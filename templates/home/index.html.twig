@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Home" | trans() %}
+
+{% import "facet_macros.html.twig" as macro %}
+
+{% block body %}
+
+    <h1 class="visually-hidden">{{ "Home" | trans() }}</h1>
+
+    <section class="hero">
+        <img src="{{ asset('/img/hero/documenten.jpeg') }}" alt="{{ "Stacks of documents" | trans() }}">
+    </section>
+
+    {% include "search/searchbar.html.twig" with { isHeroSearchForm: true } %}
+
+    <section>
+        <div>
+            <h2 class="leading-7">{{ "Browse through published documents" | trans }}</h2>
+            <div class="column-3">
+                {{ macro.facet_preview("Organization" | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_DEPARTMENT'), facets) }}
+                {{ macro.facet_preview("Official" | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_OFFICIAL'), facets) }}
+                {{ macro.facet_preview("Subject" | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_SUBJECT'), facets) }}
+                {{ macro.facet_preview("Document type" | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_SOURCE'), facets) }}
+                {{ macro.facet_preview("Period" | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_PERIOD'), facets) }}
+                {{ macro.facet_preview("Judgement" | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_JUDGEMENT'), facets) }}
+                {{ macro.facet_preview("Grounds" | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_GROUNDS'), facets) }}
+            </div>
+
+            <div class="centered pt-2"><a class="ro-font-bold" href="{{ path('app_browse') }}">{{ "See more..." | trans() }}</a></div>
+        </div>
+    </section>
+
+    <section class="background-color-offset">
+        <div>
+            <h2 class="leading-7">{{ "Recent decisions" | trans() }}</h2>
+
+            {% if recents | length > 0 %}
+            <ul class="list-unstyled list-overview -mt-3">
+                {% for dossier in recents %}
+                <li>
+                    <a class="block-link py-3" href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">
+                        <h3>{{ dossier.title | default("No title available" | trans()) }}</h3>
+                        <div class="leading-4 block">
+                            <time class="ro-font-bold" datetime="{{ dossier.createdAt | date("Y-m-d") }}">{{ dossier.createdAt | date("j F Y") }}</time>
+                            <p>
+                                {{ dossier.decision | decision }} -
+                                {{ "# documents" | trans({"count": dossier.documents|length})}}
+                                {{ "# pages" | trans({"count": dossier.pagecount|default(0)})}}
+                            </p>
+                        </div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <nav><a class="ro-font-bold" href="{{ path('app_dossier_index') }}">{{ "View all decisions" | trans }}</a></nav>
+            {% endif %}
+        </div>
+    </section>
+
+    <section>
+        <div>
+            <h2 class="leading-7">{{ "About this platform" | trans() }}</h2>
+            <p>
+                {{ "On this website, you will find internal information from the Ministry of VWS. This information has been made public to show what the ministry did during the COVID-19 pandemic. You can read about how plans and decisions were made. There are many documents to read, including reports, plans, research results, letters to the Second Chamber, budgets, e-mails, and chat messages." | trans }}
+            </p>
+            <p>
+                {{ "The documents have been made public under the Dutch Open Government Act (Wet open overheid) because journalists or other interested parties requested them. The ministry has also proactively made some of the documents public. We continue to add new documents." | trans() }}
+            </p>
+
+            <h2 class="leading-7">{{ "Submit a freedom of information request" | trans() }}</h2>
+            <p>
+                U mag informatie opvragen over wat de overheid doet. Dat staat in de <a href="https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo">Wet open overheid (Woo)</a>. Dat kan via een Woo-verzoek.
+            </p>
+
+            <ul>
+                <li>Onderzoek voordat u een verzoek doet of de informatie die u zoekt al openbaar is. Kijk bijvoorbeeld op <a href="https://www.rijksoverheid.nl/documenten">rijksoverheid.nl</a>,
+                    <a href="https://zoek.officielebekendmakingen.nl/uitgebreidzoeken/parlementair">in het archief van de Eerste Kamer en  de Tweede Kamer</a>, of
+                    <a href="https://open.overheid.nl/">andere overheidsinstanties</a>.
+                </li>
+                <li>{{ "You send the freedom of information request to the organization from which you want to receive information." | trans() }}</li>
+                <li>{{ "Provide as precise a description as possible of the information you want." | trans() }}</li>
+                <li>{{ "You may be contacted by the government for additional questions. Therefore, it's useful to provide your phone number with the request." | trans() }}</li>
+            </ul>
+
+            <p>
+                Heeft u een verzoek aan het ministerie van VWS? Op <a href="https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-verzoek-indienen">deze pagina leest u hoe u verzoek indient.</a>
+            </p>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,26 @@
+:root {
+    --pagination-border-color: #e6e6e6;
+    --pagination-border-width: 1px 0 0;
+}
+
+.pagination {
+    ul {
+        justify-content: center;
+        padding-top: 1rem;
+        width: 100%;
+    }
+
+    .disabled:hover {
+        background-color: transparent;
+        color: var(--pagination-link-text-color);
+    }
+
+    .pagination__text a:not(.disabled) {
+        color: var(--pagination-link-hover-background-color);
+
+        &:hover {
+            background-color: transparent;
+            text-decoration: underline;
+        }
+    }
+}

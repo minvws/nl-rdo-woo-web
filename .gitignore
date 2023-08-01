@@ -1,0 +1,46 @@
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+.phpunit.cache
+###< symfony/phpunit-bridge ###
+
+.phpcs-cache
+hashes.json
+lib/
+
+###> symfony/webpack-encore-bundle ###
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
+###< symfony/webpack-encore-bundle ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+### Robot Framework testresultaten ###
+/tests/robot_framework/results
+### Robot Framework testresultaten ###
+
+### Virtu ###
+/env
+### Virtu ###
+
+### Editor and private files
+/*.hidden
+### Editor and private files
+#
+
+/database

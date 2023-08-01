@@ -1,0 +1,23 @@
+<section>
+    <h2>{{ "Messages from the same e-mail conversation" | trans }}</h2>
+
+    <table>
+        <tbody>
+        {% for doc in thread %}
+            <tr>
+                <th class="w-2/5 lg:w-1/4" scope="row">{{ doc.documentNr }}</th>
+                <td>
+                    {% if doc.documentNr == document.documentNr %}
+                        {{ doc.filename }}
+                    {% else %}
+                        <a href="{{ path('app_document_detail', { dossierId: dossier.dossierNr, documentId: doc.documentNr }) }}"> {{ doc.filename }}</a>
+                    {% endif %}
+                </td>
+                <td class="text-right">
+                    <time datetime="{{ doc.documentDate | date("Y-m-d") }}">{{ doc.documentDate | date("j F Y H:i:s") }}</time>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>

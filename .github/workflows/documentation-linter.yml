@@ -1,0 +1,16 @@
+name: lint documentation
+on:
+  pull_request:
+    paths:
+      - '**.md'
+jobs:
+  mdlint: 
+    name: lint markDown file
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: DavidAnson/markdownlint-cli2-action@v11
+      with: 
+        globs: '**/*.md'
+
+# https://github.com/DavidAnson/markdownlint

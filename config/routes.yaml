@@ -1,0 +1,41 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+app_contact:
+    path:          /contact
+    controller:    App\Controller\LocalizedTemplateController
+    defaults:
+        template:  'static/contact.{locale}.html.twig'
+
+app_privacy:
+    path:          /privacy
+    controller:    App\Controller\LocalizedTemplateController
+    defaults:
+        template:  'static/privacy.{locale}.html.twig'
+
+app_about:
+    path:          /about
+    controller:    App\Controller\LocalizedTemplateController
+    defaults:
+        template:  'static/about.{locale}.html.twig'
+
+app_copyright:
+    path:          /copyright
+    controller:    App\Controller\LocalizedTemplateController
+    defaults:
+        template:  'static/copyright.{locale}.html.twig'
+
+app_cookies:
+    path:          /cookies
+    controller:    App\Controller\LocalizedTemplateController
+    defaults:
+        template:  'static/cookies.{locale}.html.twig'
+
+app_accessibility:
+    path:          /accessibility
+    controller:    App\Controller\LocalizedTemplateController
+    defaults:
+        template:  'static/accessibility.{locale}.html.twig'

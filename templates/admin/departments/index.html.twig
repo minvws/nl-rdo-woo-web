@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Department management" | trans() %}
+
+{% block body %}
+    <section>
+        <div>
+
+            <h1>{{ "Department management" | trans() }}</h1>
+
+            <table class="table table-striped table-bordered table-condensed">
+                <tr>
+                    <th>{{ "Department" | trans() }}</th>
+                    <th>{{ "Options" | trans() }}</th>
+                </tr>
+
+                {% for department in departments %}
+                    <tr>
+                        <td>{{ department.name }}</td>
+                        <td><a href="{{ path('app_admin_department_edit', { id: department.id.toBase58 }) }}" class="button">{{ "Edit" | trans() }}</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <a href="{{ path('app_admin_department_create') }}" class="button">{{ "New department" | trans() }}</a>
+
+            <table class="table table-striped table-bordered table-condensed">
+                <tr>
+                    <th>{{ "Official" | trans() }}</th>
+                    <th>{{ "Options" | trans() }}</th>
+                </tr>
+
+                {% for head in heads %}
+                    <tr>
+                        <td>{{ head.name }}</td>
+                        <td><a href="{{ path('app_admin_governmentofficial_edit', { id: head.id.toBase58 }) }}" class="button">{{ "Edit" | trans() }}</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <a href="{{ path('app_admin_governmentofficial_create') }}" class="button">{{ "New official" | trans() }}</a>
+
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,12 @@
+.button.ghost:visited {
+
+    .icon::before {
+        color: var(--button-ghost-text-color);
+    }
+
+    &:hover {
+        .icon:before {
+            color: #fff;
+        }
+    }
+}

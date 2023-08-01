@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Dossier management" | trans() %}
+
+{% block body %}
+
+    <section>
+        <div>
+
+            <h1>{{ "Dossier management" | trans() }}</h1>
+
+            <div class="mb-4">
+                <form id="uploadform" class="dropzone" method="post"
+                      action="{{ path('app_admin_dossier_documents_upload', { 'dossierId': dossier.dossierNr }) }}" enctype="multipart/form-data">
+                    <div class="previews"></div>
+                    <div class="fallback">
+                        <input name="file" type="file" multiple/>
+                    </div>
+                </form>
+            </div>
+
+            {% include "admin/dossier/document-status.html.twig" with { dossier: dossier } %}
+
+        </div>
+    </section>
+{% endblock %}

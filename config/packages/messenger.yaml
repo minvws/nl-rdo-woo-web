@@ -1,0 +1,61 @@
+framework:
+    messenger:
+        buses:
+            command_bus:
+                middleware:
+                    - doctrine_ping_connection
+#        failure_transport: failed
+        serializer:
+            default_serializer: messenger.transport.symfony_serializer
+            symfony_serializer:
+                format: json
+                context: { }
+
+        transports:
+            high:
+                dsn: '%env(HIGH_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+
+            esupdater:
+                dsn: '%env(ESUPDATER_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+
+            ingestor:
+                dsn: '%env(INGESTOR_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+
+            global:
+                dsn: '%env(GLOBAL_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+
+        routing:
+            App\Message\InitializeElasticRolloverMessage: high
+            App\Message\SetElasticAliasMessage: high
+
+            App\Message\IngestDossiersMessage: ingestor                # Ingests an audio file
+            App\Message\IngestAudioMessage: ingestor                   # Ingests an audio file
+            App\Message\IngestPdfMessage: ingestor                     # Ingests a complete PDF document and fires a message for each page
+            App\Message\IngestPdfPageMessage: ingestor                 # Ingests a single PDF page from a PDF document
+            App\Message\ProcessDocumentMessage: ingestor               # Processes uploaded document ZIP and PDF files
+
+            App\Message\UpdateDossierMessage: esupdater                # Updates the dossier in the elastic index
+            App\Message\UpdateDepartmentMessage: esupdater             # Updates the dossier in the elastic index
+            App\Message\UpdateOfficialMessage: esupdater               # Updates the dossier in the elastic index
+
+            App\Message\GenerateArchiveMessage: global                 # Generates a ZIP archive of the dossier

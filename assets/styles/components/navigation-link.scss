@@ -1,0 +1,19 @@
+:root {
+    --navigation-link-hover-font-weight: inherit;
+}
+
+.navigation-link {
+    text-decoration: none;
+
+    &::before {
+        content: var(--navigation-link-icon);
+        position: relative;
+        top: -0.12rem;
+    }
+
+    &::before,
+    &:hover::before,
+    &:focus::before {
+        font-size: var(--navigation-link-icon-font-size);
+    }
+}

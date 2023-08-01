@@ -1,0 +1,110 @@
+name: Continuous Integration Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  composer-install:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Install PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: zip
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    strategy:
+      max-parallel: 3
+      matrix:
+        php-versions: [ '8.1', '8.2' ]
+
+  woopie-unit:
+    needs:
+      - composer-install
+    runs-on: ubuntu-22.04
+    strategy:
+      max-parallel: 3
+      matrix:
+        php-versions: [ '8.1', '8.2' ]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install PHP
+      uses: shivammathur/setup-php@master
+      with:
+        php-version: ${{ matrix.php-versions }}
+        extensions: pgsql, zip, gd
+    - name: Cache PHP vendor directory
+      uses: actions/cache@v3
+      with:
+        path: vendor/
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
+    - name: use .env.ci
+      run: cp .env.ci .env.local
+    - name: Execute tests (Unit and Feature)
+      run: ./vendor/bin/phpunit --testsuite "Woopie Unit Test Suite" --log-junit=report-unit.xml --coverage-html=./coverage --coverage-clover=coverage.xml
+#    - name: 'Comment PR'
+#      uses: actions/github-script@v6
+#      if: github.event_name == 'pull_request'
+#      with:
+#        github-token: ${{ secrets.GITHUB_TOKEN }}
+#        debug: true
+#        script: |
+#          const script = require('.github/scripts/comment-updater.js');
+#          script({github, context, core, filename:"phpunit.out"});
+
+
+  woopie-functional:
+    needs:
+      - composer-install
+    runs-on: ubuntu-20.04
+    strategy:
+      max-parallel: 3
+      matrix:
+        php-versions: [ '8.1', '8.2' ]
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ci_db_test
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install PHP
+      uses: shivammathur/setup-php@master
+      with:
+        php-version: ${{ matrix.php-versions }}
+        extensions: xdebug, pgsql, zip, gd
+    - name: Cache PHP vendor directory
+      uses: actions/cache@v3
+      with:
+        path: vendor/
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
+    - name: use .env.ci
+      run: cp .env.ci .env.local
+    - name: Execute tests
+      run: ./vendor/bin/phpunit --testsuite "Woopie Functional Test Suite" --log-junit=report-functional.xml --coverage-html=./coverage --coverage-clover=coverage.xml
+#    - name: 'Comment PR'
+#      uses: actions/github-script@v6
+#      if: github.event_name == 'pull_request'
+#      with:
+#        github-token: ${{ secrets.GITHUB_TOKEN }}
+#        debug: true
+#        script: |
+#          const script = require('.github/scripts/comment-updater.js');
+#          script({github, context, core, filename:"phpunit.out"});

@@ -1,0 +1,43 @@
+flysystem:
+    storages:
+        document.storage:
+            adapter: 'local'
+            visibility: 'public'
+            directory_visibility: 'public'
+            options:
+                directory: '%document_path%'
+                permissions:
+                    file:
+                        public: 0o664            # We want group to be able to read the file
+                        private: 0o600
+                    dir:
+                        public: 0o775
+                        private: 0o700
+
+        thumbnail.storage:
+            adapter: 'local'
+            visibility: 'public'
+            directory_visibility: 'public'
+            options:
+                directory: '%thumbnail_path%'
+                permissions:
+                    file:
+                        public: 0o664            # We want group to be able to read the file
+                        private: 0o600
+                    dir:
+                        public: 0o775
+                        private: 0o700
+
+        batch.storage:
+            adapter: 'local'
+            visibility: 'public'
+            directory_visibility: 'public'
+            options:
+                directory: '%batch_path%'
+                permissions:
+                    file:
+                        public: 0o664            # We want group to be able to read the file
+                        private: 0o600
+                    dir:
+                        public: 0o775
+                        private: 0o700

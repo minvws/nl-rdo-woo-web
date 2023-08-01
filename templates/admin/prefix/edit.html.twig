@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Modify prefix %prefix%" | trans({'%prefix%': prefix.prefix }) %}
+
+{% block body %}
+
+    <section>
+        <div>
+            <h1>{{ "Modify prefix %prefix%" | trans({'%prefix%': prefix.prefix }) }}</h1>
+
+            {{ form(form) }}
+        </div>
+    </section>
+
+{% endblock %}

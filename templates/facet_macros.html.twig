@@ -1,0 +1,135 @@
+{#
+
+Display facet with hyperlinks
+
+    title: title of the section to display the facets in
+    facetKey: the key of the facet to display (e.g. 'subject')
+    result: the search result object where to fetch the facet/aggregations from
+    count: the number of facet entries to display
+#}
+
+{% macro facet_links(title, facetKey, result) %}
+    {% set entries = result.aggregation(facetKey).entries|default([]) %}
+
+    {% if entries | length > 0 %}
+    <div class="block border-0 border-b last:border-b-0 border-solid border-[#ccc] pb-8 mb-8">
+        <h3 class="ro-font-normal">{{ title }}</h3>
+
+        <ul class="list-unstyled list-densed grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-x-12">
+            {% for entry in entries %}
+            <li>
+                {# parenthesis around searchkey are important, otherwise it will be used as a literal 'searchkey' value #}
+                <a class="arrowed-link split-link" href="{{ path('app_search', { q: '', (facet2query(facetKey) ~ '[]'):  entry.key|url_encode }) }}">
+                    <span class="split-link__underline truncate">{{ entry.key }}</span>
+                    <span class="split-link__suffix de-emphasized">({{ entry.count }})</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro facet_preview(title, facetKey, result) %}
+    {% set entries = result.aggregation(facetKey).entries|default([])[:3] %}
+
+    {% if entries | length > 0 %}
+    <div class="gap-0">
+        <h3 class="ro-font-normal">{{ title }}</h3>
+
+        <ul class="list-unstyled list-densed">
+            {% for entry in entries %}
+            <li>
+                {# parenthesis around searchkey are important, otherwise it will be used as a literal 'searchkey' value #}
+                <a class="arrowed-link split-link" href="{{ path('app_search', { q: '', (facet2query(facetKey) ~ '[]'):  entry.key|url_encode }) }}">
+                    <span class="split-link__underline truncate">{{ entry.key }}</span>
+                    <span class="split-link__suffix de-emphasized">({{ entry.count }})</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+{% endmacro %}
+
+
+{#
+    Displays a single pill with the given title. Normally used by facet_pills macro, but can be called manually as well, for instance
+    when displaying date range pills.
+#}
+{% macro facet_pill(title, key, value) %}
+    <li x-data>
+        <button @click="window.removeFacetPill($el)" data-key="{{ key }}" data-value="{{ value }}" class="reset pill hover:!line-through focus:!line-through"><span class="sr-only">{{ "Remove filter" | trans() }}</span> {{ title }} <i class="fa fa-xmark" aria-hidden="true"></i></button>
+    </li>
+{% endmacro %}
+
+{#
+    Displays pills based on the current request query parameters
+
+    Title: the title of the label to display
+    facetKey: the key of the facet to display (e.g. 'subject')
+    result: the search result object where to fetch the facet/aggregations from
+#}
+{% macro facet_pills(title, facetKey, result) %}
+    {% for entry in result.aggregation(facetKey).entries|default([]) %}
+        {% if facet_checked(facet2query(facetKey), entry.key) %}
+            {{ _self.facet_pill(title ~ ': ' ~ entry.key, facet2query(facetKey) ~ '[]', entry.key) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+
+{#
+    facet_select displays a facet as a list of checkboxes (or radiobuttons)
+
+    title: the title of the facet to display
+    facetKey: the key of the facet to display (e.g. 'subject')
+    result: the search result object where to fetch the facet/aggregations from
+#}
+{% macro facet_select(title, facetKey, result) %}
+    {% set entries = result.aggregation(facetKey).entries|default([]) %}
+    {% set queryKey = facet2query(facetKey) %}
+
+    {% if entries|length > 0 %}
+    <fieldset x-data>
+        <legend>{{ title }}</legend>
+        {% for entry in entries[:5] %}
+            {{ _self._facet_entry(entry, queryKey) }}
+        {% endfor %}
+
+        {% if entries | length > 5 %}
+            <div x-data='{ open: false }'>
+                <div x-show="!open">
+                    <a href="#" @click.prevent="open=true">{{ "More..." | trans() }}</a><br>
+                </div>
+                <div x-show="open" x-cloak>
+                    {% for entry in entries[5:] %}
+                        {{ _self._facet_entry(entry, queryKey) }}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </fieldset>
+    {% endif %}
+{% endmacro %}
+
+
+{% macro _facet_entry(entry, queryKey, operator_and) %}
+    <div class="checkbox">
+        <input
+            id="input_{{ entry.key|url_encode }}"
+            type="checkbox"
+            name="{{ queryKey }}[]"
+            value="{{ entry.key }}"
+            {% if facet_checked(queryKey, entry.key) %}checked{% endif %}
+            @click="window.toggleFacet($el)"
+        >
+        <label for="input_{{ entry.key|url_encode }}">
+            <span class="flex">
+                <span class="grow">{{ entry.key | default('none'|trans())}}</span>
+
+                <span class="de-emphasized">({{ entry.count }})</span>
+            </span>
+        </label>
+    </div>
+{% endmacro %}

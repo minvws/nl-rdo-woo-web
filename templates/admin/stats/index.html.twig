@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Statistics & Monitoring" | trans() %}
+
+{% block meta %}
+    <meta http-equiv="refresh" content="10"/>
+{% endblock %}
+
+{% block body %}
+
+    <section>
+        <div>
+
+            <h1>{{ "Statistics & Monitoring" | trans() }}</h1>
+
+            <table class="">
+                <tr>
+                    <th>{{ "Dossiers available" | trans() }}</th>
+                    <td>{{ "# dossiers" | trans({'count': dossier_count}) }}</td>
+                </tr>
+                <tr>
+                    <th>{{ "Documents available" | trans() }}</th>
+                    <td>{{ "# documents" | trans({'count': document_count}) }}</td>
+                </tr>
+                <tr>
+                    <th>{{ "Total pages" | trans() }}</th>
+                    <td>{{ "# pages" | trans({'count': page_count}) }}</td>
+                </tr>
+            </table>
+
+            {% if rabbitmq_stats %}
+                <h2>{{ "RabbitMQ stats" | trans() }}</h2>
+
+                <table class="">
+                    <tr>
+                        <th>{{ "Node" | trans() }}</th>
+                        <th>{{ "Name" | trans() }}</th>
+                        <th>{{ "Messages" | trans() }}</th>
+                        <th>{{ "Msg ready" | trans() }}</th>
+                        <th>{{ "Msg unacknowledged" | trans() }}</th>
+                        <th>{{ "Msg Published" | trans() }}</th>
+                        <th>{{ "Msg Published Rate" | trans() }}</th>
+                        <th>{{ "Msg Delivered" | trans() }}</th>
+                        <th>{{ "Msg Delivered Rate" | trans() }}</th>
+                    </tr>
+
+                    {% for info in rabbitmq_stats %}
+                        <tr>
+                            <td>{{ info.node }}</td>
+                            <td>{{ info.name }}</td>
+                            <td>{{ info.messages }}</td>
+                            <td>{{ info.messages_ready }}</td>
+                            <td>{{ info.messages_unacknowledged }}</td>
+                            <td>{{ info.message_stats.publish | default(0) }}</td>
+                            <td>{{ info.message_stats.publish_details.rate | default(0) }}</td>
+                            <td>{{ info.message_stats.deliver_get | default(0) }}</td>
+                            <td>{{ info.message_stats.deliver_get_details.rate | default(0) }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <span class="float-end"><small>{{ "Last updated" | trans() }}: {{ "now"|date('Y-m-d H:i:s') }}</small></span>
+
+            {% endif %}
+
+        </div>
+    </section>
+{% endblock %}

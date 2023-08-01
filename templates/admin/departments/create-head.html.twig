@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Create new government official" | trans() %}
+
+{% block body %}
+
+    <section>
+        <div>
+            <h1>{{ "Create new government official" | trans() }}</h1>
+
+            {{ form(form) }}
+        </div>
+    </section>
+
+{% endblock %}

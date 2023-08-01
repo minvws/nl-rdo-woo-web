@@ -1,0 +1,22 @@
+<div class="gallery">
+    <div class="gallery__container">
+    {% for page in range(1, document.pageCount) %}
+
+        {% if has_thumbnail(document, page) %}
+            <a class="gallery__item" href="{{ path('app_document_download_page', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: page}) }}">
+            <img
+                alt="{{ "Page" | trans }} {{ page }}"
+                class="gallery__image"
+                src="{{ path('app_document_thumbnail', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: page}) }}"
+            />
+            </a>
+        {% else %}
+            <img
+                alt="{{ "This page is not yet processed by our system" | trans }}"
+                class="gallery__image"
+                src="{{ path('app_document_thumbnail', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: page}) }}"
+            />
+        {% endif %}
+    {% endfor %}
+    </div>
+</div>

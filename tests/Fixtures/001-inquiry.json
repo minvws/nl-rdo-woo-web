@@ -1,0 +1,66 @@
+{
+  "name": "inquiry test",
+  "description": "This test will create 3 dossiers with 1 inventory each and can test the inquiry flow and filtering",
+  "dossiers": [
+    {
+      "id": "VWS-111-0001",
+      "document_prefix": "MINVWS-COVID19",
+      "title": "Test dossier 1 for inquiries",
+      "summary": "Alle nota’s, memo’s, e-mails, notulen en Whatsapp-berichten vanuit en aan alle afdelingen binnen het RIVM, betreffende het nieuwsbericht ‘4 op de 5 COVID-19 patiënten op de IC is niet gevaccineerd’ over de periode van 1 september 2021 tot en met 31 december 2021.",
+      "department": "Ministerie van Volksgezondheid, Welzijn en Sport",
+      "official": "Minister Hugo de Jonge",
+      "period_from": "2021-09-01",
+      "period_to": "2021-12-31",
+      "decision": "partial_public",
+      "publication_reason": "",
+      "inventory_path": "001-inventory-001.xlsx",
+      "status": "published"
+    },
+    {
+      "id": "VWS-111-0002",
+      "document_prefix": "MINVWS-COVID19",
+      "title": "Test dossier 2 for inquiries",
+      "summary": "Alle nota’s, memo’s, e-mails, notulen en Whatsapp-berichten vanuit en aan alle afdelingen binnen het RIVM, betreffende het nieuwsbericht ‘4 op de 5 COVID-19 patiënten op de IC is niet gevaccineerd’ over de periode van 1 september 2021 tot en met 31 december 2021.",
+      "department": "Ministerie van Volksgezondheid, Welzijn en Sport",
+      "official": "Minister Hugo de Jonge",
+      "period_from": "2021-09-01",
+      "period_to": "2021-12-31",
+      "decision": "partial_public",
+      "publication_reason": "",
+      "inventory_path": "001-inventory-002.xlsx",
+      "status": "published"
+    },
+    {
+      "id": "VWS-111-0003",
+      "document_prefix": "MINVWS-COVID19",
+      "title": "Test dossier 3 for inquiries",
+      "summary": "Alle nota’s, memo’s, e-mails, notulen en Whatsapp-berichten vanuit en aan alle afdelingen binnen het RIVM, betreffende het nieuwsbericht ‘4 op de 5 COVID-19 patiënten op de IC is niet gevaccineerd’ over de periode van 1 september 2021 tot en met 31 december 2021.",
+      "department": "Ministerie van Volksgezondheid, Welzijn en Sport",
+      "official": "Minister Hugo de Jonge",
+      "period_from": "2021-09-01",
+      "period_to": "2021-12-31",
+      "decision": "partial_public",
+      "publication_reason": "",
+      "inventory_path": "001-inventory-003.xlsx",
+      "status": "published",
+      "fake_documents": [
+        {
+          "pages": [
+            "De volgende tekst is gegenereerd door ChatGPT en is daarom niet gebaseerd op feitelijke gebeurtenissen.",
+            "",
+            "Het begon allemaal op een kalme woensdagochtend in september, toen het nieuwsbericht '4 op de 5 COVID-19 patiënten op de IC is niet gevaccineerd' de rondte deed. Het bericht, ondanks zijn eenvoudige statistische aard, bracht een stortvloed aan communicatie teweeg binnen de muren van het RIVM. Vanuit elke hoek van de organisatie - epidemiologie tot public relations - werd er gecommuniceerd: nota's, memo's, e-mails, notulen en Whatsapp-berichten vlogen heen en weer.",
+            "Op de afdeling Epidemiologie werd het bericht met grote interesse ontvangen. Deskundigen bekeken de data en voerden diepgaande analyses uit. Notulen van bijeenkomsten tonen gedetailleerde discussies over hoe de cijfers geïnterpreteerd zouden moeten worden en welke beleidsveranderingen mogelijk nodig waren. De afdeling stuurde memo's naar andere teams om de situatie in kaart te brengen en mogelijke actieplannen te schetsen.",
+            "Tegelijkertijd ontving de communicatieafdeling het nieuws met enige bezorgdheid. Ze begonnen met het opstellen van nota's en e-mails om een strategie te formuleren voor de mogelijke media-backlash. Ze wisten dat het bericht de vaccinatiescepsis kon aanwakkeren, en dat zou een grote impact kunnen hebben op de volksgezondheid.",
+            "Het legal team was ook in rep en roer. Zij gaven memo's en adviezen uit over hoe het RIVM het beste kon omgaan met juridische implicaties en mogelijke aansprakelijkheden. Ze hielden nauwlettend de reactie van het publiek in de gaten en gaven updates via Whatsapp-berichten aan de relevante partijen binnen de organisatie.",
+            "Ondertussen namen de IT- en cyberbeveiligingsteams voorzorgsmaatregelen. Zij versterkten de beveiliging van de servers en het e-mailverkeer, omdat ze verwachtten dat er een toename van cyberaanvallen zou kunnen zijn als gevolg van het controversiële nieuws.",
+            "De afdeling Vaccinatie was misschien wel het meest betrokken bij het nieuws. Ze brachten uren door in vergaderingen, het analyseren van de mogelijke impact op vaccinatieprogramma's. Ze maakten notulen van deze vergaderingen en stuurden ze naar andere afdelingen, om hen op de hoogte te houden van de situatie.",
+            "Ondertussen waren de Whatsapp-berichten tussen de leidinggevenden van het RIVM in overvloed. Beslissingen moesten snel worden genomen en actieplannen moesten worden uitgevoerd. Deze berichten tonen de intensiteit van de situatie, met discussies die tot diep in de nacht doorgingen.",
+            "Tegen het einde van december was de situatie enigszins gestabiliseerd. De maatregelen die door de verschillende afdelingen waren genomen, hadden effect gehad. E-mails en memo's tussen de afdelingen toonden aan dat de aanvankelijke paniek was weggeëbd en plaats had gemaakt voor een gevoel van beheersing.",
+            "Toch bleef de communicatie sterk. Het laatste memo van 2021, verstuurd door de Directeur-Generaal van het RIVM, prees het team voor hun inspanningen en vroeg iedereen om alert te blijven. Het bericht eindigde met een hoopvolle toon, waarin werd uitgekeken naar een beter en gezonder 2022.",
+            "Dus, terwijl het jaar ten einde liep, ging de communicatie binnen het RIVM door. De nota’s, memo’s, e-mails, notulen en Whatsapp-berichten waren stille getuigen van de intensiteit en het belang van de situatie. Ze vertelden het verhaal van een organisatie die, geconfronteerd met een uitdagende situatie, samenwerkte om de gezondheid en het welzijn van de bevolking te waarborgen."
+          ]
+        }
+      ]
+    }
+  ]
+}

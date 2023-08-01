@@ -1,0 +1,86 @@
+{% import "facet_macros.html.twig" as macro %}
+
+<div class="flex flex-col-reverse gap-0">
+    <div class="block">
+        <h1 class="ro-text-base ro-font-normal" aria-live="polite">
+            {% if result.type == constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
+                <span class="ro-font-bold">{{ "# dossiers" | trans({'count': result.documentCount}) }}</span>
+            {% else %}
+
+                <span class="ro-font-bold">
+                    {{ "# documents" | trans({'count': result.documentCount}) }}
+                    {{ "in # dossiers" | trans({'count': result.dossierCount}) }}
+                </span>
+            {% endif %}
+        </h1>
+
+        {# Suggestions #}
+        {% set suggestionsId = constant('App\\ElasticConfig::SUGGESTIONS_SEARCH_INPUT') %}
+        {% if result.suggestion(suggestionsId) is not null and result.suggestion(suggestionsId).entries|length %}
+        <p>
+            <i>
+                {% if result.suggestion(suggestionsId).entries | length == 1 %}
+                    {{ "Did you mean:" | trans() }}
+                {% else %}
+                    {{ "Did you mean any of the following search terms:" | trans() }}
+                {% endif %}
+                {% for entry in result.suggestion(suggestionsId).entries %}
+                    [ <strong><a href="{{ path('app_home', { q: entry.name|url_encode }) }}">{{ entry.name }}</a></strong> ]
+                {% endfor %}
+            </i>
+        </p>
+        {% endif %}
+    </div>
+
+    {% if has_facets(app.request) %}
+    <div class="block">
+        {# Facet pills #}
+        <h2 class="visually-hidden">{{ "Applied filters" | trans() }}</h2>
+        <ul class="list-unstyled list-pills pb-6">
+            {% if is_valid_date(app.request.query.get('df')) %}
+                {{ macro.facet_pill('Datum vanaf: ' ~ app.request.query.get('df')|date('d-m-Y'), 'df', '') }}
+            {% endif %}
+            {% if is_valid_date(app.request.query.get('dt')) %}
+                {{ macro.facet_pill('Datum tot: ' ~ app.request.query.get('dt')|date('d-m-Y'), 'dt', '') }}
+            {% endif %}
+
+            {{ macro.facet_pills('Organization' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_DEPARTMENT'), result) }}
+            {{ macro.facet_pills('Official' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_OFFICIAL'), result) }}
+            {{ macro.facet_pills('Subject' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_SUBJECT'), result) }}
+            {{ macro.facet_pills('Document type' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_SOURCE'), result) }}
+            {{ macro.facet_pills('Judgement' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_JUDGEMENT'), result) }}
+            {{ macro.facet_pills('Grounds' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_GROUNDS'), result) }}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+
+{# Results #}
+{% if result.entries | length > 0 %}
+<h2 class="visually-hidden">Resultaten</h2>
+<ul class=" list-unstyled list-results">
+    {% for entry in result.entries %}
+    <li>
+        {% include "search/entries/" ~ entry.type ~ ".html.twig" %}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{# Pagination #}
+{% if result.paginationEnabled %}
+    {{ knp_pagination_render(result.pagination) }}
+{% endif %}
+
+{# Query debug info #}
+<div x-data="{ open: false }">
+    <button @click="open = !open" class="reset"><i class="fa fa-circle-question text-info"></i></button>
+
+    <div x-show="open" x-cloak>
+        <div class="card bg-light">
+            <div class="card-body">
+                <pre><small>{{ result.query|json_encode(constant('JSON_PRETTY_PRINT')) }}</small></pre>
+            </div>
+        </div>
+    </div>
+</div>

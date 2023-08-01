@@ -1,0 +1,40 @@
+.top-container {
+    margin-top: 6rem;
+}
+
+.hl {
+    /*background-color: yellow;*/
+    font-weight: 800;
+}
+
+[x-cloak] { display: none !important; }
+
+.entry p {
+    margin-bottom: 0.4em;
+    margin-top: 0;
+}
+
+.entry .mainlink {
+    /*font-size: 1rem;*/
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.entry .highlights {
+    /*font-size: 0.8rem;*/
+    font-weight: 400;
+    color: #000;
+}
+
+.entry .subtext {
+    /*font-size: 0.8rem;*/
+    font-weight: 400;
+    color: #888;
+}
+
+.entry .link {
+    /*font-size: 1rem;*/
+    font-weight: 400;
+    color: #00af00;
+    text-decoration: underline;
+}

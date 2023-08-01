@@ -1,0 +1,44 @@
+@import "admin-decision-link";
+
+.admin-decisions {
+  main {
+    width: 100%;
+    max-width: 1280px;
+  }
+
+  .form-search-decisions {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .search-decisions {
+    display: flex;
+
+    &__input {
+      display: flex;
+      width: 424px;
+      padding: 10px 14px;
+      align-items: center;
+      gap: 8px;
+
+      &:placeholder-shown {
+        text-overflow: ellipsis;
+      }
+    }
+
+    &__button {
+      border: none;
+      color: #999;
+      background: none;
+      margin-left: -39px;
+    }
+  }
+}
+
+.decisions {
+  td:first-child {
+    display: flex;
+    align-items: center;
+  }
+}

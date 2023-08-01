@@ -1,0 +1,33 @@
+<h2 class="text-xl">
+    <a
+        class="reverse-underline"
+        href="{{ path('app_document_detail', { dossierId: entry.document.dossiers[0].dossierNr, documentId: entry.document.documentNr }) }}"
+    >{{ "Page" | trans() }} {{ entry.elastic._source.page_nr }} {{ entry.document.filename }}</a>
+</h2>
+
+{% if entry.highlights | length > 0 %}
+<p class="ro-text-small leading-5 mt-1 mb-2 line-clamp-3">
+    {% for hl in entry.highlights %}
+        ... {{ hl | raw('html') }} {% if loop.last %}...{% endif %}
+    {% endfor %}
+</p>
+{% endif %}
+
+<p class="de-emphasized mb-0">
+    <time datetime="{{ entry.document.documentDate | date("Y-m-d") }}">{{ entry.document.documentDate | date("j F Y") }}</time> |
+    {{ entry.document.fileType }} |
+    {{ "# pages" | trans({"count": entry.document.pagecount|default(0)})}}
+    {{ entry.document.fileSize | size}} |
+    {{ "Document number" | trans }} {{ entry.document.documentNr }}
+</p>
+
+{% if entry.document.dossiers | length > 0 %}
+<ul class="list-unstyled">
+    {% for dossier in entry.document.dossiers %}
+    <li class="py-0 ro-text-small leading-5">
+        <a class="link-green" href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">Besluit {{ dossier.title }}</a>
+        <span class="de-emphasized">| {{ "# documents" | trans({"count": dossier.documents|length})}}</span>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}

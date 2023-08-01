@@ -1,0 +1,46 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = "Please sign in" | trans() %}
+
+{% block title %}{{ "Login" | trans() }}{% endblock %}
+{% block body_id %}LoginForm{% endblock %}
+
+{% block body %}
+
+  <section>
+    <div class="centered">
+      <form class="form-signin" method="POST" action="{{ path('app_login') }}">
+        {% if app.user %}
+          <div class="mb-3">
+            {{ "You are logged in as %name%" | trans({'%name%': app.user.name|default("unknown user")}) }}, <a
+              href="{{ path('app_logout') }}">{{ "Logout" | trans() }}</a>
+          </div>
+        {% else %}
+
+          <h1 class="h3 mb-3 font-weight-normal">{{ "Please sign in" | trans() }}</h1>
+          <label for="inputEmail">{{ "E-mail address" | trans() }}</label>
+          <input type="email" value="{{ last_username }}" name="_username" id="inputEmail"
+                 class="form-control"
+                 autocomplete="email" required autofocus>
+
+          <label for="inputPassword">{{ "Password" | trans() }}</label>
+          <input type="password" name="_password" id="inputPassword"
+                 class="form-control" autocomplete="current-password"
+                 required>
+
+          {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+          {% endif %}
+
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+          <button class="btn btn-lg btn-primary btn-block" type="submit">{{ "Sign in" | trans() }}</button>
+
+          <p
+            class="mt-5 mb-3 text-muted text-help-primary">{{ "Lost your login details? Please contact the person who gave you access to the platform." | trans() }}</p>
+        {% endif %}
+      </form>
+    </div>
+  </section>
+  
+{% endblock %}

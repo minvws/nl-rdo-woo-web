@@ -1,0 +1,22 @@
+.form-filters {
+    background-color: transparent;
+    line-height: 1.25rem;
+    padding: 0;
+
+    legend {
+        margin-bottom: .25rem;
+        padding-left: 0;
+    }
+
+    .checkbox {
+        margin: .3rem 0;
+
+        input[type=checkbox] {
+            margin-top: 0;
+        }
+    }
+
+    label {
+        font-size: 1rem;
+    }
+}

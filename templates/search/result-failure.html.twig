@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "An error occurred" | trans() %}
+
+{% block body %}
+
+<div class="mb-3">
+    <h1>{{ "An error occurred" | trans() }}</h1>
+    <p>
+        {{ "Something went wrong during the search. Try again later." | trans() }}
+    </p>
+
+    {% if app.debug %}
+        <div class="card bg-light mt-5">
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr><th class="col-2">{{ "Error message" | trans() }}</th><td>{{ result.message }}</td></tr>
+                    <tr><th>{{ "Time" | trans() }}</th><td>{{ "now" | date('d-m-Y H:i:s') }}</td></tr>
+                    <tr><th>{{ "Query" | trans() }}</th><td><code><pre>{{ result.query | json_encode(128) }}</pre></code></td></tr>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,150 @@
+name: PHP Linting and checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  composer-install:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Install PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: zip
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    strategy:
+      max-parallel: 3
+      matrix:
+        php-versions: [ '8.1', '8.2' ]
+
+  php-linting-psalm:
+    needs:
+      - composer-install
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Install PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-versions }}
+      - name: Clear cache
+        run: |
+          APP_ENV=dev php bin/console cache:clear && APP_ENV=dev  php bin/console cache:warmup
+          ls -laR var/cache
+      - name: Static analysis with Psalm
+        run: vendor/bin/psalm
+    strategy:
+      max-parallel: 3
+      matrix:
+        php-versions: [ '8.1', '8.2' ]
+
+  php-linting-psr12:
+    needs:
+      - composer-install
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Install PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-versions }}
+      - name: Coding style PSR12 Check
+        run: vendor/bin/phpcs
+    strategy:
+      max-parallel: 3
+      matrix:
+        php-versions: [ '8.1', '8.2' ]
+
+  php-linting-phpmd:
+    needs:
+      - composer-install
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Install PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-versions }}
+      - name: Mess detection
+        run: vendor/bin/phpmd src/ text ruleset.phpmd.xml
+    strategy:
+      max-parallel: 3
+      matrix:
+        php-versions: [ '8.1', '8.2' ]
+
+  php-linting-stan:
+    needs:
+      - composer-install
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Install PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-versions }}
+      - name: copy env file
+        run: |
+          cp .env.ci .env.local
+          # change database url to sqlite
+          sed -i 's|^DATABASE_URL=.*|DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db|' .env.local
+      - name: Clear cache
+        run: APP_ENV=dev php bin/console cache:clear && APP_ENV=dev php bin/console cache:warmup
+      - name: Static analysis with PHPStan
+        run: vendor/bin/phpstan analyse
+    strategy:
+      max-parallel: 3
+      matrix:
+        php-versions: [ '8.1', '8.2' ]
+
+  php-security-check:
+    needs:
+      - composer-install
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Install PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-versions }}
+      - name: Local PHP Security Checker
+        uses: docker://pplotka/local-php-security-checker-github-actions
+    strategy:
+      max-parallel: 3
+      matrix:
+        php-versions: [ '8.1', '8.2' ]

@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "All WOB and Woo decisions" | trans() %}
+
+{% block search_form_top %}
+    {% if result.type != constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
+        {% include "search/searchbar.html.twig" %}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+
+{% if result.type == constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
+    <section class="py-8">
+        <div class="gap-0">
+            <h1 class="mb-3">{{ "All WOB and Woo decisions" | trans() }}</h1>
+            <p class="mb-0">{{ "On this site all COVID-19 related WOB and Woo decisions are published. These are decisions from the period xx to yy." | trans() }}</p>
+            <a href="#">{{ "Subscribe to new decisions (RSS feed)" | trans() }}</a>
+        </div>
+    </section>
+{% endif %}
+
+<div class="search-results">
+    <div class="search-results__filters" id="js-facets">
+        {% include "search/facet.html.twig" with { 'result': result } %}
+    </div>
+
+    <div class="search-results__results">
+        <div class="gap-0" id="js-results">
+            {% include "search/entries.html.twig" with { 'result': result } %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Modify official %name%" | trans({'%name%': head.name}) %}
+
+{% block body %}
+
+    <section>
+        <div>
+            <h1>{{ "Modify official %name%" | trans({'%name%': head.name}) }}</h1>
+
+            {{ form(form) }}
+        </div>
+    </section>
+
+{% endblock %}

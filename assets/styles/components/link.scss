@@ -1,0 +1,26 @@
+:root {
+    --link-focus-font-size: inherit;
+    --link-focus-font-weight: inherit;
+    --link-focus-line-height: inherit;
+
+    --link-hover-font-size: inherit;
+    --link-hover-font-weight: inherit;
+    --link-hover-line-height: inherit;
+    --link-hover-text-decoration: none;
+
+    --link-visited-line-height: inherit;
+}
+
+h2>a {
+    color: var(--link-text-color);
+}
+
+.link-green {
+
+    &,
+    &:focus,
+    &:hover,
+    &:visited {
+        color: #39870c;
+    }
+}

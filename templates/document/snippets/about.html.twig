@@ -1,0 +1,53 @@
+<section>
+    <h2>{{ "About this document" | trans }}</h2>
+
+    <table>
+        <tbody>
+            <tr>
+                <th class="w-2/5 lg:w-1/4" scope="row">{{ "Document Date" | trans() }}</th>
+                <td><time datetime="{{ document.documentDate | date("Y-m-d") }}">{{ document.documentDate | date("j F Y H:i:s") }}</time></td>
+            </tr>
+            <tr>
+                <th scope="row">{{ "Document Type" | trans() }}</th>
+                <td>{{ document.sourceType | trans() }}, {{ document.pageCount }} pagina's</td>
+            </tr>
+            <tr>
+                <th scope="row">{{ "Download Type" | trans() }}</th>
+                <td>{{ document.filetype|upper}} ({{ document.filesize | size }})</td>
+            </tr>
+            <tr>
+                <th scope="row">{{ "Document Number" | trans() }}</th>
+                <td>{{ document.documentNr }}</td>
+            </tr>
+            {% if document.filetype == "audio" %}
+                <tr>
+                    <th scope="row">{{ "Duration" | trans() }}</th>
+                    <td>1 minuut, 3 seconden</td>
+                </tr>
+            {% endif %}
+
+            <tr>
+                <th scope="row">{{ "Labels" | trans() }}</th>
+                <td>
+                    {% for subject in document.subjects %}
+                        <span class="badge bg-primary">{{ subject }}</span>
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">{{ "Status" | trans() }}</th>
+                <td>{{ document.judgement }}</td>
+            </tr>
+            <tr>
+                <th scope="row">{{ "What is redacted" | trans() }}</th>
+                <td>
+                    {% for ground in document.grounds %}
+                        <a href="#">{{ ground }} {{ ground|classification }}</a>&nbsp;
+                    {% endfor %}
+                    <br>
+                    {{ "Do you encounter data in this document that you think should have been redacted? Or is the document difficult to read?" | trans }} <a href="#">{{ "Let us know" | trans }}</a>.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>

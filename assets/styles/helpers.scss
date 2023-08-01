@@ -1,0 +1,40 @@
+.ro-text-small {
+    font-size: var(--body-text-small-font-size);
+}
+
+.ro-text-base {
+    font-size: var(--application-base-font-size);
+}
+
+.ro-font-normal {
+    font-weight: var(--text-set-font-weight);
+}
+
+.ro-font-bold,
+a.ro-font-bold:focus,
+a.ro-font-bold:hover {
+    font-weight: var(--text-set-strong-font-weight);
+}
+
+.ro-gap-0 {
+    gap: 0;
+}
+
+@media (min-width: 42rem) {
+    .ro-truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.ro-width-full {
+    width: 100%;
+}
+
+.js {
+    // .results in selector: js. .js\:visually-hidden
+    & &\:visually-hidden {
+        @extend .visually-hidden;
+    }
+}

@@ -1,0 +1,47 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = "Welcome" | trans() %}
+
+{% set email = app.user.email ?? '' %}
+
+{% block title %}Log in!{% endblock %}
+{% block body_id %}LoginForm{% endblock %}
+
+{% block body %}
+
+  <section>
+    <div class="centered">
+
+      {# Let the user select the authentication method #}
+      {% if availableTwoFactorProviders|length > 1 %}
+        <p>{{ "choose_provider"|trans() }}:
+          {% for provider in availableTwoFactorProviders %}
+            <a href="{{ path("2fa_login", {"preferProvider": provider}) }}">{{ provider }}</a>
+          {% endfor %}
+        </p>
+      {% endif %}
+
+      <form class="form form-signin form-2fa" action="{{ checkPathUrl ? checkPathUrl: path(checkPathRoute) }}" method="post">
+        <h1 class="h3 mb-3 font-weight-normal">{{ "Welcome" | trans() }}</h1>
+        {% if email %}
+          <p><strong>{{ email }}</strong></p>
+        {% endif %}
+        <p class="text-help-primary">{{ "Open the authenticator app, and enter the one-time verification code for the woo-platform." | trans() }}</p>
+        <label for="_auth_code">{{ "Code" | trans() }}</label>
+        <input id="_auth_code" type="text" name="{{ authCodeParameterName }}" autocomplete="one-time-code" autofocus
+               class="form-control"/>
+        <input type="submit" value="{{ "login"|trans() }}"/>
+
+        {% if authenticationError %}
+          <p class="alert alert-danger">{{ authenticationError|trans(authenticationErrorData, 'SchebTwoFactorBundle') }}</p>
+        {% endif %}
+
+        <p class="text-help-secondary">{{ "Having problems with the authentication app? Use a recovery code from the login instructions." | trans() }}</p>
+
+      </form>
+    </div>
+
+    </div>
+  </section>
+
+{% endblock %}

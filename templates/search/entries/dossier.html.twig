@@ -1,0 +1,18 @@
+<h2 class="text-xl">
+    <a class="reverse-underline" href="{{ path('app_dossier_detail', { dossierId: entry.dossier.dossierNr }) }}">{{ entry.dossier.title }}</a>
+</h2>
+
+<p class="ro-text-small leading-5">{{ entry.dossier.summary | u.truncate(200, '...', false) }}</p>
+
+{% if entry.highlights | length > 0 %}
+<p class="ro-text-small leading-5 mt-1 mb-2 line-clamp-3">
+    {% for hl in entry.highlights %}
+        ... {{ hl | raw('html') }} {% if loop.last %}...{% endif %}
+    {% endfor %}
+</p>
+{% endif %}
+
+<p class="ro-text-small leading-5">
+    <a class="link-green" href="{{ path('app_dossier_detail', { dossierId: entry.dossier.dossierNr }) }}">{{ "Decision" | trans }} {{ entry.dossier.title }}</a>
+    <span class="de-emphasized">|{{ "# documents" | trans({"count": entry.dossier.documents|length})}}</span>
+</p>

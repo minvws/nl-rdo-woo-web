@@ -1,0 +1,7 @@
+<div role="search">
+    <form class="search-form {% if isHeroSearchForm|default(false) %}search-form--hero{% endif %}" method="post" action="">
+        <label for="search-all" class="visually-hidden">{{ "Enter a search term" | trans() }}</label>
+        <input id="search-all" type="text" placeholder="{{ "Enter a search term" | trans() }}" name="q" value="{{ app.request.get('q') }}"/>
+        <button type="submit"><span class="text">{{ "Search" | trans() }}</span> <span aria-hidden="true" class="icon icon-search"></button>
+    </form>
+</div>

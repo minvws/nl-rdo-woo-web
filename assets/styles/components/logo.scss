@@ -1,0 +1,18 @@
+.ro-logo {
+    align-items: end;
+
+    &,
+    &:hover {
+        line-height: 1;
+    }
+
+    @media (width >=35rem) {
+        max-width: 35rem;
+
+    }
+}
+
+.logo__text {
+    display: block;
+    margin-bottom: .75rem;
+}

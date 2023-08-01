@@ -1,0 +1,363 @@
+{
+    "_meta" : {
+        "version" : 2
+    },
+    "properties": {
+        "type": {
+            "type": "keyword"
+        },
+        "dossier_nr": {
+            "type": "keyword"
+        },
+        "title": {
+            "type": "text",
+            "analyzer": "dutch",
+            "fields": {
+                "suggest": {
+                    "type": "completion",
+                    "analyzer": "dutch"
+                }
+            }
+        },
+        "status": {
+            "type": "keyword"
+        },
+        "suspended": {
+            "type": "boolean"
+        },
+        "withdrawn": {
+            "type": "boolean"
+        },
+        "summary": {
+            "type": "text",
+            "analyzer": "dutch",
+            "fields": {
+                "suggest": {
+                    "type": "completion",
+                    "analyzer": "dutch"
+                }
+            }
+        },
+        "document_prefix": {
+            "type": "keyword"
+        },
+        "department": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "keyword"
+                }
+            }
+        },
+        "government_official": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "keyword"
+                },
+                "id": {
+                    "type": "keyword"
+                }
+            }
+        },
+        "document_nr": {
+            "type": "keyword"
+        },
+        "mimetype": {
+            "type": "keyword"
+        },
+        "filesize": {
+            "type": "integer"
+        },
+        "source_type": {
+            "type": "keyword"
+        },
+        "file_type": {
+            "type": "keyword"
+        },
+        "class": {
+            "type": "keyword"
+        },
+        "date": {
+            "type": "date"
+        },
+        "filename": {
+            "type": "keyword"
+        },
+        "family_id": {
+            "type": "integer"
+        },
+        "document_id": {
+            "type": "integer"
+        },
+        "thread_id": {
+            "type": "integer"
+        },
+        "judgement": {
+            "type": "keyword"
+        },
+        "grounds": {
+            "type": "keyword"
+        },
+        "subjects": {
+            "type": "keyword"
+        },
+        "period": {
+            "type": "keyword"
+        },
+        "document_pages": {
+            "type": "integer"
+        },
+        "audio_duration": {
+            "type": "integer"
+        },
+        "date_from": {
+            "type": "date"
+        },
+        "date_to": {
+            "type": "date"
+        },
+        "date_period": {
+            "type": "keyword"
+        },
+        "publication_reason": {
+            "type": "keyword"
+        },
+        "decision": {
+            "type": "keyword"
+        },
+        "content": {
+            "type": "text",
+            "analyzer": "dutch",
+            "fields": {
+                "suggest": {
+                    "type": "completion",
+                    "analyzer": "dutch"
+                }
+            }
+        },
+        "dossiers": {
+            "type": "object",
+            "properties": {
+                "dossier_nr": {
+                    "type": "keyword"
+                },
+                "title": {
+                    "type": "text",
+                    "analyzer": "dutch",
+                    "fields": {
+                        "suggest": {
+                            "type": "completion",
+                            "analyzer": "dutch"
+                        }
+                    }
+                },
+                "status": {
+                    "type": "keyword"
+                },
+                "summary": {
+                    "type": "text",
+                    "analyzer": "dutch",
+                    "fields": {
+                        "suggest": {
+                            "type": "completion",
+                            "analyzer": "dutch"
+                        }
+                    }
+                },
+                "document_prefix": {
+                    "type": "keyword"
+                },
+                "department": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "keyword"
+                        },
+                        "id": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "government_official": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "keyword"
+                        },
+                        "id": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "date_from": {
+                    "type": "date"
+                },
+                "date_to": {
+                    "type": "date"
+                },
+                "date_period": {
+                    "type": "keyword"
+                },
+                "publication_reason": {
+                    "type": "keyword"
+                },
+                "decision": {
+                    "type": "keyword"
+                }
+            }
+        },
+        "page_nr": {
+            "type": "integer"
+        },
+        "document": {
+            "type": "object",
+            "properties": {
+                "document_nr": {
+                    "type": "keyword"
+                },
+                "dossier_nr": {
+                    "type": "keyword"
+                },
+                "mimetype": {
+                    "type": "keyword"
+                },
+                "filesize": {
+                    "type": "integer"
+                },
+                "source_type": {
+                    "type": "keyword"
+                },
+                "file_type": {
+                    "type": "keyword"
+                },
+                "class": {
+                    "type": "keyword"
+                },
+                "date": {
+                    "type": "date"
+                },
+                "filename": {
+                    "type": "keyword"
+                },
+                "family_id": {
+                    "type": "integer"
+                },
+                "document_id": {
+                    "type": "integer"
+                },
+                "thread_id": {
+                    "type": "integer"
+                },
+                "judgement": {
+                    "type": "keyword"
+                },
+                "grounds": {
+                    "type": "keyword"
+                },
+                "subjects": {
+                    "type": "keyword"
+                },
+                "period": {
+                    "type": "keyword"
+                },
+                "document_pages": {
+                    "type": "integer"
+                },
+                "audio_duration": {
+                    "type": "integer"
+                },
+                "suspended": {
+                    "type": "boolean"
+                },
+                "withdrawn": {
+                    "type": "boolean"
+                },
+                "content": {
+                    "type": "text",
+                    "analyzer": "dutch",
+                    "fields": {
+                        "suggest": {
+                            "type": "completion",
+                            "analyzer": "dutch"
+                        }
+                    }
+                },
+                "dossiers": {
+                    "type": "object",
+                    "properties": {
+                        "dossier_nr": {
+                            "type": "keyword"
+                        },
+                        "title": {
+                            "type": "text",
+                            "analyzer": "dutch",
+                            "fields": {
+                                "suggest": {
+                                    "type": "completion",
+                                    "analyzer": "dutch"
+                                }
+                            }
+                        },
+                        "status": {
+                            "type": "keyword"
+                        },
+                        "summary": {
+                            "type": "text",
+                            "analyzer": "dutch",
+                            "fields": {
+                                "suggest": {
+                                    "type": "completion",
+                                    "analyzer": "dutch"
+                                }
+                            }
+                        },
+                        "document_prefix": {
+                            "type": "keyword"
+                        },
+                        "department": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "keyword"
+                                },
+                                "id": {
+                                    "type": "keyword"
+                                }
+                            }
+                        },
+                        "government_official": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "keyword"
+                                },
+                                "id": {
+                                    "type": "keyword"
+                                }
+                            }
+                        },
+                        "date_from": {
+                            "type": "date"
+                        },
+                        "date_to": {
+                            "type": "date"
+                        },
+                        "date_period": {
+                            "type": "keyword"
+                        },
+                        "publication_reason": {
+                            "type": "keyword"
+                        },
+                        "decision": {
+                            "type": "keyword"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

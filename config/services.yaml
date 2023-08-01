@@ -1,0 +1,143 @@
+parameters:
+    document_path: '%kernel.project_dir%/var/documents'
+    thumbnail_path: '%kernel.project_dir%/var/thumbnails'
+    batch_path: '%kernel.project_dir%/var/batches'
+    configPageLimit: '%env(int:DOCUMENT_PAGE_LIMIT)%'
+    env(DOCUMENT_PAGE_LIMIT): 0
+
+    rabbitmq_stats_url: '%env(RABBITMQ_STATS_URL)%'
+
+    available_locales: ['en', 'nl']
+
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+        bind:
+            $configPageLimit: '%configPageLimit%'
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    App\Service\Elastic\MappingService:
+        arguments:
+            $rootDir: '%kernel.project_dir%'
+
+    Elastic\Elasticsearch\Client:
+        factory: ['App\Service\Elastic\ElasticClientFactory', 'create']
+        arguments:
+            $host: '%env(ELASTICSEARCH_HOST)%'
+            $username: '%env(ELASTICSEARCH_USER)%'
+            $password: '%env(ELASTICSEARCH_PASS)%'
+            $mtlsCertPath: '%env(ELASTICSEARCH_MTLS_CERT_PATH)%'
+            $mtlsKeyPath: '%env(ELASTICSEARCH_MTLS_KEY_PATH)%'
+            $mtlsCAPath: '%env(ELASTICSEARCH_MTLS_CA_PATH)%'
+
+    Elastic\Elasticsearch\ClientInterface:
+        alias: 'App\Service\Elastic\CollectorClient'
+
+    tika.service:
+        class: GuzzleHttp\Client
+        factory: ['App\Service\TikaServiceFactory', 'create']
+        arguments:
+            $tikaHost: '%env(TIKA_HOST)%'
+
+    # Add all classes that implements Ingest\Handler to the ingest service.
+    App\Service\Ingest\IngestService:
+        arguments:
+            - !tagged_iterator app.ingest.handler
+
+    # Tag all classes that implements Handler with the app.ingest.handler tag.
+    _instanceof:
+        App\Service\Ingest\Handler:
+            tags: ['app.ingest.handler']
+        App\Service\Logging\LoggingTypeInterface:
+            tags: [ 'app.logging.type' ]
+
+    # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
+    App\Service\Encryption\EncryptionService:
+        public: true
+        arguments:
+            $encryptionKey: '%env(DATABASE_ENCRYPTION_KEY)%'
+
+    App\Service\Storage\DocumentStorageService:
+        arguments:
+            $storage: '@document.storage'
+            $isLocal: true
+            $documentRoot: '%document_path%'
+
+    App\Service\Storage\ThumbnailStorageService:
+        arguments:
+            $storage: '@thumbnail.storage'
+
+    # We need to create an alias to the monolog.logger service, as these services are by default private. This means
+    # it is not possible to fetch these services from the container. This is normally a "good thing"(tm), but in this
+    # case we need it because we cannot inject these services in the DBAL types (see /App/Doctrine/Encrypted*.php files)
+    public_logger:
+        alias: 'monolog.logger'
+        public: true
+
+    App\Twig\Runtime\AppExtensionRuntime:
+        arguments:
+            $projectPath: '%kernel.project_dir%'
+
+    App\Service\Worker\Pdf\Extractor\DocumentContentExtractor:
+        arguments:
+            $redis: '@snc_redis.ingest'
+
+    App\Service\Worker\Pdf\Extractor\PageContentExtractor:
+        arguments:
+            $redis: '@snc_redis.ingest'
+
+    App\Service\Worker\Pdf\Extractor\PagecountExtractor:
+        arguments:
+            $redis: '@snc_redis.ingest'
+
+    App\Service\Worker\Audio\Extractor\AudioExtractor:
+        arguments:
+            $redis: '@snc_redis.ingest'
+
+
+    App\Service\Worker\Pdf\Tools\Tika:
+        arguments:
+            $tika: '@tika.service'
+
+    App\Service\ArchiveService:
+        arguments:
+            $storage: '@batch.storage'
+
+    App\Command\Cron\CleanArchives:
+        arguments:
+            $storage: '@batch.storage'
+
+    App\EventSubscriber\LocaleListener:
+        arguments:
+            $defaultLocale: '%kernel.default_locale%'
+            $allowedLocales: '%available_locales%'
+
+    App\Service\Totp:
+        arguments:
+            $issuer: '%env(TOTP_ISSUER)%'
+
+    App\Form\Elastic\CreateRolloverType:
+        arguments:
+            $mappingService: '@App\Service\Elastic\MappingService'
+
+    App\Command\CleanSheet:
+        arguments:
+            $environment: '%kernel.environment%'
+            $queueDsns: [
+                '%env(HIGH_TRANSPORT_DSN)%',
+                '%env(INGESTOR_TRANSPORT_DSN)%',
+                '%env(ESUPDATER_TRANSPORT_DSN)%',
+                '%env(GLOBAL_TRANSPORT_DSN)%',
+            ]
+
+    App\Service\Logging\LoggingHelper:
+        arguments:
+            - !tagged_iterator app.logging.type

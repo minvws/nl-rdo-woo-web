@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% import "facet_macros.html.twig" as macro %}
+
+{% block body %}
+
+    <section>
+        <div class="block">
+            {{ macro.facet_links('Organization' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_DEPARTMENT'), result) }}
+            {{ macro.facet_links('Official' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_OFFICIAL'), result) }}
+            {{ macro.facet_links('Subject' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_SUBJECT'), result) }}
+            {{ macro.facet_links('Document type' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_SOURCE'), result) }}
+            {{ macro.facet_links('Period' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_PERIOD'), result) }}
+            {{ macro.facet_links('Judgement' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_JUDGEMENT'), result) }}
+            {{ macro.facet_links('Grounds' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_GROUNDS'), result) }}
+        </div>
+    </section>
+
+{% endblock %}

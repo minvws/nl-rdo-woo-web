@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Cookies" %}
+
+{% block body %}
+    <section>
+        <div>
+
+            <h1>Cookies</h1>
+            <p>Wij gebruiken het statistiekenprogramma Piwik om te analyseren welke pagina's het meest bezocht worden, hoe bezoekers op
+                onze website zijn gekomen en welke zoektermen er gebruikt worden in onze zoekmachine.</p>
+            <p>Hiertoe verzamelen wij, net als elke website, IP-adressen van onze bezoekers. Deze worden opgeslagen in zogeheten
+                logfiles. De logfiles worden 5 dagen op de webserver bewaard zodat ze beschikbaar zijn voor Piwik. Daarna blijven de logfiles 90 dagen
+                bewaard voor uitsluitend beveiligingsredenen en worden ze ook alleen daarvoor bekeken.</p>
+            <p>De Autoriteit Persoonsgegevens heeft maatregelen getroffen om de herleidbaarheid van bezoekers aan onze website zo veel
+                mogelijk te beperken. Dit doen we door onmiddellijk na het importeren van de logfiles in Piwik de laatste 2 octetten (cijfergroepen)
+                van elk IP-adres weg te gooien. Dit gebeurt in een tijdelijk geheugen, voordat de IP-adressen in Piwik worden opgeslagen.</p>
+            <p>Wij verzamelen de volgende gegevens met de logfiles:</p>
+            <ul>
+                <li>Cookies.</li>
+                <li>IP-adres.</li>
+                <li>User agents (browsers, operating system).</li>
+                <li>Gebruikte zoektermen om via externe zoekmachines op onze website te komen.</li>
+                <li>Gebruikte zoektermen in de zoekmachine op de website zelf.</li>
+                <li>Gebruikte links binnen de website.</li>
+                <li>Gebruikte links om op onze website te komen.</li>
+            </ul>
+            <p>Deze gegevens haalt Piwik uit de logfiles van de webserver. Deze logfiles blijven 31 dagen in de database van Piwik
+                staan. Daarna worden ze verwijderd. Er blijft dan alleen een geaggregeerde (samengevoegde) logfile over. Die geeft ons een
+                jaarrapportage over het websitebezoek.</p>
+            <p>Wij verstrekken geen persoonsgegevens aan derden, tenzij dat noodzakelijk is om aangifte te doen van strafbare
+                feiten.</p>
+            <p>Lees meer over het cookiegebruik door Rijksoverheid.nl:&nbsp;<a href="https://www.rijksoverheid.nl/cookies">https://www.rijksoverheid.nl/cookies</a>
+            </p>
+
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% set preview_mode = "" %}
+{% if dossier.status == constant('\\App\\Entity\\Dossier::STATUS_PREVIEW') %}
+    {% set preview_mode = " (preview)" %}
+{% endif %}
+
+{% set page_title = dossier.title ~ preview_mode %}
+
+{% block body %}
+
+    <section>
+        <div class="block">
+            <h1 class="mb-0">{{ dossier.title }}</h1>
+
+            {% if dossier.status == constant('\\App\\Entity\\Dossier::STATUS_PREVIEW') %}
+                <div class="pb-8">
+                    <p class="explanation" role="group" aria-label="toelichting">
+                        {{ "Dit besluit is nog niet gepubliceerd en is alleen zichtbaar in preview mode." | trans() }}
+                    </p>
+                </div>
+            {% endif %}
+
+            <p class="nota-bene text-lg">{{ "Published on" | trans() }} <time datetime="{{ dossier.createdAt | date("Y-m-d") }}">{{ dossier.createdAt | date("j F Y") }}</time></p>
+
+            <div class="py-12">
+                <div class="horizontal-scroll">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th class="w-2/5 lg:w-1/4" scope="row">{{ "Request" | trans() }}</th>
+                                <td>{{ dossier.summary }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">{{ "Responsible(s)" | trans() }}</th>
+                                <td>
+                                    {# Only display the first entries #}
+                                    {{ dossier.governmentOfficials[0].name }} - {{ dossier.departments[0].name }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">{{ "Period" | trans() }}</th>
+                                <td>{{ period(dossier.dateFrom, dossier.dateTo) }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">{{ "Type of decision" | trans() }}</th>
+                                <td>{{ dossier.publicationReason }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">{{ "Decision made" | trans() }}</th>
+                                <td class="font-bold">{{ dossier.decision | decision }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">{{ "Reasoning for decision" | trans() }}</th>
+                                <td>
+                                    <a href="#">{{ "Download decision" | trans() }}</a> (200Kb)
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">{{ "Scope of disclosure" | trans() }}</th>
+                                <td>
+                                    {{ "# documents" | trans({'count': dossier.documents | length}) }},
+                                    {{ '# pages' | trans({'count': dossier.documents | length }) }}
+                                    <a href="{{ path('app_document_download', { dossierId: dossier.dossierNr, documentId: dossier.dossierNr }) }}">{{ "Inventory list" | trans() }}</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <form class="p-0" method="post" action="{{ path('app_dossier_batch', { dossierId: dossier.dossierNr }) }}">
+                <table>
+                    <tbody>
+                    {% for doc in dossier.documents %}
+                        <tr>
+                            <th scope="row"><input type="checkbox" name="doc[]" value="{{ doc.documentNr }}"></th>
+                            <td>{{ doc.documentNr }}</td>
+                            <td>
+                                <a href="{{ path('app_document_detail', { dossierId: dossier.dossierNr, documentId: doc.documentNr }) }}">{{ doc.filename }}</a>
+                            </td>
+                            <td class="text-right">
+                                <time datetime="{{ doc.documentDate | date("Y-m-d") }}">{{ doc.documentDate | date("d F Y") }}</time>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="block sm:flex sm:flex-row gap-0 items-center pb-12">
+                    <button type="submit"><span aria-hidden="true" class="icon icon-download mr-2 before:text-white"></span> {{ "Download" | trans() }}</button>
+                    <span class="inline-block mt-2 sm:ml-4 sm:mt-0"><a href="">{{ "Search in these documents" | trans() }}</a></span>
+                </div>
+            </form>
+
+        </div>
+    </section>
+
+{% endblock %}

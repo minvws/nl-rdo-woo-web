@@ -1,0 +1,30 @@
+# HELP app_document_count Number of documents
+# TYPE app_document_count gauge
+app_document_count {{app.document_count}}
+# HELP app_dossier_count Number of dossiers
+# TYPE app_dossier_count gauge
+app_dossier_count {{app.dossier_count}}
+# HELP app_page_count Number of pages
+# TYPE app_page_count gauge
+app_page_count {{app.page_count}}
+# HELP worker_pdf_create_temp_dir_milliseconds Time to create temporary directory
+# TYPE worker_pdf_create_temp_dir_milliseconds gauge
+worker_pdf_create_temp_dir_milliseconds {{worker.pdf.create_temp_dir}}
+# HELP worker_pdf_cat_page_from_pdf_milliseconds Time to cat a page from PDF
+# TYPE worker_pdf_cat_page_from_pdf_milliseconds gauge
+worker_pdf_cat_page_from_pdf_milliseconds {{worker.pdf.cat_page_from_pdf}}
+# HELP worker_pdf_run_tika_milliseconds Time to run Tika
+# TYPE worker_pdf_run_tika_milliseconds gauge
+worker_pdf_run_tika_milliseconds {{worker.pdf.run_tika}}
+# HELP worker_pdf_convert_page_to_png_milliseconds Time to convert a page to PNG
+# TYPE worker_pdf_convert_page_to_png_milliseconds gauge
+worker_pdf_convert_page_to_png_milliseconds {{worker.pdf.convert_page_to_png}}
+# HELP worker_pdf_tesseract_milliseconds Time to run Tesseract
+# TYPE worker_pdf_tesseract_milliseconds gauge
+worker_pdf_tesseract_milliseconds {{worker.pdf.tesseract}}
+# HELP worker_pdf_delete_temp_dir_milliseconds Time to delete temporary directory
+# TYPE worker_pdf_delete_temp_dir_milliseconds gauge
+worker_pdf_delete_temp_dir_milliseconds {{worker.pdf.delete_temp_dir}}
+# HELP worker_pdf_index_page_milliseconds Time to index a page
+# TYPE worker_pdf_index_page_milliseconds gauge
+worker_pdf_index_page_milliseconds {{worker.pdf.index_page}}

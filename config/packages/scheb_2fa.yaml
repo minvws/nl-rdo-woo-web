@@ -1,0 +1,16 @@
+# See the configuration reference at https://symfony.com/bundles/SchebTwoFactorBundle/6.x/configuration.html
+scheb_two_factor:
+    security_tokens:
+        - Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken
+        - Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken
+    totp:
+        enabled: true
+        server_name: 'WooPIE'
+        issuer: 'WooPIE'
+        window: 2
+        template: security/login_2fa.html.twig
+    backup_codes:
+        enabled: true
+    email:
+        enabled: false
+        digits: 6

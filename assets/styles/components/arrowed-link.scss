@@ -1,0 +1,16 @@
+.arrowed-link {
+    padding-left: 1.25rem;
+    position: relative;
+
+    &:before {
+        background: url('../../img/chevron-right.svg') no-repeat center center;
+        bottom: 0;
+        content: '';
+        display: block;
+        left: 0;
+        padding: 0;
+        position: absolute;
+        top: 0;
+        width: 12px;
+    }
+}

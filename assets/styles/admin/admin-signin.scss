@@ -1,0 +1,46 @@
+.form-signin {
+  max-width: 360px;
+  background: $white;
+  padding: 24px;
+  margin: 64px auto;
+  display: flex;
+  flex-direction: column;
+
+  h1 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 28px;
+    font-family: $font-sans;
+  }
+
+  [type="submit"] {
+    border-radius: 8px;
+    width: 100%;
+
+    /* Shadow/xs */
+    box-shadow: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+  }
+
+  label {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    color: $gray-neutral;
+    margin-bottom: 6px;
+  }
+
+  p {
+    line-height: 28px;
+    margin: 0.5rem 0;
+  }
+
+  .text-help-primary {
+    color: $color-helptext-primary;
+    font-size: 1.125rem;
+  }
+
+  .text-help-secondary {
+    color: $color-helptext-secondary;
+  }
+}

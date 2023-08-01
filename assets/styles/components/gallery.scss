@@ -1,0 +1,20 @@
+.gallery {
+    background: #f3f3f3;
+    border-radius: .75rem;
+    padding: 1rem;
+}
+
+.gallery__container {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+}
+
+.gallery__item {
+    display: block;
+}
+
+.gallery__image {
+    display: block;
+    max-width: none;
+}

@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = document.filename %}
+
+{% block body %}
+
+    <div>
+        <div class="gap-0 py-8">
+
+            {% if not ingested %}
+                <p class="warning" role="group" aria-label="{{ "Warning" | trans() }}"><span>{{ "Warning" | trans }}:</span> {{ "This document is not yet processed. It is not possible to view individual pages, but you can download the complete document." | trans }}</p>
+            {% endif %}
+
+            <h1>{{ document.filename }}</h1>
+            <p class="nota-bene text-lg"><time datetime="{{ document.documentDate | date("Y-m-d") }}">{{ document.documentDate | date("j F Y") }}</time></p>
+            <p>{{ "Attachment of" | trans }} <a href="#"><i class="{{ document.sourceType | sourceTypeIcon }}"></i> {{ document.filename }}</a></p>
+
+            {% if ingested %}
+                {% if document.fileType == "pdf" and document.pageCount > 0 %}
+                    <div class="py-8">
+                        {% include "document/snippets/carousel.html.twig" %}
+                    </div>
+                {% endif %}
+                {% if document.fileType == "audio" %}
+                    <div class="py-8">
+                    <img
+                        width="100%"
+                        alt="{{ "Audio" | trans }}"
+                        src="{{ path('app_document_thumbnail', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: 0}) }}"
+                    />
+                    </div>
+
+                {% endif %}
+            {% endif %}
+
+            <div class="button-container">
+                <a class="button" href="">{{ "Download" | trans }} ({{ document.fileType }} {{ document.filesize | size }})</a>
+                <a class="button ghost" href="">{{ "View online (beta)" | trans() }}</a>
+            </div>
+
+            {% include "document/snippets/about.html.twig" %}
+
+            {% include "document/snippets/background.html.twig" %}
+
+            {% if document.sourceType == constant('App\\SourceType::SOURCE_EMAIL') %}
+                {% include "document/snippets/thread.html.twig" %}
+                {% include "document/snippets/attachments.html.twig" %}
+            {% else %}
+                {% include "document/snippets/family.html.twig" %}
+            {% endif %}
+
+
+            {#    {% if document.sourceType != constant('App\\SourceType::SOURCE_EMAIL') and document.familyId != document.documentId %} #}
+            {#        <a class="btn" href="#">Link to the e-mail with this attachment</a> #}
+            {#    {% endif %} #}
+
+        </div>
+    </div>
+{% endblock %}

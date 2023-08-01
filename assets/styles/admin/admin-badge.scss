@@ -1,0 +1,34 @@
+.badge {
+  border-radius: 16px;
+  border: 1.5px solid;
+  min-height: initial;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 6px;
+  height: 18px;
+  border-color: currentColor;
+  font-family: $font-sans-bold;
+  text-transform: capitalize;
+
+  &.bg-secondary {
+    color: $color-status-concept;
+  }
+
+  &.bg-dark {
+    color: $color-status-ready;
+  }
+
+  &.bg-info {
+    color: $color-status-online;
+  }
+
+  &.bg-success {
+    color: $color-status-public;
+  }
+
+  &.bg-danger {
+    color: $color-status-retracted;
+  }
+
+}

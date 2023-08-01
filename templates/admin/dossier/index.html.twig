@@ -1,0 +1,52 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = "Dossier management" | trans() %}
+
+{% block body %}
+
+    <section class="admin-decisions">
+        <main class="content">
+
+            <h1>{{ "Dossier management" | trans() }}</h1>
+
+            <p class="count">
+                {{ "A total of # dossiers are found." | trans({'count': pagination.getTotalItemCount}) }}
+            </p>
+
+            {{ form(form) }}
+
+            <table class="table table-striped decisions">
+                <tr>
+                    <th>{{ knp_pagination_sortable(pagination, 'Status' | trans(), 'd.status', {}, {}, 'search/sortable-link.html.twig') }}</th>
+                    <th>{{ knp_pagination_sortable(pagination, 'Published date' | trans(), 'd.publicationDate', {}, {}, 'search/sortable-link.html.twig') }}</th>
+                    <th>{{ knp_pagination_sortable(pagination, 'Org & reference' | trans(), 'd.dossierNr', {}, {}, 'search/sortable-link.html.twig') }}</th>
+                    <th>{{ knp_pagination_sortable(pagination, 'Decision about...' | trans(), 'd.title', {}, {}, 'search/sortable-link.html.twig') }}</th>
+                    <th>{{ "Case number" | trans() }}</th>
+                </tr>
+
+                {% for dossier in pagination %}
+                    <tr>
+                        <td>{{ status_badge(dossier.status) }}</td>
+                        <td nowrap>{{ dossier.publicationDate  is empty ? "" : dossier.publicationDate|date('Y-m-d') }}</td>
+                        <td>{{ dossier.documentPrefix }} {{ dossier.dossierNr }}</td>
+                        <td>{{ dossier.title }}</td>
+                        <td>
+                            <a class="button decision__detail-link {% if dossier.documents|length == 0 %}{{ "disabled" | trans() }}{% endif %}"
+                               data-testid="action_documents_{{ dossier.dossierNr }}"
+                               href="{{ path('app_admin_dossier_documents_edit', {dossierId: dossier.dossierNr}) }}">
+                                <span class="decision__case-number">DUMMY 12456 4567, 4572</span>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <div class="navigation">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+
+            <a href="{{ path('app_admin_dossier_new') }}" class="button">{{ "New dossier" | trans() }}</a>
+
+        </main>
+    </section>
+{% endblock %}

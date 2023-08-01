@@ -1,0 +1,39 @@
+{% if pageCount > 1 %}
+
+    <div class="pagination">
+        <ul>
+
+            {% if first is defined and current != first %}
+                <li class="pagination__text">
+                    <a href="{{ path(route, query|merge({(pageParameterName): first})) }}">&laquo; {{ "First" | trans() }}</a>
+                </li>
+            {% endif %}
+
+            {% if previous is defined %}
+                <li class="pagination__text"><a rel="prev" href="{{ path(route, query|merge({(pageParameterName): previous})) }}">&laquo;&nbsp;{{ "Previous" | trans }}</a></li>
+            {% else %}
+                <li class="pagination__text"><span class="disabled">&laquo;</span></li>
+            {% endif %}
+
+            {% for page in pagesInRange %}
+                {% if page != current %}
+                    <li {% if loop.first %}class="!ml-auto"{% endif %}><a href="{{ path(route, query|merge({(pageParameterName): page})) }}">{{ page }}</a></li>
+                {% else %}
+                    <li {% if loop.first %}class="!ml-auto"{% endif %}><a href="#" aria-current="page" class="active">{{ page }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if next is defined %}
+                <li class="!ml-auto pagination__text"><a class="page-link" rel="next" href="{{ path(route, query|merge({(pageParameterName): next})) }}">{{ "Next" | trans() }}&nbsp;&raquo;</a></li>
+            {% else %}
+                <li class="!ml-auto pagination__text"><a href="#" class="disabled">&raquo;</a></li>
+            {% endif %}
+
+            {% if last is defined and current != last %}
+                <li class="pagination__text">
+                    <a href="{{ path(route, query|merge({(pageParameterName): last})) }}">{{ "Last" | trans() }} &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+{% endif %}

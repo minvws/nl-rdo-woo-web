@@ -1,0 +1,43 @@
+<section>
+    <h2>{{ "Background disclosure" | trans() }}</h2>
+
+    <table>
+        <tbody>
+            <tr>
+                <th class="w-2/5 lg:w-1/4" scope="row">{{ "Part of" | trans() }}</th>
+                <td>{{ dossier.title }}</td>
+            </tr>
+            <tr>
+                <th scope="row">{{ "Responsible" | trans() }}</th>
+                <td>
+                    {# Only display the first entries #}
+                    {{ dossier.governmentOfficials[0].name }} - {{ dossier.departments[0].name }}
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">{{ "Summary of request" | trans() }}</th>
+                <td>{{ dossier.summary }}</td>
+            </tr>
+            <tr>
+                <th scope="row">{{ "Time period" | trans() }}</th>
+                <td>{{ period(dossier.dateFrom, dossier.dateTo) }}</td>
+            </tr>
+            <tr>
+                <th scope="row">{{ "Date of disclosure" | trans() }}</th>
+                <td>{{ dossier.createdAt | date("d-M-Y H:i:s") }}</td>
+            </tr>
+            <tr>
+                <th scope="row">{{ "Type of decision" | trans() }}</th>
+                <td>{{ dossier.decision | decision }}</td>
+            </tr>
+            <tr>
+                <th scope="row">{{ "Scope of disclosure" | trans() }}</th>
+                <td>
+                    {{ "# documents" | trans({"count": dossier.documents|length})}}
+                    {{ "# pages" | trans({"count": dossier.pagecount|default(0)})}}
+                    <a href="{{ path('app_document_download', { dossierId: dossier.dossierNr, documentId: dossier.dossierNr }) }}">{{ "Inventory list" | trans() }}</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>

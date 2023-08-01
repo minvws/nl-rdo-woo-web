@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "New request" | trans() %}
+
+{% block body %}
+
+    <section>
+        <div>
+
+            <h1>{{ "New request" | trans() }}</h1>
+
+            {{ form(form) }}
+
+        </div>
+    </section>
+
+{% endblock %}

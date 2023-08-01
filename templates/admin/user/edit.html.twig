@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Modify user %name%" | trans({'%name%': user.name}) %}
+
+{% block body %}
+
+<section>
+ <div>
+    <h1>{{ "Modify user %name%" | trans({'%name%': user.name}) }}</h1>
+
+    {% if not user.enabled %}
+        <div class="alert alert-warning">
+            {{ "This user is currently disabled." | trans() }}
+        </div>
+    {% endif %}
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>{{ "User information" | trans() }}</h5>
+        </div>
+        <div class="card-body bg-light">
+            {{ form(user_info) }}
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>{{ "Access roles" | trans() }}</h5>
+        </div>
+        <div class="card-body bg-light">
+            {{ form(user_roles) }}
+        </div>
+    </div>
+
+    {% if user.enabled %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>{{ "Disable user" | trans() }}</h5>
+        </div>
+        <div class="card-body bg-light">
+            {{ form(user_disable) }}
+        </div>
+    </div>
+    {% else %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>{{ "Enable user" | trans() }}</h5>
+        </div>
+        <div class="card-body bg-light">
+            <p>{{ "The user is currently deactivated. To activate the user, click the button below." | trans() }}</p>
+
+            {{ form(user_enable) }}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>{{ "Reset credentials" | trans() }}</h5>
+        </div>
+        <div class="card-body bg-light">
+            {{ form(user_reset) }}
+        </div>
+    </div>
+
+ </div>
+</section>
+{% endblock %}

@@ -1,0 +1,33 @@
+<div id="js-document-status" x-data="{show_all: true}">
+    <p>
+        Er zijn <strong>{{ dossier.uploadCount }}</strong> van in totaal <strong>{{ dossier.documents|length }}</strong> documenten geupload.
+    </p>
+
+    <div class="button-container">
+        <button x-cloak x-show="! show_all" class="button" @click="show_all = !show_all">Toon alle documenten</button>
+        <button x-cloak x-show="show_all" class="button" @click="show_all = !show_all">Toon alleen niet geuploade documenten</button>
+        <a href="{{ path('app_admin_dossier_documents_upload', { dossierId: dossier.dossierNr }) }}" class="button ghost">Refresh page</a>
+    </div>
+
+    <table class="table table-striped">
+        <tr>
+            <th>DocumentNr</th>
+            <th>Document naam</th>
+            <th>Filesize</th>
+            <th>Status</th>
+            <th>Opties</th>
+        </tr>
+
+        {% for document in dossier.documents %}
+            <tr {% if document.uploaded %}class="table-success" x-show=show_all{% endif %}>
+                <td>{{ document.documentNr }}</td>
+                <td>{{ document.filename }}</td>
+                <td nowrap>{% if document.filesize > 0 %}{{ document.filesize | size }}{% endif %}</td>
+                <td nowrap>{% if document.uploaded %}Geupload{% else %}Nog niet geupload{% endif %}</td>
+                <td><a class="button"
+                       href="{{ path('app_admin_dossier_document_details', { dossierId: dossier.dossierNr, documentId: document.documentNr }) }}">Details</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>

@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Requests management" | trans() %}
+
+{% block body %}
+
+    <section>
+        <div>
+
+            <h1>{{ "Requests management" | trans() }}</h1>
+
+            <p class="count">
+                {{ "There are in total # requests found." | trans({'count' : pagination.getTotalItemCount}) }}
+            </p>
+
+            <table class="table table-striped">
+                <tr>
+                    <th>{{ "Case number" | trans() }}</th>
+                    <th>{{ "Documents" | trans() }}</th>
+                    <th>{{ "Last update" | trans() }}</th>
+                    <th>{{ "Token" | trans() }}</th>
+                    <th>{{ "Options" | trans() }}</th>
+                </tr>
+
+                {% for request in pagination %}
+                    <tr>
+                        <td><a href="{{ path('app_inquiry_detail', { id: request.id.toBase58 }) }}">{{ request.casenr }}</td>
+                        <td>{{ request.documents | length }}</td>
+                        <td>{{ request.updatedAt|date('d-m-Y H:i:s') }}</td>
+                        <td>{{ request.token }} <i class="fa fa-copy"></i></td>
+                        <td>
+                            {#                    <a class="btn btn-sm btn-primary" href="{{ path('app_admin_request_edit', {id: request.id}) }}">Modify</a> #}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <div class="navigation">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+
+            {#    <a class="btn btn-primary" href="{{ path('app_admin_request_new') }}">Create new request</a> #}
+
+        </div>
+    </section>
+{% endblock %}

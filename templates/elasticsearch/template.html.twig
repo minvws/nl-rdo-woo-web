@@ -1,0 +1,113 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block toolbar %}
+    {% set icon %}
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+             viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+        <g>
+            <path fill="#ffffff" d="M434,348.4l-84.4-19.8l-22.5-42.8L437.6,189c32.8,12.4,54.6,43.8,54.6,79C492.2,304.1,468.3,337,434,348.4z M370.5,448.2
+        		c-13.1,0-26-4.4-36.5-12.5l16.7-87l76.6,18c2.4,6.6,3.7,13.6,3.7,21C431,421.1,403.9,448.2,370.5,448.2L370.5,448.2z M314.2,435.7
+        		c-23.5,34.7-62.7,55.5-104.7,55.4c-69.9,0-126.7-56.8-126.7-126.6c0-8.6,0.8-17.1,2.5-25.2l110.2-99.6l112.5,51.2l24.9,47.6
+        		L314.2,435.7z M19.9,244.1c0-36.1,23.8-69,58.1-80.4l84.2,20l19.8,42.2L74.3,323.3C41.6,310.8,19.9,279.4,19.9,244.1L19.9,244.1z
+        		 M141.5,63.9c13.3,0,26.2,4.3,36.8,12.4l-16.8,87.3l-76.8-18.1c-2.4-6.7-3.7-13.7-3.7-21.1C80.9,91,108.1,63.9,141.5,63.9z
+        		 M198.2,76.4c23.6-34.3,62.5-54.9,104.2-54.9c69.6,0,126.3,56.7,126.3,126.4c0,8.5-0.8,16.6-2.4,24.8l-113,99l-112-51.1L179.4,174
+        		L198.2,76.4z M512,268.2c0-43-26.7-80.5-66.7-95c1.8-9.1,2.7-18.3,2.7-27.5C448,66,383.1,1,303.4,1c-46.7,0-89.9,22.4-117.2,60
+        		c-13.5-10.5-30-16.1-47-16c-42.4,0-76.8,34.4-76.8,76.7c0,9.4,1.7,18.3,4.8,26.8C27.3,162.9,0,201.2,0,243.9
+        		c0,43.1,26.8,80.7,67,95.3c-1.8,9-2.7,18.2-2.7,27.5C64.3,446.3,129,511,208.6,511c46.7,0,90-22.4,117.1-60.3
+        		c13.5,10.6,29.9,16.4,47,16.4c42.3,0,76.7-34.3,76.7-76.7c0-9.4-1.7-18.3-4.8-26.8C484.6,349.2,512,310.8,512,268.2L512,268.2z"/>
+        </g>
+        </svg>
+        <span class="sf-toolbar-value"> {{ collector.calls|length }} request(s)</span>
+    {% endset %}
+
+    {% set text %}
+        <div class="sf-toolbar-info-piece">
+            <b>Calls</b>
+            <span>{{ collector.calls|length }}</span>
+        </div>
+    {% endset %}
+
+    {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { link: true }) }}
+{% endblock %}
+
+{% block menu %}
+    <span class="label">
+        <span class="icon">
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+            <g>
+            	<path fill="#888888" d="M434,348.4l-84.4-19.8l-22.5-42.8L437.6,189c32.8,12.4,54.6,43.8,54.6,79C492.2,304.1,468.3,337,434,348.4z M370.5,448.2
+            		c-13.1,0-26-4.4-36.5-12.5l16.7-87l76.6,18c2.4,6.6,3.7,13.6,3.7,21C431,421.1,403.9,448.2,370.5,448.2L370.5,448.2z M314.2,435.7
+            		c-23.5,34.7-62.7,55.5-104.7,55.4c-69.9,0-126.7-56.8-126.7-126.6c0-8.6,0.8-17.1,2.5-25.2l110.2-99.6l112.5,51.2l24.9,47.6
+            		L314.2,435.7z M19.9,244.1c0-36.1,23.8-69,58.1-80.4l84.2,20l19.8,42.2L74.3,323.3C41.6,310.8,19.9,279.4,19.9,244.1L19.9,244.1z
+            		 M141.5,63.9c13.3,0,26.2,4.3,36.8,12.4l-16.8,87.3l-76.8-18.1c-2.4-6.7-3.7-13.7-3.7-21.1C80.9,91,108.1,63.9,141.5,63.9z
+            		 M198.2,76.4c23.6-34.3,62.5-54.9,104.2-54.9c69.6,0,126.3,56.7,126.3,126.4c0,8.5-0.8,16.6-2.4,24.8l-113,99l-112-51.1L179.4,174
+            		L198.2,76.4z M512,268.2c0-43-26.7-80.5-66.7-95c1.8-9.1,2.7-18.3,2.7-27.5C448,66,383.1,1,303.4,1c-46.7,0-89.9,22.4-117.2,60
+            		c-13.5-10.5-30-16.1-47-16c-42.4,0-76.8,34.4-76.8,76.7c0,9.4,1.7,18.3,4.8,26.8C27.3,162.9,0,201.2,0,243.9
+            		c0,43.1,26.8,80.7,67,95.3c-1.8,9-2.7,18.2-2.7,27.5C64.3,446.3,129,511,208.6,511c46.7,0,90-22.4,117.1-60.3
+            		c13.5,10.6,29.9,16.4,47,16.4c42.3,0,76.7-34.3,76.7-76.7c0-9.4-1.7-18.3-4.8-26.8C484.6,349.2,512,310.8,512,268.2L512,268.2z"/>
+            </g>
+            </svg>
+        </span>
+        <strong>ElasticSearch</strong>
+
+        <span class="count">{{ collector.calls|length }}</span>
+    </span>
+{% endblock %}
+
+
+{% block panel %}
+    <h2>Elasticsearch Calls</h2>
+    
+    {% for call in collector.calls %}
+
+        <table>
+
+            <tr>
+                <td nowrap>
+
+        <h3 class="tab-title"><strong>{{ call.name }}</strong></h3>
+
+                </td>
+                <td width="100%">
+
+        <div class="sf-tabs">
+            <div class="tab">
+                <h3 class="tab-title">Info</h3>
+                <div class="tab-content">
+                    No info yet available.
+                </div>
+            </div>
+
+            <div class="tab">
+                <h3 class="tab-title">Request</h3>
+
+                <div class="tab-content">
+                    <div id="formatted-query-{{ loop.index0 }}" class="sql-runnable">
+                        <code>
+                            <pre>{{ call.arguments|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_UNICODE')) }}</pre>
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab">
+                <h3 class="tab-title">Response</h3>
+
+                <div class="tab-content">
+                    <div id="formatted-query-{{ loop.index0 }}" class="sql-runnable">
+                        <code>
+                            <pre>{{ call.response|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_UNICODE')) }}</pre>
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                </td>
+            </tr>
+        </table>
+
+    {% endfor %}
+
+{% endblock %}

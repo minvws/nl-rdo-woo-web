@@ -1,0 +1,30 @@
+:root {
+    --breadcrumb-bar-background-color: transparent;
+    --breadcrumb-bar-link-visited-text-color: #000;
+    --breadcrumb-bar-link-hover-text-color: #000;
+    --breadcrumb-bar-icon-text-color: #000;
+    --breadcrumb-bar-text-color: #000;
+    --breadcrumb-bar-link-active-text-color: #000;
+    --breadcrumb-bar-link-focus-text-color: #000;
+    --breadcrumb-bar-link-text-color: #000;
+
+    --div-content-wrapper-max-width: var(--content-max-width);
+    --div-content-wrapper-padding-bottom: var(--content-padding-bottom);
+    --div-content-wrapper-padding-left: var(--content-padding-left);
+    --div-content-wrapper-padding-top: var(--content-padding-top);
+    --div-content-wrapper-padding-right: var(--content-padding-right);
+}
+
+.main-header-bottom {
+    background-color: #f5f5f5;
+    display: block;
+}
+
+.main-header-bottom__content {
+    box-sizing: border-box;
+    display: block;
+    margin: 0 auto;
+    max-width: var(--div-content-wrapper-max-width);
+    padding-left: var(--div-content-wrapper-padding-left);
+    padding-right: var(--div-content-wrapper-padding-right);
+}

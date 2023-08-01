@@ -1,0 +1,28 @@
+{% import "facet_macros.html.twig" as macro %}
+
+<h2>Filters</h2>
+<form class="form-filters" method="post" action="">
+    <fieldset class="mb-3">
+        <legend>{{ "Date" | trans() }}</legend>
+        <div class="row">
+            <div class="col" x-data>
+                <label for="datefrom">{{ "from" | trans() }}</label>
+                <input @blur="window.toggleDateFacet($el)" id="datefrom" type="date" value="{{ app.request.get('df') }}" name="df"><br>
+                <label for="dateto">{{ "to" | trans() }}</label>
+                <input @blur="window.toggleDateFacet($el)" id="dateto" type="date" value="{{ app.request.get('dt') }}" name="dt">
+            </div>
+        </div>
+    </fieldset>
+
+    {{ macro.facet_select('Organization' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_DEPARTMENT'), result) }}
+    {{ macro.facet_select('Official' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_OFFICIAL'), result) }}
+    {{ macro.facet_select('Subject' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_SUBJECT'), result) }}
+    {{ macro.facet_select('Document type' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_SOURCE'), result) }}
+    {{ macro.facet_select('Period' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_PERIOD'), result) }}
+    {{ macro.facet_select('Judgement' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_JUDGEMENT'), result) }}
+    {{ macro.facet_select('Grounds' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_GROUNDS'), result) }}
+
+    <input type="hidden" name="q" value="{{ app.request.get('q') }}"/>
+
+    <button class="js:visually-hidden" type="submit">{{ "Filter results" | trans() }}</button>
+</form>

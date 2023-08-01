@@ -1,0 +1,12 @@
+{
+  "line-length": {
+    "strict": false,
+    "code_blocks": false,
+    "line_length": 256
+  },
+  "no-inline-html": {
+	  "allowed_elements": [
+      "dl", "dt", "dd"
+    ]
+  }
+}

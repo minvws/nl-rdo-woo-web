@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Download document archive" | trans() %}
+
+{% block body %}
+
+    <section>
+        <div class="container">
+
+            <h2>{{ "Download document archive" | trans() }}</h2>
+
+            {% if batch.status == constant("App\\Entity\\BatchDownload::STATUS_PENDING") %}
+                <p>{{ "The archive is not yet ready for download. Try again in a few minutes." | trans() }}</p>
+            {% endif %}
+
+            {% if batch.status == constant("App\\Entity\\BatchDownload::STATUS_FAILED") %}
+                <p>{{ "Something went wrong while generating the archive. Please try again." | trans() }}</p>
+            {% endif %}
+
+            {% if batch.status == constant("App\\Entity\\BatchDownload::STATUS_COMPLETED") %}
+                <p>
+                    {{ "The archive is ready for download. You can download the archive until %date%. After that, the archive needs to be generated again." | trans({'%date': batch.expiration | date('d-M-Y H:i:s') }) }}
+                </p>
+
+            <table>
+                <tr>
+                    <th>{{ "File" | trans() }}</th>
+                    <th>{{ "Documents" | trans() }}</th>
+                    <th>{{ "Expires" | trans() }}</th>
+                    <th>{{ "Link" | trans() }}</th>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-file-archive"></i> batch-{{ batch.id.toBase58 }}.zip </td>
+                    <td>{{ batch.documents|length }}</td>
+                    <td>{{ batch.expiration | date('d-M-Y H:i:s') }}</td>
+                    <td><a class="button" href="#">{{ "Download" | trans() }} ({{ batch.size| size }})</a></td>
+                </tr>
+            </table>
+            {% endif %}
+
+        </div>
+    </section>
+
+{% endblock %}

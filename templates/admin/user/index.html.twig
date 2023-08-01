@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "User management" | trans() %}
+
+{% block body %}
+
+    <section>
+        <div>
+
+            <h1>{{ "User management" | trans() }}</h1>
+
+            <table class="table table-striped">
+                <tr>
+                    <th>{{ "Username" | trans() }}</th>
+                    <th>{{ "E-mail" | trans() }}</th>
+                    <th>{{ "Created at" | trans() }}</th>
+                    <th>{{ "Role" | trans() }}</th>
+                    <th>{{ "Options" | trans() }}</th>
+                </tr>
+
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.name }}
+                            <small>
+                                {% if not user.enabled %}
+                                    <span class="badge bg-warning">{{ "Deactivated" | trans() }}</span>
+                                {% endif %}
+                            </small>
+                        </td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.createdAt | carbon.diffForHumans }}</td>
+                        <td>{{ user.roles|join(',') }}</td>
+                        <td>
+                            {% if app.user.id == user.id %}
+                                <a href="#" class="button disabled">{{ "This is you" | trans() }}</a>
+                            {% else %}
+                                <a href="{{ path('app_admin_user', { id: user.id }) }}" class="button">{{ "Modify" | trans() }}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <a href="{{ path('app_admin_user_create') }}" class="button">{{ "Create new user" | trans() }}</a>
+
+        </div>
+    </section>
+{% endblock %}

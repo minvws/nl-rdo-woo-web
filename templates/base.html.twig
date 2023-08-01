@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="nl">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% block meta %}{% endblock %}
+
+        <title>
+            {% if page_title is defined %} {{ page_title }} | {% endif %}
+            {{ "Woo Platform" | trans() }}
+        </title>
+
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+        {{ encore_entry_link_tags('woopie') }}
+        {{ encore_entry_link_tags('app') }}
+        {% block extra_stylesheets %}{% endblock %}
+
+        {{ encore_entry_script_tags('app') }}
+        {{ encore_entry_script_tags('woopie') }}
+        {% block extra_javascripts %}{% endblock %}
+    </head>
+
+    <body>
+        <header>
+            <a href="#main-content" class="button skip-to-content">{{ "Go directly to content" | trans() }}</a>
+
+            <a href="{{ path('app_home') }}" class="ro-logo">
+                <img src="{{ asset('/img/ro-logo.svg') }}" alt="Logo Rijksoverheid">
+                <span class="logo__text">{{ "Ministry of Health, Welfare and Sport" | trans }}</span>
+            </a>
+
+            <nav
+                aria-label="{{ "Main Navigation" | trans() }}"
+                class="collapsible"
+                data-close-label="{{ "Close menu" | trans() }}"
+                data-media="(min-width: 50rem)"
+                data-open-label="{{ "Menu" | trans() }}"
+            >
+                <div class="collapsing-element" id="main-nav-div">
+                    <ul>
+                        <li><a href="{{ path('app_home') }}" {% if app.request.get('_route') == 'app_home' %}aria-current="page"{% endif %}><span class="icon icon-home" aria-hidden="true"></span><span class="sr-only">{{ "Main page icon" | trans() }}</span> {{ "Public COVID documents" | trans() }}</a></li>
+                        <li><a href="{{ path('app_dossier_index') }}" {% if app.request.get('_route') == 'app_dossier_index' %}aria-current="page"{% endif %}>{{ "All published decisions" | trans() }}</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            {% if wo_breadcrumbs_exists() and app.request.get('_route') != 'app_home' %}
+            <div class="main-header-bottom">
+                <div class="main-header-bottom__content">
+                    <div class="one-third-two-thirds">
+                        <div>
+                            {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.html.twig' }) }}
+                        </div>
+
+                        <div>{% block search_form_top %}{% endblock %}</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </header>
+
+
+        <main id="main-content">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#{{ label }}-fill"/></svg>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {% block body %}{% endblock %}
+        </main>
+
+        <footer>
+            <div class="grid md:grid-cols-2">
+                <span class="slogan leading-9">{{ "The central government. For the Netherlands" | trans }}</span>
+
+                <div class="pt-8 md:pt-0 md:justify-self-end">
+                    <div class="grid sm:grid-cols-2 gap-x-12 gap-y-6">
+                        <nav aria-labelledby="page-footer-nav-1-heading">
+                            <h2 id="page-footer-nav-1-heading">Service</h2>
+                            <ul>
+                                <li><a href="{{ path('app_contact') }}">Contact</a></li>
+                                <li><a href="">{{ "RSS recent publications" | trans }}</a></li>
+                                <li><a href="">{{ "Archive" | trans }}</a></li>
+                                {% if not app.user %}
+                                    <li><a href="{{ path('app_login') }}">{{ "Login" | trans }}</a></li>
+                                {% else %}
+                                    <li><a href="{{ path('app_admin') }}">{{ "Counter" | trans() }}</a></li>
+                                    <li><a href="{{ path('app_logout') }}">{{ "Logout" | trans }}</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+
+                        <nav aria-labelledby="page-footer-nav-2-heading">
+                            <h2 id="page-footer-nav-2-heading">{{ "About this site" | trans() }}</h2>
+                            <ul>
+                                <li><a href="{{ path('app_about') }}">{{ "About Woo" | trans() }}</a></li>
+                                <li><a href="{{ path('app_copyright') }}">{{ "Copyright" | trans() }}</a></li>
+                                <li><a href="{{ path('app_privacy') }}">{{ "Privacy" | trans() }}</a></li>
+                                <li><a href="{{ path('app_cookies') }}">{{ "Cookies" | trans() }}</a></li>
+                                <li><a href="{{ path('app_accessibility') }}">{{ "Accessibility" | trans() }}</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <div class="block text-right text-white/40">{{ app_version().version }} ({{ app_version().git_ref }})</div>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,16 @@
+%pill {
+    background-color: #f3f3f3;
+    color: #344054;
+    display: inline-block;
+    padding: 0.25rem 1rem;
+    border-radius: 2rem;
+    font-size: 1rem;
+    text-decoration: none;
+}
+
+.pill,
+a.pill:focus,
+a.pill:visited,
+a.pill:hover {
+    @extend %pill;
+}

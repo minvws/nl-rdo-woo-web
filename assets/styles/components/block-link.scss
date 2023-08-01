@@ -1,0 +1,39 @@
+.block-link {
+    display: block;
+
+    h2,
+    h3 {
+        margin-bottom: .5rem;
+        text-decoration: none;
+    }
+
+    &,
+    &:focus,
+    &:hover {
+        color: var(--text-set-text-color);
+        text-decoration: none;
+
+        h2 {
+            font-size: var(--h2-font-size, inherit);
+            font-weight: var(--text-set-strong-font-weight);
+        }
+
+        h3 {
+            font-size: var(--h3-font-size, inherit);
+            font-weight: var(--text-set-strong-font-weight);
+        }
+    }
+
+    &:focus,
+    &:hover {
+
+        h2,
+        h3 {
+            text-decoration: underline;
+        }
+    }
+
+    &:visited {
+        color: var(--text-set-text-color);
+    }
+}

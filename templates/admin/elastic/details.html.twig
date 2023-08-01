@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <section>
+        <div>
+
+            <h1>{{ "Index" | trans() }} {{ details.index.name }}</h1>
+
+            <table>
+                <tr>
+                    <th>{{ "Label" | trans() }}</th>
+                    <th>{{ "Expected" | trans() }}</th>
+                    <th>{{ "In Elasticsearch" | trans() }}</th>
+                    <th>{{ "Percentage" | trans() }}</th>
+                </tr>
+
+                <tr>
+                    <td>{{ "Dossier count" | trans() }}</td>
+                    <td>{{ details.expectedDossierCount }}</td>
+                    <td>{{ details.elasticsearchDossierCount }}</td>
+                    <td>{{ details.getDossierPercentage() }}%</td>
+                </tr>
+                <tr>
+                    <td>{{ "Document count" | trans() }}</td>
+                    <td>{{ details.expectedDocumentCount }}</td>
+                    <td>{{ details.elasticsearchDocumentCount }}</td>
+                    <td>{{ details.getDocumentPercentage() }}%</td>
+                </tr>
+                <tr>
+                    <td>{{ "Page count" | trans() }}</td>
+                    <td>{{ details.expectedPageCount }}</td>
+                    <td>{{ details.elasticsearchPageCount }}</td>
+                    <td>{{ details.getPagePercentage() }}%</td>
+                </tr>
+
+            </table>
+        
+            <a href="{{ path('app_admin_elastic_live', {indexName: index.name}) }}" class="button">{{ "Promote to Live" | trans() }}</a>
+
+        </div>
+    </section>
+{% endblock %}

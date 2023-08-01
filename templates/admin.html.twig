@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% block meta %}{% endblock %}
+
+  <title>Admin</title>
+
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+  {{ encore_entry_link_tags('woopie') }}
+  {{ encore_entry_link_tags('admin') }}
+
+  {{ encore_entry_script_tags('woopie') }}
+  {{ encore_entry_script_tags('admin') }}
+</head>
+
+<body>
+<header>
+  <em>WobCovid Publicatie/document management</em>
+</header>
+{% block body %}{% endblock %}
+
+<footer>
+  <nav>
+    <ul>
+      <li><a href="#">Privacy</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="#">WobCovid publiek</a></li>
+    </ul>
+  </nav>
+</footer>
+
+</body>
+</html>

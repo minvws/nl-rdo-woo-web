@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Dossiers and documents for case number %casenr%" | trans({'%casenr%': inquiry.casenr}) %}
+
+{% block body %}
+
+    <section>
+        <div>
+
+            <h1>{{ "Dossiers and documents for case number %casenr%" | trans({'%casenr%': inquiry.casenr}) }}</h1>
+
+            <section>
+                <h2>{{ "Dossiers" | trans() }}</h2>
+
+                <table>
+                    <tr>
+                        <th>{{ "Dossier" | trans() }}</th>
+                        <th>{{ "Release date" | trans() }}</th>
+                    </tr>
+                    {% for dossier in inquiry.dossiers %}
+                        <tr>
+                            <td><a href="{{ path('app_dossier_detail', {dossierId: dossier.dossierNr}) }}">{{ dossier.title }}</a></td>
+                            <td>{{ dossier.createdAt | date('d-m-Y') }}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </section>
+
+
+            <section x-data='{filter:"all", filter_dossier:"{{ inquiry.dossiers.first.dossierNr }}" }'>
+                <h2>Documenten <small>{{ inquiry.documents|length }} documenten</small></h2>
+
+                <form>
+                    <label><input @click="filter='all'" name="filter" type="radio"> Alle {{ inquiry.allDocuments|length }} documenten in bovenstaande besluiten</label>
+                    <label><input @click="filter='case'" name="filter" type="radio"> Alle {{ inquiry.documents|length }} documenten met zaaknummer {{ inquiry.casenr }}</label>
+                    <label><input @click="filter='dossier'" name="filter" type="radio"> Documenten met zaaknummer in besluit
+                        <select name="filter_dossier" x-model="filter_dossier">
+                            {% for dossier in inquiry.dossiers %}
+                                <option>{{ dossier.dossierNr }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </form>
+
+
+                <table class="table table-striped">
+                    <tr>
+                        <th>Besluit Nr</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                    </tr>
+
+                    {% for document in inquiry.allDocuments %}
+                        <tr
+                            {% if document in inquiry.documents %}
+                                x-show="filter=='all' || (filter=='dossier' && '{{ document.dossiers.0.dossierNr}}' == filter_dossier) || filter=='case'"
+                            {% else %}
+                                x-show="filter=='all' || (filter=='dossier' && '{{ document.dossiers.0.dossierNr}}' == filter_dossier)"
+                            {% endif %}
+                        >
+                            <td nowrap>{{ document.documentNr }}</td>
+                            <td><a href="#">{{ document.filename }}</a></td>
+                            <td>{{ document.documentDate | date('d-m-Y') }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+            </section>
+
+        </div>
+    </section>
+
+{% endblock %}

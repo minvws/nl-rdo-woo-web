@@ -1,0 +1,385 @@
+'Stacks of documents': 'Stapels documenten'
+'Browse through published documents': 'Blader door openbaar gemaakte stukken'
+Organization: Organisatie
+Subject: Onderwerp
+'Document type': 'Type document'
+Period: Periode
+Minister: Bewindspersoon
+'Decision made': 'Genomen besluit'
+'See more...': 'Meer zien...'
+'Recent decisions': 'Recente besluiten'
+'No title available': 'Geen titel beschikbaar'
+'# documents' : >-
+    { count, plural,
+      =0{# documenten}
+      =1{# document}
+      other{# documenten}
+    }
+'# pages' : >-
+  { count, plural,
+    =0{# pagina's}
+    =1{# pagina}
+    other{# pagina's}
+  }
+'View all decisions': 'Bekijk alle besluiten'
+'About this platform': 'Over dit platform'
+'On this website, you will find internal information from the Ministry of VWS. This information has been made public to show what the ministry did during the COVID-19 pandemic. You can read about how plans and decisions were made. There are many documents to read, including reports, plans, research results, letters to the House of Representatives, budgets, e-mails, and chat messages.': 'Op deze website vindt u interne informatie van het ministerie van VWS. Deze informatie is openbaar gemaakt om te laten zien wat het ministerie deed tijdens de coronapandemie. Zo kunt u teruglezen hoe plannen en besluiten zijn gemaakt. Er zijn veel documenten om te lezen. Denk aan rapporten, plannen, onderzoeksresultaten, brieven aan de Tweede Kamer, begrotingen, e-mails en chatberichten.'
+'The documents have been made public under the Dutch Open Government Act (Wet open overheid) because journalists or other interested parties requested them. The ministry has also proactively made some of the documents public. We continue to add new documents.': 'De documenten zijn openbaar gemaakt via de Wet open overheid: omdat journalisten of andere geïnteresseerden erom vroegen. Een deel van de documenten heeft het ministerie op eigen initiatief openbaar gemaakt. We voegen nog steeds nieuwe documenten toe.'
+'Submit a freedom of information request': 'Een woo-verzoek indienen'
+'You send the freedom of information request to the organization from which you want to receive information.': 'U stuurt het woo-verzoek naar de organisatie waarvan u informatie wilt ontvangen.'
+'Provide as precise a description as possible of the information you want.': 'Geef zo precies mogelijk aan waarover u informatie wilt.'
+"You may be contacted by the government for additional questions. Therefore, it's useful to provide your phone number with the request.": 'Het kan zijn dat u nog wordt gebeld door de overheid, met wat extra vragen. Het is dus handig als u bij het verzoek ook uw telefoonnummer doorgeeft.'
+Warning: Waarschuwing
+'This document has not yet been converted in our system. It is not possible to view individual pages, but you can download the entire document.': "Dit document is nog niet geconverteerd in ons systeem. Het is niet mogelijk om individuele pagina's in te zien, maar het is mogelijk om het hele document te downloaden."
+'Attachment of': 'Bijlage van'
+Download: Downloaden
+'View online (beta)': 'Bekijk online (beta)'
+'Related documents': 'Gerelateerde documenten'
+'Other documents in this decision': 'Andere documenten in dit besluit'
+'File name': Bestandsnaam
+Size: Grootte
+Section: Sectie
+'Page count': "Aantal pagina's"
+'Messages from the same e-mail conversation': 'Berichten uit dezelfde e-mailconversatie'
+'About this document': 'Over dit document'
+'Document Date': 'Datum document'
+'Document Type': 'Type document'
+'Download Type': 'Download Type'
+'Document Number': DocumentNummer
+Labels: Labels
+Status: Status
+'What is redacted': 'Wat is er gelakt'
+'Do you encounter data in this document that you think should have been redacted? Or is the document difficult to read?': 'Kom je in dit document gegevens tegen waarvan je denkt dat deze gelakt hadden moeten worden? Of is het document slecht leesbaar?'
+'Let us know': 'Laat ons weten'
+'Attachments to this e-mail message': 'Bijlagen bij dit e-mailbericht'
+'There are no attachments to this e-mail message.': 'Er zijn geen bijlagen bij dit e-mailbericht.'
+'Background disclosure': 'Achtergrond openbaring'
+'Part of': 'Onderdeel van'
+Responsible: Verantwoordelijk
+'Summary of request': 'Samenvatting verzoek'
+'Time period': Tijdvak
+'Date of disclosure': 'Datum openbaarmaking'
+'Type of decision': 'Type besluit'
+'Scope of disclosure': 'Omvang openbaarmaking'
+'Inventory list': Inventarislijst
+'Other decisions in which this document appears': 'Andere besluiten waar dit document in voorkomt'
+Title: Titel
+Description: Omschrijving
+'Document count': 'Aantal documenten'
+'Woo Platform': 'Woo Platform'
+'Go directly to content': 'Ga direct naar de inhoud'
+'Ministry of Health, Welfare and Sport': 'Ministerie van Volksgezondheid, Welzijn en Sport'
+'Main Navigation': Hoofdnavigatie
+'Close menu': 'Sluit menu'
+Menu: Menu
+'Homepage': 'Homepage'
+'Public COVID documents': 'Openbare COVID-documenten'
+'All published decisions': 'Alle gepubliceerde besluiten'
+'The central government. For the Netherlands': 'De centrale overheid. Voor Nederland'
+Service: Service
+Contact: Contact
+'RSS recent publications': 'RSS recente publicaties'
+Archive: Archief
+Login: Inloggen
+Counter: Counter
+Logout: Uitloggen
+'About this site': 'Over deze site'
+'About Woo': 'Over Woo'
+Copyright: Auteursrecht
+Privacy: Privacy
+Cookies: Cookies
+Accessibility: Toegankelijkheid
+'Log in': Inloggen
+'You are logged in as %name%': 'Je bent ingelogd als %name%'
+'Please sign in': 'Log in alstublieft'
+'e-mail address': E-mailadres
+Password: Wachtwoord
+'Remember me': 'Onthoud mij'
+'Sign in': Inloggen
+'Update your password': 'Werk je wachtwoord bij'
+'Please update your password': 'Werk je wachtwoord bij'
+'A password should follow the following rules:': 'Een wachtwoord moet aan de volgende regels voldoen:'
+'At least 14 characters': 'Minstens 14 tekens'
+'Should not be a common word': 'Mag geen veelvoorkomend woord zijn'
+'Does not contain only digits': 'Mag niet alleen cijfers bevatten'
+'May not be similar to your e-mail address': 'Mag niet vergelijkbaar zijn met je e-mailadres'
+'We advise using a password manager to generate and store your password.': 'We raden aan een wachtwoordmanager te gebruiken om je wachtwoord te genereren en op te slaan.'
+'Public decisions': 'Openbare besluiten'
+'As a dedicated platform for transparency and openness of government, we have made efforts to make these Woo files accessible to the general public. We believe in the power of openness and the sharing of information, and we are convinced that making these documents available will contribute to a better understanding of the complex issues our society is facing.': 'Als een toegewijd platform voor transparantie en openbaarheid van bestuur, hebben we ons ingespannen om deze Woo-dossiers toegankelijk te maken voor het grote publiek. We geloven in de kracht van openheid en het delen van informatie, en we zijn ervan overtuigd dat het beschikbaar stellen van deze documenten zal bijdragen aan een beter begrip van de complexe kwesties waarmee onze samenleving wordt geconfronteerd.'
+'The released Woo files cover a wide range of topics, from environmental and energy policies to infrastructure projects and legislative initiatives. We encourage you to study these documents thoroughly and use the information to make informed decisions and participate in public debate.': 'De vrijgegeven Woo-dossiers beslaan een breed scala aan onderwerpen, variërend van milieu- en energiebeleid tot infrastructuurprojecten en wetgevingsinitiatieven. We moedigen u aan om deze documenten grondig te bestuderen en de informatie te gebruiken om geïnformeerde beslissingen te nemen en deel te nemen aan het maatschappelijke debat.'
+'Releasing these Woo files is a step towards a more transparent and participatory society. We believe that by sharing information and involving the public in decision-making processes, we can strive for a more inclusive and democratic society.': 'Het vrijgeven van deze Woo-dossiers is een stap in de richting van een transparantere en participatievere samenleving. We geloven dat door het delen van informatie en het betrekken van het publiek bij besluitvormingsprocessen, we kunnen streven naar een meer inclusieve en democratische samenleving.'
+'We appreciate your continuous support and encouragement in our efforts to promote transparency and openness of government. We will continue to release more Woo files and strive for a society where information is freely shared and accessible to everyone.': 'Wij waarderen uw voortdurende steun en aanmoediging in onze inspanningen om transparantie en openbaarheid van bestuur te bevorderen. We blijven ons inzetten om meer Woo-dossiers vrij te geven en zullen blijven streven naar een samenleving waarin informatie vrijelijk wordt gedeeld en toegankelijk is voor iedereen.'
+'No decisions found at the moment.': 'Er zijn op dit moment geen besluiten gevonden.'
+'Decision number': Besluitnummer
+'Number of documents': 'Aantal documenten'
+'Download document archive': 'Download document archief'
+'The archive is not ready for download yet. Please try again in a few minutes.': 'Het archief is nog niet gereed voor download. Probeer het over een paar minuten opnieuw.'
+'Something went wrong during the generation of the archive. Please try again.': 'Er is iets fout gegaan tijdens het genereren van het archief. Probeer het opnieuw.'
+'The archive is ready for download. You can download the archive until %date%. After that, the archive needs to be generated again.': 'Het archief is gereed voor download. Je kunt het archief downloaden tot %date%. Daarna moet het archief weer opnieuw worden gegeneerd.'
+File: Bestand
+Documents: Documenten
+Expires: Verloopt
+Link: Link
+First: Eerste
+Previous: Vorige
+Next: Volgende
+Last: Laatste
+'An error occurred': 'Er is een fout opgetreden'
+'Something went wrong during the search. Please try again later.': 'Er is iets misgegaan tijdens het zoeken. Probeer het later opnieuw.'
+'Error message': Foutmelding
+Time: Tijdstip
+Query: Query
+Decision: Besluit
+Page: Pagina
+'Document number': documentnummer
+Date: Datum
+from: vanaf
+to: t/m
+Department: Departement
+'Type of disclosure': 'Soort openbaarmaking'
+'Part of publication': 'Onderdeel van publicatie'
+'Filter results': 'Filter resultaten'
+none: geen
+More...: Meer...
+'# dossiers' : >-
+    { count, plural,
+      =0{# dossiers}
+      =1{# dossier}
+      other{# dossiers}
+    }
+'in # dossiers' : >-
+    { count, plural,
+      =0{in # dossiers}
+      =1{in # dossier}
+      other{in # dossiers}
+    }
+'Meanwhile, did you mean:': 'Ondertussen, bedoelde u:'
+'Did you mean one of the following search terms:': 'Bedoelde u een van de volgende zoektermen:'
+'Applied filters': 'Ingestelde filters'
+'Remove filter': 'Filter verwijderen'
+'All WOB and Woo decisions': 'Alle WOB- en Woo-besluiten'
+'On this site, all COVID-19 related WOB and Woo decisions are published. These decisions cover the period xx to yy.': 'Op deze site worden alle COVID-19 gerelateerde WOB- en Woo-besluiten gepubliceerd. Deze besluiten beslaan de periode xx tot yy.'
+'Subscribe to new decisions (RSS feed)': 'Abonneer op nieuwe besluiten (RSS-feed)'
+'Search through all WOB and Woo decisions': 'Doorzoek alle WOB- en Woo-besluiten'
+'Enter a search term': 'Typ een zoekterm in'
+Search: Zoeken
+choose_provider: 'Kies provider'
+auth_code: '2FA code'
+cancel: Terug
+login: Inloggen
+'Dit besluit is nog niet gepubliceerd en is alleen zichtbaar in preview mode.': 'This decision has not been published yet and is only visible in preview mode.'
+'This document has not yet been converted in our system. It is not possible to view individual pages, but it is possible to download the entire document.': "Dit document is nog niet geconverteerd in ons systeem. Het is niet mogelijk om individuele pagina's in te zien, maar het is mogelijk om het hele document te downloaden."
+'The archive is not yet ready for download. Try again in a few minutes.': 'Het archief is nog niet klaar voor downloaden. Probeer het over een paar minuten nog eens.'
+'Something went wrong while generating the archive. Please try again.': 'Er is iets fout gegaan tijdens het genereren van het archief. Probeer het nog eens.'
+'An error has occurred': 'Er is een fout opgetreden'
+'Something went wrong during the search. Try again later.': 'Er is iets mis gegaan tijdens het zoeken. Probeer het later nog eens.'
+Timestamp: Tijdstip
+'document number': documentnummer
+t/m: t/m
+'Did you mean:': 'Bedoelde u misschien:'
+'Did you mean any of the following search terms:': 'Bedoelde u misschien een van de volgende zoektermen:'
+'Set filters': 'Ingestelde filters'
+'On this site all COVID-19 related WOB and Woo decisions are published. These are decisions from the period xx to yy.': 'Op deze site worden alle COVID-19 gerelateerde wob en woo-besluiten gepubliceerd. Het gaat om besluiten uit de periode xx t/m yy.'
+'Type in a search term': 'Typ een zoekterm in'
+'Published on': 'Gepubliceerd op'
+Request: Verzoek
+Responsible(s): Verantwoordelijk(en)
+'Taken decision': 'Genomen besluit'
+'Reasoning for decision': 'Onderbouwing besluit'
+'Download decision': 'Download besluit'
+'Search in these documents': 'Zoeken in deze documenten'
+'This page is not yet processed by our system': 'Deze pagina is nog niet verwerkt door ons systeem'
+'No content found for this page': 'Geen inhoud gevonden voor deze pagina'
+'Modifying your own account is not allowed': 'Het wijzigen van je eigen account is niet toegestaan'
+'The user has been modified': 'De gebruiker is gewijzigd'
+'User roles have been modified': 'Gebruikersrollen zijn gewijzigd'
+'User has been disabled': 'Gebruiker is uitgeschakeld'
+'User has been enabled': 'Gebruiker is ingeschakeld'
+'Prefix created': 'Prefix aangemaakt'
+'Prefix modified': 'Prefix gewijzigd'
+'Token created': 'Token aangemaakt'
+'Token modified': 'Token gewijzigd'
+'Document has been removed': 'Document is verwijderd'
+'Document is scheduled for ingestion': 'Document is ingepland voor verwerking'
+'Department created': 'Departement aangemaakt'
+'Official created': 'Bewindvoerder aangemaakt'
+'Official modified': 'Bewindvoerder gewijzigd'
+'Department modified': 'Departement gewijzigd'
+'No documents selected': 'Geen documenten geselecteerd'
+"This document is not yet processed. It is not possible to view individual pages, but you can download the complete document.": "Dit document is nog niet geconverteerd in ons systeem. Het is niet mogelijk om individuele pagina's in te zien, maar het is mogelijk om het hele document te downloaden."
+Home: Home
+You are here: Je bent hier
+Dossier: Dossier
+Document: Document
+Search results: Zoekresultaten
+Browse: Browse
+Admin: Beheer
+Department management: Departement beheer
+New department: Nieuw departement
+New official: Nieuwe bewindvoerder
+Edit official: Bewindvoerder wijzigen
+Edit department: Departement wijzigen
+Prefix management: Prefix beheer
+Edit prefix: Prefix wijzigen
+New prefix: Nieuwe prefix
+Request management: Verzoeken beheer
+New request: Nieuw verzoek
+Edit request: Verzoek wijzigen
+Token management: Token beheer
+New token: Nieuwe token
+Edit token: Token wijzigen
+User management: Gebruikers beheer
+New user: Nieuwe gebruiker
+Edit User: Gebruiker wijzigen
+'This link provides access to user management, where you have the opportunity to create, modify and delete user accounts, and manage their access rights.': 'Deze link biedt toegang tot het gebruikersbeheer, waar u de mogelijkheid heeft om gebruikersaccounts aan te maken, te wijzigen en te verwijderen, en hun toegangsrechten te beheren.'
+'With this link you get access to the dossier management, where you can create, edit and organize files, and add and delete documents.': 'Met deze link krijgt u toegang tot het dossierbeheer, waar u dossiers kunt maken, bewerken en organiseren, en documenten kunt toevoegen en verwijderen.'
+'Dossier management': 'Dossier management'
+'This link provides access to the management of Woo requests, where you can view, manage and process new requests. Here you can also keep track of the status of existing requests and perform relevant actions.': 'Deze link biedt toegang tot het beheer van Woo aanvragen, waar u nieuwe aanvragen kunt bekijken, beheren en verwerken. Hier kunt u ook de status van bestaande aanvragen bijhouden en relevante acties uitvoeren.'
+'This link provides access to the management of departments and administrators.': 'Deze link biedt toegang tot het beheer van departmenten en bewindvoerders.'
+'This link provides access to the management of tokens for dossier previews.': 'Deze link biedt toegang tot het beheer van tokens voor dossier previews.'
+'This link provides access to the management of document prefixes.': 'Deze link biedt toegang tot het beheer van document prefixes.'
+'This link provides access to system statistics and monitoring.': 'Deze link biedt toegang tot statistieken en monitoring van het systeem.'
+'Statistics & Monitoring': 'Statistieken & Monitoring'
+'Create new token': 'Nieuwe token aanmaken'
+Token: Token
+Remark: Opmerking
+Expired: Verlopen
+Valid: Geldig
+Edit: Wijzigen
+'Modify token %token%': 'Wijzig token %token%'
+Expiry: Verloopdatum
+'Requests management': 'Verzoeken beheer'
+'There are in total # requests found.': >-
+  { count, plural,
+    =0{Er zijn geen verzoeken gevonden.}
+    =1{Er is 1 verzoek gevonden.}
+    other{Er zijn in totaal # verzoeken gevonden.}
+  }
+Case number: Zaaknummer
+'Last update': 'Laatste update'
+'Request new request': 'Vraag nieuw verzoek aan'
+'Modify request': 'Wijzig verzoek'
+'Create new user': 'Nieuwe gebruiker aanmaken'
+User: Gebruiker
+Username: Gebruikersnaam
+e-mail: e-mail
+'Created at': 'Aangemaakt op'
+Role: Rol
+Deactivated: Gedeactiveerd
+'This is you': 'Dit ben jij'
+Modify: Wijzigen
+'User credentials': 'Gebruikersgegevens'
+Name: Naam
+'Initial password': 'Initieel wachtwoord'
+'This password is for one-time use. After logging in, you need to change the password.': 'Dit wachtwoord is voor eenmalig gebruik. Na het inloggen moet u het wachtwoord wijzigen.'
+'2fa code': '2fa code'
+'Scan this code with an authenticator app like Google Authenticator or Authy. During login you will be asked for an authentication code that can be requested via this authenticator app.': 'Scan deze code in met een authenticator app zoals Google Authenticator of Authy. Er zal tijdens het inloggen gevraagd worden om een authenticatie code die via deze authenticator app is op te vragen.'
+'2fa recovery codes': '2fa herstelcodes'
+"If you can't log in with your authenticator app, you can use one of the following codes to log in. These codes can be used once.": "Als u niet kunt inloggen met uw authenticator app, kunt u een van de volgende codes gebruiken om in te loggen. Deze codes kunnen eenmalig worden gebruikt."
+'Print this page': 'Print deze pagina'
+'This user is currently disabled.': 'Deze gebruiker is momenteel gedeactiveerd.'
+'Modify user %name%': 'Wijzig gebruiker %name%'
+'User information': 'Gebruikersinformatie'
+'Access roles': 'Toegangsrollen'
+'Disable user': 'Gebruiker deactiveren'
+'Enable user': 'Gebruiker activeren'
+'The user is currently deactivated. To activate the user, click the button below.': 'De gebruiker is momenteel gedeactiveerd. Om de gebruiker te activeren, klik op de onderstaande knop.'
+'Reset credentials': 'Gebruikersgegevens resetten'
+'A total of # dossiers are found.': >-
+  { count, plural,
+    =0{Er zijn geen dossiers gevonden.}
+    =1{Er is 1 dossier gevonden.}
+    other{Er zijn in totaal # dossiers gevonden.}
+  }
+Search word...: Zoekwoord...
+Filter: Filter
+'The results are filtered.': 'De resultaten zijn gefilterd.'
+Dossier number: Dossiernummer
+disabled: gedeactiveerd
+'New dossier': 'Nieuw dossier'
+'Document details': 'Document details'
+'Document ID': 'Document ID'
+'Document title': 'Document titel'
+'Document size': 'Document grootte'
+'Document pages': "Document pagina's"
+'Document date': 'Document datum'
+'Ingest history log': 'Ingest geschiedenis log'
+Event: Gebeurtenis
+Message: Bericht
+'No ingest history found': 'Geen ingest geschiedenis gevonden'
+'Create new dossier': 'Nieuw dossier aanmaken'
+'Modify dossier': 'Wijzig dossier'
+'Dossier settings': 'Dossier instellingen'
+'Dossier Status': 'Dossier status'
+'Remove dossier': 'Dossier verwijderen'
+'Warning: this will remove the dossier AND all documents that are only linked to this dossier!': 'Waarschuwing: dit zal het dossier EN alle documenten die alleen aan dit dossier zijn gekoppeld verwijderen!'
+'Ingest dossier': 'Ingest dossier'
+"This will ingest the current dossier's documents into the search engine.": 'Dit zal de documenten van het huidige dossier in de zoekmachine opnemen.'
+'Create new prefix': 'Nieuwe prefix aanmaken'
+Prefix: Prefix
+'Modify prefix %prefix%': 'Wijzig prefix %prefix%'
+'Create new department': 'Nieuw departement aanmaken'
+Official: Bewindvoerder
+'Modify official %name%': 'Wijzig bewindvoerder %name%'
+'Create new government official': 'Nieuwe overheidsfunctionaris aanmaken'
+'Modify department %name%': 'Wijzig departement %name%'
+Last updated: 'Laatst bijgewerkt'
+Msg Delivered Rate: 'Msg Delivered Rate'
+Msg Delivered: 'Msg Delivered'
+Msg Published Rate: 'Msg Published Rate'
+Msg Published: 'Msg Published'
+Msg unacknowledged: 'Msg unacknowledged'
+Msg ready: 'Msg ready'
+Messages: 'Berichten'
+Node: 'Node'
+RabbitMQ stats: 'RabbitMQ stats'
+Total pages: "Totaal aantal pagina's"
+Documents available: 'Documenten beschikbaar'
+Dossiers available: 'Dossiers beschikbaar'
+Judgement: 'Beoordeling'
+Grounds: 'Gronden'
+Lost your login details? Please contact the person who gave you access to the platform.: 'Inloggegevens kwijt? Neem even contact op met de persoon die jou toegang heeft gegeven tot het platform.'
+'Open the authenticator app, and enter the one-time verification code for the woo-platform.': 'Open de authenticator app, en voer de eenmalige verificatiecode voor het woo-platform in.'
+'Having problems with the authentication app? Use a recovery code from the login instructions.': 'Problemen met de authenticatie app? Gebruik een herstelcode uit de inloginstructies.'
+Welcome: 'Welkom'
+doc: 'Tekstverwerking'
+pdf: 'PDF'
+presentation: 'Presentatie'
+spreadsheet: 'Spreadsheet'
+image: 'Afbeelding'
+html: 'Webpagina'
+note: 'Notitie'
+unknown: 'Onbekend'
+audio: 'Audio'
+database: 'Database'
+xml: 'XML'
+video: 'Video'
+vcard: 'Visitekaartje'
+Create new elasticsearch rollover: Rollover de elasticsearch index
+Elasticsearch management: Elasticsearch beheer
+Rollover into: Rollover naar
+Label: Label
+Expected: Verwacht
+In Elasticsearch: In Elasticsearch
+Percentage: Percentage
+Dossier count: Dossiers
+Promote to Live: Promoveren naar Live
+No rollover at the moment: Geen rollover op het moment
+Elasticsearch indices: Elasticsearch indices
+Health: Health
+Object Count: Objecten
+Aliases: Aliassen
+Details: Details
+New rollover: Nieuwe rollover
+Index: Index
+Promote index to the live index: Promoveer index naar de live index
+'Are you sure you want to make this the live index?': 'Weet je zeker dat je dit de live index wilt maken?'
+concept: Concept
+completed: 'Klaar voor publicatie'
+preview: 'Online voor verzoekers'
+published: Openbaar
+retracted: Teruggetrokken
+'Decision about...': 'Besluit over...'
+'Published date': 'Publicatiedatum'
+'Org & reference': 'Org & referentie'
+'Search with case, file or document number': 'Zoeken op zaaknummer, dossier, documentnummer'
