@@ -16,7 +16,7 @@
         "postcss": "^8.4.27",
         "postcss-loader": "^7.3.3",
         "quoted-printable": "^1.0.1",
-        "regenerator-runtime": "^0.13.2",
+        "regenerator-runtime": "^0.14.0",
         "sass": "^1.64.1",
         "sass-loader": "^13.3.2",
         "tailwindcss": "^3.3.3",
