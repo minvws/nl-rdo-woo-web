@@ -16,7 +16,31 @@ table {
         }
     }
 
-    tbody th {
-        vertical-align: top;
+    th:first-of-type {
+        padding-inline-start: 0;
     }
+
+    tbody th,
+    tbody td {
+        vertical-align: top;
+        white-space: normal;
+    }
+
+    tbody td.icon-type:has(.svg-icon) {
+        padding-top: 13px;
+    }
+
+    .th-date {
+        min-width: 25ch;
+    }
+}
+
+.table-default__thead {
+    background: unset;
+    color: black;
+    border: 0 solid var(--table-cell-border-color);
+    border-width: 0 0 1px;
+    font-style: italic;
+    font-weight: 300;
+    vertical-align: top;
 }

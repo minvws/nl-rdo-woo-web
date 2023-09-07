@@ -10,6 +10,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * Update a department in elasticsearch.
+ */
 #[AsMessageHandler]
 class UpdateDepartmentHandler
 {

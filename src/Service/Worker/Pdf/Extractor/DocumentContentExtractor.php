@@ -69,6 +69,8 @@ class DocumentContentExtractor implements DocumentExtractorInterface
         $tikaData = $this->tika->extract($localPdfPath);
         $documentContent = $tikaData['X-TIKA:content'] ?? '';
 
+        $this->documentStorage->removeDownload($localPdfPath);
+
         return [$documentContent, $tikaData];
     }
 

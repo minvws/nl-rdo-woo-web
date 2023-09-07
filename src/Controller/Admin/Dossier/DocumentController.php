@@ -6,8 +6,10 @@ namespace App\Controller\Admin\Dossier;
 
 use App\Entity\Document;
 use App\Entity\Dossier;
+use App\Entity\WithdrawReason;
 use App\Form\Document\IngestFormType;
 use App\Form\Document\RemoveFormType;
+use App\Form\Document\WithdrawFormType;
 use App\Form\Dossier\DocumentUploadType;
 use App\Service\DocumentService;
 use App\Service\FileUploader;
@@ -27,21 +29,12 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
  */
 class DocumentController extends AbstractController
 {
-    protected DocumentService $documentService;
-    protected IngestService $ingester;
-    protected FileUploader $fileUploader;
-    protected TranslatorInterface $translator;
-
     public function __construct(
-        DocumentService $documentService,
-        IngestService $ingester,
-        FileUploader $fileUploader,
-        TranslatorInterface $translator
+        private readonly DocumentService $documentService,
+        private readonly IngestService $ingester,
+        private readonly FileUploader $fileUploader,
+        private readonly TranslatorInterface $translator
     ) {
-        $this->documentService = $documentService;
-        $this->ingester = $ingester;
-        $this->fileUploader = $fileUploader;
-        $this->translator = $translator;
     }
 
     #[Route('/balie/dossier/{dossierId}/documents', name: 'app_admin_dossier_documents_edit', methods: ['GET'])]
@@ -80,6 +73,7 @@ class DocumentController extends AbstractController
 
         return $this->render('admin/dossier/document-status.html.twig', [
             'dossier' => $dossier,
+            'uploadStatus' => $dossier->getUploadStatus(),
         ]);
     }
 
@@ -106,7 +100,7 @@ class DocumentController extends AbstractController
         if ($removeForm->isSubmitted() && $removeForm->isValid()) {
             $this->documentService->removeDocumentFromDossier($dossier, $document);
 
-            $this->addFlash('success', $this->translator->trans('Document has been removed'));
+            $this->addFlash('backend', ['success' => $this->translator->trans('Document has been removed')]);
 
             return $this->redirectToRoute('app_admin_dossier_edit', ['dossierId' => $dossier->getDossierNr()]);
         }
@@ -115,7 +109,7 @@ class DocumentController extends AbstractController
         if ($ingestForm->isSubmitted() && $ingestForm->isValid()) {
             $this->ingester->ingest($document, new Options());
 
-            $this->addFlash('success', $this->translator->trans('Document is scheduled for ingestion'));
+            $this->addFlash('backend', ['success' => $this->translator->trans('Document is scheduled for ingestion')]);
 
             return $this->redirectToRoute('app_admin_dossier_edit', ['dossierId' => $dossier->getDossierNr()]);
         }
@@ -125,6 +119,61 @@ class DocumentController extends AbstractController
             'document' => $document,
             'removeForm' => $removeForm->createView(),
             'ingestForm' => $ingestForm->createView(),
+        ]);
+    }
+
+    #[Route('/balie/dossier/{dossierId}/document/{documentId}/withdraw', name: 'app_admin_dossier_document_withdraw', methods: ['GET', 'POST'])]
+    public function docWithdraw(
+        Breadcrumbs $breadcrumbs,
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document,
+        Request $request,
+    ): Response {
+        if (! $dossier->getDocuments()->contains($document)) {
+            throw new NotFoundHttpException('Document not found');
+        }
+
+        if ($document->isWithdrawn()) {
+            $this->addFlash('backend', ['error' => $this->translator->trans('Document is already withdrawn')]);
+
+            return $this->redirectToRoute(
+                'app_admin_dossier_document_details',
+                ['dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()]
+            );
+        }
+
+        $form = $this->createForm(WithdrawFormType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var WithdrawReason $reason */
+            $reason = $form->get('reason')->getData();
+
+            /** @var string $explanation */
+            $explanation = $form->get('explanation')->getData();
+
+            $this->documentService->withdraw($document, $reason, $explanation);
+            $this->addFlash('backend', ['success' => $this->translator->trans('Document has been withdrawn')]);
+
+            return $this->redirectToRoute(
+                'app_admin_dossier_document_details',
+                ['dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()]
+            );
+        }
+
+        $breadcrumbs->addRouteItem('Home', 'app_home');
+        $breadcrumbs->addRouteItem('Admin', 'app_admin');
+        $breadcrumbs->addRouteItem('Dossier management', 'app_admin_dossiers');
+        $breadcrumbs->addRouteItem(
+            'Document',
+            'app_admin_dossier_document_details',
+            ['dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()]
+        );
+        $breadcrumbs->addItem('Intrekken');
+
+        return $this->render('admin/dossier/document-withdraw.html.twig', [
+            'dossier' => $dossier,
+            'document' => $document,
+            'form' => $form->createView(),
         ]);
     }
 }

@@ -6,6 +6,7 @@ namespace App\Service\Elastic;
 
 use Elastic\Elasticsearch\ClientBuilder;
 use Elastic\Elasticsearch\ClientInterface;
+use GuzzleHttp\Client;
 
 /**
  * Creates a configured Elasticsearch client.
@@ -21,6 +22,10 @@ class ElasticClientFactory
         string $mtlsCAPath = null
     ): ClientInterface {
         $builder = new ClientBuilder();
+        $builder->setHttpClient(new Client([
+            'timeout' => 15,
+            'connect_timeout' => 5,
+        ]));
         $builder->setHosts(explode(',', $host));
 
         if (! empty($username)) {

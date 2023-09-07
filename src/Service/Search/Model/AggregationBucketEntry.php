@@ -6,13 +6,11 @@ namespace App\Service\Search\Model;
 
 class AggregationBucketEntry
 {
-    protected string $key;
-    protected int $count;
-
-    public function __construct(string $key, int $count)
-    {
-        $this->key = $key;
-        $this->count = $count;
+    public function __construct(
+        private readonly string $key,
+        private readonly int $count,
+        private readonly string $displayValue,
+    ) {
     }
 
     public function getKey(): string
@@ -23,5 +21,10 @@ class AggregationBucketEntry
     public function getCount(): int
     {
         return $this->count;
+    }
+
+    public function getDisplayValue(): string
+    {
+        return $this->displayValue;
     }
 }

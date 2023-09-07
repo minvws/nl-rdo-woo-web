@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="nl">
+<html lang="{{ "lang" | trans() }}" class="no-js">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +19,11 @@
         {{ encore_entry_script_tags('app') }}
         {{ encore_entry_script_tags('woopie') }}
         {% block extra_javascripts %}{% endblock %}
+
+        {% include "piwik.html.twig" %}
     </head>
+
+    <!-- App versie: {{ app_version().version }} (Git referentie: {{ app_version().git_ref }}) -->
 
     <body>
         <header>
@@ -39,8 +43,14 @@
             >
                 <div class="collapsing-element" id="main-nav-div">
                     <ul>
-                        <li><a href="{{ path('app_home') }}" {% if app.request.get('_route') == 'app_home' %}aria-current="page"{% endif %}><span class="icon icon-home" aria-hidden="true"></span><span class="sr-only">{{ "Main page icon" | trans() }}</span> {{ "Public COVID documents" | trans() }}</a></li>
-                        <li><a href="{{ path('app_dossier_index') }}" {% if app.request.get('_route') == 'app_dossier_index' %}aria-current="page"{% endif %}>{{ "All published decisions" | trans() }}</a></li>
+                        <li>
+                            <a href="{{ path('app_home') }}" {% if app.request.get('_route') == 'app_home' %}aria-current="page"{% endif %}>
+                                <span class="svg-icon svg-home mr-2 mt-[-2px] w-[24px] h-[24px]" aria-hidden="true"></span>
+                                {{ "Home" | trans() }}
+                            </a>
+                        </li>
+                        <li><a href="{{ path('app_browse') }}" {% if app.request.get('_route') == 'app_search' %}aria-current="page"{% endif %}>{{ "Search for documents and decisions" | trans() }}</a></li>
+                        <li><a href="{{ path('app_search')}}?type=dossier" {% if app.request.get('_route') == 'app_browse' %}aria-current="page"{% endif %}>{{ "All published decisions" | trans() }}</a></li>
                     </ul>
                 </div>
             </nav>
@@ -62,8 +72,8 @@
 
 
         <main id="main-content">
-            {% for label, messages in app.flashes %}
-                {% for message in messages %}
+            {% for messages in app.flashes(is_backend() ? 'backend' : 'frontend') %}
+                {% for label, message in messages %}
                     <div class="alert alert-{{ label }} alert-dismissible fade show">
                         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#{{ label }}-fill"/></svg>
                         {{ message }}
@@ -75,19 +85,22 @@
         </main>
 
         <footer>
+            <h2 class="visually-hidden">Footer</h2>
             <div class="grid md:grid-cols-2">
-                <span class="slogan leading-9">{{ "The central government. For the Netherlands" | trans }}</span>
+                <span class="slogan leading-9">
+                    {# {{ "The central government. For the Netherlands" | trans }} #}
+                </span>
 
-                <div class="pt-8 md:pt-0 md:justify-self-end">
+                <div class="py-8 md:pt-0 md:justify-self-end">
                     <div class="grid sm:grid-cols-2 gap-x-12 gap-y-6">
                         <nav aria-labelledby="page-footer-nav-1-heading">
-                            <h2 id="page-footer-nav-1-heading">Service</h2>
+                            <h3 id="page-footer-nav-1-heading">Service</h3>
                             <ul>
                                 <li><a href="{{ path('app_contact') }}">Contact</a></li>
-                                <li><a href="">{{ "RSS recent publications" | trans }}</a></li>
-                                <li><a href="">{{ "Archive" | trans }}</a></li>
+                                {# <li><a href="">{{ "RSS recent publications" | trans }}</a></li> #}
+{#                                <li><a href="https://wobcovid19.rijksoverheid.nl/archief/">{{ "Archive" | trans }}</a></li>#}
                                 {% if not app.user %}
-                                    <li><a href="{{ path('app_login') }}">{{ "Login" | trans }}</a></li>
+{#                                    <li><a href="{{ path('app_login') }}">{{ "Login" | trans }}</a></li>#}
                                 {% else %}
                                     <li><a href="{{ path('app_admin') }}">{{ "Counter" | trans() }}</a></li>
                                     <li><a href="{{ path('app_logout') }}">{{ "Logout" | trans }}</a></li>
@@ -96,20 +109,18 @@
                         </nav>
 
                         <nav aria-labelledby="page-footer-nav-2-heading">
-                            <h2 id="page-footer-nav-2-heading">{{ "About this site" | trans() }}</h2>
+                            <h3 id="page-footer-nav-2-heading">{{ "About this site" | trans() }}</h3>
                             <ul>
-                                <li><a href="{{ path('app_about') }}">{{ "About Woo" | trans() }}</a></li>
+                                <li><a href="{{ path('app_about') | trans() }}">{{ "About Woo" | trans() }}</a></li>
                                 <li><a href="{{ path('app_copyright') }}">{{ "Copyright" | trans() }}</a></li>
                                 <li><a href="{{ path('app_privacy') }}">{{ "Privacy" | trans() }}</a></li>
                                 <li><a href="{{ path('app_cookies') }}">{{ "Cookies" | trans() }}</a></li>
-                                <li><a href="{{ path('app_accessibility') }}">{{ "Accessibility" | trans() }}</a></li>
+                                <li><a href="{{ path('app_accessibility') | trans() }}">{{ "Accessibility" | trans() }}</a></li>
                             </ul>
                         </nav>
                     </div>
                 </div>
             </div>
-
-            <div class="block text-right text-white/40">{{ app_version().version }} ({{ app_version().git_ref }})</div>
         </footer>
     </body>
 </html>

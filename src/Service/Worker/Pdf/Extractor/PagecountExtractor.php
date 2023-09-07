@@ -60,10 +60,19 @@ class PagecountExtractor implements DocumentExtractorInterface, OutputExtractorI
     protected function extractPageCountFromPdf(Document $document): int
     {
         $localPdfPath = $this->documentStorage->downloadDocument($document);
+        if (! $localPdfPath) {
+            $this->logger->error('Failed to download document for page count extraction', [
+                'document' => $document->getDocumentNr(),
+            ]);
+
+            return 0;
+        }
 
         $params = ['/usr/bin/pdftk', $localPdfPath, 'dump_data'];
         $process = new Process($params);
         $process->run();
+
+        $this->documentStorage->removeDownload($localPdfPath);
 
         if (! $process->isSuccessful()) {
             $this->logger->error('Failed to get page count: ', [

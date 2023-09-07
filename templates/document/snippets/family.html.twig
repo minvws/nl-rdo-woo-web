@@ -1,18 +1,21 @@
-{% if family|length %}
+{% if family|length > 0 %}
 
 <section>
     <h2>{{ "Related documents" | trans }}</h2>
 
     <table>
+        <caption class="visually-hidden">
+            {{ "Related documents" | trans }}
+        </caption>
         <tbody>
         {% for doc in family %}
             <tr>
-                <th class="w-2/5 lg:w-1/4" scrope="row">{{ doc.documentNr }}</th>
+                <th class="w-2/5 lg:w-1/4" scope="row">{{ doc.documentId }}</th>
                 <td>
-                    <a href="{{ path('app_document_detail', { dossierId: dossier.dossierNr, documentId: doc.documentNr }) }}">{{ doc.filename }}</a>
+                    <a href="{{ path('app_document_detail', { dossierId: dossier.dossierNr, documentId: doc.documentNr }) }}">{{ doc.fileInfo.name }}</a>
                 </td>
                 <td class="text-right">
-                    <time datetime="{{ doc.documentDate | date("Y-m-d") }}">{{ doc.documentDate | date("j F Y H:i:s") }}</time>
+                    <time datetime="{{ doc.documentDate | date("Y-m-d") }}">{{ doc.documentDate | format_date('long') }}</time>
                 </td>
             </tr>
         {% endfor %}

@@ -77,7 +77,7 @@ class ElasticController extends AbstractController
             );
             $this->bus->dispatch($message);
 
-            $this->addFlash('success', $this->translator->trans('Elasticsearch rollover initiated'));
+            $this->addFlash('backend', ['success' => $this->translator->trans('Elasticsearch rollover initiated')]);
 
             return $this->redirectToRoute('app_admin_elastic');
         }
@@ -97,7 +97,7 @@ class ElasticController extends AbstractController
 
         $indices = $this->indexService->find($indexName);
         if (empty($indices)) {
-            $this->addFlash('error', 'Invalid elasticsearch index');
+            $this->addFlash('backend', ['error' => 'Invalid elasticsearch index']);
 
             return $this->redirectToRoute('app_admin_elastic');
         }
@@ -121,7 +121,7 @@ class ElasticController extends AbstractController
 
         $indices = $this->indexService->find($indexName);
         if (empty($indices)) {
-            $this->addFlash('error', 'Invalid elasticsearch index');
+            $this->addFlash('backend', ['error' => 'Invalid elasticsearch index']);
 
             return $this->redirectToRoute('app_admin_elastic');
         }
@@ -144,7 +144,7 @@ class ElasticController extends AbstractController
             );
             $this->bus->dispatch($message);
 
-            $this->addFlash('success', $this->translator->trans('Elasticsearch index switch initiated'));
+            $this->addFlash('backend', ['success' => $this->translator->trans('Elasticsearch index switch initiated')]);
 
             return $this->redirectToRoute('app_admin_elastic');
         }

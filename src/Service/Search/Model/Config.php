@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Model;
 
+use App\Service\Search\Query\Facet\FacetDefinition;
+
 class Config
 {
     public const OPERATOR_PHRASE = 'phrase';
@@ -33,5 +35,18 @@ class Config
         public readonly array $documentInquiries = [],
         public readonly array $dossierInquiries = [],
     ) {
+    }
+
+    public function hasFacetValues(FacetDefinition $facet): bool
+    {
+        return array_key_exists($facet->getFacetKey(), $this->facets) && count($this->facets[$facet->getFacetKey()]) > 0;
+    }
+
+    /**
+     * @return array|mixed[]
+     */
+    public function getFacetValues(FacetDefinition $facet): array
+    {
+        return $this->facets[$facet->getFacetKey()] ?? [];
     }
 }

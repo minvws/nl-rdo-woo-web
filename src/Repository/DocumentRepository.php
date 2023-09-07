@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Document;
+use App\Entity\Dossier;
 use App\Service\Elastic\Model\DocumentCounts;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -42,30 +44,49 @@ class DocumentRepository extends ServiceEntityRepository
         }
     }
 
-    //    /**
-    //     * @return Document[] Returns an array of Document objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * @return Document[]
+     */
+    public function findByThreadId(int $threadId, bool $onlyPublished = true): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->innerJoin('d.dossiers', 'ds')
+            ->where('d.threadId = :threadId')
+            ->orderBy('d.documentDate', 'ASC')
+            ->setParameter('threadId', $threadId)
+        ;
 
-    //    public function findOneBySomeField($value): ?Document
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if ($onlyPublished) {
+            $qb
+                ->andWhere('ds.status = :status')
+                ->setParameter('status', Dossier::STATUS_PUBLISHED)
+            ;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return Document[]
+     */
+    public function findByFamilyId(int $familyId, bool $onlyPublished = true): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->innerJoin('d.dossiers', 'ds')
+            ->where('d.familyId = :familyId')
+            ->orderBy('d.documentDate', 'ASC')
+            ->setParameter('familyId', $familyId)
+        ;
+
+        if ($onlyPublished) {
+            $qb
+                ->andWhere('ds.status = :status')
+                ->setParameter('status', Dossier::STATUS_PUBLISHED)
+            ;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 
     public function pagecount(): int
     {
@@ -88,8 +109,6 @@ class DocumentRepository extends ServiceEntityRepository
             ->addSelect('SUM(d.pageCount) as totalPageCount')
             ->innerJoin('d.dossiers', 'ds')
             ->where($qb->expr()->in('ds.status', ':statuses'))
-            ->andWhere('d NOT INSTANCE OF App\Entity\Inventory')
-            ->andWhere('d NOT INSTANCE OF App\Entity\Decision')
             ->setParameters([
                 'statuses' => $dossierStatuses,
             ]);
@@ -103,26 +122,70 @@ class DocumentRepository extends ServiceEntityRepository
         );
     }
 
-    //    /**
-    //     * @return Document[]
-    //     */
-    //    public function findLatests(int $limit): array
-    //    {
-    //        return $this->createQueryBuilder('d')
-    //            ->orderBy('d.createdAt', 'DESC')
-    //            ->setMaxResults($limit)
-    //            ->getQuery()
-    //            ->getResult();
-    //    }
+    public function getRelatedDocumentsByThread(Document $document): ArrayCollection
+    {
+        $threadId = $document->getThreadId();
+        if ($threadId < 1) {
+            return new ArrayCollection();
+        }
 
-    //    public function findByDossierAndDocument(string $dossierId, string $documentId)
-    //    {
-    //        return $this->createQueryBuilder('d')
-    //            ->andWhere(':dossierId MEMBER OF d.dossiers')
-    //            ->andWhere('d.id = :documentId')
-    //            ->setParameter('dossierId', $dossierId)
-    //            ->setParameter('documentId', $documentId)
-    //            ->getQuery()
-    //            ->getOneOrNullResult();
-    //    }
+        $threadDocuments = new ArrayCollection(
+            $this->findByThreadId($threadId)
+        );
+
+        return $threadDocuments->filter(
+            fn (Document $threadDocument): bool => $threadDocument->getId() !== $document->getId()
+        );
+    }
+
+    public function getRelatedDocumentsByFamily(Document $document): ArrayCollection
+    {
+        $familyId = $document->getFamilyId();
+        if ($familyId < 1) {
+            return new ArrayCollection();
+        }
+
+        $familyDocuments = new ArrayCollection(
+            $this->findByFamilyId($familyId)
+        );
+
+        return $familyDocuments->filter(
+            fn (Document $familyDocument): bool => $familyDocument->getId() !== $document->getId()
+        );
+    }
+
+    /**
+     * @return Document[]
+     */
+    public function findBySearchTerm(string $searchTerm, int $limit): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->innerJoin('d.dossiers', 'ds')
+            ->leftJoin('d.inquiries', 'i')
+            ->where('d.fileInfo.name LIKE :searchTerm')
+            ->orWhere('d.documentNr LIKE :searchTerm')
+            ->orWhere('i.casenr LIKE :searchTerm')
+            ->orderBy('d.updatedAt', 'DESC')
+            ->setMaxResults($limit)
+            ->setParameter('searchTerm', '%' . $searchTerm . '%')
+        ;
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findOneByDossierAndDocumentId(Dossier $dossier, string $documentId): ?Document
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->innerJoin('d.dossiers', 'ds')
+            ->where('d.documentId = :documentId')
+            ->andWhere('ds.id = :dossierId')
+            ->setParameter('documentId', $documentId)
+            ->setParameter('dossierId', $dossier->getId())
+        ;
+
+        /** @var ?Document $document */
+        $document = $qb->getQuery()->getOneOrNullResult();
+
+        return $document;
+    }
 }

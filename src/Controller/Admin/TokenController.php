@@ -56,7 +56,7 @@ class TokenController extends AbstractController
             $this->doctrine->persist($token);
             $this->doctrine->flush();
 
-            $this->addFlash('success', $this->translator->trans('Token created'));
+            $this->addFlash('backend', ['success' => $this->translator->trans('Token created')]);
 
             return $this->redirectToRoute('app_admin_tokens');
         }
@@ -79,7 +79,7 @@ class TokenController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->doctrine->flush();
-            $this->addFlash('success', $this->translator->trans('Token modified'));
+            $this->addFlash('backend', ['success' => $this->translator->trans('Token modified')]);
 
             return $this->redirectToRoute('app_admin_tokens');
         }

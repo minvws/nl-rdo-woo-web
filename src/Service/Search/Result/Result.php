@@ -6,6 +6,7 @@ namespace App\Service\Search\Result;
 
 use App\Service\Search\Model\Aggregation;
 use App\Service\Search\Model\Suggestion;
+use App\ValueObject\FilterDetails;
 use Knp\Component\Pager\Pagination\AbstractPagination;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
@@ -38,9 +39,25 @@ class Result
     /** @var array|mixed[] */
     protected array $query;                     // Actual query used to search
 
+    protected FilterDetails $filterDetails;     // Details about additional filters (non-facet)
+
+    private int $resultCount;                   // Total number of result items
+
     public static function create(): self
     {
         return new self();
+    }
+
+    public function getResultCount(): int
+    {
+        return $this->resultCount;
+    }
+
+    public function setResultCount(int $resultCount): Result
+    {
+        $this->resultCount = $resultCount;
+
+        return $this;
     }
 
     public function getDocumentCount(): int
@@ -255,6 +272,18 @@ class Result
     public function setType(string $type): Result
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getFilterDetails(): FilterDetails
+    {
+        return $this->filterDetails;
+    }
+
+    public function setFilterDetails(FilterDetails $filterDetails): self
+    {
+        $this->filterDetails = $filterDetails;
 
         return $this;
     }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Dossier;
-use App\Service\DocumentService;
+use App\Service\FileProcessService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -14,14 +14,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class UploadDocument extends Command
 {
-    protected DocumentService $documentService;
+    protected FileProcessService $fileProcessService;
     protected EntityManagerInterface $doctrine;
 
-    public function __construct(DocumentService $documentService, EntityManagerInterface $doctrine)
+    public function __construct(FileProcessService $fileProcessService, EntityManagerInterface $doctrine)
     {
         parent::__construct();
 
-        $this->documentService = $documentService;
+        $this->fileProcessService = $fileProcessService;
         $this->doctrine = $doctrine;
     }
 
@@ -50,7 +50,7 @@ class UploadDocument extends Command
         $path = strval($input->getArgument('path'));
         $file = new \SplFileInfo($path);
 
-        $this->documentService->processDocument($file, $dossier, $path);
+        $this->fileProcessService->processFile($file, $dossier, $path);
 
         return 0;
     }

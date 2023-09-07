@@ -19,7 +19,7 @@
                 </form>
             </div>
 
-            {% include "admin/dossier/document-status.html.twig" with { dossier: dossier } %}
+            {% include "admin/dossier/document-status.html.twig" with { dossier: dossier, uploadStatus: dossier.uploadStatus } %}
 
         </div>
     </section>

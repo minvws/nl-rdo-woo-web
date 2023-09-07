@@ -7,12 +7,12 @@
 
 {% block body %}
 
-  <section>
+  <main>
     <div class="centered">
       <form class="form-signin" method="POST" action="{{ path('app_login') }}">
-        {% if app.user %}
+        {% if app.user and is_granted('ROLE_USER')%}
           <div class="mb-3">
-            {{ "You are logged in as %name%" | trans({'%name%': app.user.name|default("unknown user")}) }}, <a
+            {{ "You are logged in as {name}" | trans({'name': app.user.name|default("unknown user")}) }}, <a
               href="{{ path('app_logout') }}">{{ "Logout" | trans() }}</a>
           </div>
         {% else %}
@@ -41,6 +41,6 @@
         {% endif %}
       </form>
     </div>
-  </section>
+  </main>
   
 {% endblock %}

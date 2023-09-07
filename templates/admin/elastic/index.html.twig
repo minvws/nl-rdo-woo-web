@@ -9,35 +9,37 @@
 
             {% if rolloverDetails %}
                 <div>
-                    <h2>{{ "Rollover into" | trans() }} {{ rolloverDetails.index.name }}</h2>
-
                     <table>
-                        <tr>
-                            <th>{{ "Label" | trans() }}</th>
-                            <th>{{ "Expected" | trans() }}</th>
-                            <th>{{ "In Elasticsearch" | trans() }}</th>
-                            <th>{{ "Percentage" | trans() }}</th>
-                        </tr>
+                        <caption class="visually-hidden">{{ "Rollover into" | trans() }} {{ rolloverDetails.index.name }}</caption>
+                        <thead>
+                            <tr>
+                                <th>{{ "Label" | trans() }}</th>
+                                <th>{{ "Expected" | trans() }}</th>
+                                <th>{{ "In Elasticsearch" | trans() }}</th>
+                                <th>{{ "Percentage" | trans() }}</th>
+                            </tr>
+                        </thead>
 
-                        <tr>
-                            <td>{{ "Dossier count" | trans() }}</td>
-                            <td>{{ rolloverDetails.expectedDossierCount }}</td>
-                            <td>{{ rolloverDetails.elasticsearchDossierCount }}</td>
-                            <td>{{ rolloverDetails.getDossierPercentage() }}%</td>
-                        </tr>
-                        <tr>
-                            <td>{{ "Document count" | trans() }}</td>
-                            <td>{{ rolloverDetails.expectedDocumentCount }}</td>
-                            <td>{{ rolloverDetails.elasticsearchDocumentCount }}</td>
-                            <td>{{ rolloverDetails.getDocumentPercentage() }}%</td>
-                        </tr>
-                        <tr>
-                            <td>{{ "Page count" | trans() }}</td>
-                            <td>{{ rolloverDetails.expectedPageCount }}</td>
-                            <td>{{ rolloverDetails.elasticsearchPageCount }}</td>
-                            <td>{{ rolloverDetails.getPagePercentage() }}%</td>
-                        </tr>
-
+                        <tbody>
+                            <tr>
+                                <td>{{ "Dossier count" | trans() }}</td>
+                                <td>{{ rolloverDetails.expectedDossierCount }}</td>
+                                <td>{{ rolloverDetails.elasticsearchDossierCount }}</td>
+                                <td>{{ rolloverDetails.getDossierPercentage() }}%</td>
+                            </tr>
+                            <tr>
+                                <td>{{ "Document count" | trans() }}</td>
+                                <td>{{ rolloverDetails.expectedDocumentCount }}</td>
+                                <td>{{ rolloverDetails.elasticsearchDocumentCount }}</td>
+                                <td>{{ rolloverDetails.getDocumentPercentage() }}%</td>
+                            </tr>
+                            <tr>
+                                <td>{{ "Page count" | trans() }}</td>
+                                <td>{{ rolloverDetails.expectedPageCount }}</td>
+                                <td>{{ rolloverDetails.elasticsearchPageCount }}</td>
+                                <td>{{ rolloverDetails.getPagePercentage() }}%</td>
+                            </tr>
+                        </tbody>
                     </table>
 
                     <a href="{{ path('app_admin_elastic_live', {indexName: rolloverDetails.index.name}) }}" class="button">{{ "Promote to Live" | trans() }}</a>
@@ -48,21 +50,24 @@
                     <p>{{ "No rollover at the moment" | trans() }}</p>
                 </div>
             {% endif %}
-            
 
-            <h2>{{ "Elasticsearch indices" | trans() }}</h2>
 
             <table class="table table-striped">
-                <tr>
-                    <th>{{ "Name" | trans() }}</th>
-                    <th>{{ "Health" | trans() }}</th>
-                    <th>{{ "Status" | trans() }}</th>
-                    <th>{{ "Object Count" | trans() }}</th>
-                    <th>{{ "Size" | trans() }}</th>
-                    <th>{{ "Aliases" | trans() }}</th>
-                    <th>{{ "Options" | trans() }}</th>
-                </tr>
+                <caption class="visually-hidden">{{ "Elasticsearch indices" | trans() }}</caption>
+                <thead>
+                    <tr>
+                        <th>{{ "Name" | trans() }}</th>
+                        <th>{{ "Health" | trans() }}</th>
+                        <th>{{ "Status" | trans() }}</th>
+                        <th>{{ "Object Count" | trans() }}</th>
+                        <th>{{ "Size" | trans() }}</th>
+                        <th>{{ "Mapping version" | trans() }}</th>
+                        <th>{{ "Aliases" | trans() }}</th>
+                        <th>{{ "Options" | trans() }}</th>
+                    </tr>
+                </thead>
 
+                <tbody>
                 {% for index in indices %}
                     <tr>
                         <td>{{ index.name }}</td>
@@ -70,6 +75,7 @@
                         <td>{{ index.status }}</td>
                         <td>{{ index.docsCount }}</td>
                         <td>{{ index.storeSize }}</td>
+                        <td>{{ index.mappingVersion }}</td>
                         <td>
                             {% for alias in index.aliases %}
                                 <span>{{ alias }}</span>
@@ -82,6 +88,7 @@
                         </td>
                     </tr>
                 {% endfor %}
+                </tbody>
             </table>
 
             <a href="{{ path('app_admin_elastic_create') }}" class="button">{{ "New rollover" | trans() }}</a>

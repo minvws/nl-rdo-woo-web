@@ -1,59 +1,85 @@
 {% extends 'base.html.twig' %}
+{% import "document_macros.html.twig" as macro %}
 
-{% set page_title = document.filename %}
+{% set page_title = document.fileInfo.name %}
 
 {% block body %}
 
-    <div>
-        <div class="gap-0 py-8">
+    <section>
+        <div class="gap-0">
 
-            {% if not ingested %}
-                <p class="warning" role="group" aria-label="{{ "Warning" | trans() }}"><span>{{ "Warning" | trans }}:</span> {{ "This document is not yet processed. It is not possible to view individual pages, but you can download the complete document." | trans }}</p>
-            {% endif %}
+            <h1 class="leading-tight flex items-center">
+                <span class="svg-icon svg-{{ document.fileInfo.sourceType }} mr-4  w-[32px] h-[32px] shrink-0" aria-hidden="true"></span>
+                <span class="visually-hidden">{{ document.fileInfo.sourceType | trans() }}</span>
+                {{ document.fileInfo.name }}
+            </h1>
 
-            <h1>{{ document.filename }}</h1>
-            <p class="nota-bene text-lg"><time datetime="{{ document.documentDate | date("Y-m-d") }}">{{ document.documentDate | date("j F Y") }}</time></p>
-            <p>{{ "Attachment of" | trans }} <a href="#"><i class="{{ document.sourceType | sourceTypeIcon }}"></i> {{ document.filename }}</a></p>
+            <dl class="nota-bene text-lg">
+                <div>
+                    <dt class="visually-hidden">{{ "Published on" | trans() }}: </dt>
+                    <dd><time datetime="{{ document.documentDate | date("Y-m-d") }}">{{ document.documentDate | format_date('long') }} {{ "at" | trans() }} {{ document.documentDate | format_time('short') }}</time></dd>
+                </div>
+                <div>
+                    <dt>{{ "Document Number" | trans() }}:</dt>
+                    <dd>{{ document.documentNr }}</dd>
+                </div>
+            </dl>
 
-            {% if ingested %}
-                {% if document.fileType == "pdf" and document.pageCount > 0 %}
-                    <div class="py-8">
+            {% include "document/snippets/notifications.html.twig" %}
+
+            {# todo how to resolve parent?
+            <p>{{ "Attachment of" | trans }} <a href="{{ path('app_document_detail', { dossierId: dossier.dossierNr, documentId: familyParent.documentNr }) }}"><i class="{{ familyParent.fileInfo.sourceType | sourceTypeIcon }}"></i> {{ familyParent.fileInfo.name }}</a></p>
+            #}
+
+            {% if ingested and document.fileInfo.isUploaded %}
+                <a id="above-carousel"></a>
+                <a href="#below-carousel" class="mt-8 skiplink-carousel-down">Sla document pagina voorvertoning over</a>
+
+                {% if document.fileInfo.type == "pdf" and document.pageCount > 0 %}
+                    <div class="pt-4 block w-full">
                         {% include "document/snippets/carousel.html.twig" %}
                     </div>
                 {% endif %}
-                {% if document.fileType == "audio" %}
-                    <div class="py-8">
-                    <img
-                        width="100%"
-                        alt="{{ "Audio" | trans }}"
-                        src="{{ path('app_document_thumbnail', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: 0}) }}"
-                    />
-                    </div>
 
+                {% if document.fileInfo.type == "audio" %}
+                    <div class="pt-8">
+                        <img
+                            width="100%"
+                            alt="{{ "Audio" | trans }}"
+                            src="{{ path('app_document_thumbnail', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: 0}) }}"
+                        />
+                    </div>
                 {% endif %}
+
+                <a href="#above-carousel" class="skiplink-carousel-up">Sla document pagina voorvertoning over</a>
+                <a id="below-carousel"></a>
             {% endif %}
 
-            <div class="button-container">
-                <a class="button" href="">{{ "Download" | trans }} ({{ document.fileType }} {{ document.filesize | size }})</a>
-                <a class="button ghost" href="">{{ "View online (beta)" | trans() }}</a>
+            {% if document.isUploaded and (document.fileInfo.size != "0") %}
+            <div class="button-container pt-8">
+                <a class="button button-pink" download href="{{ path('app_document_download', { dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">
+                    <span class="svg-icon svg-download w-[24px] h-[24px]" aria-hidden="true" ></span>
+                    {{ "Download" | trans }} ({{ document.fileInfo.type|upper }} {{ document.fileInfo.size | size }})
+                </a>
+                {# <a class="button ghost" href="">{{ "View online (beta)" | trans() }}</a> #}
             </div>
+            {% endif %}
 
             {% include "document/snippets/about.html.twig" %}
 
-            {% include "document/snippets/background.html.twig" %}
-
-            {% if document.sourceType == constant('App\\SourceType::SOURCE_EMAIL') %}
+            {% if document.fileInfo.sourceType == constant('App\\SourceType::SOURCE_EMAIL') %}
                 {% include "document/snippets/thread.html.twig" %}
                 {% include "document/snippets/attachments.html.twig" %}
             {% else %}
                 {% include "document/snippets/family.html.twig" %}
             {% endif %}
 
+            {% include "document/snippets/background.html.twig" %}
 
-            {#    {% if document.sourceType != constant('App\\SourceType::SOURCE_EMAIL') and document.familyId != document.documentId %} #}
+            {#    {% if document.fileInfo.sourceType != constant('App\\SourceType::SOURCE_EMAIL') and document.familyId != document.documentId %} #}
             {#        <a class="btn" href="#">Link to the e-mail with this attachment</a> #}
             {#    {% endif %} #}
 
         </div>
-    </div>
+    </section>
 {% endblock %}

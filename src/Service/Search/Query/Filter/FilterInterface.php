@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query\Filter;
 
+use App\Service\Search\Model\Config;
+use App\Service\Search\Query\Facet\FacetDefinition;
+use Erichard\ElasticQueryBuilder\Query\BoolQuery;
+
 interface FilterInterface
 {
-    /**
-     * @param mixed[] $values
-     *
-     * @return ?array<string, mixed>
-     */
-    public function getQuery(array $values): ?array;
+    public function addToQuery(FacetDefinition $facet, BoolQuery $query, Config $config, string $prefix = ''): void;
 }

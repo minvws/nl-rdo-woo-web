@@ -9,7 +9,7 @@
 
 {% block body %}
 
-  <section>
+  <main>
     <div class="centered">
 
       {# Let the user select the authentication method #}
@@ -30,7 +30,7 @@
         <label for="_auth_code">{{ "Code" | trans() }}</label>
         <input id="_auth_code" type="text" name="{{ authCodeParameterName }}" autocomplete="one-time-code" autofocus
                class="form-control"/>
-        <input type="submit" value="{{ "login"|trans() }}"/>
+        <input type="submit" value="{{ "Controleren"|trans() }}"/>
 
         {% if authenticationError %}
           <p class="alert alert-danger">{{ authenticationError|trans(authenticationErrorData, 'SchebTwoFactorBundle') }}</p>
@@ -42,6 +42,6 @@
     </div>
 
     </div>
-  </section>
+  </main>
 
 {% endblock %}

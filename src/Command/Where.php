@@ -76,8 +76,8 @@ class Where extends Command
                 continue;
             }
             $output->writeln("Document : <info>{$document->getId()}</info>");
-            $output->writeln("Filename : <info>{$document->getFilename()}</info>");
-            $output->writeln("Path     : <info>{$document->getFilepath()}</info>");
+            $output->writeln("Filename : <info>{$document->getFileInfo()->getName()}</info>");
+            $output->writeln("Path     : <info>{$document->getFileInfo()->getPath()}</info>");
             $output->writeln('');
         }
 

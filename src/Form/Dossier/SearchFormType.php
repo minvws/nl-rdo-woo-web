@@ -10,7 +10,6 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
@@ -43,12 +42,10 @@ class SearchFormType extends AbstractType
                 'expanded' => true,
                 'multiple' => true,
             ])
-            ->add('searchterm', TextType::class, [
-                'required' => false,
-            ])
+
             ->add('submit', SubmitType::class, [
                 'attr' => [
-                    'class' => 'btn btn-outline-dark btn-rounded waves-effect',
+                    'class' => 'icon icon-search',
                 ],
             ])
             ->setMethod('GET')

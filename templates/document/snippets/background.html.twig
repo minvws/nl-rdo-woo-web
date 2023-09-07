@@ -1,43 +1,82 @@
 <section>
-    <h2>{{ "Background disclosure" | trans() }}</h2>
+    <h2>{{ "Background" | trans() }}</h2>
+
+    {%if document.judgement.value is defined %}
+    <div class="block">
+        <p class="width-delimiter">
+            {{ ("Document judged as " ~ document.judgement.value) | trans() }} {{ "Why judgement was made" | trans }} {{ "More info about request below" | trans }}:
+        </p>
+    </div>
+    {% endif %}
 
     <table>
+        <caption class="visually-hidden">
+            {{ "Background" | trans }}
+        </caption>
         <tbody>
+            {% if dossier.title is defined %}
             <tr>
                 <th class="w-2/5 lg:w-1/4" scope="row">{{ "Part of" | trans() }}</th>
-                <td>{{ dossier.title }}</td>
+                <td><a href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a></td>
             </tr>
+            {% endif %}
+            {% if dossier.governmentOfficials[0].name is defined %}
             <tr>
                 <th scope="row">{{ "Responsible" | trans() }}</th>
                 <td>
                     {# Only display the first entries #}
-                    {{ dossier.governmentOfficials[0].name }} - {{ dossier.departments[0].name }}
+                    {{ dossier.departments[0].name }}
                 </td>
             </tr>
+            {% endif %}
+            {% if dossier.summary is defined %}
             <tr>
                 <th scope="row">{{ "Summary of request" | trans() }}</th>
-                <td>{{ dossier.summary }}</td>
+                <td>
+                    <p class="width-delimiter">{{ dossier.summary }}</p>
+                </td>
             </tr>
+            {% endif %}
+            {% if period(dossier.dateFrom, dossier.dateTo) %}
             <tr>
                 <th scope="row">{{ "Time period" | trans() }}</th>
                 <td>{{ period(dossier.dateFrom, dossier.dateTo) }}</td>
             </tr>
-            <tr>
-                <th scope="row">{{ "Date of disclosure" | trans() }}</th>
-                <td>{{ dossier.createdAt | date("d-M-Y H:i:s") }}</td>
-            </tr>
+            {% endif %}
+            {% if dossier.publicationReason is defined %}
             <tr>
                 <th scope="row">{{ "Type of decision" | trans() }}</th>
-                <td>{{ dossier.decision | decision }}</td>
+                <td>{{ dossier.publicationReason | trans }}</td>
             </tr>
+            {% endif %}
+            {% if dossier.createdAt is defined %}
+            <tr>
+                <th scope="row">{{ "Date of disclosure" | trans() }}</th>
+                <td>{{ dossier.createdAt | format_date('long') }}</td>
+            </tr>
+            {% endif %}
+
+            {% set thereAreDocuments = dossier.documents|length > 0 %}
+            {% set thereArePages = dossier.pagecount|default(0) > 0 %}
+
+            {% if (thereAreDocuments and thereArePages) or (dossier.inventory is not null) %}
             <tr>
                 <th scope="row">{{ "Scope of disclosure" | trans() }}</th>
                 <td>
-                    {{ "# documents" | trans({"count": dossier.documents|length})}}
-                    {{ "# pages" | trans({"count": dossier.pagecount|default(0)})}}
-                    <a href="{{ path('app_document_download', { dossierId: dossier.dossierNr, documentId: dossier.dossierNr }) }}">{{ "Inventory list" | trans() }}</a>
+                    {% if thereAreDocuments %}
+                        {{ "# documents" | trans({"count": dossier.documents|length})}}{% if thereAreDocuments and thereArePages %},{% endif %}
+                    {% endif %}
+
+                    {% if thereArePages %}
+                        {{ "# pages" | trans({"count": dossier.pagecount|default(0)})}}
+                    {% endif %}
+
+                    {% if dossier.inventory is not null  %}
+                        <a download href="{{ path('app_dossier_inventory_download', { dossierId: dossier.dossierNr }) }}">{{ "Inventory list" | trans() }}</a>
+                    {% endif %}
                 </td>
             </tr>
+            {% endif %}
         </tbody>
     </table>
 </section>

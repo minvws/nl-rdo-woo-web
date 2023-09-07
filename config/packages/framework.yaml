@@ -9,7 +9,7 @@ framework:
     # Remove or comment this section to explicitly disable session support.
     session:
         enabled: true
-        handler_id: null
+        handler_id: App\Session\EncryptedSessionProxy
         cookie_secure: true
         cookie_samesite: lax
         storage_factory_id: session.storage.factory.native
@@ -26,3 +26,9 @@ when@test:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+
+when@dev:
+    framework:
+        session:
+            cookie_lifetime: 604800
+            gc_maxlifetime: 604800

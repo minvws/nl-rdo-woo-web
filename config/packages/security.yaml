@@ -12,9 +12,8 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            pattern: ^/
-            lazy: true
+        balie:
+            pattern: ^/balie
             form_login:
                 provider: app_user_provider
                 login_path: app_login
@@ -27,22 +26,27 @@ security:
             two_factor:
                 auth_form_path: 2fa_login
                 check_path: 2fa_login_check
+        main:
+            pattern: ^/
+            security: false
 
     role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER, ROLE_ADMIN_DOSSIERS, ROLE_ADMIN_USERS, ROLE_ADMIN_REQUESTS
+        ROLE_ADMIN_USERS: ROLE_BALIE
+        ROLE_ADMIN_REQUESTS: ROLE_BALIE
+        ROLE_ADMIN_DOSSIERS: ROLE_BALIE
+        ROLE_ADMIN: ROLE_USER, ROLE_ADMIN_DOSSIERS, ROLE_ADMIN_USERS, ROLE_ADMIN_REQUESTS
         ROLE_SUPER_ADMIN: ROLE_ADMIN
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/logout, roles: PUBLIC_ACCESS }
-        - { path: ^/change-password, roles: ROLE_USER }
-        - { path: ^/2fa, role: IS_AUTHENTICATED_2FA_IN_PROGRESS }
-        - { path: ^/2fa_check, role: IS_AUTHENTICATED_2FA_IN_PROGRESS }
+        - { path: ^/balie/login, roles: PUBLIC_ACCESS }
+        - { path: ^/balie/logout, roles: PUBLIC_ACCESS }
+        - { path: ^/balie/2fa, role: IS_AUTHENTICATED_2FA_IN_PROGRESS }
+        - { path: ^/balie/2fa_check, role: IS_AUTHENTICATED_2FA_IN_PROGRESS }
         - { path: ^/balie/elastic, roles: ROLE_SUPER_ADMIN }
-        - { path: ^/balie, roles: ROLE_ADMIN }
-        - { path: ^/, roles: PUBLIC_ACCESS }
+        - { path: ^/balie/change-password, roles: ROLE_BALIE }
+        - { path: ^/balie, roles: ROLE_BALIE }
 
 when@test:
     security:

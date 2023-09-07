@@ -64,7 +64,7 @@ class UserController extends AbstractController
         if ($userForm->isSubmitted() && $userForm->isValid()) {
             /** @var array{name: string, email: string, roles: string[]} $data */
             $data = $userForm->getData();
-            ['plainPassword' => $plainPassword, 'user' => $user ] = $this->userService->createUser(
+            ['plainPassword' => $plainPassword, 'user' => $user] = $this->userService->createUser(
                 name: $data['name'],
                 email: $data['email'],
                 roles: $data['roles']
@@ -91,7 +91,7 @@ class UserController extends AbstractController
         $breadcrumbs->addItem('Edit user');
 
         if ($user === $this->getUser()) {
-            $this->addFlash('danger', $this->translator->trans('Modifying your own account is not allowed'));
+            $this->addFlash('backend', ['warning' => $this->translator->trans('Modifying your own account is not allowed')]);
 
             return $this->redirectToRoute('app_admin_users');
         }
@@ -133,7 +133,7 @@ class UserController extends AbstractController
         }
 
         $this->doctrine->flush();
-        $this->addFlash('success', $this->translator->trans('The user has been modified'));
+        $this->addFlash('backend', ['success' => $this->translator->trans('The user has been modified')]);
 
         return $this->redirectToRoute('app_admin');
     }
@@ -148,7 +148,7 @@ class UserController extends AbstractController
         }
 
         $this->doctrine->flush();
-        $this->addFlash('success', $this->translator->trans('User roles have been modified'));
+        $this->addFlash('backend', ['success' => $this->translator->trans('User roles have been modified')]);
 
         return $this->redirectToRoute('app_admin');
     }
@@ -164,7 +164,7 @@ class UserController extends AbstractController
 
         $user->setEnabled(false);
         $this->doctrine->flush();
-        $this->addFlash('success', $this->translator->trans('User has been disabled'));
+        $this->addFlash('backend', ['success' => $this->translator->trans('User has been disabled')]);
 
         return $this->redirectToRoute('app_admin');
     }
@@ -180,7 +180,7 @@ class UserController extends AbstractController
 
         $user->setEnabled(true);
         $this->doctrine->flush();
-        $this->addFlash('success', $this->translator->trans('User has been enabled'));
+        $this->addFlash('backend', ['success' => $this->translator->trans('User has been enabled')]);
 
         return $this->redirectToRoute('app_admin');
     }

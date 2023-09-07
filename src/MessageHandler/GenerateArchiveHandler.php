@@ -11,6 +11,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * This handler will process a generate archive message. Its task is to generate a ZIP archive file for the given documents in the message.
+ */
 #[AsMessageHandler]
 class GenerateArchiveHandler
 {

@@ -149,7 +149,7 @@ class DocumentStorageTest extends MockeryTestCase
 
         $document = new Document();
         $document->setId(new Uuid('04d3fb60-95cf-4a56-9e3e-bad0f62c7cce'));
-        $document->setFilepath('filepath.txt');
+        $document->getFileInfo()->setPath('filepath.txt');
         $this->assertFalse($service->retrieveDocument($document, 'localpath.txt'));
     }
 

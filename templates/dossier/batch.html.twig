@@ -19,7 +19,7 @@
 
             {% if batch.status == constant("App\\Entity\\BatchDownload::STATUS_COMPLETED") %}
                 <p>
-                    {{ "The archive is ready for download. You can download the archive until %date%. After that, the archive needs to be generated again." | trans({'%date': batch.expiration | date('d-M-Y H:i:s') }) }}
+                    {{ "The archive is ready for download. You can download the archive until {date}. After that, the archive needs to be generated again." | trans({'date': batch.expiration | format_datetime('long') }) }}
                 </p>
 
             <table>
@@ -30,10 +30,10 @@
                     <th>{{ "Link" | trans() }}</th>
                 </tr>
                 <tr>
-                    <td><i class="fa fa-file-archive"></i> batch-{{ batch.id.toBase58 }}.zip </td>
+                    <td><i class="fa fa-file-archive"></i> {{ batch.filename }} </td>
                     <td>{{ batch.documents|length }}</td>
-                    <td>{{ batch.expiration | date('d-M-Y H:i:s') }}</td>
-                    <td><a class="button" href="#">{{ "Download" | trans() }} ({{ batch.size| size }})</a></td>
+                    <td>{{ batch.expiration | format_datetime('long') }}</td>
+                    <td><a class="button" download href="{{ path('app_dossier_batch_download', { dossierId: dossier.dossierNr, batchId: batch.id }) }}">{{ "Download" | trans() }} ({{ batch.size| size }})</a></td>
                 </tr>
             </table>
             {% endif %}

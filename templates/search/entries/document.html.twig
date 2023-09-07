@@ -1,6 +1,12 @@
-<h2 class="text-xl">
-    <a class="reverse-underline" href="{{ path('app_document_detail', { dossierId: entry.document.dossiers[0].dossierNr, documentId: entry.document.documentNr }) }}">{{ entry.document.filename }}</a>
-</h2>
+<h3 class="text-xl items-center">
+    <div class="de-emphasized mb-0 flex items-center">
+        <span class="svg-icon svg-{{ entry.document.fileInfo.sourceType }} mr-2 w-[24px] h-[24px]" aria-hidden="true"></span>
+        <span class="pipe-after">{{ entry.document.fileInfo.sourceType | trans() }}</span>
+        <span>{{ "# pages" | trans({"count": entry.document.pagecount|default(0)})}}</span>
+    </div>
+
+    <a class="reverse-underline" href="{{ path('app_document_detail', { dossierId: entry.document.dossiers[0].dossierNr, documentId: entry.document.documentNr }) }}">{{ entry.document.fileInfo.name }}</a>
+</h3>
 
 {% if entry.highlights | length > 0 %}
 <p class="ro-text-small leading-5 mt-1 mb-2 line-clamp-3">
@@ -10,23 +16,18 @@
 </p>
 {% endif %}
 
-<p class="de-emphasized mb-0">
-    <time datetime="{{ entry.document.documentDate | date("Y-m-d") }}">{{ entry.document.documentDate | date("j F Y") }}</time> |
-    {{ entry.document.sourceType | trans() }} |
-    {{ "# pages" | trans({"count": entry.document.pagecount|default(0)})}}
-    {{ entry.document.fileSize | size}} |
-    {{ "Document number" | trans() }} {{ entry.document.documentNr }}
-</p>
+<ul class="list-unstyled de-emphasized mb-0 flex items-center pipe-after">
+    <li><time datetime="{{ entry.document.documentDate | date("Y-m-d") }}" class="pipe-after de-emphasized">{{ entry.document.documentDate | format_date('long') }}</time></li>
+    <li><span class="de-emphasized">{{ entry.document.fileInfo.size | size}}</span></li>
+    <li><span class="de-emphasized">{{ "Document number" | trans() }} {{ entry.document.documentId }}</span></li>
+</ul>
 
 {% if entry.document.dossiers | length > 0 %}
 <ul class="list-unstyled">
     {% for dossier in entry.document.dossiers %}
     <li class="py-0 ro-text-small leading-5">
-        <a class="link-green" href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
-        <span class="de-emphasized">
-            | <time datetime="{{ dossier.createdAt | date("Y-m-d") }}">{{ dossier.createdAt | date("j F Y") }}</time> |
-            {{ "# documents" | trans({"count": dossier.documents|length})}}
-        </span>
+        <a href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
+        <span class="de-emphasized">{{dossier.dossierNr}}</span>
     </li>
     {% endfor %}
 </ul>

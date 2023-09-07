@@ -8,6 +8,7 @@ use App\Entity\Dossier;
 use App\Form\Dossier\DocumentUploadType;
 use App\Message\ProcessDocumentMessage;
 use App\Service\Storage\DocumentStorageService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +23,7 @@ class FileUploader
     protected MessageBusInterface $messageBus;
     protected FormFactoryInterface $formFactory;
     protected DocumentStorageService $documentStorage;
+    protected LoggerInterface $logger;
 
     /** @var array|string[] */
     protected array $mandatoryParams = [
@@ -32,11 +34,16 @@ class FileUploader
         'dzuuid',
     ];
 
-    public function __construct(MessageBusInterface $messageBus, FormFactoryInterface $formFactory, DocumentStorageService $documentStorage)
-    {
+    public function __construct(
+        MessageBusInterface $messageBus,
+        FormFactoryInterface $formFactory,
+        DocumentStorageService $documentStorage,
+        LoggerInterface $logger,
+    ) {
         $this->messageBus = $messageBus;
         $this->formFactory = $formFactory;
         $this->documentStorage = $documentStorage;
+        $this->logger = $logger;
     }
 
     /**
@@ -55,6 +62,10 @@ class FileUploader
 
     protected function handleCompleteFiles(Request $request, Dossier $dossier): bool
     {
+        if ($dossier->getId() == null) {
+            return false;
+        }
+
         // Check if document uploaded is valid (e.g. not too large). This is done through the validation of
         // a form (@TODO: we should use direct validation for this, not through a form)
         $form = $this->formFactory->create(DocumentUploadType::class, $dossier, ['csrf_protection' => false]);
@@ -66,15 +77,21 @@ class FileUploader
         // Dispatch message for each file uploaded to process the files
         /** @var UploadedFile[] $uploadedFiles */
         $uploadedFiles = $request->files->get('document_upload');
-        //        $uploadedFiles = $form->get('upload')->getData();
         foreach ($uploadedFiles as $uploadedFile) {
+            $this->logger->info('uploaded document file', [
+                'path' => $uploadedFile->getRealPath(),
+                'original_file' => $uploadedFile->getClientOriginalName(),
+                'size' => $uploadedFile->getSize(),
+                'file_hash' => hash_file('sha256', $uploadedFile->getRealPath()),
+            ]);
+
             $remotePath = '/uploads/' . (string) $dossier->getId() . '/' . $uploadedFile->getClientOriginalName();
             if (! $this->documentStorage->store($uploadedFile, $remotePath)) {
                 continue;
             }
 
             $message = new ProcessDocumentMessage(
-                uuid: $dossier->getId(),
+                dossierUuid: $dossier->getId(),
                 remotePath: $remotePath,
                 originalFilename: $uploadedFile->getClientOriginalName(),
                 chunked: false,
@@ -94,6 +111,10 @@ class FileUploader
      */
     protected function handleChunkedUpload(Request $request, Dossier $dossier): bool
     {
+        if ($dossier->getId() == null) {
+            return false;
+        }
+
         foreach ($this->mandatoryParams as $param) {
             if (! $request->request->has($param)) {
                 throw new \Exception('Missing parameter: ' . $param);
@@ -110,6 +131,15 @@ class FileUploader
         $upload = $request->files->get('document_upload');
         /** @var UploadedFile $uploadedFile */
         $uploadedFile = $upload['upload'];
+
+        $this->logger->info('uploaded document chunk file', [
+            'path' => $uploadedFile->getRealPath(),
+            'original_file' => $uploadedFile->getClientOriginalName(),
+            'size' => $uploadedFile->getSize(),
+            'chunk_index' => $chunkIndex,
+            'file_hash' => hash_file('sha256', $uploadedFile->getRealPath()),
+        ]);
+
         $this->documentStorage->store($uploadedFile, $remoteChunkFile);
 
         // Check if all parts have been uploaded (ie: all chunks are found in the chunk upload dir)
@@ -121,7 +151,7 @@ class FileUploader
 
         // Dispatch a message to process the uploaded file
         $message = new ProcessDocumentMessage(
-            uuid: $dossier->getId(),
+            dossierUuid: $dossier->getId(),
             remotePath: $remoteChunkPath,
             originalFilename: $uploadedFile->getClientOriginalName(),
             chunked: true,

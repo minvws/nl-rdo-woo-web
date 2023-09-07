@@ -1,20 +1,26 @@
-.split-link__underline {
-    text-decoration: underline;
-}
-
 .split-link {
-    text-decoration: none;
+
+    &,
+    &:hover,
+    &:focus,
+    &:visited {
+        text-decoration: none;
+    }
+
+    &:hover,
+    &:focus {
+        .split-link__underline {
+            text-decoration: underline;
+        }
+    }
 
     @media (min-width: 42rem) {
-        align-items: baseline;
-        display: flex;
-
-        .truncate {
-            max-width: 80%;
-        }
-
         .split-link__suffix {
-            margin-left: 0.5rem;
+            margin-left: 0.25rem;
         }
+    }
+
+    span {
+        hyphens: none;
     }
 }

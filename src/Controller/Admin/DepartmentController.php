@@ -67,7 +67,7 @@ class DepartmentController extends AbstractController
             $this->doctrine->persist($department);
             $this->doctrine->flush();
 
-            $this->addFlash('success', $this->translator->trans('Department created'));
+            $this->addFlash('backend', ['success' => $this->translator->trans('Department created')]);
 
             return $this->redirectToRoute('app_admin_departments');
         }
@@ -93,7 +93,7 @@ class DepartmentController extends AbstractController
             $this->doctrine->persist($governmentOfficial);
             $this->doctrine->flush();
 
-            $this->addFlash('success', $this->translator->trans('Official created'));
+            $this->addFlash('backend', ['success' => $this->translator->trans('Official created')]);
 
             return $this->redirectToRoute('app_admin_departments');
         }
@@ -118,7 +118,7 @@ class DepartmentController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->doctrine->flush();
-            $this->addFlash('success', $this->translator->trans('Official modified'));
+            $this->addFlash('backend', ['success' => $this->translator->trans('Official modified')]);
 
             $this->messageBus->dispatch(new UpdateOfficialMessage($oldHead, $head));
 
@@ -146,7 +146,7 @@ class DepartmentController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->doctrine->flush();
-            $this->addFlash('success', $this->translator->trans('Department modified'));
+            $this->addFlash('backend', ['success' => $this->translator->trans('Department modified')]);
 
             $this->messageBus->dispatch(new UpdateDepartmentMessage($oldDepartment, $department));
 

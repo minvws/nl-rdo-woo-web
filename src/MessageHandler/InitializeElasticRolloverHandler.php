@@ -12,6 +12,9 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+/**
+ * Initialize the elasticsearch rollover and does a dossier ingestion of all dossiers.
+ */
 #[AsMessageHandler]
 class InitializeElasticRolloverHandler
 {

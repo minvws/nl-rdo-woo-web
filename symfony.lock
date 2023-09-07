@@ -116,6 +116,9 @@
             "tests/bootstrap.php"
         ]
     },
+    "presta/sitemap-bundle": {
+        "version": "v3.3.1"
+    },
     "scheb/2fa-bundle": {
         "version": "6.8",
         "recipe": {

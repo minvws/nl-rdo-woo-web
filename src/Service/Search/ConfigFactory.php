@@ -6,7 +6,7 @@ namespace App\Service\Search;
 
 use App\Service\InquiryService;
 use App\Service\Search\Model\Config;
-use App\Service\Search\Model\Facet;
+use App\Service\Search\Query\Facet\FacetMappingService;
 use Symfony\Component\HttpFoundation\Request;
 
 class ConfigFactory
@@ -15,8 +15,10 @@ class ConfigFactory
     public const MIN_PAGE_SIZE = 1;
     public const MAX_PAGE_SIZE = 100;
 
-    public function __construct(protected InquiryService $inquiryService)
-    {
+    public function __construct(
+        private readonly InquiryService $inquiryService,
+        private readonly FacetMappingService $facetMapping,
+    ) {
     }
 
     /**
@@ -32,14 +34,16 @@ class ConfigFactory
         $pageNum = max($request->query->getInt('page', 1) - 1, 0);
 
         $facets = [];
-        foreach (Facet::getQueryMapping() as $facetKey => $queryKey) {
-            if (! $request->query->has($queryKey)) {
+        foreach ($this->facetMapping->getAll() as $facet) {
+            if (! $request->query->has($facet->getQueryParam())) {
                 continue;
             }
 
             // Make sure that $items is always an array
-            $items = $request->query->all()[$queryKey];
-            $items = is_array($items) ? array_values($items) : [$items];
+            $items = $request->query->all()[$facet->getQueryParam()];
+            if (! is_array($items)) {
+                $items = [$items];
+            }
 
             // Url decode the strings but not numbers etc
             foreach ($items as $index => $item) {
@@ -48,7 +52,7 @@ class ConfigFactory
                 }
             }
 
-            $facets[$facetKey] = $items;
+            $facets[$facet->getFacetKey()] = $items;
         }
 
         // Type is not a facet but must be set directly in the config

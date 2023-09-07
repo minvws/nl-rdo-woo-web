@@ -7,28 +7,37 @@ namespace App\Controller;
 use App\Entity\BatchDownload;
 use App\Entity\Dossier;
 use App\Message\GenerateArchiveMessage;
+use App\Service\ArchiveService;
+use App\Service\DossierService;
 use App\Service\Search\Model\Config;
+use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class DossierController extends AbstractController
 {
-    protected EntityManagerInterface $doctrine;
-    protected MessageBusInterface $messageBus;
-    protected TranslatorInterface $translator;
+    protected const MAX_ITEMS_PER_PAGE = 100;
 
-    public function __construct(EntityManagerInterface $doctrine, MessageBusInterface $messageBus, TranslatorInterface $translator)
-    {
-        $this->doctrine = $doctrine;
-        $this->messageBus = $messageBus;
-        $this->translator = $translator;
+    public function __construct(
+        private readonly EntityManagerInterface $doctrine,
+        private readonly MessageBusInterface $messageBus,
+        private readonly DocumentStorageService $documentStorage,
+        private readonly DossierService $dossierService,
+        private readonly PaginatorInterface $paginator,
+        private readonly ArchiveService $archiveService,
+    ) {
     }
 
     #[Route('/dossiers', name: 'app_dossier_index', methods: ['GET'])]
@@ -40,17 +49,44 @@ class DossierController extends AbstractController
     #[Route('/dossier/{dossierId}', name: 'app_dossier_detail', methods: ['GET'])]
     public function detail(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
-        Breadcrumbs $breadcrumbs
+        Breadcrumbs $breadcrumbs,
+        Request $request,
     ): Response {
         $breadcrumbs->addRouteItem('Home', 'app_home');
         $breadcrumbs->addItem('Dossier');
 
-        if (! $dossier->isVisible()) {
+        if (! $this->dossierService->isViewingAllowed($dossier)) {
             throw $this->createNotFoundException('Dossier not found');
         }
 
+        // Split the documents by judgement for display purposes
+        $publicDocs = [];
+        $notPublicDocs = [];
+        foreach ($dossier->getDocuments() as $document) {
+            if ($document->getJudgement()?->isAtLeastPartialPublic()) {
+                $publicDocs[] = $document;
+            } else {
+                $notPublicDocs[] = $document;
+            }
+        }
+
+        $publicPagination = $this->paginator->paginate(
+            $publicDocs,
+            $request->query->getInt('pu', 1),
+            self::MAX_ITEMS_PER_PAGE,
+            ['pageParameterName' => 'pu'],
+        );
+        $notPublicPagination = $this->paginator->paginate(
+            $notPublicDocs,
+            $request->query->getInt('pn', 1),
+            self::MAX_ITEMS_PER_PAGE,
+            ['pageParameterName' => 'pn'],
+        );
+
         return $this->render('dossier/details.html.twig', [
             'dossier' => $dossier,
+            'public_docs' => $publicPagination,
+            'not_public_docs' => $notPublicPagination,
         ]);
     }
 
@@ -59,7 +95,7 @@ class DossierController extends AbstractController
         Request $request,
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
     ): Response {
-        if (! $dossier->isVisible()) {
+        if (! $this->dossierService->isViewingAllowed($dossier)) {
             throw $this->createNotFoundException('Dossier not found');
         }
 
@@ -78,10 +114,13 @@ class DossierController extends AbstractController
             }
         }
 
-        if (count($documents) === 0) {
-            $this->addFlash('warning', $this->translator->trans('No documents selected'));
-
-            return $this->redirectToRoute('app_dossier_detail', ['dossierId' => $dossier->getDossierNr()]);
+        // If a batch already exists with the given documents, redirect to that batch.
+        $batch = $this->archiveService->archiveExists($dossier, $documents);
+        if ($batch) {
+            return $this->redirectToRoute('app_dossier_batch_detail', [
+                'dossierId' => $dossier->getDossierNr(),
+                'batchId' => $batch->getId(),
+            ]);
         }
 
         $batch = new BatchDownload();
@@ -113,7 +152,7 @@ class DossierController extends AbstractController
         $breadcrumbs->addRouteItem('Dossier', 'app_dossier_detail', ['dossierId' => $dossier->getDossierNr()]);
         $breadcrumbs->addItem('Download');
 
-        if (! $dossier->isVisible()) {
+        if (! $this->dossierService->isViewingAllowed($dossier)) {
             throw $this->createNotFoundException('Dossier not found');
         }
 
@@ -121,5 +160,100 @@ class DossierController extends AbstractController
             'dossier' => $dossier,
             'batch' => $batch,
         ]);
+    }
+
+    #[Route('/dossier/{dossierId}/batch/{batchId}/download', name: 'app_dossier_batch_download', methods: ['GET'])]
+    public function batchDownload(
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
+    ): Response {
+        if (! $this->dossierService->isViewingAllowed($dossier)) {
+            throw $this->createNotFoundException('Dossier not found');
+        }
+
+        if ($batch->getStatus() !== BatchDownload::STATUS_COMPLETED) {
+            return $this->redirectToRoute('app_dossier_batch_detail', [
+                'dossierId' => $dossier->getDossierNr(),
+                'batchId' => $batch->getId(),
+            ]);
+        }
+
+        $stream = $this->archiveService->getZipStream($batch);
+        if (! $stream) {
+            throw new NotFoundHttpException();
+        }
+
+        $response = new StreamedResponse();
+        $response->headers->set('Content-Type', 'application/zip');
+        $response->headers->set('Content-Length', $batch->getSize());
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $batch->getFilename() . '"');
+        // Since the batch is immutable, we can cache it for a while
+        $response->setCache([
+            'public' => true,
+            'max_age' => 48 * 3600,
+            's_maxage' => 48 * 3600,
+            'immutable' => true,
+        ]);
+        $response->setCallback(function () use ($stream) {
+            fpassthru($stream);
+        });
+
+        return $response;
+    }
+
+    #[Route('/dossier/{dossierId}/inventory/download', name: 'app_dossier_inventory_download', methods: ['GET'])]
+    public function downloadInventory(
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
+    ): StreamedResponse {
+        if (! $this->dossierService->isViewingAllowed($dossier)) {
+            throw $this->createNotFoundException('Dossier not found');
+        }
+
+        $inventory = $dossier->getInventory();
+        if (! $inventory) {
+            throw $this->createNotFoundException('Dossier inventory not found');
+        }
+
+        $stream = $this->documentStorage->retrieveResourceDocument($inventory);
+        if (! $stream) {
+            throw new NotFoundHttpException();
+        }
+
+        $response = new StreamedResponse();
+        $response->headers->set('Content-Type', $inventory->getFileInfo()->getMimetype());
+        $response->headers->set('Content-Length', (string) $inventory->getFileInfo()->getSize());
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $inventory->getFileInfo()->getName() . '"');
+        $response->headers->set('Last-Modified', $inventory->getUpdatedAt()->format('D, d M Y H:i:s') . ' GMT');
+        $response->setCallback(function () use ($stream) {
+            fpassthru($stream);
+        });
+
+        return $response;
+    }
+
+    #[Route('/dossier/{dossierId}/decision/download', name: 'app_dossier_decision_download', methods: ['GET'])]
+    public function downloadDecision(
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
+    ): StreamedResponse {
+        $decisionDocument = $dossier->getDecisionDocument();
+        if (! $decisionDocument) {
+            throw $this->createNotFoundException('Dossier decision document not found');
+        }
+
+        $stream = $this->documentStorage->retrieveResourceDocument($decisionDocument);
+        if (! $stream) {
+            throw new NotFoundHttpException();
+        }
+
+        $response = new StreamedResponse();
+        $response->headers->set('Content-Type', $decisionDocument->getFileInfo()->getMimetype());
+        $response->headers->set('Content-Length', (string) $decisionDocument->getFileInfo()->getSize());
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $decisionDocument->getFileInfo()->getName() . '"');
+        $response->headers->set('Last-Modified', $decisionDocument->getUpdatedAt()->format('D, d M Y H:i:s') . ' GMT');
+        $response->setCallback(function () use ($stream) {
+            fpassthru($stream);
+        });
+
+        return $response;
     }
 }

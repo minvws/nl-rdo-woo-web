@@ -58,6 +58,8 @@ class ThumbnailExtractor implements PageExtractorInterface
         $process = new Process($params);
         $process->run();
 
+        $this->documentStorage->removeDownload($localPath);
+
         if (! $process->isSuccessful()) {
             $this->logger->error('Failed to create thumbnail for document', [
                 'document' => $document->getId(),
@@ -68,7 +70,6 @@ class ThumbnailExtractor implements PageExtractorInterface
             ]);
 
             $this->fileUtils->deleteTempDirectory($tempDir);
-            $this->documentStorage->removeDownload($localPath);
 
             return;
         }
@@ -77,6 +78,5 @@ class ThumbnailExtractor implements PageExtractorInterface
         $this->thumbnailStorage->store($document, $file, $pageNr);
 
         $this->fileUtils->deleteTempDirectory($tempDir);
-        $this->documentStorage->removeDownload($localPath);
     }
 }

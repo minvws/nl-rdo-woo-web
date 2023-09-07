@@ -4,8 +4,16 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\DecisionDocument;
+use App\Entity\Document;
 use App\Entity\Dossier;
+use App\Message\IngestDossierMessage;
+use App\Message\RemoveDossierMessage;
 use App\Message\UpdateDossierMessage;
+use App\Service\Inventory\InventoryService;
+use App\Service\Inventory\ProcessInventoryResult;
+use App\Service\Storage\DocumentStorageService;
+use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -13,147 +21,133 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * This class handles dossier management.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class DossierService
 {
-    protected EntityManagerInterface $doctrine;
-    protected InventoryService $inventoryService;
-    protected LoggerInterface $logger;
-    protected MessageBusInterface $messageBus;
-
     public function __construct(
-        EntityManagerInterface $doctrine,
-        InventoryService $inventoryService,
-        MessageBusInterface $messageBus,
-        LoggerInterface $logger
+        private readonly EntityManagerInterface $doctrine,
+        private readonly InventoryService $inventoryService,
+        private readonly MessageBusInterface $messageBus,
+        private readonly LoggerInterface $logger,
+        private readonly InquiryService $inquiryService,
+        private readonly DocumentStorageService $documentStorage,
     ) {
-        $this->doctrine = $doctrine;
-        $this->inventoryService = $inventoryService;
-        $this->logger = $logger;
-        $this->messageBus = $messageBus;
     }
 
     /**
-     * Creates a new dossier with inventory file. Returns an array of errors, if any.
-     *
-     * There can be multiple errors per row/line number. Note that line number 0 means
-     * a generic error
-     *
-     * [
-     *   0 => [
-     *           "incorrect column count",
-     *        ]
-     *   4 => [
-     *           "invalid date format",
-     *           "invalid other error",
-     *        ]
-     * ]
-     *
-     * @return array<int, string[]>
+     * Creates a new dossier with an inventory file and decision document.
      */
-    public function create(Dossier $dossier, UploadedFile $file = null): array
-    {
-        $dossier->setCreatedAt(new \DateTimeImmutable());
-        $dossier->setUpdatedAt(new \DateTimeImmutable());
+    public function create(
+        Dossier $dossier,
+        ?UploadedFile $inventoryUpload,
+        ?UploadedFile $decisionUpload
+    ): ProcessInventoryResult {
         $dossier->setStatus(Dossier::STATUS_CONCEPT);
 
-        // @TODO: Hardcoded dossier prefix!
-        $dossierNr = 'VWS-' . random_int(100, 999) . '-' . random_int(1000, 9999);
-        $dossier->setDossierNr($dossierNr);
-
-        // Wrap in transaction, so we can rollback if inventory processing fails
-        $this->doctrine->beginTransaction();
-
         $this->doctrine->persist($dossier);
-        $this->doctrine->flush();
+        if ($dossier->getId() === null) {
+            $this->logger->error('Dossier has an empty ID. This should not happen');
 
-        if ($file) {
-            $errors = $this->inventoryService->processInventory($file, $dossier);
-        } else {
-            $errors = [];
+            return new ProcessInventoryResult();
         }
 
-        if (count($errors)) {
+        if ($decisionUpload instanceof UploadedFile) {
+            $this->storeDecisionDocument($decisionUpload, $dossier);
+        }
+
+        // Wrap in transaction, so we can roll back if inventory processing fails
+        $this->doctrine->beginTransaction();
+        $this->doctrine->flush();
+
+        $result = $this->inventoryService->processInventory($inventoryUpload, $dossier);
+        if ($result->isSuccessful()) {
+            // Commit inventory and dossier changes
+            $this->doctrine->commit();
+
+            if ($dossier->getId()) {
+                $this->messageBus->dispatch(new UpdateDossierMessage($dossier->getId()));
+            }
+
+            $this->logger->info('Dossier created', [
+                'dossier' => $dossier->getId(),
+            ]);
+        } else {
             // Rollback inventory and dossier changes
             $this->doctrine->rollback();
 
             $this->logger->info('Dossier creation failed', [
                 'dossier' => $dossier->getId(),
-                'errors' => $errors,
+                'errors' => $result->getAllErrors(),
             ]);
-
-            return $errors;
         }
 
-        // Commit inventory and dossier changes
-        $this->doctrine->commit();
-
-        $this->logger->info('Dossier created', [
-            'dossier' => $dossier->getId(),
-        ]);
-
-        return [];
+        return $result;
     }
 
-    /**
-     * @return array<int, string[]>
-     */
-    public function update(Dossier $dossier, UploadedFile $file = null): array
-    {
-        $dossier->setUpdatedAt(new \DateTimeImmutable());
+    public function update(
+        Dossier $dossier,
+        ?UploadedFile $inventoryUpload,
+        ?UploadedFile $decisionUpload
+    ): ProcessInventoryResult {
+        if ($decisionUpload instanceof UploadedFile) {
+            $this->storeDecisionDocument($decisionUpload, $dossier);
+        }
 
         // Wrap in transaction
         $this->doctrine->beginTransaction();
-
         $this->doctrine->persist($dossier);
         $this->doctrine->flush();
 
-        $errors = [];
-        if ($file) {
-            $errors = $this->inventoryService->processInventory($file, $dossier);
+        if ($dossier->getId() === null) {
+            return new ProcessInventoryResult();
         }
 
-        if ($errors) {
+        if ($inventoryUpload instanceof UploadedFile) {
+            $result = $this->inventoryService->processInventory($inventoryUpload, $dossier);
+        } else {
+            $result = new ProcessInventoryResult();
+        }
+
+        if ($result->isSuccessful()) {
+            // Commit inventory and dossier changes
+            $this->doctrine->commit();
+
+            $this->messageBus->dispatch(new UpdateDossierMessage($dossier->getId()));
+
+            $this->logger->info('Dossier updated', [
+                'dossier' => $dossier->getId(),
+            ]);
+        } else {
             // Rollback everything mutated in this transaction
             $this->doctrine->rollback();
 
             $this->logger->info('Dossier update failed', [
                 'dossier' => $dossier->getId(),
-                'errors' => $errors,
+                'errors' => $result->getAllErrors(),
             ]);
-
-            return $errors;
         }
 
-        // Commit inventory and dossier changes
-        $this->doctrine->commit();
-
-        $this->messageBus->dispatch(new UpdateDossierMessage($dossier->getId()));
-
-        $this->logger->info('Dossier updated', [
-            'dossier' => $dossier->getId(),
-        ]);
-
-        return [];
+        return $result;
     }
 
     public function remove(Dossier $dossier): void
     {
-        // Remove documents that are only attached to this dossier
-        foreach ($dossier->getDocuments() as $document) {
-            if ($document->getDossiers()->count() == 1) {
-                $this->doctrine->remove($document);
-            }
+        if ($dossier->getId() === null) {
+            return;
         }
 
-        // @TODO: remove from elasticsearch
-
-        $this->doctrine->remove($dossier);
-        $this->doctrine->flush();
+        // Remove from elasticsearch
+        $this->messageBus->dispatch(new RemoveDossierMessage($dossier->getId()));
     }
 
     public function changeState(Dossier $dossier, string $newState): void
     {
+        if ($dossier->getId() === null) {
+            return;
+        }
+
         if (! $dossier->isAllowedState($newState)) {
             $this->logger->error('Invalid state change', [
                 'dossier' => $dossier->getId(),
@@ -169,7 +163,7 @@ class DossierService
             case Dossier::STATUS_COMPLETED:
                 // Check all documents present
                 foreach ($dossier->getDocuments() as $document) {
-                    if (! $document->isUploaded()) {
+                    if ($document->shouldBeUploaded() && ! $document->isUploaded()) {
                         $this->logger->error('Invalid state change', [
                             'dossier' => $dossier->getId(),
                             'oldState' => $dossier->getStatus(),
@@ -180,6 +174,11 @@ class DossierService
                         throw new \InvalidArgumentException('Not all documents are uploaded in this dossier');
                     }
                 }
+
+                if ($dossier->getDecisionDocument()?->getFileInfo()->isUploaded() !== true) {
+                    throw new \InvalidArgumentException('Decision document is missing');
+                }
+
                 break;
         }
 
@@ -194,5 +193,87 @@ class DossierService
             'oldState' => $dossier->getStatus(),
             'newState' => $newState,
         ]);
+    }
+
+    /**
+     * Store the decision document to disk and add it to the dossier.
+     */
+    protected function storeDecisionDocument(UploadedFile $upload, Dossier $dossier): void
+    {
+        if ($dossier->getId() === null) {
+            return;
+        }
+
+        $decisionDocument = $dossier->getDecisionDocument();
+        if (! $decisionDocument) {
+            // Create inventory if not exists yet
+            $decisionDocument = new DecisionDocument();
+            $dossier->setDecisionDocument($decisionDocument);
+            $decisionDocument->setDossier($dossier);
+        }
+
+        $file = $decisionDocument->getFileInfo();
+        $file->setSourceType(SourceType::SOURCE_PDF);
+        $file->setType('pdf');
+
+        // Set original filename
+        $filename = 'decision-' . $dossier->getDossierNr() . '.' . $upload->getClientOriginalExtension();
+        $file->setName($filename);
+
+        $this->doctrine->persist($decisionDocument);
+
+        if (! $this->documentStorage->storeDocument($upload, $decisionDocument)) {
+            throw new \RuntimeException('Could not store decision document');
+        }
+    }
+
+    public function dispatchIngest(Dossier $dossier): void
+    {
+        if ($dossier->getId() === null) {
+            return;
+        }
+
+        $message = new IngestDossierMessage($dossier->getId());
+        $this->messageBus->dispatch($message);
+    }
+
+    // Returns true when the dossier (and/or document) is allowed to be viewed. This will also
+    // consider documents and dossiers which are marked as preview and that are allowed by the session.
+    public function isViewingAllowed(Dossier $dossier, Document $document = null): bool
+    {
+        // If dossier is published, allow viewing
+        if ($dossier->getStatus() == Dossier::STATUS_PUBLISHED) {
+            return true;
+        }
+
+        // If dossier is not preview, deny access
+        if ($dossier->getStatus() != Dossier::STATUS_PREVIEW) {
+            return false;
+        }
+
+        $inquiryIds = $this->inquiryService->getInquiries();
+
+        // Check if any inquiry id from the dossier is in the session inquiry ids.
+        foreach ($dossier->getInquiries() as $inquiry) {
+            if (in_array($inquiry->getId(), $inquiryIds)) {
+                // Inquiry id is set in the session, so allow viewing
+                return true;
+            }
+        }
+
+        // If document is not visible, and no document is given, deny viewing
+        if (! $document) {
+            return false;
+        }
+
+        // Check all inquiry ids from the document to see if we have one matching in our session.
+        foreach ($document->getInquiries() as $inquiry) {
+            if (in_array($inquiry->getId(), $inquiryIds)) {
+                // Inquiry id is set in the session, so allow viewing
+                return true;
+            }
+        }
+
+        return false;
     }
 }

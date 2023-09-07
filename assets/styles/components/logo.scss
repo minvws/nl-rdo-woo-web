@@ -2,17 +2,23 @@
     align-items: end;
 
     &,
-    &:hover {
+    &:hover,
+    &:focus,
+    &:active {
         line-height: 1;
+    }
+
+    &:focus {
+        outline: var(--navigation-link-focus-outline);
+        outline-offset: -2px;
     }
 
     @media (width >=35rem) {
         max-width: 35rem;
-
     }
 }
 
 .logo__text {
     display: block;
-    margin-bottom: .75rem;
+    margin-bottom: 0.75rem;
 }

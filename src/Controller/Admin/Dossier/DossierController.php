@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier;
 
+use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Form\Document\IngestFormType;
 use App\Form\Document\RemoveFormType;
@@ -11,18 +12,18 @@ use App\Form\Dossier\DossierType;
 use App\Form\Dossier\SearchFormType;
 use App\Form\Dossier\StateChangeFormType;
 use App\Service\DossierService;
-use App\Service\Elastic\ElasticService;
-use App\Service\Ingest\IngestService;
-use App\Service\Ingest\Options;
+use App\Service\Inventory\ProcessInventoryResult;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Knp\Component\Pager\PaginatorInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,24 +34,14 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
  */
 class DossierController extends AbstractController
 {
-    protected EntityManagerInterface $doctrine;
-    protected PaginatorInterface $paginator;
-    protected DossierService $dossierService;
-    protected IngestService $ingester;
-    protected ElasticService $elasticService;
+    protected const MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
-        EntityManagerInterface $doctrine,
-        PaginatorInterface $paginator,
-        DossierService $dossierService,
-        IngestService $ingester,
-        ElasticService $elasticService,
+        private readonly EntityManagerInterface $doctrine,
+        private readonly PaginatorInterface $paginator,
+        private readonly DossierService $dossierService,
+        private readonly LoggerInterface $logger,
     ) {
-        $this->doctrine = $doctrine;
-        $this->paginator = $paginator;
-        $this->dossierService = $dossierService;
-        $this->ingester = $ingester;
-        $this->elasticService = $elasticService;
     }
 
     #[Route('/balie/dossiers', name: 'app_admin_dossiers', methods: ['GET'])]
@@ -72,13 +63,37 @@ class DossierController extends AbstractController
         $pagination = $this->paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
-            10
+            self::MAX_ITEMS_PER_PAGE,
         );
 
         return $this->render('admin/dossier/index.html.twig', [
             'pagination' => $pagination,
             'form' => $form,
         ]);
+    }
+
+    #[Route('/balie/dossiers/search', name: 'app_admin_dossiers_search', methods: ['POST'])]
+    public function search(Request $request): Response
+    {
+        $searchTerm = urldecode(strval($request->query->get('q', '')));
+
+        $dossiers = $this->doctrine->getRepository(Dossier::class)->findBySearchTerm($searchTerm, 4);
+        $documents = $this->doctrine->getRepository(Document::class)->findBySearchTerm($searchTerm, 4);
+
+        $ret = [
+            'results' => json_encode(
+                $this->renderView(
+                    'admin/dossier/search.html.twig',
+                    [
+                        'dossiers' => $dossiers,
+                        'documents' => $documents,
+                    ],
+                ),
+                JSON_THROW_ON_ERROR,
+            ),
+        ];
+
+        return new JsonResponse($ret);
     }
 
     #[Route('/balie/dossier/new', name: 'app_admin_dossier_new', methods: ['GET', 'POST'])]
@@ -94,18 +109,38 @@ class DossierController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $file */
-            $file = $form->get('inventory')->getData();
-            $errors = $this->dossierService->create($dossier, $file);
+            /** @var UploadedFile $inventoryUpload */
+            $inventoryUpload = $form->get('inventory')->getData();
+            /** @var UploadedFile $decisionUpload */
+            $decisionUpload = $form->get('decision_document')->getData();
 
-            if (! count($errors)) {
+            if ($inventoryUpload) {
+                $this->logger->info('uploaded inventory file', [
+                    'path' => $inventoryUpload->getRealPath(),
+                    'original_file' => $inventoryUpload->getClientOriginalName(),
+                    'size' => $inventoryUpload->getSize(),
+                    'file_hash' => hash_file('sha256', $inventoryUpload->getRealPath()),
+                ]);
+            }
+
+            if ($decisionUpload) {
+                $this->logger->info('uploaded decision file', [
+                    'path' => $decisionUpload->getRealPath(),
+                    'original_file' => $decisionUpload->getClientOriginalName(),
+                    'size' => $decisionUpload->getSize(),
+                    'file_hash' => hash_file('sha256', $decisionUpload->getRealPath()),
+                ]);
+            }
+
+            $result = $this->dossierService->create($dossier, $inventoryUpload, $decisionUpload);
+            if ($result->isSuccessful()) {
                 // All is good, we can safely return to dossier list
-                $this->addFlash('success', 'Dossier has been created successfully');
+                $this->addFlash('backend', ['success' => 'Dossier has been created successfully']);
 
                 return $this->redirectToRoute('app_admin_dossiers');
             }
 
-            $this->addFormErrors($form, $errors);
+            $this->addFormErrors($form, $result);
         }
 
         return $this->render('admin/dossier/new.html.twig', [
@@ -113,7 +148,22 @@ class DossierController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}', name: 'app_admin_dossier_edit', methods: ['GET', 'POST'])]
+    #[Route('/balie/dossier/{dossierId}', name: 'app_admin_dossier', methods: ['GET'])]
+    public function dossier(
+        Breadcrumbs $breadcrumbs,
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
+    ): Response {
+        $breadcrumbs->addRouteItem('Home', 'app_home');
+        $breadcrumbs->addRouteItem('Balie', 'app_admin');
+        $breadcrumbs->addRouteItem('Dossier management', 'app_admin_dossiers');
+        $breadcrumbs->addItem('View dossier');
+
+        return $this->render('admin/dossier/view.html.twig', [
+            'dossier' => $dossier,
+        ]);
+    }
+
+    #[Route('/balie/dossier/{dossierId}/edit', name: 'app_admin_dossier_edit', methods: ['GET', 'POST'])]
     public function edit(
         Breadcrumbs $breadcrumbs,
         Request $request,
@@ -148,15 +198,6 @@ class DossierController extends AbstractController
 
     protected function applyFilter(FormInterface $form, QueryBuilder $queryBuilder): void
     {
-        $searchTerm = strval($form->get('searchterm')->getData());
-        if (! empty($searchTerm)) {
-            $queryBuilder->andWhere('LOWER(dos.title) LIKE :filter 
-                OR LOWER(dos.status) LIKE :filter 
-                OR LOWER(dos.dossierNr) LIKE :filter 
-                OR inq.casenr LIKE :filter')
-                ->setParameter('filter', '%' . strtolower($searchTerm) . '%');
-        }
-
         /** @var string[] $statusFilters */
         $statusFilters = $form->get('status')->getData();
         if (is_array($statusFilters) && count($statusFilters) > 0) {
@@ -187,12 +228,12 @@ class DossierController extends AbstractController
         try {
             $this->dossierService->changeState($dossier, strval($stateForm->get('state')->getData()));
         } catch (\Exception $e) {
-            $this->addFlash('danger', 'Dossier status could not be changed due to incorrect state: ' . $e->getMessage());
+            $this->addFlash('backend', ['success' => 'Dossier status could not be changed due to incorrect state: ' . $e->getMessage()]);
 
             return $this->redirectToRoute('app_admin_dossiers');
         }
 
-        $this->addFlash('success', 'Dossier status has been changed');
+        $this->addFlash('backend', ['success' => 'Dossier status has been changed']);
 
         return $this->redirectToRoute('app_admin_dossiers');
     }
@@ -207,7 +248,7 @@ class DossierController extends AbstractController
         }
 
         $this->dossierService->remove($dossier);
-        $this->addFlash('success', 'Dossier has been removed');
+        $this->addFlash('backend', ['success' => 'Dossier has been removed']);
 
         return $this->redirectToRoute('app_admin_dossiers');
     }
@@ -221,12 +262,9 @@ class DossierController extends AbstractController
             return null;
         }
 
-        $this->elasticService->updateDossier($dossier, false);
-        foreach ($dossier->getDocuments() as $document) {
-            $this->ingester->ingest($document, new Options());
-        }
+        $this->dossierService->dispatchIngest($dossier);
 
-        $this->addFlash('success', 'Dossier is scheduled for ingestion');
+        $this->addFlash('backend', ['success' => 'Dossier is scheduled for ingestion']);
 
         return $this->redirectToRoute('app_admin_dossiers');
     }
@@ -240,36 +278,53 @@ class DossierController extends AbstractController
             return null;
         }
 
-        /** @var UploadedFile $file */
-        $file = $form->get('inventory')->getData();
-        $errors = $this->dossierService->update($dossier, $file);
+        /** @var UploadedFile $inventoryUpload */
+        $inventoryUpload = $form->get('inventory')->getData();
+        /** @var UploadedFile $decisionUpload */
+        $decisionUpload = $form->get('decision_document')->getData();
 
-        if (! count($errors)) {
+        if ($decisionUpload) {
+            $this->logger->info('uploaded decision file', [
+                'path' => $decisionUpload->getRealPath(),
+                'original_file' => $decisionUpload->getClientOriginalName(),
+                'size' => $decisionUpload->getSize(),
+                'file_hash' => hash_file('sha256', $decisionUpload->getRealPath()),
+            ]);
+        }
+
+        if ($inventoryUpload) {
+            $this->logger->info('uploaded inventory file', [
+                'path' => $inventoryUpload->getRealPath(),
+                'original_file' => $inventoryUpload->getClientOriginalName(),
+                'size' => $inventoryUpload->getSize(),
+                'file_hash' => hash_file('sha256', $inventoryUpload->getRealPath()),
+            ]);
+        }
+
+        $result = $this->dossierService->update($dossier, $inventoryUpload, $decisionUpload);
+
+        if ($result->isSuccessful()) {
             // All is good, we can safely return to dossier list
-            $this->addFlash('success', 'Dossier has been updated successfully');
+            $this->addFlash('backend', ['success' => 'Dossier has been updated successfully']);
 
             return $this->redirectToRoute('app_admin_dossiers');
         }
 
         // Add errors to form
-        $this->addFormErrors($form->get('inventory'), $errors);
+        $this->addFormErrors($form->get('inventory'), $result);
 
         return null;
     }
 
-    /**
-     * @param array<int, string[]> $errors
-     */
-    protected function addFormErrors(FormInterface $form, array $errors): void
+    protected function addFormErrors(FormInterface $form, ProcessInventoryResult $result): void
     {
-        // Add all errors to the form
-        foreach ($errors as $lineNum => $lineErrors) {
+        foreach ($result->getGenericErrors() as $errorMessage) {
+            $form->addError(new FormError($errorMessage));
+        }
+
+        foreach ($result->getRowErrors() as $lineNum => $lineErrors) {
             foreach ($lineErrors as $error) {
-                if ($lineNum == 0) {
-                    $form->addError(new FormError($error));
-                } else {
-                    $form->addError(new FormError(sprintf('Line %d: %s', $lineNum, $error)));
-                }
+                $form->addError(new FormError(sprintf('Line %d: %s', $lineNum, $error)));
             }
         }
     }

@@ -10,6 +10,9 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+/**
+ * Set the elasticsearch alias to the given index.
+ */
 #[AsMessageHandler]
 class SetElasticAliasHandler
 {

@@ -1,7 +1,7 @@
 
 {# Results #}
 {% if result.entries | length > 0 %}
-<h2 class="visually-hidden">Resultaten</h2>
+<h2 class="visually-hidden">{{ "Results" | trans() }}</h2>
 <ul class=" list-unstyled list-results">
     {% for entry in result.entries %}
     <li>

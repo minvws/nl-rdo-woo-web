@@ -23,7 +23,7 @@ class GovernmentOfficialType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Naam',
                 'required' => true,
-                'help' => 'Naam van bewindvoerder',
+                'help' => 'Naam van bewindspersoon',
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Opslaan',

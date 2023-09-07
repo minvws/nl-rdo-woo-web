@@ -1,12 +1,63 @@
 .button.ghost:visited {
-
     .icon::before {
         color: var(--button-ghost-text-color);
     }
 
     &:hover {
+        text-decoration: none;
+
         .icon:before {
-            color: #fff;
+            color: white;
+        }
+    }
+}
+
+.button.download-all {
+    background: transparent;
+    border-width: 3px;
+    font-weight: bold;
+    width: 210px;
+
+    span {
+        color: var(--button-base-background-color);
+
+        &:before {
+            filter: invert(16%) sepia(100%) saturate(3748%) hue-rotate(321deg) brightness(76%) contrast(112%);
+        }
+    }
+
+    &:focus,
+    &:hover {
+        background: var(--button-base-background-color);
+        border-color: var(--button-base-background-color);
+
+        span {
+            color: white;
+
+            &:before {
+                filter: invert(100%) sepia(0%) saturate(7470%) hue-rotate(116deg) brightness(109%) contrast(109%);
+            }
+        }
+    }
+}
+
+.button {
+    &.button-pink {
+        .svg-icon:before {
+            filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(106deg) brightness(106%) contrast(100%);
+        }
+
+        &:hover {
+            background: transparent;
+            color: var(--ro-blue);
+
+            span {
+                color: var(--ro-blue);
+
+                &:before {
+                    filter: invert(21%) sepia(97%) saturate(2139%) hue-rotate(182deg) brightness(92%) contrast(99%);
+                }
+            }
         }
     }
 }

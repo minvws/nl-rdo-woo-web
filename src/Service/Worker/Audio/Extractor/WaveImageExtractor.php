@@ -75,6 +75,8 @@ EOS;
         $process = new Process($params);
         $process->run();
 
+        $this->documentStorage->removeDownload($localPath);
+
         if (! $process->isSuccessful()) {
             $this->logger->error('Failed to create wave image for audio', [
                 'document' => $document->getId(),
@@ -84,7 +86,6 @@ EOS;
             ]);
 
             $this->fileUtils->deleteTempDirectory($tempDir);
-            $this->documentStorage->removeDownload($localPath);
 
             return;
         }
@@ -92,6 +93,5 @@ EOS;
         $this->thumbnailStorage->store($document, new File($targetPath), 0);
 
         $this->fileUtils->deleteTempDirectory($tempDir);
-        $this->documentStorage->removeDownload($localPath);
     }
 }

@@ -1,26 +1,17 @@
-:root {
-    --link-focus-font-size: inherit;
-    --link-focus-font-weight: inherit;
-    --link-focus-line-height: inherit;
+/*---------------------------------------------------------------*/
+/*--------------------------- link.scss -------------------------*/
+/*---------------------------------------------------------------*/
+@use "link-variables";
+@use "mixins/link";
+@use "mixins/outline";
 
-    --link-hover-font-size: inherit;
-    --link-hover-font-weight: inherit;
-    --link-hover-line-height: inherit;
-    --link-hover-text-decoration: none;
+a {
+    cursor: pointer;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
 
-    --link-visited-line-height: inherit;
-}
-
-h2>a {
-    color: var(--link-text-color);
-}
-
-.link-green {
-
-    &,
-    &:focus,
-    &:hover,
-    &:visited {
-        color: #39870c;
-    }
+    @include link.link("link-");
+    @include link.link-elements-styling("link-");
+    @include outline.outline("link-");
 }

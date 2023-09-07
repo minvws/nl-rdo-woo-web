@@ -4,23 +4,30 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Doctrine\TimestampableTrait;
 use App\Repository\DossierRepository;
+use App\ValueObject\DossierUploadStatus;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyFields)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
+#[UniqueEntity('dossierNr')]
+#[ORM\HasLifecycleCallbacks]
 class Dossier implements EntityWithId
 {
+    use TimestampableTrait;
+
     public const STATUS_CONCEPT = 'concept';                // Dossier is just uploaded and does not have (all) the documents present yet
     public const STATUS_COMPLETED = 'completed';            // Dossier has all the uploaded documents and is ready for publication
     public const STATUS_PREVIEW = 'preview';                // Dossier is in preview mode and can only be viewed with specific tokens
@@ -52,20 +59,14 @@ class Dossier implements EntityWithId
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private Uuid $id;
-
-    #[ORM\Column]
-    private \DateTimeImmutable $createdAt;
-
-    #[ORM\Column]
-    private \DateTimeImmutable $updatedAt;
+    private ?Uuid $id = null;
 
     /** @var Collection|Document[] */
     #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'dossiers')]
     #[ORM\OrderBy(['documentNr' => 'ASC'])]
     private Collection $documents;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private string $dossierNr;
 
     #[ORM\Column(length: 500)]
@@ -101,12 +102,27 @@ class Dossier implements EntityWithId
     private string $decision;
 
     /** @var Collection|Inquiry[] */
-    #[ORM\ManyToMany(targetEntity: Inquiry::class, inversedBy: 'dossiers')]
+    #[ORM\ManyToMany(targetEntity: Inquiry::class, mappedBy: 'dossiers')]
     #[JoinTable(name: 'inquiry_dossier')]
     private Collection $inquiries;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $publicationDate;
+
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: Inventory::class)]
+    private ?Inventory $inventory = null;
+
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: RawInventory::class)]
+    private ?RawInventory $rawInventory = null;
+
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: DecisionDocument::class)]
+    private ?DecisionDocument $decisionDocument = null;
+
+    /**
+     * @var string[]|null
+     */
+    #[ORM\Column(nullable: true)]
+    private ?array $defaultSubjects = null;
 
     public function __construct()
     {
@@ -116,33 +132,9 @@ class Dossier implements EntityWithId
         $this->inquiries = new ArrayCollection();
     }
 
-    public function getId(): Uuid
+    public function getId(): ?Uuid
     {
         return $this->id;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): \DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 
     public function getDossierNr(): string
@@ -189,12 +181,9 @@ class Dossier implements EntityWithId
         return $this;
     }
 
-    public function uploadCount(): int
+    public function getUploadStatus(): DossierUploadStatus
     {
-        $crit = new Criteria();
-        $crit->where(Criteria::expr()->eq('uploaded', true));
-
-        return $this->documents->matching($crit)->count();
+        return new DossierUploadStatus($this);
     }
 
     /**
@@ -245,14 +234,6 @@ class Dossier implements EntityWithId
         return $this;
     }
 
-    public function isVisible(): bool
-    {
-        return
-            $this->status === self::STATUS_PUBLISHED
-            || $this->status === self::STATUS_PREVIEW
-        ;
-    }
-
     public function getSummary(): string
     {
         return $this->summary;
@@ -278,26 +259,23 @@ class Dossier implements EntityWithId
     }
 
     /**
-     * When $allDocuments is true, it will return all documents, including inventory and decision documents, otherwise only
-     * "documents" are returned.
-     *
      * @return Collection|Document[]
      */
-    public function getDocuments(bool $allDocuments = false): Collection
+    public function getDocuments(): Collection
     {
-        if ($allDocuments) {
-            return $this->documents;
-        }
+        return $this->documents;
+    }
 
-        // We should be able to use filter() here, but it doesn't work for phpstan (https://github.com/doctrine/collections/issues/364)
-        $documents = [];
-        foreach ($this->documents as $element) {
-            if (get_class($element) === Document::class) {
-                $documents[] = $element;
-            }
-        }
+    public function getInventory(): ?Inventory
+    {
+        return $this->inventory;
+    }
 
-        return new ArrayCollection($documents);
+    public function setInventory(?Inventory $inventory): self
+    {
+        $this->inventory = $inventory;
+
+        return $this;
     }
 
     public function addDocument(Document $document): self
@@ -412,5 +390,63 @@ class Dossier implements EntityWithId
     public function setPublicationDate(?\DateTimeImmutable $publicationDate): void
     {
         $this->publicationDate = $publicationDate;
+    }
+
+    public function getDecisionDocument(): ?DecisionDocument
+    {
+        return $this->decisionDocument;
+    }
+
+    public function setDecisionDocument(?DecisionDocument $decisionDocument): self
+    {
+        $this->decisionDocument = $decisionDocument;
+
+        return $this;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getDefaultSubjects(): ?array
+    {
+        return $this->defaultSubjects;
+    }
+
+    /**
+     * @param string[]|null $defaultSubjects
+     *
+     * @return $this
+     */
+    public function setDefaultSubjects(?array $defaultSubjects): static
+    {
+        $this->defaultSubjects = $defaultSubjects;
+
+        return $this;
+    }
+
+    public function removeInquiry(Inquiry $inquiry): static
+    {
+        if ($this->inquiries->removeElement($inquiry)) {
+            $inquiry->removeDossier($this);
+        }
+
+        return $this;
+    }
+
+    public function getRawInventory(): ?RawInventory
+    {
+        return $this->rawInventory;
+    }
+
+    public function setRawInventory(?RawInventory $rawInventory): static
+    {
+        // set the owning side of the relation if necessary
+        if ($rawInventory !== null && $rawInventory->getDossier() !== $this) {
+            $rawInventory->setDossier($this);
+        }
+
+        $this->rawInventory = $rawInventory;
+
+        return $this;
     }
 }

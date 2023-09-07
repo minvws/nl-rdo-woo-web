@@ -1,53 +1,82 @@
+{% import "document_macros.html.twig" as macro %}
+
 <section>
     <h2>{{ "About this document" | trans }}</h2>
 
     <table>
+        <caption class="visually-hidden">
+            {{ "About this document" | trans }}
+        </caption>
         <tbody>
+            {% if document.documentDate is defined %}
             <tr>
                 <th class="w-2/5 lg:w-1/4" scope="row">{{ "Document Date" | trans() }}</th>
-                <td><time datetime="{{ document.documentDate | date("Y-m-d") }}">{{ document.documentDate | date("j F Y H:i:s") }}</time></td>
+                <td><time datetime="{{ document.documentDate | date("Y-m-d") }}">{{ document.documentDate | format_date('long') }}</time></td>
             </tr>
+            {% endif %}
+            {% if document.fileInfo.sourceType is defined %}
             <tr>
                 <th scope="row">{{ "Document Type" | trans() }}</th>
-                <td>{{ document.sourceType | trans() }}, {{ document.pageCount }} pagina's</td>
+                <td class="flex border-0">
+                <span class="svg-icon svg-{{ document.fileInfo.sourceType }} mr-2  w-[32px] h-[32px] shrink-0" aria-hidden="true"></span>
+                <span class="visually-hidden">{{ document.fileInfo.sourceType | trans() }}</span>
+                {{ document.fileInfo.sourceType | trans() }}{% if document.isUploaded %}, {{ document.pageCount }} pagina's{% endif %}</td>
             </tr>
-            <tr>
-                <th scope="row">{{ "Download Type" | trans() }}</th>
-                <td>{{ document.filetype|upper}} ({{ document.filesize | size }})</td>
-            </tr>
-            <tr>
-                <th scope="row">{{ "Document Number" | trans() }}</th>
-                <td>{{ document.documentNr }}</td>
-            </tr>
-            {% if document.filetype == "audio" %}
+            {% endif %}
+            {% if document.fileInfo.type is defined and document.fileInfo.isUploaded %}
+                <tr>
+                    <th scope="row">{{ "Download Type" | trans() }}</th>
+                    <td>{{ document.fileInfo.type|upper}} ({{ document.fileInfo.size | size }})</td>
+                </tr>
+            {% endif %}
+            {% if document.documentId is defined %}
+                <tr>
+                    <th scope="row">{{ "Document Number" | trans() }}</th>
+                    <td>{{ document.documentId }}</td>
+                </tr>
+            {% endif %}
+            {% if document.fileInfo.type == "audio" %}
                 <tr>
                     <th scope="row">{{ "Duration" | trans() }}</th>
                     <td>1 minuut, 3 seconden</td>
                 </tr>
             {% endif %}
-
+            {% if document.subjects | length > 0 %}
             <tr>
                 <th scope="row">{{ "Labels" | trans() }}</th>
                 <td>
                     {% for subject in document.subjects %}
-                        <span class="badge bg-primary">{{ subject }}</span>
+                        <a href="{{ path('app_search', { q: '', (facet2query(constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value) ~ '[]'):  subject|url_encode }) }}">{{ subject }}</a>
                     {% endfor %}
                 </td>
             </tr>
+            {% endif %}
+            {% if document.judgement.value is defined %}
             <tr>
-                <th scope="row">{{ "Status" | trans() }}</th>
-                <td>{{ document.judgement }}</td>
+                <th scope="row">{{ "Document judgement" | trans() }}</th>
+                <td>{{ document.judgement.value | trans }}</td>
             </tr>
+            {% endif %}
+            {% if (document.grounds | length > 0) or (document.isUploaded and document.fileInfo.size != "0") %}
             <tr>
                 <th scope="row">{{ "What is redacted" | trans() }}</th>
                 <td>
-                    {% for ground in document.grounds %}
-                        <a href="#">{{ ground }} {{ ground|classification }}</a>&nbsp;
-                    {% endfor %}
-                    <br>
-                    {{ "Do you encounter data in this document that you think should have been redacted? Or is the document difficult to read?" | trans }} <a href="#">{{ "Let us know" | trans }}</a>.
+                    {% if document.grounds | length > 0 %}
+                    <ul class="list-unstyled mb-4">
+                        {% for ground in document.grounds %}
+                            <li class="py-1 leading-none">
+                                {{ macro.document_ground(ground) }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    {% if document.isUploaded and document.fileInfo.size != "0" %}
+                        <p class="width-delimiter">{{ "Do you encounter data in this document that you think should have been redacted? Or is the document difficult to read?" | trans }} <a href="mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl?subject=Opmerking over {{ document.fileInfo.name }} (documentnummer {{ document.documentId }})">{{ "Let us know" | trans }}</a>.</p>
+                    {% endif %}
                 </td>
             </tr>
+            {% endif %}
         </tbody>
     </table>
 </section>

@@ -6,6 +6,7 @@ namespace App;
 
 class Roles
 {
+    public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
     public const ROLE_ADMIN = 'ROLE_ADMIN';
     public const ROLE_ADMIN_USERS = 'ROLE_ADMIN_USERS';
     public const ROLE_ADMIN_DOSSIERS = 'ROLE_ADMIN_DOSSIERS';
@@ -13,6 +14,11 @@ class Roles
 
     /** @var array|array{role: string, description: string, help: string}[] */
     protected static array $roleInfo = [
+        [
+            'role' => self::ROLE_SUPER_ADMIN,
+            'description' => 'Super administrator',
+            'help' => 'This user is allowed system wide operations.',
+        ],
         [
             'role' => self::ROLE_ADMIN,
             'description' => 'Global administrator',
@@ -36,6 +42,8 @@ class Roles
     ];
 
     /**
+     * Returns a list of all role details that can be used in the administration system.
+     *
      * @return array{role: string, description: string, help: string}[]
      */
     public static function roleDetails(): array

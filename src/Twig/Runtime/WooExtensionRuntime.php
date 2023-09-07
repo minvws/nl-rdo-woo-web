@@ -7,27 +7,41 @@ namespace App\Twig\Runtime;
 use App\Citation;
 use App\Entity\Document;
 use App\Entity\Dossier;
+use App\Repository\DocumentRepository;
 use App\Service\DateRangeConverter;
-use App\Service\Search\Model\Facet;
+use App\Service\Search\Query\Facet\FacetMappingService;
 use App\Service\Storage\ThumbnailStorageService;
 use App\SourceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\RuntimeExtensionInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class WooExtensionRuntime implements RuntimeExtensionInterface
 {
     protected RequestStack $requestStack;
     protected ThumbnailStorageService $storageService;
+    protected DocumentRepository $documentRepository;
+    protected UrlGeneratorInterface $urlGenerator;
+    protected TranslatorInterface $translator;
 
-    private TranslatorInterface $translator;
-
-    public function __construct(RequestStack $requestStack, ThumbnailStorageService $storageService, TranslatorInterface $translator)
-    {
+    public function __construct(
+        RequestStack $requestStack,
+        ThumbnailStorageService $storageService,
+        TranslatorInterface $translator,
+        DocumentRepository $documentRepository,
+        UrlGeneratorInterface $urlGenerator,
+        private readonly FacetMappingService $facetMapping,
+    ) {
         $this->requestStack = $requestStack;
         $this->storageService = $storageService;
         $this->translator = $translator;
+        $this->documentRepository = $documentRepository;
+        $this->urlGenerator = $urlGenerator;
     }
 
     /**
@@ -104,7 +118,7 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
             case Dossier::DECISION_NOTHING_FOUND:
                 return 'Niets gevonden';
             case Dossier::DECISION_PARTIAL_PUBLIC:
-                return 'Gedeeltelijk gepubliceerd';
+                return 'Deels openbaar';
 
             default:
                 return 'Onbekend';
@@ -140,8 +154,8 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
      */
     public function hasFacets(Request $request): bool
     {
-        foreach (Facet::getQueryMapping() as $queryKey) {
-            if ($request->query->has($queryKey)) {
+        foreach ($this->facetMapping->getAll() as $defition) {
+            if ($request->query->has($defition->getQueryParam())) {
                 return true;
             }
         }
@@ -162,6 +176,98 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
      */
     public function facet2query(string $facet): string
     {
-        return Facet::getQueryVarForFacet($facet);
+        return $this->facetMapping->getFacetByKey($facet)->getQueryParam();
+    }
+
+    /**
+     * Returns true if the given link is actually a document ID (ie: PREFIX-12345) and the given dossier is set to published.
+     */
+    public function isDocumentLink(string $link): bool
+    {
+        /** @var Document|null $document */
+        $document = $this->documentRepository->findOneBy(['documentNr' => $link]);
+        if (is_null($document)) {
+            return false;
+        }
+
+        // If we find a dossier with status published, we can return true
+        foreach ($document->getDossiers() as $dossier) {
+            if ($dossier->getStatus() == Dossier::STATUS_PUBLISHED) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Generate the link from the given document ID found in the link. If the link is not an existing document id, it will be returned as is.
+     */
+    public function generateDocumentLink(string $link): string
+    {
+        /** @var Document|null $document */
+        $document = $this->documentRepository->findOneBy(['documentNr' => $link]);
+        if (is_null($document)) {
+            return $link;
+        }
+
+        // If we find a dossier with status published, we can return true
+        foreach ($document->getDossiers() as $dossier) {
+            if ($dossier->getStatus() == Dossier::STATUS_PUBLISHED) {
+                return $this->urlGenerator->generate('app_document_detail', [
+                    'dossierId' => $dossier->getDossierNr(),
+                    'documentId' => $document->getDocumentNr(),
+                ]);
+            }
+        }
+
+        return $link;
+    }
+
+    public function getCitationType(string $citation): string
+    {
+        return Citation::getCitationType($citation);
+    }
+
+    public function queryStringWithoutParam(string $queryParam, string $value): string
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        if (! $request) {
+            return '';
+        }
+
+        $queryString = strval($request->getQueryString());
+        parse_str($queryString, $currentParams);
+        parse_str($queryParam, $paramToRemove);
+        $paramKeyToRemove = key($paramToRemove);
+
+        $currentParamValue = $currentParams[$paramKeyToRemove] ?? null;
+        if ($currentParamValue === null) {
+            return $queryString;
+        }
+
+        if (is_array($currentParamValue)) {
+            if (array_is_list($currentParamValue)) {
+                foreach ($currentParamValue as $paramSubKey => $paramSubValue) {
+                    if ($paramSubValue === $value) {
+                        unset($currentParams[$paramKeyToRemove][$paramSubKey]);
+                        break;
+                    }
+                }
+            } else {
+                /** @var array<string, array<string, string>> $paramToRemove */
+                $paramSubKey = key($paramToRemove[$paramKeyToRemove]);
+                unset($currentParams[$paramKeyToRemove][$paramSubKey]);
+            }
+        } else {
+            unset($currentParams[$paramKeyToRemove]);
+        }
+
+        $currentParams = array_filter($currentParams);
+
+        $query = http_build_query($currentParams);
+        $query = preg_replace('/%5B\d+%5D/imU', '%5B%5D', $query);
+
+        return strval($query);
     }
 }

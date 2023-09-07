@@ -1,22 +1,29 @@
 <div class="gallery">
-    <div class="gallery__container">
+    <ol class="gallery__container">
     {% for page in range(1, document.pageCount) %}
-
-        {% if has_thumbnail(document, page) %}
-            <a class="gallery__item" href="{{ path('app_document_download_page', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: page}) }}">
-            <img
-                alt="{{ "Page" | trans }} {{ page }}"
-                class="gallery__image"
-                src="{{ path('app_document_thumbnail', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: page}) }}"
-            />
-            </a>
-        {% else %}
-            <img
-                alt="{{ "This page is not yet processed by our system" | trans }}"
-                class="gallery__image"
-                src="{{ path('app_document_thumbnail', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: page}) }}"
-            />
-        {% endif %}
+        <li class="block">
+            {% if has_thumbnail(document, page) %}
+                <span class="sr-only">{{ "Download" | trans }}</span>
+                <a class="block" href="{{ path('app_document_download', { dossierId: dossier.dossierNr, documentId: document.documentNr}) }}#page={{page}}">
+                    <img
+                        alt="{{ "Page" | trans }} {{ page }}"
+                        class="gallery__image"
+                        src="{{ path('app_document_thumbnail', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: page}) }}"
+                        width="204"
+                        height="285"
+                        loading="lazy"
+                    />
+                </a>
+            {% else %}
+                <img
+                    alt="{{ "This page is not yet processed by our system" | trans }}"
+                    class="gallery__image gallery__image--no-thumbnail"
+                    src="{{ path('app_document_thumbnail', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: page}) }}"
+                    width="204"
+                    height="285"
+                />
+            {% endif %}
+        </li>
     {% endfor %}
-    </div>
+    </ol>
 </div>

@@ -1,24 +1,27 @@
 .decision {
-  &__case-number {
-    color: #535353;
-    font-size: 16px;
-    white-space: nowrap;
-    padding-right: 85px;
-  }
+    &__case-number {
+        color: #535353;
+        font-size: 16px;
+        white-space: nowrap;
+        padding-right: 85px;
 
-  &__detail-link {
-    text-decoration: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    &:after {
-      color: #999999;
-      width: 8px;
-      height: 14px;
-      padding: 0;
-      content: '';
-      background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjE0IiB2aWV3Qm94PSIwIDAgOCAxNCIgZmlsbD0ibm9uZSI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wLjI5Mjg5MyAwLjI5Mjg5M0MwLjY4MzQxNyAtMC4wOTc2MzExIDEuMzE2NTggLTAuMDk3NjMxMSAxLjcwNzExIDAuMjkyODkzTDcuNzA3MTEgNi4yOTI4OUM4LjA5NzYzIDYuNjgzNDIgOC4wOTc2MyA3LjMxNjU4IDcuNzA3MTEgNy43MDcxMUwxLjcwNzExIDEzLjcwNzFDMS4zMTY1OCAxNC4wOTc2IDAuNjgzNDE3IDE0LjA5NzYgMC4yOTI4OTMgMTMuNzA3MUMtMC4wOTc2MzExIDEzLjMxNjYgLTAuMDk3NjMxMSAxMi42ODM0IDAuMjkyODkzIDEyLjI5MjlMNS41ODU3OSA3TDAuMjkyODkzIDEuNzA3MTFDLTAuMDk3NjMxMSAxLjMxNjU4IC0wLjA5NzYzMTEgMC42ODM0MTcgMC4yOTI4OTMgMC4yOTI4OTNaIiBmaWxsPSIjOTk5OTk5Ii8+Cjwvc3ZnPg==) no-repeat;
+        &:after {
+            color: #999999;
+            width: 8px;
+            height: 14px;
+            padding: 0;
+            content: '';
+            background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjE0IiB2aWV3Qm94PSIwIDAgOCAxNCIgZmlsbD0ibm9uZSI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wLjI5Mjg5MyAwLjI5Mjg5M0MwLjY4MzQxNyAtMC4wOTc2MzExIDEuMzE2NTggLTAuMDk3NjMxMSAxLjcwNzExIDAuMjkyODkzTDcuNzA3MTEgNi4yOTI4OUM4LjA5NzYzIDYuNjgzNDIgOC4wOTc2MyA3LjMxNjU4IDcuNzA3MTEgNy43MDcxMUwxLjcwNzExIDEzLjcwNzFDMS4zMTY1OCAxNC4wOTc2IDAuNjgzNDE3IDE0LjA5NzYgMC4yOTI4OTMgMTMuNzA3MUMtMC4wOTc2MzExIDEzLjMxNjYgLTAuMDk3NjMxMSAxMi42ODM0IDAuMjkyODkzIDEyLjI5MjlMNS41ODU3OSA3TDAuMjkyODkzIDEuNzA3MTFDLTAuMDk3NjMxMSAxLjMxNjU4IC0wLjA5NzYzMTEgMC42ODM0MTcgMC4yOTI4OTMgMC4yOTI4OTNaIiBmaWxsPSIjOTk5OTk5Ii8+Cjwvc3ZnPg==) no-repeat;
+            position: absolute;
+            right: 30px;
+        }
     }
-  }
+
+    &__detail-link {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
 }

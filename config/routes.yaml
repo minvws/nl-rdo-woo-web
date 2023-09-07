@@ -8,34 +8,71 @@ app_contact:
     path:          /contact
     controller:    App\Controller\LocalizedTemplateController
     defaults:
-        template:  'static/contact.{locale}.html.twig'
+        template:  'static/contact.html.twig'
+    options:
+        sitemap:
+          priority: 0.7
+          changefreq: monthly
 
 app_privacy:
     path:          /privacy
     controller:    App\Controller\LocalizedTemplateController
     defaults:
-        template:  'static/privacy.{locale}.html.twig'
+        template:  'static/privacy.html.twig'
+    options:
+        sitemap:
+          priority: 0.7
+          changefreq: monthly
+          section: legal
 
-app_about:
+app_about: &app_about
     path:          /about
     controller:    App\Controller\LocalizedTemplateController
     defaults:
-        template:  'static/about.{locale}.html.twig'
+        template:  'static/about.html.twig'
+    options:
+        sitemap:
+          priority: 0.7
+          changefreq: monthly
+          section: legal
+
+app_about_dutch:
+  <<: *app_about
+  path: /over-deze-website
 
 app_copyright:
     path:          /copyright
     controller:    App\Controller\LocalizedTemplateController
     defaults:
-        template:  'static/copyright.{locale}.html.twig'
+        template:  'static/copyright.html.twig'
+    options:
+        sitemap:
+          priority: 0.7
+          changefreq: monthly
+          section: legal
 
 app_cookies:
     path:          /cookies
     controller:    App\Controller\LocalizedTemplateController
     defaults:
-        template:  'static/cookies.{locale}.html.twig'
+        template:  'static/cookies.html.twig'
+    options:
+        sitemap:
+            priority: 0.7
+            changefreq: monthly
+            section: legal
 
-app_accessibility:
+app_accessibility: &app_accessibility
     path:          /accessibility
     controller:    App\Controller\LocalizedTemplateController
     defaults:
-        template:  'static/accessibility.{locale}.html.twig'
+        template:  'static/accessibility.html.twig'
+    options:
+        sitemap:
+            priority: 0.7
+            changefreq: monthly
+            section: legal
+
+app_accessibility_dutch:
+  <<: *app_accessibility
+  path: /toegankelijkheid

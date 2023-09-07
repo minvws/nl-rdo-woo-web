@@ -4,31 +4,34 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query\Aggregation;
 
+use App\Service\Search\Model\Config;
+use App\Service\Search\Query\Dsl\TermsAggregationWithMinDocCount;
+use App\Service\Search\Query\Facet\FacetDefinition;
+use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
+use Erichard\ElasticQueryBuilder\Constants\SortDirections;
+
 class TermsAggregationStrategy implements AggregationStrategyInterface
 {
     public function __construct(
-        protected string $tagName,
-        protected string $fieldName,
-        protected int $maxCount,
+        // Set to false for AND behaviour in facet counts.
+        private readonly bool $excludeOwnFilters = true,
     ) {
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function getQuery(): array
+    public function getAggregation(FacetDefinition $facet, Config $config, int $maxCount): AbstractAggregation
     {
-        return [
-            $this->tagName => [
-                'terms' => [
-                    'field' => $this->fieldName,
-                    'size' => $this->maxCount,
-                    'order' => [
-                        '_count' => 'desc',
-                    ],
-                    'min_doc_count' => 0,
-                ],
-            ],
-        ];
+        return new TermsAggregationWithMinDocCount(
+            name: $facet->getFacetKey(),
+            fieldOrSource: $facet->getPath(),
+            minDocCount: 1,
+            orderField: '_count',
+            orderValue: SortDirections::DESC,
+            size: $maxCount,
+        );
+    }
+
+    public function excludeOwnFilters(): bool
+    {
+        return $this->excludeOwnFilters;
     }
 }

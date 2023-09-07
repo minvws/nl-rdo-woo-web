@@ -48,7 +48,8 @@ framework:
             App\Message\InitializeElasticRolloverMessage: high
             App\Message\SetElasticAliasMessage: high
 
-            App\Message\IngestDossiersMessage: ingestor                # Ingests an audio file
+            App\Message\IngestDossiersMessage: ingestor                # Ingests all dossiers
+            App\Message\IngestDossierMessage: ingestor                 # Ingests a single dossier
             App\Message\IngestAudioMessage: ingestor                   # Ingests an audio file
             App\Message\IngestPdfMessage: ingestor                     # Ingests a complete PDF document and fires a message for each page
             App\Message\IngestPdfPageMessage: ingestor                 # Ingests a single PDF page from a PDF document
@@ -57,5 +58,6 @@ framework:
             App\Message\UpdateDossierMessage: esupdater                # Updates the dossier in the elastic index
             App\Message\UpdateDepartmentMessage: esupdater             # Updates the dossier in the elastic index
             App\Message\UpdateOfficialMessage: esupdater               # Updates the dossier in the elastic index
+            App\Message\RemoveDossierMessage: esupdater                # Removes a dossier in the elastic index
 
             App\Message\GenerateArchiveMessage: global                 # Generates a ZIP archive of the dossier

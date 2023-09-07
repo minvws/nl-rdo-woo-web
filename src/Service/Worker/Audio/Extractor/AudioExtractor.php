@@ -72,6 +72,8 @@ class AudioExtractor implements AudioExtractorInterface
 
         $content = $this->extractText($localAudioPath);
 
+        $this->documentStorage->removeDownload($localAudioPath);
+
         return [$content, $metaData];
     }
 

@@ -6,65 +6,59 @@ namespace App\Service\Search\Query;
 
 use App\ElasticConfig;
 use App\Service\Search\Model\Config;
-use App\Service\Search\Model\Facet;
-use App\Service\Search\Query\Aggregation\NestedAggregationStrategy;
-use App\Service\Search\Query\Aggregation\TermsAggregationStrategy;
-use App\Service\Search\Query\DossierStrategy\TopLevelDossierStrategy;
+use App\Service\Search\Query\Condition\ContentAccessConditions;
+use App\Service\Search\Query\Condition\FacetConditions;
+use App\Service\Search\Query\Condition\SearchTermConditions;
+use Erichard\ElasticQueryBuilder\Query\BoolQuery;
+use Erichard\ElasticQueryBuilder\Query\QueryStringQuery;
+use Erichard\ElasticQueryBuilder\QueryBuilder;
 
 class QueryGenerator
 {
     public function __construct(
-        protected DocumentQueryGenerator $docQueryGen,
-        protected DossierQueryGenerator $dosQueryGen,
-        protected Config $config
+        private readonly AggregationGenerator $aggregationGenerator,
+        private readonly ContentAccessConditions $accessConditions,
+        private readonly FacetConditions $facetConditions,
+        private readonly SearchTermConditions $searchTermConditions,
     ) {
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function createFacetsQuery(): array
+    public function createFacetsQuery(Config $config): QueryBuilder
     {
-        $query = [
-            'index' => ElasticConfig::READ_INDEX,
-            'body' => [
-                'size' => 0,
-                '_source' => false,
-                'aggs' => $this->addAggregations(5),
-                'query' => $this->addQuery(),
-            ],
-        ];
+        $queryBuilder = new QueryBuilder();
+        $queryBuilder->setIndex(ElasticConfig::READ_INDEX);
+        $queryBuilder->setSize(0);
+        $queryBuilder->setSource(false);
 
-        return $query;
+        $this->addQuery($queryBuilder, $config);
+
+        $this->aggregationGenerator->addAggregations($queryBuilder, $config, 5);
+
+        return $queryBuilder;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function createExtendedFacetsQuery(): array
+    public function createExtendedFacetsQuery(Config $config): QueryBuilder
     {
-        $query = [
-            'index' => ElasticConfig::READ_INDEX,
-            'body' => [
-                'size' => 0,
-                '_source' => false,
-                'aggs' => $this->addAggregations(25),
-            ],
-        ];
+        $queryBuilder = new QueryBuilder();
+        $queryBuilder->setIndex(ElasticConfig::READ_INDEX);
+        $queryBuilder->setSize(0);
+        $queryBuilder->setSource(false);
 
-        return $query;
+        $this->addQuery($queryBuilder, $config);
+        $this->aggregationGenerator->addAggregations($queryBuilder, $config, 25);
+
+        return $queryBuilder;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function createQuery(): array
+    public function createQuery(Config $config): QueryBuilder
     {
-        $query = [
-            'index' => ElasticConfig::READ_INDEX,
+        $queryBuilder = new QueryBuilder();
+        $queryBuilder->setIndex(ElasticConfig::READ_INDEX);
+        $queryBuilder->setSize($config->limit);
+        $queryBuilder->setFrom($config->offset);
+
+        $params = [
             'body' => [
-                'size' => $this->config->limit,
-                'from' => $this->config->offset,
                 '_source' => [
                     'excludes' => [
                         'content',
@@ -73,24 +67,42 @@ class QueryGenerator
                         'dossiers.inquiry_ids',
                     ],
                 ],
-                'query' => $this->addQuery(),
-                'highlight' => $this->addHighlighting(),
-                'aggs' => $this->addAggregations(25),
-                'suggest' => $this->addSuggestions(),
             ],
         ];
 
-        return $query;
+        if ($config->query !== '') {
+            $params['body']['suggest'] = $this->getSuggestParams($config);
+        }
+
+        $queryBuilder->setParams($params);
+
+        $this->addQuery($queryBuilder, $config);
+        $this->aggregationGenerator->addAggregations($queryBuilder, $config, 25);
+        $this->aggregationGenerator->addDocTypeAggregations($queryBuilder);
+        $this->addHighlight($queryBuilder, $config);
+
+        return $queryBuilder;
+    }
+
+    private function addQuery(QueryBuilder $queryBuilder, Config $config): void
+    {
+        $query = new BoolQuery();
+
+        $this->accessConditions->applyToQuery($config, $query);
+        $this->facetConditions->applyToQuery($config, $query);
+        $this->searchTermConditions->applyToQuery($config, $query);
+
+        $queryBuilder->setQuery($query);
     }
 
     /**
      * @return array<string, mixed>
      */
-    protected function addSuggestions(): array
+    private function getSuggestParams(Config $config): array
     {
-        $suggestions = [
+        return [
             ElasticConfig::SUGGESTIONS_SEARCH_INPUT => [
-                'text' => $this->config->query,
+                'text' => $config->query,
                 'term' => [
                     'field' => 'content_for_suggestions',
                     'size' => 3,
@@ -100,127 +112,24 @@ class QueryGenerator
                 ],
             ],
         ];
-
-        return $suggestions;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    protected function addQuery(): array
+    private function addHighlight(QueryBuilder $queryBuilder, Config $config): void
     {
-        $documentQuery = $this->getDocumentQuery();
-        $dossierQuery = $this->getDossierQuery();
-        $combinedQuery = $this->combineQueries([$documentQuery, $dossierQuery]);
-
-        return $combinedQuery;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    protected function getDocumentQuery(): array
-    {
-        if (! in_array($this->config->searchType, [Config::TYPE_DOCUMENT, Config::TYPE_ALL])) {
-            return [];
+        if ($config->query === '') {
+            return;
         }
 
-        $dossierConditions = $this->docQueryGen->getConditions($this->config);
+        // Hightlighting uses a 'clean' query with additional filters like status.
+        // This is very important, otherwise filter values like 'document' and statuses will be highlighted in content.
+        $query = new QueryStringQuery(
+            query: $config->query,
+            fields: ['title', 'summary', 'decision_content', 'dossiers.summary', 'dossiers.title', 'pages.content'],
+        );
 
-        return $dossierConditions;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    protected function getDossierQuery(): array
-    {
-        if (! in_array($this->config->searchType, [Config::TYPE_DOSSIER, Config::TYPE_ALL])) {
-            return [];
-        }
-
-        $dossierConditions = $this->dosQueryGen->getConditions($this->config, new TopLevelDossierStrategy());
-
-        return $dossierConditions;
-    }
-
-    /**
-     * @param array<array<string, mixed>> $queries
-     *
-     * @return array<string, mixed>
-     */
-    protected function combineQueries(array $queries): array
-    {
-        $queries = array_values(array_filter($queries));
-        $count = count($queries);
-
-        return match ($count) {
-            0 => [],
-            1 => $queries[0],
-            default => [
-                'bool' => [
-                    'should' => $queries,
-                    'minimum_should_match' => 1,
-                ],
-            ],
-        };
-    }
-
-    protected function addAggregations(int $maxCount = 5): \stdClass
-    {
-        if (! $this->config->aggregations) {
-            return (object) [];
-        }
-
-        // Based on what type we are searching for, we need to aggregate on different fields
-        // When searching on dossiers only, we never find aggregations for 'dossiers.departments.name' for instance, but only for 'department.name'
-        $aggregationConfig = [
-            Config::TYPE_DOCUMENT => [
-                new NestedAggregationStrategy('dossiers', 'dossiers', [
-                    new TermsAggregationStrategy(Facet::FACET_DEPARTMENT, 'dossiers.departments.name', $maxCount),
-                    new TermsAggregationStrategy(Facet::FACET_OFFICIAL, 'dossiers.government_officials.name', $maxCount),
-                    new TermsAggregationStrategy(Facet::FACET_PERIOD, 'dossiers.date_period', $maxCount),
-                ]),
-                new TermsAggregationStrategy(Facet::FACET_SUBJECT, 'subjects', $maxCount),
-                new TermsAggregationStrategy(Facet::FACET_SOURCE, 'source_type', $maxCount),
-                new TermsAggregationStrategy(Facet::FACET_GROUNDS, 'grounds', $maxCount),
-                new TermsAggregationStrategy(Facet::FACET_JUDGEMENT, 'judgement', $maxCount),
-            ],
-            Config::TYPE_DOSSIER => [
-                new TermsAggregationStrategy(Facet::FACET_DEPARTMENT, 'departments.name', $maxCount),
-                new TermsAggregationStrategy(Facet::FACET_OFFICIAL, 'government_officials.name', $maxCount),
-                new TermsAggregationStrategy(Facet::FACET_PERIOD, 'date_period', $maxCount),
-                new TermsAggregationStrategy(Facet::FACET_SUBJECT, 'subjects', $maxCount),
-                new TermsAggregationStrategy(Facet::FACET_SOURCE, 'source_type', $maxCount),
-                new TermsAggregationStrategy(Facet::FACET_GROUNDS, 'grounds', $maxCount),
-                new TermsAggregationStrategy(Facet::FACET_JUDGEMENT, 'judgement', $maxCount),
-            ],
-        ];
-        $aggregationConfig[Config::TYPE_ALL] = $aggregationConfig[Config::TYPE_DOCUMENT];
-
-        $aggregations = [];
-        foreach ($aggregationConfig[$this->config->searchType] as $strategy) {
-            $queryPart = $strategy->getQuery();
-            $aggregations = array_merge_recursive($aggregations, $queryPart);
-        }
-
-        $aggregations['unique_dossiers'] = [
-            'cardinality' => [
-                'field' => 'dossier_nr',
-            ],
-        ];
-
-        return (object) $aggregations;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    protected function addHighlighting(): array
-    {
-        return [
+        $queryBuilder->setHighlight([
             'max_analyzed_offset' => 1000000,
-            'pre_tags' => ['<span class=\'hl\'>'],
+            'pre_tags' => ['<span class=\'result-highlight\'>'],
             'post_tags' => ['</span>'],
             'fields' => [
                 // Document object
@@ -250,8 +159,14 @@ class QueryGenerator
                     'number_of_fragments' => 5,
                     'type' => 'unified',
                 ],
+                'decision_content' => [
+                    'fragment_size' => 50,
+                    'number_of_fragments' => 5,
+                    'type' => 'unified',
+                ],
             ],
-            'require_field_match' => false,
-        ];
+            'require_field_match' => true,
+            'highlight_query' => $query->build(),
+        ]);
     }
 }

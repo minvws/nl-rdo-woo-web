@@ -1,39 +1,78 @@
+{% set targetAnchor = fragment|default("#search-results") %}
+
 {% if pageCount > 1 %}
 
-    <div class="pagination">
+    <nav aria-label="{{ "Pagination" | trans() }}" class="pagination">
         <ul>
-
-            {% if first is defined and current != first %}
-                <li class="pagination__text">
-                    <a href="{{ path(route, query|merge({(pageParameterName): first})) }}">&laquo; {{ "First" | trans() }}</a>
+            {% if previous is defined %}
+                <li class="pagination__text !mr-auto">
+                    <a rel="prev" href="?{{ query|merge({(pageParameterName): previous}) | url_encode }}{{ targetAnchor }}">
+                        <span class="svg-icon svg-chevron-light-left mr-2" aria-hidden="true"/></span>
+                        {{ "Previous" | trans }}
+                    </a>
+                </li>
+            {% else %}
+                <li class="!mr-auto pagination__text" aria-hidden="true">
                 </li>
             {% endif %}
 
-            {% if previous is defined %}
-                <li class="pagination__text"><a rel="prev" href="{{ path(route, query|merge({(pageParameterName): previous})) }}">&laquo;&nbsp;{{ "Previous" | trans }}</a></li>
-            {% else %}
-                <li class="pagination__text"><span class="disabled">&laquo;</span></li>
+            {% if startPage > 1 %}
+                <li>
+                    <a href="?{{ query|merge({(pageParameterName): 1}) | url_encode }}{{ targetAnchor }}">1</a>
+                </li>
+                {% if startPage == 3 %}
+                    <li>
+                        <a href="?{{ query|merge({(pageParameterName): 2}) | url_encode }}{{ targetAnchor }}">2</a>
+                    </li>
+                {% elseif startPage != 2 %}
+                    <li class="uk-disabled">
+                        <span>&hellip;</span>
+                    </li>
+                {% endif %}
             {% endif %}
 
             {% for page in pagesInRange %}
                 {% if page != current %}
-                    <li {% if loop.first %}class="!ml-auto"{% endif %}><a href="{{ path(route, query|merge({(pageParameterName): page})) }}">{{ page }}</a></li>
+                    <li {% if loop.first %}class=""{% endif %}>
+                        <a href="?{{ query|merge({(pageParameterName): page}) | url_encode }}{{ targetAnchor }}">{{ page }}</a>
+                    </li>
                 {% else %}
-                    <li {% if loop.first %}class="!ml-auto"{% endif %}><a href="#" aria-current="page" class="active">{{ page }}</a></li>
+                    <li {% if loop.first %}class=""{% endif %}>
+                        <a href="{{ targetAnchor }}" aria-current="page" class="active">
+                            <span class="visually-hidden">{{ "Page" | trans() }} </span>{{ page }}
+                        </a>
+                    </li>
                 {% endif %}
             {% endfor %}
 
-            {% if next is defined %}
-                <li class="!ml-auto pagination__text"><a class="page-link" rel="next" href="{{ path(route, query|merge({(pageParameterName): next})) }}">{{ "Next" | trans() }}&nbsp;&raquo;</a></li>
-            {% else %}
-                <li class="!ml-auto pagination__text"><a href="#" class="disabled">&raquo;</a></li>
+            {% if pageCount > endPage %}
+                {% if pageCount > (endPage + 1) %}
+                    {% if pageCount > (endPage + 2) %}
+                        <li class="uk-disabled">
+                            <span>&hellip;</span>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="?{{ query|merge({(pageParameterName): (pageCount -1)}) | url_encode }}{{ targetAnchor }}">{{ pageCount -1 }}</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+                <li>
+                    <a href="?{{ query|merge({(pageParameterName): pageCount}) | url_encode }}{{ targetAnchor }}">{{ pageCount }}</a>
+                </li>
             {% endif %}
 
-            {% if last is defined and current != last %}
-                <li class="pagination__text">
-                    <a href="{{ path(route, query|merge({(pageParameterName): last})) }}">{{ "Last" | trans() }} &raquo;</a>
+            {% if next is defined %}
+                <li class="!ml-auto pagination__text">
+                    <a class="page-link" rel="next" href="?{{ query|merge({(pageParameterName): next}) | url_encode }}{{ targetAnchor }}">
+                        {{ "Next" | trans() }}
+                        <span class="svg-icon svg-chevron-light-right ml-2" aria-hidden="true"/></span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="!ml-auto pagination__text" aria-hidden="true">
                 </li>
             {% endif %}
         </ul>
-    </div>
+    </nav>
 {% endif %}

@@ -8,6 +8,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * @template-extends AbstractType<DepartmentType>
@@ -20,10 +22,23 @@ class DepartmentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class, [
-                'label' => 'Naam',
+            ->add('short_tag', TextType::class, [
+                'label' => 'Shortname',
                 'required' => true,
-                'help' => 'Naam van ministerie of organisatie',
+                'help' => 'Short name of the agency or ministry',
+                'constraints' => [
+                    new NotBlank(),
+                    new Length(['min' => 2, 'max' => 10]),
+                ],
+            ])
+            ->add('name', TextType::class, [
+                'label' => 'Name',
+                'required' => true,
+                'help' => 'Name of the agency or ministry',
+                'constraints' => [
+                    new NotBlank(),
+                    new Length(['min' => 2, 'max' => 100]),
+                ],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Opslaan',

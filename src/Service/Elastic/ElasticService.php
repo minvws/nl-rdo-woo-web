@@ -21,6 +21,7 @@ use Psr\Log\LoggerInterface;
  * Service for interacting with Elasticsearch. Together with the SearchService, this should be the only entrypoint to elasticsearch.
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class ElasticService
 {
@@ -43,15 +44,13 @@ class ElasticService
     public function updatePage(Document $document, int $pageNr, string $content): void
     {
         $this->logger->debug('[Elasticsearch][Index Page] Inserting page');
-
-        for ($retryCount = 0; $retryCount <= self::$maxRetries; $retryCount++) {
-            try {
-                $this->elastic->update([
-                    'index' => ElasticConfig::WRITE_INDEX,
-                    'id' => $document->getDocumentNr(),
-                    'body' => [
-                        'script' => [
-                            'source' => <<< EOF
+        $this->retry(function () use ($document, $pageNr, $content) {
+            $this->elastic->update([
+                'index' => ElasticConfig::WRITE_INDEX,
+                'id' => $document->getDocumentNr(),
+                'body' => [
+                    'script' => [
+                        'source' => <<< EOF
                                 if (ctx._source.pages == null) {
                                     ctx._source.pages = [params.page];
                                 } else {
@@ -68,41 +67,17 @@ class ElasticService
                                     }
                                 }
 EOF,
-                            'lang' => 'painless',
-                            'params' => [
-                                'page' => [
-                                    'page_nr' => $pageNr,
-                                    'content' => $content,
-                                ],
+                        'lang' => 'painless',
+                        'params' => [
+                            'page' => [
+                                'page_nr' => $pageNr,
+                                'content' => $content,
                             ],
                         ],
                     ],
-                ]);
-
-                return;
-            } catch (ClientResponseException $e) {
-                if ($retryCount == self::$maxRetries) {
-                    $this->logger->error('[Elasticsearch][Index Page] Too many retries', [
-                        'message' => $e->getMessage(),
-                        'code' => $e->getCode(),
-                    ]);
-                    throw $e;
-                }
-                if ($e->getCode() != 409) {
-                    $this->logger->error('[Elasticsearch][Index Page] An error occurred: {message}', [
-                        'message' => $e->getMessage(),
-                        'code' => $e->getCode(),
-                    ]);
-                    throw $e;
-                }
-
-                $waitMs = (int) ceil(min(100000 * pow(1.5, $retryCount), 5000000));
-                $this->logger->notice('[Elasticsearch][Index Page] Update document version mismatch. Retrying...', [
-                    'waitMs' => $waitMs,
-                ]);
-                usleep($waitMs);
-            }
-        }
+                ],
+            ]);
+        });
     }
 
     /**
@@ -121,23 +96,24 @@ EOF,
             $inquiryIds[] = $inquiry->getId();
         }
 
+        $file = $document->getFileInfo();
         $documentDoc = [
             'type' => 'document',
             'document_nr' => $document->getDocumentNr(),
             'dossier_nr' => $dossierIds,
-            'mime_type' => $document->getMimeType(),
-            'file_size' => $document->getFileSize(),
-            'file_type' => $document->getFileType(),
-            'source_type' => $document->getSourceType(),
+            'mime_type' => $file->getMimeType(),
+            'file_size' => $file->getSize(),
+            'file_type' => $file->getType(),
+            'source_type' => $file->getSourceType(),
             'date' => $document->getDocumentDate()->format(\DateTimeInterface::ATOM),
-            'filename' => $document->getFilename(),
+            'filename' => $file->getName(),
             'family_id' => $document->getFamilyId() ?? 0,
             'document_id' => $document->getDocumentId() ?? 0,
             'thread_id' => $document->getThreadId() ?? 0,
             'judgement' => $document->getJudgement(),
             'grounds' => $document->getGrounds(),
             'subjects' => $document->getSubjects(),
-            'period' => $document->getPeriod(),
+            'date_period' => $document->getPeriod(),
             'audio_duration' => $document->getDuration(),
             'document_pages' => $document->getPageCount(),
             'dossiers' => $dossiers,
@@ -229,6 +205,22 @@ EOF,
         }
     }
 
+    public function updateDossierDecisionContent(Dossier $dossier, string $content): void
+    {
+        $dossierDoc = [
+            'decision_content' => $content,
+        ];
+
+        $this->elastic->update([
+            'index' => ElasticConfig::WRITE_INDEX,
+            'id' => $dossier->getDossierNr(),
+            'body' => [
+                'doc' => $dossierDoc,
+                'doc_as_upsert' => true,
+            ],
+        ]);
+    }
+
     public function updateAudio(Document $document, Metadata $metadata): void
     {
         $ids = [];
@@ -257,11 +249,11 @@ EOF,
         ]);
     }
 
-    public function documentExists(Document $document): bool
+    public function documentExists(string $documentNr): bool
     {
         $result = $this->elastic->exists([
             'index' => ElasticConfig::WRITE_INDEX,
-            'id' => $document->getDocumentNr(),
+            'id' => $documentNr,
         ]);
 
         /** @var Elasticsearch $result */
@@ -341,7 +333,7 @@ EOF,
                                 }
                             }
                         }
-                          
+
                         if (ctx._source.dossiers != null) {
                             for (int i = 0; i < ctx._source.dossiers.length; i++) {
                                 if (ctx._source.dossiers[i].government_official != null) {
@@ -352,7 +344,7 @@ EOF,
                                     }
                                 }
                             }
-                        }                          
+                        }
 EOF,
                     'lang' => 'painless',
                     'params' => [
@@ -393,7 +385,7 @@ EOF,
                                 }
                             }
                         }
-                          
+
                         if (ctx._source.dossiers != null) {
                             for (int i = 0; i < ctx._source.dossiers.length; i++) {
                                 if (ctx._source.dossiers[i].departments != null) {
@@ -404,7 +396,7 @@ EOF,
                                     }
                                 }
                             }
-                        }                          
+                        }
 EOF,
                     'lang' => 'painless',
                     'params' => [
@@ -464,46 +456,120 @@ EOF,
     private function updateAllDocumentsForDossier(Dossier $dossier, array $dossierDoc): void
     {
         $this->logger->debug('[Elasticsearch][Update Dossier] Updating dossier in document');
-        for ($retryCount = 0; $retryCount <= self::$maxRetries; $retryCount++) {
-            try {
-                $this->elastic->updateByQuery([
-                    'index' => ElasticConfig::WRITE_INDEX,
-                    'body' => [
-                        'query' => [
-                            'bool' => [
-                                'must' => [
-                                    ['match' => ['type' => Config::TYPE_DOCUMENT]],
-                                    ['match' => ['dossier_nr' => $dossier->getDossierNr()]],
-                                ],
-                            ],
-                        ],
-                        'script' => [
-                            'source' => <<< EOF
-                                for (int i = 0; i < ctx._source.dossiers.length; i++) {
-                                    if (ctx._source.dossiers[i].dossier_nr == params.dossier.dossier_nr) {
-                                        ctx._source.dossiers[i] = params.dossier;
-                                    }
-                                }
-EOF,
-                            'lang' => 'painless',
-                            'params' => [
-                                'dossier' => $dossierDoc,
+        $this->retry(function () use ($dossier, $dossierDoc) {
+            $this->elastic->updateByQuery([
+                'index' => ElasticConfig::WRITE_INDEX,
+                'body' => [
+                    'query' => [
+                        'bool' => [
+                            'must' => [
+                                ['match' => ['type' => Config::TYPE_DOCUMENT]],
+                                ['match' => ['dossier_nr' => $dossier->getDossierNr()]],
                             ],
                         ],
                     ],
-                ]);
+                    'script' => [
+                        'source' => <<< EOF
+                            for (int i = 0; i < ctx._source.dossiers.length; i++) {
+                                if (ctx._source.dossiers[i].dossier_nr == params.dossier.dossier_nr) {
+                                    ctx._source.dossiers[i] = params.dossier;
+                                }
+                            }
+EOF,
+                        'lang' => 'painless',
+                        'params' => [
+                            'dossier' => $dossierDoc,
+                        ],
+                    ],
+                ],
+            ]);
+        });
+    }
+
+    // Removes the nested dossier entry from all documents that have this dossier. Note that this can
+    // leave orphaned documents (documents that do not have any dossiers as nested entities). We assume
+    // that these are cleaned up BEFORE running this function.
+    private function removeAllDocumentsForDossier(Dossier $dossier): void
+    {
+        $this->retry(function () use ($dossier) {
+            $this->elastic->updateByQuery([
+                'index' => ElasticConfig::WRITE_INDEX,
+                'body' => [
+                    'query' => [
+                        'bool' => [
+                            'must' => [
+                                ['match' => ['type' => Config::TYPE_DOCUMENT]],
+                                ['match' => ['dossier_nr' => $dossier->getDossierNr()]],
+                            ],
+                        ],
+                    ],
+                    'script' => [
+                        'source' => <<< EOF
+                            for (int i = ctx._source.dossiers.length-1; i>=0; i-) {
+                                if (ctx._source.dossiers[i].dossier_nr == params.dossier_nr) {
+                                    ctx._source.dossiers.remove(i);
+                                }
+                            }
+EOF,
+                        'lang' => 'painless',
+                        'params' => [
+                            'dossier_nr' => $dossier->getDossierNr(),
+                        ],
+                    ],
+                ],
+            ]);
+        });
+    }
+
+    // Removes a given document
+    public function removeDocument(string $documentNr): void
+    {
+        if (! $this->documentExists($documentNr)) {
+            return;
+        }
+
+        // @Note: it's possible that the document is removed in between checking for existence and deleting.
+
+        // Delete document
+        $this->elastic->delete([
+            'index' => ElasticConfig::WRITE_INDEX,
+            'id' => $documentNr,
+        ]);
+    }
+
+    // Removes a dossier and all references inside documents that have this dossier as nested object.
+    public function removeDossier(Dossier $dossier): void
+    {
+        // Remove all dossier entries found in documents
+        $this->removeAllDocumentsForDossier($dossier);
+
+        // Delete dossier document
+        $this->elastic->delete([
+            'index' => ElasticConfig::WRITE_INDEX,
+            'id' => $dossier->getDossierNr(),
+        ]);
+    }
+
+    // Will retry a callable for a specified number of times. If the callable throws a ClientResponseException with a 409 code, it will
+    // retry the callable. If the callable throws a ClientResponseException with a different code, it will throw the exception.
+    // If the callable throws any other exception, it will throw the exception.
+    protected function retry(callable $fn): void
+    {
+        for ($retryCount = 0; $retryCount <= self::$maxRetries; $retryCount++) {
+            try {
+                $fn();
 
                 return;
             } catch (ClientResponseException $e) {
                 if ($retryCount == self::$maxRetries) {
-                    $this->logger->error('[Elasticsearch][Update Dossier] Too many retries', [
+                    $this->logger->error('[Elasticsearch] Too many retries', [
                         'message' => $e->getMessage(),
                         'code' => $e->getCode(),
                     ]);
                     throw $e;
                 }
                 if ($e->getCode() != 409) {
-                    $this->logger->error('[Elasticsearch][Update Dossier] An error occurred: {message}', [
+                    $this->logger->error('[Elasticsearch] An error occurred: {message}', [
                         'message' => $e->getMessage(),
                         'code' => $e->getCode(),
                     ]);
@@ -511,7 +577,7 @@ EOF,
                 }
 
                 $waitMs = (int) ceil(min(100000 * pow(1.4, $retryCount), 5000000));
-                $this->logger->notice('[Elasticsearch][Update Dossier] Update dossier version mismatch. Retrying...', [
+                $this->logger->notice('[Elasticsearch] Update dossier version mismatch. Retrying...', [
                     'waitMs' => $waitMs,
                 ]);
                 usleep($waitMs);

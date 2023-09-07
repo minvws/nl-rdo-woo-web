@@ -162,6 +162,56 @@ class ThumbnailStorageService
     }
 
     /**
+     * Returns the filesize in bytes, or 0 when file is not found (or empty, not readable etc).
+     */
+    public function fileSize(Document $document, int $pageNr = null): int
+    {
+        if ($pageNr) {
+            $path = $this->generatePagePath($document, $pageNr);
+        } else {
+            $path = $this->generateDocumentPath($document);
+        }
+
+        $this->logger->info('Path: ' . $path);
+
+        // Create path if not exists
+        try {
+            return $this->storage->fileSize($path);
+        } catch (FilesystemException $e) {
+            // Could not create directory
+            $this->logger->error('Could not check file size', [
+                'document' => $document->getId(),
+                'path' => $path,
+                'exception' => $e->getMessage(),
+            ]);
+        }
+
+        return 0;
+    }
+
+    public function deleteAllThumbsForDocument(Document $document): bool
+    {
+        try {
+            $path = $this->generateDocumentPath($document);
+            $this->storage->delete($path);
+
+            for ($pageNr = 1; $pageNr <= $document->getPageCount(); $pageNr++) {
+                $path = $this->generatePagePath($document, $pageNr);
+                $this->storage->delete($path);
+            }
+        } catch (\Throwable $e) {
+            $this->logger->error('Could not delete thumbnails from storage', [
+                'exception' => $e->getMessage(),
+                'path' => $path ?? '',
+            ]);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Returns the root path of a document. Normally, this is /{prefix}/{suffix}, where prefix are the first two characters of the
      * SHA256 hash, and suffix is the rest of the SHA256 hash.
      */

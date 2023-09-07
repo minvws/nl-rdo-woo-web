@@ -111,7 +111,7 @@ This will generate a password and 2fa token with which you can log into the webs
 
 ## Step 10: Browse to the site
 
-When this is all done, you can goto the website at `http://localhost:8000/login`. You can log in with your
+When this is all done, you can goto the website at `http://localhost:8000/balie/login`. You can log in with your
 generated credentials.
 
 See [usage](usage.md) for more information on how to use the application.

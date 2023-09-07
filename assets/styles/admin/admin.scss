@@ -1,23 +1,31 @@
+@import "admin-tailwind";
+
 //@import "@minvws/nl-rdo-rijksoverheid-ui-theme/scss/main";
-@import "admin-variables.scss";
-@import "admin-base.scss";
-@import "admin-badge.scss";
-@import "admin-signin.scss";
-@import "admin-decisions.scss";
+@import "admin-variables";
+@import "admin-base";
+@import "admin-components/all";
+@import "admin-badge";
+@import "admin-signin";
+@import "admin-search-form";
+@import "admin-decisions";
+@import "admin-decisions-new";
 
 /* Manon overrides */
 :root {
-  --footer-flex-direction: row;
-  --footer-min-height: 56px;
-  --link-text-color: #01689B;
-  --link-hover-text-color: #004161;
-  --link-text-decoration: underline;
-  --form-input-border-color: #ccc;
-  --icon-font-family: #{$font-icon};
-  --button-icon-only-font-family: #{$font-icon};
-  --succes-700: #027A48;
-  --notification-error-intense-default: #D52A1E;
-  --notification-warning-intense-default: #FFB71A;
-  --notification-explanation-intense-default: #007BC7;
-  --ro-basic-set-orange: #E17000;
+    --gray-2: #E6E6E6;
+    --ro-basic-set-orange: #E17000;
+    --footer-flex-direction: row;
+    --footer-min-height: 56px;
+    --link-text-color: #01689B;
+    --link-hover-text-color: #004161;
+    --link-text-decoration: underline;
+    --form-input-border-color: #ccc;
+    --icon-font-family: #{$font-icon};
+    --icon-font-size: 1rem;
+    --succes-700: #027A48;
+    --notification-error-intense-default: #D52A1E;
+    --notification-warning-intense-default: #814081;
+    --notification-explanation-intense-default: #007BC7;
+    --color-step-default: var(--gray-2);
+    --color-step-active: var(--notification-explanation-intense-default);
 }

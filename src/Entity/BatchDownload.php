@@ -127,4 +127,9 @@ class BatchDownload
 
         return $this;
     }
+
+    public function getFilename(): string
+    {
+        return sprintf('dossier-%s-%s.zip', $this->getDossier()->getDossierNr(), $this->getId()->toBase58());
+    }
 }

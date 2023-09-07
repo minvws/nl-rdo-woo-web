@@ -75,6 +75,8 @@ class PageContentExtractor implements PageExtractorInterface
         $pageContent[] = $tikaData['X-TIKA:content'] ?? '';
         $pageContent[] = $this->tesseract->extract($localPdfPath);
 
+        $this->documentStorage->removeDownload($localPdfPath);
+
         return [join("\n", $pageContent), $tikaData];
     }
 
