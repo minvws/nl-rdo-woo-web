@@ -162,6 +162,7 @@ This is very important, as the system currently does not allow duplicate documen
 It will clear dossiers, documents and inquiries from the database.
 The ElasticSearch index and all message queues will also be emptied.
 
-Optionally you can also remove all users by including the `-u` command flag.
+Optionally you can remove all users by including the `-u` command flag.
+Optionally you can remove all prefixes by including the `-p` command flag.
 
 By default the command will ask for confirmation. For automation you can add a `--force` flag, this removes the confirmation.

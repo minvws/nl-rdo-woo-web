@@ -10,6 +10,10 @@ use PhpParser\Node\Stmt\Expression;
 use PhpParser\NodeVisitorAbstract;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * This class is a node visitor for the sql dump tool. It will traverse the AST and find the up method, and then
+ * process the statements in that method. If there is an addSql statement, it will write the SQL to the output.
+ */
 class NodeVisitor extends NodeVisitorAbstract
 {
     protected OutputInterface $output;

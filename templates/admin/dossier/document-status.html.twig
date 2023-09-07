@@ -1,6 +1,6 @@
 <div id="js-document-status" x-data="{show_all: true}">
     <p>
-        Er zijn <strong>{{ dossier.uploadCount }}</strong> van in totaal <strong>{{ dossier.documents|length }}</strong> documenten geupload.
+        Er zijn <strong>{{ uploadStatus.actualUploadCount }}</strong> van in totaal <strong>{{ uploadStatus.expectedUploadCount }}</strong> verwachte documenten geupload.
     </p>
 
     <div class="button-container">
@@ -10,6 +10,7 @@
     </div>
 
     <table class="table table-striped">
+        <caption class="visually-hidden">{{ "Dossier documents" | trans() }}</caption>
         <tr>
             <th>DocumentNr</th>
             <th>Document naam</th>
@@ -18,11 +19,11 @@
             <th>Opties</th>
         </tr>
 
-        {% for document in dossier.documents %}
+        {% for document in uploadStatus.expectedDocuments %}
             <tr {% if document.uploaded %}class="table-success" x-show=show_all{% endif %}>
                 <td>{{ document.documentNr }}</td>
-                <td>{{ document.filename }}</td>
-                <td nowrap>{% if document.filesize > 0 %}{{ document.filesize | size }}{% endif %}</td>
+                <td>{{ document.fileInfo.name }}</td>
+                <td nowrap>{% if document.fileInfo.size > 0 %}{{ document.fileInfo.size | size }}{% endif %}</td>
                 <td nowrap>{% if document.uploaded %}Geupload{% else %}Nog niet geupload{% endif %}</td>
                 <td><a class="button"
                        href="{{ path('app_admin_dossier_document_details', { dossierId: dossier.dossierNr, documentId: document.documentNr }) }}">Details</a>

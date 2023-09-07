@@ -2,64 +2,72 @@ $ro-font-path: "~@minvws/nl-rdo-rijksoverheid-ui-theme/fonts";
 
 /* Regular */
 @font-face {
-  font-family: "RO Sans Web";
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-  src: url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Regular.woff2") format("woff2"),
-  url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Regular.woff") format("woff"),
-  url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Regular.ttf") format("truetype");
+    font-family: "RO Sans Web";
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    src: url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Regular.woff2")
+            format("woff2"),
+        url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Regular.woff")
+            format("woff"),
+        url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Regular.ttf")
+            format("truetype");
 }
 
 /* Bold */
 @font-face {
-  font-family: "RO Sans Web Bold";
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-  src: url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Bold.woff2") format("woff2"),
-  url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Bold.woff") format("woff"),
-  url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Bold.ttf") format("truetype");
+    font-family: "RO Sans Web Bold";
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+    src: url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Bold.woff2")
+            format("woff2"),
+        url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Bold.woff")
+            format("woff"),
+        url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Bold.ttf")
+            format("truetype");
 }
 
 /* Italic */
 @font-face {
-  font-family: "RO Sans Web Italic";
-  font-weight: normal;
-  font-style: italic;
-  font-display: swap;
-  src: url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Italic.woff2") format("woff2"),
-  url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Italic.woff") format("woff"),
-  url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Italic.ttf") format("truetype");
+    font-family: "RO Sans Web Italic";
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+    src: url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Italic.woff2")
+            format("woff2"),
+        url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Italic.woff")
+            format("woff"),
+        url("#{$ro-font-path}/ro-sans-web/RO-SansWebText-Italic.ttf")
+            format("truetype");
 }
 
 /* Icon font */
 @font-face {
-  font-family: "RO Icons";
-  font-weight: normal;
-  font-style: normal;
-  src: url("#{$ro-font-path}/ro-icons/ro-icons-3.6.woff2") format("woff2"),
-  url("#{$ro-font-path}/ro-icons/ro-icons-3.6.woff") format("woff"),
-  url("#{$ro-font-path}/ro-icons/ro-icons-3.6.ttf") format("truetype");
+    font-family: "RO Icons";
+    font-weight: normal;
+    font-style: normal;
+    src: url("#{$ro-font-path}/ro-icons/ro-icons-3.6.woff2") format("woff2"),
+        url("#{$ro-font-path}/ro-icons/ro-icons-3.6.woff") format("woff"),
+        url("#{$ro-font-path}/ro-icons/ro-icons-3.6.ttf") format("truetype");
 }
 
 /* Admin colors */
-$gray-light: #CCCCCC;
-$gray-blue-x-light: #D0D5DD;
+$gray-light: #cccccc;
+$gray-blue-x-light: #d0d5dd;
 $gray-blue-semi-transparent: #08558566;
-$gray-dark: #1D1D1D;
-$gray-main-bg: #F3F3F3;
+$gray-dark: #1d1d1d;
+$gray-main-bg: #f3f3f3;
 $gray-neutral: #696969;
 $gray-535353: #535353;
 $gray-667085: #667085;
-$gray-F9FAFB: #F9FAFB;
+$gray-F9FAFB: #f9fafb;
 $gray-999: #999999;
-$white: #FFFFFF;
+$white: #ffffff;
 $black: #000000;
 
-
 /* links */
-$link-default: #01689B;
+$link-default: #01689b;
 $link-hover: #004161;
 
 /* fonts */
@@ -78,24 +86,47 @@ $color-input: $gray-667085;
 $color-td: $gray-535353;
 $color-input-border: $gray-blue-x-light;
 $color-button-border: $gray-blue-semi-transparent;
-$color-th-border: #E6E6E6;
-$color-th-background: #F3F3F3;
+$color-th-border: var(--gray-2);
+$color-th-background: #f3f3f3;
 $color-th-text: #475467;
 $color-th-text-hover: #344054;
-$color-tr-border: #E6E6E6;
-$color-tr-hover: #E5F0F9;
+$color-tr-border: var(--gray-2);
+$color-tr-hover: #e5f0f9;
 $color-status-concept: var(--notification-warning-intense-default);
 $color-status-ready: var(--notification-explanation-intense-default);
-$color-status-online: var(--ro-basic-set-orange);
+$color-status-online: var(--succes-700);
 $color-status-public: var(--succes-700);
 $color-status-retracted: var(--notification-error-intense-default);
 $color-chevron-right: #999999;
+$color-tab-active: $gray-535353;
 
 /* metrics */
 $base-line-height: calc(26 / 16) * 1em;
 $input-line-height: calc(24 / 16) * 1em;
 $main-padding: 1.5rem;
 $default-gap: 8px;
+$default-container-padding: 24px 16px;
+$default-container-padding-nth-1: 0 16px 24px 16px;
+$small-content-container: 808px;
 
 /* shadows */
 $shadow-xs: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+
+@mixin default-big-container {
+    width: 100%;
+    max-width: 1280px;
+}
+
+@mixin default-small-container {
+    width: 100%;
+    max-width: $small-content-container;
+}
+
+@mixin center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@mixin clear-padding {
+    padding: 0;
+}

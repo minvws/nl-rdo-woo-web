@@ -1,350 +1,447 @@
-'Stacks of documents': 'Stacks of documents'
-'Browse through published documents': 'Browse through published documents'
+"lang": "en"
+"Stacks of documents": "Stacks of documents"
+"Search or browse decisions and published documents through the categories": "Search or browse decisions and published documents through the categories"
+"Browse decisions and published documents through the categories": "Browse decisions and published documents through the categories"
 Organization: Organization
+"Filters": "Filters"
+"Close Filters": "Close Filters"
+Decision files: Decision files
+Organizations and government officials: Organizations and government officials
+Access control: Access control
 Subject: Subject
-'Document type': 'Document type'
 Period: Period
 Minister: Minister
-'Decision made': 'Decision made'
-'See more...': 'See more...'
-'Recent decisions': 'Recent decisions'
-'No title available': 'No title available'
-'# documents': >-
-    { count, plural,
-      =0{# documents}
-      =1{# document}
-      other{# documents}
-    }
-'# pages': >-
+"Decision made": "Decision made"
+"To all categories": "To all categories"
+"Recent decisions": "Recent decisions"
+"No title available": "No title available"
+"# decisions": >-
+  { count, plural,
+    =1{# decision}
+    other{# decisions}
+  }
+"# documents": >-
+  { count, plural,
+    =0{# documents}
+    =1{# document}
+    other{# documents}
+  }
+"# Documents": >-
+  { count, plural,
+    =1{# Document}
+    other{# Documents}
+  }
+"# pages": >-
   { count, plural,
     =0{# pages}
     =1{# page}
     other{# pages}
   }
-'View all decisions': 'View all decisions'
-'About this platform': 'About this platform'
-'On this website, you will find internal information from the Ministry of VWS. This information has been made public to show what the ministry did during the COVID-19 pandemic. You can read about how plans and decisions were made. There are many documents to read, including reports, plans, research results, letters to the Second Chamber, budgets, e-mails, and chat messages.': 'On this website, you will find internal information from the Ministry of VWS. This information has been made public to show what the ministry did during the COVID-19 pandemic. You can read about how plans and decisions were made. There are many documents to read, including reports, plans, research results, letters to the Second Chamber, budgets, e-mails, and chat messages.'
-'The documents have been made public under the Dutch Open Government Act (Wet open overheid) because journalists or other interested parties requested them. The ministry has also proactively made some of the documents public. We continue to add new documents.': 'The documents have been made public under the Dutch Open Government Act (Wet open overheid) because journalists or other interested parties requested them. The ministry has also proactively made some of the documents public. We continue to add new documents.'
-'Submit a freedom of information request': 'Submit a freedom of information request'
-'You send the freedom of information request to the organization from which you want to receive information.': 'You send the freedom of information request to the organization from which you want to receive information.'
-'Provide as precise a description as possible of the information you want.': 'Provide as precise a description as possible of the information you want.'
-"You may be contacted by the government for additional questions. Therefore, it's useful to provide your phone number with the request.": "You may be contacted by the government for additional questions. Therefore, it's useful to provide your phone number with the request."
+"are_or_is": >-
+  { count, plural,
+    =1{is}
+    other{are}
+  }
+"will": >-
+  { count, plural,
+    other{will}
+  }
+"View all decisions": "View all decisions"
+"OGA decisions of the Dutch Ministry of Health, Welfare and Sport": "OGA decisions of the Dutch Ministry of Health, Welfare and Sport"
+"Here you will find documents that the Ministry of Health, Welfare and Sport has made public on the basis of the Open Government Act (Woo). The documents are limited to the time of the corona pandemic.": "Here you will find documents that the Ministry of Health, Welfare and Sport has made public on the basis of the Open Government Act (Woo). The documents are limited to the time of the corona pandemic."
+"About the VWS Woo publication platform": "More about this website"
+"On this website you will find documents that the Ministry of Health, Welfare and Sport has made public on the basis of the Open Government Act (Woo). These documents have been made public for requests submitted under the Woo and are about the corona period.": "On this website you will find documents that the Ministry of Health, Welfare and Sport has made public on the basis of the Open Government Act (Woo). These documents have been made public for requests submitted under the Woo and are about the corona period."
+"From these documents it can be concluded how VWS has tackled the corona fight in collaboration with other ministries, institutions and organizations. Anyone can submit a request to make documents public under the Woo. Documents are still being added.": "From these documents it can be concluded how VWS has tackled the corona fight in collaboration with other ministries, institutions and organizations. Anyone can submit a request to make documents public under the Woo. Documents are still being added."
+"The published documents of the Ministry of Health, Welfare and Sport can currently still be found on various websites:": "The published documents of the Ministry of Health, Welfare and Sport can currently still be found on various websites:"
+"General decisions (not related to COVID-18) of the Ministry of Health, Welfare and Sport can be found on <a href='https://www.rijksoverheid.nl'>rijksoverheid.nl</a>": "General decisions (not related to COVID-19) of the Ministry of Health, Welfare and Sport can be found on <a href='https://www.rijksoverheid.nl'>rijksoverheid.nl</a>"
+"COVID-19 related decisions from before September 1, 2023 can be found on <a href='https://wobcovid19.rijksoverheid.nl'>wobcovid19.rijksoverheid.nl</a>": "COVID-19 related decisions from before September 1, 2023 can be found on <a href='https://wobcovid19.rijksoverheid.nl'>wobcovid19.rijksoverheid.nl</a>"
+"COVID-19 related decisions after September 1, 2023 can be found on this website": "COVID-19 related decisions after September 1, 2023 can be found on this website"
+"On OpenVWS, the documents are more accessible and searchable. We are working hard to make the documents from <a href='https://wobcovid19.rijksoverheid.nl'>wobcovid19.rijksoverheid.nl</a> available on this platform as well.": "On OpenVWS, the documents are more accessible and searchable. We are working hard to make the documents from <a href='https://wobcovid19.rijksoverheid.nl'>wobcovid19.rijksoverheid.nl</a> available on this platform as well."
+"Submit a freedom of information request": "Submit a freedom of information request"
+"You may request information about what the government does. This is stated in the <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Open Government Act (Woo)</a>. You do this via a Woo request. Good to know in advance:": "You may request information about what the government does. This is stated in the <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Open Government Act (Woo)</a>. You do this via a Woo request. Good to know in advance:"
+"Before making a request, check if the information you are looking for is already public. Check, for example, <a href='https://www.rijksoverheid.nl/documenten'>rijksoverheid.nl</a>, <a href='https://wobcovid19.rijksoverheid.nl/'>wobcovid19.rijksoverheid.nl</a>, <a href='https://zoek.officielebekendmakingen.nl/uitbeddenzoeken/parlementair'>the archive of the Senate and the House of Representatives</a> or <a href='https://open.overheid.nl/'>open.overheid.nl</a>.": "Before making a request, check if the information you are looking for is already public. Check, for example, <a href='https://www.rijksoverheid.nl/documenten'>rijksoverheid.nl</a>, <a href='https://wobcovid19.rijksoverheid.nl/'>wobcovid19.rijksoverheid.nl</a>, <a href='https://zoek.officielebekendmakingen.nl/uitbeddenzoeken/parlementair'>the archive of the Senate and the House of Representatives</a> or <a href='https://open.overheid.nl/'>open.overheid.nl</a>."
+"Check which government organization you should submit the request to. Do you have a request for the Ministry of Health, Welfare and Sport (VWS):": "Check which government organization you should submit the request to. Do you have a request for the Ministry of Health, Welfare and Sport (VWS):"
+"and is it about the COVID-19 period? See the page <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/aanpak-vws-woo-verzoeken-corona'>Approach VWS Woo requests corona;</a>": "and is it about the COVID-19 period? See the page Approach VWS Woo requests corona;"
+"for other requests, see the page Submitting a <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-verzoek-indienen'>Woo request to the Ministry of Health, Welfare and Sport.</a>": "for other requests, see the page Submitting a Woo request to the Ministry of Health, Welfare and Sport."
+"Please indicate as precisely as possible what information you are looking for. About what subject, with what people involved, from what period?": "Please indicate as precisely as possible what information you are looking for. About what subject, with what people involved, from what period?"
+"After submitting your request, the ministry may call you with some additional questions. It is therefore useful if you also provide your telephone number with the request.": "After submitting your request, the ministry may call you with some additional questions. It is therefore useful if you also provide your telephone number with the request."
 Warning: Warning
-'This document has not yet been converted in our system. It is not possible to view individual pages, but you can download the entire document.': 'This document has not yet been converted in our system. It is not possible to view individual pages, but you can download the entire document.'
-'Attachment of': 'Attachment of'
+"This document has not yet been converted in our system. It is not possible to view individual pages, but you can download the entire document.": "This document has not yet been converted in our system. It is not possible to view individual pages, but you can download the entire document."
+"Attachment of": "Attachment of"
 Download: Download
-'View online (beta)': 'View online (beta)'
-'Related documents': 'Related documents'
-'Other documents in this decision': 'Other documents in this decision'
-'File name': 'File name'
+"View online (beta)": "View online (beta)"
+"Related documents": "Related documents"
+"Other documents in this decision": "Other documents in this decision"
+"File name": "File name"
 Size: Size
 Section: Section
-'Page count': 'Page count'
-'Messages from the same e-mail conversation': 'Messages from the same e-mail conversation'
-'About this document': 'About this document'
-'Document Date': 'Document Date'
-'Document Type': 'Document Type'
-'Download Type': 'Download Type'
-'Document Number': 'Document Number'
+"Page count": "Page count"
+"Messages from the same e-mail conversation": "Messages from the same e-mail conversation"
+"About this document": "About this document"
+"Document Date": "Document date"
+"Document Type": "Document type"
+"Type": "Type"
+"Download Type": "Download type"
+"Document Number": "Document number"
 Labels: Labels
 Status: Status
-'What is redacted': 'What is redacted'
-'Do you encounter data in this document that you think should have been redacted? Or is the document difficult to read?': 'Do you encounter data in this document that you think should have been redacted? Or is the document difficult to read?'
-'Let us know': 'Let us know'
-'Attachments to this e-mail message': 'Attachments to this e-mail message'
-'There are no attachments to this e-mail message.': 'There are no attachments to this e-mail message.'
-'Background disclosure': 'Background disclosure'
-'Part of': 'Part of'
-Responsible: Responsible
-'Summary of request': 'Summary of request'
-'Time period': 'Time period'
-'Date of disclosure': 'Date of disclosure'
-'Type of decision': 'Type of decision'
-'Scope of disclosure': 'Scope of disclosure'
-'Inventory list': 'Inventory list'
-'Other decisions in which this document appears': 'Other decisions in which this document appears'
+"Document judgement": Judgement
+"What is redacted": "What is redacted"
+"Do you encounter data in this document that you think should have been redacted? Or is the document difficult to read?": "Do you encounter data in this document that you think should have been redacted? Or is the document difficult to read?"
+"Let us know": "Let us know"
+"Attachments to this e-mail message": "Attachments to this e-mail message"
+"There are no attachments to this e-mail message.": "There are no attachments to this e-mail message."
+"Background": "Background"
+"Part of": "Part of"
+Responsible: Responsible Ministry
+Summary: Summary
+"Summary of request": "Summary of request"
+"Time period": "Time period"
+"Date of disclosure": "Date of disclosure"
+"Type of decision": "Type of decision"
+"Scope of disclosure": "Scope of disclosure"
+"Inventory list": "Inventory list"
+"Other decisions in which this document appears": "Other decisions in which this document appears"
 Title: Title
 Description: Description
-'Document count': 'Document count'
-'Woo Platform': 'Woo Platform'
-'Go directly to content': 'Go directly to content'
-'Ministry of Health, Welfare and Sport': 'Ministry of Health, Welfare and Sport'
-'Main Navigation': 'Main Navigation'
-'Close menu': 'Close menu'
+"Document count": "Document count"
+"Woo Platform": "OpenVWS"
+"Go directly to content": "Go directly to content"
+"Ministry of Health, Welfare and Sport": "Ministry of Health, Welfare and Sport"
+"Main Navigation": "Main Navigation"
+"Close menu": "Close menu"
 Menu: Menu
-'Homepage': 'Homepage'
-'Public COVID documents': 'Public COVID documents'
-'All published decisions': 'All published decisions'
-'The central government. For the Netherlands': 'The central government. For the Netherlands'
+"Homepage": "Homepage"
+"Search for documents and decisions": "Search for documents and decisions"
+"All published decisions": "All published decisions"
+"The central government. For the Netherlands": "The central government. For the Netherlands"
 Service: Service
 Contact: Contact
-'RSS recent publications': 'RSS recent publications'
+"We make every effort to supplement this website with relevant information.": "We make every effort to supplement this website with relevant information."
+"Would you like to contact us? Send an e-mail to <a href='mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl'>_dienstpostbusWoo-corona-ondersteuning@minvws.nl</a>. We can help you with the following:": "Would you like to contact us? Send an e-mail to <a href='mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl'>_dienstpostbusWoo-corona-ondersteuning@minvws.nl</a>. We can help you with the following:"
+"submit a Woo request": "submit a Woo request"
+"questions or comments about the website": "questions or comments about the website"
+"report a document on this website where additional information needs to be obscured (e.g. a person's name or contact details).": "report a document on this website where additional information needs to be obscured (e.g. a person's name or contact details)."
+"For feedback, tips and suggestions on how we can improve this website, please email us at <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl</a>": "For feedback, tips and suggestions on how we can improve this website, please email us at <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl</a>"
+"RSS recent publications": "RSS recent publications"
 Archive: Archive
 Login: Login
+"This decision has not been published yet and is only visible in preview mode.": "This decision has not been published yet and is only visible in preview mode."
 Counter: Counter
 Logout: Logout
-'About this site': 'About this site'
-'About Woo': 'About Woo'
+"About this site": "About this site"
+"About Woo": "About Woo"
 Copyright: Copyright
+"Anyone may reuse the information on this website under the Reuse of Government Information Act, unless otherwise indicated.": "Anyone may reuse the information on this website under the Reuse of Government Information Act, unless otherwise indicated."
+"The right to reuse applies to all types of information. For example, texts, reports, photos, graphs and images. The reuse applies to both commercial and non-commercial purposes.": "The right to reuse applies to all types of information. For example, texts, reports, photos, graphs and images. The reuse applies to both commercial and non-commercial purposes."
+"Reuse is allowed unless:": "Reuse is allowed unless:"
+"the copyright sign (©) indicates that a photo is copyrighted;": "the copyright sign (©) indicates that a photo is copyrighted;"
+"it concerns third-party content. Therefore, always check the sender of documents.": "it concerns third-party content. Therefore, always check the sender of documents."
 Privacy: Privacy
+"Privacy Statement Open Government Act (Woo)": "Privacy Statement Open Government Act (Woo)"
+"Which personal data do we process?": "Which personal data do we process?"
+"The Ministry of Health, Welfare and Sport (VWS) processes personal data that you share with us via your Woo request. These are, for example, your name and address details (name, address, place of residence).": "The Ministry of Health, Welfare and Sport (VWS) processes personal data that you share with us via your Woo request. These are, for example, your name and address details (name, address, place of residence)."
+"Who is responsible for the processing of your personal data?": "Who is responsible for the processing of your personal data?"
+"The Minister of Health, Welfare and Sport is the so-called controller within the meaning of the General Data Protection Regulation (GDPR). The <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-algemene-zaken/privacy/privacyverklaring-inkoop-en-aanbesteding'>Privacy Statement of the Ministry of General Affairs</a> (AZ) can be found elsewhere on Rijksoverheid.nl. VWS has a data protection officer (FG) as internal supervisor, who supervises the careful handling of personal data by VWS. The DPO can be reached by e-mail: <a href='mailto:FG-VWS@minvws.nl'>FG-VWS@minvws.nl</a>.": "The Minister of Health, Welfare and Sport is the so-called controller within the meaning of the General Data Protection Regulation (GDPR). The <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-algemene-zaken/privacy/privacyverklaring-inkoop-en-aanbesteding'>Privacy Statement of the Ministry of General Affairs</a> (AZ) can be found elsewhere on Rijksoverheid.nl. VWS has a data protection officer (FG) as internal supervisor, who supervises the careful handling of personal data by VWS. The DPO can be reached by e-mail: <a href='mailto:FG-VWS@minvws.nl'>FG-VWS@minvws.nl</a>."
+"For what purpose and on what basis do we process personal data?": "For what purpose and on what basis do we process personal data?"
+"Your data will only be used to handle your request. The legal basis for processing in the context of Woo requests is to comply with a legal obligation (the Woo).": "Your data will only be used to handle your request. The legal basis for processing in the context of Woo requests is to comply with a legal obligation (the Woo)."
+"How long do we store personal data?": "How long do we store personal data?"
+"VWS stores your personal data for 5 years in the context of the Archives Act.": "VWS stores your personal data for 5 years in the context of the Archives Act."
+"With whom do we share personal data?": "With whom do we share personal data?"
+"VWS does not share or sell your data.": "VWS does not share or sell your data."
+"Can personal data be kept longer?": "Can personal data be kept longer?"
+"Personal data is not automatically deleted in all situations. In a limited number of cases we may keep this data longer. For example, if someone commits criminal offenses and the stored data is necessary for investigation. Such a case may lead to an extension of the retention period.": "Personal data is not automatically deleted in all situations. In a limited number of cases we may keep this data longer. For example, if someone commits criminal offenses and the stored data is necessary for investigation. Such a case may lead to an extension of the retention period."
+"How do we secure personal data?": "How do we secure personal data?"
+"VWS takes the protection of your data seriously and takes appropriate measures to prevent misuse, loss, unauthorized access, unwanted disclosure and unauthorized changes.": "VWS takes the protection of your data seriously and takes appropriate measures to prevent misuse, loss, unauthorized access, unwanted disclosure and unauthorized changes."
+"Can you view, change or delete data?": "Can you view, change or delete data?"
+"You have the right to view, change or delete your personal data. You also have the right to withdraw your consent to the data processing, or to object to the processing of your personal data by VWS.": "You have the right to view, change or delete your personal data. You also have the right to withdraw your consent to the data processing, or to object to the processing of your personal data by VWS."
+"You can also <a href='https://autoriteitpersoonsgegevens.nl/nl/zelf-doen/privacyrechten/klacht-indienen-bij-de-ap'>report this to the Dutch Data Protection Authority.</a>": "You can also report this to the Dutch Data Protection Authority."
 Cookies: Cookies
+"We use the Piwik statistics program to analyze which pages are most visited, how visitors came to this website and which search terms they use in our search engine.": "We use the Piwik statistics program to analyze which pages are most visited, how visitors came to this website and which search terms they use in our search engine."
+"Like any website, we collect IP addresses from our visitors. These are stored in so-called log files. The log files are kept on the web server for 5 days, so that they are available to Piwik. After that, the log files are kept for 90 days for security reasons only and are only viewed for that purpose.": "Like any website, we collect IP addresses from our visitors. These are stored in so-called log files. The log files are kept on the web server for 5 days, so that they are available to Piwik. After that, the log files are kept for 90 days for security reasons only and are only viewed for that purpose."
+"The Dutch Data Protection Authority has taken measures to limit the traceability of visitors to our website as much as possible. We do this by discarding the last 2 octets (digit groups) of each IP address immediately after importing the log files into Piwik. This is done in a temporary memory, before the IP addresses are stored in Piwik.": "The Dutch Data Protection Authority has taken measures to limit the traceability of visitors to our website as much as possible. We do this by discarding the last 2 octets (digit groups) of each IP address immediately after importing the log files into Piwik. This is done in a temporary memory, before the IP addresses are stored in Piwik."
+"We collect the following data with the log files:": "We collect the following data with the log files:"
+"IP address": "IP address"
+"search terms used to reach our website via external search engines, search terms used in the search engine on the website itself": "search terms used to reach our website via external search engines, search terms used in the search engine on the website itself"
+"used links within the website": "used links within the website"
+"used links to get to our website.": "used links to get to our website."
+"Piwik retrieves this information from the web server's log files. These log files remain in the Piwik database for 31 days. Then they are deleted. Only a merged log file remains. It provides us with an annual report on website visits.": "Piwik retrieves this information from the web server's log files. These log files remain in the Piwik database for 31 days. Then they are deleted. Only a merged log file remains. It provides us with an annual report on website visits."
+"We do not share personal data with third parties, unless this is necessary to report criminal offences. Read more about <a href='https://www.rijksoverheid.nl/cookies'>the use of cookies by Rijksoverheid.nl</a>.": "We do not share personal data with third parties, unless this is necessary to report criminal offences. Read more about <a href='https://www.rijksoverheid.nl/cookies'>the use of cookies by Rijksoverheid.nl</a>."
 Accessibility: Accessibility
-'Log in': 'Log in'
-'You are logged in as %name%': 'You are logged in as %name%'
-'Please sign in': 'Please sign in'
-'E-mail address': 'E-mail address'
+"We would like everyone to be able to use this website. Do you come across a page that is not accessible? Or do you have another question? <a href='mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl'>Please contact us</a>.": "We would like everyone to be able to use this website. Do you come across a page that is not accessible? Or do you have another question? <a href='mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl'>Please contact us</a>."
+"What is an accessible website?": "What is an accessible website?"
+"An accessible website is easier to use for all visitors. That is why functional-technical and editorial <a href='https://www.digiaccessible.nl/'>accessibility requirements</a> or (formerly: web guidelines) apply to government websites. These are described in the <a href='https://www.forumstandaardisatie.nl/standaard/digiaccessible-en-301-549-met-wcag-21'>accessibility standard Digiaccessible EN 301 549</a>.": "An accessible website is easier to use for all visitors. That is why functional-technical and editorial <a href='https://www.digiaccessible.nl/'>accessibility requirements</a> or (formerly: web guidelines) apply to government websites. These are described in the <a href='https://www.forumstandaardisatie.nl/standaard/digiaccessible-en-301-549-met-wcag-21'>accessibility standard Digiaccessible EN 301 549</a>."
+"How do we ensure this website is accessible?": "How do we ensure this website is accessible?"
+"We guarantee good accessibility in various ways within our (daily) processes:": "We guarantee good accessibility in various ways within our (daily) processes:"
+"Accessibility by design: Accessibility is part of all steps in the design, construction and editorial process of this website from the start.": "Accessibility by design: Accessibility is part of all steps in the design, construction and editorial process of this website from the start."
+"Research: we regularly check (parts of) our website for accessibility. Both for the functional-technical parts and the editorial aspects. We solve any bottlenecks found in a sustainable manner.": "Research: we regularly check (parts of) our website for accessibility. Both for the functional-technical parts and the editorial aspects. We solve any bottlenecks found in a sustainable manner."
+"Employee knowledge: our employees keep their knowledge about accessibility up to date and apply it where necessary.": "Employee knowledge: our employees keep their knowledge about accessibility up to date and apply it where necessary."
+"Log in": "Log in"
+"You are logged in as {name}": "You are logged in as {name}"
+"Please sign in": "Please sign in"
+"E-mail address": "E-mail address"
 Password: Password
-'Remember me': 'Remember me'
-'Sign in': 'Sign in'
-'Update your password': 'Update your password'
-'Please update your password': 'Please update your password'
-'A password should follow the following rules:': 'A password should follow the following rules:'
-'At least 14 characters': 'At least 14 characters'
-'Should not be a common word': 'Should not be a common word'
-'Does not contain only digits': 'Does not contain only digits'
-'May not be similar to your e-mail address': 'May not be similar to your e-mail address'
-'We advise using a password manager to generate and store your password.': 'We advise using a password manager to generate and store your password.'
-'Public decisions': 'Public decisions'
-'As a dedicated platform for transparency and openness of government, we have made efforts to make these Woo files accessible to the general public. We believe in the power of openness and the sharing of information, and we are convinced that making these documents available will contribute to a better understanding of the complex issues our society is facing.': 'As a dedicated platform for transparency and openness of government, we have made efforts to make these Woo files accessible to the general public. We believe in the power of openness and the sharing of information, and we are convinced that making these documents available will contribute to a better understanding of the complex issues our society is facing.'
-'The released Woo files cover a wide range of topics, from environmental and energy policies to infrastructure projects and legislative initiatives. We encourage you to study these documents thoroughly and use the information to make informed decisions and participate in public debate.': 'The released Woo files cover a wide range of topics, from environmental and energy policies to infrastructure projects and legislative initiatives. We encourage you to study these documents thoroughly and use the information to make informed decisions and participate in public debate.'
-'Releasing these Woo files is a step towards a more transparent and participatory society. We believe that by sharing information and involving the public in decision-making processes, we can strive for a more inclusive and democratic society.': 'Releasing these Woo files is a step towards a more transparent and participatory society. We believe that by sharing information and involving the public in decision-making processes, we can strive for a more inclusive and democratic society.'
-'We appreciate your continuous support and encouragement in our efforts to promote transparency and openness of government. We will continue to release more Woo files and strive for a society where information is freely shared and accessible to everyone.': 'We appreciate your continuous support and encouragement in our efforts to promote transparency and openness of government. We will continue to release more Woo files and strive for a society where information is freely shared and accessible to everyone.'
-'No decisions found at the moment.': 'No decisions found at the moment.'
-'Decision number': 'Decision number'
-'Number of documents': 'Number of documents'
-'Download document archive': 'Download document archive'
-'The archive is not ready for download yet. Please try again in a few minutes.': 'The archive is not ready for download yet. Please try again in a few minutes.'
-'Something went wrong during the generation of the archive. Please try again.': 'Something went wrong during the generation of the archive. Please try again.'
-'The archive is ready for download. You can download the archive until %date%. After that, the archive needs to be generated again.': 'The archive is ready for download. You can download the archive until %date%. After that, the archive needs to be generated again.'
+"Remember me": "Remember me"
+"Sign in": "Sign in"
+"Update your password": "Update your password"
+"Please update your password": "Please update your password"
+"A password should follow the following rules:": "A password should follow the following rules:"
+"At least 14 characters": "At least 14 characters"
+"Should not be a common word": "Should not be a common word"
+"Does not contain only digits": "Does not contain only digits"
+"May not be similar to your e-mail address": "May not be similar to your e-mail address"
+"We advise using a password manager to generate and store your password.": "We advise using a password manager to generate and store your password."
+"Public decisions": "Public decisions"
+"As a dedicated platform for transparency and openness of government, we have made efforts to make these Woo files accessible to the general public. We believe in the power of openness and the sharing of information, and we are convinced that making these documents available will contribute to a better understanding of the complex issues our society is facing.": "As a dedicated platform for transparency and openness of government, we have made efforts to make these Woo files accessible to the general public. We believe in the power of openness and the sharing of information, and we are convinced that making these documents available will contribute to a better understanding of the complex issues our society is facing."
+"The released Woo files cover a wide range of topics, from environmental and energy policies to infrastructure projects and legislative initiatives. We encourage you to study these documents thoroughly and use the information to make informed decisions and participate in public debate.": "The released Woo files cover a wide range of topics, from environmental and energy policies to infrastructure projects and legislative initiatives. We encourage you to study these documents thoroughly and use the information to make informed decisions and participate in public debate."
+"Releasing these Woo files is a step towards a more transparent and participatory society. We believe that by sharing information and involving the public in decision-making processes, we can strive for a more inclusive and democratic society.": "Releasing these Woo files is a step towards a more transparent and participatory society. We believe that by sharing information and involving the public in decision-making processes, we can strive for a more inclusive and democratic society."
+"We appreciate your continuous support and encouragement in our efforts to promote transparency and openness of government. We will continue to release more Woo files and strive for a society where information is freely shared and accessible to everyone.": "We appreciate your continuous support and encouragement in our efforts to promote transparency and openness of government. We will continue to release more Woo files and strive for a society where information is freely shared and accessible to everyone."
+"No decisions found at the moment.": "No decisions found at the moment."
+"Decision number": "Decision number"
+"Number of documents": "Number of documents"
+"Download document archive": "Download document archive"
+"The archive is not ready for download yet. Please try again in a few minutes.": "The archive is not ready for download yet. Please try again in a few minutes."
+"Something went wrong during the generation of the archive. Please try again.": "Something went wrong during the generation of the archive. Please try again."
+"The archive is ready for download. You can download the archive until {date}. After that, the archive needs to be generated again.": "The archive is ready for download. You can download the archive until {date}. After that, the archive needs to be generated again."
 File: File
 Documents: Documents
+No documents: No documents
 Expires: Expires
 Link: Link
 First: First
 Previous: Previous
 Next: Next
 Last: Last
-'An error occurred': 'An error occurred'
-'Something went wrong during the search. Please try again later.': 'Something went wrong during the search. Please try again later.'
-'Error message': 'Error message'
+"An error occurred": "An error occurred"
+"Something went wrong during the search. Please try again later.": "Something went wrong during the search. Please try again later."
+"Error message": "Error message"
 Time: Time
 Query: Query
 Decision: Decision
+Decision about: "Decision about"
 Page: Page
-'Document number': 'Document number'
+"Document number": "Document number"
 Date: Date
 from: from
 to: to
 Department: Department
-'Type of disclosure': 'Type of disclosure'
-'Part of publication': 'Part of publication'
-'Filter results': 'Filter results'
+"Type of disclosure": "Type of disclosure"
+"Part of publication": "Part of publication"
+"Filter results": "Filter results"
 none: none
 More...: More...
-'# dossiers': >-
-    { count, plural,
-      =0{# dossiers}
-      =1{# dossier}
-      other{# dossiers}
-    }
-'in # dossiers': >-
-    { count, plural,
-      =0{in # dossiers}
-      =1{in # dossier}
-      other{in # dossiers}
-    }
-'Meanwhile, did you mean:': 'Meanwhile, did you mean:'
-'Did you mean one of the following search terms:': 'Did you mean one of the following search terms:'
-'Applied filters': 'Applied filters'
-'Remove filter': 'Remove filter'
-'All WOB and Woo decisions': 'All WOB and Woo decisions'
-'On this site, all COVID-19 related WOB and Woo decisions are published. These decisions cover the period xx to yy.': 'On this site, all COVID-19 related WOB and Woo decisions are published. These decisions cover the period xx to yy.'
-'Subscribe to new decisions (RSS feed)': 'Subscribe to new decisions (RSS feed)'
-'Search through all WOB and Woo decisions': 'Search through all WOB and Woo decisions'
-'Enter a search term': 'Enter a search term'
+"# dossiers": >-
+  { count, plural,
+    =0{# dossiers}
+    =1{# dossier}
+    other{# dossiers}
+  }
+"in # dossiers": >-
+  { count, plural,
+    =0{in # dossiers}
+    =1{in # dossier}
+    other{in # dossiers}
+  }
+"Meanwhile, did you mean:": "Meanwhile, did you mean:"
+"Did you mean one of the following search terms:": "Did you mean one of the following search terms:"
+"Applied filters": "Applied filters"
+"Remove filter": "Remove filter"
+"All Wob and Woo decisions": "All Wob and Woo decisions"
+"On this site, all COVID-19 related Wob and Woo decisions are published. These decisions cover the period xx to yy.": "On this site, all COVID-19 related WOB and Woo decisions are published. These decisions cover the period xx to yy."
+"Subscribe to new decisions (RSS feed)": "Subscribe to new decisions (RSS feed)"
+"Search through all Wob and Woo decisions": "Search through all Wob and Woo decisions"
+"Enter a search term": "Enter a search term"
 Search: Search
 choose_provider: choose_provider
 auth_code: auth_code
 cancel: cancel
 login: login
-'Dit besluit is nog niet gepubliceerd en is alleen zichtbaar in preview mode.': 'Dit besluit is nog niet gepubliceerd en is alleen zichtbaar in preview mode.'
-'This document has not yet been converted in our system. It is not possible to view individual pages, but it is possible to download the entire document.': 'This document has not yet been converted in our system. It is not possible to view individual pages, but it is possible to download the entire document.'
-'The archive is not yet ready for download. Try again in a few minutes.': 'The archive is not yet ready for download. Try again in a few minutes.'
-'Something went wrong while generating the archive. Please try again.': 'Something went wrong while generating the archive. Please try again.'
-'An error has occurred': 'An error has occurred'
-'Something went wrong during the search. Try again later.': 'Something went wrong during the search. Try again later.'
+"Dit besluit is nog niet gepubliceerd en is alleen zichtbaar in preview mode.": "Dit besluit is nog niet gepubliceerd en is alleen zichtbaar in preview mode."
+"This document has not yet been converted in our system. It is not possible to view individual pages, but it is possible to download the entire document.": "This document has not yet been converted in our system. It is not possible to view individual pages, but it is possible to download the entire document."
+"The archive is not yet ready for download. Try again in a few minutes.": "The archive is not yet ready for download. Try again in a few minutes."
+"Something went wrong while generating the archive. Please try again.": "Something went wrong while generating the archive. Please try again."
+"An error has occurred": "An error has occurred"
+"Something went wrong during the search. Try again later.": "Something went wrong during the search. Try again later."
 Timestamp: Timestamp
-'document number': 'document number'
+"document number": "document number"
 t/m: t/m
-'Did you mean:': 'Did you mean:'
-'Did you mean any of the following search terms:': 'Did you mean any of the following search terms:'
-'Set filters': 'Set filters'
-'On this site all COVID-19 related WOB and Woo decisions are published. These are decisions from the period xx to yy.': 'On this site all COVID-19 related WOB and Woo decisions are published. These are decisions from the period xx to yy.'
-'Type in a search term': 'Type in a search term'
-'Published on': 'Published on'
+"Did you mean:": "Did you mean:"
+"Did you mean any of the following search terms:": "Did you mean any of the following search terms:"
+"Set filters": "Set filters"
+"On this site all COVID-19 related Wob and Woo decisions are published. These are decisions from the period xx to yy.": "On this site all COVID-19 related Wob and Woo decisions are published. These are decisions from the period xx to yy."
+"Type in a search term": "Type in a search term"
+"Published on": "Published on"
 Request: Request
 Responsible(s): Responsible(s)
-'Taken decision': 'Taken decision'
-'Reasoning for decision': 'Reasoning for decision'
-'Download decision': 'Download decision'
-'Search in these documents': 'Search in these documents'
-'This page is not yet processed by our system': 'This page is not yet processed by our system'
-'No content found for this page': 'No content found for this page'
-'Modifying your own account is not allowed': 'Modifying your own account is not allowed'
-'The user has been modified': 'The user has been modified'
-'User roles have been modified': 'User roles have been modified'
-'User has been disabled': 'User has been disabled'
-'User has been enabled': 'User has been enabled'
-'Prefix created': 'Prefix created'
-'Prefix modified': 'Prefix modified'
-'Token created': 'Token created'
-'Token modified': 'Token modified'
-'Document has been removed': 'Document has been removed'
-'Document is scheduled for ingestion': 'Document is scheduled for ingestion'
-'Department created': 'Department created'
-'Official created': 'Official created'
-'Official modified': 'Official modified'
-'Department modified': 'Department modified'
-'No documents selected': 'No documents selected'
-'This document is not yet processed. It is not possible to view individual pages, but you can download the complete document.': 'This document is not yet processed. It is not possible to view individual pages, but you can download the complete document.'
+"Taken decision": "Taken decision"
+"Reasoning for decision": "Reasoning for decision"
+"Download decision": "Download decision"
+"Search in these documents...": "Search in these documents..."
+"This page is not yet processed by our system": "This page is not yet processed by our system"
+"No content found for this page": "No content found for this page"
+"Modifying your own account is not allowed": "Modifying your own account is not allowed"
+"The user has been modified": "The user has been modified"
+"User roles have been modified": "User roles have been modified"
+"User has been disabled": "User has been disabled"
+"User has been enabled": "User has been enabled"
+"Prefix created": "Prefix created"
+"Prefix modified": "Prefix modified"
+"Token created": "Token created"
+"Token modified": "Token modified"
+"Document has been removed": "Document has been removed"
+"Document is scheduled for ingestion": "Document is scheduled for ingestion"
+"Department created": "Department created"
+"Official created": "Official created"
+"Official modified": "Official modified"
+"Department modified": "Department modified"
+"No documents selected": "No documents selected"
+"This document is not yet processed. It is not possible to view individual pages, but you can download the complete document.": "This document is not yet processed. It is not possible to view individual pages, but you can download the complete document."
 Home: Home
 You are here: You are here
 Dossier: Dossier
 Document: Document
-'Search results': 'Search results'
+Dossier documents: Dossier documents
+Documents that match the request: Documents that meet the request
+Public: Public
+Not made public: Not made public
+Not public: Not public
+"Search results": "Search results"
 Browse: Browse
 Admin: Admin
-'Department management': 'Department management'
-'New department': 'New department'
-'New official': 'New official'
-'Edit official': 'Edit official'
-'Edit department': 'Edit department'
-'Prefix management': 'Prefix management'
-'Edit prefix': 'Edit prefix'
-'New prefix': 'New prefix'
-'Request management': 'Request management'
-'New request': 'New request'
-'Edit request': 'Edit request'
-'Token management': 'Token management'
-'New token': 'New token'
-'Edit token': 'Edit token'
-'User management': 'User management'
-'New user': 'New user'
-'Edit User': 'Edit user'
-'This link provides access to user management, where you have the opportunity to create, modify and delete user accounts, and manage their access rights.': 'This link provides access to user management, where you have the opportunity to create, modify and delete user accounts, and manage their access rights.'
-'With this link you get access to the dossier management, where you can create, edit and organize files, and add and delete documents.': 'With this link you get access to the dossier management, where you can create, edit and organize files, and add and delete documents.'
-'This link provides access to the management of Woo requests, where you can view, manage and process new requests. Here you can also keep track of the status of existing requests and perform relevant actions.': 'This link provides access to the management of Woo requests, where you can view, manage and process new requests. Here you can also keep track of the status of existing requests and perform relevant actions.'
-'This link provides access to the management of departments and administrators.': 'This link provides access to the management of departments and administrators.'
-'This link provides access to the management of tokens for dossier previews.': 'This link provides access to the management of tokens for dossier previews.'
-'This link provides access to the management of document prefixes.': 'This link provides access to the management of document prefixes.'
-'This link provides access to system statistics and monitoring.': 'This link provides access to system statistics and monitoring.'
-'Statistics & Monitoring': 'Statistics & Monitoring'
-'Create new token': 'Create new token'
+"Department management": "Department management"
+"All departments": "All departments"
+"New department": "New department"
+"All officials": "All officials"
+"New official": "New official"
+"Edit official": "Edit official"
+"Edit department": "Edit department"
+"Prefix management": "Prefix management"
+"Edit prefix": "Edit prefix"
+"New prefix": "New prefix"
+"Request management": "Request management"
+"New request": "New request"
+"Edit request": "Edit request"
+"Token management": "Token management"
+"New token": "New token"
+"Edit token": "Edit token"
+"User management": "User management"
+"New user": "New user"
+"Edit User": "Edit user"
+"This link provides access to user management, where you have the opportunity to create, modify and delete user accounts, and manage their access rights.": "This link provides access to user management, where you have the opportunity to create, modify and delete user accounts, and manage their access rights."
+"With this link you get access to the dossier management, where you can create, edit and organize files, and add and delete documents.": "With this link you get access to the dossier management, where you can create, edit and organize files, and add and delete documents."
+"This link provides access to the management of Woo requests, where you can view, manage and process new requests. Here you can also keep track of the status of existing requests and perform relevant actions.": "This link provides access to the management of Woo requests, where you can view, manage and process new requests. Here you can also keep track of the status of existing requests and perform relevant actions."
+"This link provides access to the management of departments and administrators.": "This link provides access to the management of departments and administrators."
+"This link provides access to the management of tokens for dossier previews.": "This link provides access to the management of tokens for dossier previews."
+"This link provides access to the management of document prefixes.": "This link provides access to the management of document prefixes."
+"This link provides access to system statistics and monitoring.": "This link provides access to system statistics and monitoring."
+"Statistics & Monitoring": "Statistics & Monitoring"
+"Create new token": "Create new token"
 Token: Token
 Remark: Remark
 Options: Options
 Expired: Expired
 Valid: Valid
 Edit: Edit
-'Modify token %token%': 'Modify token %token%'
+"Modify token {token}": "Modify token {token}"
 Expiry: Expiry
-'Requests management': 'Requests management'
-'There are in total # requests found.': 'There are in total # requests found.'
+"Requests management": "Requests management"
+"There are in total # requests found.": "There are in total # requests found."
 Case number: Case number
-'Last update': 'Last update'
-'Request new request': 'Request new request'
-'Modify request': 'Modify request'
-'Create new user': 'Create new user'
+"Last update": "Last update"
+"Request new request": "Request new request"
+"Modify request": "Modify request"
+"Create new user": "Create new user"
 User: User
 Username: Username
 e-mail: e-mail
-'Created at': 'Created at'
+"Created at": "Created at"
 Role: Role
 Deactivated: Deactivated
-'This is you': 'This is you'
+"This is you": "This is you"
 Modify: Modify
-'User credentials': 'User credentials'
+"User credentials": "User credentials"
 Name: Name
-'Initial password': 'Initial password'
-'This password is for one-time use. After logging in, you need to change the password.': 'This password is for one-time use. After logging in, you need to change the password.'
-'2fa code': '2fa code'
-'Scan this code with an authenticator app like Google Authenticator or Authy. During login you will be asked for an authentication code that can be requested via this authenticator app.': 'Scan this code with an authenticator app like Google Authenticator or Authy. During login you will be asked for an authentication code that can be requested via this authenticator app.'
-'2fa recovery codes': '2fa recovery codes'
+"Initial password": "Initial password"
+"This password is for one-time use. After logging in, you need to change the password.": "This password is for one-time use. After logging in, you need to change the password."
+"2fa code": "2fa code"
+"Scan this code with an authenticator app like Google Authenticator or Authy. During login you will be asked for an authentication code that can be requested via this authenticator app.": "Scan this code with an authenticator app like Google Authenticator or Authy. During login you will be asked for an authentication code that can be requested via this authenticator app."
+"2fa recovery codes": "2fa recovery codes"
 "If you can't log in with your authenticator app, you can use one of the following codes to log in. These codes can be used once.": "If you can't log in with your authenticator app, you can use one of the following codes to log in. These codes can be used once."
-'Print this page': 'Print this page'
-'This user is currently disabled.': 'This user is currently disabled.'
-'Modify user %name%': 'Modify user %name%'
-'User information': 'User information'
-'Access roles': 'Access roles'
-'Disable user': 'Disable user'
-'Enable user': 'Enable user'
-'The user is currently deactivated. To activate the user, click the button below.': 'The user is currently deactivated. To activate the user, click the button below.'
-'Reset credentials': 'Reset credentials'
-'A total of # dossiers are found.': 'A total of # dossiers are found.'
+"Print this page": "Print this page"
+"This user is currently disabled.": "This user is currently disabled."
+"Modify user {name}": "Modify user {name}"
+"User information": "User information"
+"Access roles": "Access roles"
+"Disable user": "Disable user"
+"Enable user": "Enable user"
+"The user is currently deactivated. To activate the user, click the button below.": "The user is currently deactivated. To activate the user, click the button below."
+"Reset credentials": "Reset credentials"
+"A total of # dossiers are found.": "A total of # dossiers are found."
 Search word...: Searchword...
 Filter: Filter
-'The results are filtered.': 'The results are filtered.'
+"The results are filtered.": "The results are filtered."
 Dossier number: Dossier number
 disabled: disabled
-'New dossier': 'New dossier'
-'Document details': 'Document details'
-'Document ID': 'Document ID'
-'Document title': 'Document title'
-'Document size': 'Document size'
-'Document pages': 'Document pages'
-'Document date': 'Document date'
-'Ingest history log': 'Ingest history log'
+"New dossier": "New dossier"
+"Document details": "Document details"
+"Document ID": "Document ID"
+"Document title": "Document title"
+"Document size": "Document size"
+"Document pages": "Document pages"
+"Document date": "Document date"
+"Ingest history log": "Ingest history log"
 Event: Event
 Message: Message
-'No ingest history found': 'No ingest history found'
-'Create new dossier': 'Create new dossier'
-'Modify dossier': 'Modify dossier'
-'Dossier settings': 'Dossier settings'
-'Dossier Status': 'Dossier Status'
-'Remove dossier': 'Remove dossier'
-'Warning: this will remove the dossier AND all documents that are only linked to this dossier!': 'Warning: this will remove the dossier AND all documents that are only linked to this dossier!'
-'Ingest dossier': 'Ingest dossier'
+"No ingest history found": "No ingest history found"
+"Create new dossier": "Create new dossier"
+"Modify dossier": "Modify dossier"
+"Dossier settings": "Dossier settings"
+"Dossier Status": "Dossier Status"
+"Remove dossier": "Remove dossier"
+"Warning: this will remove the dossier AND all documents that are only linked to this dossier!": "Warning: this will remove the dossier AND all documents that are only linked to this dossier!"
+"Ingest dossier": "Ingest dossier"
 "This will ingest the current dossier's documents into the search engine.": "This will ingest the current dossier's documents into the search engine."
-'Create new prefix': 'Create new prefix'
+"Create new prefix": "Create new prefix"
 Prefix: Prefix
-'Modify prefix %prefix%': 'Modify prefix %prefix%'
-'Create new department': 'Create new department'
+"Modify prefix {prefix}": "Modify prefix {prefix}"
+"Create new department": "Create new department"
 Official: Official
-'Modify official %name%': 'Modify official %name%'
-'Create new government official': 'Create new government official'
-'Modify department %name%': 'Modify department %name%'
-Last updated: 'Last updated'
-Msg Delivered Rate: 'Msg Delivered Rate'
-Msg Delivered: 'Msg Delivered'
-Msg Published Rate: 'Msg Published Rate'
-Msg Published: 'Msg Published'
-Msg unacknowledged: 'Msg unacknowledged'
-Msg ready: 'Msg ready'
-Messages: 'Messages'
-Node: 'Node'
-RabbitMQ stats: 'RabbitMQ stats'
-Total pages: 'Total pages'
-Documents available: 'Documents available'
-Dossiers available: 'Dossiers available'
-Judgement: 'Judgement'
-Grounds: 'Grounds'
-'Lost your login details? Please contact the person who gave you access to the platform.': 'Lost your login details? Please contact the person who gave you access to the platform.'
-'Having problems with the authentication app? Use a recovery code from the login instructions.': 'Having problems with the authentication app? Use a recovery code from the login instructions.'
-'Open the authenticator app, and enter the one-time verification code for the woo-platform.': 'Open the authenticator app, and enter the one-time verification code for the woo-platform.'
-Welcome: 'Welcome'
-doc: 'Word document'
-pdf: 'PDF'
-presentation: 'Presentation'
-spreadsheet: 'Spreadsheet'
-image: 'Image'
-html: 'Web page'
-note: 'Notition'
-unknown: 'Unknown'
-audio: 'Audio'
-database: 'Database'
-xml: 'XML'
-video: 'Video'
-vcard: 'Vcard'
+"Modify official {name}": "Modify official {name}"
+"Create new government official": "Create new government official"
+"Modify department {name}": "Modify department {name}"
+Last updated: "Last updated"
+Msg Delivered Rate: "Msg Delivered Rate"
+Msg Delivered: "Msg Delivered"
+Msg Published Rate: "Msg Published Rate"
+Msg Published: "Msg Published"
+Msg unacknowledged: "Msg unacknowledged"
+Msg ready: "Msg ready"
+Messages: "Messages"
+Node: "Node"
+RabbitMQ stats: "RabbitMQ stats"
+Total pages: "Total pages"
+Documents available: "Documents available"
+Dossiers available: "Dossiers available"
+Judgement: "Judgement"
+Grounds: "Grounds"
+"Lost your login details? Please contact the person who gave you access to the platform.": "Lost your login details? Please contact the person who gave you access to the platform."
+"Having problems with the authentication app? Use a recovery code from the login instructions.": "Having problems with the authentication app? Use a recovery code from the login instructions."
+"Open the authenticator app, and enter the one-time verification code for the woo-platform.": "Open the authenticator app, and enter the one-time verification code for the woo-platform."
+Welcome: "Welcome"
+doc: "Word document"
+pdf: "PDF"
+presentation: "Presentation"
+spreadsheet: "Spreadsheet"
+email: Email
+image: "Image"
+html: "Web page"
+note: "Notition"
+unknown: "Unknown"
+audio: "Audio"
+database: "Database"
+xml: "XML"
+video: "Video"
+vcard: "Vcard"
 Create new elasticsearch rollover: Create new elasticsearch rollover
 Elasticsearch management: Elasticsearch management
 Rollover into: Rollover into
@@ -363,13 +460,85 @@ Details: Details
 New rollover: New rollover
 Index: Index
 Promote index to the live index: Promote index to the live index
-'Are you sure you want to make this the live index?': Are you sure you want to make this the live index?
-'Decision about...': 'Decision about...'
-'Published date': 'Published date'
-'Org & reference': 'Org & reference'
-'Search with case, file or document number': 'Search with case, file or document number'
-concept: 'concept'
-completed: 'completed'
-preview: 'preview'
-published: 'published'
-retracted: 'retracted'
+"Are you sure you want to make this the live index?": Are you sure you want to make this the live index?
+Pagination: Pagination
+Dossier with number {dossier_nr}: "Dossier {dossier_nr}"
+Documents with casenumber {case_nr}: "Documents with casenumber {case_nr} "
+Dossiers with casenumber {case_nr}: "Dossiers with casenumber {case_nr}"
+"Decision about...": "Decision about..."
+"Published date": "Published date"
+"Org & reference": "Org & reference"
+"Search with case, file or document number": "Search with case, file or document number"
+concept: "concept"
+completed: "completed"
+preview: "preview"
+published: "published"
+retracted: "retracted"
+"All dossiers": "All dossiers"
+"Dossiers": "Dossiers"
+No dossiers: "No dossiers"
+wob_request: "Wob: request"
+woo_request: "Woo: request"
+woo_active: "Woo: proactive publication"
+public: Public
+already_public: Already public
+partial_public: Partial public
+not_public: Not public
+"Page not found": "Page not found"
+"The page/document you are looking for does not exist or is not available.": "The page/document you are looking for does not exist or is not available."
+"Access denied": "Access denied"
+"You do not have the required access rights to view this page or document.": "You do not have the required access rights to view this page or document"
+"Page or document not available": "Page or document not available"
+"The requested page or document is not available.": "The requested page or document is not available."
+"Status code ": "Status code "
+"Go back to the homepage": "Go back to the homepage"
+"About this decision": "About this decision"
+Show less: "Show less"
+Show more: "Show more"
+Collapse group: "Collapse group"
+Expand group: "Expand group"
+Results: Results
+Roles: Roles
+Super administrator: Super administrator
+Global administrator: Global administrator
+User administrator: User administrator
+Dossier administrator: Dossier administrator
+Request administrator: Request administrator
+Reset password: Reset password
+Reset two factor authentication: Reset two factor authentication
+Woo Wob request info: "A Woo request is a request for access to government information in the Netherlands in accordance with the Dutch Open Government Act (OGA). A Wob request is an official request to a government agency to disclose specific information or documents under the Government Information (Public Access) Act."
+More about Woo Wob requests: "More about Woo/Wob requests"
+No search results: "No search results"
+No documents found related to {query}: 'We could not find any documents related to your query "{query}"'
+Suggestions: "Suggesties"
+Check query spelling: "Verify the spelling of your query"
+Try a different search term: "Try a different search term"
+Use less keywords: "Use less keywords"
+Dossiers and documents for case number {case_number}: "Dossiers and documents for case number {case_number}"
+"{number_of_documents} {are_or_is} (partly) made public": "{number_of_documents} {are_or_is} (partly) made public"
+"{number_of_documents} {will} not be made public": "{number_of_documents} {will} not be made public"
+"{number_of_decisions} made for case": "There {are_or_is} made {number_of_decisions} regarding the request to disclose information with case number {case_number}."
+"# Number of documents judged": >-
+  { count, plural,
+    =1{One document has been assessed to determine if it could be disclosed}
+    other{# Documents have been assessed for their potential disclosure}
+  }
+"{number_of_documents} {are_or_is} relevant for case": "{number_of_documents} {are_or_is} directly relevant to the case mentioned above."
+Document withdrawn: "This document is currently unavailable. It was withdrawn on {date}. The reason for the withdrawal of the document is: {reason}."
+Document suspended: "There is an ongoing procedure regarding this document involving a concerned party. Therefore, we are unable to display this document at the moment."
+Document determined to be not public: "During the assessment of the {dossier_type}, {organisation} has decided not to disclose this document."
+Document already public: "While reviewing this document, it was found that its content is already public. You can find this content at"
+Reasons are: "The reasons for this are"
+DATA_IN_DOCUMENT: 'Non-redacted data in the document'
+DATA_IN_FILE: 'Non-redacted data in the file'
+UNREADABLE_DOCUMENT: 'Document is unreadable'
+INCORRECT_DOCUMENT: 'Incorrect document'
+Withdraw document: 'Withdraw document'
+Document has been withdrawn: 'Het document has been withdrawn'
+Withdrawn: 'Withdrawn'
+Document judged as public: "This document has been assessed by lawyers and published."
+Document judged as partial_public: "This document has been assessed by lawyers and published partially."
+Document judged as not_public: "This document has been assessed by lawyers and not published."
+Document judged as already_public: "This document has been assessed by lawyers and was already published."
+Why judgement was made: "That assessment was conducted because someone requested the Ministry of Health, Welfare and Sport to disclose internal information."
+More info about request below: "Your can find more information about that request and the decision below"

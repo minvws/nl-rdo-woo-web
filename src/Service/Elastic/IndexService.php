@@ -150,18 +150,24 @@ class IndexService
             $params['index'] = $name;
         }
 
-        /** @var Elasticsearch $response */
-        $response = $this->elastic->cat()->indices($params);
+        /** @var Elasticsearch $indicesResponse */
+        $indicesResponse = $this->elastic->cat()->indices($params);
+
+        /** @var Elasticsearch $mappingResponse */
+        $mappingResponse = $this->elastic->indices()->getMapping();
+        $mappingData = $mappingResponse->asArray();
 
         $indices = [];
-        foreach ($response->asArray() as $index) {
+        foreach ($indicesResponse->asArray() as $index) {
             $indexAliases = array_keys($aliases[$index['index']]['aliases'] ?? []);
+
             $indices[] = new Index(
                 name: $index['index'],
                 health: $index['health'],
                 status: $index['status'],
                 docsCount: $index['docs.count'] ?? '??',
                 storeSize: $index['store.size'] ?? '??',
+                mappingVersion: strval($mappingData[$index['index']]['mappings']['_meta']['version'] ?? 'unknown'),
                 aliases: $indexAliases,
             );
         }

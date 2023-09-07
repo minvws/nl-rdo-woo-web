@@ -13,6 +13,8 @@ use App\Exception\FixtureInventoryException;
 use App\Message\ProcessDocumentMessage;
 use App\Service\Elastic\ElasticService;
 use App\Service\Ingest\IngestService;
+use App\Service\Ingest\Options;
+use App\Service\Inventory\InventoryService;
 use App\Service\Storage\DocumentStorageService;
 use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -79,11 +81,9 @@ class FixtureService
      */
     protected function createDossier(array $data, string $inventoryPath, ?string $documentsPath): Dossier
     {
-        $this->validatePrefix($data['document_prefix']);
+        $this->ensurePrefixExists($data['document_prefix']);
 
         $dossier = new Dossier();
-        $dossier->setCreatedAt(new \DateTimeImmutable());
-        $dossier->setUpdatedAt(new \DateTimeImmutable());
         $dossier->setDateFrom(new \DateTimeImmutable($data['period_from']));
         $dossier->setDateTo(new \DateTimeImmutable($data['period_to']));
         $dossier->setDecision($data['decision']);
@@ -101,10 +101,10 @@ class FixtureService
         $this->doctrine->flush();
 
         $file = new UploadedFile($inventoryPath, 'inventory.pdf', 'application/pdf', null, true);
-        $errors = $this->inventoryService->processInventory($file, $dossier);
+        $result = $this->inventoryService->processInventory($file, $dossier);
 
-        if (count($errors) > 0) {
-            throw FixtureInventoryException::forProcessingErrors($errors);
+        if (! $result->isSuccessful()) {
+            throw FixtureInventoryException::forProcessingErrors($result->getAllErrors());
         }
 
         if ($documentsPath) {
@@ -115,13 +115,19 @@ class FixtureService
             }
 
             $message = new ProcessDocumentMessage(
-                uuid: $dossier->getId(),
+                dossierUuid: $dossier->getId(),
                 remotePath: $remotePath,
                 originalFilename: $documentPathFileInfo->getBasename(),
                 chunked: false,
             );
 
             $this->messageBus->dispatch($message);
+        } else {
+            // If no 'real' documents are provided: still index the metadata-only documents
+            $options = new Options();
+            foreach ($dossier->getDocuments() as $document) {
+                $this->ingester->ingest($document, $options);
+            }
         }
 
         if (isset($data['fake_documents']) && is_array($data['fake_documents'])) {
@@ -166,19 +172,20 @@ class FixtureService
         $document->setCreatedAt($data['created_at']);
         $document->setUpdatedAt($data['updated_at']);
         $document->setDocumentDate($data['document_date']);
-        $document->setSourceType($data['source_type']);
         $document->setDuration($data['duration']);
         $document->setFamilyId($data['family_id']);
         $document->setThreadId($data['thread_id']);
         $document->setPageCount(count($data['pages']));
         $document->setSummary($data['summary']);
-        $document->setUploaded($data['uploaded']);
-        $document->setFilename($data['filename']);
-        $document->setMimetype($data['mime_type']);
-        $document->setFileType($data['file_type']);
         $document->setSubjects($data['subjects']);
         $document->setSuspended($data['suspended']);
-        $document->setWithdrawn($data['withdrawn']);
+
+        $file = $document->getFileInfo();
+        $file->setUploaded($data['uploaded']);
+        $file->setName($data['filename']);
+        $file->setMimetype($data['mime_type']);
+        $file->setType($data['file_type']);
+        $file->setSourceType($data['source_type']);
 
         $this->doctrine->persist($document);
         $dossier->addDocument($document);
@@ -190,10 +197,15 @@ class FixtureService
         $this->elasticService->setPages($document, $pages);
     }
 
-    private function validatePrefix(string $prefix): void
+    private function ensurePrefixExists(string $prefix): void
     {
         if ($this->doctrine->getRepository(DocumentPrefix::class)->count(['prefix' => $prefix]) === 0) {
-            throw new \RuntimeException("Prefix $prefix does not exist");
+            $documentPrefix = new DocumentPrefix();
+            $documentPrefix->setPrefix($prefix);
+            $documentPrefix->setDescription($prefix);
+
+            $this->doctrine->persist($documentPrefix);
+            $this->doctrine->flush();
         }
     }
 

@@ -9,6 +9,9 @@ use Symfony\Bundle\FrameworkBundle\DataCollector\AbstractDataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * A data collector for elasticsearch calls so we can display them in the debug profiler toolbar.
+ */
 class ElasticCollector extends AbstractDataCollector
 {
     protected bool $enabled = true;

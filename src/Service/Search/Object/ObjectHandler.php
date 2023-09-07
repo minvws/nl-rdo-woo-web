@@ -98,19 +98,29 @@ class ObjectHandler
     {
         $params = [
             'index' => ElasticConfig::READ_INDEX,
-            'id' => $document->getDocumentNr(),
             'body' => [
                 '_source' => false,
                 'query' => [
-                    'nested' => [
-                        'path' => 'pages',
-                        'query' => [
-                            'term' => [
-                                'pages.page_nr' => $pageNr,
+                    'bool' => [
+                        'must' => [
+                            [
+                                'term' => [
+                                    '_id' => $document->getDocumentNr(),
+                                ],
                             ],
-                        ],
-                        'inner_hits' => [
-                            '_source' => 'pages.content',
+                            [
+                                'nested' => [
+                                    'path' => 'pages',
+                                    'query' => [
+                                        'term' => [
+                                            'pages.page_nr' => $pageNr,
+                                        ],
+                                    ],
+                                    'inner_hits' => [
+                                        '_source' => 'pages.content',
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -122,10 +132,10 @@ class ObjectHandler
             $response = $this->elastic->search($params);
             $response = new TypeArray($response->asArray());
 
-            $ontent = $response->getString('[hits][hits][0][inner_hits][pages][hits][hits][0][_source][content]', '');
+            $content = $response->getString('[hits][hits][0][inner_hits][pages][hits][hits][0][_source][content]', '');
 
-            return $ontent;
-        } catch (\Throwable) {
+            return $content;
+        } catch (\Throwable $e) {
             return '';
         }
     }

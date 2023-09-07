@@ -11,6 +11,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * Update a dossier data based on info in the database into elasticsearch.
+ */
 #[AsMessageHandler]
 class UpdateDossierHandler
 {

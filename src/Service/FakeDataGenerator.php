@@ -8,6 +8,7 @@ use App\Entity\Department;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\GovernmentOfficial;
+use App\Entity\Judgement;
 use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
 use Faker\Factory;
@@ -64,8 +65,6 @@ class FakeDataGenerator
         ]);
 
         $dossier = new Dossier();
-        $dossier->setCreatedAt(new \DateTimeImmutable());
-        $dossier->setUpdatedAt(new \DateTimeImmutable());
         $dossier->setDossierNr($dossierNr);
         $dossier->setTitle($this->faker->sentence());
         $dossier->setSummary($sentences);
@@ -99,24 +98,48 @@ class FakeDataGenerator
         $documentId = random_int(100000, 999999);
         $documentNr = 'PREF-' . $documentId;
         $document = new Document();
-        $document->setCreatedAt(new \DateTimeImmutable());
-        $document->setUpdatedAt(new \DateTimeImmutable());
         $document->setDocumentDate(new \DateTimeImmutable());
         $document->setDocumentNr($documentNr);
-        $document->setSourceType($sourceType);
         $document->setDuration(0);
         $document->setFamilyId($documentId);
         $document->setDocumentid($documentId);
         $document->setThreadId(0);
         $document->setPageCount(random_int(1, 20));
         $document->setSummary('summary of the document');
-        $document->setUploaded(false);
-        $document->setFilename('document-' . $documentNr . '.pdf');
-        $document->setMimetype('application/pdf');
-        $document->setFileType('pdf');
         $document->setSubjects($this->generateSubjects());
-        $document->setSuspended(false);
-        $document->setWithdrawn(false);
+
+        $file = $document->getFileInfo();
+        $file->setSourceType($sourceType);
+        $file->setName('document-' . $documentNr . '.pdf');
+        $file->setMimetype('application/pdf');
+        $file->setType('pdf');
+
+        switch ($randomInt = random_int(0, 10)) {
+            case $randomInt <= 5:
+                $document->setJudgement(Judgement::PUBLIC);
+                $file->setUploaded(true);
+                break;
+            case $randomInt <= 7:
+                $document->setJudgement(Judgement::PARTIAL_PUBLIC);
+                $file->setUploaded(true);
+                break;
+            case $randomInt <= 8:
+                $document->setJudgement(Judgement::ALREADY_PUBLIC);
+                $file->setUploaded(false);
+                break;
+            default:
+                $document->setJudgement(Judgement::NOT_PUBLIC);
+                $file->setUploaded(false);
+                break;
+        }
+
+        if (random_int(0, 1) === 1) {
+            $document->setLink($this->faker->url());
+        }
+
+        if (random_int(0, 1) === 1) {
+            $document->setRemark($this->faker->text());
+        }
 
         return $document;
     }

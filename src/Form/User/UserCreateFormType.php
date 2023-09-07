@@ -25,20 +25,20 @@ class UserCreateFormType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Naam',
+                'label' => 'Name',
             ])
             ->add('email', TextType::class, [
-                'label' => 'E-mailadres',
+                'label' => 'E-mail address',
             ])
             ->add('roles', ChoiceTypeWithHelp::class, [
                 'choices' => $this->createChoices(Roles::roleDetails()),
                 'choice_help_labels' => $this->createHelp(Roles::roleDetails()),
                 'multiple' => true,
                 'expanded' => true,
-                'label' => 'Rollen',
+                'label' => 'Roles',
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Gebruiker aanmaken',
+                'label' => 'Create user',
             ])
         ;
 

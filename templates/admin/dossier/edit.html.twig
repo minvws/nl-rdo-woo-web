@@ -1,10 +1,10 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% set page_title = "Modify dossier" | trans() ~ ' ' ~ dossier.dossierNr %}
 
 {% block body %}
-
-    <section>
+<main>
+    <section class="content">
         <div>
 
             <h1>{{ "Modify dossier" | trans() }} {{ dossier.dossierNr }}</h1>
@@ -37,5 +37,5 @@
 
         </div>
     </section>
-
+</main>
 {% endblock %}

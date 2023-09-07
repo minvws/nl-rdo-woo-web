@@ -9,6 +9,8 @@ parameters:
 
     available_locales: ['en', 'nl']
 
+    default_site_name: open.minvws.nl
+
 services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
@@ -16,6 +18,7 @@ services:
 
         bind:
             $configPageLimit: '%configPageLimit%'
+            Psr\Log\LoggerInterface $logger: '@App\Service\Logging\EnrichedPsrLogger'
 
     App\:
         resource: '../src/'
@@ -68,7 +71,7 @@ services:
     App\Service\Storage\DocumentStorageService:
         arguments:
             $storage: '@document.storage'
-            $isLocal: true
+            $isLocal: "@=env('STORAGE_DOCUMENT_ADAPTER')=='local' ? true : false"
             $documentRoot: '%document_path%'
 
     App\Service\Storage\ThumbnailStorageService:
@@ -102,6 +105,9 @@ services:
         arguments:
             $redis: '@snc_redis.ingest'
 
+    App\Service\Worker\Pdf\Extractor\DecisionContentExtractor:
+      arguments:
+        $redis: '@snc_redis.ingest'
 
     App\Service\Worker\Pdf\Tools\Tika:
         arguments:
@@ -141,3 +147,40 @@ services:
     App\Service\Logging\LoggingHelper:
         arguments:
             - !tagged_iterator app.logging.type
+
+    App\Controller\StatsController:
+        arguments:
+            $redis: '@snc_redis.ingest'
+            $rabbitMqStatUrl: '%rabbitmq_stats_url%'
+
+
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
+        arguments:
+            $redis: '@snc_redis.session'
+
+    App\EventSubscriber\AppModeListener:
+        arguments:
+            $appMode: '%env(APP_MODE)%'
+
+    App\Session\EncryptedSessionProxy:
+        arguments:
+            - '@Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler'
+            - '%env(APP_SECRET)%'
+
+    App\Service\Logging\EnrichedPsrLogger:
+        arguments:
+            $logger: '@monolog.logger'
+
+    Aws\S3\S3Client:
+        arguments:
+            - version: '2006-03-01'
+              region: '%env(STORAGE_MINIO_REGION)%'
+              endpoint: '%env(STORAGE_MINIO_ENDPOINT)%'
+              use_path_style_endpoint: true
+              credentials:
+                key: '%env(STORAGE_MINIO_ACCESS_KEY)%'
+                secret: '%env(STORAGE_MINIO_SECRET_KEY)%'
+
+    App\EventSubscriber\SecurityHeaderSubscriber:
+        arguments:
+            $appMode: '%env(APP_MODE)%'

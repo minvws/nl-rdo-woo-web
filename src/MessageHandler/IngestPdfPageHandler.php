@@ -11,6 +11,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * Ingest a single PDF page into the system.
+ */
 #[AsMessageHandler]
 class IngestPdfPageHandler
 {

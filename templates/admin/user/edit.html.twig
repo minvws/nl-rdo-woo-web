@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% set page_title = "Modify user %name%" | trans({'%name%': user.name}) %}
+{% set page_title = "Modify user {name}" | trans({'name': user.name}) %}
 
 {% block body %}
 
 <section>
  <div>
-    <h1>{{ "Modify user %name%" | trans({'%name%': user.name}) }}</h1>
+    <h1>{{ "Modify user {name}" | trans({'name': user.name}) }}</h1>
 
     {% if not user.enabled %}
         <div class="alert alert-warning">

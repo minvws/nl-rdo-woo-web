@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% block meta %}{% endblock %}
 
-  <title>Admin</title>
+  <title>Beheer {{ SITE_NAME }}</title>
 
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
@@ -14,15 +14,62 @@
 
   {{ encore_entry_script_tags('woopie') }}
   {{ encore_entry_script_tags('admin') }}
+
+  {% include "piwik.html.twig" %}
 </head>
 
 <body>
 <header>
-  <em>WobCovid Publicatie/document management</em>
+  <nav>
+    <div class="nav__container">
+      {% if app.user and is_granted('ROLE_USER') %}
+        {% embed 'components/tabs.twig' with {classes: ['tabs__top-menu']} %}
+          {% block tabs %}
+          <ul>
+            <li class="active"><span aria-current="page">{{ 'Decision files' | trans() }}</span></li>
+            <li><a href="#">{{ 'Organizations and government officials' | trans() }}</a></li>
+            <li><a href="#">{{ 'Access control' | trans() }}</a></li>
+          </ul>
+          {% endblock %}
+        {% endembed %}
+        {% else %}
+          <em class="visually-hidden">open.minvws.nl<br />Publicatie/document management </em>
+          {% include 'components/admin-logo.twig' %}
+        {% endif %}
+
+        {% if app.user and is_granted('ROLE_USER')%}
+        <div class="header__profile">
+          <ul>
+              <li class="collapsing-element-item">
+                <span>
+                    {{ app.user.name|default("unknown user") }}
+                </span>
+              </li>
+              <li class="collapsing-element-item">
+                <a href="/balie/logout">
+                  {{ 'Logout' | trans() }}
+                </a>
+              </li>
+            </ul>
+        </div>
+        {% endif %}
+
+      </div>
+  </nav>
+    {%- block header_content -%}
+        <div class="header__content">
+            {% block page_title %}<h1 class="visually-hidden">{{ 'Admin' | trans() }}</h1>{% endblock %}
+            {% block actions %}{% endblock %}
+        </div>
+    {%- endblock -%}
 </header>
+
 {% block body %}{% endblock %}
 
 <footer>
+  {% if app.user and is_granted('ROLE_USER') %}
+  {% include 'components/admin-logo.twig' %}
+  {% endif %}
   <nav>
     <ul>
       <li><a href="#">Privacy</a></li>

@@ -6,15 +6,19 @@ namespace App\Twig\Runtime;
 
 use Carbon\Carbon;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class AppExtensionRuntime implements RuntimeExtensionInterface
 {
     protected string $projectPath;
+    protected RequestStack $requestStack;
 
-    public function __construct(string $projectPath)
+    public function __construct(string $projectPath, RequestStack $requestStack)
     {
         $this->projectPath = $projectPath;
+        $this->requestStack = $requestStack;
     }
 
     public function basename(string $value): string
@@ -76,5 +80,12 @@ class AppExtensionRuntime implements RuntimeExtensionInterface
     public function isInstanceOf(mixed $var, string $instance): bool
     {
         return $var instanceof $instance;
+    }
+
+    public function isBackend(): bool
+    {
+        $request = $this->requestStack->getCurrentRequest() ?? new Request();
+
+        return str_starts_with($request->getPathInfo(), '/balie');
     }
 }

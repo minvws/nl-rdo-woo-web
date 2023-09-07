@@ -7,18 +7,23 @@ namespace App\Controller;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\WorkerStats;
+use App\Service\Search\Model\Config;
+use App\Service\Search\SearchService;
 use Doctrine\ORM\EntityManagerInterface;
+use Predis\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class StatsController extends AbstractController
 {
-    protected EntityManagerInterface $doctrine;
-
-    public function __construct(EntityManagerInterface $doctrine)
-    {
-        $this->doctrine = $doctrine;
+    public function __construct(
+        private readonly EntityManagerInterface $doctrine,
+        private readonly Client $redis,
+        private readonly SearchService $searchService,
+        private readonly string $rabbitMqStatUrl
+    ) {
     }
 
     #[Route('/prometheus', name: 'app_prometheus', methods: ['GET'])]
@@ -46,5 +51,99 @@ class StatsController extends AbstractController
         $response->headers->set('Content-Type', 'text/plain');
 
         return $response;
+    }
+
+    #[Route('/health', name: 'app_health', methods: ['GET'])]
+    public function health(): JsonResponse
+    {
+        $services = [
+            'postgres' => $this->isPostgresAlive(),
+            'redis' => $this->isRedisAlive(),
+            'elastic' => $this->isElasticAlive(),
+            'rabbitmq' => $this->isRabbitMqAlive(),
+        ];
+
+        $statusCode = Response::HTTP_OK;
+        foreach ($services as $status) {
+            if ($status === false) {
+                $statusCode = Response::HTTP_SERVICE_UNAVAILABLE;
+            }
+        }
+
+        $healthy = $services['postgres'] && $services['redis'] && $services['elastic'] && $services['rabbitmq'];
+        $response = new JsonResponse([
+            'healthy' => $healthy,
+            'externals' => [
+                'postgres' => $services['postgres'],
+                'redis' => $services['redis'],
+                'elastic' => $services['elastic'],
+                'rabbitmq' => $services['rabbitmq'],
+            ],
+        ], $statusCode);
+
+        return $response->setPrivate();
+    }
+
+    protected function isRedisAlive(): bool
+    {
+        try {
+            $this->redis->connect();
+            $result = $this->redis->isConnected();
+            if ($result !== true) {
+                return false;
+            }
+
+            $result = $this->redis->ping('ping');
+
+            return $result === 'ping';
+        } catch (\Throwable) {
+            // ignore
+        }
+
+        return false;
+    }
+
+    protected function isPostgresAlive(): bool
+    {
+        try {
+            $result = $this->doctrine->getConnection()->fetchOne('SELECT 1');
+
+            return $result === 1;
+        } catch (\Throwable) {
+            // ignore
+        }
+
+        return false;
+    }
+
+    protected function isElasticAlive(): bool
+    {
+        try {
+            $result = $this->searchService->search(new Config());
+
+            return $result->hasFailed() === false;
+        } catch (\Throwable) {
+            // ignore
+        }
+
+        return false;
+    }
+
+    protected function isRabbitMqAlive(): bool
+    {
+        try {
+            $client = new \GuzzleHttp\Client([
+                'base_uri' => $this->rabbitMqStatUrl,
+                'timeout' => 2.0,
+                'connect_timeout' => 2.0,
+            ]);
+            $response = $client->get('/api/overview');
+
+            return $response->getStatusCode() === Response::HTTP_OK;
+        } catch (\Exception) {
+            // ignore
+        }
+
+        return false;
     }
 }

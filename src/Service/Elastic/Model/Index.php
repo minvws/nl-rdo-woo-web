@@ -15,6 +15,7 @@ class Index
         public readonly string $status,
         public readonly string $docsCount,
         public readonly string $storeSize,
+        public readonly string $mappingVersion,
         public readonly array $aliases = [],
     ) {
     }

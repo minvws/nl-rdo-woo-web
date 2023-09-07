@@ -13,7 +13,9 @@ RUN pecl install amqp && docker-php-ext-enable amqp
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 COPY woopie.conf /etc/apache2/sites-available/woopie.conf
-RUN a2dissite 000-default && a2ensite woopie && service apache2 restart
+COPY open-woopie.conf /etc/apache2/sites-available/open-woopie.conf
+COPY balie-woopie.conf /etc/apache2/sites-available/balie-woopie.conf
+RUN a2dissite 000-default && a2ensite woopie && a2ensite balie-woopie && a2ensite open-woopie && service apache2 restart
 
 # Install NodeJS
 RUN apt-get update -qq && \

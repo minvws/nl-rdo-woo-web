@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% set page_title = "Modify department %name%" | trans({'%name%': department.name}) %}
+{% set page_title = "Modify department {name}" | trans({'name': department.name}) %}
 
 {% block body %}
 
     <section>
         <div>
-            <h1>{{ "Modify department %name%" | trans({'%name%': department.name}) }}</h1>
+            <h1>{{ "Modify department {name}" | trans({'name': department.name}) }}</h1>
 
             {{ form(form) }}
         </div>

@@ -6,6 +6,9 @@
         <div class="card-body">
 
             <table class="table table-striped table-condensed table-bordered">
+                <caption class="visually-hidden">
+                    {{ "Other documents in this decision" | trans }}
+                </caption>
                 <thead>
                     <tr>
                         <th>{{ "Document Number" | trans }}</th>
@@ -18,10 +21,10 @@
                 <tbody>
                 {% for doc in dossier.documents %}
                     <tr>
-                        <td nowrap>{{ doc.documentNr }}</td>
-                        <td><i class="fa fa-file-pdf"></i> <a href="{{ path('app_document_detail', { dossierId: dossier.dossierNr, documentId: doc.documentNr }) }}">{{ doc.filename|basename }}</a></td>
-                        <td class="text-end">{{ doc.filesize | size }}</td>
-                        <td>{{ doc.sourceType | trans() }}</td>
+                        <td nowrap>{{ doc.documentId }}</td>
+                        <td><i class="fa fa-file-pdf"></i> <a href="{{ path('app_document_detail', { dossierId: dossier.dossierNr, documentId: doc.documentNr }) }}">{{ doc.fileInfo.name|basename }}</a></td>
+                        <td class="text-end">{{ doc.fileInfo.size | size }}</td>
+                        <td>{{ doc.fileInfo.sourceType | trans() }}</td>
                         <td>{{ "# pages" | trans({ 'count': doc.pagecount}) }}</td>
                     </tr>
                 {% endfor %}

@@ -70,6 +70,7 @@ class SourceType
         ],
     ];
 
+    // Finds the given source type in the list of known types
     public static function getType(string $target): string
     {
         $target = strtolower($target);
@@ -84,6 +85,8 @@ class SourceType
     }
 
     /**
+     * Returns a list of all known source types.
+     *
      * @return array|string[]
      */
     public static function getAllSourceTypes(): array

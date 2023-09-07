@@ -57,7 +57,7 @@ class GenerateDocuments extends Command
             $dossierInquiries = $this->pickInquiries($inquiries, $i, 3);
 
             print "Creating dossier $i / $numberOfDossiers\n";
-            $dossier = $this->createDossier('MINVWS-' . random_int(1000, 9999) . '-' . random_int(10000, 99999), $dossierInquiries);
+            $dossier = $this->createDossier('DOSSIER-' . random_int(1000, 9999) . '-' . random_int(10000, 99999), $dossierInquiries);
 
             $docCount = random_int(10, 100);
             for ($j = 0; $j !== $docCount; $j++) {

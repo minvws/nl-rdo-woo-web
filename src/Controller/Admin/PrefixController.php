@@ -55,7 +55,7 @@ class PrefixController extends AbstractController
             $this->doctrine->persist($prefix);
             $this->doctrine->flush();
 
-            $this->addFlash('success', $this->translator->trans('Prefix created'));
+            $this->addFlash('backend', ['success' => $this->translator->trans('Prefix created')]);
 
             return $this->redirectToRoute('app_admin_prefixes');
         }
@@ -78,7 +78,7 @@ class PrefixController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->doctrine->flush();
-            $this->addFlash('success', $this->translator->trans('Prefix modified'));
+            $this->addFlash('backend', ['success' => $this->translator->trans('Prefix modified')]);
 
             return $this->redirectToRoute('app_admin_prefixes');
         }

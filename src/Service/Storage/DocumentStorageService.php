@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Storage;
 
 use App\Entity\Document;
+use App\Entity\EntityWithFileInfo;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FileAttributes;
 use League\Flysystem\FilesystemOperator;
@@ -154,7 +155,11 @@ class DocumentStorageService
             // An exception occurred when trying to store the file.
             return false;
         } finally {
-            fclose($stream);
+            // Close the stream if not already closed
+            // @phpstan-ignore-next-line
+            if (is_resource($stream)) {
+                @fclose($stream);
+            }
         }
 
         return true;
@@ -215,7 +220,7 @@ class DocumentStorageService
 
     public function retrieveDocument(Document $document, string $localPath): bool
     {
-        $remotePath = $this->generateDocumentPath($document, new \SplFileInfo($document->getFilepath() ?? ''));
+        $remotePath = $this->generateDocumentPath($document, new \SplFileInfo($document->getFileInfo()->getPath() ?? ''));
 
         return $this->retrieve($remotePath, $localPath);
     }
@@ -223,14 +228,14 @@ class DocumentStorageService
     /**
      * @return resource|null
      */
-    public function retrieveResourceDocument(Document $document)
+    public function retrieveResourceDocument(EntityWithFileInfo $document)
     {
-        $remotePath = $this->generateDocumentPath($document, new \SplFileInfo($document->getFilepath() ?? ''));
+        $remotePath = $this->generateDocumentPath($document, new \SplFileInfo($document->getFileInfo()->getPath() ?? ''));
 
         return $this->retrieveResource($remotePath);
     }
 
-    public function storeDocument(\SplFileInfo $localFile, Document $document): bool
+    public function storeDocument(\SplFileInfo $localFile, EntityWithFileInfo $document): bool
     {
         $remotePath = $this->generateDocumentPath($document, $localFile);
 
@@ -240,12 +245,13 @@ class DocumentStorageService
         }
 
         // Store file information in document record
-        $document->setFilepath($remotePath);
-        $document->setFilesize($localFile->getSize());
+        $file = $document->getFileInfo();
+        $file->setPath($remotePath);
+        $file->setSize($localFile->getSize());
 
         $foundationFile = new File($localFile->getPathname());
-        $document->setMimetype($foundationFile->getMimeType() ?? '');
-        $document->setUploaded(true);
+        $file->setMimetype($foundationFile->getMimeType() ?? '');
+        $file->setUploaded(true);
 
         $this->doctrine->persist($document);
         $this->doctrine->flush();
@@ -255,7 +261,7 @@ class DocumentStorageService
 
     public function existsDocument(Document $document): bool
     {
-        $remotePath = $this->generateDocumentPath($document, new \SplFileInfo($document->getFilepath() ?? ''));
+        $remotePath = $this->generateDocumentPath($document, new \SplFileInfo($document->getFileInfo()->getPath() ?? ''));
 
         return $this->exists($remotePath);
     }
@@ -286,6 +292,11 @@ class DocumentStorageService
             return $localPath;
         }
 
+        // Remove the temporary file when retrieval fails
+        if (file_exists($localPath)) {
+            unlink($localPath);
+        }
+
         return false;
     }
 
@@ -296,9 +307,9 @@ class DocumentStorageService
         return $this->download($remotePath);
     }
 
-    public function downloadDocument(Document $document): string|false
+    public function downloadDocument(EntityWithFileInfo $document): string|false
     {
-        $remotePath = $this->generateDocumentPath($document, new \SplFileInfo($document->getFilepath() ?? ''));
+        $remotePath = $this->generateDocumentPath($document, new \SplFileInfo($document->getFileInfo()->getPath() ?? ''));
 
         return $this->download($remotePath);
     }
@@ -309,10 +320,10 @@ class DocumentStorageService
      * Since download*() does not copy the file but actually points to the given file when
      * the filesystem is local, this function will NOT delete the file in that case.
      */
-    public function removeDownload(string $localPath): void
+    public function removeDownload(string $localPath, bool $forceLocalDelete = false): void
     {
         // Don't remove when the storage is local. It would point to the actual stored file
-        if ($this->isLocal) {
+        if ($this->isLocal && ! $forceLocalDelete) {
             return;
         }
 
@@ -326,7 +337,7 @@ class DocumentStorageService
      * Returns the root path of a document. Normally, this is /{prefix}/{suffix}, where prefix are the first two characters of the
      * SHA256 hash, and suffix is the rest of the SHA256 hash.
      */
-    protected function getRootPathForDocument(Document $document): string
+    protected function getRootPathForDocument(EntityWithFileInfo $document): string
     {
         $documentId = (string) $document->getId();
         $hash = hash('sha256', $documentId);
@@ -340,7 +351,7 @@ class DocumentStorageService
     /**
      * Generates the path to a document. It will use the original filename of the file object if it's an uploaded file.
      */
-    protected function generateDocumentPath(Document $document, \SplFileInfo $file): string
+    protected function generateDocumentPath(EntityWithFileInfo $document, \SplFileInfo $file): string
     {
         $rootPath = $this->getRootPathForDocument($document);
 
@@ -389,5 +400,27 @@ class DocumentStorageService
         }
 
         return $ret;
+    }
+
+    public function deleteAllFilesForDocument(Document $document): bool
+    {
+        try {
+            $path = $this->generateDocumentPath($document, new \SplFileInfo($document->getFileInfo()->getPath() ?? ''));
+            $this->storage->delete($path);
+
+            for ($pageNr = 1; $pageNr <= $document->getPageCount(); $pageNr++) {
+                $path = $this->generatePagePath($document, $pageNr);
+                $this->storage->delete($path);
+            }
+        } catch (\Throwable $e) {
+            $this->logger->error('Could not delete files from storage', [
+                'exception' => $e->getMessage(),
+                'path' => $path ?? '',
+            ]);
+
+            return false;
+        }
+
+        return true;
     }
 }

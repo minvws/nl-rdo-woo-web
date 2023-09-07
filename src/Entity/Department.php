@@ -21,6 +21,9 @@ class Department
     #[ORM\Column(length: 255)]
     private string $name;
 
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $shortTag = null;
+
     public function getId(): Uuid
     {
         return $this->id;
@@ -36,5 +39,22 @@ class Department
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getShortTag(): ?string
+    {
+        return $this->shortTag;
+    }
+
+    public function setShortTag(?string $shortTag): static
+    {
+        $this->shortTag = $shortTag;
+
+        return $this;
+    }
+
+    public function nameAndShort(): string
+    {
+        return $this->name . ' (' . $this->shortTag . ')';
     }
 }

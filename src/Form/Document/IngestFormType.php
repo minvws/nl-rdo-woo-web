@@ -25,7 +25,7 @@ class IngestFormType extends AbstractType
                 'mapped' => false,
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Ingest document',
+                'label' => 'Ingest dossier',
                 'attr' => [
                     'class' => 'btn btn-primary',
                 ],

@@ -37,7 +37,6 @@ class LoadFixture extends Command
         $file = strval($input->getArgument('file'));
         if (! file_exists($file)) {
             $output->writeln("File $file does not exist");
-            $output->writeln("File $file does not exist");
 
             return 1;
         }

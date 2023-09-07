@@ -7,6 +7,9 @@
     --breadcrumb-bar-link-active-text-color: #000;
     --breadcrumb-bar-link-focus-text-color: #000;
     --breadcrumb-bar-link-text-color: #000;
+    --breadcrumb-bar-content-wrapper-padding-left: 0;
+    --breadcrumb-bar-content-wrapper-padding-right: 0;
+    --breadcrumb-bar-icon: var(--icon-chevron-light-right);
 
     --div-content-wrapper-max-width: var(--content-max-width);
     --div-content-wrapper-padding-bottom: var(--content-padding-bottom);
@@ -27,4 +30,26 @@
     max-width: var(--div-content-wrapper-max-width);
     padding-left: var(--div-content-wrapper-padding-left);
     padding-right: var(--div-content-wrapper-padding-right);
+
+    .one-third-two-thirds {
+        gap: inherit;
+        flex-direction: column;
+
+        @media (max-width: $breakpoint-3) {
+            > div {
+                width: 100%;
+                &:first-of-type {
+                    padding-top: 20px;
+                }
+                &:last-of-type {
+                    padding-bottom: 20px;
+                }
+            }
+        }
+
+        @media (min-width: $breakpoint-3) {
+            flex-direction: row;
+            gap: var(--layout-one-third-two-thirds-breakpoint-gap);
+        }
+    }
 }

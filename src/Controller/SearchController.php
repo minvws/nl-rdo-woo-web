@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Service\Search\ConfigFactory;
+use App\Service\Search\Model\Config;
 use App\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -84,9 +86,6 @@ class SearchController extends AbstractController
     #[Route('/search', name: 'app_search')]
     public function search(Request $request, Breadcrumbs $breadcrumbs): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addItem('Search results');
-
         // If we have a POST request, we have a search query in the body. Redirect to GET request
         // so we have the q in the query string.
         if ($request->isMethod('POST')) {
@@ -99,10 +98,15 @@ class SearchController extends AbstractController
             ));
         }
 
-        // From here we always have a 'q' from the query string
-        $q = strval($request->query->get('q'));
-
         $config = $this->configFactory->createFromRequest($request);
+
+        $breadcrumbs->addRouteItem('Home', 'app_home');
+        if ($config->searchType === Config::TYPE_DOSSIER) {
+            $breadcrumbs->addItem('All published dossiers');
+        } else {
+            $breadcrumbs->addItem('Search');
+        }
+
         $result = $this->searchService->search($config);
         if ($result->hasFailed()) {
             return $this->render('search/result-failure.html.twig', [
@@ -116,8 +120,24 @@ class SearchController extends AbstractController
     }
 
     #[Route('/browse', name: 'app_browse')]
-    public function browse(Breadcrumbs $breadcrumbs): Response
+    public function browse(Request $request, Breadcrumbs $breadcrumbs): Response
     {
+        // If we have a POST request, we have a search query in the body. Redirect to GET request
+        // so we have the q in the query string.
+        if ($request->isMethod('POST')) {
+            $q = strval($request->request->get('q'));
+
+            // Redirect to GET request, so we have the q in the query string.
+            return $this->redirect($this->generateUrl('app_browse', ['q' => $q]));
+        }
+
+        // From here we always have a 'q' from the query string
+        if ($request->query->has('q')) {
+            $q = strval($request->query->get('q'));
+
+            return new RedirectResponse($this->generateUrl('app_search', ['q' => $q]));
+        }
+
         $breadcrumbs->addRouteItem('Home', 'app_home');
         $breadcrumbs->addItem('Browse');
 

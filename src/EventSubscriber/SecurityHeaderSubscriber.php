@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -13,6 +14,13 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class SecurityHeaderSubscriber implements EventSubscriberInterface
 {
+    protected string $appMode;
+
+    protected const CSP_SELF = "'self'";
+    protected const CSP_UNSAFE_INLINE = "'unsafe-inline'";
+    protected const CSP_UNSAFE_EVAL = "'unsafe-eval'";
+    protected const CSP_DATA = 'data:';
+
     /** @var array|string[] */
     protected array $fields = [
         'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains; preload',
@@ -29,11 +37,42 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
         'X-Download-Options' => 'noopen',
         'X-Permitted-Cross-Domain-Policies' => 'off',
         'X-XSS-Protection' => '1; mode=block',
-        'Content-Security-Policy' => "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " .
-            "style-src 'self' 'unsafe-inline'; " .
-            "img-src 'self' data: ; " .
-            "font-src 'self';",
     ];
+
+    /** @var array|string[][][] */
+    protected array $csp = [
+        'FRONTEND' => [
+            'script-src' => [self::CSP_SELF, 'https://statistiek.rijksoverheid.nl'],
+            'style-src' => [self::CSP_SELF],
+            'img-src' => [self::CSP_SELF, self::CSP_DATA, 'https://statistiek.rijksoverheid.nl'],
+            'font-src' => [self::CSP_SELF],
+        ],
+        'BALIE' => [
+            'script-src' => [self::CSP_SELF, self::CSP_UNSAFE_INLINE, self::CSP_UNSAFE_EVAL, 'https://statistiek.rijksoverheid.nl'],
+            'style-src' => [self::CSP_SELF, self::CSP_UNSAFE_INLINE],
+            'img-src' => [self::CSP_SELF, self::CSP_DATA, 'https://statistiek.rijksoverheid.nl'],
+            'font-src' => [self::CSP_SELF],
+        ],
+        'BOTH' => [
+            'script-src' => [self::CSP_SELF, self::CSP_UNSAFE_INLINE, self::CSP_UNSAFE_EVAL, 'https://statistiek.rijksoverheid.nl'],
+            'style-src' => [self::CSP_SELF, self::CSP_UNSAFE_INLINE],
+            'img-src' => [self::CSP_SELF, self::CSP_DATA],
+            'font-src' => [self::CSP_SELF],
+        ],
+    ];
+
+    public function __construct(string $appMode)
+    {
+        $this->appMode = $appMode;
+    }
+
+    public function onKernelRequest(RequestEvent $event): void
+    {
+        // Add random nonce that can be used in CSP for this request only
+        $nonce = bin2hex(random_bytes(16));
+
+        $event->getRequest()->attributes->set('csp_nonce', $nonce);
+    }
 
     public function onKernelResponse(ResponseEvent $event): void
     {
@@ -44,12 +83,35 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
                 $response->headers->set($key, $value);
             }
         }
+
+        // Add nonce to CSP
+        $nonce = $event->getRequest()->attributes->get('csp_nonce');
+
+        $csp = $this->csp[$this->appMode] ?? $this->csp['both'];
+        $csp['script-src'][] = "'nonce-" . $nonce . "'";
+        $csp['style-src'][] = "'nonce-" . $nonce . "'";
+
+        $response->headers->set('Content-Security-Policy', $this->buildCsp($csp));
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
+            KernelEvents::REQUEST => 'onKernelRequest',
             KernelEvents::RESPONSE => 'onKernelResponse',
         ];
+    }
+
+    /**
+     * @param string[][] $csp
+     */
+    protected function buildCsp(array $csp): string
+    {
+        $result = [];
+        foreach ($csp as $key => $value) {
+            $result[] = $key . ' ' . join(' ', $value);
+        }
+
+        return implode('; ', $result);
     }
 }

@@ -13,6 +13,9 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+/**
+ * Ingest multiple dossiers that are publishable into the system. Used primarily for reindexing.
+ */
 #[AsMessageHandler]
 class IngestDossiersHandler
 {

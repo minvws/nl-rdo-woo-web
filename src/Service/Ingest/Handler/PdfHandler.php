@@ -5,43 +5,24 @@ declare(strict_types=1);
 namespace App\Service\Ingest\Handler;
 
 use App\Entity\Document;
+use App\Entity\FileInfo;
 use App\Message\IngestPdfMessage;
-use App\Service\DocumentService;
 use App\Service\Ingest\Handler;
 use App\Service\Ingest\Options;
-use App\Service\Storage\DocumentStorageService;
-use App\Service\Worker\Pdf\Extractor\PagecountExtractor;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
-class PdfHandler extends BaseHandler implements Handler
+class PdfHandler implements Handler
 {
-    protected DocumentStorageService $storageService;
-    protected DocumentService $documentService;
-    protected PagecountExtractor $extractor;
-
     public function __construct(
-        MessageBusInterface $bus,
-        EntityManagerInterface $doctrine,
-        LoggerInterface $logger,
-        DocumentStorageService $storageService,
-        DocumentService $documentService,
-        PagecountExtractor $extractor,
+        private readonly MessageBusInterface $bus,
+        private readonly LoggerInterface $logger,
     ) {
-        parent::__construct($bus, $doctrine, $logger);
-
-        $this->storageService = $storageService;
-        $this->documentService = $documentService;
-        $this->extractor = $extractor;
     }
 
     public function handle(Document $document, Options $options): void
     {
-        $this->logger->info('Ingesting PDF for document', [
+        $this->logger->info('Dispatching ingest for PDF document', [
             'document' => $document->getId(),
         ]);
 
@@ -49,8 +30,8 @@ class PdfHandler extends BaseHandler implements Handler
         $this->bus->dispatch($message);
     }
 
-    public function canHandle(string $mimeType): bool
+    public function canHandle(FileInfo $fileInfo): bool
     {
-        return $mimeType === 'application/pdf';
+        return $fileInfo->getMimetype() === 'application/pdf';
     }
 }

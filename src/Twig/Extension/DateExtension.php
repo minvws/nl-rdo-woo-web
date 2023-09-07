@@ -19,7 +19,7 @@ class DateExtension extends AbstractExtension
     /**
      * Validates whether a date string conforms to a specified format.
      */
-    public function isValidDate(?string $date, string $format = 'd-m-Y'): bool
+    public function isValidDate(?string $date, string $format = 'Y-m-d'): bool
     {
         if (! $date) {
             return false;

@@ -28,8 +28,8 @@ class IngestService
     public function ingest(Document $document, Options $options): void
     {
         foreach ($this->handlers as $handler) {
-            if ($handler->canHandle($document->getMimetype() ?? '')) {
-                $this->ingestLogger->success($document, 'ingest', 'Starting ingest on ' . $document->getFilename());
+            if ($handler->canHandle($document->getFileInfo())) {
+                $this->ingestLogger->success($document, 'ingest', 'Starting ingest on ' . $document->getFileInfo()->getName());
 
                 $handler->handle($document, $options);
 

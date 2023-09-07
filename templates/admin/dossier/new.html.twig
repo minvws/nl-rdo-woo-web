@@ -1,16 +1,32 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
-{% set page_title = "Create new dossier" | trans() %}
+    {%- block header_content -%}
+        <div class="header__content">
+            <div class="centered">
+                <h1>{{ "Create new dossier" | trans() }}</h1>
+            </div>
+        </div>
+    {%- endblock -%}
 
 {% block body %}
+    <main class="admin-decisions-new">
+        {% embed 'components/admin-steps.twig' with {active: 0} %}
+        {% endembed %}
+        <section class="content content__small">
+            <div class="admin-decisions-new__help-text">
+                <h2>{{ 'Subject of decision'|trans() }}</h2>
+                <p>{{ 'Keep it short and be specific. So do not use unnecessary prepositions, articles and self-evident substantive words such as Woo, conclusion, etc.'|trans() }}</p>
+                <ul>
+                    <li><img src="{{ asset('/img/admin/icon-close.svg') }}"
+                             alt="{{ 'Close icon'|trans() }}"/>{{ 'Woo partial decision regarding Consultation VWS about the period June 2020'|trans() }}
+                    </li>
+                    <li><img src="{{ asset('/img/admin/icon-check.svg') }}"
+                             alt="{{ 'Check icon'|trans() }}"/>{{ 'Documents consultation VWS June 2020'|trans() }}
+                    </li>
+                </ul>
+                {{ form(form) }}
 
-    <section>
-        <div>
-
-            <h1>{{ "Create new dossier" | trans() }}</h1>
-
-            {{ form(form) }}
-
-        </div>
-    </section>
+            </div>
+        </section>
+    </main>
 {% endblock %}

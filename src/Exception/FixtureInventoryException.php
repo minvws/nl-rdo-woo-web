@@ -7,7 +7,7 @@ namespace App\Exception;
 class FixtureInventoryException extends \RuntimeException
 {
     /**
-     * @param array<int, array<int, string>> $errors
+     * @param array<string|int, array<int, string>> $errors
      */
     public function __construct(
         string $message,
@@ -15,7 +15,7 @@ class FixtureInventoryException extends \RuntimeException
     ) {
         foreach ($errors as $error) {
             foreach ($error as $rowIndex => $errorDescription) {
-                $message .= "\n- [row $rowIndex] $errorDescription";
+                $message .= "\n- [$rowIndex] $errorDescription";
             }
         }
 
@@ -23,7 +23,7 @@ class FixtureInventoryException extends \RuntimeException
     }
 
     /**
-     * @param array<int, array<int, string>> $errors
+     * @param array<string|int, array<int, string>> $errors
      */
     public static function forProcessingErrors(array $errors): self
     {

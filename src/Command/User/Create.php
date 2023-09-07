@@ -51,10 +51,10 @@ class Create extends Command
         } elseif ($input->getOption('admin')) {
             $role = ['ROLE_ADMIN'];
         } else {
-            $role = ['ROLE_USER'];
+            $role = ['ROLE_USER', 'ROLE_BALIE'];
         }
 
-        ['plainPassword' => $plainPassword, 'user' => $user ] = $this->userService->createUser(
+        ['plainPassword' => $plainPassword, 'user' => $user] = $this->userService->createUser(
             strval($input->getArgument('name')),
             strval($input->getArgument('email')),
             $role,

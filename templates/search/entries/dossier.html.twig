@@ -1,6 +1,13 @@
-<h2 class="text-xl">
+<h3 class="text-xl items-center">
+    <div class="de-emphasized mb-0 flex items-center">
+        <span class="svg-icon svg-map mr-2 w-[24px] h-[24px]" aria-hidden="true"></span>
+        <span class="visually-hidden">{{ "Dossier" | trans() }}</span>
+        <span class="de-emphasized ro-font-bold pipe-after">Woo-besluit</span>
+        <span class="de-emphasized">{{ "# documents" | trans({"count": entry.dossier.documents|length})}}</span>
+    </div>
+
     <a class="reverse-underline" href="{{ path('app_dossier_detail', { dossierId: entry.dossier.dossierNr }) }}">{{ entry.dossier.title }}</a>
-</h2>
+</h3>
 
 <p class="ro-text-small leading-5">{{ entry.dossier.summary | u.truncate(200, '...', false) }}</p>
 
@@ -12,7 +19,15 @@
 </p>
 {% endif %}
 
-<p class="ro-text-small leading-5">
-    <a class="link-green" href="{{ path('app_dossier_detail', { dossierId: entry.dossier.dossierNr }) }}">{{ "Decision" | trans }} {{ entry.dossier.title }}</a>
-    <span class="de-emphasized">|{{ "# documents" | trans({"count": entry.dossier.documents|length})}}</span>
-</p>
+<ul class="list-unstyled de-emphasized mb-0 items-center pipe-after">
+    <li>
+        <time datetime="{{ entry.dossier.publicationDate | date("Y-m-d") }}" class="de-emphasized">{{ entry.dossier.publicationDate | format_date('long') }}</time>
+    </li>
+    <li>
+        <span class="de-emphasized">{{ entry.dossier.decision | trans() }}</span>
+    </li>
+    <li>
+        <span class="de-emphasized">{{ entry.dossier.dossierNr}}</span>
+    </li>
+</ul>
+

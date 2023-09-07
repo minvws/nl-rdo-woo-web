@@ -1,16 +1,26 @@
 .arrowed-link {
-    padding-left: 1.25rem;
     position: relative;
 
-    &:before {
-        background: url('../../img/chevron-right.svg') no-repeat center center;
-        bottom: 0;
-        content: '';
-        display: block;
-        left: 0;
-        padding: 0;
-        position: absolute;
-        top: 0;
-        width: 12px;
+    &:before,
+    &:hover:before {
+        content: var(--icon-chevron-right);
+        align-items: flex-start;
+        display: inline-flex;
+        height: 100%;
+        justify-self: center;
+        line-height: 1;
+        text-decoration-color: transparent;
+        font-size: 0.8rem;
+        transform: translateY(-2px);
+    }
+
+    &.split-link {
+        &:before,
+        &:hover:before {
+            position: absolute;
+            left: -1.5rem;
+            top: 0.2rem;
+            transform: none;
+        }
     }
 }

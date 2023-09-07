@@ -77,4 +77,14 @@ class BatchDownloadRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function pruneExpired(): void
+    {
+        $this->createQueryBuilder('b')
+            ->delete()
+            ->andWhere('b.expiration < :now')
+            ->setParameter('now', new \DateTimeImmutable())
+            ->getQuery()
+            ->execute();
+    }
 }

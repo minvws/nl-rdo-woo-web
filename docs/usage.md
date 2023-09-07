@@ -15,13 +15,13 @@ command:
 ```
 
 Press ctrl-C when you feel you have enough documents.
-  
+
 ### Create and upload real data
 
 On the Google drive (woo), you will find a folder called `Proof-of-concept-Woopie/test bestanden`.
 This folder contains a ZIP file with a number of PDF files and a few inventory XLS files.
 
-You can create a dossier after logging in at `localhost:8000/balue/dossiers`. Fill in the dossier
+You can create a dossier after logging in at `localhost:8000/balie/dossiers`. Fill in the dossier
 you want, and add a XLS file as inventory file.
 
 After this, you can upload the PDF files to the dossier. You can do this by clicking on the dossier

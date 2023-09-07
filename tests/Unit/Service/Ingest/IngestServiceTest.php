@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Ingest;
 
 use App\Entity\Document;
+use App\Entity\FileInfo;
 use App\Service\Ingest\Handler;
 use App\Service\Ingest\IngestLogger;
 use App\Service\Ingest\IngestService;
@@ -43,16 +44,16 @@ class IngestServiceTest extends MockeryTestCase
 
     public function testIngestUsesFirstMatchingHandler(): void
     {
-        $pdfType = 'application/pdf';
+        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo->shouldReceive('getName')->zeroOrMoreTimes()->andReturn('test.pdf');
 
         $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('getMimetype')->zeroOrMoreTimes()->andReturn($pdfType);
-        $document->shouldReceive('getFilename')->zeroOrMoreTimes()->andReturn('test.pdf');
+        $document->shouldReceive('getFileInfo')->zeroOrMoreTimes()->andReturn($fileInfo);
 
         $options = new Options();
 
-        $this->handlerA->shouldReceive('canHandle')->with($pdfType)->andReturnFalse();
-        $this->handlerB->shouldReceive('canHandle')->with($pdfType)->andReturnTrue();
+        $this->handlerA->shouldReceive('canHandle')->with($fileInfo)->andReturnFalse();
+        $this->handlerB->shouldReceive('canHandle')->with($fileInfo)->andReturnTrue();
         $this->handlerC->shouldNotReceive('canHandle');
 
         $this->ingestLogger->shouldReceive('success')->with($document, \Mockery::any(), \Mockery::any());
@@ -63,16 +64,16 @@ class IngestServiceTest extends MockeryTestCase
 
     public function testIngestTriggersIngestErrorWhenThereIsNoMatchingHandler(): void
     {
-        $pdfType = 'application/pdf';
+        $fileInfo = \Mockery::mock(FileInfo::class);
 
         $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('getMimetype')->zeroOrMoreTimes()->andReturn($pdfType);
+        $document->shouldReceive('getFileInfo')->zeroOrMoreTimes()->andReturn($fileInfo);
 
         $options = new Options();
 
-        $this->handlerA->shouldReceive('canHandle')->with($pdfType)->andReturnFalse();
-        $this->handlerB->shouldReceive('canHandle')->with($pdfType)->andReturnFalse();
-        $this->handlerC->shouldReceive('canHandle')->with($pdfType)->andReturnFalse();
+        $this->handlerA->shouldReceive('canHandle')->with($fileInfo)->andReturnFalse();
+        $this->handlerB->shouldReceive('canHandle')->with($fileInfo)->andReturnFalse();
+        $this->handlerC->shouldReceive('canHandle')->with($fileInfo)->andReturnFalse();
 
         $this->ingestLogger->shouldReceive('error')->with($document, \Mockery::any(), \Mockery::any());
 

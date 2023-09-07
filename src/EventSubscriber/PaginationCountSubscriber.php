@@ -32,7 +32,7 @@ class PaginationCountSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $event->count = $event->target->getDocumentCount();
+        $event->count = $event->target->getResultCount();
         $event->items = $event->target->getEntries();
 
         $event->stopPropagation();

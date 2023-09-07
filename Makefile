@@ -4,7 +4,7 @@ SHELL=/usr/bin/env bash -O globstar
 
 all: help
 
-test: test_phpcs test_phpstan test_phpcsfixer test_phpmd test_unit test_psalm ## Runs tests
+test: test_phpcs test_phpstan test_phpcsfixer test_phpmd test_unit test_psalm test_twig test_markdown ## Runs tests
 
 test_phpcs:
 	source test-utils.sh ;\
@@ -35,6 +35,18 @@ test_unit: ## Run unit tests
 	source test-utils.sh ;\
 	section "PHPUNIT" ;\
 	vendor/bin/phpunit --testsuite "Woopie Unit Test Suite"
+
+test_twig: ## Run twig linter
+	source test-utils.sh ;\
+	section "TWIG-LINT" ;\
+	APP_DEBUG=false APP_ENV=prod php bin/console cache:clear
+	APP_DEBUG=false APP_ENV=prod php bin/console cache:warmup
+	APP_DEBUG=false APP_ENV=prod php bin/console lint:twig templates
+
+test_markdown: ## Lint markdown files
+	source test-utils.sh ;\
+	section "MARKDOWN-LINT" ;\
+	npm run mdlint
 
 fix: ## Fixes coding style
 	vendor/bin/php-cs-fixer fix
@@ -71,3 +83,11 @@ test-rf/%: ## Run Robot Framework tests with matching tag
 
 test-rf-head/%: ## Run Robot Framework  with browser visible, with matching tag
 	env/bin/python -m robot -d tests/robot_framework/results -x outputxunit.xml -i $* -v headless:false tests/robot_framework
+
+update: ## Update code / db/ assets, for instance after git pull
+	composer install
+	bin/console doctrine:migrations:migrate --no-interaction
+	npm install
+	npm run build
+	vendor/bin/phpdotenvsync --opt=sync --src=.env.development --dest=.env.local --no-interaction
+

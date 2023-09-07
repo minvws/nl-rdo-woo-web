@@ -39,6 +39,10 @@ class WooExtension extends AbstractExtension
             new TwigFunction('status_badge', [$this->runtime, 'statusBadge'], ['is_safe' => ['html']]),
             new TwigFunction('period', [$this->runtime, 'period']),
             new TwigFunction('has_thumbnail', [$this->runtime, 'hasThumbnail']),
+            new TwigFunction('is_document_id', [$this->runtime, 'isDocumentLink']),
+            new TwigFunction('generate_document_link', [$this->runtime, 'generateDocumentLink']),
+            new TwigFunction('get_citation_type', [$this->runtime, 'getCitationType']),
+            new TwigFunction('query_string_without_param', [$this->runtime, 'queryStringWithoutParam']),
         ];
     }
 }

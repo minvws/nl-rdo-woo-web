@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Doctrine\TimestampableTrait;
 use App\Repository\DocumentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Embedded;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
@@ -19,39 +21,16 @@ use Symfony\Component\Uid\Uuid;
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
-#[ORM\InheritanceType('SINGLE_TABLE')]
-#[ORM\DiscriminatorColumn(name: 'class', type: 'string')]
-#[ORM\DiscriminatorMap([
-    self::CLASS_INVENTORY => Inventory::class,
-    self::CLASS_DOCUMENT => Document::class,
-    self::CLASS_DECISION => Decision::class,
-])]
-class Document
+#[ORM\HasLifecycleCallbacks]
+class Document implements EntityWithFileInfo
 {
-    public const CLASS_INVENTORY = 'inventory';
-    public const CLASS_DOCUMENT = 'document';
-    public const CLASS_DECISION = 'decision';
+    use TimestampableTrait;
 
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
-
-    #[ORM\Column(nullable: false)]
-    private \DateTimeImmutable $createdAt;
-
-    #[ORM\Column(nullable: false)]
-    private \DateTimeImmutable $updatedAt;
-
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $mimetype;
-
-    #[ORM\Column(length: 1024, nullable: true)]
-    private ?string $filepath;
-
-    #[ORM\Column(nullable: false)]
-    private int $filesize = 0;
 
     // Number of pages for word based documents
     #[ORM\Column(nullable: false)]
@@ -71,22 +50,11 @@ class Document
     #[ORM\ManyToMany(targetEntity: Dossier::class, inversedBy: 'documents')]
     private Collection $dossiers;
 
-    /* The type of the local file on disk. This is mostly a PDF. These are the types that can be ingested by the workers */
-    #[ORM\Column(length: 255, nullable: false)]
-    private string $fileType;
-
-    /* The type of the original file. This could be a spreadsheet, word document or email */
-    #[ORM\Column(length: 255, nullable: false)]
-    private string $sourceType;
-
     #[ORM\Column(length: 255, nullable: false)]
     private string $documentNr;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     private \DateTimeInterface $documentDate;
-
-    #[ORM\Column(length: 255, nullable: false)]
-    private string $filename;
 
     #[ORM\Column(nullable: true)]
     private ?int $familyId = null;
@@ -97,8 +65,8 @@ class Document
     #[ORM\Column(nullable: true)]
     private ?int $threadId = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $judgement = null;
+    #[ORM\Column(length: 255, nullable: true, enumType: Judgement::class)]
+    private ?Judgement $judgement = null;
 
     /** @var array<string> */
     #[ORM\Column(type: Types::JSON, nullable: false)]
@@ -111,28 +79,44 @@ class Document
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $period = null;
 
-    #[ORM\Column(nullable: false)]
-    private bool $uploaded = false;
-
     /** @var Collection|IngestLog[] */
     #[ORM\OneToMany(mappedBy: 'document', targetEntity: IngestLog::class, orphanRemoval: true)]
     private Collection $ingestLogs;
 
     #[ORM\Column]
-    private bool $suspended;
+    private bool $suspended = false;
 
     #[ORM\Column]
-    private bool $withdrawn;
+    private bool $withdrawn = false;
+
+    #[ORM\Column(length: 255, nullable: true, enumType: WithdrawReason::class)]
+    private ?WithdrawReason $withdrawReason = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $withdrawExplanation = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $withdrawDate = null;
 
     /** @var Collection|Inquiry[] */
     #[ORM\ManyToMany(targetEntity: Inquiry::class, mappedBy: 'documents')]
     private Collection $inquiries;
+
+    #[Embedded(class: FileInfo::class, columnPrefix: 'file_')]
+    private FileInfo $fileInfo;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $link = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $remark = null;
 
     public function __construct()
     {
         $this->dossiers = new ArrayCollection();
         $this->ingestLogs = new ArrayCollection();
         $this->inquiries = new ArrayCollection();
+        $this->fileInfo = new FileInfo();
     }
 
     public function getId(): Uuid
@@ -143,66 +127,6 @@ class Document
     public function setId(UUid $uuid): void
     {
         $this->id = $uuid;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): \DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getMimetype(): ?string
-    {
-        return $this->mimetype;
-    }
-
-    public function setMimetype(?string $mimetype): self
-    {
-        $this->mimetype = $mimetype;
-
-        return $this;
-    }
-
-    public function getFilepath(): ?string
-    {
-        return $this->filepath;
-    }
-
-    public function setFilepath(?string $filepath): self
-    {
-        $this->filepath = $filepath;
-
-        return $this;
-    }
-
-    public function getFilesize(): int
-    {
-        return $this->filesize;
-    }
-
-    public function setFilesize(int $filesize): self
-    {
-        $this->filesize = $filesize;
-
-        return $this;
     }
 
     public function getPageCount(): int
@@ -277,18 +201,6 @@ class Document
         return $this;
     }
 
-    public function getFilename(): string
-    {
-        return $this->filename;
-    }
-
-    public function setFilename(string $filename): self
-    {
-        $this->filename = $filename;
-
-        return $this;
-    }
-
     public function getFamilyId(): ?int
     {
         return $this->familyId;
@@ -325,12 +237,12 @@ class Document
         return $this;
     }
 
-    public function getJudgement(): ?string
+    public function getJudgement(): ?Judgement
     {
         return $this->judgement;
     }
 
-    public function setJudgement(string $judgement): self
+    public function setJudgement(Judgement $judgement): self
     {
         $this->judgement = $judgement;
 
@@ -385,18 +297,6 @@ class Document
     public function setPeriod(string $period): self
     {
         $this->period = $period;
-
-        return $this;
-    }
-
-    public function isUploaded(): bool
-    {
-        return $this->uploaded;
-    }
-
-    public function setUploaded(bool $uploaded): self
-    {
-        $this->uploaded = $uploaded;
 
         return $this;
     }
@@ -486,30 +386,6 @@ class Document
         return $grouped;
     }
 
-    public function getFileType(): ?string
-    {
-        return $this->fileType;
-    }
-
-    public function setFileType(string $fileType): self
-    {
-        $this->fileType = $fileType;
-
-        return $this;
-    }
-
-    public function getSourceType(): ?string
-    {
-        return $this->sourceType;
-    }
-
-    public function setSourceType(string $sourceType): self
-    {
-        $this->sourceType = $sourceType;
-
-        return $this;
-    }
-
     public function isSuspended(): bool
     {
         return $this->suspended;
@@ -525,13 +401,6 @@ class Document
     public function isWithdrawn(): bool
     {
         return $this->withdrawn;
-    }
-
-    public function setWithdrawn(bool $withdrawn): self
-    {
-        $this->withdrawn = $withdrawn;
-
-        return $this;
     }
 
     /**
@@ -558,5 +427,92 @@ class Document
         }
 
         return $this;
+    }
+
+    public function getFileInfo(): FileInfo
+    {
+        return $this->fileInfo;
+    }
+
+    public function setFileInfo(FileInfo $fileInfo): self
+    {
+        $this->fileInfo = $fileInfo;
+
+        return $this;
+    }
+
+    public function getLink(): ?string
+    {
+        return $this->link;
+    }
+
+    public function setLink(?string $link): static
+    {
+        $this->link = $link;
+
+        return $this;
+    }
+
+    public function isUploaded(): bool
+    {
+        return $this->fileInfo->isUploaded();
+    }
+
+    public function shouldBeUploaded(): bool
+    {
+        if ($this->suspended === true) {
+            return false;
+        }
+
+        if (! $this->judgement) {
+            return false;
+        }
+
+        return $this->judgement->isAtLeastPartialPublic();
+    }
+
+    public function getRemark(): ?string
+    {
+        return $this->remark;
+    }
+
+    public function setRemark(?string $remark): static
+    {
+        $this->remark = $remark;
+
+        return $this;
+    }
+
+    public function getFileCacheKey(): string
+    {
+        return $this->documentNr;
+    }
+
+    public function getWithdrawReason(): ?WithdrawReason
+    {
+        return $this->withdrawReason;
+    }
+
+    public function getWithdrawExplanation(): ?string
+    {
+        return $this->withdrawExplanation;
+    }
+
+    public function getWithdrawDate(): ?\DateTimeImmutable
+    {
+        return $this->withdrawDate;
+    }
+
+    public function withdraw(WithdrawReason $reason, string $explanation): void
+    {
+        $this->withdrawn = true;
+        $this->withdrawReason = $reason;
+        $this->withdrawExplanation = $explanation;
+        $this->withdrawDate = new \DateTimeImmutable();
+
+        $this->fileInfo->setMimetype(null);
+        $this->fileInfo->setUploaded(false);
+        $this->fileInfo->setSize(0);
+        $this->fileInfo->setPath(null);
     }
 }

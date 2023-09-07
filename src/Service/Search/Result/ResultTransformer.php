@@ -6,11 +6,13 @@ namespace App\Service\Search\Result;
 
 use App\Entity\Document;
 use App\Entity\Dossier;
+use App\Entity\Inquiry;
 use App\Service\Search\Model\Aggregation;
-use App\Service\Search\Model\AggregationBucketEntry;
 use App\Service\Search\Model\Config;
 use App\Service\Search\Model\Suggestion;
 use App\Service\Search\Model\SuggestionEntry;
+use App\ValueObject\FilterDetails;
+use App\ValueObject\InquiryDescription;
 use Doctrine\ORM\EntityManagerInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Jaytaph\TypeArray\TypeArray;
@@ -25,7 +27,8 @@ class ResultTransformer
     public function __construct(
         protected EntityManagerInterface $doctrine,
         protected LoggerInterface $logger,
-        protected PaginatorInterface $paginator
+        protected PaginatorInterface $paginator,
+        private readonly AggregationMapper $aggregationMapper,
     ) {
     }
 
@@ -63,6 +66,8 @@ class ResultTransformer
             $result->setPagination($pagination);
         }
 
+        $result->setFilterDetails($this->getFilterDetails($config));
+
         return $result;
     }
 
@@ -82,10 +87,9 @@ class ResultTransformer
             return $result;
         }
 
-        $result->setDocumentCount($typedResponse->getInt('[hits][total][value]', 0));
-        if ($config->aggregations) {
-            $result->setDossierCount($typedResponse->getInt('[aggregations][unique_dossiers][value]', 0));
-        }
+        $result->setResultCount($typedResponse->getInt('[hits][total][value]', 0));
+        $result->setDossierCount($typedResponse->getInt('[aggregations][unique_dossiers][value]', 0));
+        $result->setDocumentCount($typedResponse->getInt('[aggregations][unique_documents][value]', 0));
 
         $suggestions = $this->transformSuggestions($typedResponse);
         if ($suggestions) {
@@ -165,13 +169,10 @@ class ResultTransformer
                 continue;
             }
 
-            // Regular aggregation, iterate over the buckets and create entries
-            $entries = [];
-            foreach ($aggregation->getIterable('[buckets]') as $bucket) {
-                $entries[] = new AggregationBucketEntry($bucket->getString('[key]'), $bucket->getInt('[doc_count]'));
-            }
-
-            $ret[] = new Aggregation(strval($name), $entries);
+            $ret[] = $this->aggregationMapper->map(
+                strval($name),
+                $aggregation->getIterable('[buckets]')
+            );
         }
 
         return $ret;
@@ -201,7 +202,7 @@ class ResultTransformer
         $highlightPaths = [
             '[highlight][pages.content]',
             '[highlight][dossiers.title]',
-            '[highlight][dossiers.title]',
+            '[highlight][dossiers.summary]',
         ];
         $highlightData = $this->getHighlightData($hit, $highlightPaths);
 
@@ -230,6 +231,7 @@ class ResultTransformer
         $highlightPaths = [
             '[highlight][title]',
             '[highlight][summary]',
+            '[highlight][decision_content]',
         ];
         $highlightData = $this->getHighlightData($hit, $highlightPaths);
 
@@ -259,5 +261,34 @@ class ResultTransformer
 
         /** @var string[] $highlightData */
         return $highlightData;
+    }
+
+    /**
+     * @param string[] $inquiryIds
+     *
+     * @return InquiryDescription[]
+     */
+    private function getInquiryDescriptions(array $inquiryIds): array
+    {
+        if (count($inquiryIds) === 0) {
+            return [];
+        }
+
+        return array_map(
+            static fn (Inquiry $inquiry): InquiryDescription => InquiryDescription::fromEntity($inquiry),
+            $this->doctrine->getRepository(Inquiry::class)->findBy(['id' => $inquiryIds])
+        );
+    }
+
+    private function getFilterDetails(Config $config): FilterDetails
+    {
+        /** @var string[] $dossierNrs */
+        $dossierNrs = $config->facets['dnr'] ?? [];
+
+        return new FilterDetails(
+            $this->getInquiryDescriptions($config->dossierInquiries),
+            $this->getInquiryDescriptions($config->documentInquiries),
+            $dossierNrs,
+        );
     }
 }

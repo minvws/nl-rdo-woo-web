@@ -8,7 +8,7 @@ use App\Entity\Document;
 use App\Service\Elastic\ElasticClientInterface;
 use App\Service\Search\Model\Config;
 use App\Service\Search\Object\ObjectHandler;
-use App\Service\Search\Query\QueryGeneratorFactory;
+use App\Service\Search\Query\QueryGenerator;
 use App\Service\Search\Result\Result;
 use App\Service\Search\Result\ResultTransformer;
 use Elastic\Elasticsearch\Response\Elasticsearch;
@@ -19,7 +19,7 @@ class SearchService
     public function __construct(
         protected ElasticClientInterface $elastic,
         protected LoggerInterface $logger,
-        protected QueryGeneratorFactory $queryGenFactory,
+        protected QueryGenerator $queryGenerator,
         protected ObjectHandler $objectHandler,
         protected ResultTransformer $resultTransformer
     ) {
@@ -27,18 +27,16 @@ class SearchService
 
     public function searchFacets(Config $config): Result
     {
-        $queryGenerator = $this->queryGenFactory->create($config);
-        $query = $queryGenerator->createFacetsQuery();
+        $query = $this->queryGenerator->createFacetsQuery($config);
 
-        return $this->doSearch($query, $config);
+        return $this->doSearch($query->build(), $config);
     }
 
     public function search(Config $config): Result
     {
-        $queryGenerator = $this->queryGenFactory->create($config);
-        $query = $queryGenerator->createQuery();
+        $query = $this->queryGenerator->createQuery($config);
 
-        return $this->doSearch($query, $config);
+        return $this->doSearch($query->build(), $config);
     }
 
     public function isIngested(Document $document): bool
@@ -53,12 +51,10 @@ class SearchService
 
     public function retrieveExtendedFacets(): Result
     {
-        $queryGenerator = $this->queryGenFactory->create();
-        $query = $queryGenerator->createExtendedFacetsQuery();
-
         $config = new Config(limit: 0);
+        $query = $this->queryGenerator->createExtendedFacetsQuery($config);
 
-        return $this->doSearch($query, $config);
+        return $this->doSearch($query->build(), $config);
     }
 
     /**

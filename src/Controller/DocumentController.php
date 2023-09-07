@@ -6,10 +6,11 @@ namespace App\Controller;
 
 use App\Entity\Document;
 use App\Entity\Dossier;
+use App\Repository\DocumentRepository;
+use App\Service\DossierService;
 use App\Service\Search\SearchService;
 use App\Service\Storage\DocumentStorageService;
 use App\Service\Storage\ThumbnailStorageService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,24 +22,14 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class DocumentController extends AbstractController
 {
-    protected EntityManagerInterface $doctrine;
-    protected DocumentStorageService $documentStorage;
-    protected ThumbnailStorageService $thumbnailStorage;
-    protected SearchService $searchService;
-    protected TranslatorInterface $translator;
-
     public function __construct(
-        EntityManagerInterface $doctrine,
-        DocumentStorageService $documentStorage,
-        ThumbnailStorageService $thumbnailStorage,
-        SearchService $searchService,
-        TranslatorInterface $translator
+        private readonly DocumentStorageService $documentStorage,
+        private readonly ThumbnailStorageService $thumbnailStorage,
+        private readonly SearchService $searchService,
+        private readonly TranslatorInterface $translator,
+        private readonly DocumentRepository $documentRepository,
+        private readonly DossierService $dossierService,
     ) {
-        $this->doctrine = $doctrine;
-        $this->documentStorage = $documentStorage;
-        $this->thumbnailStorage = $thumbnailStorage;
-        $this->searchService = $searchService;
-        $this->translator = $translator;
     }
 
     #[Route('/dossier/{dossierId}/document/{documentId}', name: 'app_document_detail', methods: ['GET'])]
@@ -51,24 +42,20 @@ class DocumentController extends AbstractController
         $breadcrumbs->addRouteItem('Dossier', 'app_dossier_detail', ['dossierId' => $dossier->getDossierNr()]);
         $breadcrumbs->addItem('Document');
 
-        if (! $dossier->getDocuments()->contains($document)) {
-            throw new NotFoundHttpException('Document not found');
+        if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
+            throw $this->createNotFoundException('Document or dossier not found');
         }
 
-        $thread = $this->doctrine->getRepository(Document::class)->findBy(['threadId' => $document->getThreadId()], ['documentDate' => 'ASC']);
-        $family = $this->doctrine->getRepository(Document::class)->findBy(['familyId' => $document->getFamilyId()], ['documentDate' => 'ASC']);
-
-        // This could be easier with a criteria
-        $family = array_filter($family, function (Document $doc) use ($document) {
-            return $doc->getDocumentNr() !== $document->getDocumentNr();
-        });
+        if (! $dossier->getDocuments()->contains($document)) {
+            throw new NotFoundHttpException('Document not found in dossier');
+        }
 
         return $this->render('document/details.html.twig', [
             'ingested' => $this->searchService->isIngested($document),
             'dossier' => $dossier,
             'document' => $document,
-            'thread' => $thread,
-            'family' => $family,
+            'thread' => $this->documentRepository->getRelatedDocumentsByThread($document),
+            'family' => $this->documentRepository->getRelatedDocumentsByFamily($document),
         ]);
     }
 
@@ -77,8 +64,12 @@ class DocumentController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
         #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document
     ): StreamedResponse {
+        if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
+            throw $this->createNotFoundException('Document or dossier not found');
+        }
+
         if (! $dossier->getDocuments()->contains($document)) {
-            throw new NotFoundHttpException('Document not found');
+            throw new NotFoundHttpException('Document not found in dossier');
         }
 
         $stream = $this->documentStorage->retrieveResourceDocument($document);
@@ -86,10 +77,10 @@ class DocumentController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        // @todo: caching headers et al
         $response = new StreamedResponse();
-        $response->headers->set('Content-Type', $document->getMimetype());
-
+        $response->headers->set('Content-Type', $document->getFileInfo()->getMimetype());
+        $response->headers->set('Content-Length', (string) $document->getFileInfo()->getSize());
+        $response->headers->set('Last-Modified', $document->getUpdatedAt()->format('D, d M Y H:i:s') . ' GMT');
         $response->setCallback(function () use ($stream) {
             fpassthru($stream);
         });
@@ -108,8 +99,12 @@ class DocumentController extends AbstractController
         #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document,
         string $pageNr
     ): Response {
+        if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
+            throw $this->createNotFoundException('Document or dossier not found');
+        }
+
         if (! $dossier->getDocuments()->contains($document)) {
-            throw new NotFoundHttpException('Document not found');
+            throw new NotFoundHttpException('Document not found in dossier');
         }
 
         $content = $this->searchService->getPageContent($document, intval($pageNr));
@@ -131,12 +126,17 @@ class DocumentController extends AbstractController
         #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document,
         string $pageNr
     ): StreamedResponse {
+        if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
+            throw $this->createNotFoundException('Document or dossier not found');
+        }
+
         if (! $dossier->getDocuments()->contains($document)) {
-            throw new NotFoundHttpException('Document not found');
+            throw new NotFoundHttpException('Document not found in dossier');
         }
 
         // No file found (yet), just the document record
-        if ($document->getFilepath() == null || ! $document->isUploaded()) {
+        $file = $document->getFileInfo();
+        if ($file->getPath() === null || ! $file->isUploaded()) {
             throw new NotFoundHttpException();
         }
 
@@ -145,11 +145,13 @@ class DocumentController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        // @todo: caching headers et al
-        $response = new StreamedResponse(function () use ($stream) {
+        $response = new StreamedResponse();
+        $response->headers->set('Content-Type', $file->getMimetype());
+        $response->headers->set('Content-Length', (string) $file->getSize());
+        $response->headers->set('Last-Modified', $document->getUpdatedAt()->format('D, d M Y H:i:s') . ' GMT');
+        $response->setCallback(function () use ($stream) {
             fpassthru($stream);
         });
-        $response->headers->set('Content-Type', $document->getMimetype());
 
         return $response;
     }
@@ -165,24 +167,35 @@ class DocumentController extends AbstractController
         #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document,
         string $pageNr
     ): StreamedResponse {
-        if (! $dossier->getDocuments()->contains($document)) {
-            throw new NotFoundHttpException('Document not found');
+        if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
+            throw $this->createNotFoundException('Document or dossier not found');
         }
 
+        if (! $dossier->getDocuments()->contains($document)) {
+            throw new NotFoundHttpException('Document not found in dossier');
+        }
+
+        $fileSize = $this->thumbnailStorage->fileSize($document, intval($pageNr));
         $stream = $this->thumbnailStorage->retrieveResource($document, intval($pageNr));
         if (! $stream) {
             // Display default placeholder thumbnail if we haven't found a thumbnail for given document/pageNr
             $path = sprintf('%s/%s', $this->getParameter('kernel.project_dir') . '/public', 'placeholder.png');
+            $fileSize = filesize($path);
             $stream = fopen($path, 'rb');
             if (! $stream) {
                 throw new NotFoundHttpException();
             }
         }
 
-        // @todo: caching headers et al
         $response = new StreamedResponse();
         $response->headers->set('Content-Type', 'image/png');
-
+        $response->headers->set('Content-Length', (string) $fileSize);
+        $response->setCache([
+            'public' => true,
+            'max_age' => 3600,
+            's_maxage' => 3600,
+            'immutable' => true,
+        ]);
         $response->setCallback(function () use ($stream) {
             fpassthru($stream);
         });

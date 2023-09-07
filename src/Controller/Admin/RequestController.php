@@ -18,6 +18,8 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class RequestController extends AbstractController
 {
+    protected const MAX_ITEMS_PER_PAGE = 100;
+
     protected EntityManagerInterface $doctrine;
     protected UserService $userService;
     protected PaginatorInterface $paginator;
@@ -41,7 +43,7 @@ class RequestController extends AbstractController
         $pagination = $this->paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
-            10
+            self::MAX_ITEMS_PER_PAGE
         );
 
         return $this->render('admin/request/index.html.twig', [

@@ -38,6 +38,13 @@ class PageExtractor implements PageExtractorInterface
         }
 
         $localPath = $this->documentStorage->downloadDocument($document);
+        if (! $localPath) {
+            $this->logger->error('cannot download document from storage', [
+                'document' => $document->getId(),
+            ]);
+
+            return;
+        }
 
         $tempDir = $this->fileUtils->createTempDir();
         $targetPath = $tempDir . '/page.pdf';
@@ -46,6 +53,9 @@ class PageExtractor implements PageExtractorInterface
         $this->logger->debug('EXEC: ' . join(' ', $params));
         $process = new Process($params);
         $process->run();
+
+        // Remove local file
+        $this->documentStorage->removeDownload($localPath);
 
         if (! $process->isSuccessful()) {
             $this->logger->error('Failed to fetch PDF page: ', [

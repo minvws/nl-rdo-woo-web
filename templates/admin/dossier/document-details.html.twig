@@ -11,39 +11,52 @@
             <section id="document_details" class="mb-5">
                 <div class="card mb-3">
                     <div class="card-header">
-                        <a href="#" class="button float-end"><i class="fa fa-download"></i> {{ "Download" | trans() }} ({{ document.filesize | size }}
+                        <a href="#" class="button float-end"><i class="fa fa-download"></i> {{ "Download" | trans() }} ({{ document.fileInfo.size | size }}
                             ) </a>
-                        <h5>{{ "Document details" | trans() }}</h5>
                     </div>
                     <div class="card-body bg-light">
-
                         <table>
+                            <caption class="visually-hidden">{{ "Document details" | trans() }}</caption>
+
                             <tr>
                                 <td>{{ "Document ID" | trans() }}</td>
                                 <td>{{ document.documentNr }}</td>
                             </tr>
                             <tr>
                                 <td>{{ "Document title" | trans() }}</td>
-                                <td>{{ document.filename }}</td>
+                                <td>{{ document.fileInfo.name }}</td>
                             </tr>
                             <tr>
                                 <td>{{ "Document type" | trans() }}</td>
-                                <td>{{ document.sourceType | trans() }}</td>
+                                <td>{{ document.fileInfo.sourceType | trans() }}</td>
                             </tr>
                             <tr>
                                 <td>{{ "Document size" | trans() }}</td>
-                                <td>{{ document.filesize | size }}</td>
+                                <td>{{ document.fileInfo.size | size }}</td>
                             </tr>
                             <tr>
                                 <td>{{ "Document pages" | trans() }}</td>
                                 <td>{{ document.pageCount }}</td>
                             </tr>
-
                             <tr>
                                 <td>{{ "Document date" | trans() }}</td>
-                                <td>{{ document.documentDate|date("d-m-Y") }}</td>
+                                <td>
+                                    <time datetime="{{ document.documentDate | date("Y-m-d") }}">{{ document.documentDate | format_date('long') }}</time>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{{ "Withdrawn" | trans() }}</td>
+                                <td>{{ document.withdrawn ? 'ja' : 'nee' }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ "Public link" | trans() }}</td>
+                                <td><a href="{{ path('app_document_detail', { 'dossierId': dossier.dossierNr, 'documentId': document.documentNr }) }}">open</a></td>
                             </tr>
                         </table>
+
+                        {% if not document.withdrawn %}
+                            <a href="{{ path('app_admin_dossier_document_withdraw', { 'dossierId': dossier.dossierNr, 'documentId': document.documentNr }) }}">Intrekken</a>
+                        {% endif %}
 
                         {{ form(removeForm) }}
                         {{ form(ingestForm) }}
@@ -53,8 +66,9 @@
 
 
             <section id="ingest_history" class="mb-5">
-                <h3>{{ "Ingest history log" | trans() }}</h3>
                 <table class="table table-condensed table-striped table-bordered table-hover table-">
+                    <caption class="visually-hidden">{{ "Ingest history log" | trans() }}</caption>
+
                     <thead>
                     <tr>
                         <th>{{ "Timestamp" | trans() }}</th>
@@ -62,9 +76,9 @@
                         <th>{{ "Message" | trans() }}</th>
                     </tr>
                     </thead>
+
                     <tbody>
                     {% for group in document.groupedIngestLogs %}
-
                         <tr>
                             <td>{{ group.0.createdAt | date('Y-m-d H:i:s') }}</td>
                             <td>{{ group.0.event }}</td>

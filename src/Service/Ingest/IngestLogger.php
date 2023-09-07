@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class IngestLogger implements LoggingTypeInterface
 {
     private bool $enabled = true;
+    private bool $flush = true;
 
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
@@ -31,6 +32,11 @@ class IngestLogger implements LoggingTypeInterface
     public function restore(): void
     {
         $this->enabled = true;
+    }
+
+    public function setFlush(bool $flush): void
+    {
+        $this->flush = $flush;
     }
 
     public function success(Document $document, string $event, string $message): void
@@ -58,6 +64,9 @@ class IngestLogger implements LoggingTypeInterface
         $log->setSuccess($succes);
 
         $this->doctrine->persist($log);
-        $this->doctrine->flush();
+
+        if ($this->flush) {
+            $this->doctrine->flush();
+        }
     }
 }

@@ -1,3 +1,15 @@
+{% macro inquiry_facets(result) %}
+    {% for dossier_nr in result.filterDetails.dossierNumbers %}
+        {{ _self.facet_pill("Dossier with number {dossier_nr}" | trans({'dossier_nr': dossier_nr}), constant('App\\Service\\Search\\Model\\FacetKey::DOSSIER_NR').value ~ '[]', dossier_nr) }}
+    {% endfor %}
+    {% for inquiryDescription in result.filterDetails.documentInquiries %}
+        {{ _self.facet_pill("Documents with casenumber {case_nr}" | trans({'case_nr': inquiryDescription.casenumber}), constant('App\\Service\\Search\\Model\\FacetKey::INQUIRY_DOCUMENTS').value ~ '[]', inquiryDescription.id) }}
+    {% endfor %}
+    {% for inquiryDescription in result.filterDetails.dossierInquiries %}
+        {{ _self.facet_pill("Dossiers with casenumber {case_nr}" | trans({'case_nr': inquiryDescription.casenumber}), constant('App\\Service\\Search\\Model\\FacetKey::INQUIRY_DOSSIERS').value ~ '[]', inquiryDescription.id) }}
+    {% endfor %}
+{% endmacro %}
+
 {#
 
 Display facet with hyperlinks
@@ -7,7 +19,6 @@ Display facet with hyperlinks
     result: the search result object where to fetch the facet/aggregations from
     count: the number of facet entries to display
 #}
-
 {% macro facet_links(title, facetKey, result) %}
     {% set entries = result.aggregation(facetKey).entries|default([]) %}
 
@@ -20,7 +31,7 @@ Display facet with hyperlinks
             <li>
                 {# parenthesis around searchkey are important, otherwise it will be used as a literal 'searchkey' value #}
                 <a class="arrowed-link split-link" href="{{ path('app_search', { q: '', (facet2query(facetKey) ~ '[]'):  entry.key|url_encode }) }}">
-                    <span class="split-link__underline truncate">{{ entry.key }}</span>
+                    <span class="split-link__underline">{{ entry.displayValue }}</span>
                     <span class="split-link__suffix de-emphasized">({{ entry.count }})</span>
                 </a>
             </li>
@@ -42,7 +53,7 @@ Display facet with hyperlinks
             <li>
                 {# parenthesis around searchkey are important, otherwise it will be used as a literal 'searchkey' value #}
                 <a class="arrowed-link split-link" href="{{ path('app_search', { q: '', (facet2query(facetKey) ~ '[]'):  entry.key|url_encode }) }}">
-                    <span class="split-link__underline truncate">{{ entry.key }}</span>
+                    <span class="split-link__underline">{{ entry.displayValue }}</span>
                     <span class="split-link__suffix de-emphasized">({{ entry.count }})</span>
                 </a>
             </li>
@@ -58,8 +69,10 @@ Display facet with hyperlinks
     when displaying date range pills.
 #}
 {% macro facet_pill(title, key, value) %}
-    <li x-data>
-        <button @click="window.removeFacetPill($el)" data-key="{{ key }}" data-value="{{ value }}" class="reset pill hover:!line-through focus:!line-through"><span class="sr-only">{{ "Remove filter" | trans() }}</span> {{ title }} <i class="fa fa-xmark" aria-hidden="true"></i></button>
+    <li>
+        <a class="pill js-active-filter-pill" data-key="{{ key }}" data-value="{{ value }}"  href="?{{ query_string_without_param(key, value) }}">
+            <span class="visually-hidden">{{ "Remove filter" | trans() }}</span> {{ title }} <i class="fa fa-xmark ml-1 mt-1" aria-hidden="true"></i>
+        </a>
     </li>
 {% endmacro %}
 
@@ -73,7 +86,7 @@ Display facet with hyperlinks
 {% macro facet_pills(title, facetKey, result) %}
     {% for entry in result.aggregation(facetKey).entries|default([]) %}
         {% if facet_checked(facet2query(facetKey), entry.key) %}
-            {{ _self.facet_pill(title ~ ': ' ~ entry.key, facet2query(facetKey) ~ '[]', entry.key) }}
+            {{ _self.facet_pill(title ~ ': ' ~ entry.displayValue, facet2query(facetKey) ~ '[]', entry.key) }}
         {% endif %}
     {% endfor %}
 {% endmacro %}
@@ -91,43 +104,62 @@ Display facet with hyperlinks
     {% set queryKey = facet2query(facetKey) %}
 
     {% if entries|length > 0 %}
-    <fieldset x-data>
-        <legend>{{ title }}</legend>
-        {% for entry in entries[:5] %}
-            {{ _self._facet_entry(entry, queryKey) }}
-        {% endfor %}
+    <fieldset class="js-filters-group" data-key="{{ facetKey }}">
+        <legend>
+            <button
+                aria-expanded="true"
+                aria-controls="filters-group-{{ facetKey }}"
+                class="toggle-filters-group-button js-toggle-filters-group-button"
+                type="button"
+            >
+                {{ title }}
+                <img class="no-js:hidden" src="/img/chevron-up.svg" alt="" />
+            </button>
+        </legend>
 
-        {% if entries | length > 5 %}
-            <div x-data='{ open: false }'>
-                <div x-show="!open">
-                    <a href="#" @click.prevent="open=true">{{ "More..." | trans() }}</a><br>
-                </div>
-                <div x-show="open" x-cloak>
+        <div class="filters-collapsible js-filters-group-collapsible" id="filters-group-{{ facetKey }}">
+            {% for entry in entries[:5] %}
+                {{ _self._facet_entry(entry, queryKey, facetKey) }}
+            {% endfor %}
+
+            {% if entries | length > 5 %}
+                <div class="filters-collapsible js-filters-item-collapsible" id="filter-items-{{ facetKey }}">
                     {% for entry in entries[5:] %}
-                        {{ _self._facet_entry(entry, queryKey) }}
+                        {{ _self._facet_entry(entry, queryKey, facetKey) }}
                     {% endfor %}
                 </div>
-            </div>
-        {% endif %}
+                <button
+                    aria-expanded="true"
+                    aria-controls="filter-items-{{ facetKey }}"
+                    class="toggle-filter-items-button js-toggle-filter-items-button no-js:hidden"
+                    data-text-collapsed="{{ "Show more" | trans() }}"
+                    data-text-expanded="{{ "Show less" | trans() }}"
+                    type="button"
+                >{{ "Show more" | trans() }}</button>
+            {% endif %}
+
+            <a href="#search-results" class="sr-only focus:not-sr-only">
+                {{ "Go to search results" | trans() }}
+            </a>
+        </div>
     </fieldset>
     {% endif %}
 {% endmacro %}
 
 
-{% macro _facet_entry(entry, queryKey, operator_and) %}
+{% macro _facet_entry(entry, queryKey, facetKey) %}
     <div class="checkbox">
         <input
+            class="js-search-filter-checkbox"
             id="input_{{ entry.key|url_encode }}"
             type="checkbox"
             name="{{ queryKey }}[]"
             value="{{ entry.key }}"
             {% if facet_checked(queryKey, entry.key) %}checked{% endif %}
-            @click="window.toggleFacet($el)"
         >
         <label for="input_{{ entry.key|url_encode }}">
             <span class="flex">
-                <span class="grow">{{ entry.key | default('none'|trans())}}</span>
-
+                <span class="grow mr-2">{{ entry.displayValue }}</span>
                 <span class="de-emphasized">({{ entry.count }})</span>
             </span>
         </label>

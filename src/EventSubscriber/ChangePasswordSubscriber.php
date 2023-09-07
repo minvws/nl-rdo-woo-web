@@ -21,7 +21,7 @@ class ChangePasswordSubscriber implements EventSubscriberInterface
     protected UrlGeneratorInterface $urlGenerator;
     protected Security $security;
 
-    // Skip the redirector when we are on these routes
+    // Skip the redirector when we are on these routes, otherwise we end up in a redirect loop
     /** @var array|string[] */
     protected array $skipRoutes = [
         '2fa_check',

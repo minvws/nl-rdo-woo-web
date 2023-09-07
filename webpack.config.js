@@ -15,6 +15,13 @@ Encore
     //.setManifestKeyPrefix('build/')
 
     /*
+     * COPY FILES
+     */
+    .copyFiles({
+        from: 'assets/img',
+    })
+
+    /*
      * ENTRY CONFIG
      *
      * Each entry will result in one JavaScript file (e.g. app.js)

@@ -38,6 +38,9 @@ class ArchiveService
 
     /**
      * Generates a ZIP archive for the given batch download. Returns true on success (or already created), false otherwise.
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function generateArchive(BatchDownload $batch): bool
     {
@@ -51,11 +54,19 @@ class ArchiveService
         $zip = new \ZipArchive();
         $zip->open($zipArchivePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
 
+        $documents = $batch->getDocuments();
+        if (count($documents) === 0) {
+            foreach ($batch->getDossier()->getDocuments() as $document) {
+                $documents[] = $document->getDocumentNr();
+            }
+        }
+
         // Add all document files
-        foreach ($batch->getDocuments() as $documentNr) {
+        $localPaths = [];
+        foreach ($documents as $documentNr) {
             // Check (again) if the document exists in the dossier.
             $document = $this->findInDossier($batch->getDossier(), $documentNr);
-            if (! $document) {
+            if (! $document || ! $document->isUploaded()) {
                 continue;
             }
 
@@ -69,19 +80,40 @@ class ArchiveService
 
                 continue;
             }
-            $zip->addFile($localPath, $document->getDocumentNr() . '-' . $document->getFilename());
-            $this->storageService->removeDownload($localPath);
+
+            // Generate correct filename for this document
+            $fileName = $document->getDocumentNr() . '-' . $document->getFileInfo()->getName();
+            if (! str_ends_with(strtolower($fileName), '.pdf')) {
+                $fileName .= '.pdf';
+            }
+
+            $sanitizer = new FilenameSanitizer($fileName);
+            $sanitizer->stripAdditionalCharacters();
+            $sanitizer->stripIllegalFilesystemCharacters();
+            $sanitizer->stripRiskyCharacters();
+            $fileName = $sanitizer->getFilename();
+
+            $zip->addFile($localPath, $fileName);
+
+            $localPaths[] = $localPath;
         }
 
         // Finished processing
         $zip->close();
 
-        $destinationPath = sprintf('batch-%s.zip', $batch->getId()->toBase58());
-        if ($this->saveZip($zipArchivePath, $destinationPath, $batch)) {
+        // Remove all local files
+        foreach ($localPaths as $localPath) {
+            $this->storageService->removeDownload($localPath);
+        }
+
+        if ($this->saveZip($zipArchivePath, $batch->getFilename(), $batch)) {
             $batch->setStatus(BatchDownload::STATUS_COMPLETED);
         } else {
             $batch->setStatus(BatchDownload::STATUS_FAILED);
         }
+
+        // Store the documents in the batch
+        $batch->setDocuments($documents);
 
         // Save new status and size
         $fileSize = filesize($zipArchivePath);
@@ -139,5 +171,52 @@ class ArchiveService
         fclose($stream);
 
         return true;
+    }
+
+    /**
+     * @return false|resource
+     */
+    public function getZipStream(BatchDownload $batch)
+    {
+        try {
+            return $this->storage->readStream($batch->getFilename());
+        } catch (FilesystemException $e) {
+            $this->logger->error('Failed open ZIP archive ', [
+                'batch' => $batch->getId()->toBase58(),
+                'path' => $batch->getFilename(),
+                'exception' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * @param string[] $documents
+     */
+    public function archiveExists(Dossier $dossier, array $documents): ?BatchDownload
+    {
+        // No documents mean all documents of the dossier
+        if (count($documents) === 0) {
+            foreach ($dossier->getDocuments() as $document) {
+                $documents[] = $document->getDocumentNr();
+            }
+        }
+
+        // Prune all expired documents (garbage collection in case cron doesn't work)
+        $this->doctrine->getRepository(BatchDownload::class)->pruneExpired();
+
+        $batches = $this->doctrine->getRepository(BatchDownload::class)->findBy([
+            'status' => BatchDownload::STATUS_COMPLETED,
+            'dossier' => $dossier,
+        ]);
+
+        foreach ($batches as $batch) {
+            if ($batch->getDocuments() === $documents) {
+                return $batch;
+            }
+        }
+
+        return null;
     }
 }

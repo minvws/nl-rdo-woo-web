@@ -44,6 +44,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('choice_attr', [$this->runtime, 'getChoiceAttribute']),
             new TwigFunction('app_version', [$this->runtime, 'appVersion']),
             new TwigFunction('die', [$this->runtime, 'dieTwig']),
+            new TwigFunction('is_backend', [$this->runtime, 'isBackend']),
         ];
     }
 }

@@ -1,72 +1,93 @@
 {% extends 'base.html.twig' %}
+{% import "document_macros.html.twig" as macro %}
 
-{% set page_title = "Dossiers and documents for case number %casenr%" | trans({'%casenr%': inquiry.casenr}) %}
+{% set page_title = "Dossiers and documents for case number {case_number}" | trans({'{case_number}': inquiry.casenr}) %}
 
 {% block body %}
 
     <section>
         <div>
+            <div class="block w-full">
+                <h1 class="leading-tight mb-10">{{ page_title }}</h1>
 
-            <h1>{{ "Dossiers and documents for case number %casenr%" | trans({'%casenr%': inquiry.casenr}) }}</h1>
+                <div class="bg-anti-flash-white block p-6 leading-tight mb-10">
+                    <p class="font-bold">
+                        {{
+                            "{number_of_decisions} made for case" | trans({
+                                '{are_or_is}': "are_or_is" | trans({ 'count': inquiry.dossiers.count }),
+                                '{number_of_decisions}': "# decisions" | trans({ 'count': inquiry.dossiers.count }),
+                                '{case_number}': inquiry.casenr,
+                            })
+                        }}
+                        {{ "# Number of documents judged" | trans({ 'count': public_docs.getTotalItemCount + not_public_docs.getTotalItemCount }) }}:
+                    </p>
 
-            <section>
-                <h2>{{ "Dossiers" | trans() }}</h2>
+                    <ul class="my-4">
+                        {% if public_docs.getTotalItemCount > 0 %}
+                        <li>{{ "{number_of_documents} {are_or_is} (partly) made public" | trans({ '{number_of_documents}': "# Documents" | trans({ 'count': public_docs.getTotalItemCount }), '{are_or_is}': "are_or_is" | trans({ 'count': public_docs.getTotalItemCount }) }) }}</li>
+                        {% endif %}
+                        {% if not_public_docs.getTotalItemCount > 0 %}
+                        <li>{{ "{number_of_documents} {will} not be made public" | trans({ '{number_of_documents}': "# Documents" | trans({ 'count': not_public_docs.getTotalItemCount }), '{will}': "will" | trans({ 'count': not_public_docs.getTotalItemCount }) }) }}</li>
+                        {% endif %}
+                    </ul>
 
-                <table>
-                    <tr>
-                        <th>{{ "Dossier" | trans() }}</th>
-                        <th>{{ "Release date" | trans() }}</th>
-                    </tr>
-                    {% for dossier in inquiry.dossiers %}
-                        <tr>
-                            <td><a href="{{ path('app_dossier_detail', {dossierId: dossier.dossierNr}) }}">{{ dossier.title }}</a></td>
-                            <td>{{ dossier.createdAt | date('d-m-Y') }}
-                        </tr>
-                    {% endfor %}
-                </table>
-            </section>
+                    <p>
+                        {{
+                            "{number_of_documents} {are_or_is} relevant for case" | trans({
+                                '{number_of_documents}': "# Documents" | trans({ 'count': inquiry.documents.count }),
+                                '{are_or_is}': "are_or_is" | trans({ 'count': inquiry.documents.count })
+                            })
+                        }}
+                    </p>
+                </div>
 
+                <div class="block mb-10">
+                    <h2>{{ "Dossiers" | trans() }}</h2>
+                    {% if inquiry.dossiers | length > 0 %}
+                    <table>
+                        <thead class="table-default__thead">
+                            <tr>
+                                <th scope="col">{{ "Dossier" | trans() }}</th>
+                                <th scope="col" class="text-right th-date">{{ "Date of disclosure" | trans() }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for dossier in inquiry.dossiers %}
+                            <tr>
+                                <td><a href="{{ path('app_dossier_detail', {dossierId: dossier.dossierNr}) }}">{{ dossier.title }}</a></td>
+                                <td class="text-right">{{ dossier.createdAt | format_date('long') }}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p>{{ "No dossiers" | trans }}</p>
+                    {% endif %}
+                </div>
 
-            <section x-data='{filter:"all", filter_dossier:"{{ inquiry.dossiers.first.dossierNr }}" }'>
-                <h2>Documenten <small>{{ inquiry.documents|length }} documenten</small></h2>
-
-                <form>
+                <h2 id="documenten">{{ "Documents" | trans }}</h2>
+                {% if (public_docs.getTotalItemCount + not_public_docs.getTotalItemCount) > 0 %}
+                {# <form class="mb-10">
                     <label><input @click="filter='all'" name="filter" type="radio"> Alle {{ inquiry.allDocuments|length }} documenten in bovenstaande besluiten</label>
                     <label><input @click="filter='case'" name="filter" type="radio"> Alle {{ inquiry.documents|length }} documenten met zaaknummer {{ inquiry.casenr }}</label>
                     <label><input @click="filter='dossier'" name="filter" type="radio"> Documenten met zaaknummer in besluit
-                        <select name="filter_dossier" x-model="filter_dossier">
+                        <select id="dossier-case-nr" name="filter_dossier" x-model="filter_dossier" onchange="window.setInquiryDossierLink()">
                             {% for dossier in inquiry.dossiers %}
-                                <option>{{ dossier.dossierNr }}</option>
+                                <option{% if loop.first %} selected{% endif %}>{{ dossier.dossierNr }}</option>
                             {% endfor %}
                         </select>
                     </label>
                 </form>
 
+                <a x-show="filter=='all'" href="{{ path('app_search') }}?dsi[]={{ inquiry.id }}">Zoeken in deze documenten...</a>
+                <a x-show="filter=='case'" href="{{ path('app_search') }}?dci[]={{ inquiry.id }}">Zoeken in deze documenten...</a> #}
+                {# <a x-show="filter=='dossier'" id="dossier-case-link" data-base_href="{{ path('app_search')}}?dci[]={{ inquiry.id }}&dnr[]=" href="{{ path('app_search')}}?dci[]={{ inquiry.id }}&dnr[]={{ inquiry.dossiers|first.dossierNr }}">Zoeken in deze documenten...</a> #}
 
-                <table class="table table-striped">
-                    <tr>
-                        <th>Besluit Nr</th>
-                        <th>Title</th>
-                        <th>Type</th>
-                    </tr>
-
-                    {% for document in inquiry.allDocuments %}
-                        <tr
-                            {% if document in inquiry.documents %}
-                                x-show="filter=='all' || (filter=='dossier' && '{{ document.dossiers.0.dossierNr}}' == filter_dossier) || filter=='case'"
-                            {% else %}
-                                x-show="filter=='all' || (filter=='dossier' && '{{ document.dossiers.0.dossierNr}}' == filter_dossier)"
-                            {% endif %}
-                        >
-                            <td nowrap>{{ document.documentNr }}</td>
-                            <td><a href="#">{{ document.filename }}</a></td>
-                            <td>{{ document.documentDate | date('d-m-Y') }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-
-            </section>
-
+                    {{ macro.document_tabs(public_docs, not_public_docs, '#documenten') }}
+                {% else %}
+                    <p>{{ "No documents" | trans }}</p>
+                {% endif %}
+            </div>
         </div>
     </section>
 

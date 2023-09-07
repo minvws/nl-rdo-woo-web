@@ -6,39 +6,33 @@ namespace App\MessageHandler;
 
 use App\Entity\Dossier;
 use App\Message\ProcessDocumentMessage;
-use App\Service\DocumentService;
+use App\Service\FileProcessService;
 use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * Process a document (archive, pdf) that is uploaded to the system. If the upload has been chunked, it will be stitched together first.
+ */
 #[AsMessageHandler]
 class ProcessDocumentHandler
 {
-    protected EntityManagerInterface $doctrine;
-    protected LoggerInterface $logger;
-    protected DocumentService $documentService;
-    protected DocumentStorageService $storageService;
-
     public function __construct(
-        DocumentService $documentService,
-        DocumentStorageService $storageService,
-        EntityManagerInterface $doctrine,
-        LoggerInterface $logger
+        private readonly FileProcessService $fileProcessService,
+        private readonly DocumentStorageService $storageService,
+        private readonly EntityManagerInterface $doctrine,
+        private readonly LoggerInterface $logger
     ) {
-        $this->documentService = $documentService;
-        $this->storageService = $storageService;
-        $this->doctrine = $doctrine;
-        $this->logger = $logger;
     }
 
     public function __invoke(ProcessDocumentMessage $message): void
     {
-        $dossier = $this->doctrine->getRepository(Dossier::class)->find($message->getUuid());
+        $dossier = $this->doctrine->getRepository(Dossier::class)->find($message->getDossierUuid());
         if (! $dossier) {
             // No dossier found for this message
             $this->logger->warning('No dossier found for this message', [
-                'dossier_uuid' => $message->getUuid(),
+                'dossier_uuid' => $message->getDossierUuid(),
             ]);
 
             return;
@@ -49,7 +43,7 @@ class ProcessDocumentHandler
             $localFile = $this->assembleChunks($message->getChunkUuid(), $message->getChunkCount());
             if (! $localFile) {
                 $this->logger->error('Could not assemble chunks', [
-                    'dossier_uuid' => $message->getUuid(),
+                    'dossier_uuid' => $message->getDossierUuid(),
                     'chunk_uuid' => $message->getChunkUuid(),
                     'chunk_count' => $message->getChunkCount(),
                 ]);
@@ -57,7 +51,7 @@ class ProcessDocumentHandler
                 return;
             }
 
-            $this->documentService->processDocument($localFile, $dossier, $message->getOriginalFilename());
+            $this->fileProcessService->processFile($localFile, $dossier, $message->getOriginalFilename());
             unlink($localFile->getPathname());
 
             return;
@@ -67,7 +61,7 @@ class ProcessDocumentHandler
         $localFilePath = $this->storageService->download($message->getRemotePath());
         if (! $localFilePath) {
             $this->logger->error('File could not be downloaded', [
-                'dossier_uuid' => $message->getUuid(),
+                'dossier_uuid' => $message->getDossierUuid(),
                 'file_path' => $message->getRemotePath(),
             ]);
 
@@ -75,23 +69,28 @@ class ProcessDocumentHandler
         }
 
         $localFile = new \SplFileObject($localFilePath);
-        $this->documentService->processDocument($localFile, $dossier, $message->getOriginalFilename());
-        $this->storageService->removeDownload($localFilePath);
+        try {
+            $this->fileProcessService->processFile($localFile, $dossier, $message->getOriginalFilename());
+        } catch (\Throwable $e) {
+            throw $e;
+        } finally {
+            $this->storageService->removeDownload($localFilePath, true);
+        }
     }
 
-    protected function assembleChunks(string $uuid, int $chunkCount): ?\SplFileInfo
+    protected function assembleChunks(string $chunkUuid, int $chunkCount): ?\SplFileInfo
     {
-        $path = sprintf('%s/assembled-%s', sys_get_temp_dir(), $uuid);
+        $path = sprintf('%s/assembled-%s', sys_get_temp_dir(), $chunkUuid);
         $stitchedFile = new \SplFileObject($path, 'w');
 
         for ($i = 0; $i < $chunkCount; $i++) {
             // Check if the chunk exists
-            $remoteChunkPath = '/uploads/chunks/' . $uuid . '/' . $i;
+            $remoteChunkPath = '/uploads/chunks/' . $chunkUuid . '/' . $i;
 
             $localChunkFile = $this->storageService->download($remoteChunkPath);
             if (! $localChunkFile) {
                 $this->logger->error('Chunk is not readable', [
-                    'uuid' => $uuid,
+                    'uuid' => $chunkUuid,
                     'chunk' => $i,
                 ]);
 

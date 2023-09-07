@@ -30,11 +30,11 @@ class Inquiry
     private \DateTimeImmutable $updatedAt;
 
     /** @var Collection|Document[] */
-    #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'inquiries')]
+    #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'inquiries', cascade: ['persist'])]
     private Collection $documents;
 
     /** @var Collection|Dossier[] */
-    #[ORM\ManyToMany(targetEntity: Dossier::class, mappedBy: 'inquiries')]
+    #[ORM\ManyToMany(targetEntity: Dossier::class, inversedBy: 'inquiries', cascade: ['persist'])]
     private Collection $dossiers;
 
     #[ORM\Column(length: 255)]

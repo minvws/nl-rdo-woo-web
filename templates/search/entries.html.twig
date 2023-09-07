@@ -1,18 +1,17 @@
 {% import "facet_macros.html.twig" as macro %}
 
-<div class="flex flex-col-reverse gap-0">
+<div>
     <div class="block">
-        <h1 class="ro-text-base ro-font-normal" aria-live="polite">
+        <h2 class="ro-text-base ro-font-normal" aria-live="polite" id="js-number-of-search-results">
             {% if result.type == constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
-                <span class="ro-font-bold">{{ "# dossiers" | trans({'count': result.documentCount}) }}</span>
+                <span class="ro-font-bold">{{ "# dossiers" | trans({'count': result.dossierCount}) }}</span>
             {% else %}
-
                 <span class="ro-font-bold">
                     {{ "# documents" | trans({'count': result.documentCount}) }}
                     {{ "in # dossiers" | trans({'count': result.dossierCount}) }}
                 </span>
             {% endif %}
-        </h1>
+        </h2>
 
         {# Suggestions #}
         {% set suggestionsId = constant('App\\ElasticConfig::SUGGESTIONS_SEARCH_INPUT') %}
@@ -32,38 +31,53 @@
         {% endif %}
     </div>
 
+    <div class="block pb-6">
     {% if has_facets(app.request) %}
-    <div class="block">
         {# Facet pills #}
-        <h2 class="visually-hidden">{{ "Applied filters" | trans() }}</h2>
-        <ul class="list-unstyled list-pills pb-6">
-            {% if is_valid_date(app.request.query.get('df')) %}
-                {{ macro.facet_pill('Datum vanaf: ' ~ app.request.query.get('df')|date('d-m-Y'), 'df', '') }}
+        <ul class="list-unstyled list-pills">
+            {{  macro.inquiry_facets(result) }}
+
+            {% if is_valid_date(app.request.get('dt').from | default) %}
+                {{ macro.facet_pill('Datum vanaf: ' ~ app.request.get('dt').from | default | format_date('long'), 'dt[from]', '') }}
             {% endif %}
-            {% if is_valid_date(app.request.query.get('dt')) %}
-                {{ macro.facet_pill('Datum tot: ' ~ app.request.query.get('dt')|date('d-m-Y'), 'dt', '') }}
+            {% if is_valid_date(app.request.get('dt').to | default) %}
+                {{ macro.facet_pill('Datum tot: ' ~ app.request.get('dt').to | default | format_date('long'), 'dt[to]', '') }}
             {% endif %}
 
-            {{ macro.facet_pills('Organization' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_DEPARTMENT'), result) }}
-            {{ macro.facet_pills('Official' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_OFFICIAL'), result) }}
-            {{ macro.facet_pills('Subject' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_SUBJECT'), result) }}
-            {{ macro.facet_pills('Document type' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_SOURCE'), result) }}
-            {{ macro.facet_pills('Judgement' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_JUDGEMENT'), result) }}
-            {{ macro.facet_pills('Grounds' | trans(), constant('App\\Service\\Search\\Model\\Facet::FACET_GROUNDS'), result) }}
+            {{ macro.facet_pills('Organization' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}
+            {# {{ macro.facet_pills('Official' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::OFFICIAL').value, result) }} #}
+            {{ macro.facet_pills('Subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
+            {{ macro.facet_pills('Document type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
+            {{ macro.facet_pills('Judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
+            {{ macro.facet_pills('Grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
         </ul>
-    </div>
     {% endif %}
+    </div>
 </div>
 
 {# Results #}
 {% if result.entries | length > 0 %}
-<h2 class="visually-hidden">Resultaten</h2>
-<ul class=" list-unstyled list-results">
+<h2 class="visually-hidden">{{ "Results" | trans() }}</h2>
+<ul class="list-unstyled list-results">
     {% for entry in result.entries %}
     <li>
         {% include "search/entries/" ~ entry.type ~ ".html.twig" %}
     </li>
     {% endfor %}
+</ul>
+{% elseif app.request.query.get('q') %}
+<h2>
+    <span aria-hidden="true" class="icon icon-search text-dim-gray relative -top-0.5 mr-2"></span>
+    <span class="text-2xl font-normal">{{ "No search results" | trans }}</span>
+</h2>
+
+<p>{{ "No documents found related to {query}" | trans({ 'query': app.request.query.get('q') }) }}.</p>
+
+<h3 class="mt-4 text-lg">{{ "Suggestions" | trans }}:</h3>
+<ul class="ml-4">
+    <li class="p-0">{{ "Check query spelling" | trans }}</li>
+    <li class="p-0">{{ "Try a different search term" | trans }}</li>
+    <li class="p-0">{{ "Use less keywords" | trans }}</li>
 </ul>
 {% endif %}
 
@@ -71,16 +85,3 @@
 {% if result.paginationEnabled %}
     {{ knp_pagination_render(result.pagination) }}
 {% endif %}
-
-{# Query debug info #}
-<div x-data="{ open: false }">
-    <button @click="open = !open" class="reset"><i class="fa fa-circle-question text-info"></i></button>
-
-    <div x-show="open" x-cloak>
-        <div class="card bg-light">
-            <div class="card-body">
-                <pre><small>{{ result.query|json_encode(constant('JSON_PRETTY_PRINT')) }}</small></pre>
-            </div>
-        </div>
-    </div>
-</div>

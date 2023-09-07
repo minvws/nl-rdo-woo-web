@@ -47,8 +47,9 @@ class HomeController extends AbstractController
         }
 
         // From here we always have a 'q' from the query string
-        $q = strval($request->query->get('q'));
-        if (! empty($q)) {
+        if ($request->query->has('q')) {
+            $q = strval($request->query->get('q'));
+
             return new RedirectResponse($this->generateUrl('app_search', ['q' => $q]));
         }
 

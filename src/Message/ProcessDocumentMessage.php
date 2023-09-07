@@ -8,8 +8,7 @@ use Symfony\Component\Uid\Uuid;
 
 class ProcessDocumentMessage
 {
-    // @todo: Rename to $dossierUuid, because this suggest the document uuid
-    protected Uuid $uuid;
+    protected Uuid $dossierUuid;
     protected string $remotePath;
     protected bool $chunked;
     protected string $chunkUuid;
@@ -17,14 +16,14 @@ class ProcessDocumentMessage
     protected string $originalFilename;
 
     public function __construct(
-        Uuid $uuid,
+        Uuid $dossierUuid,
         string $remotePath,
         string $originalFilename,
         bool $chunked = false,
         string $chunkUuid = '',
         int $chunkCount = 0
     ) {
-        $this->uuid = $uuid;
+        $this->dossierUuid = $dossierUuid;
         $this->remotePath = $remotePath;
         $this->chunked = $chunked;
         $this->chunkUuid = $chunkUuid;
@@ -32,9 +31,9 @@ class ProcessDocumentMessage
         $this->originalFilename = $originalFilename;
     }
 
-    public function getUuid(): Uuid
+    public function getDossierUuid(): Uuid
     {
-        return $this->uuid;
+        return $this->dossierUuid;
     }
 
     public function isChunked(): bool

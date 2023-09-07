@@ -8,5 +8,5 @@ use Symfony\Component\Uid\Uuid;
 
 interface EntityWithId
 {
-    public function getId(): Uuid;
+    public function getId(): ?Uuid;
 }

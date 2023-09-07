@@ -1,7 +1,15 @@
-<div role="search">
-    <form class="search-form {% if isHeroSearchForm|default(false) %}search-form--hero{% endif %}" method="post" action="">
-        <label for="search-all" class="visually-hidden">{{ "Enter a search term" | trans() }}</label>
-        <input id="search-all" type="text" placeholder="{{ "Enter a search term" | trans() }}" name="q" value="{{ app.request.get('q') }}"/>
+{% set inputId = id|default("search-field") %}
+{% set isHero = isHeroSearchForm|default(false) %}
+{% set isHalfWidth = isHalfWidth|default(false) %}
+
+<div class="{% if isHalfWidth %}half-width{% else %}w-full{% endif %}" role="search">
+    <form class="search-form {% if isHero %}search-form--hero{% endif %}" method="post" action="">
+        <label for="{{ inputId }}" class="visually-hidden">{{ "Enter a search term" | trans() }}</label>
+        <input id="{{ inputId }}" type="text" placeholder="{{ "Enter a search term" | trans() }}" name="q" value="{{ app.request.get('q') }}"/>
         <button type="submit"><span class="text">{{ "Search" | trans() }}</span> <span aria-hidden="true" class="icon icon-search"></button>
+
+        {% if isHero is same as(false) %}
+            <div class="search-form__suggestions" id="js-search-suggestions" hidden></div>
+        {% endif %}
     </form>
 </div>

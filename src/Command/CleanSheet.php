@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Document;
+use App\Entity\DocumentPrefix;
 use App\Entity\Dossier;
 use App\Entity\IngestLog;
 use App\Entity\Inquiry;
@@ -44,6 +45,7 @@ class CleanSheet extends Command
             ->setDefinition([
                 new InputOption('force', null, InputOption::VALUE_NONE, 'Force the operation without confirmation'),
                 new InputOption('users', 'u', InputOption::VALUE_NONE, 'Reset users'),
+                new InputOption('prefixes', 'p', InputOption::VALUE_NONE, 'Reset prefixes'),
                 new InputOption('index', 'i', InputOption::VALUE_REQUIRED, 'ES index name', 'woopie'),
             ])
         ;
@@ -78,6 +80,10 @@ class CleanSheet extends Command
 
         if ($input->getOption('users')) {
             $this->deleteAllEntities(User::class, $output);
+        }
+
+        if ($input->getOption('prefixes')) {
+            $this->deleteAllEntities(DocumentPrefix::class, $output);
         }
 
         return 0;

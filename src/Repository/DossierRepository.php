@@ -58,13 +58,21 @@ class DossierRepository extends ServiceEntityRepository
         return $dossiers;
     }
 
-    //    public function findOneBySomeField($value): ?Dossier
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * @return Dossier[]
+     */
+    public function findBySearchTerm(string $searchTerm, int $limit): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->leftJoin('d.inquiries', 'i')
+            ->where('d.title LIKE :searchTerm')
+            ->orWhere('d.dossierNr LIKE :searchTerm')
+            ->orWhere('i.casenr LIKE :searchTerm')
+            ->orderBy('d.updatedAt', 'DESC')
+            ->setMaxResults($limit)
+            ->setParameter('searchTerm', '%' . $searchTerm . '%')
+        ;
+
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -2,7 +2,8 @@ form.search-form {
     flex-direction: row;
     margin: 0 auto;
     padding: 1rem 0;
-    z-index: 0;
+    position: relative;
+    z-index: 1;
 
     button {
         align-self: auto;
@@ -40,6 +41,24 @@ form.search-form {
             position: static !important;
         }
     }
+
+    .search-form__suggestions {
+        background-color: #fff;
+        border: 1px solid #eee;
+        padding: 0 1rem;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 70px;
+
+        &:empty {
+            display: none;
+        }
+
+        .list-results {
+            padding-bottom: 0;
+        }
+    }
 }
 
 form.search-form--hero {
@@ -53,4 +72,11 @@ form.search-form--hero {
         margin-top: -56px;
         padding: var(--form-base-padding-top) var(--form-base-padding-right);
     }
+}
+
+[role="search"].half-width {
+    margin-inline-start: auto;
+    margin-inline-end: auto;
+    width: 100%;
+    max-width: 30rem;
 }

@@ -14,6 +14,9 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+/**
+ * Ingest a PDF file into the system. It will extract all pages fromm the pdf and emits a message for each page.
+ */
 #[AsMessageHandler]
 class IngestPdfHandler
 {

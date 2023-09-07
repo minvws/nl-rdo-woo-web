@@ -148,3 +148,36 @@ jobs:
       max-parallel: 3
       matrix:
         php-versions: [ '8.1', '8.2' ]
+
+  php-linting-twig:
+    needs:
+      - composer-install
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Install PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-versions }}
+      - name: copy env file
+        run: |
+          cp .env.ci .env.local
+          # change database url to sqlite
+          sed -i 's|^DATABASE_URL=.*|DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db|' .env.local
+      - name: Twig linter
+        run: |
+          bin/console cache:clear
+          bin/console cache:warmup
+          bin/console lint:twig templates
+        env:
+          APP_ENV: prod
+          APP_DEBUG: false
+    strategy:
+      max-parallel: 3
+      matrix:
+        php-versions: [ '8.1', '8.2' ]
