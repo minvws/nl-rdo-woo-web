@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Modify dossier" | trans() ~ ' ' ~ dossier.dossierNr %}
+
+{% block body %}
+
+    <section>
+
+        <div>
+            <h1>{{ "Dossier" | trans() }} {{ dossier.dossierNr }}</h1>
+
+            <a href="{{ path('app_admin_dossier_edit', {dossierId: dossier.dossierNr}) }}">edit</a>
+
+            <a href="{{ path('app_admin_dossier_documents_upload', {dossierId: dossier.dossierNr}) }}">upload docs</a>
+        </div>
+
+    </section>
+
+{% endblock %}

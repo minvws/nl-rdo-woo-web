@@ -1,0 +1,131 @@
+{#
+    document_tabs displays two tabs with both public and not public documents.
+
+    public_docs: a list of at least partially public documents
+    not_public_docs: a list of not public documents (already_public or not_public)
+    fragment: the fragment to use for the pagination links, like #documenten
+#}
+{% macro document_tabs(public_docs, not_public_docs, fragment) %}
+    {% set hasPublicDocuments = public_docs | length > 0 %}
+    {% set hasNotPublicDocuments = not_public_docs | length > 0 %}
+
+    {% if hasPublicDocuments and hasNotPublicDocuments %}
+    <div class="tabs w-full gap-0">
+        <ul class="p-0" role="tablist" aria-label="{{ "Documents" | trans() }}">
+            <li>
+                <button
+                    aria-controls="tab1"
+                    aria-label="{{ "Documents that match the request" | trans() }}"
+                    aria-selected="true"
+                    class="active tab"
+                    data-tab-target="#tab1"
+                    id="tabcontrol-1"
+                    role="tab"
+                >
+                    <span class="copy-desktop" id="a11y-tab1">
+                        {{ "Documents that match the request" | trans() }}
+                    </span>
+                    <span class="copy-mobile">
+                        {{ "Public" | trans() }}
+                    </span>
+                </button>
+            </li>
+            <li>
+                <button
+                    aria-controls="tab2"
+                    aria-label="{{ "Not made public" | trans() }}"
+                    class="tab"
+                    data-tab-target="#tab2"
+                    id="tabcontrol-2"
+                    role="tab"
+                >
+                    <span class="copy-desktop">
+                        {{ "Not made public" | trans() }}
+                    </span>
+                    <span class="copy-mobile">
+                        {{ "Not public" | trans() }}
+                    </span>
+                </button>
+            </li>
+        </ul>
+
+        <div id="tab1" data-tab-content class="active block w-full" role="tabpanel" tabindex="0" aria-labelledby="tabcontrol-1">
+            {{ _self.documents_table(public_docs, "Documents that match the request", '#tabcontrol-1') }}
+        </div>
+
+        <div id="tab2" data-tab-content class="block w-full" role="tabpanel" tabindex="0" aria-labelledby="tabcontrol-2" hidden>
+            {{ _self.documents_table(not_public_docs, "Not made public", '#tabcontrol-2') }}
+        </div>
+    </div>
+    {% elseif hasPublicDocuments %}
+        {{ _self.documents_table(public_docs, "Documents that match the request", fragment) }}
+    {% elseif hasNotPublicDocuments %}
+        {{ _self.documents_table(not_public_docs, "Not made public", fragment) }}
+    {% endif %}
+{% endmacro %}
+
+{#
+    documents_table displays a table with the provided documents.
+
+    documents: a list of documents to display
+    tableTitleTranslationKey: the translation key of the table caption
+#}
+{% macro documents_table(documents, tableTitleTranslationKey, fragment) %}
+    <table>
+        <caption class="visually-hidden">
+            {{ tableTitleTranslationKey | trans() }}
+        </caption>
+        <thead class="table-default__thead">
+            <tr>
+                <th>{{ "Document number" | trans() }}</th>
+                <th>{{ "Type" | trans() }}</th>
+                <th>{{ "Name" | trans() }}</th>
+                <th class="text-right th-date">{{ "Date" | trans() }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for doc in documents %}
+            <tr>
+                <td>
+                    {{ doc.documentId }}
+                </td>
+                <td>
+                    {% if doc.judgement.value is defined and doc.judgement.value is same as ('already_public') %}
+                        <div class="svg-icon svg-web w-[24px] h-[24px] block mt-[5px]" aria-hidden="true"></div>
+                    {% else %}
+                        <div class="svg-icon svg-{{ doc.fileInfo.sourceType }} w-[24px] h-[24px] block mt-[5px]" aria-hidden="true"></div>
+                    {% endif %}
+                    <span class="visually-hidden">{{ doc.fileInfo.sourceType | trans() }}</span>
+                </td>
+                <td>
+                    <div class="width-delimiter block">
+                        <a href="{{ path('app_document_detail', { dossierId: doc.dossiers.first.dossierNr, documentId: doc.documentNr }) }}">{{ doc.fileInfo.name }}</a>
+                    </div>
+                </td>
+                <td class="text-right">
+                    <time datetime="{{ doc.documentDate | date("Y-m-d") }}">{{ doc.documentDate | format_date('long') }}</time>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pt-10">
+        {{ knp_pagination_render(documents, null, {}, { 'fragment': fragment }) }}
+    </div>
+{% endmacro %}
+
+{#
+    document_ground displays a ground with a possible link pointing to more information.
+
+    ground: a list of documents to display
+#}
+{% macro document_ground(ground) %}
+    {% if get_citation_type(ground) == "woo" %}
+        <a href="https://wetten.overheid.nl/BWBR0045754/2022-08-01#Hoofdstuk5">{{ ground }} {{ ground|classification }}</a>
+    {% elseif get_citation_type(ground) == "wob" %}
+        <a href="https://wetten.overheid.nl/BWBR0005252/2018-07-28#HoofdstukV">{{ ground }} {{ ground|classification }}</a>
+    {% else %}
+        {{ ground }}
+    {% endif %}
+{% endmacro %}

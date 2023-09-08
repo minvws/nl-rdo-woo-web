@@ -1,0 +1,51 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Form\Document;
+
+use App\Entity\WithdrawReason;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+/**
+ * @template-extends AbstractType<RemoveFormType>
+ */
+class WithdrawFormType extends AbstractType
+{
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('reason', EnumType::class, [
+                'label' => 'Reden',
+                'required' => true,
+                'class' => WithdrawReason::class,
+                'expanded' => true,
+                'placeholder' => 'Choose an option',
+            ])
+            ->add('explanation', TextareaType::class, [
+                'label' => 'Toelichting',
+                'required' => true,
+                'constraints' => [],
+                'attr' => ['class' => 'w-full'],
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'Withdraw document',
+                'attr' => [
+                    'class' => 'btn btn-danger',
+                ],
+            ]);
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([]);
+    }
+}

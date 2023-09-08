@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Page not found" | trans() %}
+
+{% block body %}
+    <section>
+        <div>
+            <h1>{{ "Page not found" | trans() }}</h1>
+
+            <!-- {{ status_code }}, {{ status_text }} -->
+
+            <p>
+                {{ "The page/document you are looking for does not exist or is not available." | trans() }}
+            </p>
+
+            <a href="/">{{ "Go back to the homepage" | trans() }}</a>
+        </div>
+    </section>
+{% endblock %}
+

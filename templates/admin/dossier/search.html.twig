@@ -1,0 +1,15 @@
+<ul>
+
+{% for dossier in dossiers %}
+    <li>
+        <a href="{{ path('app_admin_dossier', {'dossierId': dossier.id}) }}">{{ dossier.dossierNr }} {{ dossier.title }}</a>
+    </li>
+{% endfor %}
+
+{% for document in documents %}
+    <li>
+        <a href="{{ path('app_admin_dossier_document_details', {'dossierId': document.dossiers.first.id, 'documentId': document.id}) }}">{{ document.documentNr }} {{ document.fileInfo.name }}</a>
+    </li>
+{% endfor %}
+
+</ul>

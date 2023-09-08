@@ -1,0 +1,81 @@
+/*---------------------------------------------------------------------*/
+/*------------------------- mixins/icon.scss --------------------------*/
+/*---------------------------------------------------------------------*/
+@use "icon";
+
+$states: ("visited", "hover", "active", "focus");
+
+@mixin styling($prefix) {
+    line-height: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    background-color: var(--#{$prefix}background-color);
+    color: var(--#{$prefix}text-color);
+    text-decoration: underline;
+    border-width: var(--#{$prefix}border-width);
+    border-style: var(--#{$prefix}border-style);
+    border-color: var(--#{$prefix}border-color);
+    border-radius: var(--#{$prefix}border-radius);
+    box-sizing: border-box;
+}
+
+@mixin link-and-icon-styling($prefix) {
+    @include styling($prefix);
+
+    &:before,
+    .icon:before {
+        @include styling("#{$prefix}icon-");
+    }
+}
+
+@mixin link($prefix) {
+    @include styling($prefix);
+
+    &:before {
+        @include icon.icon-format($prefix);
+        @include icon.icon-content($prefix);
+    }
+
+    > span.icon:last-of-type:not(:only-of-type) {
+        padding-right: var(--#{$prefix}icon-last-padding-right);
+        padding-left: var(--#{$prefix}icon-last-padding-left);
+    }
+}
+
+@mixin link-elements-styling($prefix) {
+    > h1,
+    > h2,
+    > h3,
+    > h4,
+    > h5,
+    > h6 {
+        // @include link-and-icon-styling($prefix);
+        @content;
+    }
+}
+
+@mixin styling-variables($prefix, $parentPrefix) {
+    --#{$prefix}font-size: inherit;
+    --#{$prefix}font-weight: var(--#{$parentPrefix}font-weight);
+    --#{$prefix}line-height: var(--#{$parentPrefix}line-height);
+    --#{$prefix}background-color: var(--#{$parentPrefix}background-color);
+    --#{$prefix}text-color: var(--#{$parentPrefix}text-color);
+    --#{$prefix}text-decoration: var(--#{$parentPrefix}text-decoration);
+    --#{$prefix}border-width: var(--#{$parentPrefix}border-width);
+    --#{$prefix}border-style: var(--#{$parentPrefix}border-style);
+    --#{$prefix}border-color: var(--#{$parentPrefix}border-color);
+    --#{$prefix}border-radius: var(--#{$parentPrefix}border-radius);
+}
+
+@mixin icon-styling-variables($prefix, $parentPrefix, $state) {
+    --#{$prefix}font-size: var(--#{$parentPrefix}icon-font-size);
+    --#{$prefix}font-weight: var(--#{$parentPrefix}icon-font-weight);
+    --#{$prefix}line-height: var(--#{$parentPrefix}icon-line-height);
+    --#{$prefix}background-color: var(--#{$parentPrefix}#{$state}-background-color);
+    --#{$prefix}text-color: var(--#{$parentPrefix}#{$state}-text-color);
+    --#{$prefix}text-decoration: var(--#{$parentPrefix}icon-text-decoration);
+    --#{$prefix}border-width: var(--#{$parentPrefix}icon-border-width);
+    --#{$prefix}border-style: var(--#{$parentPrefix}icon-border-style);
+    --#{$prefix}border-color: var(--#{$parentPrefix}icon-border-color);
+    --#{$prefix}border-radius: var(--#{$parentPrefix}icon-border-radius);
+}

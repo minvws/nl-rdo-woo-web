@@ -1,0 +1,71 @@
+{% import "document_macros.html.twig" as macro %}
+
+{% if document.withdrawn %}
+<div class="block pt-8 w-full">
+    <div class="warning">
+        <div class="width-delimiter block">
+            <span></span>
+            {{
+                "Document withdrawn" | trans({
+                    '{date}': document.withdrawDate | format_date('long'),
+                    '{reason}': document.withdrawReason.name | trans(),
+                })
+            }}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if document.suspended %}
+<div class="block pt-8 w-full">
+    <div class="warning">
+        <div class="width-delimiter block">
+            <span></span> {{ "Document suspended" | trans }}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if document.judgement.value is defined and document.judgement.value is same as ('not_public') %}
+<div class="block pt-8 w-full">
+    <div class="notification notification--info">
+        <div class="width-delimiter block">
+            <p>{{
+                "Document determined to be not public" | trans({
+                    '{dossier_type}': dossier.publicationReason | trans(),
+                    '{organisation}': dossier.departments.first.name,
+                })
+            }}</p>
+
+            {% if document.grounds | length > 0 %}
+                <p class="mt-6">{{ "Reasons are" | trans }}:</p>
+                <ul>
+                    {% for ground in document.grounds %}
+                        <li class="p-0">
+                            {{ macro.document_ground(ground) }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if document.judgement.value is defined and document.judgement.value is same as ('already_public') %}
+<div class="block pt-8 w-full">
+    <div class="notification notification--info">
+        <div class="width-delimiter block">
+            {{ "Document already public" | trans }} <a href="{{document.link}}">{{ document.link }}</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if document.isUploaded and not ingested %}
+    <div class="warning">
+        <div class="width-delimiter block">
+            <span>{{ "Warning" | trans }}:</span> {{ "This document is not yet processed. It is not possible to view individual pages, but you can download the complete document." | trans }}
+        </div>
+    </div>
+{% endif %}

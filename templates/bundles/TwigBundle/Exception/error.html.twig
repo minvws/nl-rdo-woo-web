@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Page or document not available" | trans() %}
+
+{% block body %}
+    <section>
+        <div>
+            <h1>{{ "Page or document not available" | trans() }}</h1>
+
+            <!-- {{ status_code }}, {{ status_text }} -->
+
+            <p>
+                {{ "The requested page or document is not available." | trans() }}
+            </p>
+
+            <a href="/">{{ "Go back to the homepage" | trans() }}</a>
+        </div>
+    </section>
+{% endblock %}

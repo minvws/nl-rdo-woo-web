@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Withdraw document" | trans() %}
+
+{% block body %}
+    <section>
+        <div>
+
+            <h1>{{ "Withdraw document" | trans() }} {{ document.documentNr }}</h1>
+
+            <section id="document_details" class="mb-5">
+                <div class="card mb-3">
+                    <div class="card-body bg-light">
+                        {{ form(form) }}
+                    </div>
+                </div>
+            </section>
+
+            <a href="{{ path('app_admin_dossier_document_details', { 'dossierId': dossier.dossierNr, 'documentId': document.documentNr }) }}">Annuleren</a>
+        </div>
+    </section>
+
+{% endblock %}
