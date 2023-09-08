@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Contact" | trans() %}
+
+{% block body %}
+    <section>
+        <div>
+            <h1>{{ "Contact" | trans() }}</h1>
+
+            <p>{{ "We make every effort to supplement this website with relevant information." | trans() }}</p>
+
+            <p>{{ "Would you like to contact us? Send an e-mail to <a href='mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl'>_dienstpostbusWoo-corona-ondersteuning@minvws.nl</a>. We can help you with the following:" | trans() | raw }}</p>
+
+            <ul>
+                <li>{{ "submit a Woo request" | trans() }}</li>
+                <li>{{ "questions or comments about the website" | trans() }}</li>
+                <li>{{ "report a document on this website where additional information needs to be obscured (e.g. a person's name or contact details)." | trans() }}</li>
+            </ul>
+            <p>{{ "For feedback, tips and suggestions on how we can improve this website, please email us at <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl</a>" | trans() | raw }}</p>
+        </div>
+    </section>
+{% endblock %}

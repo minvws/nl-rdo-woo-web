@@ -1,0 +1,67 @@
+/*---------------------------------------------------------------*/
+/*------------------- components/header.scss --------------------*/
+/*---------------------------------------------------------------*/
+@use "header-variables";
+
+body > header,
+.page-header,
+%main-header-style {
+    display: flex;
+    flex-direction: var(--header-flex-direction);
+    justify-content: var(--header-justify-content);
+    align-items: var(--header-align-items);
+    gap: var(--header-gap);
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+
+    padding-top: var(--header-padding-top);
+    padding-right: var(--header-padding-right);
+    padding-bottom: var(--header-padding-bottom);
+    padding-left: var(--header-padding-left);
+
+    max-width: var(--header-max-width);
+    background-color: var(--header-background-color);
+    min-height: var(--header-min-height);
+
+    border-width: var(--header-border-width);
+    border-style: var(--header-border-style);
+    border-color: var(--header-border-color);
+
+    > section,
+    > div {
+        display: flex;
+        flex-direction: var(--header-content-wrapper-flex-direction);
+        justify-content: var(--header-content-wrapper-justify-content);
+        align-items: var(--header-content-wrapper-align-items);
+        width: var(--header-content-wrapper-width);
+        margin-top: var(--header-content-wrapper-margin-top);
+        gap: var(--header-content-wrapper-gap);
+
+        div {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 0;
+
+            button {
+                align-self: center;
+            }
+        }
+    }
+}
+
+#main-nav-div {
+    ul li a {
+        text-decoration: none;
+        &:hover,
+        &:focus {
+            text-decoration: underline;
+        }
+        span:before {
+            filter: invert(100%) sepia(0%) saturate(7470%) hue-rotate(116deg)
+                brightness(109%) contrast(109%);
+        }
+    }
+}

@@ -1,0 +1,29 @@
+{% set step_links = [
+    '/balie/dossier/new',
+    '#',
+    '#',
+    '#',
+] %}
+{% set step_captions = [
+    'Basisgegevens',
+    'Besluit',
+    'Documenten',
+    'Publiceren',
+] %}
+<ul class="steps">
+    {%- for i in 0..3 -%}
+        <li {% if active == i %} class="active" {% endif %}>
+            <a href="{{ step_links[i] }}">
+{#                {% Also create a done step check here. %}#}
+                {% if active == i %}
+                {% embed 'components/admin-step.twig' %}
+                {% endembed %}
+                {% else %}
+                {% embed 'components/admin-step.twig' %}
+                {% endembed %}
+                    {% endif %}
+                <span>{{ step_captions[i] }}</span>
+            </a>
+        </li>
+    {%- endfor -%}
+</ul>

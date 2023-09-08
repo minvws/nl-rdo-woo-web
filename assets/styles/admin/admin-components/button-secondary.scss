@@ -1,0 +1,36 @@
+@use "@minvws/manon/button-base";
+
+.secondary {
+    button,
+    a.button,
+    input[type="button"],
+    input[type="submit"],
+    input[type="reset"] {
+        --button-base-border-color: #d0d5dd;
+        --button-base-focus-border-color: #f3f3f3;
+        --button-base-border-width: 1px;
+        --button-base-focus-border-width: 5px;
+        --button-base-border-radius: 8px;
+        --button-base-background-color: #fff;
+        --button-base-hover-background-color: #f3f3f3;
+        --button-base-focus-background-color: #fff;
+        --button-base-text-color: #696969;
+        --button-base-hover-text-color: #404040;
+        --button-base-line-height: 20px; /* 125% */
+        --button-base-padding-top: 10px;
+        --button-base-padding-right: 16px;
+        --button-base-padding-bottom: 10px;
+        --button-base-padding-left: 16px;
+        font-family: $font-sans-bold;
+        box-shadow: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+
+        &:hover {
+            border-color: #ccc;
+        }
+
+        &:focus {
+            border: 1px solid #f3f3f3;
+            background: #fff;
+        }
+    }
+}

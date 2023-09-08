@@ -1,0 +1,33 @@
+name: E2E regression tests
+on:
+    schedule:
+      - cron: '0 0 * * *' # This cron schedule runs the workflow every day at midnight UTC
+    workflow_dispatch:  
+  
+jobs:
+  e2e-robot-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r tests/robot_framework/requirements.txt --use-deprecated=legacy-resolver
+        rfbrowser init
+    - name: Execute E2E tests (Robot Framework)
+      env:
+        OTP_SECRET_WOO: ${{ secrets.OTP_SECRET_WOO }}
+        USERNAME_WOO: ${{ secrets.USERNAME_WOO }}
+        PASSWORD_WOO: ${{ secrets.PASSWORD_WOO }}
+      run: |
+        python -m robot -d tests/robot_framework/results -x outputxunit.xml -i E2E -e LOGS -v headless:true tests/robot_framework
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: reports
+        path: tests/robot_framework/results
+
+#     - name: echo environment
+#       run: echo "Testing on env: ${{ github.event.inputs.env }}"

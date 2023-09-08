@@ -1,0 +1,21 @@
+ul.pipe-after {
+    display: flex;
+    flex-direction: row;
+
+    li {
+        display: inline-flex;
+    }
+}
+
+ul.pipe-after li:not(:last-child)::after,
+span.pipe-after::after {
+    content: " | ";
+    color: white;
+    border-right: 1px solid #696969;
+    display: inline-block;
+    margin-inline-start: 0.3rem;
+    margin-inline-end: 0.5rem;
+    font-weight: normal;
+    height: 1rem;
+    vertical-align: middle;
+}

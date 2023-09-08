@@ -1,0 +1,40 @@
+.tabs {
+    &__top-menu {
+        @include default-big-container;
+        width: auto;
+        display: flex;
+        justify-content: center;
+        height: 100%;
+        font-family: $font-sans-bold;
+        font-size: 18px;
+
+        ul, li, a, span {
+            height: 100%;
+
+            &:hover {
+                text-decoration: none;
+                border: none;
+            }
+        }
+
+        ul {
+            --tabs-border-style: none;
+            margin: 0;
+
+            li {
+                --tabs-item-text-color: white;
+
+                &.active, &:hover {
+                    background: $color-tab-active;
+                }
+
+                > a, span {
+                    --tabs-item-active-border-width: 0;
+                    display: flex;
+                    padding: 0 16px;
+                    align-items: center;
+                }
+            }
+        }
+    }
+}

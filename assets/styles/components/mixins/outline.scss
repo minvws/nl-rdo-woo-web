@@ -1,0 +1,11 @@
+@mixin outline($prefix) {
+  outline: var(--#{$prefix}outline);
+  outline-offset: var(--#{$prefix}outline-offset);
+  z-index: var(--#{$prefix}z-index, 1);
+}
+
+@mixin outline-variables($prefix, $parentPrefix) {
+  --#{$prefix}outline: var(--#{$parentPrefix}outline);
+  --#{$prefix}outline-offset: var(--#{$parentPrefix}outline-offset);
+  --#{$prefix}z-index: var(--#{$parentPrefix}z-index);
+}

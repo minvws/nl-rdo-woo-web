@@ -1,0 +1,144 @@
+/*---------------------------------------------------------------*/
+/*-------------- components/buttons/base.scss -------------------*/
+/*---------------------------------------------------------------*/
+@use "button-base-variables";
+
+button,
+a.button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  $breakpoint: 24rem !default;
+
+  justify-content: var(--button-base-justify-content);
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--button-base-gap);
+
+  box-sizing: border-box;
+
+  padding-top: var(--button-base-padding-top);
+  padding-right: var(--button-base-padding-right);
+  padding-bottom: var(--button-base-padding-bottom);
+  padding-left: var(--button-base-padding-left);
+  margin: 0;
+
+  width: auto;
+  min-height: var(--button-base-min-height);
+
+  background-color: var(--button-base-background-color);
+  color: var(--button-base-text-color);
+
+  border-width: var(--button-base-border-width);
+  border-style: var(--button-base-border-style);
+  border-color: var(--button-base-border-color);
+  border-radius: var(--button-base-border-radius);
+  /* Reset ios button styling */
+  webkit-border-radius: var(--button-base-border-radius);
+  /* Reset ios button styling */
+  -webkit-appearance: var(--button-base-webkit-appearance);
+
+  cursor: pointer;
+  overflow-wrap: break-word;
+
+  font-family: var(--button-base-font-family);
+  font-size: var(--button-base-font-size);
+  font-weight: var(--button-base-font-weight);
+  line-height: var(--button-base-line-height);
+  text-decoration: var(--button-base-text-decoration);
+  text-align: var(--button-base-text-align);
+
+  &:visited {
+    color: var(--button-base-text-color);
+  }
+
+  &:hover,
+  &.hover {
+    background-color: var(--button-base-hover-background-color);
+    color: var(--button-base-hover-text-color);
+    border-color: var(--button-base-hover-background-color);
+  }
+
+  &:active,
+  &.active {
+    outline-style: var(--button-base-active-outline-style);
+    outline-color: var(--button-base-active-outline-color);
+    outline-width: var(--button-base-active-outline-width);
+    outline-offset: var(--button-base-active-outline-offset);
+    background-color: var(--button-base-active-background-color);
+    color: var(--button-base-active-text-color);
+    border-style: var(--button-base-active-border-style);
+    border-color: var(
+      --button-base-active-border-color,
+      var(--application-base-accent-color-accent)
+    );
+    border-width: var(--button-base-active-border-width);
+  }
+
+  &:focus,
+  &.focus {
+    outline-style: var(--button-base-focus-outline-style);
+    outline-color: var(--button-base-focus-outline-color);
+    outline-width: var(--button-base-focus-outline-width);
+    outline-offset: var(--button-base-focus-outline-offset);
+    border-style: var(--button-base-focus-border-style);
+    border-color: var(
+      --button-base-focus-border-color,
+      var(--application-base-accent-color-accent)
+    );
+    border-width: var(--button-base-focus-border-width);
+    background-color: var(
+      --button-base-focus-background-color,
+      var(--application-base-accent-color-accent)
+    );
+    color: var(
+      --button-base-focus-text-color,
+      var(--application-text-color-accent)
+    );
+  }
+
+  &.selected {
+    outline-style: var(--button-base-focus-outline-style);
+    outline-color: var(--button-base-focus-outline-color);
+    outline-width: var(--button-base-focus-outline-width);
+    outline-offset: var(--button-base-focus-outline-offset);
+    border-style: var(--button-base-focus-border-style);
+    border-color: var(
+      --button-base-focus-border-color,
+      var(--application-base-accent-color-accent)
+    );
+    border-width: var(--button-base-focus-border-width);
+    background-color: var(
+      --button-base-selected-background-color,
+      var(--application-base-accent-color-accent)
+    );
+    color: var(
+      --button-base-selected-text-color,
+      var(--application-text-color-accent)
+    );
+  }
+
+  > img {
+    max-width: var(
+      --button-base-image-max-width
+    ); /* Limiting the use of images within buttons for readability. */
+  }
+
+  /* Prevent elements within the button to block onclick events */
+  > * {
+    pointer-events: none;
+  }
+
+  @media (min-width: $breakpoint) {
+    min-width: var(--button-base-min-width);
+  }
+}
+
+/* Buttons can not be flex containers */
+/* But these elements can. So using flex box where possible. */
+a.button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  display: flex;
+}

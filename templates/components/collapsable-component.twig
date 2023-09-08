@@ -1,0 +1,16 @@
+{% set open_label = open_label ?? 'Open' %}
+{% set close_label = close_label ?? 'Close' %}
+{% set aria_label = aria_label ?? 'Toggle' %}
+{% set toggle_classes = 'collapsible' ~ (toggle_classes ? ' ' ~ (toggle_classes | join(' '))) %}
+
+<div
+  data-open-label="{{ open_label | trans() }}"
+  data-close-label="{{ close_label | trans() }}"
+  data-media="(min-width: 100%)"
+  aria-label="{{ aria_label | trans() }}"
+  class="{{ toggle_classes }}">
+
+  <div class="collapsing-element">
+    {% block collapsing %}{% endblock %}
+  </div>
+</div>

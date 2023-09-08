@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "Accessibility" | trans() %}
+
+{% block body %}
+    <section>
+        <div>
+
+            <h1>{{ "Accessibility" | trans() }}</h1>
+
+            <p>
+                {{ "We would like everyone to be able to use this website. Do you come across a page that is not accessible? Or do you have another question? <a href='mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl'>Please contact us</a>." | trans() | raw }}
+            </p>
+
+            <p><a href="https://www.toegankelijkheidsverklaring.nl/register?w=open.minvws.nl">{{ "Accessibility statement open.minvws.nl" | trans() }}</a>.</p>
+
+            <h2>{{ "What is an accessible website?" | trans() }}</h2>
+
+            <p>{{ "An accessible website is easier to use for all visitors. That is why functional-technical and editorial <a href='https://www.digiaccessible.nl/'>accessibility requirements</a> or (formerly: web guidelines) apply to government websites. These are described in the <a href='https://www.forumstandaardisatie.nl/standaard/digiaccessible-en-301-549-met-wcag-21'>accessibility standard Digiaccessible EN 301 549</a>." | trans() | raw  }}</p>
+
+            <h2>{{ "How do we ensure this website is accessible?" | trans() }}</h2>
+
+            <p>{{ "We guarantee good accessibility in various ways within our (daily) processes:" | trans() }}</p>
+            <ul>
+                <li>{{ "Accessibility by design: Accessibility is part of all steps in the design, construction and editorial process of this website from the start." | trans() }}
+                </li>
+                <li>{{ "Research: we regularly check (parts of) our website for accessibility. Both for the functional-technical parts and the editorial aspects. We solve any bottlenecks found in a sustainable manner." | trans() }}
+                </li>
+                <li>{{ "Employee knowledge: our employees keep their knowledge about accessibility up to date and apply it where necessary." | trans() }}</li>
+            </ul>
+
+        </div>
+    </section>
+{% endblock %}

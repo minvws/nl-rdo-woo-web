@@ -1,0 +1,54 @@
+.steps {
+    position: relative;
+    display: flex;
+    list-style: none;
+    justify-content: space-between;
+    @include default-small-container;
+    @include center;
+    @include clear-padding;
+    background: linear-gradient(transparent 15px, var(--color-step-default) 15px, var(--color-step-default) 17px, transparent 17px);
+
+    li {
+        a {
+            position: relative;
+            z-index: 1;
+
+            span {
+                position: absolute;
+                font-family: $font-sans-bold;
+                text-decoration: none;
+                color: black;
+                white-space: nowrap;
+                transform: translateX(-25%) translateY(10px);
+            }
+        }
+    }
+
+    svg {
+        display: flex;
+        width: 32px;
+        height: 32px;
+        justify-content: center;
+        align-items: center;
+        fill: var(--color-step-default);
+    }
+
+    .active {
+        &:before {
+            content: "";
+            background: var(--notification-explanation-intense-default);
+            width: 33%;
+            height: 2px;
+            display: block;
+            transform: translateY(15px);
+            position: absolute;
+            z-index: 0;
+
+        }
+        svg {
+            border-radius: 16px;
+            background: var(--notification-explanation-intense-default, #007BC7);
+            fill: var(--notification-explanation-intense-default);
+        }
+    }
+}
