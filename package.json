@@ -15,7 +15,7 @@
         "core-js": "^3.32.1",
         "file-loader": "^6.2.0",
         "lodash": "^4.17.21",
-        "markdownlint-cli2": "^0.9.2",
+        "markdownlint-cli2": "^0.10.0",
         "postcss": "^8.4.29",
         "postcss-loader": "^7.3.3",
         "quoted-printable": "^1.0.1",
