@@ -16,7 +16,7 @@
         "file-loader": "^6.2.0",
         "lodash": "^4.17.21",
         "markdownlint-cli2": "^0.9.2",
-        "postcss": "^8.4.29",
+        "postcss": "^8.4.30",
         "postcss-loader": "^7.3.3",
         "quoted-printable": "^1.0.1",
         "regenerator-runtime": "^0.14.0",
