@@ -19,21 +19,12 @@ use Psr\Log\LoggerInterface;
  */
 class ArchiveService
 {
-    protected EntityManagerInterface $doctrine;
-    protected DocumentStorageService $storageService;
-    protected FilesystemOperator $storage;
-    protected LoggerInterface $logger;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        DocumentStorageService $storageService,
-        FilesystemOperator $storage,
-        LoggerInterface $logger
+        private readonly EntityManagerInterface $doctrine,
+        private readonly DocumentStorageService $storageService,
+        private readonly FilesystemOperator $storage,
+        private readonly LoggerInterface $logger,
     ) {
-        $this->doctrine = $entityManager;
-        $this->storageService = $storageService;
-        $this->storage = $storage;
-        $this->logger = $logger;
     }
 
     /**
@@ -41,6 +32,7 @@ class ArchiveService
      *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function generateArchive(BatchDownload $batch): bool
     {
@@ -57,16 +49,38 @@ class ArchiveService
         $documents = $batch->getDocuments();
         if (count($documents) === 0) {
             foreach ($batch->getDossier()->getDocuments() as $document) {
+                if (! $document->shouldBeUploaded()) {
+                    continue;
+                }
+
                 $documents[] = $document->getDocumentNr();
             }
         }
 
+        $batchQuery = $this->doctrine->getConnection()->createQueryBuilder();
+        $batchQuery
+            ->select('COUNT(*)')
+            ->from('batch_download')
+            ->where('id = :id')
+            ->setParameter('id', $batch->getId()->toRfc4122());
+
         // Add all document files
+        $empty = true;
         $localPaths = [];
         foreach ($documents as $documentNr) {
+            // Check if the batch still exists. If not, we can stop processing because we are superseded by a new batch.
+            $count = (int) $batchQuery->executeQuery()->fetchNumeric();
+            if ($count === 0) {
+                $this->logger->info('Batch download has been deleted, stopping processing', [
+                    'batch_id' => $batch->getId()->toRfc4122(),
+                ]);
+
+                return false;
+            }
+
             // Check (again) if the document exists in the dossier.
             $document = $this->findInDossier($batch->getDossier(), $documentNr);
-            if (! $document || ! $document->isUploaded()) {
+            if (! $document || ! $document->isUploaded() || ! $document->shouldBeUploaded()) {
                 continue;
             }
 
@@ -74,8 +88,8 @@ class ArchiveService
             $localPath = $this->storageService->downloadDocument($document);
             if (! $localPath) {
                 $this->logger->error('Could not save document to local path', [
-                    'batch_id' => $batch->getId()->toBase58(),
-                    'document_id' => $document->getId()->toBase58(),
+                    'batch_id' => $batch->getId()->toRfc4122(),
+                    'document_id' => $document->getId()->toRfc4122(),
                 ]);
 
                 continue;
@@ -94,6 +108,7 @@ class ArchiveService
             $fileName = $sanitizer->getFilename();
 
             $zip->addFile($localPath, $fileName);
+            $empty = false;
 
             $localPaths[] = $localPath;
         }
@@ -106,7 +121,7 @@ class ArchiveService
             $this->storageService->removeDownload($localPath);
         }
 
-        if ($this->saveZip($zipArchivePath, $batch->getFilename(), $batch)) {
+        if (! $empty && $this->saveZip($zipArchivePath, $batch->getFilename(), $batch)) {
             $batch->setStatus(BatchDownload::STATUS_COMPLETED);
         } else {
             $batch->setStatus(BatchDownload::STATUS_FAILED);
@@ -132,7 +147,7 @@ class ArchiveService
     protected function findInDossier(Dossier $dossier, string $documentNr): ?Document
     {
         foreach ($dossier->getDocuments() as $document) {
-            if ($document->getDocumentNr() === $documentNr) {
+            if ($document->getDocumentNr() === $documentNr && $document->shouldBeUploaded()) {
                 return $document;
             }
         }
@@ -146,7 +161,7 @@ class ArchiveService
         $stream = fopen($zipArchivePath, 'r');
         if (! is_resource($stream)) {
             $this->logger->error('Could not open zip file stream', [
-                'batch' => $batch->getId()->toBase58(),
+                'batch' => $batch->getId()->toRfc4122(),
                 'path' => $zipArchivePath,
             ]);
 
@@ -157,7 +172,7 @@ class ArchiveService
             $this->storage->writeStream($destinationPath, $stream);
         } catch (FilesystemException $e) {
             $this->logger->error('Failed to move ZIP archive to storage', [
-                'batch' => $batch->getId()->toBase58(),
+                'batch' => $batch->getId()->toRfc4122(),
                 'source_path' => $zipArchivePath,
                 'destination_path' => $destinationPath,
                 'exception' => $e->getMessage(),
@@ -182,7 +197,7 @@ class ArchiveService
             return $this->storage->readStream($batch->getFilename());
         } catch (FilesystemException $e) {
             $this->logger->error('Failed open ZIP archive ', [
-                'batch' => $batch->getId()->toBase58(),
+                'batch' => $batch->getId()->toRfc4122(),
                 'path' => $batch->getFilename(),
                 'exception' => $e->getMessage(),
             ]);
@@ -198,7 +213,8 @@ class ArchiveService
     {
         // No documents mean all documents of the dossier
         if (count($documents) === 0) {
-            foreach ($dossier->getDocuments() as $document) {
+            /** @var Document $document */
+            foreach ($dossier->getUploadStatus()->getExpectedDocuments() as $document) {
                 $documents[] = $document->getDocumentNr();
             }
         }
@@ -207,16 +223,70 @@ class ArchiveService
         $this->doctrine->getRepository(BatchDownload::class)->pruneExpired();
 
         $batches = $this->doctrine->getRepository(BatchDownload::class)->findBy([
-            'status' => BatchDownload::STATUS_COMPLETED,
             'dossier' => $dossier,
         ]);
 
         foreach ($batches as $batch) {
+            // Both completed and pending are ok. Otherwise we get a stampede when a zip is being created and the user refreshes the page.
+            if (
+                $batch->getStatus() !== BatchDownload::STATUS_COMPLETED
+                && $batch->getStatus() !== BatchDownload::STATUS_PENDING
+            ) {
+                continue;
+            }
+
             if ($batch->getDocuments() === $documents) {
                 return $batch;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Deletes all batches that contain the given dossier.
+     */
+    public function deleteDossierArchives(Dossier $dossier): void
+    {
+        $batches = $this->doctrine->getRepository(BatchDownload::class)->findBy([
+            'dossier' => $dossier->getId(),
+        ]);
+
+        foreach ($batches as $batch) {
+            $this->doctrine->remove($batch);
+        }
+
+        $this->doctrine->flush();
+    }
+
+    /**
+     * Deletes all batches that contain the given document.
+     */
+    public function deleteByDocument(Document $document): void
+    {
+        $batches = $this->doctrine->getRepository(BatchDownload::class)->findBy([
+            'documents' => $document->getDocumentNr(),
+        ]);
+
+        foreach ($batches as $batch) {
+            $this->doctrine->remove($batch);
+        }
+
+        $this->doctrine->flush();
+    }
+
+    public function createArchiveForCompleteDossier(Dossier $dossier): void
+    {
+        $batch = new BatchDownload();
+        $batch->setStatus(BatchDownload::STATUS_PENDING);
+        $batch->setDossier($dossier);
+        $batch->setDownloaded(0);
+        $batch->setExpiration(new \DateTimeImmutable('+10 years'));
+        $batch->setDocuments([]);
+
+        $this->doctrine->persist($batch);
+        $this->doctrine->flush();
+
+        $this->generateArchive($batch);
     }
 }

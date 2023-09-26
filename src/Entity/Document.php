@@ -510,9 +510,14 @@ class Document implements EntityWithFileInfo
         $this->withdrawExplanation = $explanation;
         $this->withdrawDate = new \DateTimeImmutable();
 
-        $this->fileInfo->setMimetype(null);
-        $this->fileInfo->setUploaded(false);
-        $this->fileInfo->setSize(0);
-        $this->fileInfo->setPath(null);
+        $this->fileInfo->removeFileProperties();
+    }
+
+    public function republish(): void
+    {
+        $this->withdrawn = false;
+        $this->withdrawReason = null;
+        $this->withdrawExplanation = '';
+        $this->withdrawDate = null;
     }
 }

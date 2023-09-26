@@ -1,18 +1,59 @@
 {% extends 'admin.html.twig' %}
 
-{% set page_title = "All dossiers" | trans() %}
-
-{% block page_title %}
-    <h1>{{ page_title }}</h1>
-{% endblock %}
-
-{% block actions %}
-<div class="secondary new-dossier">
-    <a href="{{ path('app_admin_dossier_new') }}" class="button">{{ "Create new dossier" | trans() }}</a>
-</div>
-{% endblock %}
+{% set page_title = "All dossiers" | trans %}
 
 {% block body %}
+<div class="woo-container">
+    <twig:LeftAndRight>
+        <h1 class="woo-title">{{ page_title }}</h1>
+
+        <twig:block name="right">
+            <a class="woo-button woo-button--secondary" href="{{ path('app_admin_dossier_new') }}">{{ "Create new dossier" | trans() }}</a>
+        </twig:block>
+    </twig:LeftAndRight>
+
+    <div class="woo-card">
+        {% include 'components/dossier-search.html.twig' with { 'form': form } %}
+
+        <table class="woo-table">
+            <thead>
+                <tr>
+                    <th class="woo-column-head woo-column-head--sortable" scope="col">{{ knp_pagination_sortable(pagination, 'Status' | trans(), 'd.status', {}, {}, 'search/sortable-link.html.twig') }}</th>
+                    <th class="woo-column-head woo-column-head--sortable" scope="col">{{ knp_pagination_sortable(pagination, 'Published date' | trans(), 'd.publicationDate', {}, {}, 'search/sortable-link.html.twig') }}</th>
+                    <th class="woo-column-head woo-column-head--sortable" scope="col">{{ knp_pagination_sortable(pagination, 'Org & reference' | trans(), 'd.dossierNr', {}, {}, 'search/sortable-link.html.twig') }}</th>
+                    <th class="woo-column-head woo-column-head--sortable" scope="col">{{ knp_pagination_sortable(pagination, 'Decision about...' | trans(), 'd.title', {}, {}, 'search/sortable-link.html.twig') }}</th>
+                    <th class="woo-column-head woo-column-head--sortable border-r-0" scope="col">{{ "Case number" | trans() }}</th>
+                    <th class="woo-column-head woo-column-head--sortable" scope="col">
+                        <span class="sr-only">{{ 'Edit dossier'| trans() }}</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dossier in pagination %}
+                <tr>
+                    <td>{{ status_badge(dossier.status) }}</td>
+                    <td nowrap>{{ dossier.publicationDate  is empty ? "-" : dossier.publicationDate|format_date('medium') }}</td>
+                    <td>{{ dossier.documentPrefix }} / {{ dossier.dossierNr }}</td>
+                    <td>{{ dossier.title }}</td>
+                    <td>
+                        {% set case_numbers = [] %}
+                        {%- for inquiry in dossier.inquiries -%}
+                            {% set case_numbers = case_numbers|merge([inquiry.casenr]) %}
+                        {%- endfor -%}
+                        {{ case_numbers|join(', ') }}
+                    </td>
+                    <td>
+                        <a class="js-woo-clickable-row__a" href="{{ path('app_admin_dossier', {dossierId: dossier.dossierNr}) }}">
+                            <twig:Icon name="chevron-right" />
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{#
     <main class="admin-decisions">
         <section class="content">
 
@@ -63,5 +104,5 @@
             </div>
 
         </section>
-    </main>
+    </main> #}
 {% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+    <div class="woo-container woo-container--sm">
+        <h1 class="woo-title text-center mb-10">{{ "New decision file - basic data" | trans() }}</h1>
+
+        {% include 'admin/dossier/concept/workflow.html.twig' %}
+
+        <div class="woo-card">
+            {% include 'admin/dossier/form/details.html.twig' %}
+        </div>
+    </div>
+{% endblock %}

@@ -10,7 +10,7 @@ jobs:
   composer-install:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/cache@v3
         with:
           path: vendor/
@@ -22,7 +22,9 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           extensions: zip
       - name: Install Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        env:
+           COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.REPO_READ_ONLY_TOKEN }}"}}'
+        run: composer install  --no-interaction --no-scripts --no-progress --prefer-dist
     strategy:
       max-parallel: 3
       matrix:
@@ -33,7 +35,7 @@ jobs:
       - composer-install
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/cache@v3
         with:
           path: vendor/
@@ -59,7 +61,7 @@ jobs:
       - composer-install
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/cache@v3
         with:
           path: vendor/
@@ -81,7 +83,7 @@ jobs:
       - composer-install
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/cache@v3
         with:
           path: vendor/
@@ -103,7 +105,7 @@ jobs:
       - composer-install
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/cache@v3
         with:
           path: vendor/
@@ -132,7 +134,7 @@ jobs:
       - composer-install
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/cache@v3
         with:
           path: vendor/
@@ -154,7 +156,7 @@ jobs:
       - composer-install
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/cache@v3
         with:
           path: vendor/

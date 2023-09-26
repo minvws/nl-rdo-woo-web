@@ -11,8 +11,14 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class IndexController extends AbstractController
 {
-    #[Route('/balie', name: 'app_admin', methods: ['GET'])]
-    public function index(Breadcrumbs $breadcrumbs): Response
+    #[Route('/balie', name: 'app_admin_index', methods: ['GET'])]
+    public function index(): Response
+    {
+        return $this->redirectToRoute('app_admin_dossiers');
+    }
+
+    #[Route('/balie/admin', name: 'app_admin', methods: ['GET'])]
+    public function admin(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
         $breadcrumbs->addItem('Admin');

@@ -66,8 +66,6 @@ class FileUploader
             return false;
         }
 
-        // Check if document uploaded is valid (e.g. not too large). This is done through the validation of
-        // a form (@TODO: we should use direct validation for this, not through a form)
         $form = $this->formFactory->create(DocumentUploadType::class, $dossier, ['csrf_protection' => false]);
         $form->handleRequest($request);
         if (! $form->isSubmitted() || ! $form->isValid()) {

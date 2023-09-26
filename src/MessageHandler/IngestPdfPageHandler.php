@@ -45,7 +45,7 @@ class IngestPdfPageHandler
                 return;
             }
 
-            $this->processor->processDocumentPage($document, $message->getPageNr(), $message->forceRefresh());
+            $this->processor->processDocumentPage($document, $message->getPageNr(), $message->getForceRefresh());
         } catch (\Exception $e) {
             $this->logger->error('Error processing document', [
                 'uuid' => $message->getUuid(),

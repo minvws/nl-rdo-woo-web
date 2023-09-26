@@ -1,0 +1,46 @@
+:root {
+    --table-body-head-cell-background-color: transparent;
+    --table-body-head-cell-text-color: #696969;
+    --table-body-head-cell-font-weight: 400;
+    --table-row-background-color-striping: transparent;
+    --table-body-head-cell-border-width: 1px 0;
+    --table-cell-border-width: 1px 0;
+}
+
+table {
+    tr:first-child {
+
+        td,
+        th {
+            border-top-width: 0;
+        }
+    }
+
+    th:first-of-type {
+        padding-inline-start: 0;
+    }
+
+    tbody th,
+    tbody td {
+        vertical-align: top;
+        white-space: normal;
+    }
+
+    tbody td.icon-type:has(.svg-icon) {
+        padding-top: 13px;
+    }
+
+    .th-date {
+        min-width: 25ch;
+    }
+}
+
+.table-default__thead {
+    background: unset;
+    color: black;
+    border: 0 solid var(--table-cell-border-color);
+    border-width: 0 0 1px;
+    font-style: italic;
+    font-weight: 300;
+    vertical-align: top;
+}

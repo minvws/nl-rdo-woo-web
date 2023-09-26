@@ -1,23 +1,14 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% set page_title = "Create new user" | trans() %}
 
 {% block body %}
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-title text-center mb-10">{{ page_title }}</h1>
 
-    <section>
-        <div>
-
-            <h1>{{ "Create new user" | trans() }}</h1>
-
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h5>{{ "User" | trans() }}</h5>
-                </div>
-                <div class="card-body bg-light">
-                    {{ form(userForm) }}
-                </div>
-            </div>
-
-        </div>
-    </section>
+    <div class="woo-card">
+        {{ form(userForm) }}
+    </div>
+</div>
 {% endblock %}
+

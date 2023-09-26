@@ -15,6 +15,7 @@ use App\Service\DocumentService;
 use App\Service\FileUploader;
 use App\Service\Ingest\IngestService;
 use App\Service\Ingest\Options;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,7 +34,8 @@ class DocumentController extends AbstractController
         private readonly DocumentService $documentService,
         private readonly IngestService $ingester,
         private readonly FileUploader $fileUploader,
-        private readonly TranslatorInterface $translator
+        private readonly TranslatorInterface $translator,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -63,8 +65,12 @@ class DocumentController extends AbstractController
         try {
             $completed = $this->fileUploader->handleUpload($request, $dossier);
         } catch (\Exception $e) {
-            // @TODO: do we want to send the message directly to the user?
-            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+            $this->logger->error('Error while uploading file(chunk)', [
+                'exception' => $e,
+                'dossier_id' => $dossier->getDossierNr(),
+            ]);
+
+            return new Response('File could not be uploaded correctly', Response::HTTP_BAD_REQUEST);
         }
 
         if (! $completed) {
@@ -174,6 +180,16 @@ class DocumentController extends AbstractController
             'dossier' => $dossier,
             'document' => $document,
             'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/balie/dossier/{dossierId}/document-list', name: 'app_admin_dossier_document_list', methods: ['GET'])]
+    public function documentList(
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+    ): Response {
+        return $this->render('admin/dossier/document-status.html.twig', [
+            'dossier' => $dossier,
+            'uploadStatus' => $dossier->getUploadStatus(),
         ]);
     }
 }

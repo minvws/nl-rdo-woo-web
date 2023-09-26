@@ -22,49 +22,63 @@ class WorkerStats
     private string $section;
 
     #[ORM\Column]
-    private int $count;
+    private \DateTimeImmutable $createdAt;
 
-    // Bigints are converted to string,.. because of PHP's int size limitations on 32bit machines.
-    #[ORM\Column(type: 'bigint')]
-    private string $duration;
+    #[ORM\Column]
+    private int $duration;
 
-    public function getId(): ?Uuid
+    #[ORM\Column(length: 255)]
+    private string $hostname;
+
+    public function getCreatedAt(): \DateTimeImmutable
     {
-        return $this->id;
+        return $this->createdAt;
     }
 
-    public function getSection(): ?string
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        return $this->section;
-    }
-
-    public function setSection(string $section): self
-    {
-        $this->section = $section;
-
-        return $this;
-    }
-
-    public function getCount(): ?int
-    {
-        return $this->count;
-    }
-
-    public function setCount(int $count): self
-    {
-        $this->count = $count;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
     public function getDuration(): int
     {
-        return (int) $this->duration;
+        return $this->duration;
     }
 
-    public function setDuration(int $duration): self
+    public function setDuration(int $duration): static
     {
-        $this->duration = strval($duration);
+        $this->duration = $duration;
+
+        return $this;
+    }
+
+    public function getId(): Uuid
+    {
+        return $this->id;
+    }
+
+    public function getSection(): string
+    {
+        return $this->section;
+    }
+
+    public function setSection(string $section): static
+    {
+        $this->section = $section;
+
+        return $this;
+    }
+
+    public function getHostname(): string
+    {
+        return $this->hostname;
+    }
+
+    public function setHostname(string $hostname): static
+    {
+        $this->hostname = $hostname;
 
         return $this;
     }

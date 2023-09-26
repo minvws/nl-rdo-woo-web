@@ -1,0 +1,17 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+    <div class="woo-container">
+        {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.html.twig' }) }}
+        <h1 class="woo-title text-center mb-10">Vervang document {{ document.documentNr }}</h1>
+
+        {% if replaced %}
+            Het document wordt nu verwerkt, dit kan even duren.
+        {% else %}
+            {% if error is not empty %}
+                <b>Fout: {{ error }}</b>
+            {% endif %}
+            {{ form(form) }}
+        {% endif %}
+    </div>
+{% endblock %}

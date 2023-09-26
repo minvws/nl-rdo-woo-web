@@ -1,0 +1,48 @@
+<div class="px-4">
+    <twig:LeftAndRight>
+        <details class="js-details">
+            <summary class="woo-button woo-button--secondary">
+                <span class="woo-button__icon-before"><twig:Icon name="filter" dimensions="20" /></span>
+                Filters
+            </summary>
+
+            <div class="woo-overlay-card max-w-xs mt-20">
+                {{ form_start(form) }}
+                <fieldset>
+                    <legend class="woo-legend">{{ 'Organization' | trans() }}</legend>
+                    {{ form_widget(form.department) }}
+                </fieldset>
+
+                <fieldset class="mt-4">
+                    <legend class="woo-legend">{{ 'Status' | trans() }}</legend>
+                    {{ form_widget(form.status) }}
+                </fieldset>
+
+                <div class="woo-submit-row">
+                    {{ form_widget(form.submit) }}
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </details>
+
+        <twig:block name="right">
+            <form class="relative" method="get">
+                <label class="sr-only" for="search-dossiers">Zoek naar</label>
+                <div class="relative">
+                    <input
+                        class="woo-input-text woo-input-text--with-icon-after text-base w-96 js-search-previews-input"
+                        id="search-dossiers"
+                        name="query"
+                        placeholder="{{ 'Zoeken op zaaknummer, dossier, documentnummer' | trans() }}"
+                        type="text"
+                    />
+                    <span class="woo-input-icon woo-input-icon--after">
+                        <twig:Icon name="search" dimensions="20" />
+                    </span>
+                </div>
+
+                <div class="woo-overlay-card right-0 mt-2 w-[56rem]" hidden id="js-search-previews-placeholder"></div>
+            </form>
+        </twig:block>
+    </twig:LeftAndRight>
+</div>

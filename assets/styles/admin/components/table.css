@@ -1,0 +1,30 @@
+@layer components {
+    .woo-table {
+        @apply w-full;
+    }
+
+    .woo-table td,
+    .woo-table th {
+        @apply py-2 px-4;
+    }
+
+    .woo-table tr {
+        @apply border-b border-platinum;
+    }
+
+    .woo-row-head {
+        @apply font-normal italic text-left;
+    }
+
+    .woo-column-head {
+        @apply font-normal italic text-lg text-left;
+    }
+
+    .woo-column-head--sortable {
+        @apply bg-anti-flash-white border-r border-platinum text-independence last:border-r-0;
+    }
+
+    .woo-clickable-row {
+        @apply cursor-pointer bg-white hover:bg-lavender-web transition-colors;
+    }
+}

@@ -2,45 +2,62 @@
 
 {% set page_title = "Please sign in" | trans() %}
 
-{% block title %}{{ "Login" | trans() }}{% endblock %}
-{% block body_id %}LoginForm{% endblock %}
-
 {% block body %}
+<div class="woo-container woo-container--xs">
+    <div class="woo-card">
+        <h1 class="woo-title-sm mb-8">{{ page_title }}</h1>
 
-  <main>
-    <div class="centered">
-      <form class="form-signin" method="POST" action="{{ path('app_login') }}">
-        {% if app.user and is_granted('ROLE_USER')%}
-          <div class="mb-3">
-            {{ "You are logged in as {name}" | trans({'name': app.user.name|default("unknown user")}) }}, <a
-              href="{{ path('app_logout') }}">{{ "Logout" | trans() }}</a>
-          </div>
-        {% else %}
+        <form method="POST" action="{{ path('app_login') }}">
+            {% if app.user and is_granted('ROLE_USER')%}
+                <twig:Alert type="info">
+                    {{ "You are logged in as {name}" | trans({'name': app.user.name|default("unknown user")}) }}.
+                    <a class="woo-a woo-a--inherit-color" href="{{ path('app_logout') }}">{{ "Logout" | trans() }}</a>
+                </twig:Alert>
+            {% else %}
 
-          <h1 class="h3 mb-3 font-weight-normal">{{ "Please sign in" | trans() }}</h1>
-          <label for="inputEmail">{{ "E-mail address" | trans() }}</label>
-          <input type="email" value="{{ last_username }}" name="_username" id="inputEmail"
-                 class="form-control"
-                 autocomplete="email" required autofocus>
+                {% if error %}
+                <div class="mb-6">
+                    <twig:Alert :hasRole="true" type="danger">
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </twig:Alert>
+                </div>
+                {% endif %}
 
-          <label for="inputPassword">{{ "Password" | trans() }}</label>
-          <input type="password" name="_password" id="inputPassword"
-                 class="form-control" autocomplete="current-password"
-                 required>
+                <div class="woo-form-row">
+                    <label class="woo-label" for="inputEmail">{{ "E-mail address" | trans() }}</label>
+                    <input
+                        autocomplete="email"
+                        class="woo-input-text"
+                        id="inputEmail"
+                        name="_username"
+                        required
+                        type="email"
+                        value="{{ last_username }}"
+                    >
+                </div>
 
-          {% if error %}
-            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-          {% endif %}
 
-          <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <div class="woo-form-row">
+                    <label class="woo-label" for="inputPassword">{{ "Password" | trans() }}</label>
+                    <input
+                        autocomplete="current-password"
+                        class="woo-input-text"
+                        id="inputPassword"
+                        name="_password"
+                        required
+                        type="password"
+                    >
+                </div>
 
-          <button class="btn btn-lg btn-primary btn-block" type="submit">{{ "Sign in" | trans() }}</button>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-          <p
-            class="mt-5 mb-3 text-muted text-help-primary">{{ "Lost your login details? Please contact the person who gave you access to the platform." | trans() }}</p>
-        {% endif %}
+                <div class="woo-submit-row">
+                    <button class="woo-button woo-button--primary woo-button--full-width" type="submit">{{ "Sign in" | trans() }}</button>
+                </div>
+
+                <p class="mt-6 woo-text-muted">{{ "Lost your login details? Please contact the person who gave you access to the platform." | trans() }}</p>
+            {% endif %}
       </form>
     </div>
-  </main>
-  
+</div>
 {% endblock %}

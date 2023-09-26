@@ -9,8 +9,8 @@ use App\Entity\Dossier;
 use App\Message\GenerateArchiveMessage;
 use App\Service\ArchiveService;
 use App\Service\DossierService;
+use App\Service\DownloadResponseHelper;
 use App\Service\Search\Model\Config;
-use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,19 +34,21 @@ class DossierController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
         private readonly MessageBusInterface $messageBus,
-        private readonly DocumentStorageService $documentStorage,
         private readonly DossierService $dossierService,
         private readonly PaginatorInterface $paginator,
         private readonly ArchiveService $archiveService,
+        private readonly DownloadResponseHelper $downloadHelper,
     ) {
     }
 
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     #[Route('/dossiers', name: 'app_dossier_index', methods: ['GET'])]
     public function index(): Response
     {
         return $this->redirectToRoute('app_search', ['type' => Config::TYPE_DOSSIER]);
     }
 
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     #[Route('/dossier/{dossierId}', name: 'app_dossier_detail', methods: ['GET'])]
     public function detail(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
@@ -162,6 +165,7 @@ class DossierController extends AbstractController
         ]);
     }
 
+    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
     #[Route('/dossier/{dossierId}/batch/{batchId}/download', name: 'app_dossier_batch_download', methods: ['GET'])]
     public function batchDownload(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
@@ -187,13 +191,6 @@ class DossierController extends AbstractController
         $response->headers->set('Content-Type', 'application/zip');
         $response->headers->set('Content-Length', $batch->getSize());
         $response->headers->set('Content-Disposition', 'attachment; filename="' . $batch->getFilename() . '"');
-        // Since the batch is immutable, we can cache it for a while
-        $response->setCache([
-            'public' => true,
-            'max_age' => 48 * 3600,
-            's_maxage' => 48 * 3600,
-            'immutable' => true,
-        ]);
         $response->setCallback(function () use ($stream) {
             fpassthru($stream);
         });
@@ -201,6 +198,7 @@ class DossierController extends AbstractController
         return $response;
     }
 
+    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
     #[Route('/dossier/{dossierId}/inventory/download', name: 'app_dossier_inventory_download', methods: ['GET'])]
     public function downloadInventory(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
@@ -209,51 +207,18 @@ class DossierController extends AbstractController
             throw $this->createNotFoundException('Dossier not found');
         }
 
-        $inventory = $dossier->getInventory();
-        if (! $inventory) {
-            throw $this->createNotFoundException('Dossier inventory not found');
-        }
-
-        $stream = $this->documentStorage->retrieveResourceDocument($inventory);
-        if (! $stream) {
-            throw new NotFoundHttpException();
-        }
-
-        $response = new StreamedResponse();
-        $response->headers->set('Content-Type', $inventory->getFileInfo()->getMimetype());
-        $response->headers->set('Content-Length', (string) $inventory->getFileInfo()->getSize());
-        $response->headers->set('Content-Disposition', 'attachment; filename="' . $inventory->getFileInfo()->getName() . '"');
-        $response->headers->set('Last-Modified', $inventory->getUpdatedAt()->format('D, d M Y H:i:s') . ' GMT');
-        $response->setCallback(function () use ($stream) {
-            fpassthru($stream);
-        });
-
-        return $response;
+        return $this->downloadHelper->getResponseForEntityWithFileInfo($dossier->getInventory());
     }
 
+    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
     #[Route('/dossier/{dossierId}/decision/download', name: 'app_dossier_decision_download', methods: ['GET'])]
     public function downloadDecision(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
     ): StreamedResponse {
-        $decisionDocument = $dossier->getDecisionDocument();
-        if (! $decisionDocument) {
-            throw $this->createNotFoundException('Dossier decision document not found');
+        if (! $this->dossierService->isViewingAllowed($dossier)) {
+            throw $this->createNotFoundException('Dossier not found');
         }
 
-        $stream = $this->documentStorage->retrieveResourceDocument($decisionDocument);
-        if (! $stream) {
-            throw new NotFoundHttpException();
-        }
-
-        $response = new StreamedResponse();
-        $response->headers->set('Content-Type', $decisionDocument->getFileInfo()->getMimetype());
-        $response->headers->set('Content-Length', (string) $decisionDocument->getFileInfo()->getSize());
-        $response->headers->set('Content-Disposition', 'attachment; filename="' . $decisionDocument->getFileInfo()->getName() . '"');
-        $response->headers->set('Last-Modified', $decisionDocument->getUpdatedAt()->format('D, d M Y H:i:s') . ' GMT');
-        $response->setCallback(function () use ($stream) {
-            fpassthru($stream);
-        });
-
-        return $response;
+        return $this->downloadHelper->getResponseForEntityWithFileInfo($dossier->getDecisionDocument());
     }
 }

@@ -135,7 +135,7 @@ class DocumentMetadata
 
         $fileName = $this->filename;
         if (empty($fileName)) {
-            // @TODO: FILETYPE DOES NOT HAVE TO BE PDF
+            // Assume that when we have no filename, we can use the documentNr as filename and its extension is PDF.
             $fileName = $documentNr . '.pdf';
         }
 

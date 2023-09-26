@@ -1,0 +1,87 @@
+/*---------------------------------------------------------------*/
+/*----------- components/button-base-variables.scss -------------*/
+/*---------------------------------------------------------------*/
+
+:root {
+    // --application-base-accent-color-active: #8d0041;
+    // --application-base-accent-color-active-text-color: white;
+    // --application-base-accent-color-focus: #ca005d;
+    // --application-base-accent-color-focus-text-color: white;
+    // --application-base-accent-color-selected: #8d0041;
+
+    /* Button */
+    --button-base-flex: inline-flex;
+    --button-base-gap: 0.5rem;
+    --button-base-padding-top: 0.25rem;
+    --button-base-padding-right: 1rem;
+    --button-base-padding-bottom: 0.25rem;
+    --button-base-padding-left: 1rem;
+    --button-base-justify-content: center;
+    --button-base-min-width: 8rem;
+    --button-base-min-height: 2.75rem;
+    --button-base-height: unset;
+    // --button-base-background-color: var(--application-base-accent-color);
+    --button-base-text-color: var(--application-base-accent-color-text-color);
+    --button-base-border-width: 2px;
+    --button-base-border-style: solid;
+    --button-base-border-color: var(--button-base-background-color);
+    --button-base-font-family: var(--application-base-font-family);
+    --button-base-font-size: var(--application-base-font-size);
+    --button-base-line-height: var(--application-base-line-height);
+    --button-base-font-weight: var(--application-base-font-weight);
+    --button-base-text-align: center;
+    --button-base-text-decoration: none;
+    --button-base-border-radius: var(--application-base-border-radius);
+
+    /* Reset ios button styling */
+    /* --button-base-webkit-appearance: none; */
+    --button-base-align-self: flex-start;
+
+    /* Hover */
+    // --button-base-hover-background-color: var(--application-base-accent-color-hover,
+    //         var(--application-base-accent-color));
+    --button-base-hover-text-color: var(--application-base-accent-color-hover-text-color,
+            var(--application-base-accent-color-text-color));
+
+    /* Active */
+    /* --button-base-active-outline-style: ; */
+    /* --button-base-active-outline-color: ; */
+    /* --button-base-active-outline-width: ; */
+    /* --button-base-active-outline-offset: ; */
+    /* --button-base-active-border-style: ; */
+    /* --button-base-active-border-color: ; */
+    /* --button-base-active-border-width: ; */
+    --button-base-active-background-color: var(--application-base-accent-color-active,
+            var(--application-base-accent-color));
+    --button-base-active-text-color: var(--application-base-accent-color-active-text-color,
+            var(--application-base-accent-color-text-color));
+
+    /* Focus */
+    /* --button-base-focus-outline-style: ; */
+    /* --button-base-focus-outline-color: ; */
+    /* --button-base-focus-outline-width: ; */
+    /* --button-base-focus-outline-offset: ; */
+    /* --button-base-focus-border-style: ; */
+    /* --button-base-focus-border-color: ; */
+    /* --button-base-focus-border-width: ; */
+    // --button-base-focus-background-color: var(--application-base-accent-color-focus,
+    //         var(--application-base-accent-color));
+    --button-base-focus-text-color: var(--application-base-accent-color-focus-text-color,
+            var(--application-base-accent-color-text-color));
+
+    /* Selected */
+    /* --button-base-selected-outline-style: ; */
+    /* --button-base-selected-outline-color: ; */
+    /* --button-base-selected-outline-width: ; */
+    /* --button-base-selected-outline-offset: ; */
+    /* --button-base-selected-border-style: ; */
+    /* --button-base-selected-border-color: ; */
+    /* --button-base-selected-border-width: ; */
+    --button-base-selected-background-color: var(--application-base-accent-color-selected,
+            var(--application-base-accent-color));
+    --button-base-selected-text-color: var(--application-base-accent-color-selected-text-color,
+            var(--application-base-accent-color-text-color));
+
+    /* Image */
+    --button-base-image-max-width: 1.5rem;
+}

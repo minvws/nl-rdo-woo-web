@@ -7,6 +7,8 @@ namespace App\Form\Dossier;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\File;
 
 /**
  * @template-extends AbstractType<DocumentUploadType>
@@ -23,18 +25,20 @@ class DocumentUploadType extends AbstractType
                 'mapped' => false,
                 'multiple' => true,
                 'required' => true,
-//                'constraints' => [
-//                    new File([
-//                        'maxSize' => '500M',
-//                        'mimeTypes' => [
-//                            'application/pdf',
-//                            'application/x-pdf',
-//                            'application/zip',
-//                            'application/x-zip-compressed',
-//                        ],
-//                        'mimeTypesMessage' => 'Please upload a valid PDF document or ZIP archive',
-//                    ])
-//                ]
+                'constraints' => [
+                    new All([
+                        new File([
+                            'maxSize' => '4096M',
+                            'mimeTypes' => [
+                                'application/pdf',
+                                'application/x-pdf',
+                                'application/zip',
+                                'application/x-zip-compressed',
+                            ],
+                            'mimeTypesMessage' => 'Please upload a valid PDF document or ZIP archive',
+                        ]),
+                    ]),
+                ],
             ])
         ;
     }

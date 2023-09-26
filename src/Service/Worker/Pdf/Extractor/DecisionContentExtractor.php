@@ -8,6 +8,7 @@ use App\Entity\DecisionDocument;
 use App\Entity\Dossier;
 use App\Entity\EntityWithFileInfo;
 use App\Service\Elastic\ElasticService;
+use App\Service\Stats\WorkerStatsService;
 use App\Service\Storage\DocumentStorageService;
 use App\Service\Worker\Pdf\Tools\Tesseract;
 use App\Service\Worker\Pdf\Tools\Tika;
@@ -21,6 +22,7 @@ class DecisionContentExtractor
         private readonly Tika $tika,
         private readonly ElasticService $elasticService,
         private readonly Client $redis,
+        private readonly WorkerStatsService $statService
     ) {
     }
 
@@ -38,15 +40,29 @@ class DecisionContentExtractor
 
     private function extractContent(DecisionDocument $decision): string
     {
-        $localFilePath = $this->documentStorage->downloadDocument($decision);
-        if (! $localFilePath) {
-            throw new \RuntimeException('Failed to file to local storage for DecisionDocument ' . $decision->getId()->toBase58());
-        }
+        /** @var string $localFilePath */
+        $localFilePath = $this->statService->measure('download.document', function ($decision) {
+            $localFilePath = $this->documentStorage->downloadDocument($decision);
+            if (! $localFilePath) {
+                throw new \RuntimeException('Failed to file to local storage for DecisionDocument ' . $decision->getId()->toBase58());
+            }
 
-        $tikaData = $this->tika->extract($localFilePath);
+            return $localFilePath;
+        }, [$decision]);
+
+        /** @var string[] $tikaData */
+        $tikaData = $this->statService->measure('tika', function ($localFilePath) {
+            return $this->tika->extract($localFilePath);
+        }, [$localFilePath]);
+
+        /** @var string $tesseractContent */
+        $tesseractContent = $this->statService->measure('tesseract', function ($localFilePath) {
+            return $this->tesseract->extract($localFilePath);
+        }, [$localFilePath]);
+
         $content = $tikaData['X-TIKA:content'] ?? '';
         $content .= "\n";
-        $content .= $this->tesseract->extract($localFilePath);
+        $content .= $tesseractContent;
 
         $this->documentStorage->removeDownload($localFilePath);
 

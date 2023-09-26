@@ -1,0 +1,51 @@
+/*---------------------------------------------------------------*/
+/*---------------- breadcrumb-bar-variables.scss ----------------*/
+/*---------------------------------------------------------------*/
+:root {
+  --breadcrumb-bar-flex-direction: column;
+  --breadcrumb-bar-justify-content: flex-start;
+  --breadcrumb-bar-align-items: center;
+  --breadcrumb-bar-gap: 0;
+  --breadcrumb-bar-padding-top: 0;
+  --breadcrumb-bar-padding-right: var(--page-whitespace-right);
+  --breadcrumb-bar-padding-bottom: 0;
+  --breadcrumb-bar-padding-left: var(--page-whitespace-left);
+  --breadcrumb-bar-max-width: 100%;
+  --breadcrumb-bar-background-color: var(--branding-color-accent-5);
+  --breadcrumb-bar-text-color: var(--application-base-text-color);
+  --breadcrumb-bar-border-width: 0;
+  --breadcrumb-bar-border-style: solid;
+  --breadcrumb-bar-border-color: transparent;
+  --breadcrumb-bar-border-radius: 0;
+  --breadcrumb-bar-min-height: 0;
+
+  /* Hover */
+  --breadcrumb-bar-hover-text-color: var(--application-base-text-color);
+
+  /* List */
+  --breadcrumb-bar-list-padding: 0;
+  --breadcrumb-bar-list-gap: 1rem;
+  --breadcrumb-bar-list-vertical-align: center;
+
+  /* List item */
+  --breadcrumb-bar-list-item-gap: 1rem;
+
+  /* Icon */
+  --breadcrumb-bar-icon: ">";
+  --breadcrumb-bar-icon-font-family: var(--icon-font-family);
+  --breadcrumb-bar-icon-font-size: var(--icon-font-size);
+  --breadcrumb-bar-icon-padding-right: 0;
+  --breadcrumb-bar-icon-padding-left: 0;
+  --breadcrumb-bar-icon-margin-left: 0;
+  --breadcrumb-bar-icon-margin-right: 0;
+
+  /* Last item / current page */
+  --breadcrumb-bar-list-item-last-child-font-weight: bold;
+
+  /* Link */
+  --breadcrumb-bar-link-text-decoration: none;
+  --breadcrumb-bar-link-white-space: nowrap;
+
+  /* Link hover */
+  --breadcrumb-bar-link-hover-text-decoration: none;
+}

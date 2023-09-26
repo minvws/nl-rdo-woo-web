@@ -1,15 +1,22 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% set page_title = "Dossier management" | trans() %}
 
+    {%- block header_content -%}
+        <div class="header__content">
+            <div class="centered">
+                <h1>{{ "[Titel besluit; Subsidieregeling bonus]" | trans() }}</h1>
+            </div>
+        </div>
+    {%- endblock -%}
 {% block body %}
-
-    <section>
-        <div>
-
-            <h1>{{ "Dossier management" | trans() }}</h1>
-
+<main class="woo-container woo-container--sm">
+    <section class="content content__small">
+        <div class="admin-decisions-crud__help-text">
             <div class="mb-4">
+                <p>Step 2</p>
+                <p class="admin-decisions-crud__form-step-title">Upload documents</p>
+                <p>Tip: upload multiple documents at the same time. To do this, drag your entire selection (or a zip file) into this window.</p>
                 <form id="uploadform" class="dropzone" method="post"
                       action="{{ path('app_admin_dossier_documents_upload', { 'dossierId': dossier.dossierNr }) }}" enctype="multipart/form-data">
                     <div class="previews"></div>
@@ -23,4 +30,5 @@
 
         </div>
     </section>
+</main>
 {% endblock %}

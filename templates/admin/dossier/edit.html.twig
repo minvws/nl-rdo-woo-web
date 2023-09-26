@@ -3,39 +3,47 @@
 {% set page_title = "Modify dossier" | trans() ~ ' ' ~ dossier.dossierNr %}
 
 {% block body %}
-<main>
-    <section class="content">
-        <div>
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-title text-center mb-10">{{ page_title }}</h1>
 
-            <h1>{{ "Modify dossier" | trans() }} {{ dossier.dossierNr }}</h1>
+    <div class="woo-card">
+        <h2 class="woo-title-sm mb-4">{{ "Dossier settings" | trans() }}</h2>
+        {{ form(form) }}
+    </div>
 
-            <h5>{{ "Dossier settings" | trans() }}</h5>
-            {{ form(form) }}
+    <div class="woo-card mt-10">
+        <h2 class="woo-title-sm mb-4">{{ "Dossier Status" | trans() }}</h2>
+        {{ form(stateForm) }}
+    </div>
 
-            <div class="column-3">
-                <div>
-
-                    <h4>{{ "Dossier Status" | trans() }}</h4>
-                    {{ form(stateForm) }}
-
-                </div>
-                <div>
-
-                    <h4>{{ "Remove dossier" | trans() }}</h4>
-                    <p>{{ "Warning: this will remove the dossier AND all documents that are only linked to this dossier!" | trans() }}</p>
-                    {{ form(removeForm) }}
-
-                </div>
-                <div>
-
-                    <h4>{{ "Ingest dossier" | trans() }}</h4>
-                    <p>{{ "This will ingest the current dossier's documents into the search engine." | trans() }}</p>
-                    {{ form(ingestForm) }}
-
-                </div>
-            </div>
-
+    <div class="woo-card mt-10">
+        <h2 class="woo-title-sm mb-4">{{ "Remove dossier" | trans() }}</h2>
+        <div class="mb-4">
+            <twig:Alert type="info">
+                {{ "Warning: this will remove the dossier AND all documents that are only linked to this dossier!" | trans() }}
+            </twig:Alert>
         </div>
-    </section>
-</main>
+        {{ form(removeForm) }}
+    </div>
+
+    <div class="woo-card mt-10">
+        <h2 class="woo-title-sm mb-4">{{ "Ingest dossier" | trans() }}</h2>
+        <div class="mb-4">
+            <twig:Alert type="info">
+                {{ "This will ingest the current dossier's documents into the search engine." | trans() }}
+            </twig:Alert>
+        </div>
+        {{ form(ingestForm) }}
+    </div>
+
+    <div class="woo-card mt-10">
+        <h2 class="woo-title-sm mb-4">{{ "Create archive" | trans() }}</h2>
+        <div class="mb-4">
+            <twig:Alert type="info">
+                {{ "This will create an archive of the current dossier" | trans() }}
+            </twig:Alert>
+        </div>
+        {{ form(archiveForm) }}
+    </div>
+</div>
 {% endblock %}

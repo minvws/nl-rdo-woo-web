@@ -1,19 +1,191 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
-{% set page_title = "Modify dossier" | trans() ~ ' ' ~ dossier.dossierNr %}
+{% set page_title = "Dossier " | trans() ~ dossier.dossierNr %}
+{% set uploadStatus = dossier.uploadStatus %}
+{% set firstOpenStep = workflowStatus.firstOpenStep.stepName.value | default %}
 
 {% block body %}
+<div class="woo-container woo-container--sm">
+    <div class="mb-8">
+        <h1 class="mb-2">
+            <span class="block text-lg font-normal mb-2 text-black-olive">Besluit over woo-verzoek met onderwerp:</span>
+            <span class="woo-title-lg">{{ dossier.title }}</span>
+        </h1>
+        {{ status_badge(dossier.status) }}
+    </div>
 
-    <section>
+    <div class="px-11">
+        <section class="woo-card">
+            <twig:LeftAndRight>
+                <h2 class="woo-title">Basisgegevens</h2>
 
-        <div>
-            <h1>{{ "Dossier" | trans() }} {{ dossier.dossierNr }}</h1>
+                <twig:block name="right">
+                    <a class="woo-button woo-button--secondary" href="{{ path(workflowStatus.detailsPath, {dossierId: dossier.dossierNr}) }}">Bewerken</a>
+                </twig:block>
+            </twig:LeftAndRight>
 
-            <a href="{{ path('app_admin_dossier_edit', {dossierId: dossier.dossierNr}) }}">edit</a>
+            <dl class="text-lg">
+                <twig:Definition term="{{ "Subject" | trans() }}">
+                    {{ dossier.title }}
+                </twig:Definition>
 
-            <a href="{{ path('app_admin_dossier_documents_upload', {dossierId: dossier.dossierNr}) }}">upload docs</a>
-        </div>
+                <twig:Definition term="{{ "Period" | trans() }}">
+                    {% if period(dossier.dateFrom, dossier.dateTo) %}
+                        {{ period(dossier.dateFrom, dossier.dateTo) }}
+                    {% endif %}
+                </twig:Definition>
 
-    </section>
+                <twig:Definition term="{{ "Decision number" | trans() }}">
+                    {{ dossier.dossierNr }}
+                </twig:Definition>
 
+                <twig:Definition term="{{ "Responsible" | trans() }}">
+                    {{ dossier.departments[0].name | default("Niet opgegeven") }}
+                </twig:Definition>
+            </dl>
+        </section>
+
+        <section class="woo-card mt-10">
+            <twig:LeftAndRight>
+                <h2 class="woo-title">{{ "Decision" | trans }}</h2>
+
+                <twig:block name="right">
+                    {% if workflowStatus.isReadyForDecision %}
+                    <a class="woo-button woo-button--secondary" href="{{ path(workflowStatus.decisionPath, {dossierId: dossier.dossierNr}) }}">Bewerken</a>
+                    {% endif %}
+                </twig:block>
+            </twig:LeftAndRight>
+
+            {% if workflowStatus.isReadyForDecision %}
+            <dl class="text-lg">
+                <twig:Definition term="{{ "Decision made" | trans() }}">
+                    {% if dossier.decision is defined %}
+                        {{ dossier.decision | decision }}
+                    {% endif %}
+                </twig:Definition>
+
+                <twig:Definition term="{{ "Summary" | trans() }}">
+                    {{ dossier.summary | default("Niet opgegeven") }}
+                </twig:Definition>
+
+                <twig:Definition term="Bijlage met officeel besluit">
+                    {% if dossier.decisionDocument.fileInfo.name is defined %}
+                        <twig:IconLink
+                            href="{{ path('app_admin_dossier_decision_download', {dossierId: dossier.dossierNr}) }}"
+                            icon="document-pdf"
+                            text="{{ dossier.decisionDocument.fileInfo.name }}"
+                        />
+                    {% else %}
+                        Niet opgegeven
+                    {% endif %}
+                </twig:Definition>
+            </dl>
+            {% else %}
+                <p class="font-bold text-lg text-center py-6">{{ ("complete_step_" ~ firstOpenStep) | trans }}</p>
+            {% endif %}
+        </section>
+
+        <section class="woo-card mt-10">
+            <twig:LeftAndRight>
+                <h2 class="woo-title">{{ "Documents" | trans }}</h2>
+
+                <twig:block name="right">
+                    {% if dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments %}
+                        <a class="woo-button woo-button--secondary" href="{{ path(workflowStatus.documentsPath, {dossierId: dossier.dossierNr}) }}">Bewerken</a>
+                    {% endif %}
+                </twig:block>
+            </twig:LeftAndRight>
+
+            {% if not dossier.needsInventoryAndDocuments %}
+                <p class="font-bold text-lg text-center py-6">{{ "Not applicable to decision" | trans({'decision': dossier.decision | decision}) }}</p>
+            {% elseif workflowStatus.isReadyForDocuments %}
+                <dl class="text-lg">
+                    <twig:Definition term="{{ "Inventory list" | trans() }}">
+                        {% if dossier.inventory is not null  %}
+                            <twig:IconLink
+                                href="{{ path('app_admin_dossier_inventory_download', {dossierId: dossier.dossierNr}) }}"
+                                icon="document-csv"
+                                text="{{ dossier.inventory.fileInfo.name }}"
+                            />
+                        {% else %}
+                            Niet opgegeven
+                        {% endif %}
+                    </twig:Definition>
+
+                    <twig:Definition term="{{ "Documents" | trans() }}">
+                        <p>{{ uploadStatus.actualUploadCount }} van {{ uploadStatus.expectedUploadCount }} bestanden geüpload</p>
+
+                        <p class="mt-3">
+                            <twig:IconLink
+                                href=""
+                                icon="folder"
+                                text="Naar documenten"
+                            />
+                        </p>
+                    </twig:Definition>
+                </dl>
+            {% else %}
+                <p class="font-bold text-lg text-center py-6">{{ ("complete_step_" ~ firstOpenStep) | trans }}</p>
+            {% endif %}
+        </section>
+
+        <section class="woo-card mt-10">
+            <twig:LeftAndRight>
+                <div class="flex items-center">
+                    <h2 class="woo-title mr-3">{{ "Publicatie" | trans }}</h2>
+                    {{ status_badge(dossier.status) }}
+                </div>
+
+                <twig:block name="right">
+                    {% if workflowStatus.isReadyForPublication %}
+                        <a class="woo-button woo-button--secondary" href="{{ path(workflowStatus.publicationPath, {dossierId: dossier.dossierNr}) }}">Bewerken</a>
+                    {% endif %}
+                </twig:block>
+            </twig:LeftAndRight>
+
+            {% if workflowStatus.isPubliclyAvailable %}
+                <dl class="text-lg">
+                    <twig:Definition term="{{ "Published on" | trans() }}">
+                        {% if dossier.publicationDate is defined %}
+                            <time datetime="{{ dossier.publicationDate | date("Y-m-d") }}">{{ dossier.publicationDate | format_date('long') }}</time>
+                        {% else %}
+                            Niet opgegeven
+                        {% endif %}
+                    </twig:Definition>
+
+                    {% if dossier.status == constant('\\App\\Entity\\Dossier::STATUS_PUBLISHED') %}
+                    <twig:Definition term="Link naar gehele Woo-besluit">
+                        {% set publicDossierUrl = path('app_dossier_detail', { dossierId: dossier.dossierNr }) %}
+                        <a href="{{ publicDossierUrl }}">{{ publicDossierUrl }}</a>
+                    </twig:Definition>
+                    {% endif %}
+
+                    <twig:Definition term="Unieke link per zaaknummer">
+                        {% if dossier.inquiries | length %}
+                            <table class="woo-table">
+                                <thead>
+                                    <th class="woo-column-head" scope="col">Zaaknummer</th>
+                                    <th class="woo-column-head" scope="col">Link voor verzoeker</th>
+                                </thead>
+                                <tbody>
+                                    {% for inquiry in dossier.inquiries %}
+                                    <tr>
+                                        <td>{{ inquiry.casenr }}</td>
+                                        {% set url = PUBLIC_BASE_URL ~ path('app_inquiry_detail', {token: inquiry.token}) %}
+                                        <td><a class="woo-a" href="{{ url }}">{{ url }}</a></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            Dit besluit heeft geen zaaknummers
+                        {% endif %}
+                    </twig:Definition>
+                </dl>
+            {% else %}
+                <p class="font-bold text-lg text-center py-6">{{ ("complete_step_" ~ firstOpenStep) | trans }}</p>
+            {% endif %}
+        </section>
+    </div>
+</div>
 {% endblock %}

@@ -1,46 +1,51 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% set page_title = "Requests management" | trans() %}
 
 {% block body %}
+<div class="woo-container">
+    <twig:LeftAndRight>
+        <h1 class="woo-title">{{ page_title }}</h1>
 
-    <section>
-        <div>
+        <twig:block name="right">
+            {# <a class="woo-button woo-button--secondary" href="{{ path('app_admin_request_new') }}">Nieuw verzoek</a> #}
+        </twig:block>
+    </twig:LeftAndRight>
 
-            <h1>{{ "Requests management" | trans() }}</h1>
-
-            <p class="count">
-                {{ "There are in total # requests found." | trans({'count' : pagination.getTotalItemCount}) }}
-            </p>
-
-            <table class="table table-striped">
+    <div class="woo-card">
+        <table class="woo-table">
+            <thead>
                 <tr>
-                    <th>{{ "Case number" | trans() }}</th>
-                    <th>{{ "Documents" | trans() }}</th>
-                    <th>{{ "Last update" | trans() }}</th>
-                    <th>{{ "Token" | trans() }}</th>
-                    <th>{{ "Options" | trans() }}</th>
+                    <th class="woo-column-head woo-column-head--sortable" scope="col">{{ "Case number" | trans() }}</th>
+                    <th class="woo-column-head woo-column-head--sortable" scope="col">{{ "Documents" | trans() }}</th>
+                    <th class="woo-column-head woo-column-head--sortable" scope="col">{{ "Last update" | trans() }}</th>
+                    <th class="woo-column-head woo-column-head--sortable border-r-0" scope="col">{{ "Token" | trans() }}</th>
+                    {# <th class="woo-column-head woo-column-head--sortable" scope="col">
+                        <span class="sr-only">{{ "Options" | trans() }}</span>
+                    </th> #}
                 </tr>
-
+            </thead>
+            <tbody>
                 {% for inquiry in pagination %}
                     <tr>
-                        <td><a href="{{ PUBLIC_BASE_URL }}{{ path('app_inquiry_detail', { token: inquiry.token }) }}">{{ inquiry.casenr }}</td>
+                        <td><a class="woo-a" href="{{ PUBLIC_BASE_URL }}{{ path('app_inquiry_detail', { token: inquiry.token }) }}">{{ inquiry.casenr }}</td>
                         <td>{{ inquiry.documents | length }}</td>
                         <td>{{ inquiry.updatedAt|date('d-m-Y H:i:s') }}</td>
-                        <td>{{ inquiry.token }} <i class="fa fa-copy"></i></td>
-                        <td>
-                            {#                    <a class="btn btn-sm btn-primary" href="{{ path('app_admin_request_edit', {id: inquiry.id}) }}">Modify</a> #}
-                        </td>
+                        <td>{{ inquiry.token }}</i></td>
+                        {# <td>
+
+                            IMPORTANT: when enabling this `<td>`, please also enable the corresponding `<th>` in the `<thead>` above
+
+                            <a class="js-woo-clickable-row__a" href="{{ path('app_admin_request_edit', {id: inquiry.id}) }}">
+                                <twig:Icon name="chevron-right" />
+                            </a>
+                        </td> #}
                     </tr>
                 {% endfor %}
-            </table>
+            </tbody>
+        </table>
 
-            <div class="navigation">
-                {{ knp_pagination_render(pagination) }}
-            </div>
-
-            {#    <a class="btn btn-primary" href="{{ path('app_admin_request_new') }}">Create new request</a> #}
-
-        </div>
-    </section>
+        {{ knp_pagination_render(pagination) }}
+    </div>
+</div>
 {% endblock %}

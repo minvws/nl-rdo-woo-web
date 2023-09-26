@@ -6,12 +6,15 @@ namespace App\Controller\Admin\Dossier;
 
 use App\Entity\Document;
 use App\Entity\Dossier;
+use App\Form\Document\ArchiveFormType;
 use App\Form\Document\IngestFormType;
 use App\Form\Document\RemoveFormType;
 use App\Form\Dossier\DossierType;
 use App\Form\Dossier\SearchFormType;
 use App\Form\Dossier\StateChangeFormType;
+use App\Service\ArchiveService;
 use App\Service\DossierService;
+use App\Service\DossierWorkflow\DossierWorkflow;
 use App\Service\Inventory\ProcessInventoryResult;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,7 +43,9 @@ class DossierController extends AbstractController
         private readonly EntityManagerInterface $doctrine,
         private readonly PaginatorInterface $paginator,
         private readonly DossierService $dossierService,
+        private readonly ArchiveService $archiveService,
         private readonly LoggerInterface $logger,
+        private readonly DossierWorkflow $workflow,
     ) {
     }
 
@@ -123,15 +128,6 @@ class DossierController extends AbstractController
                 ]);
             }
 
-            if ($decisionUpload) {
-                $this->logger->info('uploaded decision file', [
-                    'path' => $decisionUpload->getRealPath(),
-                    'original_file' => $decisionUpload->getClientOriginalName(),
-                    'size' => $decisionUpload->getSize(),
-                    'file_hash' => hash_file('sha256', $decisionUpload->getRealPath()),
-                ]);
-            }
-
             $result = $this->dossierService->create($dossier, $inventoryUpload, $decisionUpload);
             if ($result->isSuccessful()) {
                 // All is good, we can safely return to dossier list
@@ -160,6 +156,7 @@ class DossierController extends AbstractController
 
         return $this->render('admin/dossier/view.html.twig', [
             'dossier' => $dossier,
+            'workflowStatus' => $this->workflow->getStatus($dossier),
         ]);
     }
 
@@ -177,7 +174,8 @@ class DossierController extends AbstractController
         $response = $this->handleIngestForm($request, $dossier) ??
             $this->handleRemoveForm($request, $dossier) ??
             $this->handleUpdateForm($request, $dossier) ??
-            $this->handleStateForm($request, $dossier);
+            $this->handleStateForm($request, $dossier) ??
+            $this->handleArchiveForm($request, $dossier);
         if ($response) {
             return $response;
         }
@@ -185,12 +183,14 @@ class DossierController extends AbstractController
         $form = $this->createForm(DossierType::class, $dossier, ['edit_mode' => true]);
         $removeForm = $this->createForm(RemoveFormType::class, $dossier);
         $ingestForm = $this->createForm(IngestFormType::class, $dossier);
+        $archiveForm = $this->createForm(ArchiveFormType::class, $dossier);
         $stateForm = $this->createForm(StateChangeFormType::class, $dossier);
 
         return $this->render('admin/dossier/edit.html.twig', [
             'form' => $form->createView(),
             'removeForm' => $removeForm->createView(),
             'ingestForm' => $ingestForm->createView(),
+            'archiveForm' => $archiveForm->createView(),
             'stateForm' => $stateForm->createView(),
             'dossier' => $dossier,
         ]);
@@ -269,6 +269,23 @@ class DossierController extends AbstractController
         return $this->redirectToRoute('app_admin_dossiers');
     }
 
+    protected function handleArchiveForm(Request $request, Dossier $dossier): ?Response
+    {
+        $archiveForm = $this->createForm(ArchiveFormType::class, $dossier);
+
+        $archiveForm->handleRequest($request);
+        if (! $archiveForm->isSubmitted() || ! $archiveForm->isValid()) {
+            return null;
+        }
+
+        $this->archiveService->deleteDossierArchives($dossier);
+        $this->archiveService->createArchiveForCompleteDossier($dossier);
+
+        $this->addFlash('backend', ['success' => 'Creating dossier archive']);
+
+        return $this->redirectToRoute('app_admin_dossiers');
+    }
+
     protected function handleUpdateForm(Request $request, Dossier $dossier): ?Response
     {
         $form = $this->createForm(DossierType::class, $dossier, ['edit_mode' => true]);
@@ -282,15 +299,6 @@ class DossierController extends AbstractController
         $inventoryUpload = $form->get('inventory')->getData();
         /** @var UploadedFile $decisionUpload */
         $decisionUpload = $form->get('decision_document')->getData();
-
-        if ($decisionUpload) {
-            $this->logger->info('uploaded decision file', [
-                'path' => $decisionUpload->getRealPath(),
-                'original_file' => $decisionUpload->getClientOriginalName(),
-                'size' => $decisionUpload->getSize(),
-                'file_hash' => hash_file('sha256', $decisionUpload->getRealPath()),
-            ]);
-        }
 
         if ($inventoryUpload) {
             $this->logger->info('uploaded inventory file', [

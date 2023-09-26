@@ -15,7 +15,7 @@ $spacing: 2px;
         padding: 0;
         a {
             padding: $padding;
-            color: $gray-neutral;
+            color: $grey-neutral;
             display: inline-flex;
             justify-content: center;
             align-items: center;
@@ -28,12 +28,12 @@ $spacing: 2px;
             &:hover,
             &:focus,
             &.active {
-                background: $gray-main-bg;
+                background: $grey-main-bg;
             }
         }
 
         li.pagination__text a {
-            border: 1px solid $gray-blue-x-light;
+            border: 1px solid $grey-blue-x-light;
             padding: $padding 15px;
             width: auto;
         }
@@ -49,11 +49,11 @@ $spacing: 2px;
                 height: 100%;
             }
             &.svg-chevron-light-right:before {
-                background: url("../../../svg/chevron.svg") no-repeat center
+                background: url("../../../img/public/svg/chevron.svg") no-repeat center
                     center;
             }
             &.svg-chevron-light-left:before {
-                background: url("../../../svg/chevron.svg") no-repeat center
+                background: url("../../../img/public/svg/chevron.svg") no-repeat center
                     center;
                 transform: rotate(180deg);
             }

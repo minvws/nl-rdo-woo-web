@@ -9,6 +9,8 @@ use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Inventory;
 use App\Entity\RawInventory;
+use App\Message\IngestMetadataOnlyMessage;
+use App\Message\RemoveDocumentMessage;
 use App\Service\Inventory\Reader\InventoryReaderFactory;
 use App\Service\Inventory\Reader\InventoryReadItem;
 use App\Service\Storage\DocumentStorageService;
@@ -16,6 +18,7 @@ use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -32,7 +35,8 @@ class InventoryService
         private readonly DocumentStorageService $documentStorage,
         private readonly InventoryReaderFactory $readerFactory,
         private readonly TranslatorInterface $translator,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly MessageBusInterface $messageBus,
     ) {
     }
 
@@ -116,11 +120,13 @@ class InventoryService
             'dossier' => $dossier->getId() ?? 'unknown',
             'filename' => $uploadedFile->getClientOriginalName(),
             'duration' => microtime(true) - $start,
-            'success' => true,
+            'success' => $result->isSuccessful(),
             'errors' => $result->getRowErrors(),
         ]);
 
         $this->documentStorage->removeDownload($tmpFilename);
+
+        $this->doctrine->persist($dossier);
 
         return $result;
     }
@@ -166,6 +172,7 @@ class InventoryService
                     if (isset($tobeRemovedDocs[$document->getDocumentNr()])) {
                         unset($tobeRemovedDocs[$document->getDocumentNr()]);
                     }
+                    $this->handleUpdatedDocument($document);
                 } catch (\Exception $e) {
                     $this->logger->error("Error while processing row $rowIndex in the spreadsheet.", [
                         'dossier' => $dossier->getId() ?? 'unknown',
@@ -184,6 +191,9 @@ class InventoryService
         // Remove these documents from the dossier
         foreach ($tobeRemovedDocs as $document) {
             $dossier->removeDocument($document);
+            $this->messageBus->dispatch(
+                RemoveDocumentMessage::forDossierAndDocument($dossier, $document)
+            );
         }
     }
 
@@ -354,7 +364,7 @@ class InventoryService
 
         // Create or update inventory document and add to dossier
         $inventory = $dossier->getInventory();
-        if ($inventory == null) {
+        if (! $inventory) {
             $inventory = new Inventory();
             $inventory->setDossier($dossier);
         }
@@ -402,5 +412,24 @@ class InventoryService
         }
 
         return null;
+    }
+
+    public function handleUpdatedDocument(Document $document): void
+    {
+        if (! $document->shouldBeUploaded()) {
+            $this->documentStorage->deleteAllFilesForDocument($document);
+            $document->getFileInfo()->removeFileProperties();
+            $document->setPageCount(0);
+            $this->doctrine->persist($document);
+        }
+
+        /*
+         * Update the metadata for the document in ES.
+         * - if we no longer expect an upload remove any existing pages by setting it to true
+         * - otherwise only update document metadata and leave the pages as is
+         */
+        $this->messageBus->dispatch(
+            new IngestMetadataOnlyMessage($document->getId(), ! $document->shouldBeUploaded())
+        );
     }
 }

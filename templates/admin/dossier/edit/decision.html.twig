@@ -1,0 +1,10 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+    <div class="woo-container">
+        <h1 class="woo-title text-center mb-10">{{ "Besluitdossier bewerken - besluit" | trans() }}</h1>
+        <div class="woo-card">
+            {% include 'admin/dossier/form/decision.html.twig' %}
+        </div>
+    </div>
+{% endblock %}

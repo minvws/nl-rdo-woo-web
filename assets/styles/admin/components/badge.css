@@ -1,0 +1,21 @@
+@layer components {
+    .woo-badge {
+        @apply border-2 font-bold inline-block leading-none px-2 py-0.5 rounded-2xl text-sm;
+    }
+
+    .woo-badge--blue {
+        @apply border-ocean-boat-blue text-ocean-boat-blue;
+    }
+
+    .woo-badge--green {
+        @apply border-philippine-green text-philippine-green;
+    }
+
+    .woo-badge--purple {
+        @apply border-plum text-plum;
+    }
+
+    .woo-badge--red {
+        @apply border-maximum-red text-maximum-red;
+    }
+}

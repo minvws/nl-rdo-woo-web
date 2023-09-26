@@ -1,0 +1,15 @@
+{#
+    Displays an svg icon. Check `public/img/admin/icons.svg`
+
+    name: name of the icon
+#}
+{% macro icon(name, dimensions = [24, 24], css = '') %}
+    {% set defaultDimension = 24 %}
+    {% set imagePath = '/img/admin/icons.svg#' ~ name %}
+    {% set height = dimensions|default([defaultDimension, defaultDimension])[0]|default(defaultDimension) %}
+    {% set width = dimensions|default([defaultDimension, defaultDimension])[1]|default(defaultDimension) %}
+
+    <svg aria-hidden="true" class="inline-block fill-dim-gray" height="{{height}}" width="{{width}}">
+        <use xlink:href="{{imagePath}}" />
+    </svg>
+{% endmacro %}

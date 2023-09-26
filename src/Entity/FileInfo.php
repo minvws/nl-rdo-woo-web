@@ -115,4 +115,12 @@ class FileInfo
 
         return $this;
     }
+
+    public function removeFileProperties(): void
+    {
+        $this->setMimetype(null);
+        $this->setUploaded(false);
+        $this->setSize(0);
+        $this->setPath(null);
+    }
 }

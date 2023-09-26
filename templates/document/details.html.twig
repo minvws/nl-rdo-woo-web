@@ -55,7 +55,7 @@
                 <a id="below-carousel"></a>
             {% endif %}
 
-            {% if document.isUploaded and (document.fileInfo.size != "0") %}
+            {% if not document.withdrawn and document.isUploaded and (document.fileInfo.size != "0") %}
             <div class="button-container pt-8">
                 <a class="button button-pink" download href="{{ path('app_document_download', { dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">
                     <span class="svg-icon svg-download w-[24px] h-[24px]" aria-hidden="true" ></span>

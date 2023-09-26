@@ -1,0 +1,5 @@
+{% if dossier.id | default %}
+    <p>Dossier number: {{ dossier.dossierNr }}</p>
+    <p>Document prefix: {{ dossier.documentPrefix }}</p>
+{% endif %}
+{{ form(form) }}

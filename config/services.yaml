@@ -55,12 +55,20 @@ services:
         arguments:
             - !tagged_iterator app.ingest.handler
 
+    App\Service\Stats\WorkerStatsService:
+        arguments:
+            $handlers:
+                - '@App\Service\Stats\Handler\ElasticHandler'
+                - '@App\Service\Stats\Handler\DoctrineHandler'
+
     # Tag all classes that implements Handler with the app.ingest.handler tag.
     _instanceof:
         App\Service\Ingest\Handler:
             tags: ['app.ingest.handler']
         App\Service\Logging\LoggingTypeInterface:
             tags: [ 'app.logging.type' ]
+        App\Service\Stats\Handler\StatsHandlerInterface:
+            tags: [ 'app.stats.handler' ]
 
     # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
     App\Service\Encryption\EncryptionService:
@@ -184,3 +192,14 @@ services:
     App\EventSubscriber\SecurityHeaderSubscriber:
         arguments:
             $appMode: '%env(APP_MODE)%'
+
+    # Order of the arguments is important here, so manually inject instead of using _instanceOf
+    App\Service\DossierWorkflow\WorkflowStatusFactory:
+        arguments:
+          - '@App\Service\DossierWorkflow\Step\DetailsStep'
+          - '@App\Service\DossierWorkflow\Step\DecisionStep'
+          - '@App\Service\DossierWorkflow\Step\DocumentsStep'
+          - '@App\Service\DossierWorkflow\Step\PublicationStep'
+
+
+

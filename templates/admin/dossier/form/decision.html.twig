@@ -1,0 +1,16 @@
+{{ form_start(form) }}
+{{ form_errors(form) }}
+{{ form_row(form.decision) }}
+{{ form_row(form.summary) }}
+{{ form_row(form.decision_document) }}
+
+{% if dossier.decisionDocument.fileInfo.isUploaded|default(false) %}
+    <div class="woo-form-row">
+    <a download href="{{ path('app_admin_dossier_decision_download', { dossierId: dossier.dossierNr }) }}">Huidig document</a> ({{ dossier.decisionDocument.fileInfo.size | size }})
+    </div>
+{% else %}
+    <div class="woo-form-row">Er is nog geen besluitbrief toegevoegd.</div>
+{% endif %}
+
+{{ form_end(form) }}
+

@@ -49,4 +49,5 @@ when@prod:
                 ident: woopie
                 formatter: monolog.formatter.json
                 level: info
-                channels: ["!request", "!doctrine", "!event", "!deprecation"]
+                channels: ["!doctrine", "!event", "!deprecation"]
+

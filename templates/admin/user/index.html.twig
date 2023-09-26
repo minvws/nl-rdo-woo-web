@@ -1,48 +1,53 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
-{% set page_title = "User management" | trans() %}
+{% set page_title = "User management" | trans %}
 
 {% block body %}
+<div class="woo-container">
+    <twig:LeftAndRight>
+        <h1 class="woo-title">{{ page_title }}</h1>
 
-    <section>
-        <div>
+        <twig:block name="right">
+            <a class="woo-button woo-button--secondary" href="{{ path('app_admin_user_create') }}">{{ "Create new user" | trans() }}</a>
+        </twig:block>
+    </twig:LeftAndRight>
 
-            <h1>{{ "User management" | trans() }}</h1>
-
-            <table class="table table-striped">
+    <div class="woo-card">
+        <table class="woo-table">
+            <thead>
                 <tr>
-                    <th>{{ "Username" | trans() }}</th>
-                    <th>{{ "E-mail" | trans() }}</th>
-                    <th>{{ "Created at" | trans() }}</th>
-                    <th>{{ "Role" | trans() }}</th>
-                    <th>{{ "Options" | trans() }}</th>
+                    <th class="woo-column-head woo-column-head--sortable" scope="col">{{ "Username" | trans() }}</th>
+                    <th class="woo-column-head woo-column-head--sortable" scope="col">{{ "E-mail" | trans() }}</th>
+                    <th class="woo-column-head woo-column-head--sortable" scope="col">{{ "Created at" | trans() }}</th>
+                    <th class="woo-column-head woo-column-head--sortable border-r-0" scope="col">{{ "Role" | trans() }}</th>
+                    <th class="woo-column-head woo-column-head--sortable" scope="col">
+                        <span class="sr-only">{{ "Edit user" | trans() }}</span>
+                    </th>
                 </tr>
-
+            </thead>
+            <tbody>
                 {% for user in users %}
                     <tr>
-                        <td>{{ user.name }}
-                            <small>
-                                {% if not user.enabled %}
-                                    <span class="badge bg-warning">{{ "Deactivated" | trans() }}</span>
-                                {% endif %}
-                            </small>
+                        <td>
+                            <span class="font-bold">{{ user.name }}</span>
+                            {% if not user.enabled %}
+                                <span class="woo-badge woo-badge--red">{{ "Deactivated" | trans() }}</span>
+                            {% endif %}
                         </td>
                         <td>{{ user.email }}</td>
                         <td>{{ user.createdAt | carbon.diffForHumans }}</td>
-                        <td>{{ user.roles|join(',') }}</td>
-                        <td>
-                            {% if app.user.id == user.id %}
-                                <a href="#" class="button disabled">{{ "This is you" | trans() }}</a>
-                            {% else %}
-                                <a href="{{ path('app_admin_user', { id: user.id }) }}" class="button">{{ "Modify" | trans() }}</a>
+                        <td>{{ user.roles|join(', ') }}</td>
+                        <td class="text-right">
+                            {% if app.user.id != user.id %}
+                                <a class="js-woo-clickable-row__a" href="{{ path('app_admin_user', { id: user.id }) }}">
+                                    <twig:Icon name="chevron-right" />
+                                </a>
                             {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
-            </table>
-
-            <a href="{{ path('app_admin_user_create') }}" class="button">{{ "Create new user" | trans() }}</a>
-
-        </div>
-    </section>
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

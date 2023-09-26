@@ -13,7 +13,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * @template-extends AbstractType<RemoveFormType>
+ * @template-extends AbstractType<WithdrawFormType>
  */
 class WithdrawFormType extends AbstractType
 {

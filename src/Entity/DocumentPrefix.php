@@ -54,4 +54,9 @@ class DocumentPrefix
 
         return $this;
     }
+
+    public function prefixAndDescription(): string
+    {
+        return $this->prefix . ' (' . $this->description . ')';
+    }
 }

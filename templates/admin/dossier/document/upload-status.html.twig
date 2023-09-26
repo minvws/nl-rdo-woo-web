@@ -1,0 +1,52 @@
+<div id="js-document-status" x-data="{show_all: true}">
+    <p>
+        Nog te uploaden: <strong>{{ uploadStatus.expectedUploadCount - uploadStatus.actualUploadCount }}</strong> van {{ uploadStatus.expectedUploadCount }} documenten.
+    </p>
+
+    <div class="button-container mb-4">
+        <button x-cloak x-show="! show_all" class="button" @click="show_all = !show_all">Toon alle documenten</button>
+        <button x-cloak x-show="show_all" class="button" @click="show_all = !show_all">Toon alleen niet geuploade documenten</button>
+        <a href="?" class="button ghost">Refresh page</a>
+    </div>
+
+    <ul class="columns-4">
+        {% for document in uploadStatus.expectedDocuments %}
+        <li class="woo-li woo-li--document">
+            {% set type = document.fileInfo.sourceType %}
+            {% if type == 'doc'  %}
+                <twig:Icon name="document" color="fill-dim-gray" dimensions="20" />
+            {% elseif type == 'pdf' %}
+                <twig:Icon name="document-pdf" color="fill-dim-gray" dimensions="20" />
+            {% else %}
+                <twig:Icon name="document" color="fill-dim-gray" dimensions="20" />
+            {% endif %}
+            {{ document.documentNr }}.{{ document.fileInfo.sourceType }}
+        </li>
+        {% endfor %}
+    </ul>
+{#    #}
+{#    We might need this for later use.#}
+
+{#    <table class="table table-striped">#}
+{#        <caption class="visually-hidden">{{ "Dossier documents" | trans() }}</caption>#}
+{#        <tr>#}
+{#            <th>DocumentNr</th>#}
+{#            <th>Document naam</th>#}
+{#            <th>Filesize</th>#}
+{#            <th>Status</th>#}
+{#            <th>Opties</th>#}
+{#        </tr>#}
+
+{#        {% for document in uploadStatus.expectedDocuments %}#}
+{#            <tr {% if document.uploaded %}class="table-success" x-show=show_all{% endif %}>#}
+{#                <td>{{ document.documentNr }}</td>#}
+{#                <td>{{ document.fileInfo.name }}</td>#}
+{#                <td nowrap>{% if document.fileInfo.size > 0 %}{{ document.fileInfo.size | size }}{% endif %}</td>#}
+{#                <td nowrap>{% if document.uploaded %}Geupload{% else %}Nog niet geupload{% endif %}</td>#}
+{#                <td><a class="button"#}
+{#                       href="{{ path('app_admin_dossier_document_details', { dossierId: dossier.dossierNr, documentId: document.documentNr }) }}">Details</a>#}
+{#                </td>#}
+{#            </tr>#}
+{#        {% endfor %}#}
+{#    </table>#}
+</div>

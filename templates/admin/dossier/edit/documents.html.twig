@@ -1,0 +1,45 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+    <div class="woo-container">
+        <h1 class="woo-title text-center mb-10">{{ "Besluitdossier bewerken - documenten" | trans() }}</h1>
+        <div class="woo-card">
+            {% if dossier.needsInventoryAndDocuments %}
+                {{ form(form) }}
+
+                {% set uploadStatus = dossier.uploadStatus %}
+
+                {% if not uploadStatus.isComplete %}
+                    <h3>Missende uploads</h3>
+                    <ul>
+                    {% for document in uploadStatus.getMissingDocuments %}
+                        <li>{{ document.documentNr }}</li>
+                    {% endfor %}
+                    </ul>
+
+                    <form id="uploadform" class="dropzone" method="post"
+                          action="{{ path('app_admin_dossier_documents_upload', { 'dossierId': dossier.dossierNr }) }}" enctype="multipart/form-data">
+                        <div class="previews"></div>
+                        <div class="fallback">
+                            <input name="file" type="file" multiple/>
+                        </div>
+                    </form>
+
+                    <div id="documentlist" data-path="{{ path('app_admin_dossier_document_list', { dossierId: dossier.dossierNr }) }}">
+                        {# todo auto refresh using data-path every X seconds? #}
+                        {% include 'admin/dossier/document-status.html.twig' with {uploadStatus: dossier.uploadStatus} %}
+                    </div>
+                {% endif %}
+
+                <h3>Documenten</h3>
+                <ul>
+                    {% for document in dossier.documents %}
+                        <li><a href="{{ path('app_admin_document', {dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">{{ document.documentNr }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                Op basis van het besluit '{{ dossier.decision | decision }}' heeft dit dossier geen inventarislijst en/of documenten.
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

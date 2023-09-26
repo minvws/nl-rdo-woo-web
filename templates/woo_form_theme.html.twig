@@ -1,5 +1,16 @@
 {% extends 'tailwind_2_layout.html.twig' %}
 
+{%- block choice_widget_expanded -%}
+    <div {{ block('widget_container_attributes') }}>
+        {%- for child in form %}
+            <div class="woo-choice-row">
+                <span>{{- form_widget(child) -}}</span>
+                {{- form_label(child, null, { 'label_attr': {'class': 'woo-choice-label'}, translation_domain: choice_translation_domain }) -}}
+            </div>
+        {% endfor -%}
+    </div>
+{%- endblock choice_widget_expanded -%}
+
 {%- block form_errors -%}
     {%- if errors|length > 0 -%}
         <div class="error">
@@ -13,17 +24,17 @@
 {%- endblock form_errors -%}
 
 {%- block form_help -%}
-    {%- set help_attr = help_attr|merge({ class: help_attr.class|default(help_class|default('mb-3 text-independence leading-tight text-sm')) }) -%}
+    {%- set help_attr = help_attr|merge({ class: help_attr.class|default(help_class|default('woo-form-help text-lg pb-2')) }) -%}
     {{- parent() -}}
 {%- endblock form_help -%}
 
 {%- block form_label -%}
-    {%- set label_attr = label_attr|merge({ class: label_attr.class|default(label_class|default('block text-lg font-bold leading-tight mt-0 mb-2')) }) -%}
+    {%- set label_attr = label_attr|merge({ class: label_attr.class|default(label_class|default('woo-label')) }) -%}
     {{- parent() -}}
 {%- endblock form_label -%}
 
 {%- block form_row -%}
-    {%- set row_attr = row_attr|merge({ class: row_attr.class|default(row_class|default('mb-6')) }) -%}
+    {%- set row_attr = row_attr|merge({ class: row_attr.class|default(row_class|default('woo-form-row')) }) -%}
     {%- set widget_attr = {} -%}
     {%- if help is not empty -%}
         {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
@@ -36,7 +47,36 @@
     </div>
 {%- endblock form_row -%}
 
+{% block button_row %}
+    {% if 'data-first-button' in attr %}
+        <div class="woo-form-row">
+    {% endif %}
+    {{ form_widget(form) }}
+    {% if 'data-last-button' in attr %}
+        </div>
+    {% endif %}
+{% endblock button_row %}
+
+{% block button_attributes %}
+    class="woo-button woo-button--primary mr-4" id="{{ id }}" name="{{ full_name }}"{% if disabled %} disabled="disabled"{% endif -%}
+    {% for attrname, attrvalue in attr %}{% if attrvalue != 'data-first-button' and attrvalue != 'data-last-button'%}{{ attrname }}="{{ attrvalue }}"{%endif%}{% endfor %}
+{% endblock button_attributes %}
+
+{%- block textarea_widget -%}
+    <textarea {{ block('widget_attributes') }} class="woo-textarea">{{ value }}</textarea>
+{%- endblock textarea_widget -%}
+
 {%- block widget_attributes -%}
-    {%- set attr = attr|merge({ class: attr.class|default(widget_class|default('w-6/12')) ~ (disabled ? ' ' ~ widget_disabled_class|default('border-gray-300 text-gray-500')) ~ (errors|length ? ' ' ~ widget_errors_class|default('border-red-700')) }) -%}
+    {%- set attr = attr|merge({ class: attr.class|default(widget_class|default('woo-input-text')) ~ (disabled ? ' ' ~ widget_disabled_class|default('border-gray-300 text-gray-500')) ~ (errors|length ? ' ' ~ widget_errors_class|default('border-red-700')) }) -%}
     {{- parent() -}}
 {%- endblock widget_attributes -%}
+
+{%- block checkbox_widget -%}
+    {%- set widget_class = widget_class|default('woo-choice-input woo-choice-input--checkbox') -%}
+    {{- parent() -}}
+{%- endblock checkbox_widget -%}
+
+{%- block radio_widget -%}
+    {%- set widget_class = widget_class|default('woo-choice-input woo-choice-input--radio') -%}
+    {{- parent() -}}
+{%- endblock radio_widget -%}

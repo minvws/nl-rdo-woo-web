@@ -126,24 +126,28 @@
                 </div>
             </div>
 
-            <h3 id="documenten">{{ "Documents" | trans() }}</h3>
+            {% if dossier.needsInventoryAndDocuments and (public_docs.count > 0 or not_public_docs.count > 0) %}
+                <h3 id="documenten">{{ "Documents" | trans() }}</h3>
 
-            <div class="gap-0 items-center pb-8 pt-4">
-                <form class="p-0 flex flex-col sm:flex-row items-stretch sm:items-center" method="post" action="{{ path('app_dossier_batch', { dossierId: dossier.dossierNr }) }}">
-                    <button type="submit" download class="button download-all flex items-center">
-                        <span class="svg-icon svg-download w-[24px] h-[24px]" aria-hidden="true" ></span>
-                        <span class="mx-auto">{{ "Download" | trans() }}</span>
-                        {# <span class="svg-icon svg-chevron-down mt-[-6px] w-[16px] h-[16px]" aria-hidden="true"/> #}
-                    </button>
-                    <span class="inline-block mt-2 sm:ml-4 sm:mt-0">
-                        <a href="{{ path('app_search') }}?dnr[]={{ dossier.dossierNr }}">
-                            {{ "Search in these documents..." | trans() }}
-                        </a>
-                    </span>
-                </form>
-            </div>
+                <div class="gap-0 items-center pb-8 pt-4">
+                    <form class="p-0 flex flex-col sm:flex-row items-stretch sm:items-center" method="post" action="{{ path('app_dossier_batch', { dossierId: dossier.dossierNr }) }}">
+                        {% if dossier.uploadStatus.getActualUploadCount > 0 %}
+                        <button type="submit" download class="button download-all flex items-center">
+                            <span class="svg-icon svg-download w-[24px] h-[24px]" aria-hidden="true" ></span>
+                            <span class="mx-auto">{{ "Download" | trans() }}</span>
+                            {# <span class="svg-icon svg-chevron-down mt-[-6px] w-[16px] h-[16px]" aria-hidden="true"/> #}
+                        </button>
+                        {% endif %}
+                        <span class="inline-block mt-2 sm:ml-4 sm:mt-0">
+                            <a href="{{ path('app_search') }}?dnr[]={{ dossier.dossierNr }}">
+                                {{ "Search in these documents..." | trans() }}
+                            </a>
+                        </span>
+                    </form>
+                </div>
 
-            {{ macro.document_tabs(public_docs, not_public_docs, '#documenten') }}
+                {{ macro.document_tabs(public_docs, not_public_docs, '#documenten') }}
+            {% endif %}
         </div>
     </section>
 

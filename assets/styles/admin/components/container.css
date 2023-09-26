@@ -1,0 +1,13 @@
+@layer components {
+    .woo-container {
+        @apply max-w-7xl mx-auto;
+    }
+
+    .woo-container--sm {
+        @apply max-w-[808px];
+    }
+
+    .woo-container--xs {
+        @apply max-w-sm;
+    }
+}

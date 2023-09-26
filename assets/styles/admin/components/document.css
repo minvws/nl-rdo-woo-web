@@ -1,0 +1,5 @@
+@layer components {
+    .woo-li--document {
+        @apply mb-3;
+    }
+}

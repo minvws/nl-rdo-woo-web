@@ -26,9 +26,12 @@
         "league/flysystem-aws-s3-v3": "^3.15",
         "league/flysystem-bundle": "^3.1",
         "mhujer/breadcrumbs-bundle": "^1.5",
+        "minvws/audit-logger": "dev-main",
+        "minvws/audit-logger-bundle": "dev-main",
         "minvws/horsebattery": "^1.1",
         "nesbot/carbon": "^2.66",
         "paragonie/halite": "^5.1",
+        "php-amqplib/rabbitmq-bundle": "^2.11",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpoffice/phpspreadsheet": "^1.28",
         "phpstan/phpdoc-parser": "^1.20",
@@ -66,6 +69,7 @@
         "symfony/translation": "6.3.*",
         "symfony/twig-bundle": "6.3.*",
         "symfony/uid": "6.3.*",
+        "symfony/ux-twig-component": "^2.11",
         "symfony/validator": "6.3.*",
         "symfony/web-link": "6.3.*",
         "symfony/webpack-encore-bundle": "^2.0",
@@ -122,6 +126,16 @@
         "symfony": {
             "allow-contrib": false,
             "require": "6.3.*"
+        }
+    },
+    "repositories": {
+        "minvws/audit-logger": {
+            "type": "vcs",
+            "url": "git@github.com:minvws/nl-rdo-php-audit-logger.git"
+        },
+        "minvws/audit-logger-bundle": {
+            "type": "vcs",
+            "url": "git@github.com:minvws/nl-rdo-php-audit-logger-bundle.git"
         }
     },
     "require-dev": {

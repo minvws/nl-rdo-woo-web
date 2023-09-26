@@ -18,8 +18,10 @@ use Symfony\Component\Uid\Uuid;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[UniqueEntity('dossierNr')]
@@ -144,7 +146,7 @@ class Dossier implements EntityWithId
 
     public function setDossierNr(string $dossierNr): self
     {
-        $this->dossierNr = $dossierNr;
+        $this->dossierNr = strtolower($dossierNr);
 
         return $this;
     }
@@ -448,5 +450,11 @@ class Dossier implements EntityWithId
         $this->rawInventory = $rawInventory;
 
         return $this;
+    }
+
+    public function needsInventoryAndDocuments(): bool
+    {
+        return $this->getDecision() !== self::DECISION_NOTHING_FOUND
+            && $this->getDecision() !== self::DECISION_NOT_PUBLIC;
     }
 }

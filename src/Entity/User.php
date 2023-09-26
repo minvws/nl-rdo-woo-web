@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use MinVWS\AuditLogger\Contracts\LoggableUser;
 use Scheb\TwoFactorBundle\Model\BackupCodeInterface;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
@@ -18,7 +19,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\HasLifecycleCallbacks]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface, BackupCodeInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface, BackupCodeInterface, LoggableUser
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
@@ -271,5 +272,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function isChangepwd(): ?bool
     {
         return $this->changepwd;
+    }
+
+    public function getAuditId(): string
+    {
+        return (string) $this->getId();
     }
 }

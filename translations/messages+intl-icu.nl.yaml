@@ -206,7 +206,7 @@ Password: Wachtwoord
 "Download document archive": "Download document archief"
 "The archive is not ready for download yet. Please try again in a few minutes.": "Het archief is nog niet gereed voor download. Probeer het over een paar minuten opnieuw."
 "Something went wrong during the generation of the archive. Please try again.": "Er is iets fout gegaan tijdens het genereren van het archief. Probeer het opnieuw."
-"The archive is ready for download. You can download the archive until {date}. After that, the archive needs to be generated again.": "Het archief is gereed voor download. Je kunt het archief downloaden tot {date}. Daarna moet het archief weer opnieuw worden gegeneerd."
+"The archive is ready for download. You can download the archive until {date}. After that, the archive needs to be generated again.": "Het archief is gereed voor download. Je kunt het archief downloaden tot {date}. Daarna moet het archief weer opnieuw worden gegenereerd."
 File: Bestand
 Documents: Documenten
 No documents: Geen documenten
@@ -562,3 +562,14 @@ Document judged as not_public: "Dit document is door juristen beoordeeld en verv
 Document judged as already_public: "Dit document is door juristen beoordeeld en bleek reeds openbaar beschikbaar."
 Why judgement was made: "Die beoordeling is gedaan omdat iemand het ministerie van Volksgezondheid, Welzijn en Sport gevraagd heeft interne informatie te openbaren."
 More info about request below: "Hieronder meer informatie over dat verzoek en het besluit"
+complete_step_details: "Maak eerst details compleet"
+complete_step_decision: "Maak eerst besluit compleet"
+complete_step_documents: "Maak eerst documenten compleet"
+complete_step_publication: "Het besluit is compleet maar nog niet gepubliceerd"
+workflow_step_details: "Basisgegevens"
+workflow_step_decision: "Besluit"
+workflow_step_documents: "Documenten"
+workflow_step_publication: "Publicatie"
+"Not applicable to decision": 'Niet van toepassing op besluit "{decision}"'
+"Filename doesn't match document number": "De bestandsnaam {filename} komt niet overeen met documentnummer {documentnr}"
+New decision file - basic data: "Nieuw besluitdossier - basisgegevens"

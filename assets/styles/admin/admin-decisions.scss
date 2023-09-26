@@ -1,13 +1,13 @@
 @import "admin-decision-link";
 
 .admin-decisions {
-  > .content {
-    margin-top: 0;
-  }
+    >.content:first-child {
+        margin-top: 0;
+    }
 
-  + footer {
-    margin-top: 160px;
-  }
+    +footer {
+        margin-top: 160px;
+    }
 }
 
 .decisions {

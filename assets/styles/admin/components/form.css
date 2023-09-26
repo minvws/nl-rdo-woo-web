@@ -1,0 +1,80 @@
+@layer components {
+    .woo-label {
+        @apply block
+            font-bold
+            leading-tight
+            mb-2
+            text-lg;
+    }
+
+    .woo-legend {
+        @apply block
+            font-bold
+            leading-tight
+            mt-0
+            mb-2
+            text-lg;
+    }
+
+    .woo-input-text {
+        @apply border
+            border-chinese-silver
+            leading-none
+            px-3
+            py-3
+            text-dim-gray
+            text-lg
+            rounded-lg
+            w-full;
+    }
+
+    .woo-input-text--with-icon-after {
+        @apply pr-10;
+    }
+
+    .woo-input-text--invalid {
+        @apply border-maximum-red;
+    }
+
+    .woo-textarea {
+        @apply woo-input-text leading-tight;
+    }
+
+    .woo-choice-row {
+        @apply flex py-0.5;
+    }
+
+    .woo-choice-label {
+        /* label next to a radio or checkbox input */
+        @apply inline-block font-normal text-base leading-5;
+    }
+
+    .woo-choice-input {
+        /* radio or checkbox input */
+        @apply border border-chinese-silver h-4 w-4 mr-2 mt-px;
+    }
+
+    .woo-input-icon {
+        @apply absolute pointer-events-none right-3 top-3;
+    }
+
+    .woo-input-icon--after {
+        @apply right-3;
+    }
+
+    .woo-form-row {
+        @apply pb-6;
+    }
+
+    .woo-form-manage-file {
+        @apply my-5 p-6 border border-platinum rounded-[12px];
+    }
+
+    .woo-form-help {
+        @apply text-dim-gray;
+    }
+
+    .woo-submit-row {
+        @apply pt-4;
+    }
+}

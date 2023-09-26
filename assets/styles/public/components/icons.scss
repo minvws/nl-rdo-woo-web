@@ -1,0 +1,142 @@
+.svg-icon {
+    display: inline-block;
+
+    &:before {
+        display: inline-block;
+        content: "";
+        width: 100%;
+        height: 100%;
+    }
+    &.svg-home:before {
+        background: url("../../../img/public/svg/home.svg") no-repeat center center;
+    }
+    &.svg-email:before {
+        background: url("../../../img/public/svg/mail.svg") no-repeat top -1px center;
+    }
+    &.svg-pdf:before {
+        background: url("../../../img/public/svg/pdf.svg") no-repeat top -1px center;
+    }
+    &.svg-map:before {
+        background: url("../../../img/public/svg/map.svg") no-repeat top -1px center;
+    }
+    &.svg-doc:before {
+        background: url("../../../img/public/svg/doc.svg") no-repeat top -1px center;
+    }
+    &.svg-csv:before,
+    &.svg-spreadsheet {
+        background: url("../../../img/public/svg/csv.svg") no-repeat top -1px center;
+    }
+    // This icon will probably go unused
+    &.svg-xlsx:before {
+        background: url("../../../img/public/svg/xlsx.svg") no-repeat top -1px center;
+    }
+    &.svg-xml:before {
+        background: url("../../../img/public/svg/xml.svg") no-repeat top -1px center;
+    }
+    &.svg-presentation:before {
+        background: url("../../../img/public/svg/presentation.svg") no-repeat top -1px center;
+    }
+    &.svg-unknown:before {
+        background: url("../../../img/public/svg/unknown.svg") no-repeat top -1px center;
+    }
+    &.svg-audio:before {
+        background: url("../../../img/public/svg/audio.svg") no-repeat top -1px center;
+    }
+    &.svg-video:before {
+        background: url("../../../img/public/svg/video.svg") no-repeat top -1px center;
+    }
+    &.svg-image:before {
+        background: url("../../../img/public/svg/image.svg") no-repeat top -1px center;
+    }
+    &.svg-vcard:before {
+        background: url("../../../img/public/svg/vcard.svg") no-repeat top -1px center;
+    }
+    &.svg-database:before {
+        background: url("../../../img/public/svg/database.svg") no-repeat top -1px center;
+    }
+    &.svg-note:before {
+        background: url("../../../img/public/svg/note.svg") no-repeat top -1px center;
+    }
+    &.svg-html:before {
+        background: url("../../../img/public/svg/html.svg") no-repeat top -1px center;
+    }
+    &.svg-text:before {
+        background: url("../../../img/public/svg/text.svg") no-repeat top -1px center;
+    }
+    &.svg-chevron-right:before {
+        background: url("../../../img/public/svg/chevron-link.svg") no-repeat center center;
+    }
+    &.svg-chevron-up:before {
+        background: url("../../../img/public/svg/chevron-link.svg") no-repeat center center;
+    }
+    &.svg-chevron-down:before {
+        background: url("../../../img/public/svg/chevron-link.svg") no-repeat center center;
+        transform: rotate(90deg);
+    }
+    &.svg-chevron-left:before {
+        background: url("../../../img/public/svg/chevron-link.svg") no-repeat center center;
+        transform: rotate(180deg);
+    }
+    &.svg-chevron-up:before {
+        background: url("../../../img/public/svg/chevron-link.svg") no-repeat center center;
+        transform: rotate(-90deg);
+    }
+    &.svg-chevron-light-right:before {
+        background: url("../../../img/public/svg/chevron.svg") no-repeat center center;
+    }
+    &.svg-chevron-light-down:before {
+        background: url("../../../img/public/svg/chevron.svg") no-repeat center center;
+        transform: rotate(90deg);
+    }
+    &.svg-chevron-light-left:before {
+        background: url("../../../img/public/svg/chevron.svg") no-repeat center center;
+        transform: rotate(180deg);
+    }
+    &.svg-chevron-light-up:before {
+        background: url("../../../img/public/svg/chevron.svg") no-repeat center center;
+        transform: rotate(-90deg);
+    }
+    &.svg-arrow-up:before {
+        background: url("../../../img/public/svg/arrow.svg") no-repeat top -1px center;
+        transform: rotate(180deg);
+    }
+    &.svg-arrow-right:before {
+        background: url("../../../img/public/svg/arrow.svg") no-repeat top -1px center;
+        transform: rotate(-90deg);
+    }
+    &.svg-arrow-down:before {
+        background: url("../../../img/public/svg/arrow.svg") no-repeat top -1px center;
+    }
+    &.svg-arrow-left:before {
+        background: url("../../../img/public/svg/arrow.svg") no-repeat top -1px center;
+        transform: rotate(90deg);
+    }
+    &.svg-trash:before {
+        background: url("../../../img/public/svg/trash.svg") no-repeat top -1px center;
+    }
+    &.svg-web:before,
+    &.svg-internet:before {
+        background: url("../../../img/public/svg/internet.svg") no-repeat top -1px center;
+    }
+    &.svg-delete:before {
+        background: url("../../../img/public/svg/delete.svg") no-repeat center center;
+    }
+    &.svg-attachment:before {
+        background: url("../../../img/public/svg/bijlage.svg") no-repeat center center;
+    }
+    &.svg-zoom:before {
+        background: url("../../../img/public/svg/zoom.svg") no-repeat center center;
+    }
+    &.svg-message:before {
+        background: url("../../../img/public/svg/bericht.svg") no-repeat center center;
+    }
+    &.svg-download:before {
+        background: url("../../../img/public/svg/download.svg") no-repeat center center;
+    }
+    &.svg-externallink:before {
+        background: url("../../../img/public/svg/externallink.svg") no-repeat top -1px center;
+    }
+    &.svg-sendusmail:before {
+        background: url("../../../img/public/svg/sendusmail.svg") no-repeat top -1px center;
+    }
+}

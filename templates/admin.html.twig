@@ -1,83 +1,80 @@
 <!doctype html>
 <html lang="nl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  {% block meta %}{% endblock %}
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% block meta %}{% endblock %}
 
-  <title>Beheer {{ SITE_NAME }}</title>
+        <title>
+            {% if page_title is defined %} {{ page_title }} | {% endif %}
+            Beheer {{ SITE_NAME }}
+        </title>
 
-  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-  {{ encore_entry_link_tags('woopie') }}
-  {{ encore_entry_link_tags('admin') }}
+        {{ encore_entry_link_tags('admin') }}
 
-  {{ encore_entry_script_tags('woopie') }}
-  {{ encore_entry_script_tags('admin') }}
+        {{ encore_entry_script_tags('admin') }}
 
-  {% include "piwik.html.twig" %}
-</head>
+        {% include "piwik.html.twig" %}
+    </head>
 
-<body>
-<header>
-  <nav>
-    <div class="nav__container">
-      {% if app.user and is_granted('ROLE_USER') %}
-        {% embed 'components/tabs.twig' with {classes: ['tabs__top-menu']} %}
-          {% block tabs %}
-          <ul>
-            <li class="active"><span aria-current="page">{{ 'Decision files' | trans() }}</span></li>
-            <li><a href="#">{{ 'Organizations and government officials' | trans() }}</a></li>
-            <li><a href="#">{{ 'Access control' | trans() }}</a></li>
-          </ul>
-          {% endblock %}
-        {% endembed %}
-        {% else %}
-          <em class="visually-hidden">open.minvws.nl<br />Publicatie/document management </em>
-          {% include 'components/admin-logo.twig' %}
-        {% endif %}
+    <body class="antialiased bg-anti-flash-white text-black flex min-h-screen flex-col">
+        {% set isAuthenticated = app.user and is_granted('ROLE_USER') %}
 
-        {% if app.user and is_granted('ROLE_USER')%}
-        <div class="header__profile">
-          <ul>
-              <li class="collapsing-element-item">
-                <span>
-                    {{ app.user.name|default("unknown user") }}
-                </span>
-              </li>
-              <li class="collapsing-element-item">
-                <a href="/balie/logout">
-                  {{ 'Logout' | trans() }}
-                </a>
-              </li>
+
+        {% macro nav_item(routeName, titleTranslationKey) %}
+            {% set isActivePage = app.request.get('_route') is same as(routeName) %}
+            <li><a class="woo-site-header-nav-item woo-site-header-nav-item--anchor {% if isActivePage %}woo-site-header-nav-item--active{% endif %}" href="{{ path(routeName) }}" {% if isActivePage %}aria-current="page"{% endif %}>{{ titleTranslationKey | trans() }}</a></li>
+        {% endmacro %}
+
+        <header class="bg-eerie-black">
+            <div class="mx-auto max-w-[1152px] px-4">
+                {% if isAuthenticated %}
+                <nav class="flex text-white">
+                    <ul class="grow flex">
+                        <li><a href="#inhoud" class="woo-site-header-nav-item woo-site-header-nav-item--anchor woo-site-header-nav-item--skip-link">{{ "Go directly to content" | trans() }}</a></li>
+                        {% if is_granted('ROLE_ADMIN_DOSSIERS') %}
+                            {{ _self.nav_item('app_admin_dossiers', 'Decision files') }}
+                            {{ _self.nav_item('app_admin_departments', 'Organizations and government officials') }}
+                        {% endif %}
+
+                        {% if is_granted('ROLE_ADMIN_USERS') %}
+                            {{ _self.nav_item('app_admin_users', 'Access control') }}
+                        {% endif %}
+                    </ul>
+
+                    <ul class="flex">
+                        <li><span class="woo-site-header-nav-item font-normal">{{ app.user.name|default("unknown user") }}</span></li>
+                        {{ _self.nav_item('app_logout', 'Logout') }}
+                    </ul>
+                </nav>
+                {% else %}
+                <div class="text-center text-white py-3">
+                    <div><strong class="text-2xl">{{ SITE_NAME }}</strong></div>
+                    <em>Publicatie/document management</em>
+                </div>
+                {% endif %}
+            </div>
+        </header>
+
+        <main class="grow pt-16 px-4" id="inhoud">
+            {% block body %}{% endblock %}
+        </main>
+
+        <footer class="pb-8 pt-16 px-4">
+            {% if isAuthenticated %}
+                <div class="leading-tight pb-4 pt-24 text-center text-dim-gray">
+                    <div><strong class="text-2xl">{{ SITE_NAME }}</strong></div>
+                    <em>Publicatie/document management</em>
+                </div>
+            {% endif %}
+
+            <ul class="flex justify-center">
+                <li><a class="woo-site-footer-nav-item" href="">Privacy</a></li>
+                <li><a class="woo-site-footer-nav-item" href="">Contact</a></li>
+                <li><a class="woo-site-footer-nav-item" href="">WobCovid publiek</a></li>
             </ul>
-        </div>
-        {% endif %}
-
-      </div>
-  </nav>
-    {%- block header_content -%}
-        <div class="header__content">
-            {% block page_title %}<h1 class="visually-hidden">{{ 'Admin' | trans() }}</h1>{% endblock %}
-            {% block actions %}{% endblock %}
-        </div>
-    {%- endblock -%}
-</header>
-
-{% block body %}{% endblock %}
-
-<footer>
-  {% if app.user and is_granted('ROLE_USER') %}
-  {% include 'components/admin-logo.twig' %}
-  {% endif %}
-  <nav>
-    <ul>
-      <li><a href="#">Privacy</a></li>
-      <li><a href="#">Contact</a></li>
-      <li><a href="#">WobCovid publiek</a></li>
-    </ul>
-  </nav>
-</footer>
-
-</body>
+        </footer>
+    </body>
 </html>

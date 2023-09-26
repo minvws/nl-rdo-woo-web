@@ -1,0 +1,39 @@
+<div class="woo-card">
+    <div id="decision_decision_help" class="text-lg pb-2">
+        <p class="woo-form-help">Stap 1</p>
+        <p><strong>Upload inventarislijst?</strong></p>
+        <p class="woo-form-help mt-5">Upload de Zylab rapportage die bij dit besluit hoort. Dit is een Excel bestand.</p>
+    </div>
+{% if dossier.rawInventory.fileInfo.isUploaded | default %}
+    <div class="woo-form-manage-file">
+        <div class="flex">
+        <twig:Icon name="document" color="fill-dim-gray" dimensions="18" css="mr-3" />
+        <p class="flex-1" ><a href="{{ path('app_admin_dossier_raw_inventory_download', { dossierId: dossier.dossierNr }) }}"><strong>{{ dossier.rawInventory.fileInfo.name }}</strong></a><br /><span class="text-sm">{{ dossier.rawInventory.fileInfo.size | size }}</span></p>
+        <a href="{{ path('app_admin_dossier_concept_delete_inventory', { dossierId: dossier.dossierNr }) }}"><twig:Icon name="trash" color="fill-dim-gray" dimensions="18" /></a>
+        </div>
+    </div>
+</div>
+
+<div class="woo-card mt-10">
+    <div class="text-lg pb-2">
+        <p class="woo-form-help">Stap 2</p>
+        <p><strong>Upload documenten</strong></p>
+        <p class="woo-form-help mt-5">Upload alle documenten die met beoordeling ‘openbaar’ of ‘deels openbaar’ op de inventarislijst staan. Zorg dat de bestandsnamen overeenkomen met de document-nummers op de inventarislijst (bijvoorbeeld: 123.pdf)</p>
+    </div>
+
+    <form id="uploadform" class="dropzone woo-form-manage-file min-h-[206px] flex flex-col bg-to-top bg-no-repeat bg-center" method="post"
+          action="{{ path('app_admin_dossier_documents_upload', { 'dossierId': dossier.dossierNr }) }}" enctype="multipart/form-data">
+        <div class="previews"></div>
+        <div class="fallback">
+            <input name="file" type="file" multiple/>
+        </div>
+    </form>
+
+    <div id="documentlist" class="bg-cornsilk p-6 max-h-[330px] overflow-y-auto" data-path="{{ path('app_admin_dossier_document_list', { dossierId: dossier.dossierNr }) }}">
+        {# todo auto refresh using data-path every X seconds? #}
+        {% include 'admin/dossier/document-status.html.twig' with {uploadStatus: dossier.uploadStatus} %}
+    </div>
+{% else %}
+    {{ form(inventoryForm) }}
+{% endif %}
+</div>

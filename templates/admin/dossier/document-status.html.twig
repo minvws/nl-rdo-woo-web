@@ -6,7 +6,7 @@
     <div class="button-container">
         <button x-cloak x-show="! show_all" class="button" @click="show_all = !show_all">Toon alle documenten</button>
         <button x-cloak x-show="show_all" class="button" @click="show_all = !show_all">Toon alleen niet geuploade documenten</button>
-        <a href="{{ path('app_admin_dossier_documents_upload', { dossierId: dossier.dossierNr }) }}" class="button ghost">Refresh page</a>
+        <a href="?" class="button ghost">Refresh page</a>
     </div>
 
     <table class="table table-striped">

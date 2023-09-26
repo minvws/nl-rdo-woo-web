@@ -29,7 +29,7 @@ class IngestPdfPageMessage
         return $this->uuid;
     }
 
-    public function forceRefresh(): bool
+    public function getForceRefresh(): bool
     {
         return $this->forceRefresh;
     }

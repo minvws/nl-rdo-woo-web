@@ -66,8 +66,12 @@ class DossierServiceTest extends MockeryTestCase
         $this->decisionDocument->shouldReceive('getFileInfo')->andReturn($this->decisionFileInfo);
 
         $this->inventoryUpload = \Mockery::mock(UploadedFile::class);
+
         $this->decisionUpload = \Mockery::mock(UploadedFile::class);
         $this->decisionUpload->shouldReceive('getClientOriginalExtension')->andReturn('pdf');
+        $this->decisionUpload->shouldReceive('getRealPath')->zeroOrMoreTimes()->andReturn(__FILE__);
+        $this->decisionUpload->shouldReceive('getClientOriginalName')->andReturn('xyz');
+        $this->decisionUpload->shouldReceive('getSize')->andReturn(123);
 
         $this->documentStorage->shouldReceive('storeDocument')->with($this->decisionUpload, $this->decisionDocument)->andReturnTrue();
 
@@ -76,6 +80,7 @@ class DossierServiceTest extends MockeryTestCase
         $this->dossier->shouldReceive('getDossierNr')->andReturn('test-123');
         $this->dossier->shouldReceive('getDecisionDocument')->andReturn($this->decisionDocument);
         $this->dossier->shouldReceive('setDecisionDocument')->with($this->decisionDocument);
+        $this->dossier->shouldReceive('needsInventoryAndDocuments')->andReturnTrue();
 
         parent::setUp();
     }
@@ -99,6 +104,7 @@ class DossierServiceTest extends MockeryTestCase
 
         $this->entityManager->expects('rollback');
         $this->logger->expects('info')->with('Dossier creation failed', \Mockery::any());
+        $this->logger->expects('info')->with('uploaded decision file', \Mockery::any());
 
         $actualResult = $this->dossierService->create($this->dossier, $this->inventoryUpload, $this->decisionUpload);
 
@@ -123,6 +129,7 @@ class DossierServiceTest extends MockeryTestCase
 
         $this->entityManager->expects('commit');
         $this->logger->expects('info')->with('Dossier created', \Mockery::any());
+        $this->logger->expects('info')->with('uploaded decision file', \Mockery::any());
 
         $actualResult = $this->dossierService->create($this->dossier, $this->inventoryUpload, $this->decisionUpload);
 
@@ -146,6 +153,7 @@ class DossierServiceTest extends MockeryTestCase
 
         $this->entityManager->expects('rollback');
         $this->logger->expects('info')->with('Dossier update failed', \Mockery::any());
+        $this->logger->expects('info')->with('uploaded decision file', \Mockery::any());
 
         $actualResult = $this->dossierService->update($this->dossier, $this->inventoryUpload, $this->decisionUpload);
 
@@ -168,6 +176,7 @@ class DossierServiceTest extends MockeryTestCase
 
         $this->entityManager->expects('commit');
         $this->logger->expects('info')->with('Dossier updated', \Mockery::any());
+        $this->logger->expects('info')->with('uploaded decision file', \Mockery::any());
 
         $actualResult = $this->dossierService->update($this->dossier, $this->inventoryUpload, $this->decisionUpload);
 

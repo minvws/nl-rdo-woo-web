@@ -1,0 +1,90 @@
+.form-filters {
+    background-color: transparent;
+    display: block;
+    line-height: 1.25rem;
+    padding: 0;
+
+    fieldset {
+        margin-bottom: 1rem;
+    }
+
+    legend {
+        margin-bottom: 0.25rem;
+        padding-left: 0;
+        width: 100%;
+    }
+
+    input {
+        font-size: 1rem;
+    }
+
+    .checkbox {
+        margin: 0.3rem 0;
+
+        input[type="checkbox"] {
+            border-color: #696969;
+            border-radius: 2px;
+            border-width: 1px;
+            margin-top: 0.125rem;
+        }
+    }
+
+    label {
+        font-size: 1rem;
+    }
+}
+
+.toggle-filters-group-button {
+    padding: 0.5rem 0;
+    position: relative;
+    text-align: left;
+    width: 100%;
+
+    &,
+    &:hover,
+    &:focus {
+        background: transparent;
+        border-color: #d7d6d6;
+        border-width: 0 0 1px;
+        color: var(--form-base-text-color);
+    }
+
+    img {
+        margin-top: -0.25rem;
+        position: absolute;
+        right: 0;
+        transform: rotate(0deg);
+    }
+
+    &.toggle-button--with-animation {
+        img {
+            transition: 0.25s ease-in-out transform;
+        }
+    }
+
+    &.toggle-button--collapsed {
+        img {
+            transform: rotate(180deg);
+        }
+    }
+}
+
+.toggle-filter-items-button {
+    font-size: 14px;
+    padding-left: 0;
+    padding-right: 0;
+    text-align: left;
+
+    &,
+    &:hover,
+    &:focus {
+        background: transparent;
+        border: none;
+        color: var(--link-text-color);
+    }
+}
+
+.filters-collapsible {
+    height: auto;
+    transition: 0.25s ease-in-out height;
+}

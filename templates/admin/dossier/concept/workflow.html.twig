@@ -1,0 +1,28 @@
+<ol class="woo-steps mb-16">
+    {% set firstOpenStep = workflowStatus.getFirstOpenStep %}
+    {% for step in workflowStatus.steps %}
+        {% set step_href = "#" %}
+        {% if step.isCompleted %}
+            {% set step_class = 'woo-steps__step--done' %}
+            {% set step_href = path(step.routeName, { dossierId: dossier.dossierNr }) %}
+        {% elseif step == firstOpenStep %}
+            {% set step_class = 'woo-steps__step--active' %}
+            {% if dossier.id | default %}
+                {% set step_href = path(step.routeName, { dossierId: dossier.dossierNr }) %}
+            {% endif %}
+        {% else %}
+            {% set step_class = 'woo-steps__step--inactive' %}
+        {% endif %}
+
+        <li class="woo-steps__step {{ step_class }}">
+            <a href="{{ step_href }}">
+                {% if step.isCompleted %}
+                    <twig:Icon name="step-done" color="fill-white" dimensions="32"/>
+                {% else %}
+                    <twig:Icon name="step" color="fill-white" dimensions="32"/>
+                {% endif %}
+                <span class="woo-steps__caption">{{ ("workflow_step_" ~ step.stepName.value) | trans }}</span>
+            </a>
+        </li>
+    {% endfor %}
+</ol>

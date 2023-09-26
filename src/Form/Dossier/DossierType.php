@@ -66,7 +66,7 @@ class DossierType extends AbstractType
                 'label' => 'Dossier nummer',
                 'required' => true,
                 'help' => 'Verplicht dossier nummer. Let op: het dossier nummer moet uniek zijn en kan na aanmaken niet meer gewijzigd worden.',
-                'attr' => ['class' => 'w-full'],
+                'attr' => ['class' => ''],
                 'constraints' => [
                     new NotBlank(),
                     new Length(['min' => 3, 'max' => 255]),
@@ -76,14 +76,14 @@ class DossierType extends AbstractType
                 'label' => 'Titel',
                 'required' => true,
                 'help' => 'Geef een korte titel voor het dossier',
-                'attr' => ['class' => 'w-full'],
+                'attr' => ['class' => ''],
             ])
             ->add('summary', TextareaType::class, [
                 'label' => 'Omschrijving',
                 'required' => true,
                 'help' => 'Geef een korte omschrijving voor het dossier',
                 'constraints' => [],
-                'attr' => ['class' => 'w-full'],
+                'attr' => ['class' => ''],
             ])
             ->add('departments', EntityType::class, [
                 'class' => Department::class,

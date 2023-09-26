@@ -13,7 +13,7 @@ html * {
 }
 
 body {
-    background: $gray-main-bg;
+    background: $grey-main-bg;
     font-family: $font-sans;
     line-height: $base-line-height;
     margin: 0;
@@ -21,15 +21,15 @@ body {
     flex-direction: column;
     min-height: 100vh;
 
-    > header > nav {
-        background: $gray-dark;
+    >header>nav {
+        background: $grey-dark;
         color: $white;
-        font-family: $font-sans-italic;
+        font-style: italic;
         font-size: 22px;
         height: 80px;
     }
 
-    > header > nav > .nav__container {
+    >header>nav>.nav__container {
         width: 100%;
         height: 100%;
         max-width: 1152px;
@@ -40,7 +40,7 @@ body {
         margin: 0 auto;
     }
 
-    > header .header__profile {
+    >header .header__profile {
         position: relative;
 
         ul {
@@ -52,48 +52,55 @@ body {
             align-items: center;
             height: 80px;
         }
+
         li {
             height: 100%;
+
             &:hover,
             &:focus {
-                background: $gray-535353;
+                background: var(--color-form-help-text);
             }
+
             &:first-child a {
                 font-family: $font-sans;
             }
         }
-        a, span {
+
+        a,
+        span {
             text-decoration: none;
             height: 100%;
             display: flex;
             flex-direction: row;
             align-items: center;
             color: $white;
-            font-family: $font-sans-bold;
+            font-weight: bold;
             padding: 0 16px;
         }
+
         span {
             font-family: $font-sans;
         }
     }
 
-    > header > .header__content {
+    >header>.header__content {
         @include default-big-container;
         @include center;
         display: flex;
         justify-content: space-between;
         margin-top: 64px;
         margin-bottom: 24px;
+        padding: 0 $main-padding;
     }
 
-    > header h1 {
+    >header h1 {
         margin: 0;
     }
 
     main {
         flex: 1;
 
-        > .content {
+        >.content {
             margin: 4rem auto 0;
             padding: $main-padding;
             @include default-big-container;
@@ -101,16 +108,21 @@ body {
             &__small {
                 max-width: $small-content-container;
             }
+
+            +.content {
+                margin-top: 2.5rem;
+            }
         }
     }
 
-    footer {
+    > footer {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         width: 100%;
         margin-bottom: 32px;
+        margin-top: 160px;
 
         svg {
             margin-bottom: 18px;
@@ -144,13 +156,11 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: $font-sans-bold;
-    font-weight: normal;
+    font-weight: bold;
 }
 
 strong {
-    font-family: $font-sans-bold;
-    font-weight: normal;
+    font-weight: bold;
     font-style: normal;
 }
 
@@ -222,7 +232,7 @@ th {
     border: 1px solid $color-th-border;
     background: $color-th-background;
     color: $color-th-text;
-    font-family: $font-sans-italic;
+    font-style: italic;
     font-size: 1rem;
     font-style: italic;
     font-weight: 400;
@@ -233,6 +243,7 @@ th {
     &:first-child {
         border-left: none;
     }
+
     &:last-child,
     &:nth-last-child(2) {
         border-right: none;
@@ -283,17 +294,25 @@ td {
 
 ::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: $gray-999;
+    color: $grey-999;
     opacity: 1;
     /* Firefox */
 }
 
 ::-ms-input-placeholder {
     /* Internet Explorer 10-11 */
-    color: $gray-999;
+    color: $grey-999;
 }
 
 ::-ms-input-placeholder {
     /* Microsoft Edge */
-    color: $gray-999;
+    color: $grey-999;
+}
+
+.font-family-sans-bold {
+    font-weight: bold;
+}
+
+.font-family-sans {
+    font-family: $font-sans;
 }

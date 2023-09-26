@@ -87,7 +87,7 @@ EOF,
      * @param string[]               $metadata
      * @param array<int, mixed>|null $pages
      */
-    public function updateDocument(Document $document, array $metadata = [], array $pages = null): void
+    public function updateDocument(Document $document, array $metadata = null, array $pages = null): void
     {
         [$dossiers, $dossierIds] = $this->dossiersAsArray($document);
 
@@ -117,9 +117,12 @@ EOF,
             'audio_duration' => $document->getDuration(),
             'document_pages' => $document->getPageCount(),
             'dossiers' => $dossiers,
-            // 'metadata' => $metadata, @todo: this does not work
             'inquiry_ids' => $inquiryIds,
         ];
+
+        if ($metadata !== null) {
+            $documentDoc['metadata'] = $metadata;
+        }
 
         if ($pages !== null) {
             $documentDoc['pages'] = $pages;
@@ -183,6 +186,10 @@ EOF,
             'government_officials' => $officials,
             'date_from' => $dossier->getDateFrom()?->format(\DateTimeInterface::ATOM),
             'date_to' => $dossier->getDateTo()?->format(\DateTimeInterface::ATOM),
+            'date_range' => [
+                'gte' => $dossier->getDateFrom()?->format(\DateTimeInterface::ATOM),
+                'lte' => $dossier->getDateTo()?->format(\DateTimeInterface::ATOM),
+            ],
             'date_period' => DateRangeConverter::convertToString($dossier->getDateFrom(), $dossier->getDateTo()),
             'publication_reason' => $dossier->getPublicationReason(),
             'decision' => $dossier->getDecision(),
@@ -297,6 +304,10 @@ EOF,
                 'government_officials' => $officials,
                 'date_from' => $dossier->getDateFrom()?->format(\DateTimeInterface::ATOM),
                 'date_to' => $dossier->getDateTo()?->format(\DateTimeInterface::ATOM),
+                'date_range' => [
+                    'gte' => $dossier->getDateFrom()?->format(\DateTimeInterface::ATOM),
+                    'lte' => $dossier->getDateTo()?->format(\DateTimeInterface::ATOM),
+                ],
                 'date_period' => DateRangeConverter::convertToString($dossier->getDateFrom(), $dossier->getDateTo()),
                 'publication_reason' => $dossier->getPublicationReason(),
                 'decision' => $dossier->getDecision(),

@@ -1,0 +1,17 @@
+@layer components {
+    .woo-site-header-nav-item {
+        @apply block font-bold leading-4 px-4 py-8 text-lg;
+    }
+
+    .woo-site-header-nav-item--anchor {
+        @apply hover-focus:bg-davys-grey;
+    }
+
+    .woo-site-header-nav-item--active {
+        @apply bg-davys-grey;
+    }
+
+    .woo-site-header-nav-item--skip-link {
+        @apply sr-only focus:not-sr-only focus:px-4 focus:py-8;
+    }
+}

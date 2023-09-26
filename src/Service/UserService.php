@@ -7,13 +7,21 @@ namespace App\Service;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Endroid\QrCode\Builder\Builder;
+use MinVWS\AuditLogger\AuditLogger;
+use MinVWS\AuditLogger\AuditUser;
+use MinVWS\AuditLogger\Contracts\LoggableUser;
+use MinVWS\AuditLogger\Events\Logging\ResetCredentialsLogEvent;
+use MinVWS\AuditLogger\Events\Logging\UserCreatedLogEvent;
 use Minvws\HorseBattery\HorseBattery;
 use Psr\Log\LoggerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * This class handles user management.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class UserService
 {
@@ -22,12 +30,16 @@ class UserService
     protected TotpAuthenticatorInterface $totp;
     protected HorseBattery $passwordGenerator;
     protected LoggerInterface $logger;
+    protected AuditLogger $auditLogger;
+    protected TokenStorageInterface $tokenStorage;
 
     public function __construct(
         EntityManagerInterface $doctrine,
         UserPasswordHasherInterface $passwordHasher,
         TotpAuthenticatorInterface $totp,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        AuditLogger $auditLogger,
+        TokenStorageInterface $tokenStorage
     ) {
         $this->doctrine = $doctrine;
         $this->passwordHasher = $passwordHasher;
@@ -35,6 +47,8 @@ class UserService
 
         $this->passwordGenerator = new HorseBattery();
         $this->logger = $logger;
+        $this->auditLogger = $auditLogger;
+        $this->tokenStorage = $tokenStorage;
     }
 
     public function resetCredentials(User $user, bool $resetPassword, bool $reset2fa): string
@@ -67,6 +81,24 @@ class UserService
             'resetPassword' => $resetPassword,
             'reset2fa' => $reset2fa,
         ]);
+
+        /** @var LoggableUser|null $loggedInUser */
+        /** @phpstan-ignore-next-line */
+        $loggedInUser = $this->tokenStorage->getToken()?->getUser() ?? null;
+        if ($loggedInUser === null) {
+            $loggedInUser = new AuditUser('cli user', 'system', [], 'system@localhost');
+        }
+        /** @var LoggableUser $loggedInUser */
+        $this->auditLogger->log((new ResetCredentialsLogEvent())
+            ->asUpdate()
+            ->withActor($loggedInUser)
+            ->withTarget($user)
+            ->withSource('woo')
+            ->withData([
+                'user_id' => $user->getAuditId(),
+                'password_reset' => $resetPassword,
+                '2fa_reset' => $reset2fa,
+            ]));
 
         return $plainPassword;
     }
@@ -114,6 +146,23 @@ class UserService
             'user' => $user->getId(),
             'roles' => $roles,
         ]);
+
+        /** @var LoggableUser|null $loggedInUser */
+        /** @phpstan-ignore-next-line */
+        $loggedInUser = $this->tokenStorage->getToken()?->getUser() ?? null;
+        if ($loggedInUser === null) {
+            $loggedInUser = new AuditUser('cli user', 'system', [], 'system@localhost');
+        }
+        /** @var LoggableUser $loggedInUser */
+        $this->auditLogger->log((new UserCreatedLogEvent())
+            ->asCreate()
+            ->withActor($loggedInUser)
+            ->withTarget($user)
+            ->withSource('woo')
+            ->withData([
+                'user_id' => $user->getAuditId(),
+                'roles' => $roles,
+            ]));
 
         return [
             'plainPassword' => $plainPassword,

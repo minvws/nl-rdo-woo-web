@@ -15,7 +15,7 @@
 
             span {
                 position: absolute;
-                font-family: $font-sans-bold;
+                font-weight: bold;
                 text-decoration: none;
                 color: black;
                 white-space: nowrap;
@@ -45,6 +45,7 @@
             z-index: 0;
 
         }
+
         svg {
             border-radius: 16px;
             background: var(--notification-explanation-intense-default, #007BC7);

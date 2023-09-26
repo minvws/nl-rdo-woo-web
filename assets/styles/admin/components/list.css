@@ -1,0 +1,17 @@
+/**
+ * Check `./content.css` if you want to apply the style below to every list in a certain element
+ */
+
+@layer components {
+    .woo-ul {
+        @apply leading-tight list-square ml-5;
+    }
+
+    .woo-ol {
+        @apply leading-tight ml-5;
+    }
+
+    .woo-li {
+        @apply py-0.5;
+    }
+}

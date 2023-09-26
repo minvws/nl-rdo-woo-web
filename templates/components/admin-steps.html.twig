@@ -1,0 +1,33 @@
+{% set step_links = [
+    '/balie/dossier/new',
+    '#',
+    '#',
+    '#',
+] %}
+{% set step_captions = [
+    'Basisgegevens',
+    'Besluit',
+    'Documenten',
+    'Publiceren',
+] %}
+<ol class="woo-steps mb-16">
+    {%- for i in 0..3 -%}
+        {% if active > i %}
+            {% set step_class = 'woo-steps__step--done' %}
+        {% elseif active == i %}
+            {% set step_class = 'woo-steps__step--active' %}
+        {% else %}
+            {% set step_class = 'woo-steps__step--inactive' %}
+        {% endif %}
+        <li class="woo-steps__step {{ step_class }}">
+            <a href="{{ step_links[i] }}">
+                {% if active > i %}
+                    <twig:Icon name="step-done" color="fill-white" dimensions="32"/>
+                {% else %}
+                    <twig:Icon name="step" color="fill-white" dimensions="32"/>
+                {% endif %}
+                <span class="woo-steps__caption">{{ step_captions[i] }}</span>
+            </a>
+        </li>
+    {%- endfor -%}
+</ol>

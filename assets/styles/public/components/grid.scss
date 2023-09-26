@@ -1,0 +1,9 @@
+/* temporary fix, should be done in Manon perhaps. */
+/* when in a one third, two thirds layout, and the two-thirds container is empty, allow the one third (in our case the breadcrumbs) to grow to 100% width */
+.one-third-two-thirds > *:nth-child(odd):has(~ :empty) {
+    width: 100%;
+}
+
+.one-third-two-thirds > *:nth-child(even):empty {
+    display: none;
+}

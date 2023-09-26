@@ -47,6 +47,11 @@ class LocaleListener implements EventSubscriberInterface
 
             $request->setLocale($locale);
         } else {
+            // Don't fetch the session if it's not started yet
+            if ($request->hasSession(true) === false) {
+                return;
+            }
+
             // Try and fetch the locale from the session, otherwise use the default locale if none is found
             $request->setLocale(strval($request->getSession()->get(self::LOCALE_KEY, $this->defaultLocale)));
         }

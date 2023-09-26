@@ -1,0 +1,20 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = "Statistics & Monitoring" | trans() %}
+
+{% block body %}
+
+    <section>
+        <div>
+
+            <h1>{{ "Worker Monitoring" | trans() }}</h1>
+
+            <script {{ csp_nonce() }} id="chartdata" type="application/json">
+                {{ data | json_encode | raw('javascript') }}
+            </script>
+
+            <div style="width: 100%;"><canvas id="workerstats"></canvas></div>
+
+        </div>
+    </section>
+{% endblock %}

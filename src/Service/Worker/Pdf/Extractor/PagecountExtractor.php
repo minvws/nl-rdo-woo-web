@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Worker\Pdf\Extractor;
 
 use App\Entity\Document;
+use App\Service\Stats\WorkerStatsService;
 use App\Service\Storage\DocumentStorageService;
 use App\Service\Worker\Pdf\Tools\FileUtils;
 use Predis\Client;
@@ -20,17 +21,23 @@ class PagecountExtractor implements DocumentExtractorInterface, OutputExtractorI
     protected DocumentStorageService $documentStorage;
     protected FileUtils $fileUtils;
     protected Client $redis;
+    protected WorkerStatsService $statsService;
 
     /** @var array<string, int> */
     protected array $output = [];
 
-    public function __construct(LoggerInterface $logger, DocumentStorageService $documentStorage, Client $redis)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        DocumentStorageService $documentStorage,
+        Client $redis,
+        WorkerStatsService $statsService,
+    ) {
         $this->logger = $logger;
         $this->documentStorage = $documentStorage;
 
         $this->fileUtils = new FileUtils();
         $this->redis = $redis;
+        $this->statsService = $statsService;
     }
 
     public function extract(Document $document, bool $forceRefresh): void
@@ -59,7 +66,10 @@ class PagecountExtractor implements DocumentExtractorInterface, OutputExtractorI
 
     protected function extractPageCountFromPdf(Document $document): int
     {
-        $localPdfPath = $this->documentStorage->downloadDocument($document);
+        /** @var string $localPdfPath */
+        $localPdfPath = $this->statsService->measure('download.document', function ($document) {
+            return $this->documentStorage->downloadDocument($document);
+        }, [$document]);
         if (! $localPdfPath) {
             $this->logger->error('Failed to download document for page count extraction', [
                 'document' => $document->getDocumentNr(),
@@ -68,9 +78,14 @@ class PagecountExtractor implements DocumentExtractorInterface, OutputExtractorI
             return 0;
         }
 
-        $params = ['/usr/bin/pdftk', $localPdfPath, 'dump_data'];
-        $process = new Process($params);
-        $process->run();
+        /** @var Process $process */
+        $process = $this->statsService->measure('download.document', function ($localPdfPath) {
+            $params = ['/usr/bin/pdftk', $localPdfPath, 'dump_data'];
+            $process = new Process($params);
+            $process->run();
+
+            return $process;
+        }, [$localPdfPath]);
 
         $this->documentStorage->removeDownload($localPdfPath);
 

@@ -8,6 +8,7 @@ use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Repository\DocumentRepository;
 use App\Service\DossierService;
+use App\Service\DownloadResponseHelper;
 use App\Service\Search\SearchService;
 use App\Service\Storage\DocumentStorageService;
 use App\Service\Storage\ThumbnailStorageService;
@@ -15,11 +16,15 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class DocumentController extends AbstractController
 {
     public function __construct(
@@ -29,9 +34,11 @@ class DocumentController extends AbstractController
         private readonly TranslatorInterface $translator,
         private readonly DocumentRepository $documentRepository,
         private readonly DossierService $dossierService,
+        private readonly DownloadResponseHelper $downloadHelper,
     ) {
     }
 
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     #[Route('/dossier/{dossierId}/document/{documentId}', name: 'app_document_detail', methods: ['GET'])]
     public function detail(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
@@ -59,6 +66,7 @@ class DocumentController extends AbstractController
         ]);
     }
 
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     #[Route('/dossier/{dossierId}/download/{documentId}', name: 'app_document_download', methods: ['GET'])]
     public function download(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
@@ -68,24 +76,11 @@ class DocumentController extends AbstractController
             throw $this->createNotFoundException('Document or dossier not found');
         }
 
-        if (! $dossier->getDocuments()->contains($document)) {
+        if ($document->isWithdrawn() || ! $dossier->getDocuments()->contains($document)) {
             throw new NotFoundHttpException('Document not found in dossier');
         }
 
-        $stream = $this->documentStorage->retrieveResourceDocument($document);
-        if (! $stream) {
-            throw new NotFoundHttpException();
-        }
-
-        $response = new StreamedResponse();
-        $response->headers->set('Content-Type', $document->getFileInfo()->getMimetype());
-        $response->headers->set('Content-Length', (string) $document->getFileInfo()->getSize());
-        $response->headers->set('Last-Modified', $document->getUpdatedAt()->format('D, d M Y H:i:s') . ' GMT');
-        $response->setCallback(function () use ($stream) {
-            fpassthru($stream);
-        });
-
-        return $response;
+        return $this->downloadHelper->getResponseForEntityWithFileInfo($document, false);
     }
 
     #[Route(
@@ -103,7 +98,7 @@ class DocumentController extends AbstractController
             throw $this->createNotFoundException('Document or dossier not found');
         }
 
-        if (! $dossier->getDocuments()->contains($document)) {
+        if ($document->isWithdrawn() || ! $dossier->getDocuments()->contains($document)) {
             throw new NotFoundHttpException('Document not found in dossier');
         }
 
@@ -115,6 +110,7 @@ class DocumentController extends AbstractController
         return new Response('<pre>' . trim($content) . '</pre>');
     }
 
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     #[Route(
         '/dossier/{dossierId}/download/{documentId}/{pageNr}',
         name: 'app_document_download_page',
@@ -130,7 +126,7 @@ class DocumentController extends AbstractController
             throw $this->createNotFoundException('Document or dossier not found');
         }
 
-        if (! $dossier->getDocuments()->contains($document)) {
+        if ($document->isWithdrawn() || ! $dossier->getDocuments()->contains($document)) {
             throw new NotFoundHttpException('Document not found in dossier');
         }
 
@@ -156,6 +152,7 @@ class DocumentController extends AbstractController
         return $response;
     }
 
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     #[Route(
         '/dossier/{dossierId}/thumbnail/{documentId}/{pageNr}',
         name: 'app_document_thumbnail',
@@ -171,7 +168,7 @@ class DocumentController extends AbstractController
             throw $this->createNotFoundException('Document or dossier not found');
         }
 
-        if (! $dossier->getDocuments()->contains($document)) {
+        if ($document->isWithdrawn() || ! $dossier->getDocuments()->contains($document)) {
             throw new NotFoundHttpException('Document not found in dossier');
         }
 
@@ -190,12 +187,6 @@ class DocumentController extends AbstractController
         $response = new StreamedResponse();
         $response->headers->set('Content-Type', 'image/png');
         $response->headers->set('Content-Length', (string) $fileSize);
-        $response->setCache([
-            'public' => true,
-            'max_age' => 3600,
-            's_maxage' => 3600,
-            'immutable' => true,
-        ]);
         $response->setCallback(function () use ($stream) {
             fpassthru($stream);
         });

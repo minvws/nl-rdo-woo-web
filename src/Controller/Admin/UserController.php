@@ -13,6 +13,9 @@ use App\Form\User\UserInfoFormType;
 use App\Form\User\UserRoleFormType;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
+use MinVWS\AuditLogger\AuditLogger;
+use MinVWS\AuditLogger\Contracts\LoggableUser;
+use MinVWS\AuditLogger\Events\Logging\AccountChangeLogEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,12 +31,18 @@ class UserController extends AbstractController
     protected EntityManagerInterface $doctrine;
     protected UserService $userService;
     protected TranslatorInterface $translator;
+    protected AuditLogger $auditLogger;
 
-    public function __construct(EntityManagerInterface $doctrine, UserService $userService, TranslatorInterface $translator)
-    {
+    public function __construct(
+        EntityManagerInterface $doctrine,
+        UserService $userService,
+        TranslatorInterface $translator,
+        AuditLogger $auditLogger
+    ) {
         $this->doctrine = $doctrine;
         $this->userService = $userService;
         $this->translator = $translator;
+        $this->auditLogger = $auditLogger;
     }
 
     #[Route('/balie/gebruikers', name: 'app_admin_users', methods: ['GET'])]
@@ -125,6 +134,8 @@ class UserController extends AbstractController
 
     protected function handleInfoForm(Request $request, User $user): ?Response
     {
+        $oldUser = clone $user;
+
         $userInfoForm = $this->createForm(UserInfoFormType::class, $user);
 
         $userInfoForm->handleRequest($request);
@@ -135,11 +146,36 @@ class UserController extends AbstractController
         $this->doctrine->flush();
         $this->addFlash('backend', ['success' => $this->translator->trans('The user has been modified')]);
 
+        /** @var LoggableUser $loggedInUser */
+        /** @phpstan-ignore-next-line */
+        $loggedInUser = $this->getUser();
+        /** @var LoggableUser $loggedInUser */
+        $this->auditLogger->log((new AccountChangeLogEvent())
+            ->asUpdate()
+            ->withActor($loggedInUser)
+            ->withTarget($user)
+            ->withSource('woo')
+            ->withEventCode(AccountChangeLogEvent::EVENTCODE_USERDATA)
+            ->withData([
+                'user_id' => $user->getAuditId(),
+            ])
+            ->withPiiData([
+                'old' => [
+                    'name' => $oldUser->getName(),
+                    'email' => $oldUser->getEmail(),
+                ],
+                'new' => [
+                    'name' => $user->getName(),
+                    'email' => $user->getEmail(),
+                ],
+            ]));
+
         return $this->redirectToRoute('app_admin');
     }
 
     protected function handleRoleForm(Request $request, User $user): ?Response
     {
+        $oldUser = clone $user;
         $userRolesForm = $this->createForm(UserRoleFormType::class, $user);
 
         $userRolesForm->handleRequest($request);
@@ -149,6 +185,26 @@ class UserController extends AbstractController
 
         $this->doctrine->flush();
         $this->addFlash('backend', ['success' => $this->translator->trans('User roles have been modified')]);
+
+        /** @var LoggableUser $loggedInUser */
+        /** @phpstan-ignore-next-line */
+        $loggedInUser = $this->getUser();
+        /** @var LoggableUser $loggedInUser */
+        $this->auditLogger->log((new AccountChangeLogEvent())
+            ->asUpdate()
+            ->withActor($loggedInUser)
+            ->withTarget($user)
+            ->withSource('woo')
+            ->withEventCode(AccountChangeLogEvent::EVENTCODE_USERDATA)
+            ->withData([
+                'user_id' => $user->getAuditId(),
+                'old' => [
+                    'roles' => $oldUser->getRoles(),
+                ],
+                'new' => [
+                    'roles' => $user->getRoles(),
+                ],
+            ]));
 
         return $this->redirectToRoute('app_admin');
     }
@@ -166,6 +222,21 @@ class UserController extends AbstractController
         $this->doctrine->flush();
         $this->addFlash('backend', ['success' => $this->translator->trans('User has been disabled')]);
 
+        /** @var LoggableUser $loggedInUser */
+        /** @phpstan-ignore-next-line */
+        $loggedInUser = $this->getUser();
+        /** @var LoggableUser $loggedInUser */
+        $this->auditLogger->log((new AccountChangeLogEvent())
+            ->asUpdate()
+            ->withActor($loggedInUser)
+            ->withTarget($user)
+            ->withSource('woo')
+            ->withEventCode(AccountChangeLogEvent::EVENTCODE_ACTIVE)
+            ->withData([
+                'user_id' => $user->getAuditId(),
+                'enabled' => false,
+            ]));
+
         return $this->redirectToRoute('app_admin');
     }
 
@@ -181,6 +252,21 @@ class UserController extends AbstractController
         $user->setEnabled(true);
         $this->doctrine->flush();
         $this->addFlash('backend', ['success' => $this->translator->trans('User has been enabled')]);
+
+        /** @var LoggableUser $loggedInUser */
+        /** @phpstan-ignore-next-line */
+        $loggedInUser = $this->getUser();
+        /** @var LoggableUser $loggedInUser */
+        $this->auditLogger->log((new AccountChangeLogEvent())
+            ->asUpdate()
+            ->withActor($loggedInUser)
+            ->withTarget($user)
+            ->withSource('woo')
+            ->withEventCode(AccountChangeLogEvent::EVENTCODE_ACTIVE)
+            ->withData([
+                'user_id' => $user->getAuditId(),
+                'enabled' => true,
+            ]));
 
         return $this->redirectToRoute('app_admin');
     }

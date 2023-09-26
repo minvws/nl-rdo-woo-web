@@ -46,10 +46,17 @@ class AppModeListener implements EventSubscriberInterface
             return;
         }
 
+        // Health check can be accessed by all modes
+        if (str_starts_with($event->getRequest()->getPathInfo(), '/health')) {
+            return;
+        }
+
+        // Only /balie urls are allowed in the balie mode
         if ($this->appMode === 'BALIE' && ! str_starts_with($event->getRequest()->getPathInfo(), '/balie')) {
             $event->setResponse(new RedirectResponse('/balie'));
         }
 
+        // Only non-balie urls are allowed in the frontend mode
         if ($this->appMode === 'FRONTEND' && str_starts_with($event->getRequest()->getPathInfo(), '/balie')) {
             $event->setResponse(new RedirectResponse('/'));
         }

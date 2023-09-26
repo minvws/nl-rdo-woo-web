@@ -18,7 +18,7 @@ security:
                 provider: app_user_provider
                 login_path: app_login
                 check_path: app_login
-                default_target_path: app_admin
+                default_target_path: app_admin_index
                 always_use_default_target_path: true
             logout:
                 path: app_logout

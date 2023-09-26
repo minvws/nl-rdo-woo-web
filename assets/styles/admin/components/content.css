@@ -1,0 +1,17 @@
+@layer components {
+    .woo-content ul {
+        @apply woo-ul;
+    }
+    .woo-content ol {
+        @apply woo-ol;
+    }
+    .woo-content li {
+        @apply woo-li;
+    }
+    .woo-content p {
+        @apply woo-p;
+    }
+    .woo-content a {
+        @apply woo-a;
+    }
+}

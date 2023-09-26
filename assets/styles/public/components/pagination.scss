@@ -1,0 +1,88 @@
+/*---------------------------------------------------------------*/
+/*---------------------- pagination.scss ------------------------*/
+/*---------------------------------------------------------------*/
+
+:root {
+    --pagination-link-border-width: 0 0 3px 0;
+    --pagination-border-color: #e6e6e6;
+    --pagination-border-width: 1px 0 0;
+}
+
+%pagination-list-styling {
+    li {
+        span.svg-icon {
+            width: 30px;
+            height: 30px;
+            &:before {
+                display: inline-block;
+                content: "";
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+}
+
+nav.pagination,
+.pagination {
+    display: flex;
+    justify-content: var(--pagination-justify-content);
+    align-items: var(--pagination-align-items);
+    width: 100%;
+    border-width: var(--pagination-border-width);
+    border-style: var(--pagination-border-style);
+    border-color: var(--pagination-border-color);
+    padding-top: var(--pagination-padding-top);
+    gap: var(--pagination-gap);
+
+    ul {
+        @extend %pagination-list-styling;
+    }
+
+    .adjacent {
+        @extend %pagination-adjacent-styling;
+    }
+}
+
+ul.pagination {
+    @extend %pagination-list-styling;
+}
+
+.pagination {
+    ul {
+        justify-content: center;
+        padding-top: 1rem;
+        width: 100%;
+
+        span:hover {
+            background-color: transparent !important;
+        }
+    }
+
+    @media (max-width: 42rem) {
+        li:nth-child(3),
+        li:nth-child(4),
+        li:nth-child(5),
+        li:nth-child(6) {
+            display: none;
+        }
+    }
+
+    .disabled:hover {
+        background-color: transparent;
+        color: var(--pagination-link-text-color);
+    }
+
+    .pagination__text a:not(.disabled) {
+        color: var(--pagination-link-hover-background-color);
+
+        &:hover {
+            background-color: transparent;
+            // text-decoration: underline;
+        }
+    }
+
+    .active:not(:hover, :focus) {
+        outline: 0;
+    }
+}

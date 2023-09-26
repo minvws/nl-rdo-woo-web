@@ -42,18 +42,33 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
     /** @var array|string[][][] */
     protected array $csp = [
         'FRONTEND' => [
+            'default-src' => [self::CSP_SELF],
+            'frame-ancestors' => [self::CSP_SELF],
+            'form-action' => [self::CSP_SELF],
+            'base-uri' => [self::CSP_SELF],
+            'connect-src' => [self::CSP_SELF, 'https://statistiek.rijksoverheid.nl'],
             'script-src' => [self::CSP_SELF, 'https://statistiek.rijksoverheid.nl'],
             'style-src' => [self::CSP_SELF],
             'img-src' => [self::CSP_SELF, self::CSP_DATA, 'https://statistiek.rijksoverheid.nl'],
             'font-src' => [self::CSP_SELF],
         ],
         'BALIE' => [
+            'default-src' => [self::CSP_SELF],
+            'frame-ancestors' => [self::CSP_SELF],
+            'form-action' => [self::CSP_SELF],
+            'base-uri' => [self::CSP_SELF],
+            'connect-src' => [self::CSP_SELF, 'https://statistiek.rijksoverheid.nl'],
             'script-src' => [self::CSP_SELF, self::CSP_UNSAFE_INLINE, self::CSP_UNSAFE_EVAL, 'https://statistiek.rijksoverheid.nl'],
             'style-src' => [self::CSP_SELF, self::CSP_UNSAFE_INLINE],
             'img-src' => [self::CSP_SELF, self::CSP_DATA, 'https://statistiek.rijksoverheid.nl'],
             'font-src' => [self::CSP_SELF],
         ],
         'BOTH' => [
+            'default-src' => [self::CSP_SELF],
+            'frame-ancestors' => [self::CSP_SELF],
+            'form-action' => [self::CSP_SELF],
+            'base-uri' => [self::CSP_SELF],
+            'connect-src' => [self::CSP_SELF, 'https://statistiek.rijksoverheid.nl'],
             'script-src' => [self::CSP_SELF, self::CSP_UNSAFE_INLINE, self::CSP_UNSAFE_EVAL, 'https://statistiek.rijksoverheid.nl'],
             'style-src' => [self::CSP_SELF, self::CSP_UNSAFE_INLINE],
             'img-src' => [self::CSP_SELF, self::CSP_DATA],
@@ -87,7 +102,7 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
         // Add nonce to CSP
         $nonce = $event->getRequest()->attributes->get('csp_nonce');
 
-        $csp = $this->csp[$this->appMode] ?? $this->csp['both'];
+        $csp = $this->csp[$this->appMode] ?? $this->csp['BOTH'];
         $csp['script-src'][] = "'nonce-" . $nonce . "'";
         $csp['style-src'][] = "'nonce-" . $nonce . "'";
 

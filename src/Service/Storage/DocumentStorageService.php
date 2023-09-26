@@ -45,8 +45,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * ThumbnailStorage service. This allows us to separate the storage of the document and the storage of the thumbnails if needed.
  *
  * @SuppressWarnings(TooManyPublicMethods)
+ * @SuppressWarnings(CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
-class DocumentStorageService
+class DocumentStorageService implements StorageAliveInterface
 {
     protected FilesystemOperator $storage;
     protected EntityManagerInterface $doctrine;
@@ -414,6 +416,38 @@ class DocumentStorageService
             }
         } catch (\Throwable $e) {
             $this->logger->error('Could not delete files from storage', [
+                'exception' => $e->getMessage(),
+                'path' => $path ?? '',
+            ]);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public function isAlive(): bool
+    {
+        $suffix = hash('sha256', random_bytes(32));
+
+        try {
+            $this->storage->write("healthcheck.{$suffix}", $suffix);
+            $content = $this->storage->read("healthcheck.{$suffix}");
+            $this->storage->delete("healthcheck.{$suffix}");
+        } catch (\Exception) {
+            return false;
+        }
+
+        return $content == $suffix;
+    }
+
+    public function removeFileForEntity(EntityWithFileInfo $entity): bool
+    {
+        try {
+            $path = $this->generateDocumentPath($entity, new \SplFileInfo($entity->getFileInfo()->getPath() ?? ''));
+            $this->storage->delete($path);
+        } catch (\Throwable $e) {
+            $this->logger->error('Could not delete file from storage for entity', [
                 'exception' => $e->getMessage(),
                 'path' => $path ?? '',
             ]);

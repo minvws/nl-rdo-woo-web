@@ -1,32 +1,31 @@
 {% extends 'admin.html.twig' %}
 
-    {%- block header_content -%}
-        <div class="header__content">
-            <div class="centered">
-                <h1>{{ "Create new dossier" | trans() }}</h1>
-            </div>
-        </div>
-    {%- endblock -%}
+{% set page_title = "Create new dossier" | trans %}
 
 {% block body %}
-    <main class="admin-decisions-new">
-        {% embed 'components/admin-steps.twig' with {active: 0} %}
-        {% endembed %}
-        <section class="content content__small">
-            <div class="admin-decisions-new__help-text">
-                <h2>{{ 'Subject of decision'|trans() }}</h2>
-                <p>{{ 'Keep it short and be specific. So do not use unnecessary prepositions, articles and self-evident substantive words such as Woo, conclusion, etc.'|trans() }}</p>
-                <ul>
-                    <li><img src="{{ asset('/img/admin/icon-close.svg') }}"
-                             alt="{{ 'Close icon'|trans() }}"/>{{ 'Woo partial decision regarding Consultation VWS about the period June 2020'|trans() }}
-                    </li>
-                    <li><img src="{{ asset('/img/admin/icon-check.svg') }}"
-                             alt="{{ 'Check icon'|trans() }}"/>{{ 'Documents consultation VWS June 2020'|trans() }}
-                    </li>
-                </ul>
-                {{ form(form) }}
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-title text-center mb-10">{{ page_title }}</h1>
 
-            </div>
-        </section>
-    </main>
+    {% embed 'components/admin-steps.html.twig' with {active: 1} %}
+    {% endembed %}
+
+    <div class="woo-card">
+        <h2 class="woo-label">{{ 'Subject of decision'|trans() }}</h2>
+
+        <p class="text-lg mb-2">{{ 'Keep it short and be specific. So do not use unnecessary prepositions, articles and self-evident substantive words such as Woo, conclusion, etc.'|trans() }}</p>
+
+        <ul class="mb-2">
+            <li class="py-1">
+                <twig:Icon name="close" color="fill-maximum-red" css="mr-2" />
+                {{ 'Woo partial decision regarding Consultation VWS about the period June 2020'|trans() }}
+            </li>
+            <li class="py-1">
+                <twig:Icon name="check" color="fill-philippine-green" css="mr-2" />
+                {{ 'Documents consultation VWS June 2020'|trans() }}
+            </li>
+        </ul>
+
+        {{ form(form) }}
+    </div>
+</div>
 {% endblock %}

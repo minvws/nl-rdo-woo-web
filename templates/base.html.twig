@@ -12,13 +12,9 @@
 
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-        {{ encore_entry_link_tags('woopie') }}
-        {{ encore_entry_link_tags('app') }}
-        {% block extra_stylesheets %}{% endblock %}
+        {{ encore_entry_link_tags('public') }}
 
-        {{ encore_entry_script_tags('app') }}
-        {{ encore_entry_script_tags('woopie') }}
-        {% block extra_javascripts %}{% endblock %}
+        {{ encore_entry_script_tags('public') }}
 
         {% include "piwik.html.twig" %}
     </head>

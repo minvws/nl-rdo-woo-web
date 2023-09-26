@@ -1,0 +1,16 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+    <div class="woo-container">
+        {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.html.twig' }) }}
+        <h1 class="woo-title text-center mb-10">Intrekken document {{ document.documentNr }}</h1>
+
+        {% if workflow.canWithdraw %}
+            {{ form(form) }}
+        {% elseif document.withDrawn %}
+            Het document is ingetrokken.
+        {% else %}
+            Intrekken van dit document is niet mogelijk.
+        {% endif %}
+    </div>
+{% endblock %}

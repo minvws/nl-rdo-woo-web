@@ -1,0 +1,5 @@
+<ul>
+{% for document in dossier.documents %}
+    <li>{{ document.fileInfo.isUploaded ? 'UPLOADED' : 'MISSING' }}: {{ document.fileInfo.name }}</li>
+{% endfor %}
+</ul>

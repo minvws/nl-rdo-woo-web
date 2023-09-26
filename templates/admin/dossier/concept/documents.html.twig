@@ -1,0 +1,14 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+    <div class="woo-container woo-container--sm">
+        <h1 class="woo-title text-center mb-10">{{ "Nieuw besluitdossier - documenten" | trans() }}</h1>
+        {% include 'admin/dossier/concept/workflow.html.twig' %}
+
+        {% if dossier.needsInventoryAndDocuments %}
+            {% include 'admin/dossier/form/documents.html.twig' %}
+        {% else %}
+            Op basis van het besluit '{{ dossier.decision | decision }}' heeft dit dossier geen inventarislijst en/of documenten.
+        {% endif %}
+    </div>
+{% endblock %}

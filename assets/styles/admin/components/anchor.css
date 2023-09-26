@@ -1,0 +1,15 @@
+@layer components {
+    .woo-a {
+        @apply text-sea-blue
+            underline
+            hover-focus:text-ateneo-blue
+            visited:text-plum;
+    }
+
+    .woo-a--inherit-color {
+        @apply text-inherit
+            hover-focus:text-inherit
+            hover-focus:no-underline
+            visited:text-inherit;
+    }
+}

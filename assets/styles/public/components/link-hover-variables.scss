@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------*/
+/*-------------------- link-hover-variables.scss ----------------*/
+/*---------------------------------------------------------------*/
+@use "mixins/link";
+@use "mixins/outline";
+
+:root {
+    /* Hover */
+    @include link.styling-variables("link-hover-", "link-");
+    @include outline.outline-variables("link-hover-", "link-");
+
+    /* Icon */
+    @include link.icon-styling-variables("link-hover-icon-", "link-", "hover");
+}

@@ -1,0 +1,33 @@
+.admin-decisions-crud {
+    &__help-text {
+        color: var(--body-text-de-emphasized);
+
+        p {
+            font-size: 18px;
+
+            &:first-child {
+                margin: 0;
+            }
+        }
+
+        ul {
+            padding: 0;
+
+            li {
+                list-style: none;
+                display: flex;
+                align-items: center;
+
+                img {
+                    margin-right: 10px;
+                }
+            }
+        }
+    }
+
+    &__form-step-title {
+        color: var(--grey-8);
+        font-weight: bold;
+        margin-bottom: 1.5em;
+    }
+}

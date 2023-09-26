@@ -82,25 +82,25 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
     {
         switch ($status) {
             case Dossier::STATUS_CONCEPT:
-                $color = 'secondary';
+                $color = 'woo-badge--purple';
                 break;
             case Dossier::STATUS_COMPLETED:
-                $color = 'dark';
+                $color = 'woo-badge--blue';
                 break;
             case Dossier::STATUS_PREVIEW:
-                $color = 'info text-dark';
+                $color = 'woo-badge--green';
                 break;
             case Dossier::STATUS_PUBLISHED:
-                $color = 'success';
+                $color = 'woo-badge--green';
                 break;
             case Dossier::STATUS_RETRACTED:
-                $color = 'danger';
+                $color = 'woo-badge--red';
                 break;
             default:
-                $color = 'secondary';
+                $color = 'woo-badge--purple';
         }
 
-        return "<span class=\"badge bg-{$color}\">" . $this->translator->trans($status) . '</span>';
+        return "<span class=\"woo-badge {$color}\">" . $this->translator->trans($status) . '</span>';
     }
 
     /**

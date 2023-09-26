@@ -10,6 +10,8 @@ use App\Entity\FileInfo;
 use App\Entity\Inquiry;
 use App\Entity\Inventory;
 use App\Entity\RawInventory;
+use App\Message\IngestMetadataOnlyMessage;
+use App\Message\RemoveDocumentMessage;
 use App\Repository\InquiryRepository;
 use App\Service\Inventory\InventoryService;
 use App\Service\Inventory\Reader\InventoryReaderFactory;
@@ -21,6 +23,8 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -37,13 +41,16 @@ class InventoryServiceTest extends MockeryTestCase
     private EntityRepository|MockInterface $documentRepository;
     private InquiryRepository|MockInterface $inquiryRepository;
     private TranslatorInterface|MockInterface $translator;
+    private MessageBusInterface|MockInterface $messageBus;
 
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
 
         $this->documentStorage = \Mockery::mock(DocumentStorageService::class);
-        
+
+        $this->messageBus = \Mockery::mock(MessageBusInterface::class);
+
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->logger->shouldReceive('info');
 
@@ -56,6 +63,7 @@ class InventoryServiceTest extends MockeryTestCase
             new InventoryReaderFactory(),
             $this->translator,
             $this->logger,
+            $this->messageBus,
         );
 
         $this->uploadedFile = \Mockery::mock(UploadedFile::class);
@@ -137,7 +145,7 @@ class InventoryServiceTest extends MockeryTestCase
 
         $this->entityManager->expects('persist')->with(\Mockery::type(RawInventory::class));
         $this->entityManager->expects('persist')->with(\Mockery::type(Inventory::class));
-        $this->entityManager->expects('persist')->with(\Mockery::type(Dossier::class));
+        $this->entityManager->expects('persist')->with(\Mockery::type(Dossier::class))->zeroOrMoreTimes();
 
         $this->documentStorage
             ->expects('downloadDocument')
@@ -277,7 +285,13 @@ class InventoryServiceTest extends MockeryTestCase
             ->andReturnNull();
 
         $this->dossier->expects('addDocument')->with(\Mockery::type(Document::class));
-        $this->entityManager->expects('persist')->with(\Mockery::type(Document::class));
+        $this->entityManager->expects('persist')->with(\Mockery::on(
+            static function ($document) {
+                $document->setId(Uuid::v6());
+
+                return true;
+            }
+        ));
 
         $dummyInquiry = \Mockery::mock(Inquiry::class);
         $dummyInquiry->expects('addDocument')->with(\Mockery::type(Document::class));
@@ -289,7 +303,9 @@ class InventoryServiceTest extends MockeryTestCase
             ->andReturn($dummyInquiry);
 
         $this->entityManager->expects('persist')->with($dummyInquiry);
-        $this->entityManager->expects('persist')->with($this->dossier);
+        $this->entityManager->expects('persist')->with($this->dossier)->twice();
+
+        $this->messageBus->expects('dispatch')->once()->with(\Mockery::any())->andReturns(new Envelope(new \stdClass()));
 
         $result = $this->inventoryService->processInventory(
             $this->uploadedFile,
@@ -334,12 +350,14 @@ class InventoryServiceTest extends MockeryTestCase
 
         $this->entityManager->expects('persist')->with(\Mockery::type(RawInventory::class));
         $this->entityManager->expects('persist')->with(\Mockery::type(Inventory::class));
-        $this->entityManager->expects('persist')->with($this->dossier)->times(3);
+        $this->entityManager->expects('persist')->with($this->dossier)->times(4);
 
         $this->logger->shouldReceive('error');
 
+        $removedDocumentUuid = Uuid::v6();
         $dummyDocToBeRemoved = \Mockery::mock(Document::class);
         $dummyDocToBeRemoved->expects('getDocumentNr')->andReturn(789);
+        $dummyDocToBeRemoved->expects('getId')->andReturn($removedDocumentUuid)->zeroOrMoreTimes();
 
         $file = \Mockery::mock(FileInfo::class);
         $file->shouldReceive('setSourceType');
@@ -347,6 +365,7 @@ class InventoryServiceTest extends MockeryTestCase
         $file->shouldReceive('setName');
         $file->shouldReceive('getName')->zeroOrMoreTimes()->andReturn('test456');
 
+        $existingDocumentUuid = Uuid::v6();
         $dummyDocExisting = \Mockery::mock(Document::class);
         $dummyDocExisting->expects('getDocumentNr')->andReturn(5034)->times(3);
         $dummyDocExisting->expects('getDossiers')->andReturn(new ArrayCollection([$this->dossier]))->times(2);
@@ -363,6 +382,8 @@ class InventoryServiceTest extends MockeryTestCase
         $dummyDocExisting->expects('getFileInfo')->andReturns($file);
         $dummyDocExisting->expects('setLink')->andReturnSelf();
         $dummyDocExisting->expects('setRemark')->andReturnSelf();
+        $dummyDocExisting->expects('getId')->andReturn($existingDocumentUuid)->zeroOrMoreTimes();
+        $dummyDocExisting->expects('shouldBeUploaded')->zeroOrMoreTimes()->andReturnTrue();
 
         $dummyInquiry = \Mockery::mock(Inquiry::class);
         $dummyInquiry->expects('setUpdatedAt')->andReturnSelf()->twice();
@@ -395,12 +416,44 @@ class InventoryServiceTest extends MockeryTestCase
             ->andReturn($dummyInquiry)
             ->times(2);
 
+        $newDocumentUuid = Uuid::v6();
         $this->dossier->expects('removeDocument')->with($dummyDocToBeRemoved);
         $this->dossier->expects('addDocument')->with($dummyDocExisting);
-        $this->dossier->expects('addDocument')->with(\Mockery::type(Document::class));
+        $this->dossier->expects('addDocument')->with(\Mockery::on(
+            static function (Document $document) use ($newDocumentUuid) {
+                $document->setId($newDocumentUuid);
 
-        $this->entityManager->expects('persist')->with(\Mockery::type(Document::class))->zeroOrMoreTimes();
-        $this->entityManager->expects('persist')->with($dummyInquiry)->times(2);
+                return true;
+            }
+        ));
+
+        $this->entityManager->expects('persist')->with(\Mockery::type(Inquiry::class));
+        $this->entityManager->expects('persist')->with(\Mockery::type(Document::class))->twice();
+        $this->entityManager->expects('persist')->with($dummyInquiry);
+
+        $this->messageBus->expects('dispatch')->once()
+            ->with(\Mockery::on(
+                static function ($message) use ($removedDocumentUuid) {
+                    return $message instanceof RemoveDocumentMessage && $message->getDocumentId() === $removedDocumentUuid;
+                }
+            ))
+            ->andReturns(new Envelope(new \stdClass()));
+
+        $this->messageBus->expects('dispatch')->once()
+            ->with(\Mockery::on(
+                static function ($message) use ($existingDocumentUuid) {
+                    return $message instanceof IngestMetadataOnlyMessage && $message->getUuid() === $existingDocumentUuid;
+                }
+            ))
+            ->andReturns(new Envelope(new \stdClass()));
+
+        $this->messageBus->expects('dispatch')->once()
+            ->with(\Mockery::on(
+                static function ($message) use ($newDocumentUuid) {
+                    return $message instanceof IngestMetadataOnlyMessage && $message->getUuid() === $newDocumentUuid;
+                }
+            ))
+            ->andReturns(new Envelope(new \stdClass()));
 
         $result = $this->inventoryService->processInventory(
             $this->uploadedFile,
