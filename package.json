@@ -35,7 +35,7 @@
         "mdlint": "markdownlint-cli2 '**/*.md' '!vendor/**' '!node_modules/**'"
     },
     "dependencies": {
-        "@minvws/nl-rdo-rijksoverheid-ui-theme": "^0.0.14",
+        "@minvws/manon": "^16.0.0",
         "@popperjs/core": "^2.11.7",
         "alpinejs": "^3.13.0",
         "chart.js": "^4.4.0",
