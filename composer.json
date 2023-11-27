@@ -147,6 +147,6 @@
         "symfony/maker-bundle": "^1.0",
         "symfony/phpunit-bridge": "^6.3",
         "symfony/web-profiler-bundle": "6.3.*",
-        "vimeo/psalm": "5.9"
+        "vimeo/psalm": "5.16.0"
     }
 }
