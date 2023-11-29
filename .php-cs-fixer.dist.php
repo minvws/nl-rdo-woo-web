@@ -2,7 +2,7 @@
 
 $finder = (new PhpCsFixer\Finder())
     ->in(__DIR__)
-    ->exclude('var')
+    ->exclude(['var', 'node_modules'])
 ;
 
 return (new PhpCsFixer\Config())
@@ -15,6 +15,7 @@ return (new PhpCsFixer\Config())
         'not_operator_with_space' => false,
         'not_operator_with_successor_space' => true,
         'phpdoc_to_comment' => ['ignored_tags' => ['var']],
+        'types_spaces' => ['space_multiple_catch' => 'single'],
     ])
     ->setFinder($finder)
 ;

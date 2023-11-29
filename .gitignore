@@ -43,5 +43,6 @@ yarn-error.log
 ### Editor and private files
 #
 
+/coverage
 /database
 /public/sitemap*
