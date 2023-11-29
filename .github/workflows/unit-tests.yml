@@ -10,7 +10,7 @@ jobs:
   composer-install:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/cache@v3
         with:
           path: vendor/
@@ -37,7 +37,7 @@ jobs:
       matrix:
         php-versions: [ '8.1', '8.2' ]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install PHP
       uses: shivammathur/setup-php@master
       with:
@@ -83,7 +83,7 @@ jobs:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install PHP
       uses: shivammathur/setup-php@master
       with:
