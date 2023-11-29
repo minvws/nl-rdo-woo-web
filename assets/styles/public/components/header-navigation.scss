@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------*/
+/*----------------- header-navigation.scss ----------------------*/
+/*---------------------------------------------------------------*/
+
+:root {
+    --header-navigation-link-background-color: transparent;
+    --header-navigation-link-active-background-color: var(--header-navigation-link-background-color);
+    --header-navigation-link-hover-background-color: var(--header-navigation-link-background-color);
+    --header-navigation-link-active-text-color: var(--application-base-accent-color-text-color);
+    --header-navigation-link-hover-text-color: var(--application-base-accent-color-text-color);
+    --header-navigation-collapsible-list-item-link-hover-text-color: var(--application-base-accent-color-text-color);
+    --header-navigation-link-hover-text-decoration: underline;
+    --header-navigation-collapsible-list-item-hover-text-decoration: var(--header-navigation-link-hover-text-decoration);
+    --header-navigation-button-hover-text-decoration: none;
+    --header-navigation-button-focus-text-decoration: var(--header-navigation-button-hover-text-decoration);
+}
+
+body > header > nav {
+    --navigation-link-focus-outline: 2px dotted white;
+    --navigation-link-focus-outline-offset: calc(0.25rem * -1);
+    --button-base-focus-outline-color: var(--navigation-link-focus-outline);
+}

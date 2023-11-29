@@ -9,10 +9,13 @@
             <h1>{{ "Accessibility" | trans() }}</h1>
 
             <p>
-                {{ "We would like everyone to be able to use this website. Do you come across a page that is not accessible? Or do you have another question? <a href='mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl'>Please contact us</a>." | trans() | raw }}
+                {{ "We would like everyone to be able to use this website. Do you come across a page that is not accessible? Or do you have another question? <a href='#'>Please contact us</a>." | trans() | raw }}
             </p>
 
-            <p><a href="https://www.toegankelijkheidsverklaring.nl/register?w=open.minvws.nl">{{ "Accessibility statement open.minvws.nl" | trans() }}</a>.</p>
+            <p class="flex flex-col">
+                <span>{{ "Accessibility statement {site}" | trans({'site': SITE_NAME }) | raw }}</span>
+                <span>{{ "Download accessibility report" | trans() | raw }}</span>
+            </p>
 
             <h2>{{ "What is an accessible website?" | trans() }}</h2>
 

@@ -1,7 +1,7 @@
 twig:
     default_path: '%kernel.project_dir%/templates'
     form_themes:
-        - 'woo_form_theme.html.twig'
+        - 'forms/admin_form_theme.html.twig'
     globals:
         PUBLIC_BASE_URL: '%env(PUBLIC_BASE_URL)%'
         PIWIK_ANALYTICS_ID: '%env(PIWIK_ANALYTICS_ID)%'

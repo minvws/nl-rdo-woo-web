@@ -1,0 +1,15 @@
+{% block inline_style %}
+    {% set progressWidth = 0 %}
+    {% for step in workflowStatus.steps %}
+        {% set isCurrentStep = step == workflowStatus.currentStep %}
+        {% if isCurrentStep %}
+            {% set progressWidth = ((loop.index - 1) / ((workflowStatus.steps | length) - 1)) * 100 %}
+        {% endif %}
+    {% endfor %}
+
+    <style nonce="{{ csp_nonce() }}">
+        #bhr-steps__progress-bar--custom-width {
+            width: {{ progressWidth }}%;
+        }
+    </style>
+{% endblock %}

@@ -27,6 +27,11 @@ class WooExtension extends AbstractExtension
             new TwigFilter('decision', [$this->runtime, 'decision']),
             new TwigFilter('sourceTypeIcon', [$this->runtime, 'sourceTypeIcon']),
             new TwigFilter('classification', [$this->runtime, 'classification']),
+            new TwigFilter(
+                'highlights',
+                [$this->runtime, 'filterHighlights'],
+                ['pre_escape' => 'html', 'is_safe' => ['html']],
+            ),
         ];
     }
 
@@ -43,6 +48,8 @@ class WooExtension extends AbstractExtension
             new TwigFunction('generate_document_link', [$this->runtime, 'generateDocumentLink']),
             new TwigFunction('get_citation_type', [$this->runtime, 'getCitationType']),
             new TwigFunction('query_string_without_param', [$this->runtime, 'queryStringWithoutParam']),
+            new TwigFunction('query_string_with_params', [$this->runtime, 'getQuerystringWithParams']),
+            new TwigFunction('get_upload_queue', [$this->runtime, 'getUploadQueue']),
         ];
     }
 }

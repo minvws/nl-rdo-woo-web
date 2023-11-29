@@ -55,12 +55,20 @@ services:
         arguments:
             - !tagged_iterator app.ingest.handler
 
+    App\Service\Stats\WorkerStatsService:
+        arguments:
+            $handlers:
+                - '@App\Service\Stats\Handler\ElasticHandler'
+                - '@App\Service\Stats\Handler\DoctrineHandler'
+
     # Tag all classes that implements Handler with the app.ingest.handler tag.
     _instanceof:
         App\Service\Ingest\Handler:
             tags: ['app.ingest.handler']
         App\Service\Logging\LoggingTypeInterface:
             tags: [ 'app.logging.type' ]
+        App\Service\Stats\Handler\StatsHandlerInterface:
+            tags: [ 'app.stats.handler' ]
 
     # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
     App\Service\Encryption\EncryptionService:
@@ -117,10 +125,6 @@ services:
         arguments:
             $storage: '@batch.storage'
 
-    App\Command\Cron\CleanArchives:
-        arguments:
-            $storage: '@batch.storage'
-
     App\EventSubscriber\LocaleListener:
         arguments:
             $defaultLocale: '%kernel.default_locale%'
@@ -129,10 +133,6 @@ services:
     App\Service\Totp:
         arguments:
             $issuer: '%env(TOTP_ISSUER)%'
-
-    App\Form\Elastic\CreateRolloverType:
-        arguments:
-            $mappingService: '@App\Service\Elastic\MappingService'
 
     App\Command\CleanSheet:
         arguments:
@@ -184,3 +184,30 @@ services:
     App\EventSubscriber\SecurityHeaderSubscriber:
         arguments:
             $appMode: '%env(APP_MODE)%'
+
+    # Order of the arguments is important here, so manually inject instead of using _instanceOf
+    App\Service\DossierWorkflow\WorkflowStatusFactory:
+        arguments:
+          - '@App\Service\DossierWorkflow\Step\DetailsStep'
+          - '@App\Service\DossierWorkflow\Step\DecisionStep'
+          - '@App\Service\DossierWorkflow\Step\DocumentsStep'
+          - '@App\Service\DossierWorkflow\Step\PublicationStep'
+
+
+
+    App\Service\Security\Authorization\AuthorizationMatrix:
+        arguments:
+            $entries: '@=service("App\\Service\\Security\\Authorization\\ConfigFactory").create()'
+
+    App\Service\Security\Authorization\ConfigFactory:
+        arguments:
+            $config: '%authorization_matrix%'
+
+    App\Service\DocumentUploadQueue:
+        arguments:
+            $redis: '@snc_redis.admin'
+
+    App\Service\Inventory\Sanitizer\InventorySanitizer:
+        arguments:
+            $writer: '@App\Service\Inventory\Sanitizer\ExcelWriter'
+            $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'

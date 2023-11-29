@@ -23,8 +23,12 @@ class DocumentPrefix
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private string $prefix;
 
-    #[ORM\Column(length: 255, nullable: false)]
+    #[ORM\Column(length: 1024, nullable: false)]
     private string $description;
+
+    #[ORM\ManyToOne(inversedBy: 'documentPrefixes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Organisation $organisation;
 
     public function getId(): Uuid
     {
@@ -51,6 +55,23 @@ class DocumentPrefix
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function prefixAndDescription(): string
+    {
+        return $this->prefix . ' (' . $this->description . ')';
+    }
+
+    public function getOrganisation(): Organisation
+    {
+        return $this->organisation;
+    }
+
+    public function setOrganisation(Organisation $organisation): static
+    {
+        $this->organisation = $organisation;
 
         return $this;
     }

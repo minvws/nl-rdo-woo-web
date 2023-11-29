@@ -1,51 +1,93 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
-{% set page_title = "Department management" | trans() %}
+{% set page_title = "Department management" | trans %}
 
 {% block body %}
-    <section>
-        <div>
+<div class="bhr-container">
+    <twig:Admin:LeftAndRight>
+        <h1 class="bhr-title">{{ page_title }}</h1>
 
-            <h1>{{ "Department management" | trans() }}</h1>
+        <twig:block name="right">
+            {% if matrix_has_permission('department.create') %}
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_department_create') }}">{{ "New department" | trans() }}</a>
+            {% endif %}
+        </twig:block>
+    </twig:Admin:LeftAndRight>
 
-            <table class="table table-striped table-bordered table-condensed">
-                <caption class="visually-hidden">{{ "All departments" | trans() }}</caption>
-    
+    <div class="bhr-card">
+        {% set alerts = app.flashes('backend') %}
+        {% if alerts | length > 0 %}
+            <div class="mb-8">
+                {% for messages in alerts %}
+                    {% for label, message in messages %}
+                        <twig:Admin:Alert type="{{ label }}">
+                            <strong>{{ message }}</strong>
+                        </twig:Admin:Alert>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <table class="bhr-table">
+            <thead>
                 <tr>
-                    <th>&nbsp;</th>
-                    <th>{{ "Department" | trans() }}</th>
-                    <th>{{ "Options" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Department" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ "Short name" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">
+                        <span class="sr-only">{{ "Edit department" | trans() }}</span>
+                    </th>
                 </tr>
-
+            </thead>
+            <tbody>
                 {% for department in departments %}
                     <tr>
-                        <td>{{ department.shortTag }}</td>
                         <td>{{ department.name }}</td>
-                        <td><a href="{{ path('app_admin_department_edit', { id: department.id.toBase58 }) }}" class="button">{{ "Edit" | trans() }}</a></td>
+                        <td>{{ department.shortTag | default('-') }}</td>
+                        <td class="text-right">
+                            <a class="js-clickable-row__focusable" href="{{ path('app_admin_department_edit', { id: department.id.toBase58 }) }}">
+                                <span class="sr-only">Details {{ department.name }}</span>
+                                <twig:Admin:Icon name="chevron-right" />
+                            </a>
+                        </td>
                     </tr>
                 {% endfor %}
-            </table>
+            </tbody>
+        </table>
+    </div>
 
-            <a href="{{ path('app_admin_department_create') }}" class="button">{{ "New department" | trans() }}</a>
+    <div class="pt-16">
+        <twig:Admin:LeftAndRight>
+            <h2 class="bhr-title">{{ "All officials" | trans }}</h2>
 
-            <table class="table table-striped table-bordered table-condensed">
-                <caption class="visually-hidden">{{ "All officials" | trans() }}</caption>
-    
-                <tr>
-                    <th>{{ "Official" | trans() }}</th>
-                    <th>{{ "Options" | trans() }}</th>
-                </tr>
+            <twig:block name="right">
+                <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_governmentofficial_create') }}">{{ "New official" | trans }}</a>
+            </twig:block>
+        </twig:Admin:LeftAndRight>
 
-                {% for head in heads %}
+        <div class="bhr-card">
+            <table class="bhr-table">
+                <thead>
                     <tr>
-                        <td>{{ head.name }}</td>
-                        <td><a href="{{ path('app_admin_governmentofficial_edit', { id: head.id.toBase58 }) }}" class="button">{{ "Edit" | trans() }}</a></td>
+                        <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ "Official" | trans() }}</th>
+                        <th class="bhr-column-head bhr-column-head--gray" scope="col">
+                            <span class="sr-only">{{ "Edit official" | trans() }}</span>
+                        </th>
                     </tr>
-                {% endfor %}
+                </thead>
+                <tbody>
+                    {% for head in heads %}
+                        <tr>
+                            <td>{{ head.name }}</td>
+                            <td class="text-right">
+                                <a class="js-clickable-row__focusable" href="{{ path('app_admin_governmentofficial_edit', { officialId: head.id.toBase58 }) }}">
+                                    <span class="sr-only">Details {{ head.name }}</span>
+                                    <twig:Admin:Icon name="chevron-right" />
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
-
-            <a href="{{ path('app_admin_governmentofficial_create') }}" class="button">{{ "New official" | trans() }}</a>
-
         </div>
-    </section>
+    </div>
+</div>
 {% endblock %}

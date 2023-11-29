@@ -10,6 +10,7 @@ use App\Service\Encryption\EncryptionService;
 use App\Service\Encryption\EncryptionServiceInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 
 class Kernel extends BaseKernel
@@ -21,6 +22,12 @@ class Kernel extends BaseKernel
         parent::boot();
 
         $this->injectEncryptionServiceIntoDbalTypes();
+    }
+
+    protected function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+        $container->registerExtension(new \App\DependencyInjection\AuthMatrixExtension());
     }
 
     protected function injectEncryptionServiceIntoDbalTypes(): void

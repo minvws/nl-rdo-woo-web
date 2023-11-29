@@ -1,0 +1,17 @@
+@layer components {
+    .bhr-content ul {
+        @apply bhr-ul;
+    }
+    .bhr-content ol {
+        @apply bhr-ol;
+    }
+    .bhr-content li {
+        @apply bhr-li;
+    }
+    .bhr-content p {
+        @apply bhr-p;
+    }
+    .bhr-content a {
+        @apply bhr-a;
+    }
+}

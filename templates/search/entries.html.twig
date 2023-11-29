@@ -2,16 +2,47 @@
 
 <div>
     <div class="block">
-        <h2 class="ro-text-base ro-font-normal" aria-live="polite" id="js-number-of-search-results">
-            {% if result.type == constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
-                <span class="ro-font-bold">{{ "# dossiers" | trans({'count': result.dossierCount}) }}</span>
-            {% else %}
-                <span class="ro-font-bold">
-                    {{ "# documents" | trans({'count': result.documentCount}) }}
-                    {{ "in # dossiers" | trans({'count': result.dossierCount}) }}
-                </span>
-            {% endif %}
-        </h2>
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <h2 class="ro-text-base roe-font-normal" aria-live="polite" id="js-number-of-search-results">
+                {% if result.type == constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
+                    <span class="ro-font-bold">{{ "# dossiers" | trans({'count': result.dossierCount}) }}</span>
+                {% else %}
+                   <span>
+                        <span class="ro-font-bold">
+                            {{ "# documents" | trans({'count': result.documentCount}) }}
+                        </span>
+                        <span>
+                            {{ "in # dossiers" | trans({'count': result.dossierCount}) }}
+                        </span>
+                   </span>
+                {% endif %}
+            </h2>
+
+            <section class="accordion m-0 p-0">
+                <div class="accordion__container">
+                    <button class="button button--light button--secondary flex items-center" aria-expanded="false" id="sort">
+                        <span>{{ "Sort" | trans() }}</span>
+                        <twig:Icon name="sort" />
+                    </button>
+                    <div aria-labelledby="sort" class="accordion-content">
+                        <ul class="list-unstyled w-full">
+                            <li>
+                                <a href="?{{ query_string_with_params({'sort': 'decision_date', 'sortorder': 'desc'}) }}">{{ "Date of decision" | trans() }} ({{ "newest first" | trans() }})</a>
+                            </li>
+                            <li>
+                                <a href="?{{ query_string_with_params({'sort': 'decision_date', 'sortorder': 'asc'}) }}">{{ "Date of decision" | trans() }} ({{ "oldest first" | trans() }})</a>
+                            </li>
+                            <li>
+                                <a href="?{{ query_string_with_params({'sort': 'publication_date', 'sortorder': 'desc'}) }}">{{ "Date of publication" | trans() }} ({{ "newest first" | trans() }})</a>
+                            </li>
+                            <li>
+                                <a href="?{{ query_string_with_params({'sort': 'publication_date', 'sortorder': 'asc'}) }}">{{ "Date of publication" | trans() }} ({{ "oldest first" | trans() }})</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
 
         {# Suggestions #}
         {% set suggestionsId = constant('App\\ElasticConfig::SUGGESTIONS_SEARCH_INPUT') %}
@@ -44,10 +75,10 @@
                 {{ macro.facet_pill('Datum tot: ' ~ app.request.get('dt').to | default | format_date('long'), 'dt[to]', '') }}
             {% endif %}
 
-            {{ macro.facet_pills('Organization' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}
+            {{ macro.facet_pills('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}
             {# {{ macro.facet_pills('Official' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::OFFICIAL').value, result) }} #}
             {{ macro.facet_pills('Subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
-            {{ macro.facet_pills('Document type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
+            {{ macro.facet_pills('Source document type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
             {{ macro.facet_pills('Judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
             {{ macro.facet_pills('Grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
         </ul>
@@ -57,7 +88,6 @@
 
 {# Results #}
 {% if result.entries | length > 0 %}
-<h2 class="visually-hidden">{{ "Results" | trans() }}</h2>
 <ul class="list-unstyled list-results">
     {% for entry in result.entries %}
     <li>

@@ -1,15 +1,65 @@
-<ul>
+{% set hasDossiers = dossiers | default | length > 0 %}
 
-{% for dossier in dossiers %}
-    <li>
-        <a href="{{ path('app_admin_dossier', {'dossierId': dossier.id}) }}">{{ dossier.dossierNr }} {{ dossier.title }}</a>
-    </li>
-{% endfor %}
+{% if hasDossiers %}
+    <h2 class="bhr-title mb-2" id="search-results-dossiers">{{ "Dossiers" | trans }}</h2>
 
-{% for document in documents %}
-    <li>
-        <a href="{{ path('app_admin_dossier_document_details', {'dossierId': document.dossiers.first.id, 'documentId': document.id}) }}">{{ document.documentNr }} {{ document.fileInfo.name }}</a>
-    </li>
-{% endfor %}
+    <table class="bhr-table" aria-labelledby="search-results-dossiers">
+        <thead class="sr-only">
+            <tr>
+                <th scope="col">{{ "Dossier number" | trans() }}</th>
+                <th scope="col">{{ "Title" | trans() }}</th>
+                <th scope="col">{{ "More..." | trans() }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dossier in dossiers %}
+            <tr>
+                <td class="w-48" tabindex="-1">{{ dossier.dossierNr }}</td>
+                <td tabindex="-1">{{ dossier.title }}</td>
+                <td class="text-right">
+                    <a
+                        class="js-clickable-row__focusable"
+                        href="{{ path('app_admin_dossier', {'dossierId': dossier.dossierNr}) }}"
+                        tabindex="-1"
+                    >
+                        <span class="sr-only">Details {{ dossier.dossierNr }}</span>
+                        <twig:Admin:Icon name="chevron-right" />
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
 
-</ul>
+{% if documents | length > 0 %}
+    <h2 class="bhr-title mb-2{% if hasDossiers %} mt-6{% endif %}" id="search-results-documents">{{ "Documents" | trans }}</h2>
+
+    <table class="bhr-table" aria-labelledby="search-results-documents">
+        <thead class="sr-only">
+            <tr>
+                <th scope="col">{{ "Document number" | trans() }}</th>
+                <th scope="col">{{ "Title" | trans() }}</th>
+                <th scope="col">{{ "More..." | trans() }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for document in documents %}
+            <tr>
+                <td class="w-48" tabindex="-1">{{ document.documentNr }}</td>
+                <td tabindex="-1">{{ document.fileInfo.name }}</td>
+                <td class="text-right">
+                    <a
+                        class="js-clickable-row__focusable"
+                        href="{{ path('app_admin_document', {dossierId: document.dossiers.first.dossierNr, documentId: document.documentNr}) }}"
+                        tabindex="-1"
+                    >
+                        <span class="sr-only">Details {{ document.documentNr }}</span>
+                        <twig:Admin:Icon name="chevron-right" />
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

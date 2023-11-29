@@ -22,7 +22,7 @@ class FileInfo
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $type = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 1024, nullable: true)]
     private ?string $name = null;
 
     #[ORM\Column(nullable: false)]
@@ -114,5 +114,13 @@ class FileInfo
         $this->sourceType = $sourceType;
 
         return $this;
+    }
+
+    public function removeFileProperties(): void
+    {
+        $this->setMimetype(null);
+        $this->setUploaded(false);
+        $this->setSize(0);
+        $this->setPath(null);
     }
 }

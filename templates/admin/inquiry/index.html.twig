@@ -1,0 +1,51 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = "Famous case numbers" | trans() %}
+
+{% block body %}
+<div class="bhr-container">
+    <twig:Admin:LeftAndRight>
+        <h1 class="bhr-title">{{ page_title }}</h1>
+
+        <twig:block name="right">
+            {% if matrix_has_permission('inquiry.update') %}
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_inquiries_link') }}">{{ "Link case numbers to decisions or documents" | trans }}</a>
+            {% endif %}
+        </twig:block>
+    </twig:Admin:LeftAndRight>
+
+    <div class="bhr-card">
+        <table class="bhr-table">
+            <thead>
+                <tr>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Case number" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Dossiers" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Documents" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Last update" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">
+                        <span class="sr-only">{{ "Link case" | trans() }}</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in pagination %}
+                    <tr>
+                        <td><strong>{{ row.inquiry.casenr }}</strong></td>
+                        <td>{{ row.dossierCount }}</td>
+                        <td>{{ row.documentCount }}</td>
+                        <td>{{ row.inquiry.updatedAt | format_datetime('medium') }}</td>
+                        <td>
+                            <a class="js-clickable-row__focusable" href="{{ PUBLIC_BASE_URL }}{{ path('app_inquiry_detail', { token: row.inquiry.token }) }}">
+                                <span class="sr-only">Details {{ row.inquiry.token }}</span>
+                                <twig:Admin:Icon name="chevron-right"/>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
+    </div>
+</div>
+{% endblock %}

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Command\User;
 
+use App\Entity\Organisation;
 use App\Entity\User;
 use App\Service\Totp;
 use App\Service\UserService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,13 +21,15 @@ class Create extends Command
 {
     protected UserService $userService;
     protected Totp $totp;
+    protected EntityManagerInterface $doctrine;
 
-    public function __construct(UserService $userService, Totp $totp)
+    public function __construct(UserService $userService, Totp $totp, EntityManagerInterface $doctrine)
     {
         parent::__construct();
 
         $this->userService = $userService;
         $this->totp = $totp;
+        $this->doctrine = $doctrine;
     }
 
     protected function configure(): void
@@ -54,10 +58,14 @@ class Create extends Command
             $role = ['ROLE_USER', 'ROLE_BALIE'];
         }
 
+        // We assume that the created user is always part of the first organisation
+        $organisation = $this->doctrine->getRepository(Organisation::class)->findAll()[0];
+
         ['plainPassword' => $plainPassword, 'user' => $user] = $this->userService->createUser(
             strval($input->getArgument('name')),
             strval($input->getArgument('email')),
             $role,
+            $organisation
         );
 
         $output->writeln("User <info>{$user->getEmail()}</info> created.");

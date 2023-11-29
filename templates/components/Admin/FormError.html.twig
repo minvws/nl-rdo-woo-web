@@ -1,0 +1,14 @@
+<div class="p-4 border-l-2 border-maximum-red bg-pale-pink" role="alert">
+    <div class="flex">
+        <span class="mr-4"><twig:Admin:Icon name="exclamation" color="fill-maximum-red" /></span>
+        <div class="leading-tight pt-1">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    {% if block('extra') is not empty %}
+    <div class="mt-2">
+        {% block extra %}{% endblock %}
+    </div>
+    {% endif %}
+</div>

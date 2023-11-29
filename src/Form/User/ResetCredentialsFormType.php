@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Form\User;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -21,22 +21,21 @@ class ResetCredentialsFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('reset_pw', CheckboxType::class, [
-                'label' => 'Reset password',
-                'required' => false,
+            ->add('reset_pw', HiddenType::class, [
                 'attr' => [
-                    'help' => 'Reset the password of this user to a random value',
+                    'value' => 1,
                 ],
             ])
-            ->add('reset_2fa', CheckboxType::class, [
-                'label' => 'Reset two factor authentication',
-                'required' => false,
+            ->add('reset_2fa', HiddenType::class, [
                 'attr' => [
-                    'help' => 'Reset the two factor authentication of this user to a random value',
+                    'value' => 1,
                 ],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Reset credentials',
+                'attr' => [
+                    'class' => 'bhr-button--secondary mt-6',
+                ],
             ]);
     }
 

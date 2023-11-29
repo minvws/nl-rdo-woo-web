@@ -37,8 +37,12 @@ class IngestMetadataOnlyHandler
         }
 
         try {
-            // The third argument is very important: this will remove any existing page content.
-            $this->elasticService->updateDocument($document, [], []);
+            // The second and third argument are important: removes existing metadata and pages if refresh=true
+            $this->elasticService->updateDocument(
+                $document,
+                $message->getForceRefresh() ? [] : null,
+                $message->getForceRefresh() ? [] : null
+            );
         } catch (\Exception $e) {
             $this->logger->error('Failed to ingest metadata-only document into ES', [
                 'document' => $document->getDocumentNr(),

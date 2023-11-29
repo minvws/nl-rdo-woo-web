@@ -1,0 +1,30 @@
+<form class="relative" data-endpoint="{{ endpoint }}" id="{{ id | default('js-dossier-search-previews') }}" method="get">
+    {% block content %}
+        <div class="fixed inset-0 pointer-events-none bg-black/25 hidden js-overlay"></div>
+        <div class="flex items-center">
+            <label class="block text-dim-gray mr-3 leading-tight" for="search-previews">
+                {{ label }}
+            </label>
+            <div class="relative">
+                <input
+                    aria-controls="search-previews-results"
+                    aria-expanded="false"
+                    aria-haspopup="grid"
+                    autocomplete="off"
+                    class="bhr-input-text bhr-input-text--with-icon-after text-base w-60 js-input peer"
+                    id="search-previews"
+                    name="query"
+                    role="combobox"
+                    type="text"
+                />
+                <twig:Admin:Search:InputIcons />
+            </div>
+        </div>
+
+        <div
+            class="bhr-overlay-card hidden right-0 mt-2 w-[56rem] js-placeholder"
+            id="search-previews-results"
+            role="grid"
+        ></div>
+    {% endblock %}
+</form>

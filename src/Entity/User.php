@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use MinVWS\AuditLogger\Contracts\LoggableUser;
 use Scheb\TwoFactorBundle\Model\BackupCodeInterface;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
@@ -18,7 +21,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\HasLifecycleCallbacks]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface, BackupCodeInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface, BackupCodeInterface, LoggableUser
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
@@ -63,6 +66,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column]
     private bool $changepwd;
 
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Organisation $organisation;
+
+    /** @var Collection|LoginActivity[] */
+    #[ORM\OneToMany(mappedBy: 'account', targetEntity: LoginActivity::class, orphanRemoval: true)]
+    private Collection $loginActivities;
+
+    public function __construct()
+    {
+        $this->loginActivities = new ArrayCollection();
+    }
+
     public function getId(): Uuid
     {
         return $this->id;
@@ -100,6 +116,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
                 $roles[] = 'ROLE_USER';*/
 
         return array_unique($roles);
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return in_array(strtoupper($role), $this->roles);
     }
 
     /**
@@ -271,5 +292,61 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function isChangepwd(): ?bool
     {
         return $this->changepwd;
+    }
+
+    public function getAuditId(): string
+    {
+        return (string) $this->getId();
+    }
+
+    public function getOrganisation(): Organisation
+    {
+        return $this->organisation;
+    }
+
+    public function setOrganisation(Organisation $organisation): static
+    {
+        $this->organisation = $organisation;
+
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getOrganisationPrefixes(): array
+    {
+        /** @var DocumentPrefix[] $prefixes */
+        $prefixes = $this->getOrganisation()->getDocumentPrefixes()->toArray() ?? [];
+
+        return array_map(
+            static fn (DocumentPrefix $prefix) => $prefix->getPrefix(),
+            $prefixes
+        );
+    }
+
+    /**
+     * @return Collection|LoginActivity[]
+     */
+    public function getLoginActivities(): Collection
+    {
+        return $this->loginActivities;
+    }
+
+    public function addLoginActivity(LoginActivity $loginActivity): static
+    {
+        if (! $this->loginActivities->contains($loginActivity)) {
+            $this->loginActivities->add($loginActivity);
+            $loginActivity->setAccount($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLoginActivity(LoginActivity $loginActivity): static
+    {
+        $this->loginActivities->removeElement($loginActivity);
+
+        return $this;
     }
 }

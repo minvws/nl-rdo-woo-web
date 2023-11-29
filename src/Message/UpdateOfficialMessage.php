@@ -5,25 +5,22 @@ declare(strict_types=1);
 namespace App\Message;
 
 use App\Entity\GovernmentOfficial;
+use Symfony\Component\Uid\Uuid;
 
 class UpdateOfficialMessage
 {
-    protected GovernmentOfficial $old;
-    protected GovernmentOfficial $new;
-
-    public function __construct(GovernmentOfficial $old, GovernmentOfficial $new)
-    {
-        $this->old = $old;
-        $this->new = $new;
+    public function __construct(
+        private readonly Uuid $uuid,
+    ) {
     }
 
-    public function getOld(): GovernmentOfficial
+    public function getUuid(): Uuid
     {
-        return $this->old;
+        return $this->uuid;
     }
 
-    public function getNew(): GovernmentOfficial
+    public static function forGovermentOfficial(GovernmentOfficial $official): self
     {
-        return $this->new;
+        return new self($official->getId());
     }
 }

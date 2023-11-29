@@ -23,7 +23,7 @@ class EnableUserFormType extends AbstractType
         $builder
             ->add('enabled', HiddenType::class)
             ->add('submit', SubmitType::class, [
-                'label' => 'Activeer gebruiker',
+                'label' => 'Activate account',
             ]);
     }
 

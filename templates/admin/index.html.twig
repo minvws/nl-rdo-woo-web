@@ -8,71 +8,47 @@
             <h1 class="mb-4">{{ "Admin" | trans() }}</h1>
 
             <div class="column-3">
+
                 <div>
 
-                    {% if is_granted('ROLE_ADMIN_USERS') %}
+                    {% if matrix_has_permission('dossier.administration') %}
                         <div class="card h-100">
                             <div class="card-body">
-                                <h2 class="card-title text-center" aria-labelledby="userMgmtButton"><i class="fa fa-users fa-5x"></i></h2>
+                                <h2 class="card-title text-center" aria-labelledby="dossierMgmtButton"><i class="fa fa-folder-open fa-5x"></i></h2>
                                 <p class="card-text">
-                                    {{ "This link provides access to user management, where you have the opportunity to create, modify and delete user accounts, and manage their access rights." | trans() }}
+                                    {{ "This link provides access to dossier admin actions." | trans() }}
                                 </p>
                             </div>
                             <div class="card-footer bg-transparent">
-                                <a href="{{ path('app_admin_users') }}" class="button" id="userMgmtButton">{{ "User management" | trans() }}</a>
+                                <a href="{{ path('app_admin_dossier_administration') }}" class="button" id="dossierMgmtButton">{{ "Dossier management" | trans() }}</a>
                             </div>
                         </div>
                     {% endif %}
 
                 </div>
+
                 <div>
 
-                    {% if is_granted('ROLE_ADMIN_DOSSIERS') %}
+                    {% if matrix_has_permission('inquiry.administration') %}
                         <div class="card h-100">
                             <div class="card-body">
-                                <h2 class="card-title text-center" aria-labelledby="dossierMgmtButton"><i class="fa fa-file fa-5x"></i></h2>
-                                <p class="card-text">{{ "With this link you get access to the dossier management, where you can create, edit and organize files, and add and delete documents." | trans() }}</p>
+                                <h2 class="card-title text-center" aria-labelledby="inquiryMgmtButton"><i class="fa fa-folder-open fa-5x"></i></h2>
+                                <p class="card-text">
+                                    {{ "This link provides access to inquiry admin actions." | trans() }}
+                                </p>
                             </div>
                             <div class="card-footer bg-transparent">
-                                <a href="{{ path('app_admin_dossiers') }}" class="button" id="dossierMgmtButton">{{ "Dossier management" | trans() }}</a>
+                                <a href="{{ path('app_admin_inquiry_administration') }}" class="button" id="inquiryMgmtButton">{{ "Inquiry management" | trans() }}</a>
                             </div>
                         </div>
                     {% endif %}
 
                 </div>
+
+                {# currently not in use
                 <div>
 
-                    {% if is_granted('ROLE_ADMIN_REQUESTS') %}
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h2 class="card-title text-center" aria-labelledby="requestMgmtButton"><i class="fa-solid fa-file-circle-question fa-5x"></i></h2>
-                                <p class="card-text">{{ "This link provides access to the management of Woo requests, where you can view, manage and process new requests. Here you can also keep track of the status of existing requests and perform relevant actions." | trans() }}</p>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <a href="{{ path('app_admin_requests') }}" class="button" id="requestMgmtButton">{{ "Request management" | trans() }}</a>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                </div>
-                <div>
-
-                    {% if is_granted('ROLE_ADMIN_DOSSIERS') %}
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h2 class="card-title text-center" aria-labelledby="departmentMgmtButton"><i class="fa-solid fa-building fa-5x"></i></h2>
-                                <p class="card-text">{{ "This link provides access to the management of departments and administrators." | trans() }}</p>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <a href="{{ path('app_admin_departments') }}" class="button" id="departmentMgmtButton">{{ "Department management" | trans() }}</a>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                </div>
-                <div>
-
-                    {% if is_granted('ROLE_ADMIN_REQUESTS') %}
+                    {% if matrix_has_permission('token.read') %}
                         <div class="card h-100">
                             <div class="card-body">
                                 <h2 class="card-title text-center" aria-labelledby="tokenMgmtButton"><i class="fa-solid fa-key fa-5x"></i></h2>
@@ -85,9 +61,11 @@
                     {% endif %}
 
                 </div>
+                #}
+
                 <div>
 
-                    {% if is_granted('ROLE_ADMIN') %}
+                    {% if matrix_has_permission('prefix.read') %}
                         <div class="card h-100">
                             <div class="card-body">
                                 <h2 class="card-title text-center" aria-labelledby="prefixMgmtButton"><i class="fa-solid fa-arrow-right fa-5x"></i></h2>
@@ -102,7 +80,7 @@
                 </div>
                 <div>
 
-                    {% if is_granted('ROLE_ADMIN') %}
+                    {% if matrix_has_permission('stat.read') %}
                         <div class="card h-100">
                             <div class="card-body">
                                 <h2 class="card-title text-center" aria-labelledby="statisticsButton"><i class="fa-solid fa-clipboard-check fa-5x"></i></h2>
@@ -117,7 +95,7 @@
                 </div>
                 <div>
 
-                    {% if is_granted('ROLE_SUPER_ADMIN') %}
+                    {% if matrix_has_permission('elastic.read') %}
                         <div class="card h-100">
                             <div class="card-body">
                                 <h2 class="card-title text-center" aria-labelledby="elasticsearchMgmtButton"><i class="fa-solid fa-gears fa-5x"></i></h2>
@@ -126,7 +104,7 @@
                             <div class="card-footer bg-transparent">
                                 <a href="{{ path('app_admin_elastic') }}" class="button" id="elasticsearchMgmtButton">{{ "Elasticsearch management" | trans() }}</a>
                             </div>
-                        </div>  
+                        </div>
                     {% endif %}
 
                 </div>

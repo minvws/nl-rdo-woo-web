@@ -10,6 +10,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * @template-extends AbstractType<TokenType>
@@ -26,6 +28,10 @@ class TokenType extends AbstractType
                 'label' => 'Remark',
                 'required' => true,
                 'help' => 'Informatie over het token, bijvoorbeeld de naam van de gebruiker.',
+                'constraints' => [
+                    new NotBlank(),
+                    new Length(['min' => 2, 'max' => 255]),
+                ],
             ])
             ->add('dossier', EntityType::class, [
                 'label' => 'Dossier',

@@ -29,6 +29,10 @@ class InventoryDataHelper
      */
     public static function separateValues(mixed $value, string $separator = ';'): array
     {
+        if ($value === null) {
+            return [];
+        }
+
         $values = explode($separator, strval($value));
         $values = array_map('trim', $values);
 

@@ -14,13 +14,19 @@
         <div class="block">
             <h1 class="mb-0 leading-tight">
                 <span class="font-normal block">{{ "Decision about" | trans() }}:</span>
-                {{ dossier.title ~ preview_mode }}
+                {{ dossier.title }}
             </h1>
 
             <dl class="nota-bene text-lg">
                 <div>
-                    <dt class="visually-hidden">{{ "Published on" | trans() }}: </dt>
-                    <dd><time datetime="{{ dossier.createdAt | date("Y-m-d") }}">{{ dossier.createdAt | format_date('long') }}</time></dd>
+                    <dt>
+                    {% if dossier.status == constant('\\App\\Entity\\Dossier::STATUS_PREVIEW') %}
+                        {{ "Date of publication" | trans() }}:
+                    {% else %}
+                        {{ "Published on" | trans() }}:
+                    {% endif %}
+                    </dt>
+                    <dd><time datetime="{{ dossier.publicationDate | date("Y-m-d") }}">{{ dossier.publicationDate | format_date('long') }}</time></dd>
                 </div>
                 <div>
                     <dt>{{ "Dossier number" | trans() }}:</dt>
@@ -36,19 +42,25 @@
             </div>
 
             {% if dossier.status == constant('\\App\\Entity\\Dossier::STATUS_PREVIEW') %}
-                <div class="pb-8">
-                    <div class="explanation width-delimiter block" aria-label="toelichting">
-                        <p>{{ "This decision has not been published yet and is only visible in preview mode." | trans() }}</p>
+                <div class="pb-8 block">
+                    <div class="warning">
+                        <div class="width-delimiter block">
+                            <h2 class="visually-hidden">{{ "preview" | trans() }}</h2>
+                            <p>
+                                <span></span>
+                                {{ "You have untill {date} exclusive access to these documents" | trans({ date: dossier.publicationDate | date_modify('-1 minute') | format_datetime(pattern="d LLLL y 'om' H:m 'uur'") }) }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             {% endif %}
 
-            {# if extra information about this information request, give it an h2
+            {# if extra information about this information request, give it an h3
                 and similar styling to the dossier summary below #}
             {% if dossier.summary is defined %}
-                <div class="bg-anti-flash-white p-6 block mt-8 mb-8">
+                <div class="bg-anti-flash-white p-6 my-8">
                     <div class="width-delimiter block">
-                        <h2 class="font-normal leading-tight mb-3">{{ "Summary" | trans() }}</h2>
+                        <h3 class="font-normal leading-tight mb-3">{{ "Summary" | trans() }}</h3>
                         <p>{{ dossier.summary }}</p>
                     </div>
                 </div>
@@ -75,15 +87,12 @@
                                 </td>
                             </tr>
                             {% endif %}
-                            {% if dossier.governmentOfficials[0].name is defined %}
+                            {% if dossier.departments[0].name is defined %}
                             <tr>
                                 <th scope="row" class="ps-0">{{ "Responsible(s)" | trans() }}</th>
                                 <td class="pe-0">
                                     {# Only display the first entries #}
-                                    {{ dossier.governmentOfficials[0].name }}
-                                    {% if (dossier.departments[0]).name %}
-                                     - {{ dossier.departments[0].name }}
-                                    {% endif %}
+                                    {{ dossier.departments[0].name }}
                                 </td>
                             </tr>
                             {% endif %}
@@ -93,6 +102,10 @@
                                 <td class="pe-0">{{ period(dossier.dateFrom, dossier.dateTo) }}</td>
                             </tr>
                             {% endif %}
+                            <tr>
+                                <th scope="row" class="ps-0">{{ "Decision date" | trans() }}</th>
+                                <td class="pe-0"><time datetime="{{ dossier.decisionDate | date("Y-m-d") }}">{{ dossier.decisionDate | format_date('long') }}</time></td>
+                            </tr>
                             {% if dossier.publicationReason is defined %}
                             <tr>
                                 <th scope="row" class="ps-0">{{ "Type of decision" | trans() }}</th>
@@ -126,24 +139,27 @@
                 </div>
             </div>
 
-            <h3 id="documenten">{{ "Documents" | trans() }}</h3>
+            {% if dossier.needsInventoryAndDocuments and (public_docs.count > 0 or not_public_docs.count > 0) %}
+                <h3 id="documenten">{{ "Documents" | trans() }}</h3>
 
-            <div class="gap-0 items-center pb-8 pt-4">
-                <form class="p-0 flex flex-col sm:flex-row items-stretch sm:items-center" method="post" action="{{ path('app_dossier_batch', { dossierId: dossier.dossierNr }) }}">
-                    <button type="submit" download class="button download-all flex items-center">
-                        <span class="svg-icon svg-download w-[24px] h-[24px]" aria-hidden="true" ></span>
-                        <span class="mx-auto">{{ "Download" | trans() }}</span>
-                        {# <span class="svg-icon svg-chevron-down mt-[-6px] w-[16px] h-[16px]" aria-hidden="true"/> #}
-                    </button>
-                    <span class="inline-block mt-2 sm:ml-4 sm:mt-0">
-                        <a href="{{ path('app_search') }}?dnr[]={{ dossier.dossierNr }}">
-                            {{ "Search in these documents..." | trans() }}
-                        </a>
-                    </span>
-                </form>
-            </div>
+                <div class="gap-0 items-center pb-8 pt-4">
+                    <form class="p-0 flex flex-col sm:flex-row items-stretch sm:items-center" method="post" action="{{ path('app_dossier_batch', { dossierId: dossier.dossierNr }) }}">
+                        {% if dossier.uploadStatus.getActualUploadCount > 0 and public_docs.count > 0 %}
+                        <button type="submit" download class="button button--light flex items-center mb-2 sm:mr-4 sm:mb-0">
+                            <twig:Icon name="download" />
+                            <span class="px-4">{{ "Download" | trans() }}</span>
+                        </button>
+                        {% endif %}
+                        <span class="inline-block">
+                            <a href="{{ path('app_search') }}?dnr[]={{ dossier.dossierNr }}">
+                                {{ "Search in these documents..." | trans() }}
+                            </a>
+                        </span>
+                    </form>
+                </div>
 
-            {{ macro.document_tabs(public_docs, not_public_docs, '#documenten') }}
+                {{ macro.document_tabs(public_docs, not_public_docs, not_online_docs, '#documenten', dossier) }}
+            {% endif %}
         </div>
     </section>
 

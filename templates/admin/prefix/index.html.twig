@@ -11,6 +11,7 @@
                 <tr>
                     <th>{{ "Prefix" | trans() }}</th>
                     <th>{{ "Description" | trans() }}</th>
+                    <th>{{ "Department" | trans() }}</th>
                     <th>{{ "Options" | trans() }}</th>
                 </tr>
 
@@ -18,12 +19,15 @@
                     <tr>
                         <td>{{ prefix.prefix }}</td>
                         <td>{{ prefix.description }}</td>
+                        <td>{{ prefix.organisation.name }}</td>
                         <td><a href="{{ path('app_admin_prefix_edit', { id: prefix.id.toBase58 }) }}" class="button">{{ "Edit" | trans() }}</a></td>
                     </tr>
                 {% endfor %}
             </table>
 
+            {% if matrix_has_permission('prefix.create') %}
             <a href="{{ path('app_admin_prefix_create') }}" class="button">{{ "New prefix" | trans() }}</a>
+            {% endif %}
 
         </div>
     </section>

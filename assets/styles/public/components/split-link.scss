@@ -1,0 +1,29 @@
+.split-link {
+    &,
+    &:hover,
+    &:focus,
+    &:visited {
+        text-decoration: none;
+    }
+
+    &:hover,
+    &:focus {
+        .split-link__underline {
+            text-decoration: underline;
+        }
+    }
+
+    .split-link__suffix {
+        &.de-emphasized {
+            --de-emphasized-font-size: 1rem;
+        }
+
+        @media (min-width: 42rem) {
+            margin-left: 0.25rem;
+        }
+    }
+
+    span {
+        hyphens: none;
+    }
+}

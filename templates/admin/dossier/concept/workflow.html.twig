@@ -1,0 +1,48 @@
+<nav class="bhr-steps mb-16" aria-label="Processtappen">
+    <ol class="bhr-steps__list">
+        {% set progressWidth = 0 %}
+        {% for step in workflowStatus.steps %}
+            {% set iconName = step.isCompleted ? 'check-rounded' : 'dot' %}
+            {% set isCurrentStep = step == workflowStatus.currentStep %}
+            {% set iconClass = '' %}
+            {% set stepClass = '' %}
+            {% set stepIndicationClass = '' %}
+            {% set stepTextClass = '' %}
+            {% set stepUrl = dossier.dossierNr ? path(step.routeName, { dossierId: dossier.dossierNr }) : '' %}
+
+            {% if isCurrentStep %}
+                {% set stepClass = 'bhr-steps__step--current' %}
+                {% set stepIndicationClass = 'bhr-steps__step-indication--current' %}
+                {% set stepTextClass = 'bhr-steps__step-text--current' %}
+            {% elseif not step.isBeforeCurrentStep %}
+                {% set iconClass = 'bhr-steps__icon--future' %}
+                {% if not step.accessible %}
+                    {% set stepUrl = '' %}
+                {% endif %}
+            {% endif %}
+            <li class="bhr-steps__step {{ stepClass }}">
+                <a class="bhr-steps__anchor" {% if stepUrl %} href="{{ stepUrl }}"{% endif %}>
+                    <twig:Admin:Icon class="bhr-steps__icon {{ iconClass }}" name="{{ iconName }}" color="fill-white" size="{{ isCurrentStep ? 40 : 32 }}" />
+                    <span class="bhr-steps__step-text {{ stepTextClass }}">
+                        <span class="font-bold">{{ ("workflow_step_" ~ step.stepName.value) | trans }}</span>
+                        <span class="sr-only">
+                            {% if step.isBeforeCurrentStep %}
+                                (voltooide stap)
+                            {% elseif isCurrentStep %}
+                                (huidige stap)
+                            {% else %}
+                                (nog te nemen stap)
+                            {% endif %}
+                        </span>
+                        <span class="bhr-steps__step-indication {{ stepIndicationClass }}">
+                            Stap {{ loop.index }} van {{ workflowStatus.steps | length }}
+                        </span>
+                    </span>
+                </a>
+            </li>
+        {% endfor %}
+    </ol>
+
+    {# The value of the attribute 'id' below is used in `workflow-styles.html.twig` to style the width of this element #}
+    <div class="bhr-steps__progress"><div class="bhr-steps__progress-bar" id="bhr-steps__progress-bar--custom-width"></div></div>
+</nav>

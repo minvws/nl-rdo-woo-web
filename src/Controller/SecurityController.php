@@ -60,7 +60,14 @@ class SecurityController extends AbstractController
 
             $this->doctrine->flush();
 
-            // Redirect
+            // Redirect to target path if exists
+            if ($request->getSession()->has('target_path')) {
+                $targetPath = strval($request->getSession()->get('target_path'));
+                $request->getSession()->remove('target_path');
+
+                return $this->redirect($targetPath);
+            }
+
             return $this->redirectToRoute('app_admin');
         }
 

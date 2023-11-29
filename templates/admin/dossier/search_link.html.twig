@@ -1,0 +1,9 @@
+{% if dossiers | default([]) | length > 0 %}
+    <ul>
+        {% for dossier in dossiers %}
+        <li class="py-2 px-3 border-b border-platinum" data-dossier-id="{{ dossier.id }}" role="option">
+            {{ dossier.title }}
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}

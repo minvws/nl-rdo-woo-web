@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory\Reader;
 
-use App\Exception\InventoryReaderException;
+use App\Exception\ExcelReaderException;
 use App\Service\Inventory\DocumentMetadata;
 
 class InventoryReadItem
@@ -12,11 +12,11 @@ class InventoryReadItem
     public function __construct(
         private readonly ?DocumentMetadata $documentMetadata,
         private readonly int $index,
-        private readonly ?InventoryReaderException $exception,
+        private readonly ?ExcelReaderException $exception,
     ) {
     }
 
-    public function getException(): ?InventoryReaderException
+    public function getException(): ?ExcelReaderException
     {
         return $this->exception;
     }

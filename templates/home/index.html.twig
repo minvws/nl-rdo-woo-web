@@ -7,7 +7,7 @@
 {% block body %}
 
     <section class="hero">
-        <img src="{{ asset('/img/hero/documenten.jpeg') }}" alt="{{ "Stacks of documents" | trans() }}">
+        <img src="{{ asset('/img/hero/documenten.jpeg') }}" alt="">
     </section>
 
         {% include "search/searchbar.html.twig" with { isHeroSearchForm: true } %}
@@ -34,21 +34,20 @@
                         <a class="block-link py-3" href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">
                             <h3 class="!leading-tight">{{ dossier.title | default("No title available" | trans()) }}</h3>
                             <div class="leading-4 block">
-                                <time class="ro-font-bold" datetime="{{ dossier.createdAt | date("Y-m-d") }}">{{ dossier.createdAt | format_date('long') }}</time>
-                                <p>
-                                    {{ dossier.decision | decision }} -
+                                <time class="ro-font-bold" datetime="{{ dossier.publicationDate | date("Y-m-d") }}">{{ dossier.publicationDate | format_date('long') }}</time>
+                                {% set thereAreDocuments = dossier.documents|length > 0 %}
+                                {% set thereArePages = dossier.pagecount|default(0) > 0 %}
+                                {% if (thereAreDocuments or thereArePages) %}
+                                    <p>
+                                        {% if thereAreDocuments %}
+                                            {{ "# documents" | trans({"count": dossier.documents|length})}}{% if thereAreDocuments and thereArePages %},{% endif %}
+                                        {% endif %}
 
-                                    {% set thereAreDocuments = dossier.documents|length > 0 %}
-                                    {% set thereArePages = dossier.pagecount|default(0) > 0 %}
-
-                                    {% if thereAreDocuments %}
-                                        {{ "# documents" | trans({"count": dossier.documents|length})}}{% if thereAreDocuments and thereArePages %},{% endif %}
-                                    {% endif %}
-
-                                    {% if thereArePages %}
-                                        {{ "# pages" | trans({"count": dossier.pagecount|default(0)})}}
-                                    {% endif %}
-                                </p>
+                                        {% if thereArePages %}
+                                            {{ "# pages" | trans({"count": dossier.pagecount|default(0)})}}
+                                        {% endif %}
+                                    </p>
+                                {% endif %}
                             </div>
                         </a>
                     </li>
@@ -67,17 +66,17 @@
             {% include "search/searchbar.html.twig" with { id: "search-field-bottom", isHalfWidth: true } %}
 
             <div class="column-3">
-                {# {{ macro.facet_preview("Organization" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, facets) }} #}
+                {# {{ macro.facet_preview("Department" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, facets) }} #}
                 {# {{ macro.facet_preview("Official" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::OFFICIAL').value, facets) }} #}
                 {{ macro.facet_preview("Subject" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, facets) }}
-                {{ macro.facet_preview("Document type" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, facets) }}
-{#                {{ macro.facet_preview("Period" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::PERIOD').value, facets) }}#}
+                {{ macro.facet_preview("Source document type" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, facets) }}
+                {# {{ macro.facet_preview("Period" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::PERIOD').value, facets) }} #}
                 {{ macro.facet_preview("Judgement" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, facets) }}
                 {{ macro.facet_preview("Grounds" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, facets) }}
             </div>
 
             <div class="centered pt-2">
-                <a class="arrowed-link ro-font-bold no-underline hover:underline focus:underline" href="{{ path('app_browse') }}">{{ "To all categories" | trans() }}</a>
+                <a class="arrowed-link ro-font-bold reverse-underline" href="{{ path('app_browse') }}">{{ "To all categories" | trans() }}</a>
             </div>
         </div>
     </section>
@@ -94,12 +93,12 @@
                     {{ "Before making a request, check if the information you are looking for is already public. Check, for example, <a href='https://www.rijksoverheid.nl/documenten'>rijksoverheid.nl</a>, <a href='https://wobcovid19.rijksoverheid.nl/'>wobcovid19.rijksoverheid.nl</a>, <a href='https://zoek.officielebekendmakingen.nl/uitbeddenzoeken/parlementair'>the archive of the Senate and the House of Representatives</a> or <a href='https://open.overheid.nl/'>open.overheid.nl</a>." | trans() | raw }}
                 </li>
                 <li>
-                    {{ "Check which government organization you should submit the request to. Do you have a request for the Ministry of Health, Welfare and Sport (VWS):" | trans() | raw }}
+                    {{ "Check which department you should submit the request to. Do you have a request for the Ministry of Health, Welfare and Sport (VWS):" | trans() | raw }}
                     <ul>
                         <li>{{ "and is it about the COVID-19 period? See the page <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/aanpak-vws-woo-verzoeken-corona'>Approach VWS Woo requests corona;</a>" | trans() | raw }}</li>
                         <li>{{ "for other requests, see the page Submitting a <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-verzoek-indienen'>Woo request to the Ministry of Health, Welfare and Sport.</a>" | trans() | raw }}</li>
                     </ul>
-                    {#                    {{ "Check which government organization you should submit the request to. Do you have a request for the Ministry of VWS? <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-vragen-vragen'>Send the request to us</a>." | trans() | raw }}#}
+                    {# {{ "Check which department you should submit the request to. Do you have a request for the Ministry of VWS? <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-vragen-vragen'>Send the request to us</a>." | trans() | raw }} #}
                 </li>
                 <li>
                     {{ "Please indicate as precisely as possible what information you are looking for. About what subject, with what people involved, from what period?" | trans() | raw }}

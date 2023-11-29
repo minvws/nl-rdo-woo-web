@@ -61,6 +61,8 @@ class ChangePasswordSubscriber implements EventSubscriberInterface
         }
 
         if ($user->isPasswordChangeRequired()) {
+            // Set target path so we return back to the correct page after changing the password
+            $event->getRequest()->getSession()->set('target_path', $event->getRequest()->getRequestUri());
             $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_change_password')));
         }
     }

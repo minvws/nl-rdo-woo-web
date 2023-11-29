@@ -24,8 +24,12 @@ class BatchDownload
     private Uuid $id;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private Dossier $dossier;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Dossier $dossier;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Inquiry $inquiry;
 
     #[ORM\Column]
     private \DateTimeImmutable $expiration;
@@ -40,6 +44,9 @@ class BatchDownload
     #[ORM\Column(length: 255)]
     private string $status;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $filename;
+
     #[ORM\Column(type: Types::BIGINT, nullable: true)]
     private ?string $size = null;
 
@@ -48,16 +55,9 @@ class BatchDownload
         return $this->id;
     }
 
-    public function getDossier(): Dossier
+    public function setId(UUid $uuid): void
     {
-        return $this->dossier;
-    }
-
-    public function setDossier(Dossier $dossier): static
-    {
-        $this->dossier = $dossier;
-
-        return $this;
+        $this->id = $uuid;
     }
 
     public function getExpiration(): \DateTimeImmutable
@@ -128,8 +128,43 @@ class BatchDownload
         return $this;
     }
 
+    public function getEntity(): EntityWithBatchDownload
+    {
+        if ($this->dossier instanceof EntityWithBatchDownload) {
+            return $this->dossier;
+        }
+
+        if ($this->inquiry instanceof EntityWithBatchDownload) {
+            return $this->inquiry;
+        }
+
+        throw new \RuntimeException('Batchdownload has no entity relation');
+    }
+
+    public function setEntity(EntityWithBatchDownload $entity): void
+    {
+        if ($entity instanceof Dossier) {
+            $this->dossier = $entity;
+
+            return;
+        }
+
+        if ($entity instanceof Inquiry) {
+            $this->inquiry = $entity;
+
+            return;
+        }
+
+        throw new \RuntimeException('Batchdownload does not support this entity type');
+    }
+
     public function getFilename(): string
     {
-        return sprintf('dossier-%s-%s.zip', $this->getDossier()->getDossierNr(), $this->getId()->toBase58());
+        return $this->filename ?? 'download-' . $this->id->toBase58() . '.zip';
+    }
+
+    public function setFilename(string $filename): void
+    {
+        $this->filename = $filename;
     }
 }

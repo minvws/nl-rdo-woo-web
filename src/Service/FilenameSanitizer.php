@@ -12,4 +12,24 @@ class FilenameSanitizer extends \IndieHD\FilenameSanitizer\FilenameSanitizer
 
         return $this;
     }
+
+    public function stripPhp()
+    {
+        $this->setFilename(htmlspecialchars($this->getFilename()));
+
+        return $this;
+    }
+
+    public function stripRiskyCharacters()
+    {
+        $filename = $this->getFilename();
+
+        $filename = str_replace('`', '', $filename);
+        $filename = strval(preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $filename));
+        $filename = strval(preg_replace('/[^a-zA-Z0-9._\-]/', '_', $filename));
+
+        $this->setFilename($filename);
+
+        return $this;
+    }
 }

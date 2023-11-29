@@ -1,0 +1,90 @@
+<div class="{{ css|default('') }} js-upload-section">
+    <div class="mb-4 hidden js-invalid-files">
+        <twig:Admin:Alert type="danger">
+            <p>
+                De volgende bestanden werden genegeerd.
+                {% if hasAllowedMimeTypes %}Alleen bestanden van het type {{ validExtensionsAnd }} zijn toegestaan.{% endif %}
+                {% if hasMaxFileSize %}De maximale bestandsgroote per bestand is {{ maxFileSize | size }}.{% endif %}
+            </p>
+
+            <twig:block name="extra">
+                <ul class="bhr-ul grid grid-cols-2 gap-x-8 gap-y-1 js-invalid-files-list"></ul>
+            </twig:block>
+        </twig:Admin:Alert>
+    </div>
+
+    <div class="bhr-upload-area js-upload-area">
+        <label class="block cursor-pointer px-4 -mx-4 py-8" for="{{ id }}">
+            {% if tip is not empty %}
+            <span class="block text-left text-lg leading-tight pb-8 -mt-3">
+                {{ tip }}
+            </span>
+            {% endif %}
+
+            <twig:Admin:Icon name="to-top" />
+
+            <span class="block pt-4">
+                <button
+                    class="font-bold text-sea-blue js-select-files js-select-files-main"
+                    data-upload-more-text="Nog meer bestanden selecteren"
+                    tabindex="-1"
+                    type="button"
+                >
+                    {{ multiple ? 'Bestanden' : 'Bestand' }} selecteren
+                </button> <span class="no-js:hidden">of hierin slepen</span>
+            </span>
+
+            {% if hasAllowedMimeTypes or hasMaxFileSize %}
+            <span class="block pt-2 text-sm">
+                {% if hasAllowedMimeTypes %}{{ multiple ? 'Bestanden' : 'Bestand' }} van het type {{ validExtensionsOr }}{% endif %}{%if hasMaxFileSize %} (max {{maxFileSize | size}} per bestand){% endif %}
+            </span>
+            {% endif %}
+        </label>
+
+        <input
+            {% if hasAllowedMimeTypes %}accept="{{ accept | join(',') }}"{% endif %}
+            class="bhr-upload-area__input js:sr-only js-upload-input"
+            {% if hasMaxFileSize %}data-max-file-size="{{ maxFileSize }}"{% endif %}
+            id="{{ id }}"
+            name="{{ name }}"
+            type="file"
+            {% if multiple %}multiple{% endif %}
+        >
+
+        {% if isAutoUploadEnabled %}
+            <div class="bhr-upload-area__files-area no-js:hidden js-auto-upload-files-area" data-endpoint="{{ endpoint }}" data-name="{{ name }}">
+                <button
+                    class="bhr-upload-area__no-files js-no-files-message js-select-files"
+                    for="{{ id }}"
+                    type="button"
+                >
+                    Geen {{ multiple ? 'bestanden' : 'bestand' }} aan het uploaden
+                </button>
+            </div>
+        {% else %}
+            <div class="bhr-upload-area__files-area no-js:hidden js-no-auto-upload-files-area">
+                <button
+                    class="bhr-upload-area__no-files js-no-files-message js-select-files"
+                    for="{{ id }}"
+                    type="button"
+                    hidden
+                >
+                    Geen {{ multiple ? 'bestanden' : 'bestand' }} geselecteerd
+                </button>
+            </div>
+        {% endif %}
+
+        {% if block('content') is not empty %}
+            <div class="text-left">
+                {% block content %}{% endblock %}
+            </div>
+        {% endif %}
+
+        <div class="bhr-upload-visual opacity-0 hidden js-upload-visual">
+            <div class="bhr-upload-visual__dot js-upload-visual-dot">
+                <twig:Admin:Icon color="fill-white" name="to-top" />
+                <span class="block pt-2 font-bold">Uploaden</span>
+            </div>
+        </div>
+    </div>
+</div>

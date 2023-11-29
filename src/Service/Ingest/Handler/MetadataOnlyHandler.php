@@ -26,7 +26,8 @@ class MetadataOnlyHandler implements Handler
             'document' => $document->getId(),
         ]);
 
-        $message = new IngestMetadataOnlyMessage($document->getId(), $options->forceRefresh());
+        // Force refresh to true so any existing metadata or pages from an older document version is removed.
+        $message = new IngestMetadataOnlyMessage($document->getId(), true);
         $this->bus->dispatch($message);
     }
 

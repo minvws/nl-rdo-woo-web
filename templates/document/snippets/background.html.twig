@@ -49,10 +49,10 @@
                 <td>{{ dossier.publicationReason | trans }}</td>
             </tr>
             {% endif %}
-            {% if dossier.createdAt is defined %}
+            {% if dossier.decisionDate is defined %}
             <tr>
                 <th scope="row">{{ "Date of disclosure" | trans() }}</th>
-                <td>{{ dossier.createdAt | format_date('long') }}</td>
+                <td>{{ dossier.decisionDate | format_date('long') }}</td>
             </tr>
             {% endif %}
 

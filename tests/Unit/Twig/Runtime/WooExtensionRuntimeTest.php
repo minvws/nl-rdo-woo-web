@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Twig\Runtime;
 
 use App\Repository\DocumentRepository;
+use App\Service\DocumentUploadQueue;
 use App\Service\Search\Query\Facet\FacetMappingService;
 use App\Service\Storage\ThumbnailStorageService;
 use App\Twig\Runtime\WooExtensionRuntime;
@@ -31,6 +32,7 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
             \Mockery::mock(DocumentRepository::class),
             \Mockery::mock(UrlGeneratorInterface::class),
             \Mockery::mock(FacetMappingService::class),
+            \Mockery::mock(DocumentUploadQueue::class),
         );
     }
 

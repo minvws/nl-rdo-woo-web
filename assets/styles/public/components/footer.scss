@@ -1,0 +1,9 @@
+body > footer {
+    --navigation-link-focus-outline: 2px dotted white;
+    margin-top: 10rem;
+
+    nav a {
+        padding: var(--list-base-item-padding);
+        padding-left: 1.25rem;
+    }
+}

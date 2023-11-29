@@ -8,9 +8,9 @@ use App\Service\Search\Model\Config;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Aggregation\NestedTermsAggregationStrategy;
 use App\Service\Search\Query\Aggregation\TermsAggregationStrategy;
+use App\Service\Search\Query\Filter\AndTermFilter;
 use App\Service\Search\Query\Filter\DocumentOnlyFilter;
 use App\Service\Search\Query\Filter\DossierAndNestedDossierFilter;
-use App\Service\Search\Query\Filter\DossierOnlyFilter;
 use App\Service\Search\Query\Filter\OrTermFilter;
 use App\Service\Search\Query\Filter\PeriodFilter;
 
@@ -42,8 +42,8 @@ class FacetMappingService
                 key: FacetKey::GROUNDS,
                 path: 'grounds',
                 queryParam: 'gnd',
-                filter: new DocumentOnlyFilter(new OrTermFilter()),
-                aggregationStrategy: new TermsAggregationStrategy(),
+                filter: new DocumentOnlyFilter(new AndTermFilter()),
+                aggregationStrategy: new TermsAggregationStrategy(false),
             ),
             new FacetDefinition(
                 key: FacetKey::JUDGEMENT,
@@ -91,7 +91,7 @@ class FacetMappingService
                 key: FacetKey::INQUIRY_DOSSIERS,
                 path: 'inquiry_ids',
                 queryParam: 'dsi',
-                filter: new DossierOnlyFilter(new OrTermFilter()),
+                filter: new DossierAndNestedDossierFilter(new OrTermFilter()),
                 // Intentionally no agg. strategy: only exists for filtering
             ),
             new FacetDefinition(

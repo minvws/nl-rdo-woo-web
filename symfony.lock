@@ -78,6 +78,22 @@
     "mhujer/breadcrumbs-bundle": {
         "version": "1.5.8"
     },
+    "minvws/audit-logger-bundle": {
+        "version": "dev-main"
+    },
+    "php-amqplib/rabbitmq-bundle": {
+        "version": "2.11",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.12",
+            "ref": "ce3ca2e4577270c4f518539aa6b9e878998fcfef"
+        },
+        "files": [
+            "config/packages/old_sound_rabbit_mq.yaml",
+            "src/Consumer/.gitignore"
+        ]
+    },
     "php-http/discovery": {
         "version": "1.18",
         "recipe": {
@@ -342,6 +358,9 @@
         "files": [
             "config/packages/uid.yaml"
         ]
+    },
+    "symfony/ux-twig-component": {
+        "version": "v2.11.2"
     },
     "symfony/validator": {
         "version": "6.2",

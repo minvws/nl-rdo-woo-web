@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Service\Search\Model;
 
 use App\Service\Search\Query\Facet\FacetDefinition;
+use App\Service\Search\Query\SortField;
+use App\Service\Search\Query\SortOrder;
 
 class Config
 {
@@ -34,6 +36,8 @@ class Config
         public readonly string $searchType = self::TYPE_ALL,
         public readonly array $documentInquiries = [],
         public readonly array $dossierInquiries = [],
+        public readonly SortField $sortField = SortField::SCORE,
+        public readonly SortOrder $sortOrder = SortOrder::DESC,
     ) {
     }
 

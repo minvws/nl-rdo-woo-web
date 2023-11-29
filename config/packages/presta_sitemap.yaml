@@ -6,3 +6,4 @@ presta_sitemap:
         lastmod: now
     items_by_set: 50000
     dump_directory: public
+    sitemap_file_prefix: sitemapindex-diwoo-infocat014

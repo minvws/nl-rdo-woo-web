@@ -6,6 +6,7 @@ namespace App\Service\Worker\Pdf\Extractor;
 
 use App\Entity\Document;
 use App\Service\Elastic\ElasticService;
+use App\Service\Stats\WorkerStatsService;
 use App\Service\Storage\DocumentStorageService;
 use App\Service\Worker\Pdf\Tools\Tesseract;
 use App\Service\Worker\Pdf\Tools\Tika;
@@ -23,6 +24,7 @@ class DocumentContentExtractor implements DocumentExtractorInterface
     protected ElasticService $elasticService;
     protected Tesseract $tesseract;
     protected Tika $tika;
+    protected WorkerStatsService $statsService;
 
     public function __construct(
         LoggerInterface $logger,
@@ -30,7 +32,8 @@ class DocumentContentExtractor implements DocumentExtractorInterface
         Client $redis,
         ElasticService $elasticService,
         Tesseract $tesseract,
-        Tika $tika
+        Tika $tika,
+        WorkerStatsService $statsService
     ) {
         $this->logger = $logger;
         $this->documentStorage = $documentStorage;
@@ -38,18 +41,24 @@ class DocumentContentExtractor implements DocumentExtractorInterface
         $this->elasticService = $elasticService;
         $this->tesseract = $tesseract;
         $this->tika = $tika;
+        $this->statsService = $statsService;
     }
 
     public function extract(Document $document, bool $forceRefresh): void
     {
         if ($forceRefresh || ! $this->isCached($document)) {
-            $tikaData = $this->extractContentFromPdf($document);
+            $contentAndMetadata = $this->extractContentFromPdf($document);
 
-            $this->setCachedTikaData($document, $tikaData);
+            $this->setCachedTikaData($document, $contentAndMetadata);
         }
 
-        $tikaData = $this->getCachedTikaData($document);
-        $this->indexDocument($document, $tikaData);
+        /** @var array{string, string[]} $contentAndMetadata */
+        $contentAndMetadata = $this->getCachedTikaData($document);
+        $metaData = $contentAndMetadata[1] ?? [];
+
+        $this->statsService->measure('index.document', function ($document, $metaData) {
+            $this->indexDocument($document, $metaData);
+        }, [$document, $metaData]);
     }
 
     /**
@@ -57,7 +66,11 @@ class DocumentContentExtractor implements DocumentExtractorInterface
      */
     protected function extractContentFromPdf(Document $document): array
     {
-        $localPdfPath = $this->documentStorage->downloadDocument($document);
+        /** @var string $localPdfPath */
+        $localPdfPath = $this->statsService->measure('download.document', function ($document) {
+            return $this->documentStorage->downloadDocument($document);
+        }, [$document]);
+
         if (! $localPdfPath) {
             $this->logger->error('Failed to save document to local storage', [
                 'document' => $document->getId(),
@@ -66,8 +79,13 @@ class DocumentContentExtractor implements DocumentExtractorInterface
             return ['', []];
         }
 
-        $tikaData = $this->tika->extract($localPdfPath);
+        /** @var string[] $tikaData */
+        $tikaData = $this->statsService->measure('tika', function ($localPdfPath) {
+            return $this->tika->extract($localPdfPath);
+        }, [$localPdfPath]);
+
         $documentContent = $tikaData['X-TIKA:content'] ?? '';
+        unset($tikaData['X-TIKA:content']);
 
         $this->documentStorage->removeDownload($localPdfPath);
 
@@ -84,9 +102,6 @@ class DocumentContentExtractor implements DocumentExtractorInterface
      */
     protected function indexDocument(Document $document, array $tikaData): void
     {
-        // Unset the content from the tika data, as we already store that separately
-        unset($tikaData['X-TIKA:content']);
-
         try {
             $this->elasticService->updateDocument($document, $tikaData);
         } catch (\Exception $e) {

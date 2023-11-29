@@ -1,0 +1,515 @@
+auth_matrix:
+    entries: [
+      # -- User ----------------------------------------------------------------------------
+        {
+            # The prefix for this entry. This in combination with the permission is what we are checking against.
+            prefix: "user",
+            # At least one of these roles a logged-in user should have to be able to perform the action.
+            roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            # Set of permissions that are allowed for this prefix. Defaults to false if not specified.
+            permissions: {
+                # The user has create permission for this prefix.
+                create: true,
+                # The user has read permission for this prefix.
+                read: true,
+                # The user has update permission for this prefix.
+                update: true,
+                # The user has delete permission for this prefix.
+                delete: true,
+            },
+            # Filters are supplementary checks that can be performed entities.
+            filters: {
+                # The matching user can only access entities that belong to the same organisation as the user.
+                organisation_only: true,
+            }
+        }
+        {
+            prefix: "user",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        }
+        {
+            prefix: "user",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        }
+
+      # -- Official ----------------------------------------------------------------------------
+        {
+            prefix: "official",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        }
+        {
+            prefix: "official",
+            roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+            },
+            filters: {
+                organisation_only: true,
+            }
+        }
+        {
+            prefix: "official",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        },
+
+      # -- Department ----------------------------------------------------------------------------
+        {
+            prefix: "department",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        }
+        {
+            prefix: "department",
+            roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+            },
+            filters: {
+                organisation_only: true,
+            }
+        }
+        {
+            prefix: "department",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        },
+
+      # -- Dossier ----------------------------------------------------------------------------
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_DOSSIER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+            },
+            filters: {
+                organisation_only: true,
+                published_dossiers: true,
+            }
+        }
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_DOSSIER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: true,
+                published_dossiers: false,
+                unpublished_dossiers: true,
+            }
+        }
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_VIEW_ACCESS" ],
+            permissions: {
+                create: false,
+                read: true,
+                update: false,
+                delete: false,
+            },
+            filters: {
+                organisation_only: true,
+                published_dossiers: true,
+                unpublished_dossiers: true,
+            }
+        }
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                execute: true,
+                administration: true,
+            },
+            filters: {
+                organisation_only: false,
+                published_dossiers: true,
+                unpublished_dossiers: true,
+            }
+        }
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+                execute: true,
+            },
+            filters: {
+                organisation_only: false,
+                published_dossiers: true,
+            }
+        }
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                execute: true,
+            },
+            filters: {
+                organisation_only: false,
+                unpublished_dossiers: true,
+            }
+        }
+
+      # -- Document ----------------------------------------------------------------------------
+        {
+            prefix: "document",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: false,
+                published_dossiers: true,
+                unpublished_dossiers: true,
+            }
+        },
+        {
+            prefix: "document",
+            roles: [ "ROLE_DOSSIER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: true,
+                published_dossiers: false,
+                unpublished_dossiers: true,
+            }
+        },
+        {
+            prefix: "document",
+            roles: [ "ROLE_DOSSIER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+            },
+            filters: {
+                organisation_only: true,
+                published_dossiers: true,
+                unpublished_dossiers: false,
+            }
+        },
+        {
+            prefix: "document",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: true,
+                published_dossiers: false,
+                unpublished_dossiers: true,
+            }
+        },
+        {
+            prefix: "document",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+            },
+            filters: {
+                organisation_only: true,
+                published_dossiers: true,
+                unpublished_dossiers: false,
+            }
+        },
+        {
+            prefix: "document",
+            roles: [ "ROLE_VIEW_ACCESS" ],
+            permissions: {
+                create: false,
+                read: true,
+                update: false,
+                delete: false,
+            },
+            filters: {
+                organisation_only: true,
+                published_dossiers: true,
+                unpublished_dossiers: false,
+            }
+        },
+
+      # -- Prefix ----------------------------------------------------------------------------
+        {
+            prefix: "prefix",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        }
+        {
+            prefix: "prefix",
+            roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            permissions: {
+                create: false,
+                read: true,
+                update: false,
+                delete: false,
+            },
+            filters: {
+                organisation_only: true,
+            }
+        }
+        {
+            prefix: "prefix",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        },
+
+      # -- Organisation ----------------------------------------------------------------------------
+        {
+            prefix: "organisation",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        }
+        {
+            prefix: "organisation",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        },
+
+      # -- Inquiry ----------------------------------------------------------------------------
+        {
+            prefix: "inquiry",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                administration: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        },
+        {
+            prefix: "inquiry",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        }
+        {
+            prefix: "inquiry",
+            roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+            },
+            filters: {
+                organisation_only: true,
+            }
+        }
+        {
+            prefix: "inquiry",
+            roles: [ "ROLE_DOSSIER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+            },
+            filters: {
+                organisation_only: true,
+            }
+        }
+        {
+            prefix: "inquiry",
+            roles: [ "ROLE_VIEW_ACCESS" ],
+            permissions: {
+                create: false,
+                read: true,
+                update: false,
+                delete: false,
+            },
+            filters: {
+                organisation_only: true,
+            }
+        }
+
+      # -- Misc ----------------------------------------------------------------------------
+        {
+            prefix: "stat",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: false,
+                read: true,
+                update: false,
+                delete: false,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        }
+        {
+            prefix: "stat",
+            roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            permissions: {
+                create: false,
+                read: true,
+                update: false,
+                delete: false,
+            },
+            filters: {
+                organisation_only: true,
+            }
+        }
+        {
+            prefix: "stat",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            }
+        },
+        {
+            prefix: "token",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+        },
+        {
+            prefix: "elastic",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            }
+        },
+
+    ]

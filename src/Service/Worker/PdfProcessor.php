@@ -11,9 +11,6 @@ use App\Service\Worker\Pdf\Extractor\PageContentExtractor;
 use App\Service\Worker\Pdf\Extractor\PageExtractor;
 use App\Service\Worker\Pdf\Extractor\ThumbnailExtractor;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
 class PdfProcessor
 {
     public function __construct(

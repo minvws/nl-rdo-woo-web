@@ -4,7 +4,7 @@ SHELL=/usr/bin/env bash -O globstar
 
 all: help
 
-test: test_phpcs test_phpstan test_phpcsfixer test_phpmd test_unit test_psalm test_twig test_markdown ## Runs tests
+test: test_phpcs test_phpstan test_phpcsfixer test_phpmd test_unit test_psalm test_twig test_markdown test_translations ## Runs tests
 
 test_phpcs:
 	source test-utils.sh ;\
@@ -42,6 +42,11 @@ test_twig: ## Run twig linter
 	APP_DEBUG=false APP_ENV=prod php bin/console cache:clear
 	APP_DEBUG=false APP_ENV=prod php bin/console cache:warmup
 	APP_DEBUG=false APP_ENV=prod php bin/console lint:twig templates
+
+test_translations: ## Run yaml linter on translation files
+	source test-utils.sh ;\
+	section "TRANSLATION-LINT" ;\
+	php bin/console lint:yaml translations
 
 test_markdown: ## Lint markdown files
 	source test-utils.sh ;\

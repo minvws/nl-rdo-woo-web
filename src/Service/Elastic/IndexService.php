@@ -123,7 +123,17 @@ class IndexService
     {
         $indices = $this->find();
 
-        return $indices;
+        // ES returns indices in a random order for each request, so manually order them for a consistent list
+        usort(
+            $indices,
+            static fn (Index $index1, Index $index2) => $index2->name <=> $index1->name
+        );
+
+        // Also filter out a special index that is not relevant
+        return array_filter(
+            $indices,
+            static fn (Index $index) => $index->name !== 'worker_stats'
+        );
     }
 
     /**

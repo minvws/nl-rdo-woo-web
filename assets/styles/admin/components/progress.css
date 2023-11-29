@@ -1,0 +1,13 @@
+@layer components {
+    .bhr-progress[value] {
+        @apply appearance-none block h-2 rounded overflow-hidden w-full;
+    }
+
+    .bhr-progress[value]::-webkit-progress-bar {
+        @apply bg-anti-flash-white;
+    }
+
+    .bhr-progress[value]::-webkit-progress-value {
+        @apply bg-ocean-boat-blue;
+    }
+}

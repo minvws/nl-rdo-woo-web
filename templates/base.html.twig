@@ -1,8 +1,10 @@
+
 <!doctype html>
 <html lang="{{ "lang" | trans() }}" class="no-js">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="format-detection" content="telephone=no">
         {% block meta %}{% endblock %}
 
         <title>
@@ -12,45 +14,48 @@
 
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-        {{ encore_entry_link_tags('woopie') }}
-        {{ encore_entry_link_tags('app') }}
-        {% block extra_stylesheets %}{% endblock %}
+        {{ encore_entry_link_tags('public') }}
 
-        {{ encore_entry_script_tags('app') }}
-        {{ encore_entry_script_tags('woopie') }}
-        {% block extra_javascripts %}{% endblock %}
+        {{ encore_entry_script_tags('public') }}
 
-        {% include "piwik.html.twig" %}
+        {% include "piwik-script.html.twig" %}
     </head>
 
     <!-- App versie: {{ app_version().version }} (Git referentie: {{ app_version().git_ref }}) -->
 
     <body>
+         {% if form is defined %}
+            {% form_theme form 'forms/public_form_theme.html.twig' %}
+        {% endif %}
         <header>
             <a href="#main-content" class="button skip-to-content">{{ "Go directly to content" | trans() }}</a>
 
             <a href="{{ path('app_home') }}" class="ro-logo">
                 <img src="{{ asset('/img/ro-logo.svg') }}" alt="Logo Rijksoverheid">
                 <span class="logo__text">{{ "Ministry of Health, Welfare and Sport" | trans }}</span>
+                <span class="visually-hidden">, {{ "Go to homepage" | trans() }}</span>
             </a>
 
             <nav
                 aria-label="{{ "Main Navigation" | trans() }}"
                 class="collapsible"
-                data-close-label="{{ "Close menu" | trans() }}"
+                data-close-label="{{ "Menu" | trans() }}"
                 data-media="(min-width: 50rem)"
                 data-open-label="{{ "Menu" | trans() }}"
             >
                 <div class="collapsing-element" id="main-nav-div">
+                    {% set isHomePage = app.request.get('_route') == 'app_home' %}
+                    {% set isSearchPage = app.request.get('_route') == 'app_browse' or (app.request.get('_route') == 'app_search' and app.request.get('type') != 'dossier') %}
+                    {% set isPublishedDecisionsPage = app.request.get('_route') == 'app_search' and app.request.get('type') == 'dossier' %}
                     <ul>
                         <li>
-                            <a href="{{ path('app_home') }}" {% if app.request.get('_route') == 'app_home' %}aria-current="page"{% endif %}>
-                                <span class="svg-icon svg-home mr-2 mt-[-2px] w-[24px] h-[24px]" aria-hidden="true"></span>
+                            <a href="{{ path('app_home') }}" {% if isHomePage %}aria-current="page"{% endif %}>
+                                <twig:Icon name="house" color="fill-white" class="me-2" />
                                 {{ "Home" | trans() }}
                             </a>
                         </li>
-                        <li><a href="{{ path('app_browse') }}" {% if app.request.get('_route') == 'app_search' %}aria-current="page"{% endif %}>{{ "Search for documents and decisions" | trans() }}</a></li>
-                        <li><a href="{{ path('app_search')}}?type=dossier" {% if app.request.get('_route') == 'app_browse' %}aria-current="page"{% endif %}>{{ "All published decisions" | trans() }}</a></li>
+                        <li><a href="{{ path('app_browse') }}" {% if isSearchPage %}aria-current="page"{% endif %}>{{ "Search for documents and decisions" | trans() }}</a></li>
+                        <li><a href="{{ path('app_search', {'type': 'dossier', 'sort': 'decision_date', 'sortorder': 'desc'})}}" {% if isPublishedDecisionsPage  %}aria-current="page"{% endif %}>{{ "All published decisions" | trans() }}</a></li>
                     </ul>
                 </div>
             </nav>
@@ -98,9 +103,9 @@
                             <ul>
                                 <li><a href="{{ path('app_contact') }}">Contact</a></li>
                                 {# <li><a href="">{{ "RSS recent publications" | trans }}</a></li> #}
-{#                                <li><a href="https://wobcovid19.rijksoverheid.nl/archief/">{{ "Archive" | trans }}</a></li>#}
+                                {# <li><a href="https://wobcovid19.rijksoverheid.nl/archief/">{{ "Archive" | trans }}</a></li>#}
                                 {% if not app.user %}
-{#                                    <li><a href="{{ path('app_login') }}">{{ "Login" | trans }}</a></li>#}
+                                {#<li><a href="{{ path('app_login') }}">{{ "Login" | trans }}</a></li>#}
                                 {% else %}
                                     <li><a href="{{ path('app_admin') }}">{{ "Counter" | trans() }}</a></li>
                                     <li><a href="{{ path('app_logout') }}">{{ "Logout" | trans }}</a></li>
@@ -111,16 +116,18 @@
                         <nav aria-labelledby="page-footer-nav-2-heading">
                             <h3 id="page-footer-nav-2-heading">{{ "About this site" | trans() }}</h3>
                             <ul>
-                                <li><a href="{{ path('app_about') | trans() }}">{{ "About Woo" | trans() }}</a></li>
+                                <li><a href="{{ path('app_about') }}">{{ "About Woo" | trans() }}</a></li>
                                 <li><a href="{{ path('app_copyright') }}">{{ "Copyright" | trans() }}</a></li>
                                 <li><a href="{{ path('app_privacy') }}">{{ "Privacy" | trans() }}</a></li>
                                 <li><a href="{{ path('app_cookies') }}">{{ "Cookies" | trans() }}</a></li>
-                                <li><a href="{{ path('app_accessibility') | trans() }}">{{ "Accessibility" | trans() }}</a></li>
+                                <li><a href="{{ path('app_accessibility') }}">{{ "Accessibility" | trans() }}</a></li>
                             </ul>
                         </nav>
                     </div>
                 </div>
             </div>
         </footer>
+
+        {% include "piwik-noscript.html.twig" %}
     </body>
 </html>

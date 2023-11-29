@@ -15,6 +15,8 @@ framework:
         storage_factory_id: session.storage.factory.native
         name: '%env(COOKIE_NAME)%'
         cookie_httponly: true
+        cookie_lifetime: 604800
+        gc_maxlifetime: 604800
 
     #esi: true
     #fragments: true
@@ -26,9 +28,3 @@ when@test:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
-
-when@dev:
-    framework:
-        session:
-            cookie_lifetime: 604800
-            gc_maxlifetime: 604800

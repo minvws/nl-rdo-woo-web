@@ -7,10 +7,33 @@ namespace App;
 class Roles
 {
     public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
-    public const ROLE_ADMIN = 'ROLE_ADMIN';
-    public const ROLE_ADMIN_USERS = 'ROLE_ADMIN_USERS';
-    public const ROLE_ADMIN_DOSSIERS = 'ROLE_ADMIN_DOSSIERS';
-    public const ROLE_ADMIN_REQUESTS = 'ROLE_ADMIN_REQUESTS';
+    public const ROLE_GLOBAL_ADMIN = 'ROLE_GLOBAL_ADMIN';
+    public const ROLE_ORGANISATION_ADMIN = 'ROLE_ORGANISATION_ADMIN';
+    public const ROLE_DOSSIER_ADMIN = 'ROLE_DOSSIER_ADMIN';
+    public const ROLE_VIEW_ACCESS = 'ROLE_VIEW_ACCESS';
+
+    // This is the role hierarchy. It is used to determine which roles a user can assign to other users.
+    /** @var array<string, string[]> */
+    protected static array $roleHierarchy = [
+        self::ROLE_SUPER_ADMIN => [
+            self::ROLE_SUPER_ADMIN,
+            self::ROLE_GLOBAL_ADMIN,
+            self::ROLE_ORGANISATION_ADMIN,
+            self::ROLE_DOSSIER_ADMIN,
+            self::ROLE_VIEW_ACCESS,
+        ],
+        self::ROLE_GLOBAL_ADMIN => [
+            self::ROLE_GLOBAL_ADMIN,
+            self::ROLE_ORGANISATION_ADMIN,
+            self::ROLE_DOSSIER_ADMIN,
+            self::ROLE_VIEW_ACCESS,
+        ],
+        self::ROLE_ORGANISATION_ADMIN => [
+            self::ROLE_ORGANISATION_ADMIN,
+            self::ROLE_DOSSIER_ADMIN,
+            self::ROLE_VIEW_ACCESS,
+        ],
+    ];
 
     /** @var array|array{role: string, description: string, help: string}[] */
     protected static array $roleInfo = [
@@ -20,24 +43,24 @@ class Roles
             'help' => 'This user is allowed system wide operations.',
         ],
         [
-            'role' => self::ROLE_ADMIN,
+            'role' => self::ROLE_GLOBAL_ADMIN,
             'description' => 'Global administrator',
             'help' => 'This user is allowed every operation in the administration system.',
         ],
         [
-            'role' => self::ROLE_ADMIN_USERS,
-            'description' => 'User administrator',
-            'help' => 'This user can create/edit users that have access to the administration system.',
+            'role' => self::ROLE_ORGANISATION_ADMIN,
+            'description' => 'Organisation administrator',
+            'help' => 'This user has administrative permissions in the attached organisation(s).',
         ],
         [
-            'role' => self::ROLE_ADMIN_DOSSIERS,
+            'role' => self::ROLE_DOSSIER_ADMIN,
             'description' => 'Dossier administrator',
-            'help' => 'This user can create and manage dossiers including the documents.',
+            'help' => 'This user can create and manage dossiers including the documents in the attached organisation(s).',
         ],
         [
-            'role' => self::ROLE_ADMIN_REQUESTS,
-            'description' => 'Request administrator',
-            'help' => 'This user can manage Woo requests.',
+            'role' => self::ROLE_VIEW_ACCESS,
+            'description' => 'View access',
+            'help' => 'This user has view access to the attached organisation(s).',
         ],
     ];
 
@@ -49,5 +72,13 @@ class Roles
     public static function roleDetails(): array
     {
         return self::$roleInfo;
+    }
+
+    /**
+     * @return array|string[]
+     */
+    public static function getRoleHierarchy(string $role): array
+    {
+        return self::$roleHierarchy[$role] ?? [];
     }
 }

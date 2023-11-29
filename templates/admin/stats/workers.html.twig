@@ -1,0 +1,23 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = "Statistics & Monitoring" | trans() %}
+
+{% block extra_scripts %}
+    {{ encore_entry_script_tags('worker-charts') }}
+{% endblock %}
+
+{% block body %}
+    <section>
+        <div>
+
+            <h1>{{ "Worker Monitoring" | trans() }}</h1>
+
+            <script {{ csp_nonce() }} id="chartdata" type="application/json">
+                {{ data | json_encode | raw('javascript') }}
+            </script>
+
+            <div style="width: 100%;"><canvas id="js-workerstats"></canvas></div>
+
+        </div>
+    </section>
+{% endblock %}

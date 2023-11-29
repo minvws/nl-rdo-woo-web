@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Doctrine\TimestampableTrait;
 use App\Repository\DossierRepository;
 use App\ValueObject\DossierUploadStatus;
+use App\ValueObject\TranslatableMessage;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -18,18 +19,20 @@ use Symfony\Component\Uid\Uuid;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[UniqueEntity('dossierNr')]
 #[ORM\HasLifecycleCallbacks]
-class Dossier implements EntityWithId
+class Dossier implements EntityWithId, EntityWithBatchDownload
 {
     use TimestampableTrait;
 
     public const STATUS_CONCEPT = 'concept';                // Dossier is just uploaded and does not have (all) the documents present yet
-    public const STATUS_COMPLETED = 'completed';            // Dossier has all the uploaded documents and is ready for publication
+    public const STATUS_SCHEDULED = 'scheduled';            // Dossier is no longer a concept, but preview and publish is planned at a future date
     public const STATUS_PREVIEW = 'preview';                // Dossier is in preview mode and can only be viewed with specific tokens
     public const STATUS_PUBLISHED = 'published';            // Dossier is published and available for everybody
     public const STATUS_RETRACTED = 'retracted';            // Dossier is retracted (but not deleted) and not available for anybody
@@ -48,9 +51,9 @@ class Dossier implements EntityWithId
     // criteria that must be met (ie: concept -> ready needs all documents to be present etc)
     /** @var array<string, array<string>> */
     public array $allowedStates = [
-        Dossier::STATUS_CONCEPT => [Dossier::STATUS_COMPLETED],
-        Dossier::STATUS_COMPLETED => [Dossier::STATUS_PREVIEW, Dossier::STATUS_CONCEPT],
-        Dossier::STATUS_PREVIEW => [Dossier::STATUS_RETRACTED, Dossier::STATUS_CONCEPT, Dossier::STATUS_PUBLISHED],
+        Dossier::STATUS_CONCEPT => [Dossier::STATUS_SCHEDULED, Dossier::STATUS_PREVIEW, Dossier::STATUS_PUBLISHED],
+        Dossier::STATUS_SCHEDULED => [Dossier::STATUS_PREVIEW, Dossier::STATUS_PUBLISHED],
+        Dossier::STATUS_PREVIEW => [Dossier::STATUS_RETRACTED, Dossier::STATUS_PUBLISHED],
         Dossier::STATUS_PUBLISHED => [Dossier::STATUS_RETRACTED],
         Dossier::STATUS_RETRACTED => [Dossier::STATUS_CONCEPT],
     ];
@@ -67,7 +70,7 @@ class Dossier implements EntityWithId
     private Collection $documents;
 
     #[ORM\Column(length: 255, unique: true)]
-    private string $dossierNr;
+    private string $dossierNr = '';
 
     #[ORM\Column(length: 500)]
     private string $title;
@@ -107,7 +110,7 @@ class Dossier implements EntityWithId
     private Collection $inquiries;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $publicationDate;
+    private ?\DateTimeImmutable $publicationDate = null;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: Inventory::class)]
     private ?Inventory $inventory = null;
@@ -118,11 +121,23 @@ class Dossier implements EntityWithId
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: DecisionDocument::class)]
     private ?DecisionDocument $decisionDocument = null;
 
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $decisionDate = null;
+
     /**
      * @var string[]|null
      */
     #[ORM\Column(nullable: true)]
     private ?array $defaultSubjects = null;
+
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $previewDate = null;
+
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false)]
+    private bool $completed = false;
+
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: InventoryProcessRun::class)]
+    private ?InventoryProcessRun $processRun = null;
 
     public function __construct()
     {
@@ -144,7 +159,7 @@ class Dossier implements EntityWithId
 
     public function setDossierNr(string $dossierNr): self
     {
-        $this->dossierNr = $dossierNr;
+        $this->dossierNr = strtolower($dossierNr);
 
         return $this;
     }
@@ -168,12 +183,9 @@ class Dossier implements EntityWithId
 
     public function setStatus(string $status): self
     {
-        if ($status === self::STATUS_PUBLISHED) {
-            $this->publicationDate = new \DateTimeImmutable();
-        }
-
         if ($status === self::STATUS_RETRACTED) {
             $this->publicationDate = null;
+            $this->previewDate = null;
         }
 
         $this->status = $status;
@@ -211,6 +223,19 @@ class Dossier implements EntityWithId
     }
 
     /**
+     * @param Department[] $departments
+     *
+     * @return $this
+     */
+    public function setDepartments(array $departments): self
+    {
+        $this->departments->clear();
+        $this->departments->add(...$departments);
+
+        return $this;
+    }
+
+    /**
      * @return Collection|GovernmentOfficial[]
      */
     public function getGovernmentOfficials(): Collection
@@ -218,8 +243,12 @@ class Dossier implements EntityWithId
         return $this->governmentOfficials;
     }
 
-    public function addGovernmentOfficial(GovernmentOfficial $governmentOfficial): self
+    public function addGovernmentOfficial(?GovernmentOfficial $governmentOfficial): self
     {
+        if ($governmentOfficial === null) {
+            return $this;
+        }
+
         if (! $this->governmentOfficials->contains($governmentOfficial)) {
             $this->governmentOfficials->add($governmentOfficial);
         }
@@ -448,5 +477,96 @@ class Dossier implements EntityWithId
         $this->rawInventory = $rawInventory;
 
         return $this;
+    }
+
+    public function needsInventoryAndDocuments(): bool
+    {
+        return $this->getDecision() !== self::DECISION_NOTHING_FOUND
+            && $this->getDecision() !== self::DECISION_NOT_PUBLIC;
+    }
+
+    public function getPreviewDate(): ?\DateTimeImmutable
+    {
+        return $this->previewDate;
+    }
+
+    public function setPreviewDate(?\DateTimeImmutable $previewDate): static
+    {
+        $this->previewDate = $previewDate;
+
+        return $this;
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->completed;
+    }
+
+    public function setCompleted(bool $completed): static
+    {
+        $this->completed = $completed;
+
+        return $this;
+    }
+
+    public function hasFuturePreviewDate(): bool
+    {
+        return $this->previewDate > new \DateTimeImmutable('today midnight');
+    }
+
+    public function hasFuturePublicationDate(): bool
+    {
+        return $this->publicationDate > new \DateTimeImmutable('today midnight');
+    }
+
+    public function getDecisionDate(): ?\DateTimeImmutable
+    {
+        return $this->decisionDate;
+    }
+
+    public function setDecisionDate(?\DateTimeImmutable $decisionDate): static
+    {
+        $this->decisionDate = $decisionDate;
+
+        return $this;
+    }
+
+    public function getProcessRun(): ?InventoryProcessRun
+    {
+        return $this->processRun;
+    }
+
+    public function setProcessRun(InventoryProcessRun $run): self
+    {
+        if ($this->processRun?->isNotFinal()) {
+            throw new \RuntimeException('Cannot overwrite a non-final InventoryProcessRun');
+        }
+
+        $this->processRun = $run;
+
+        return $this;
+    }
+
+    public function isAvailableForBatchDownload(): bool
+    {
+        if ($this->getStatus() !== self::STATUS_PUBLISHED && $this->getStatus() !== self::STATUS_PREVIEW) {
+            return false;
+        }
+
+        if ($this->getUploadStatus()->getActualUploadCount() === 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function getDownloadFilePrefix(): TranslatableMessage
+    {
+        return new TranslatableMessage(
+            'filename-decision-{dossierNr}',
+            [
+                'dossierNr' => $this->dossierNr,
+            ]
+        );
     }
 }

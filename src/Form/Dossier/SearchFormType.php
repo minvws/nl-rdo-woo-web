@@ -11,12 +11,18 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @template-extends AbstractType<DocumentUploadType>
  */
 class SearchFormType extends AbstractType
 {
+    public function getBlockPrefix(): string
+    {
+        return '';
+    }
+
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -27,7 +33,7 @@ class SearchFormType extends AbstractType
                 'required' => false,
                 'choices' => [
                     Dossier::STATUS_CONCEPT => Dossier::STATUS_CONCEPT,
-                    Dossier::STATUS_COMPLETED => Dossier::STATUS_COMPLETED,
+                    Dossier::STATUS_SCHEDULED => Dossier::STATUS_SCHEDULED,
                     Dossier::STATUS_PREVIEW => Dossier::STATUS_PREVIEW,
                     Dossier::STATUS_PUBLISHED => Dossier::STATUS_PUBLISHED,
                     Dossier::STATUS_RETRACTED => Dossier::STATUS_RETRACTED,
@@ -43,12 +49,15 @@ class SearchFormType extends AbstractType
                 'multiple' => true,
             ])
 
-            ->add('submit', SubmitType::class, [
-                'attr' => [
-                    'class' => 'icon icon-search',
-                ],
-            ])
+            ->add('submit', SubmitType::class)
             ->setMethod('GET')
             ->getForm();
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'csrf_protection' => false,
+        ]);
     }
 }

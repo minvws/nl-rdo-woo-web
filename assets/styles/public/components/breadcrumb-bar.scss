@@ -1,0 +1,20 @@
+:root {
+    --breadcrumb-bar-background-color: transparent;
+    --breadcrumb-bar-link-visited-text-color: var(--application-base-text-color);
+    --breadcrumb-bar-link-hover-text-color: var(--application-base-text-color);
+    --breadcrumb-bar-icon-text-color: var(--application-base-text-color);
+    --breadcrumb-bar-text-color: var(--application-base-text-color);
+    --breadcrumb-bar-link-active-text-color: var(--application-base-text-color);
+    --breadcrumb-bar-link-focus-text-color: var(--application-base-text-color);
+    --breadcrumb-bar-link-text-color: var(--application-base-text-color);
+    --breadcrumb-bar-link-hover-text-decoration: none;
+    --breadcrumb-bar-padding-bottom: 0;
+    --breadcrumb-bar-content-wrapper-padding-left: 0;
+    --breadcrumb-bar-content-wrapper-padding-right: 0;
+    --breadcrumb-bar-list-item-gap: 1.5rem;
+}
+
+.breadcrumb-bar {
+    --breadcrumb-bar-padding-top: 0.5rem;
+    --breadcrumb-bar-padding-bottom: 0.5rem;
+}

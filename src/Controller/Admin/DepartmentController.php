@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Attribute\AuthMatrix;
 use App\Entity\Department;
 use App\Entity\GovernmentOfficial;
 use App\Form\DepartmentType;
@@ -11,6 +12,7 @@ use App\Form\GovernmentOfficialType;
 use App\Message\UpdateDepartmentMessage;
 use App\Message\UpdateOfficialMessage;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,6 +38,7 @@ class DepartmentController extends AbstractController
     }
 
     #[Route('/balie/departementen', name: 'app_admin_departments', methods: ['GET'])]
+    #[AuthMatrix('department.read')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
@@ -51,7 +54,8 @@ class DepartmentController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/departmenten/new', name: 'app_admin_department_create', methods: ['GET', 'POST'])]
+    #[Route('/balie/departementen/new', name: 'app_admin_department_create', methods: ['GET', 'POST'])]
+    #[AuthMatrix('department.create')]
     public function create(Breadcrumbs $breadcrumbs, Request $request): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
@@ -78,6 +82,7 @@ class DepartmentController extends AbstractController
     }
 
     #[Route('/balie/bewindsvoerders/new', name: 'app_admin_governmentofficial_create', methods: ['GET', 'POST'])]
+    #[AuthMatrix('official.create')]
     public function createHead(Breadcrumbs $breadcrumbs, Request $request): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
@@ -103,9 +108,13 @@ class DepartmentController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/bewindsvoerders/{id}', name: 'app_admin_governmentofficial_edit', methods: ['GET', 'POST'])]
-    public function modifyHead(Breadcrumbs $breadcrumbs, Request $request, GovernmentOfficial $head): Response
-    {
+    #[Route('/balie/bewindsvoerders/{officialId}', name: 'app_admin_governmentofficial_edit', methods: ['GET', 'POST'])]
+    #[AuthMatrix('official.update')]
+    public function modifyHead(
+        Breadcrumbs $breadcrumbs,
+        Request $request,
+        #[MapEntity(mapping: ['officialId' => 'id'])] GovernmentOfficial $head
+    ): Response {
         $breadcrumbs->addRouteItem('Home', 'app_home');
         $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addRouteItem('Department management', 'app_admin_departments');
@@ -113,14 +122,12 @@ class DepartmentController extends AbstractController
 
         $form = $this->createForm(GovernmentOfficialType::class, $head);
 
-        $oldHead = clone $head;
-
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->doctrine->flush();
             $this->addFlash('backend', ['success' => $this->translator->trans('Official modified')]);
 
-            $this->messageBus->dispatch(new UpdateOfficialMessage($oldHead, $head));
+            $this->messageBus->dispatch(UpdateOfficialMessage::forGovermentOfficial($head));
 
             return $this->redirectToRoute('app_admin_departments');
         }
@@ -131,7 +138,8 @@ class DepartmentController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/departmenten/{id}', name: 'app_admin_department_edit', methods: ['GET', 'POST'])]
+    #[Route('/balie/departementen/{id}', name: 'app_admin_department_edit', methods: ['GET', 'POST'])]
+    #[AuthMatrix('department.update')]
     public function modify(Breadcrumbs $breadcrumbs, Request $request, Department $department): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
@@ -141,14 +149,12 @@ class DepartmentController extends AbstractController
 
         $form = $this->createForm(DepartmentType::class, $department);
 
-        $oldDepartment = clone $department;
-
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->doctrine->flush();
             $this->addFlash('backend', ['success' => $this->translator->trans('Department modified')]);
 
-            $this->messageBus->dispatch(new UpdateDepartmentMessage($oldDepartment, $department));
+            $this->messageBus->dispatch(UpdateDepartmentMessage::forDepartment($department));
 
             return $this->redirectToRoute('app_admin_departments');
         }

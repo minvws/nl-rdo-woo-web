@@ -1,0 +1,9 @@
+@layer components {
+    .bhr-clickable-row {
+        @apply cursor-pointer bg-white hover:bg-lavender-web transition-colors;
+    }
+
+    .bhr-clickable-row--with-color {
+        @apply bg-lavender-web;
+    }
+}

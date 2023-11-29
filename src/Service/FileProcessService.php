@@ -7,6 +7,8 @@ namespace App\Service;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Repository\DocumentRepository;
+use App\Service\Ingest\IngestService;
+use App\Service\Ingest\Options;
 use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -23,6 +25,7 @@ class FileProcessService
         private readonly EntityManagerInterface $doctrine,
         private readonly DocumentStorageService $storage,
         private readonly LoggerInterface $logger,
+        private readonly IngestService $ingestService,
     ) {
     }
 
@@ -48,22 +51,33 @@ class FileProcessService
         }
     }
 
-    protected function processSingleFile(\SplFileInfo $file, Dossier $dossier, string $originalFile, string $type): bool
-    {
-        // Fetch document number from the beginning of the filename. Only use digits
-        $originalFile = basename($originalFile);
-        preg_match('/^(\d+)/', $originalFile, $matches);
-        $documentId = $matches[1] ?? null;
+    public function processFileForDocument(
+        \SplFileInfo $file,
+        Dossier $dossier,
+        Document $document,
+        string $originalFile,
+        string $type,
+    ): bool {
+        $documentId = $this->getDocumentNumberFromFilename($originalFile, $dossier);
 
-        if (is_null($documentId)) {
-            $this->logger->error('Cannot extract document ID from the filename', [
+        if ($document->getDocumentId() !== intval($documentId)) {
+            $this->logger->warning("Filename does not match the document with id $documentId", [
+                'documentId' => $documentId,
+                'dossierId' => $dossier->getId()?->toRfc4122(),
                 'filename' => $originalFile,
-                'matches' => $matches,
-                'dossierId' => $dossier->getId(),
             ]);
 
-            throw new \RuntimeException('Cannot extract document id from file');
+            return false;
         }
+
+        $this->storeFileForDocument($file, $document, $documentId, $type);
+
+        return true;
+    }
+
+    protected function processSingleFile(\SplFileInfo $file, Dossier $dossier, string $originalFile, string $type): bool
+    {
+        $documentId = $this->getDocumentNumberFromFilename($originalFile, $dossier);
 
         // Find matching document entity in the database
         /** @var DocumentRepository $repo */
@@ -89,20 +103,11 @@ class FileProcessService
             return true;
         }
 
-        // Store document in storage
-        if (! $this->storage->storeDocument($file, $document)) {
-            $this->logger->error('Failed to store document', [
-                'documentId' => $documentId,
-                'path' => $file->getRealPath(),
-            ]);
+        $this->storeFileForDocument($file, $document, $documentId, $type);
 
-            throw new \RuntimeException("Failed to store document with id $documentId");
-        }
-
-        $document->getFileInfo()->setType($type);
-
-        $this->doctrine->persist($document);
-        $this->doctrine->flush();
+        $options = new Options();
+        $options->setForceRefresh(true);
+        $this->ingestService->ingest($document, $options);
 
         return true;
     }
@@ -141,5 +146,41 @@ class FileProcessService
         $zip->close();
 
         return true;
+    }
+
+    public function getDocumentNumberFromFilename(string $originalFile, Dossier $dossier): string
+    {
+        $originalFile = basename($originalFile);
+        preg_match('/^(\d+)/', $originalFile, $matches);
+        $documentId = $matches[1] ?? null;
+
+        if (is_null($documentId)) {
+            $this->logger->error('Cannot extract document ID from the filename', [
+                'filename' => $originalFile,
+                'matches' => $matches,
+                'dossierId' => $dossier->getId(),
+            ]);
+
+            throw new \RuntimeException('Cannot extract document id from file');
+        }
+
+        return $documentId;
+    }
+
+    private function storeFileForDocument(\SplFileInfo $file, Document $document, string $documentId, string $type): void
+    {
+        if (! $this->storage->storeDocument($file, $document)) {
+            $this->logger->error('Failed to store document', [
+                'documentId' => $documentId,
+                'path' => $file->getRealPath(),
+            ]);
+
+            throw new \RuntimeException("Failed to store document with id $documentId");
+        }
+
+        $document->getFileInfo()->setType($type);
+
+        $this->doctrine->persist($document);
+        $this->doctrine->flush();
     }
 }

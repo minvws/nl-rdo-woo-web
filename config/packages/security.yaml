@@ -18,8 +18,6 @@ security:
                 provider: app_user_provider
                 login_path: app_login
                 check_path: app_login
-                default_target_path: app_admin
-                always_use_default_target_path: true
             logout:
                 path: app_logout
                 target: app_home
@@ -31,11 +29,11 @@ security:
             security: false
 
     role_hierarchy:
-        ROLE_ADMIN_USERS: ROLE_BALIE
-        ROLE_ADMIN_REQUESTS: ROLE_BALIE
-        ROLE_ADMIN_DOSSIERS: ROLE_BALIE
-        ROLE_ADMIN: ROLE_USER, ROLE_ADMIN_DOSSIERS, ROLE_ADMIN_USERS, ROLE_ADMIN_REQUESTS
-        ROLE_SUPER_ADMIN: ROLE_ADMIN
+        ROLE_SUPER_ADMIN: ROLE_BALIE
+        ROLE_GLOBAL_ADMIN: ROLE_BALIE
+        ROLE_ORGANISATION_ADMIN: ROLE_BALIE
+        ROLE_DOSSIER_ADMIN: ROLE_BALIE
+        ROLE_VIEW_ACCESS: ROLE_BALIE
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used

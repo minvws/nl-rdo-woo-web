@@ -4,13 +4,16 @@
 <div class="block pt-8 w-full">
     <div class="warning">
         <div class="width-delimiter block">
-            <span></span>
-            {{
-                "Document withdrawn" | trans({
-                    '{date}': document.withdrawDate | format_date('long'),
-                    '{reason}': document.withdrawReason.name | trans(),
-                })
-            }}
+            <h2 class="visually-hidden">{{ "Withdrawn" | trans() }}</h2>
+            <p>
+                <span></span>
+                {{
+                    "Document withdrawn" | trans({
+                        '{date}': document.withdrawDate | format_date('long'),
+                        '{reason}': document.withdrawReason.name | trans(),
+                    })
+                }}
+            </p>
         </div>
     </div>
 </div>
@@ -20,7 +23,11 @@
 <div class="block pt-8 w-full">
     <div class="warning">
         <div class="width-delimiter block">
-            <span></span> {{ "Document suspended" | trans }}
+            <h2 class="visually-hidden">{{ "Suspended" | trans() }}</h2>
+            <p>
+                <span></span>
+                {{ "Document suspended" | trans }}
+            </p>
         </div>
     </div>
 </div>
@@ -30,15 +37,16 @@
 <div class="block pt-8 w-full">
     <div class="notification notification--info">
         <div class="width-delimiter block">
+            <h2 class="visually-hidden">{{ "Not public" | trans() }}</h2>
             <p>{{
                 "Document determined to be not public" | trans({
                     '{dossier_type}': dossier.publicationReason | trans(),
-                    '{organisation}': dossier.departments.first.name,
+                    '{department}': dossier.departments.first.name,
                 })
             }}</p>
 
             {% if document.grounds | length > 0 %}
-                <p class="mt-6">{{ "Reasons are" | trans }}:</p>
+                <p class="mt-6">{{ "Reasons are" | trans({'count': document.grounds | length }) }}:</p>
                 <ul>
                     {% for ground in document.grounds %}
                         <li class="p-0">
@@ -56,7 +64,14 @@
 <div class="block pt-8 w-full">
     <div class="notification notification--info">
         <div class="width-delimiter block">
-            {{ "Document already public" | trans }} <a href="{{document.link}}">{{ document.link }}</a>
+            <h2 class="visually-hidden">{{ "Public" | trans() }}</h2>
+            <p>
+                {{ "Document already public" | trans }}
+                {% if document.link is defined and document.link %}
+                    {{ "You can find this content at" | trans }}
+                    <a href="{{document.link}}">{{ document.link }}</a>
+                {% endif %}
+            </p>
         </div>
     </div>
 </div>
@@ -65,7 +80,11 @@
 {% if document.isUploaded and not ingested %}
     <div class="warning">
         <div class="width-delimiter block">
-            <span>{{ "Warning" | trans }}:</span> {{ "This document is not yet processed. It is not possible to view individual pages, but you can download the complete document." | trans }}
+            <h2 class="visually-hidden">{{ "Not yet processed" | trans() }}</h2>
+            <p>
+                <span>{{ "Warning" | trans }}:</span>
+                {{ "This document is not yet processed. It is not possible to view individual pages, but you can download the complete document." | trans }}
+            </p>
         </div>
     </div>
 {% endif %}

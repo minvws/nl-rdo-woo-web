@@ -6,6 +6,7 @@ namespace App\Service\Search\Query\Filter;
 
 use App\Service\Search\Model\Config;
 use App\Service\Search\Query\Facet\FacetDefinition;
+use Erichard\ElasticQueryBuilder\Contracts\QueryInterface;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 use Erichard\ElasticQueryBuilder\Query\RangeQuery;
 use Erichard\ElasticQueryBuilder\Query\TermQuery;
@@ -55,7 +56,7 @@ class PeriodFilter implements FilterInterface
         );
     }
 
-    private function getDocumentDateQuery(?\DateTimeImmutable $fromDate, ?\DateTimeImmutable $toDate): RangeQuery
+    private function getDocumentDateQuery(?\DateTimeImmutable $fromDate, ?\DateTimeImmutable $toDate): QueryInterface
     {
         $query = new RangeQuery('date');
         if ($toDate) {
@@ -68,44 +69,17 @@ class PeriodFilter implements FilterInterface
         return $query;
     }
 
-    private function getDossierDateQuery(?\DateTimeImmutable $fromDate, ?\DateTimeImmutable $toDate): BoolQuery
+    private function getDossierDateQuery(?\DateTimeImmutable $fromDate, ?\DateTimeImmutable $toDate): QueryInterface
     {
-        $rangeFromQuery = new RangeQuery('date_from');
+        $query = new RangeQuery('date_range');
         if ($fromDate) {
-            $rangeFromQuery->gte($fromDate->format('Y-m-d'));
+            $query->gte($fromDate->format('Y-m-d'));
         }
         if ($toDate) {
-            $rangeFromQuery->lte($toDate->format('Y-m-d'));
+            $query->lte($toDate->format('Y-m-d'));
         }
-
-        $rangeToQuery = new RangeQuery('date_to');
-        if ($fromDate) {
-            $rangeToQuery->gte($fromDate->format('Y-m-d'));
-        }
-        if ($toDate) {
-            $rangeToQuery->lte($toDate->format('Y-m-d'));
-        }
-
-        $rangeOverspanQuery = null;
-        if ($fromDate && $toDate) {
-            $fromQuery = new RangeQuery('date_from');
-            $fromQuery->lt($fromDate->format('Y-m-d'));
-
-            $toQuery = new RangeQuery('date_to');
-            $toQuery->gt($toDate->format('Y-m-d'));
-
-            $rangeOverspanQuery = new BoolQuery();
-            $rangeOverspanQuery->addMust($fromQuery);
-            $rangeOverspanQuery->addMust($toQuery);
-        }
-
-        $query = new BoolQuery();
-        $query->addShould($rangeFromQuery);
-        $query->addShould($rangeToQuery);
-        if ($rangeOverspanQuery) {
-            $query->addShould($rangeOverspanQuery);
-        }
-        $query->setParams(['minimum_should_match' => 1]);
+        // RangeQuery we use does not have a relation method, so we use params to manually set it
+        $query->setParams(['relation' => 'intersects']);
 
         return $query;
     }

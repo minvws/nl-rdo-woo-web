@@ -5,25 +5,22 @@ declare(strict_types=1);
 namespace App\Message;
 
 use App\Entity\Department;
+use Symfony\Component\Uid\Uuid;
 
 class UpdateDepartmentMessage
 {
-    protected Department $old;
-    protected Department $new;
-
-    public function __construct(Department $old, Department $new)
-    {
-        $this->old = $old;
-        $this->new = $new;
+    public function __construct(
+        private readonly Uuid $uuid,
+    ) {
     }
 
-    public function getOld(): Department
+    public function getUuid(): Uuid
     {
-        return $this->old;
+        return $this->uuid;
     }
 
-    public function getNew(): Department
+    public static function forDepartment(Department $department): self
     {
-        return $this->new;
+        return new self($department->getId());
     }
 }

@@ -9,7 +9,9 @@ use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Repository\DocumentRepository;
 use App\Service\DateRangeConverter;
+use App\Service\DocumentUploadQueue;
 use App\Service\Search\Query\Facet\FacetMappingService;
+use App\Service\Search\Query\QueryGenerator;
 use App\Service\Storage\ThumbnailStorageService;
 use App\SourceType;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +22,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class WooExtensionRuntime implements RuntimeExtensionInterface
 {
@@ -36,6 +39,7 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
         DocumentRepository $documentRepository,
         UrlGeneratorInterface $urlGenerator,
         private readonly FacetMappingService $facetMapping,
+        private readonly DocumentUploadQueue $uploadQueue,
     ) {
         $this->requestStack = $requestStack;
         $this->storageService = $storageService;
@@ -80,27 +84,13 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
      */
     public function statusBadge(string $status): string
     {
-        switch ($status) {
-            case Dossier::STATUS_CONCEPT:
-                $color = 'secondary';
-                break;
-            case Dossier::STATUS_COMPLETED:
-                $color = 'dark';
-                break;
-            case Dossier::STATUS_PREVIEW:
-                $color = 'info text-dark';
-                break;
-            case Dossier::STATUS_PUBLISHED:
-                $color = 'success';
-                break;
-            case Dossier::STATUS_RETRACTED:
-                $color = 'danger';
-                break;
-            default:
-                $color = 'secondary';
-        }
+        $color = match ($status) {
+            Dossier::STATUS_SCHEDULED, Dossier::STATUS_PREVIEW, Dossier::STATUS_PUBLISHED => 'bhr-badge--green',
+            Dossier::STATUS_RETRACTED => 'bhr-badge--red',
+            default => 'bhr-badge--purple',
+        };
 
-        return "<span class=\"badge bg-{$color}\">" . $this->translator->trans($status) . '</span>';
+        return "<span class=\"bhr-badge {$color}\">" . $this->translator->trans($status) . '</span>';
     }
 
     /**
@@ -108,21 +98,14 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
      */
     public function decision(string $value): string
     {
-        switch ($value) {
-            case Dossier::DECISION_ALREADY_PUBLIC:
-                return 'Reeds gepubliceerd';
-            case Dossier::DECISION_PUBLIC:
-                return 'Openbaar';
-            case Dossier::DECISION_NOT_PUBLIC:
-                return 'Niet openbaar';
-            case Dossier::DECISION_NOTHING_FOUND:
-                return 'Niets gevonden';
-            case Dossier::DECISION_PARTIAL_PUBLIC:
-                return 'Deels openbaar';
-
-            default:
-                return 'Onbekend';
-        }
+        return match ($value) {
+            Dossier::DECISION_ALREADY_PUBLIC => 'Reeds gepubliceerd',
+            Dossier::DECISION_PUBLIC => 'Openbaar',
+            Dossier::DECISION_NOT_PUBLIC => 'Niet openbaar',
+            Dossier::DECISION_NOTHING_FOUND => 'Niets gevonden',
+            Dossier::DECISION_PARTIAL_PUBLIC => 'Deels openbaar',
+            default => 'Onbekend',
+        };
     }
 
     /**
@@ -229,6 +212,29 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
         return Citation::getCitationType($citation);
     }
 
+    /**
+     * @param array<string, string> $params
+     */
+    public function getQuerystringWithParams(array $params): string
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        if (! $request) {
+            return '';
+        }
+
+        $queryString = strval($request->getQueryString());
+        parse_str($queryString, $currentParams);
+
+        foreach ($params as $key => $value) {
+            $currentParams[$key] = $value;
+        }
+
+        $query = http_build_query($currentParams);
+        $query = preg_replace('/%5B\d+%5D/imU', '%5B%5D', $query);
+
+        return strval($query);
+    }
+
     public function queryStringWithoutParam(string $queryParam, string $value): string
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -269,5 +275,22 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
         $query = preg_replace('/%5B\d+%5D/imU', '%5B%5D', $query);
 
         return strval($query);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getUploadQueue(Dossier $dossier): array
+    {
+        return $this->uploadQueue->getFilenames($dossier);
+    }
+
+    public function filterHighlights(string $input): string
+    {
+        return str_replace(
+            [QueryGenerator::HL_START, QueryGenerator::HL_END],
+            ['<strong>', '</strong>'],
+            $input,
+        );
     }
 }

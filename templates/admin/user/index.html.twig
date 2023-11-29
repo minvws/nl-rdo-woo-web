@@ -1,48 +1,77 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
-{% set page_title = "User management" | trans() %}
+{% set page_title = "User management" | trans %}
 
 {% block body %}
+<div class="bhr-container">
+    <twig:Admin:LeftAndRight>
+        <h1 class="bhr-title">{{ page_title }}</h1>
 
-    <section>
-        <div>
+        <twig:block name="right">
+            {% if matrix_has_permission('user.create') %}
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_user_create') }}">{{ "Create new user" | trans() }}</a>
+            {% endif %}
+        </twig:block>
+    </twig:Admin:LeftAndRight>
 
-            <h1>{{ "User management" | trans() }}</h1>
-
-            <table class="table table-striped">
+    <div class="bhr-card">
+        {% set alerts = app.flashes('backend') %}
+        {% if alerts | length > 0 %}
+            <div class="mb-8">
+                {% for messages in alerts %}
+                    {% for label, message in messages %}
+                        <twig:Admin:Alert type="{{ label }}">
+                            <strong>{{ message }}</strong>
+                        </twig:Admin:Alert>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <table class="bhr-table">
+            <thead>
                 <tr>
-                    <th>{{ "Username" | trans() }}</th>
-                    <th>{{ "E-mail" | trans() }}</th>
-                    <th>{{ "Created at" | trans() }}</th>
-                    <th>{{ "Role" | trans() }}</th>
-                    <th>{{ "Options" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "User" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Organisation" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Roles" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ "Last log in" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">
+                        <span class="sr-only">{{ "Edit user" | trans }}</span>
+                    </th>
                 </tr>
-
+            </thead>
+            <tbody>
                 {% for user in users %}
+                    {% set roles = [] %}
+                    {% for user_role in user.roles %}
+                        {% set roles = roles|merge([role_details[user_role]|trans]) %}
+                    {% endfor %}
                     <tr>
-                        <td>{{ user.name }}
-                            <small>
-                                {% if not user.enabled %}
-                                    <span class="badge bg-warning">{{ "Deactivated" | trans() }}</span>
-                                {% endif %}
-                            </small>
-                        </td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.createdAt | carbon.diffForHumans }}</td>
-                        <td>{{ user.roles|join(',') }}</td>
+                        <th class="text-left" scope="row">
+                            <span class="font-bold">{{ user.name }}</span>
+                            {% if not user.enabled %}
+                                <span class="bhr-badge bhr-badge--red">{{ "Deactivated" | trans() }}</span>
+                            {% endif %}
+                        </th>
+                        <td>{{ user.organisation.name }}</td>
+                        <td>{{ roles|join(', ') }}</td>
                         <td>
-                            {% if app.user.id == user.id %}
-                                <a href="#" class="button disabled">{{ "This is you" | trans() }}</a>
-                            {% else %}
-                                <a href="{{ path('app_admin_user', { id: user.id }) }}" class="button">{{ "Modify" | trans() }}</a>
+                            {% set last_login = user.loginActivities|last %}
+                            {% if last_login is not empty %}
+                                {{ last_login.loginAt | format_datetime(timezone='Europe/Amsterdam') }}
+                            {% endif %}
+                        </td>
+                        <td class="text-right">
+                            {% if app.user.id != user.id %}
+                                <a class="js-clickable-row__focusable" href="{{ path('app_admin_user', { id: user.id }) }}">
+                                    <span class="sr-only">Details {{ user.name }}</span>
+                                    <twig:Admin:Icon name="chevron-right" />
+                                </a>
                             {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
-            </table>
-
-            <a href="{{ path('app_admin_user_create') }}" class="button">{{ "Create new user" | trans() }}</a>
-
-        </div>
-    </section>
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

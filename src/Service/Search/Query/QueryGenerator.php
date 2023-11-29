@@ -15,6 +15,9 @@ use Erichard\ElasticQueryBuilder\QueryBuilder;
 
 class QueryGenerator
 {
+    public const HL_START = '[[hl_start]]';
+    public const HL_END = '[[hl_end]]';
+
     public function __construct(
         private readonly AggregationGenerator $aggregationGenerator,
         private readonly ContentAccessConditions $accessConditions,
@@ -74,6 +77,19 @@ class QueryGenerator
             $params['body']['suggest'] = $this->getSuggestParams($config);
         }
 
+        if ($config->sortField === SortField::SCORE) {
+            $params['body']['sort'] = [
+                '_score',
+            ];
+        } else {
+            $params['body']['sort'] = [[
+                $config->sortField->value => [
+                    'missing' => '_last',
+                    'order' => $config->sortOrder->value,
+                ],
+            ]];
+        }
+
         $queryBuilder->setParams($params);
 
         $this->addQuery($queryBuilder, $config);
@@ -129,8 +145,8 @@ class QueryGenerator
 
         $queryBuilder->setHighlight([
             'max_analyzed_offset' => 1000000,
-            'pre_tags' => ['<span class=\'result-highlight\'>'],
-            'post_tags' => ['</span>'],
+            'pre_tags' => [self::HL_START],
+            'post_tags' => [self::HL_END],
             'fields' => [
                 // Document object
                 'pages.content' => [

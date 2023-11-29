@@ -16,11 +16,11 @@
             {% endif %}
             {% if document.fileInfo.sourceType is defined %}
             <tr>
-                <th scope="row">{{ "Document Type" | trans() }}</th>
+                <th scope="row">{{ "Source document type" | trans() }}</th>
                 <td class="flex border-0">
-                <span class="svg-icon svg-{{ document.fileInfo.sourceType }} mr-2  w-[32px] h-[32px] shrink-0" aria-hidden="true"></span>
-                <span class="visually-hidden">{{ document.fileInfo.sourceType | trans() }}</span>
-                {{ document.fileInfo.sourceType | trans() }}{% if document.isUploaded %}, {{ document.pageCount }} pagina's{% endif %}</td>
+                    <twig:Icon name="{{ document.fileInfo.sourceType }}" size="32" class="mr-2 shrink-0" />
+                    <span class="visually-hidden">{{ document.fileInfo.sourceType | trans() }}</span>
+                    {{ document.fileInfo.sourceType | trans() }}{% if document.isUploaded %}, {{ document.pageCount }} pagina's{% endif %}</td>
             </tr>
             {% endif %}
             {% if document.fileInfo.type is defined and document.fileInfo.isUploaded %}
@@ -57,6 +57,16 @@
                 <td>{{ document.judgement.value | trans }}</td>
             </tr>
             {% endif %}
+            {% set documentIsAlreadyPublic = document.judgement.value is defined and document.judgement.value is same as ('already_public') %}
+            {% if document.remark or (document.link and not documentIsAlreadyPublic) %}
+            <tr>
+                <th scope="row">{{ "Explanation" | trans() }}</th>
+                <td>
+                    {% if document.remark and document.remark != document.link  %}{{ document.remark }}{% endif %}
+                    {% if document.link and not documentIsAlreadyPublic %}<a href="{{document.link}}">{{ document.link }}</a>{% endif %}
+                </td>
+            </tr>
+            {% endif %}
             {% if (document.grounds | length > 0) or (document.isUploaded and document.fileInfo.size != "0") %}
             <tr>
                 <th scope="row">{{ "What is redacted" | trans() }}</th>
@@ -72,7 +82,12 @@
                     {% endif %}
 
                     {% if document.isUploaded and document.fileInfo.size != "0" %}
-                        <p class="width-delimiter">{{ "Do you encounter data in this document that you think should have been redacted? Or is the document difficult to read?" | trans }} <a href="mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl?subject=Opmerking over {{ document.fileInfo.name }} (documentnummer {{ document.documentId }})">{{ "Let us know" | trans }}</a>.</p>
+                        <p class="width-delimiter">
+                            {{ "Do you encounter data in this document that you think should have been redacted? Or is the document difficult to read?" | trans }}
+                            <a class="icon-after" href="mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl?subject=Opmerking over {{ document.fileInfo.name }} (documentnummer {{ document.documentId }})">
+                                {{ "Let us know" | trans }}
+                            </a>.
+                        </p>
                     {% endif %}
                 </td>
             </tr>

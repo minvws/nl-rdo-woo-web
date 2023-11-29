@@ -1,21 +1,23 @@
-<h3 class="text-xl items-center">
+<h3 class="text-xl flex flex-col-reverse">
+    <a
+        class="reverse-underline"
+        href="{{ path('app_document_detail', { dossierId: entry.document.dossiers[0].dossierNr, documentId: entry.document.documentNr }) }}"
+    >
+        {{ "Page" | trans() }} {{ entry.elastic._source.page_nr }} {{ entry.document.fileInfo.name }}
+    </a>
+
     <div class="de-emphasized mb-0 flex items-center">
-        <span class="svg-icon svg-html mr-2 w-[24px] h-[24px]" aria-hidden="true"></span>
+        <twig:Icon name="html" class="mr-2" />
         <span class="visually-hidden">{{ entry.document.fileInfo.sourceType | trans() }}</span>
         <span class="de-emphasized ro-font-bold"> {{ entry.document.fileInfo.sourceType | trans() }}</span>
         <span>{{ "# pages" | trans({"count": entry.document.pagecount|default(0)})}}</span>
     </div>
-
-    <a
-        class="reverse-underline"
-        href="{{ path('app_document_detail', { dossierId: entry.document.dossiers[0].dossierNr, documentId: entry.document.documentNr }) }}"
-    >{{ "Page" | trans() }} {{ entry.elastic._source.page_nr }} {{ entry.document.fileInfo.name }}</a>
 </h3>
 
 {% if entry.highlights | length > 0 %}
 <p class="ro-text-small leading-5 mt-1 mb-2 line-clamp-3">
     {% for hl in entry.highlights %}
-        ... {{ hl | raw('html') }} {% if loop.last %}...{% endif %}
+        ... {{ hl | highlights }} {% if loop.last %}...{% endif %}
     {% endfor %}
 </p>
 {% endif %}

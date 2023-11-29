@@ -105,7 +105,7 @@ class Document implements EntityWithFileInfo
     #[Embedded(class: FileInfo::class, columnPrefix: 'file_')]
     private FileInfo $fileInfo;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 2048, nullable: true)]
     private ?string $link = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -325,6 +325,17 @@ class Document implements EntityWithFileInfo
         return $this;
     }
 
+    public function hasPubliclyAvailableDossier(): bool
+    {
+        foreach ($this->dossiers as $dossier) {
+            if ($dossier->getStatus() === Dossier::STATUS_PREVIEW || $dossier->getStatus() === Dossier::STATUS_PUBLISHED) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @return Collection|IngestLog[]
      */
@@ -458,9 +469,13 @@ class Document implements EntityWithFileInfo
         return $this->fileInfo->isUploaded();
     }
 
-    public function shouldBeUploaded(): bool
+    public function shouldBeUploaded(bool $ignoreWithdrawn = false): bool
     {
         if ($this->suspended === true) {
+            return false;
+        }
+
+        if ($ignoreWithdrawn === false && $this->withdrawn === true) {
             return false;
         }
 
@@ -510,9 +525,14 @@ class Document implements EntityWithFileInfo
         $this->withdrawExplanation = $explanation;
         $this->withdrawDate = new \DateTimeImmutable();
 
-        $this->fileInfo->setMimetype(null);
-        $this->fileInfo->setUploaded(false);
-        $this->fileInfo->setSize(0);
-        $this->fileInfo->setPath(null);
+        $this->fileInfo->removeFileProperties();
+    }
+
+    public function republish(): void
+    {
+        $this->withdrawn = false;
+        $this->withdrawReason = null;
+        $this->withdrawExplanation = '';
+        $this->withdrawDate = null;
     }
 }

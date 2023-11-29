@@ -8,6 +8,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * @template-extends AbstractType<GovernmentOfficialType>
@@ -24,6 +26,10 @@ class GovernmentOfficialType extends AbstractType
                 'label' => 'Naam',
                 'required' => true,
                 'help' => 'Naam van bewindspersoon',
+                'constraints' => [
+                    new NotBlank(),
+                    new Length(['min' => 2, 'max' => 255]),
+                ],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Opslaan',

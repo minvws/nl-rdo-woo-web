@@ -1,0 +1,23 @@
+{% set numberOfErrors = errors | default([]) | length %}
+{% set hasError = error is defined %}
+{% if numberOfErrors > 0 or hasError %}
+<div class="flex pb-3 bhr-form-error" {% if id is defined %}id="{{ id }}"{% endif %}>
+    <span class="mr-2">
+        <twig:Admin:Icon color="fill-maximum-red" name="exclamation" />
+    </span>
+
+    <div class="text-maximum-red">
+        {% if numberOfErrors > 1 %}
+        <ul class="bhr-ul">
+            {% for error in errors %}
+                <li class="bhr-li">{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+        {% elseif numberOfErrors == 1 %}
+            {{ (errors|first).message }}
+        {% elseif hasError %}
+            <div class="leading-tight">{{ error }}</div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

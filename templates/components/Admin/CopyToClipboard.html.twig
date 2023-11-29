@@ -1,0 +1,5 @@
+<span class="block h-6 w-6 cursor-pointer js-copy-to-clipboard" data-copy-to-clipboard="{{ copy|default('') }}">
+    <span class="sr-only">Kopieer naar klembord: {{ copy|default('') }}</span>
+    <span class="js-copy-icon"><twig:Admin:Icon name="copy"/></span>
+    <span class="js-success-icon hidden"><twig:Admin:Icon color="fill-philippine-green" name="check"/></span>
+</span>

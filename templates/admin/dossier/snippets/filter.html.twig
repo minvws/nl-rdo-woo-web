@@ -1,0 +1,27 @@
+<details class="js-details">
+    <summary class="bhr-button bhr-button--secondary bhr-button--with-icon-left">
+        <span class="bhr-button__icon bhr-button__icon--left"><twig:Admin:Icon name="filter" size="20" /></span>
+        Filters
+    </summary>
+
+    <div class="bhr-overlay-card max-w-xs mt-20">
+        {{ form_start(form) }}
+
+        <div class="bhr-form-row">
+            <fieldset>
+                <legend class="bhr-legend">{{ 'Department' | trans() }}</legend>
+                {{ form_widget(form.department) }}
+            </fieldset>
+        </div>
+
+        <div class="bhr-form-row">
+            <fieldset>
+                <legend class="bhr-legend">{{ 'Status' | trans() }}</legend>
+                {{ form_widget(form.status) }}
+            </fieldset>
+        </div>
+
+        {{ form_widget(form.submit, { 'label': 'Submit filter'|trans }) }}
+        {{ form_end(form) }}
+    </div>
+</details>

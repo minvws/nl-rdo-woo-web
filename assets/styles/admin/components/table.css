@@ -1,0 +1,26 @@
+@layer components {
+    .bhr-table {
+        @apply w-full;
+    }
+
+    .bhr-table td,
+    .bhr-table th {
+        @apply py-2 px-4;
+    }
+
+    .bhr-table tr {
+        @apply border-b border-platinum;
+    }
+
+    .bhr-row-head {
+        @apply font-normal text-left text-dim-gray;
+    }
+
+    .bhr-column-head {
+        @apply font-normal italic text-lg text-left;
+    }
+
+    .bhr-column-head--gray {
+        @apply bg-anti-flash-white border-r border-platinum text-independence last:border-r-0;
+    }
+}

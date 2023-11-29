@@ -18,19 +18,19 @@
                 <tr>
                     <td>{{ "Dossier count" | trans() }}</td>
                     <td>{{ details.expectedDossierCount }}</td>
-                    <td>{{ details.elasticsearchDossierCount }}</td>
+                    <td>{{ details.actualDossierCount }}</td>
                     <td>{{ details.getDossierPercentage() }}%</td>
                 </tr>
                 <tr>
                     <td>{{ "Document count" | trans() }}</td>
-                    <td>{{ details.expectedDocumentCount }}</td>
-                    <td>{{ details.elasticsearchDocumentCount }}</td>
+                    <td>{{ details.expectedDocCount }}</td>
+                    <td>{{ details.actualDocCount }}</td>
                     <td>{{ details.getDocumentPercentage() }}%</td>
                 </tr>
                 <tr>
                     <td>{{ "Page count" | trans() }}</td>
                     <td>{{ details.expectedPageCount }}</td>
-                    <td>{{ details.elasticsearchPageCount }}</td>
+                    <td>{{ details.actualPageCount }}</td>
                     <td>{{ details.getPagePercentage() }}%</td>
                 </tr>
             </table>

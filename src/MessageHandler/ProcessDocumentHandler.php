@@ -6,6 +6,7 @@ namespace App\MessageHandler;
 
 use App\Entity\Dossier;
 use App\Message\ProcessDocumentMessage;
+use App\Service\DocumentUploadQueue;
 use App\Service\FileProcessService;
 use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,7 +23,8 @@ class ProcessDocumentHandler
         private readonly FileProcessService $fileProcessService,
         private readonly DocumentStorageService $storageService,
         private readonly EntityManagerInterface $doctrine,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly DocumentUploadQueue $uploadQueue,
     ) {
     }
 
@@ -48,11 +50,15 @@ class ProcessDocumentHandler
                     'chunk_count' => $message->getChunkCount(),
                 ]);
 
+                $this->uploadQueue->remove($dossier, $message->getOriginalFilename());
+
                 return;
             }
 
             $this->fileProcessService->processFile($localFile, $dossier, $message->getOriginalFilename());
             unlink($localFile->getPathname());
+
+            $this->uploadQueue->remove($dossier, $message->getOriginalFilename());
 
             return;
         }
@@ -65,6 +71,8 @@ class ProcessDocumentHandler
                 'file_path' => $message->getRemotePath(),
             ]);
 
+            $this->uploadQueue->remove($dossier, $message->getOriginalFilename());
+
             return;
         }
 
@@ -75,6 +83,8 @@ class ProcessDocumentHandler
             throw $e;
         } finally {
             $this->storageService->removeDownload($localFilePath, true);
+
+            $this->uploadQueue->remove($dossier, $message->getOriginalFilename());
         }
     }
 

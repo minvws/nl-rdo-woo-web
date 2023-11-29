@@ -9,6 +9,7 @@ use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Service\Elastic\ElasticService;
 use App\Service\FakeDataGenerator;
+use App\Service\Inquiry\InquiryService;
 use App\Service\Logging\LoggingHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -16,7 +17,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
-use Symfony\Component\Uid\Uuid;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -28,6 +28,7 @@ class GenerateDocuments extends Command
         private readonly ElasticService $elasticService,
         private readonly FakeDataGenerator $fakeDataGenerator,
         private readonly LoggingHelper $loggingHelper,
+        private readonly InquiryService $inquiryService,
     ) {
         parent::__construct();
     }
@@ -92,20 +93,9 @@ class GenerateDocuments extends Command
         $inquiries = [];
 
         for ($i = 0; $i < 10; $i++) {
-            $now = new \DateTimeImmutable();
-
-            $inquiry = new Inquiry();
-            $inquiry->setCasenr((string) ($i + 100));
-            $inquiry->setToken(Uuid::v6()->toBase58());
-            $inquiry->setCreatedAt($now);
-            $inquiry->setUpdatedAt($now);
-
-            $this->doctrine->persist($inquiry);
-
-            $inquiries[] = $inquiry;
+            $caseNumber = (string) ($i + 100);
+            $inquiries[] = $this->inquiryService->findOrCreateInquiryForCaseNumber($caseNumber);
         }
-
-        $this->doctrine->flush();
 
         return $inquiries;
     }

@@ -1,0 +1,18 @@
+{% set uploadedQueue = get_upload_queue(dossier) %}
+{% set missingDocuments = uploadStatus.getDocumentsToUpload(uploadedQueue) %}
+
+{% if missingDocuments | length > 0 %}
+<div class="bg-cornsilk p-6 max-h-80 overflow-y-auto">
+    <p class="mb-3 text-lg">
+        Nog te uploaden: <span class="font-bold">{{ missingDocuments | length }}</span> van {{ uploadStatus.expectedUploadCount }} document{% if uploadStatus.expectedUploadCount != 1 %}en{% endif %}.
+    </p>
+
+    <ul class="grid grid-cols-4 gap-x-4">
+        {% for document in missingDocuments %}
+        <li class="py-1">
+            <twig:Admin:FileWithIcon fileName="{{ document.documentId }}.pdf" mimeType="application/pdf" />
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}

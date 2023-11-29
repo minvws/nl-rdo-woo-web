@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Attribute\AuthMatrix;
 use App\Entity\Token;
 use App\Form\TokenType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,6 +27,7 @@ class TokenController extends AbstractController
     }
 
     #[Route('/balie/tokens', name: 'app_admin_tokens', methods: ['GET'])]
+    #[AuthMatrix('token.read')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
@@ -40,6 +42,7 @@ class TokenController extends AbstractController
     }
 
     #[Route('/balie/token/new', name: 'app_admin_token_new', methods: ['GET', 'POST'])]
+    #[AuthMatrix('token.create')]
     public function create(Breadcrumbs $breadcrumbs, Request $request): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
@@ -67,6 +70,7 @@ class TokenController extends AbstractController
     }
 
     #[Route('/balie/token/{id}', name: 'app_admin_token_edit', methods: ['GET', 'POST'])]
+    #[AuthMatrix('token.update')]
     public function modify(Breadcrumbs $breadcrumbs, Request $request, Token $token): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');

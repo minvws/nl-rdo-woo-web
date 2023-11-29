@@ -1,0 +1,19 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+    <div class="bhr-container bhr-container--sm">
+        {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.admin.html.twig' }) }}
+
+        <div class="px-11">
+            <div class="bhr-card">
+                {% if success %}
+                    <p class="bhr-form-help text-lg mb-4">Het dossier wordt verwijderd, het kan even duren voor dit verwerkt is.</p>
+                    <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_dossiers') }}">Naar overzicht besluitdossiers</a>
+                {% else %}
+                    <p class="bhr-form-help text-lg mb-4">Bevestig de verwijdering van dit dossier. Kan niet ongedaan gemaakt worden!</p>
+                    {{ form(form) }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

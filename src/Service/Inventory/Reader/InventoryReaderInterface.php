@@ -17,4 +17,6 @@ interface InventoryReaderInterface
      * @return \Generator<InventoryReadItem>
      */
     public function getDocumentMetadataGenerator(Dossier $dossier): \Generator;
+
+    public function getCount(): int;
 }

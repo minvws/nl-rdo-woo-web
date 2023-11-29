@@ -15,4 +15,6 @@ interface EntityWithFileInfo
     public function setFileInfo(FileInfo $fileInfo): self;
 
     public function getFileCacheKey(): string;
+
+    public function getUpdatedAt(): \DateTimeImmutable;
 }

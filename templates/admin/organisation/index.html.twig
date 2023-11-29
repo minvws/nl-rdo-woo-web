@@ -1,0 +1,47 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = "Organisation management" | trans %}
+
+{% block body %}
+<div class="bhr-container">
+    <twig:Admin:LeftAndRight>
+        <h1 class="bhr-title">{{ page_title }}</h1>
+
+        <twig:block name="right">
+            {% if matrix_has_permission('organisation.create') %}
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_user_organisation_create') }}">{{ "Create new organisation" | trans() }}</a>
+            {% endif %}
+        </twig:block>
+    </twig:Admin:LeftAndRight>
+
+    <div class="bhr-card">
+        <table class="bhr-table">
+            <thead>
+                <tr>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Name" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Department" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Created at" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">
+                        <span class="sr-only">{{ "Edit organisation" | trans() }}</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for organisation in organisations %}
+                    <tr>
+                        <td><span class="font-bold">{{ organisation.name }}</span></td>
+                        <td>({{ organisation.department.shortTag }}) {{ organisation.department.name }}</td>
+                        <td>{{ organisation.createdAt | carbon.diffForHumans }}</td>
+                        <td class="text-right">
+                            <a class="js-clickable-row__focusable" href="{{ path('app_admin_user_organisation_edit', { id: organisation.id }) }}">
+                                <span class="sr-only">Details {{ organisation.name }}</span>
+                                <twig:Admin:Icon name="chevron-right" />
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

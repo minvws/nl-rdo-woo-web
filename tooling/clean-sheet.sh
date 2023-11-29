@@ -35,10 +35,10 @@ echo
 
 # Delete all data from the database
 echo -e "${notice}* Deleting all data from the database${expand}${reset}"
-echo "TRUNCATE dossier CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user postgres
-echo "TRUNCATE document CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user postgres
-echo "TRUNCATE ingest_log CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user postgres
-echo "TRUNCATE inquiry CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user postgres
+echo "TRUNCATE dossier CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user postgres woopie
+echo "TRUNCATE document CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user postgres woopie
+echo "TRUNCATE ingest_log CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user postgres woopie
+echo "TRUNCATE inquiry CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user postgres woopie
 echo
 
 # Delete all messages from RabbitMQ

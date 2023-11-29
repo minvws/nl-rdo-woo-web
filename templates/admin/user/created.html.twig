@@ -1,0 +1,40 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = "Login instructions for"| trans() %}
+
+  {% if mode == "created" %}
+      {% set user_info = "This account is created" %}
+  {% elseif mode == "modified" %}
+      {% set user_info = "This account is updated" %}
+  {% endif %}
+
+{% block body %}
+    <div class="bhr-container bhr-container--sm">
+        <h1 class="bhr-title screen:text-center mb-10 print:mb-4">{{ page_title ~ " " ~ user.name }}</h1>
+        <div class="bhr-card">
+            <div class="bhr-content">
+                <div class="py-6 px-8 bg-chinese-white mb-8">
+                    <twig:Admin:Icon name="check-rounded-filled" color="fill-japanese-laurel" size="32" />
+                    <strong class="text-lg ml-3">{{ user_info | trans() }}</strong>
+                </div>
+                <div class="bhr-form-row">
+                    <p class="bhr-label">{{ "Download these instructions and send them to the user in a secure manner." | trans() }}</p>
+                    <a href="{{ path('app_admin_user_pdf') }}">
+                        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary">
+                            {{ "Download inlog instructions" | trans() }}</button>
+                    </a>
+
+                </div>
+                <div class="bhr-form-row">
+                    <p class="bhr-label">{{ "Have you shared the login instructions?" | trans() }}</p>
+                    <span class="bhr-form-help text-lg pb-2 block">
+                        {{ "Please note: this is the only time you can download these instructions" | trans() }}</span>
+                    <a href="{{ path('app_admin_users') }}">
+                        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary">
+                            {{ "Yes, I have shared them" | trans() }}</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

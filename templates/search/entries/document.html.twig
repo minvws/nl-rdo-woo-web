@@ -1,24 +1,33 @@
-<h3 class="text-xl items-center">
-    <div class="de-emphasized mb-0 flex items-center">
-        <span class="svg-icon svg-{{ entry.document.fileInfo.sourceType }} mr-2 w-[24px] h-[24px]" aria-hidden="true"></span>
-        <span class="pipe-after">{{ entry.document.fileInfo.sourceType | trans() }}</span>
-        <span>{{ "# pages" | trans({"count": entry.document.pagecount|default(0)})}}</span>
-    </div>
-
+<h3 class="text-xl flex flex-col-reverse">
     <a class="reverse-underline" href="{{ path('app_document_detail', { dossierId: entry.document.dossiers[0].dossierNr, documentId: entry.document.documentNr }) }}">{{ entry.document.fileInfo.name }}</a>
+
+    <div class="de-emphasized mb-0 flex items-center">
+        <twig:Icon name="{{ entry.document.fileInfo.sourceType }}" class="mr-2" />
+        <span class="pipe-after">{{ entry.document.fileInfo.sourceType | trans() }}</span>
+        {% if entry.document.fileInfo.isUploaded %}
+        <span class="pipe-after">
+            {{ "# pages" | trans({"count": entry.document.pagecount})}}
+        </span>
+        {% endif %}
+        <span>{{ entry.document.judgement.value | decision }}</span>
+    </div>
 </h3>
 
 {% if entry.highlights | length > 0 %}
 <p class="ro-text-small leading-5 mt-1 mb-2 line-clamp-3">
     {% for hl in entry.highlights %}
-        ... {{ hl | raw('html') }} {% if loop.last %}...{% endif %}
+        ... {{ hl | highlights }} {% if loop.last %}...{% endif %}
     {% endfor %}
 </p>
 {% endif %}
 
 <ul class="list-unstyled de-emphasized mb-0 flex items-center pipe-after">
     <li><time datetime="{{ entry.document.documentDate | date("Y-m-d") }}" class="pipe-after de-emphasized">{{ entry.document.documentDate | format_date('long') }}</time></li>
-    <li><span class="de-emphasized">{{ entry.document.fileInfo.size | size}}</span></li>
+        {% if entry.document.fileInfo.isUploaded %}
+        <li>
+            <span class="de-emphasized">{{ entry.document.fileInfo.size | size}}</span>
+        </li>
+        {% endif %}
     <li><span class="de-emphasized">{{ "Document number" | trans() }} {{ entry.document.documentId }}</span></li>
 </ul>
 

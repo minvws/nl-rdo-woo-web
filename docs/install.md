@@ -80,7 +80,9 @@ Next step is to generate the database structure and fill with initial data:
 ```
 
 ## Step 8: Compile frontend code
->
+
+NOTE: at this moment this is not possible. We are still working on a solution for [this issue](https://github.com/minvws/nl-rdo-woo-web/issues/14)
+
 > This application contains a private npm dependency to conform to the Rijksoverheid style guide:
 > [Rijksoverheid Theme](https://github.com/minvws/nl-rdo-rijksoverheid-ui-theme). It requires you to add a file (`~/.npmrc`) on your
 > machine containing a Github access token. Please follow

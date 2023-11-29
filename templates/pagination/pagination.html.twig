@@ -1,0 +1,79 @@
+{% set targetAnchor = fragment|default("#search-results") %}
+
+{% if pageCount > 1 %}
+<nav aria-label="{{ "Pagination" | trans() }}" class="pagination">
+    <ul>
+        {% if previous is defined %}
+            <li class="pagination__text !mr-auto">
+                <a rel="prev" href="?{{ query|merge({(pageParameterName): previous}) | url_encode }}{{ targetAnchor }}">
+                    <twig:Icon class="mr-2" name="chevron-left" size="30" color="fill-black" />
+                    {{ "Previous" | trans }}
+                </a>
+            </li>
+        {% else %}
+            <li class="!mr-auto pagination__text">
+                <twig:Icon class="mr-2" name="chevron-left" size="30" color="fill-gray-300" />
+            </li>
+        {% endif %}
+
+        {% if current > 5 %}
+            <li>
+                <a href="?{{ query|merge({(pageParameterName): 1}) | url_encode }}{{ targetAnchor }}">1</a>
+            </li>
+            {% if startPage == 3 %}
+                <li {% if current != 2 %}class="pagination__not-active"{% endif %}>
+                    <a href="?{{ query|merge({(pageParameterName): 2}) | url_encode }}{{ targetAnchor }}">2</a>
+                </li>
+            {% elseif startPage != 2 %}
+                <li class="pagination__dots uk-disabled">
+                    <span>&hellip;</span>
+                </li>
+            {% endif %}
+        {% endif %}
+
+        {% for page in pagesInRange %}
+            {% if page != current %}
+                <li {% if pageCount > 5 %}class="pagination__not-active"{% endif %}>
+                    <a href="?{{ query|merge({(pageParameterName): page}) | url_encode }}{{ targetAnchor }}">{{ page }}</a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ targetAnchor }}" aria-current="page" class="active">
+                        <span class="visually-hidden">{{ "Page" | trans() }} </span>{{ page }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if pageCount > endPage %}
+            {% if pageCount > (endPage + 1) %}
+                {% if pageCount > (endPage + 2) %}
+                    <li class="pagination__dots uk-disabled">
+                        <span>&hellip;</span>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="?{{ query|merge({(pageParameterName): (pageCount -1)}) | url_encode }}{{ targetAnchor }}">{{ pageCount -1 }}</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+            <li>
+                <a href="?{{ query|merge({(pageParameterName): pageCount}) | url_encode }}{{ targetAnchor }}">{{ pageCount }}</a>
+            </li>
+        {% endif %}
+
+        {% if next is defined %}
+            <li class="!ml-auto pagination__text">
+                <a class="page-link" rel="next" href="?{{ query|merge({(pageParameterName): next}) | url_encode }}{{ targetAnchor }}">
+                    {{ "Next" | trans() }}
+                    <twig:Icon class="ml-2" name="chevron-right" size="30" color="fill-black" />
+                </a>
+            </li>
+        {% else %}
+            <li class="!ml-auto pagination__text">
+                <twig:Icon name="chevron-right" size="30" color="fill-gray-300" />
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}

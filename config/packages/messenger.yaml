@@ -45,19 +45,29 @@ framework:
                     multiplier: 2
 
         routing:
-            App\Message\InitializeElasticRolloverMessage: high
+            App\Message\InitiateElasticRolloverMessage: high
             App\Message\SetElasticAliasMessage: high
+            App\Message\InventoryProcessRunMessage: high
+            App\Message\GenerateSanitizedInventoryMessage: high
+            App\Message\ProcessDocumentMessage: high                   # Processes doc uploads (not the actual ingest). Higher prio for user feedback.
 
             App\Message\IngestDossiersMessage: ingestor                # Ingests all dossiers
             App\Message\IngestDossierMessage: ingestor                 # Ingests a single dossier
             App\Message\IngestAudioMessage: ingestor                   # Ingests an audio file
             App\Message\IngestPdfMessage: ingestor                     # Ingests a complete PDF document and fires a message for each page
             App\Message\IngestPdfPageMessage: ingestor                 # Ingests a single PDF page from a PDF document
-            App\Message\ProcessDocumentMessage: ingestor               # Processes uploaded document ZIP and PDF files
+            App\Message\ReplaceDocumentMessage: ingestor
+            App\Message\RemoveInventoryAndDocumentsMessage: ingestor
+            App\Message\IngestDecisionMessage: ingestor
+            App\Message\IngestMetadataOnlyMessage: ingestor
+            App\Message\GenerateInquiryInventoryMessage: ingestor
+            App\Message\GenerateInquiryArchivesMessage: ingestor
 
             App\Message\UpdateDossierMessage: esupdater                # Updates the dossier in the elastic index
             App\Message\UpdateDepartmentMessage: esupdater             # Updates the dossier in the elastic index
             App\Message\UpdateOfficialMessage: esupdater               # Updates the dossier in the elastic index
             App\Message\RemoveDossierMessage: esupdater                # Removes a dossier in the elastic index
+            App\Message\RemoveDocumentMessage: esupdater
 
             App\Message\GenerateArchiveMessage: global                 # Generates a ZIP archive of the dossier
+            App\Message\UpdateDossierArchivesMessage: global           # Removes existing archives for a dossier and generates a new complete archive

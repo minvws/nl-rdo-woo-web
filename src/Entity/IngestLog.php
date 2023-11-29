@@ -27,7 +27,7 @@ class IngestLog
     #[ORM\Column(length: 255, nullable: false)]
     private string $event;
 
-    #[ORM\Column(length: 255, nullable: false)]
+    #[ORM\Column(length: 1024, nullable: false)]
     private string $message;
 
     #[ORM\ManyToOne(inversedBy: 'ingestLogs')]

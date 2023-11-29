@@ -1,0 +1,26 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = "Link case number" | trans() %}
+
+{% block body %}
+    <div class="bhr-container bhr-container--sm">
+        <h1 class="bhr-title mb-10">{{ page_title }}</h1>
+
+        <div class="px-11">
+            <div class="bhr-card">
+                <p class="bhr-label">{{ "Link case numbers to previously published documents on the platform or to previously published decisions." | trans }}</p>
+                <p class="bhr-form-help">{{ "Choose where you want to link the case numbers and then see how you can link them in a new screen." | trans }}</p>
+
+                <div class="flex">
+                    <a href="{{ path('app_admin_inquiries_link_documents') }}" id="placeholder_link_documents" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary mt-6">
+                        {{ "Link to documents" | trans }}
+                    </a>
+                    <a href="{{ path('app_admin_inquiries_link_dossiers') }}" id="placeholder_link_dossiers" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary mt-6">
+                        {{ "Link to dossiers" | trans }}
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

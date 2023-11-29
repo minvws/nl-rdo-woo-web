@@ -1,15 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% set page_title = "All published dossiers" | trans() %}
+{% set page_title =
+    result.type == constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER')
+        ? "All published dossiers" | trans()
+        : "Search for documents and decisions" | trans()
+%}
 
 {% block search_form_top %}
-    {% if result.type != constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
-        {% include "search/searchbar.html.twig" %}
-    {% endif %}
+{% if result.type != constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
+    {% include "search/searchbar.html.twig" %}
+{% endif %}
 {% endblock %}
 
 {% block body %}
-
 {% if result.type == constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
     <section class="py-8">
         <div class="gap-0">

@@ -1,0 +1,30 @@
+{{ form_start(form) }}
+
+{{ form_errors(form) }}
+
+{% if form.decision is defined %}
+    {{ form_row(form.decision) }}
+{% else %}
+    <div class="bhr-form-row -mt-4">
+        <span class="bhr-label">Soort besluit</span>
+         {{ dossier.decision | decision }}
+    </div>
+{% endif %}
+
+{{ form_row(form.summary) }}
+
+{{ form_row(form.decision_document) }}
+
+{% if dossier.decisionDocument.fileInfo.isUploaded|default(false) %}
+    <div class="bhr-form-row -mt-6">
+        <twig:Admin:UploadedFile
+            downloadUrl="{{ path('app_admin_dossier_decision_download', { dossierId: dossier.dossierNr }) }}"
+            fileName="{{ dossier.decisionDocument.fileInfo.name }}"
+            fileSize="{{ dossier.decisionDocument.fileInfo.size }}"
+            mimeType="{{ dossier.decisionDocument.fileInfo.mimetype }}"
+        />
+    </div>
+{% endif %}
+
+{{ form_end(form) }}
+

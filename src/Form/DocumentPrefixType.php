@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Entity\Organisation;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
@@ -37,11 +39,21 @@ class DocumentPrefixType extends AbstractType implements DataTransformerInterfac
                 ],
                 'help' => 'Prefix',
             ])
+            ->add('organisation', EntityType::class, [
+                'label' => 'Organisatie',
+                'class' => Organisation::class,
+                'choice_label' => function (Organisation $organisation) {
+                    return $organisation->getName() . ' (' . $organisation->getDepartment()->getShortTag() . ')';
+                },
+                'placeholder' => 'Selecteer een organisatie',
+                'required' => true,
+            ])
             ->add('description', TextType::class, [
                 'label' => 'Omschrijving',
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),
+                    new Length(['min' => 2, 'max' => 255]),
                 ],
                 'help' => 'Beknopte omschrijving voor deze prefix',
             ])

@@ -1,0 +1,17 @@
+@layer components {
+    .bhr-site-header-nav-item {
+        @apply block font-bold leading-4 px-4 py-8 text-lg;
+    }
+
+    .bhr-site-header-nav-item--anchor {
+        @apply hover-focus:bg-davys-grey;
+    }
+
+    .bhr-site-header-nav-item--active {
+        @apply bg-davys-grey;
+    }
+
+    .bhr-site-header-nav-item--skip-link {
+        @apply sr-only focus:not-sr-only focus:px-4 focus:py-8;
+    }
+}

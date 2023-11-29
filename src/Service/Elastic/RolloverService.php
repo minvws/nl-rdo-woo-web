@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Service\Elastic;
 
 use App\ElasticConfig;
-use App\Entity\Dossier;
+use App\Message\InitiateElasticRolloverMessage;
+use App\Message\SetElasticAliasMessage;
 use App\Repository\DocumentRepository;
 use App\Repository\DossierRepository;
 use App\Service\Elastic\Model\Index;
 use App\Service\Elastic\Model\RolloverDetails;
+use App\Service\Elastic\Model\RolloverParameters;
 use App\Service\Search\Object\ObjectHandler;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class RolloverService
 {
@@ -19,6 +22,8 @@ class RolloverService
         protected DocumentRepository $documentRepository,
         protected ElasticClientInterface $elastic,
         protected ObjectHandler $objectHandler,
+        protected MessageBusInterface $messageBus,
+        protected MappingService $mappingService,
     ) {
     }
 
@@ -44,14 +49,8 @@ class RolloverService
 
     public function getDetails(Index $index): RolloverDetails
     {
-        $dossierStatuses = [
-            Dossier::STATUS_PREVIEW,
-            Dossier::STATUS_PUBLISHED,
-        ];
-        $expectedDossierCount = $this->dossierRepository->count([
-            'status' => $dossierStatuses,
-        ]);
-        $documentCounts = $this->documentRepository->getCountAndPageSumForStatuses($dossierStatuses);
+        $dossierCount = $this->dossierRepository->count([]);
+        $documentCounts = $this->documentRepository->getCountAndPageSum();
 
         $elasticDossierCount = $this->objectHandler->getObjectCount($index->name, 'dossier');
         $elasticDocCount = $this->objectHandler->getObjectCount($index->name, 'document');
@@ -59,14 +58,50 @@ class RolloverService
 
         $response = new RolloverDetails(
             index: $index,
-            expectedDossierCount: $expectedDossierCount,
-            expectedDocumentCount: $documentCounts->documentCount,
+            expectedDossierCount: $dossierCount,
+            expectedDocCount: $documentCounts->documentCount,
             expectedPageCount: $documentCounts->totalPageCount,
-            elasticsearchDossierCount: $elasticDossierCount,
-            elasticsearchDocumentCount: $elasticDocCount,
-            elasticsearchPageCount: $elasticPageCount,
+            actualDossierCount: $elasticDossierCount,
+            actualDocCount: $elasticDocCount,
+            actualPageCount: $elasticPageCount,
         );
 
         return $response;
+    }
+
+    public function makeLive(string $indexName): void
+    {
+        $this->messageBus->dispatch(
+            new SetElasticAliasMessage(
+                indexName: $indexName,
+                aliasName: ElasticConfig::READ_INDEX,
+            )
+        );
+
+        $this->messageBus->dispatch(
+            new SetElasticAliasMessage(
+                indexName: $indexName,
+                aliasName: ElasticConfig::WRITE_INDEX,
+            )
+        );
+    }
+
+    public function initiateRollover(RolloverParameters $rollover): void
+    {
+        $this->messageBus->dispatch(
+            new InitiateElasticRolloverMessage(
+                mappingVersion: $rollover->getMappingVersion(),
+                indexName: ElasticConfig::INDEX_PREFIX . date('Ymd-His'),
+            )
+        );
+    }
+
+    public function getDefaultRolloverParameters(): RolloverParameters
+    {
+        $latestMappingVersion = $this->mappingService->getLatestMappingVersion();
+
+        return new RolloverParameters(
+            mappingVersion: $latestMappingVersion,
+        );
     }
 }

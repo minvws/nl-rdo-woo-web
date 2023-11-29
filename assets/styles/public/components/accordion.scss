@@ -1,0 +1,43 @@
+:root {
+    --accordion-button-icon-after-open-content: none;
+    --accordion-button-icon-after-close-content: none;
+    --accordion-content-padding: 0.5rem 1rem;
+    --accordion-content-border-color: var(grey-4);
+    --accordion-content-background-color: white;
+    --accordion-button-justify-content: center;
+}
+
+.accordion {
+    position: relative;
+
+    @media (min-width: $breakpoint-2) {
+        width: max-content;
+    }
+
+    .accordion-content {
+        --list-base-item-padding: 0.5rem 0;
+
+        box-shadow: 0px 0px 7px 0px rgba(0, 0, 0, 0.25);
+
+        @media (min-width: $breakpoint-2) {
+            width: max-content;
+            position: absolute;
+            top: 100%;
+            right: 0;
+        }
+
+        li:not(:first-child) {
+            --list-base-item-border-width: 1px 0 0 0;
+            --list-base-item-border-color: var(--grey-3);
+        }
+
+        a {
+            --link-text-color: black;
+            --link-visited-text-color: var(--link-text-color);
+
+            text-decoration: none;
+            padding: var(--list-base-item-padding);
+            padding-right: 2rem;
+        }
+    }
+}

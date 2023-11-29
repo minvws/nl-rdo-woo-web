@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form\User;
 
 use App\Validator\CommonList;
+use App\Validator\NotTheSamePassword;
 use App\Validator\SimilarityEmail;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -28,6 +29,8 @@ class ChangePasswordType extends AbstractType
         $builder
             ->add('current_password', PasswordType::class, [
                 'required' => true,
+                'label_attr' => ['class' => 'text-sm'],
+                'row_attr' => ['class' => 'mb-4'],
                 'constraints' => [
                     new UserPassword(),
                 ],
@@ -36,11 +39,16 @@ class ChangePasswordType extends AbstractType
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'invalid_message' => 'The password fields must match.',
-                'options' => ['attr' => ['class' => 'password-field']],
+                'options' => [
+                    'label_attr' => ['class' => 'text-sm'],
+                    'row_attr' => ['class' => 'mb-4'],
+                ],
                 'required' => true,
                 'first_options' => ['label' => 'New Password'],
                 'second_options' => ['label' => 'Repeat Password'],
-                'attr' => ['autocomplete' => 'off'],
+                'attr' => [
+                    'autocomplete' => 'off',
+                ],
                 'constraints' => [
                     new Length([
                         'min' => 14,
@@ -52,12 +60,16 @@ class ChangePasswordType extends AbstractType
                         'pattern' => '/(?!^\d+$)^.+$/',
                         'message' => 'Your password must not contain only digits.',
                     ]),
+                    new NotTheSamePassword(),   // Not the same as the current password
                     new CommonList(),           // Not a common password
                     new SimilarityEmail(),      // Not similar to user's email address
                 ],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Wachtwoord aanpassen',
+                'attr' => [
+                    'class' => 'bhr-button bhr-button--primary bhr-button--full-width mt-4',
+                ],
             ])
         ;
     }

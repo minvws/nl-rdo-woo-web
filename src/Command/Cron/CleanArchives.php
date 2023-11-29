@@ -4,27 +4,19 @@ declare(strict_types=1);
 
 namespace App\Command\Cron;
 
-use App\Entity\BatchDownload;
-use Doctrine\ORM\EntityManagerInterface;
-use League\Flysystem\FilesystemOperator;
-use Psr\Log\LoggerInterface;
+use App\Repository\BatchDownloadRepository;
+use App\Service\BatchDownloadService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CleanArchives extends Command
 {
-    protected EntityManagerInterface $doctrine;
-    protected FilesystemOperator $storage;
-    protected LoggerInterface $logger;
-
-    public function __construct(EntityManagerInterface $doctrine, FilesystemOperator $storage, LoggerInterface $logger)
-    {
+    public function __construct(
+        private readonly BatchDownloadRepository $batchRepository,
+        private readonly BatchDownloadService $batchDownloadService,
+    ) {
         parent::__construct();
-
-        $this->doctrine = $doctrine;
-        $this->storage = $storage;
-        $this->logger = $logger;
     }
 
     protected function configure(): void
@@ -41,21 +33,11 @@ class CleanArchives extends Command
 
         $count = 0;
 
-        $batches = $this->doctrine->getRepository(BatchDownload::class)->findExpiredArchives();
+        $batches = $this->batchRepository->findExpiredArchives();
         foreach ($batches as $batch) {
-            $archivePath = sprintf('batch-%s.zip', $batch->getId()->toBase58());
-            try {
-                $this->storage->delete($archivePath);
-            } catch (\Throwable $e) {
-                $this->logger->error(sprintf('Failed to remove archive %s: %s', $archivePath, $e->getMessage()));
-                continue;
-            }
-
-            $this->doctrine->remove($batch);
+            $this->batchDownloadService->remove($batch);
             $count++;
         }
-
-        $this->doctrine->flush();
 
         $output->writeln(sprintf('Removed %d expired archives', $count));
 

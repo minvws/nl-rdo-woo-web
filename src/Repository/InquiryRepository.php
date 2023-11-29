@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Document;
+use App\Entity\Dossier;
 use App\Entity\Inquiry;
+use App\Entity\Judgement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -41,28 +47,136 @@ class InquiryRepository extends ServiceEntityRepository
         }
     }
 
-    //    /**
-    //     * @return Inquiry[] Returns an array of Inquiry objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('w')
-    //            ->andWhere('w.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('w.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * @return Inquiry[]
+     */
+    public function findByDossier(Dossier $dossier): array
+    {
+        return $this->createQueryBuilder('i')
+            ->join('i.dossiers', 'd')
+            ->andWhere('d.id = :dossierId')
+            ->setParameter('dossierId', $dossier->getId())
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?Inquiry
-    //    {
-    //        return $this->createQueryBuilder('w')
-    //            ->andWhere('w.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * @return array<int, array{title: string, dossierNr: string, doccount: int}>
+     */
+    public function getDocCountsByDossier(Inquiry $inquiry): array
+    {
+        /* @phpstan-ignore-next-line */
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('dos.dossierNr', 'dos.title')
+            ->addSelect('count(doc) as doccount')
+            ->from(Dossier::class, 'dos')
+            ->where('dos.status IN (:statuses)')
+            ->innerJoin('dos.inquiries', 'inq', Join::WITH, 'inq.id = :inquiryId')
+            ->innerJoin('dos.documents', 'doc')
+            ->innerJoin('doc.inquiries', 'doc_inq', Join::WITH, 'doc_inq.id = :inquiryId')
+            ->groupBy('dos.id')
+            ->setParameter('inquiryId', $inquiry->getId())
+            ->setParameter('statuses', [
+                Dossier::STATUS_PREVIEW,
+                Dossier::STATUS_PUBLISHED,
+            ])
+            ->getQuery()
+            ->getArrayResult()
+        ;
+    }
+
+    public function getQueryWithDocCountAndDossierCount(): Query
+    {
+        return $this->createQueryBuilder('inq')
+            ->select('inq as inquiry')
+            ->addSelect('inv')
+            ->addSelect('count(distinct(doc.id)) as documentCount')
+            ->addSelect('count(distinct(dos.id)) as dossierCount')
+            ->leftJoin('inq.dossiers', 'dos')
+            ->leftJoin('inq.documents', 'doc')
+            ->leftJoin('inq.inventory', 'inv')
+            ->groupBy('inq.id, inv.id')
+            ->orderBy('inq.updatedAt', 'DESC')
+            ->getQuery()
+        ;
+    }
+
+    public function getDocsForInquiryDossierQueryBuilder(Inquiry $inquiry, Dossier $dossier): QueryBuilder
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('doc, dos')
+            ->from(Document::class, 'doc')
+            ->innerJoin('doc.inquiries', 'inq', Join::WITH, 'inq.id = :inquiryId')
+            ->innerJoin('doc.dossiers', 'dos', Join::WITH, 'dos.id = :dossierId')
+            ->where('dos.status IN (:statuses)')
+            ->setParameter('inquiryId', $inquiry->getId())
+            ->setParameter('dossierId', $dossier->getId())
+            ->setParameter('statuses', [
+                Dossier::STATUS_PREVIEW,
+                Dossier::STATUS_PUBLISHED,
+            ])
+        ;
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    public function countDocumentsByJudgement(Inquiry $inquiry): array
+    {
+        $queryBuilder = $this->createQueryBuilder('inq')
+            ->select('count(doc) as total')
+            ->join('inq.documents', 'doc')
+            ->join('doc.dossiers', 'dos')
+            ->where('inq.id = :inquiryId')
+            ->andWhere('dos.status IN (:statuses)')
+            ->setParameter('inquiryId', $inquiry->getId())
+            ->setParameter('statuses', [
+                Dossier::STATUS_PREVIEW,
+                Dossier::STATUS_PUBLISHED,
+            ]);
+
+        foreach (Judgement::cases() as $judgement) {
+            $queryBuilder
+                ->addSelect('SUM(CASE WHEN doc.judgement = :' . $judgement->value . ' THEN 1 ELSE 0 END) as ' . $judgement->value)
+                ->setParameter($judgement->value, $judgement->value);
+        }
+
+        /** @var array<string, int> $result */
+        $result = $queryBuilder->getQuery()->getSingleResult();
+
+        return $result;
+    }
+
+    public function countDocumentsForPubliclyAvailableDossiers(Inquiry $inquiry): int
+    {
+        return intval($this->createQueryBuilder('inq')
+            ->select('count(doc)')
+            ->join('inq.documents', 'doc')
+            ->join('doc.dossiers', 'dos')
+            ->where('inq.id = :inquiryId')
+            ->andWhere('dos.status IN (:statuses)')
+            ->setParameter('inquiryId', $inquiry->getId())
+            ->setParameter('statuses', [
+                Dossier::STATUS_PREVIEW,
+                Dossier::STATUS_PUBLISHED,
+            ])
+            ->getQuery()
+            ->getSingleScalarResult());
+    }
+
+    public function getDocumentsForPubliclyAvailableDossiers(Inquiry $inquiry): QueryBuilder
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('doc, dos')
+            ->from(Document::class, 'doc')
+            ->join('doc.inquiries', 'inq', Join::WITH, 'inq.id = :inquiryId')
+            ->join('doc.dossiers', 'dos')
+            ->where('inq.id = :inquiryId')
+            ->andWhere('dos.status IN (:statuses)')
+            ->setParameter('inquiryId', $inquiry->getId())
+            ->setParameter('statuses', [
+                Dossier::STATUS_PREVIEW,
+                Dossier::STATUS_PUBLISHED,
+            ]);
+    }
 }

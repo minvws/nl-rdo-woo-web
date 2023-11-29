@@ -36,7 +36,7 @@ class IngestDossiersHandler
         try {
             $options = new Options();
 
-            $dossiers = $this->dossierRepository->findAllPublishable();
+            $dossiers = $this->dossierRepository->findAll();
             foreach ($dossiers as $dossier) {
                 $this->elasticService->updateDossier($dossier, false);
 

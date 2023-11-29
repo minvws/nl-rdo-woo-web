@@ -53,7 +53,7 @@ class IngestPdfHandler
         }
 
         // Create extractor or cached extractor based on the given options
-        $this->extractor->extract($document, $message->forceRefresh());
+        $this->extractor->extract($document, $message->getForceRefresh());
         $data = $this->extractor->getOutput($document, 0);
         $pageCount = $data['count'] ?? 0;
 
@@ -63,11 +63,11 @@ class IngestPdfHandler
         $this->doctrine->flush();
 
         // Process document and store in elastic as a whole
-        $this->processor->processDocument($document, $message->forceRefresh());
+        $this->processor->processDocument($document, $message->getForceRefresh());
 
         // Go and ingest all pages in the document
         for ($i = 1; $i <= $pageCount; $i++) {
-            $message = new IngestPdfPageMessage($document->getId(), $i, $message->forceRefresh());
+            $message = new IngestPdfPageMessage($document->getId(), $i, $message->getForceRefresh());
             $this->bus->dispatch($message);
         }
     }

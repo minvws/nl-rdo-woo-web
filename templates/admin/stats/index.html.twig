@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% set page_title = "Statistics & Monitoring" | trans() %}
 
@@ -59,7 +59,7 @@
                 
                 <p>
                     <span class="float-end">
-                        <small>{{ "Last updated" | trans() }}: {{ "now"|date('Y-m-d H:i:s') }}</small>
+                        <small>{{ "Last updated" | trans() }}: {{ "now"|format_datetime('medium') }}</small>
                     </span>
                 </p>
             {% endif %}

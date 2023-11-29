@@ -25,8 +25,16 @@ app_privacy:
           changefreq: monthly
           section: legal
 
+app_robots:
+    path: /robots.txt
+    controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+    defaults:
+        template: 'static/robots.txt.twig'
+
 app_about: &app_about
-    path:          /about
+    path:
+        en: /about
+        nl: /over-deze-website
     controller:    App\Controller\LocalizedTemplateController
     defaults:
         template:  'static/about.html.twig'
@@ -35,10 +43,6 @@ app_about: &app_about
           priority: 0.7
           changefreq: monthly
           section: legal
-
-app_about_dutch:
-  <<: *app_about
-  path: /over-deze-website
 
 app_copyright:
     path:          /copyright
@@ -63,7 +67,9 @@ app_cookies:
             section: legal
 
 app_accessibility: &app_accessibility
-    path:          /accessibility
+    path:
+        en: /accessibility
+        nl: /toegankelijkheid
     controller:    App\Controller\LocalizedTemplateController
     defaults:
         template:  'static/accessibility.html.twig'
@@ -72,7 +78,3 @@ app_accessibility: &app_accessibility
             priority: 0.7
             changefreq: monthly
             section: legal
-
-app_accessibility_dutch:
-  <<: *app_accessibility
-  path: /toegankelijkheid

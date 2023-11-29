@@ -11,9 +11,10 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * @template-extends AbstractType<RemoveFormType>
+ * @template-extends AbstractType<WithdrawFormType>
  */
 class WithdrawFormType extends AbstractType
 {
@@ -29,17 +30,32 @@ class WithdrawFormType extends AbstractType
                 'class' => WithdrawReason::class,
                 'expanded' => true,
                 'placeholder' => 'Choose an option',
+                'constraints' => [
+                    new NotBlank(),
+                ],
             ])
             ->add('explanation', TextareaType::class, [
                 'label' => 'Toelichting',
                 'required' => true,
-                'constraints' => [],
-                'attr' => ['class' => 'w-full'],
+                'constraints' => [
+                    new NotBlank(),
+                ],
+                'attr' => [
+                    'class' => 'w-full',
+                    'rows' => 5,
+                ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Withdraw document',
+                'label' => 'Withdraw',
                 'attr' => [
-                    'class' => 'btn btn-danger',
+                    'class' => 'bhr-button--primary',
+                ],
+            ])
+            ->add('cancel', SubmitType::class, [
+                'label' => 'Cancel',
+                'attr' => [
+                    'class' => 'bhr-button--secondary',
+                    'data-last-button' => true,
                 ],
             ]);
     }

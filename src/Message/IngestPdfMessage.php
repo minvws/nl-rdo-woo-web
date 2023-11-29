@@ -11,7 +11,7 @@ class IngestPdfMessage
     protected Uuid $uuid;
     protected bool $forceRefresh;
 
-    public function __construct(Uuid $uuid, bool $forceRefresh = false)
+    public function __construct(Uuid $uuid, bool $forceRefresh)
     {
         $this->uuid = $uuid;
         $this->forceRefresh = $forceRefresh;
@@ -22,7 +22,7 @@ class IngestPdfMessage
         return $this->uuid;
     }
 
-    public function forceRefresh(): bool
+    public function getForceRefresh(): bool
     {
         return $this->forceRefresh;
     }

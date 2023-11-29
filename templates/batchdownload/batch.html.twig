@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = page_title | trans() %}
+
+{% block body %}
+
+    <section>
+        <div class="container">
+
+            <h1>{{ page_title }}</h1>
+
+            {% if batch.status == constant("App\\Entity\\BatchDownload::STATUS_PENDING") %}
+                <p>{{ "The archive is not yet ready for download. Try again in a few minutes." | trans() }}</p>
+            {% endif %}
+
+            {% if batch.status == constant("App\\Entity\\BatchDownload::STATUS_FAILED") %}
+                <p>{{ "Something went wrong while generating the archive. Please try again." | trans() }}</p>
+            {% endif %}
+
+            {% if batch.status == constant("App\\Entity\\BatchDownload::STATUS_COMPLETED") %}
+                <p>
+                    {{ "The archive is ready for download. You can download the archive until {date}. After that, the archive needs to be generated again." | trans({'date': batch.expiration | format_datetime('long') }) }}
+                </p>
+
+            <table>
+               <thead>
+                    <tr>
+                        <th>{{ "File" | trans() }}</th>
+                        <th class="table-cell--desktop">{{ "Documents" | trans() }}</th>
+                        <th class="table-cell--desktop">{{ "Expires" | trans() }}</th>
+                        <th class="text-right">{{ "Link" | trans() }}</th>
+                    </tr>
+               </thead>
+                <tr>
+                    <td class="align-middle">
+                        <span class="flex">
+                            <twig:Icon name="zipper" class="mt-1 mr-1 shrink-0" />
+                            <span>{{ batch.filename }}</span>
+                        </span>
+                    </td>
+                    <td class="table-cell--desktop align-middle">{{ batch.documents|length }}</td>
+                    <td class="table-cell--desktop align-middle">{{ batch.expiration | format_datetime('long') }}</td>
+                    <td class="align-middle">
+                        <a class="button button--light flex items-center float-right" download href="{{ download_path }}">
+                            <twig:Icon name="download"/>
+                            <span class="px-4 nowrap">{{ "Download" | trans() }} ({{ batch.size| size }})</span>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            {% endif %}
+
+        </div>
+    </section>
+
+{% endblock %}

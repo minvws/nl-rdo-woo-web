@@ -24,19 +24,19 @@
                             <tr>
                                 <td>{{ "Dossier count" | trans() }}</td>
                                 <td>{{ rolloverDetails.expectedDossierCount }}</td>
-                                <td>{{ rolloverDetails.elasticsearchDossierCount }}</td>
+                                <td>{{ rolloverDetails.actualDossierCount }}</td>
                                 <td>{{ rolloverDetails.getDossierPercentage() }}%</td>
                             </tr>
                             <tr>
                                 <td>{{ "Document count" | trans() }}</td>
-                                <td>{{ rolloverDetails.expectedDocumentCount }}</td>
-                                <td>{{ rolloverDetails.elasticsearchDocumentCount }}</td>
+                                <td>{{ rolloverDetails.expectedDocCount }}</td>
+                                <td>{{ rolloverDetails.actualDocCount }}</td>
                                 <td>{{ rolloverDetails.getDocumentPercentage() }}%</td>
                             </tr>
                             <tr>
                                 <td>{{ "Page count" | trans() }}</td>
                                 <td>{{ rolloverDetails.expectedPageCount }}</td>
-                                <td>{{ rolloverDetails.elasticsearchPageCount }}</td>
+                                <td>{{ rolloverDetails.actualPageCount }}</td>
                                 <td>{{ rolloverDetails.getPagePercentage() }}%</td>
                             </tr>
                         </tbody>

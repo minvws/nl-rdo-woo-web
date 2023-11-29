@@ -1,0 +1,117 @@
+:root {
+    /* Heading XXL */
+    --heading-xxl-font-size: 2.88651rem;
+
+    /* Heading XL, used for h1 */
+    --heading-xl-font-size: 2rem;
+
+    /* Heading large, used for h2 */
+    --heading-large-font-size: 1.625rem;
+
+    /* Heading normal, used for h3 */
+    --heading-normal-font-size: 1.625rem; /* was 1.60181rem */
+
+    /* Heading small, h4
+  --heading-small-font-size: 1.26562rem;  */
+
+    /* Heading XS, h5
+  --heading-xs-font-size: 1.125rem; */
+}
+
+.reduce-width {
+    max-width: 45ch;
+}
+
+h1,
+h1 > a {
+    font-family: var(--h1-font-family, var(--application-base-font-family));
+    font-size: var(--h1-font-size, inherit);
+    color: var(--h1-text-color, inherit);
+    font-weight: var(--h1-font-weight, inherit);
+    line-height: var(--h1-line-height, inherit);
+    margin: var(--h1-margin, inherit);
+}
+
+h2,
+h2 > a {
+    font-family: var(--h2-font-family, var(--application-base-font-family));
+    font-size: var(--h2-font-size, inherit);
+    color: var(--h2-text-color, inherit);
+    font-weight: var(--h2-font-weight, inherit);
+    line-height: var(--h2-line-height, inherit);
+    margin: var(--h2-margin, inherit);
+}
+
+h3,
+h3 > a {
+    font-family: var(--h3-font-family, var(--application-base-font-family));
+    font-size: var(--h3-font-size, inherit);
+    color: var(--h3-text-color, inherit);
+    font-weight: var(--h3-font-weight, inherit);
+    line-height: var(--h3-line-height, inherit);
+    margin: var(--h3-margin, inherit);
+}
+
+h4,
+h4 > a {
+    font-family: var(--h4-font-family, var(--application-base-font-family));
+    font-size: var(--h4-font-size, inherit);
+    color: var(--h4-text-color, inherit);
+    font-weight: var(--h4-font-weight, inherit);
+    line-height: var(--h4-line-height, inherit);
+    margin: var(--h4-margin, inherit);
+}
+
+h5,
+h5 > a {
+    font-family: var(--h5-font-family, var(--application-base-font-family));
+    font-size: var(--h5-font-size);
+    color: var(--h5-text-color, inherit);
+    font-weight: var(--h5-font-weight);
+    line-height: var(--h5-line-height, initial);
+    margin: var(--h5-margin, inherit);
+}
+
+h6,
+h6 > a {
+    font-family: var(--h6-font-family, var(--application-base-font-family));
+    font-size: var(--h6-font-size);
+    color: var(--h6-text-color);
+    font-weight: var(--h6-font-weight);
+    line-height: var(--h6-line-height, initial);
+    margin: var(--h6-margin, inherit);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    hyphens: none;
+    > a {
+        color: var(--headings-text-color, inherit);
+        &:focus,
+        &:hover {
+            color: var(--headings-hover-text-color, inherit);
+        }
+        &:visited {
+            color: var(--headings-visited-text-color, inherit);
+        }
+    }
+}
+
+.site-title {
+    font-size: 2rem;
+
+    > :last-child {
+        display: block;
+        font-size: 1.8rem;
+    }
+
+    @media (min-width: 42rem) {
+        .no-break {
+            display: inline-block;
+        }
+    }
+}

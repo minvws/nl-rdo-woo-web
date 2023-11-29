@@ -1,0 +1,119 @@
+.ro-text-small {
+    font-size: var(--body-text-small-font-size);
+}
+
+.ro-text-base {
+    font-size: var(--application-base-font-size);
+}
+
+.ro-font-normal {
+    font-weight: var(--text-set-font-weight);
+}
+
+.ro-font-bold,
+a.ro-font-bold:focus,
+a.ro-font-bold:hover {
+    font-weight: var(--text-set-strong-font-weight);
+}
+
+.ro-gap-0 {
+    gap: 0;
+}
+
+.ro-width-full {
+    width: 100%;
+}
+
+.js {
+    // .results in selector: .js\:visually-hidden
+    & &\:visually-hidden {
+        @extend .visually-hidden;
+    }
+
+    & &\:hidden {
+        @extend .hidden;
+    }
+}
+
+.no-js {
+    // .results in selector: .js\:visually-hidden
+    & &\:hidden {
+        @extend .hidden;
+    }
+}
+
+.width-delimiter {
+    max-width: 70ch;
+    -webkit-hyphens: none;
+    hyphens: none;
+    word-break: none;
+}
+
+.nota-bene:is(dl) {
+    > div {
+        background: none !important;
+        display: block !important;
+    }
+
+    :is(dd, dt) {
+        display: inline;
+        color: var(--grey-6);
+    }
+}
+
+a[href^="mailto"],
+.content-container a[href^="https://"]
+{
+    &,
+    &:focus,
+    &:hover {
+        &::before,
+        &::after {
+            box-sizing: border-box;
+            font-size: 0;
+            height: 24px;
+            width: 24px;
+        }
+    }
+
+    &::before,
+    &::after {
+        font-size: 0;
+        background: no-repeat left -5px;
+        background-size: contain;
+        margin-left: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+a[href^="mailto"]:not(.icon-after)::before {
+    background-image: url("../../img/sendusmail.svg");
+    content: "E-mail us \00a0 ";
+
+    [lang="nl"] & {
+        content: "E-mail ons \00a0 ";
+    }
+}
+
+a[href^="mailto"].icon-after::after {
+    background-image: url("../../img/sendusmail.svg");
+    content: " \00a0 via email";
+
+    [lang="nl"] & {
+        content: " \00a0 via email";
+    }
+}
+
+.content-container a[href^="https://"]:not(.icon-after)::before,
+.content-container a[href^="https://"].icon-after::after
+{
+    background-image: url("../../img/externallink.svg");
+    background-position: left -4px;
+    content: " (external website) \00a0";
+
+    [lang="nl"] & {
+        content: "(externe website) \00a0 ";
+    }
+}

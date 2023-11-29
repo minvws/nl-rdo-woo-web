@@ -140,3 +140,6 @@ Error: Error
 'Please upload a valid spreadsheet': '__Please upload a valid spreadsheet'
 'Your password should be at least {{ limit }} characters': '__Your password should be at least {{ limit }} characters'
 'Your password must not contain only digits.': '__Your password must not contain only digits.'
+'This email address is already in use': 'This email address is already in use'
+'Enter a case number or multiple case numbers, separate multiple case numbers with commas': 'Enter a case number or multiple case numbers, separate multiple case numbers with commas'
+'Choose from the selection of published decisions': 'Choose from the selection of published decisions'

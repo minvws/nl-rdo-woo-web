@@ -1,0 +1,149 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+    <div class="bhr-container bhr-container--sm">
+
+        {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.admin.html.twig' }) }}
+
+        <div class="px-11">
+            <div class="bhr-card">
+                <twig:Admin:LeftAndRight>
+                    <h2 class="bhr-title">{{ document.documentNr }}</h2>
+
+                    <twig:block name="right">
+                        {% if workflow.canReplace %}
+                            <a href="{{ path('app_admin_document_replace', {dossierId: dossier.dossierNr, documentId: document.documentNr}) }}" class="bhr-button bhr-button--secondary">Document vervangen</a>
+                        {% endif %}
+                        {% if workflow.canWithdraw %}
+                            <a href="{{ path('app_admin_document_withdraw', {dossierId: dossier.dossierNr, documentId: document.documentNr}) }}" class="bhr-button bhr-button--secondary {% if workflow.canReplace %}ml-4{% endif %}">Intrekken</a>
+                        {% endif %}
+                    </twig:block>
+                </twig:Admin:LeftAndRight>
+
+                <table class="bhr-table">
+                    <tbody>
+                        <tr>
+                            <th class="bhr-row-head" scope="row">Publicatiestatus</th>
+                            <td>
+                                {% if document.suspended %}
+                                    <span class="bhr-badge bhr-badge--red">Suspended</span>
+                                {% elseif document.withdrawn %}
+                                    <span class="bhr-badge bhr-badge--red">Ingetrokken</span>
+                                {% else %}
+                                    <span class="bhr-badge bhr-badge--green">Gepubliceerd</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bhr-row-head" scope="row">Documentnaam</th>
+                            <td class="font-bold">{{ document.fileInfo.name }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bhr-row-head" scope="row">Publieke url</th>
+                            <td>
+                                {% if dossier.status == constant('\\App\\Entity\\Dossier::STATUS_PUBLISHED') %}
+                                    {% set url = PUBLIC_BASE_URL ~ path('app_document_detail', {dossierId: dossier.dossierNr, documentId: document.documentNr}) %}
+                                    <a class="bhr-a" href="{{ url }}">{{ url }}</a>
+                                {% else %}
+                                    Nog niet beschikbaar
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bhr-row-head" scope="row">Status</th>
+                            <td>{{ document.judgement.value | trans }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bhr-row-head" scope="row">Gelakte gegevens</th>
+                            <td>
+                                {% if document.grounds | length > 0 %}
+                                    <ul>
+                                        {% for ground in document.grounds %}
+                                            <li>
+                                                {{ ground }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bhr-row-head" scope="row">Zaaknummers</th>
+                            <td>
+                                {% for inquiry in document.inquiries %}
+                                    {{ inquiry.caseNr }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bhr-row-head" scope="row">ThreadID</th>
+                            <td>{{ document.threadId }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bhr-row-head" scope="row">Family</th>
+                            <td>{{ document.familyId }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bhr-row-head" scope="row">Datum document</th>
+                            <td>{{ document.documentDate | format_date('long') }} {{ document.documentDate | format_time('short') }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bhr-row-head" scope="row">Onderwerpen</th>
+                            <td>
+                                {% for subject in document.subjects %}
+                                    {{ subject }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bhr-row-head" scope="row">Type download</th>
+                            <td>
+                                {% if document.isUploaded %}
+                                    {{ document.fileInfo.type | upper }}, {{ document.fileinfo.size | size }}
+                                {% else %}
+                                    niet van toepassing
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="bhr-row-head" scope="row">Aantal pagina's</th>
+                            <td>{{ document.pageCount }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            {# <div class="bhr-card mt-6">
+                <h2 class="bhr-title mb-6">Geschiedenis</h2>
+
+                <table class="bhr-table">
+                    <thead>
+                        <tr>
+                            <th class="bhr-column-head" scope="row">Datum</th>
+                            <th class="bhr-column-head" scope="row">Actie</th>
+                        </tr>
+                    </thead>
+                    {% for group in document.groupedIngestLogs %}
+                    <tbody>
+                        <tr>
+                            <td>{{ group.0.createdAt | date('Y-m-d H:i:s') }}</td>
+                            <td>
+                                {{ group.0.event }}:
+                                {% for log in group %}
+                                    {% if log.success %}
+                                        <i class="text-success fa fa-thumbs-up"></i>
+                                    {% else %}
+                                        <i class="text-danger fa fa-thumbs-down"></i>
+                                    {% endif %}
+                                    {{ log.message }}
+                                    <br/>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div> #}
+        </div>
+    </div>
+{% endblock %}

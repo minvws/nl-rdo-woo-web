@@ -9,9 +9,7 @@ use App\Entity\Department;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\GovernmentOfficial;
-use App\Service\DateRangeConverter;
 use App\Service\Search\Model\Config;
-use App\Service\Worker\Audio\Metadata;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Jaytaph\TypeArray\TypeArray;
@@ -19,26 +17,19 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Service for interacting with Elasticsearch. Together with the SearchService, this should be the only entrypoint to elasticsearch.
- *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class ElasticService
 {
     protected static int $maxRetries = 10;
 
-    protected ElasticClientInterface $elastic;
-    protected LoggerInterface $logger;
-
-    public function __construct(ElasticClientInterface $elastic, LoggerInterface $logger)
-    {
-        $this->elastic = $elastic;
-        $this->logger = $logger;
+    public function __construct(
+        private readonly ElasticClientInterface $elastic,
+        private LoggerInterface $logger,
+        private readonly ElasticDocumentMapper $mapper,
+    ) {
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     *
      * @throws \Elastic\Elasticsearch\Exception\ServerResponseException
      */
     public function updatePage(Document $document, int $pageNr, string $content): void
@@ -81,56 +72,17 @@ EOF,
     }
 
     /**
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     *
      * @param string[]               $metadata
      * @param array<int, mixed>|null $pages
      */
-    public function updateDocument(Document $document, array $metadata = [], array $pages = null): void
+    public function updateDocument(Document $document, array $metadata = null, array $pages = null): void
     {
-        [$dossiers, $dossierIds] = $this->dossiersAsArray($document);
-
-        $inquiryIds = [];
-        foreach ($document->getInquiries() as $inquiry) {
-            $inquiryIds[] = $inquiry->getId();
-        }
-
-        $file = $document->getFileInfo();
-        $documentDoc = [
-            'type' => 'document',
-            'document_nr' => $document->getDocumentNr(),
-            'dossier_nr' => $dossierIds,
-            'mime_type' => $file->getMimeType(),
-            'file_size' => $file->getSize(),
-            'file_type' => $file->getType(),
-            'source_type' => $file->getSourceType(),
-            'date' => $document->getDocumentDate()->format(\DateTimeInterface::ATOM),
-            'filename' => $file->getName(),
-            'family_id' => $document->getFamilyId() ?? 0,
-            'document_id' => $document->getDocumentId() ?? 0,
-            'thread_id' => $document->getThreadId() ?? 0,
-            'judgement' => $document->getJudgement(),
-            'grounds' => $document->getGrounds(),
-            'subjects' => $document->getSubjects(),
-            'date_period' => $document->getPeriod(),
-            'audio_duration' => $document->getDuration(),
-            'document_pages' => $document->getPageCount(),
-            'dossiers' => $dossiers,
-            // 'metadata' => $metadata, @todo: this does not work
-            'inquiry_ids' => $inquiryIds,
-        ];
-
-        if ($pages !== null) {
-            $documentDoc['pages'] = $pages;
-        }
-
         // Update main document
         $this->elastic->update([
             'index' => ElasticConfig::WRITE_INDEX,
             'id' => $document->getDocumentNr(),
             'body' => [
-                'doc' => $documentDoc,
+                'doc' => $this->mapper->mapDocumentToElasticDocument($document, $metadata, $pages),
                 'doc_as_upsert' => true,
             ],
         ]);
@@ -165,29 +117,7 @@ EOF,
 
     public function updateDossier(Dossier $dossier, bool $updateDocuments = true): void
     {
-        list($departments, $officials) = $this->getDepartmentsAndOfficials($dossier);
-
-        $inquiryIds = [];
-        foreach ($dossier->getInquiries() as $inquiry) {
-            $inquiryIds[] = $inquiry->getId();
-        }
-
-        $dossierDoc = [
-            'type' => 'dossier',
-            'dossier_nr' => $dossier->getDossierNr(),
-            'title' => $dossier->getTitle(),
-            'status' => $dossier->getStatus(),
-            'summary' => $dossier->getSummary(),
-            'document_prefix' => $dossier->getDocumentPrefix(),
-            'departments' => $departments,
-            'government_officials' => $officials,
-            'date_from' => $dossier->getDateFrom()?->format(\DateTimeInterface::ATOM),
-            'date_to' => $dossier->getDateTo()?->format(\DateTimeInterface::ATOM),
-            'date_period' => DateRangeConverter::convertToString($dossier->getDateFrom(), $dossier->getDateTo()),
-            'publication_reason' => $dossier->getPublicationReason(),
-            'decision' => $dossier->getDecision(),
-            'inquiry_ids' => $inquiryIds,
-        ];
+        $dossierDoc = $this->mapper->mapDossierToElasticDocument($dossier);
 
         // Update main dossier document
         $this->logger->debug('[Elasticsearch][Update Dossier] Updating dossier');
@@ -221,34 +151,6 @@ EOF,
         ]);
     }
 
-    public function updateAudio(Document $document, Metadata $metadata): void
-    {
-        $ids = [];
-        foreach ($document->getDossiers() as $dossier) {
-            $ids[] = $dossier->getId();
-        }
-
-        $body = [
-            'type' => 'audio',
-            'dossier_nr' => $ids,
-            'document_nr' => $document->getDocumentNr(),
-            'duration' => $metadata->getDuration(),
-            'sample_rate' => $metadata->getSampleRate(),
-            'channels' => $metadata->getChannels(),
-            'bit_rate' => $metadata->getBitRate(),
-            'format' => $metadata->getFormat(),
-        ];
-
-        $this->elastic->update([
-            'index' => ElasticConfig::WRITE_INDEX,
-            'id' => $document->getDocumentNr(),
-            'body' => [
-                'doc' => $body,
-                'doc_as_upsert' => true,
-            ],
-        ]);
-    }
-
     public function documentExists(string $documentNr): bool
     {
         $result = $this->elastic->exists([
@@ -271,46 +173,7 @@ EOF,
         return new TypeArray($result->asArray());
     }
 
-    /**
-     * @return mixed[]
-     */
-    protected function dossiersAsArray(Document $document): array
-    {
-        $dossiers = [];
-        $dossierIds = [];
-        foreach ($document->getDossiers() as $dossier) {
-            list($departments, $officials) = $this->getDepartmentsAndOfficials($dossier);
-
-            $inquiryIds = [];
-            foreach ($document->getInquiries() as $inquiry) {
-                $inquiryIds[] = $inquiry->getId();
-            }
-
-            $data = [
-                'type' => 'dossier',
-                'dossier_nr' => $dossier->getDossierNr(),
-                'title' => $dossier->getTitle(),
-                'summary' => $dossier->getSummary(),
-                'status' => $dossier->getStatus(),
-                'document_prefix' => $dossier->getDocumentPrefix(),
-                'departments' => $departments,
-                'government_officials' => $officials,
-                'date_from' => $dossier->getDateFrom()?->format(\DateTimeInterface::ATOM),
-                'date_to' => $dossier->getDateTo()?->format(\DateTimeInterface::ATOM),
-                'date_period' => DateRangeConverter::convertToString($dossier->getDateFrom(), $dossier->getDateTo()),
-                'publication_reason' => $dossier->getPublicationReason(),
-                'decision' => $dossier->getDecision(),
-                'inquiry_ids' => $inquiryIds,
-            ];
-
-            $dossiers[] = $data;
-            $dossierIds[] = $dossier->getDossierNr();
-        }
-
-        return [$dossiers, $dossierIds];
-    }
-
-    public function updateOfficial(GovernmentOfficial $old, GovernmentOfficial $new): void
+    public function updateOfficial(GovernmentOfficial $official): void
     {
         $this->elastic->updateByQuery([
             'index' => ElasticConfig::WRITE_INDEX,
@@ -318,28 +181,33 @@ EOF,
                 'query' => [
                     'bool' => [
                         'should' => [
-                            ['match' => ['government_official.id' => $old->getId()]],
-                            ['match' => ['dossiers.government_official.id' => $old->getId()]],
+                            ['match' => ['government_officials.id' => $official->getId()]],
+                            ['nested' => [
+                                'path' => 'dossiers',
+                                'query' => [
+                                    'term' => ['dossiers.government_officials.id' => $official->getId()],
+                                ],
+                            ]],
                         ],
                         'minimum_should_match' => 1,
                     ],
                 ],
                 'script' => [
                     'source' => <<< EOF
-                        if (ctx._source.government_official != null) {
-                            for (int i = 0; i < ctx._source.government_official.length; i++) {
-                                if (ctx._source.government_official[i].id.equals(params.old.id)) {
-                                    ctx._source.government_official[i] = params.new;
+                        if (ctx._source.government_officials != null) {
+                            for (int i = 0; i < ctx._source.government_officials.length; i++) {
+                                if (ctx._source.government_officials[i].id.equals(params.official.id)) {
+                                    ctx._source.government_officials[i] = params.official;
                                 }
                             }
                         }
 
                         if (ctx._source.dossiers != null) {
                             for (int i = 0; i < ctx._source.dossiers.length; i++) {
-                                if (ctx._source.dossiers[i].government_official != null) {
-                                    for (int j = 0; j < ctx._source.dossiers[i].government_official.length; j++) {
-                                        if (ctx._source.dossiers[i].government_official[j].id.equals(params.old.id)) {
-                                            ctx._source.dossiers[i].government_official[j] = params.new;
+                                if (ctx._source.dossiers[i].government_officials != null) {
+                                    for (int j = 0; j < ctx._source.dossiers[i].government_officials.length; j++) {
+                                        if (ctx._source.dossiers[i].government_officials[j].id.equals(params.official.id)) {
+                                            ctx._source.dossiers[i].government_officials[j] = params.official;
                                         }
                                     }
                                 }
@@ -348,13 +216,9 @@ EOF,
 EOF,
                     'lang' => 'painless',
                     'params' => [
-                        'old' => [
-                            'name' => $old->getName(),
-                            'id' => $old->getId(),
-                        ],
-                        'new' => [
-                            'name' => $new->getName(),
-                            'id' => $new->getId(),
+                        'official' => [
+                            'name' => $official->getName(),
+                            'id' => $official->getId(),
                         ],
                     ],
                 ],
@@ -362,7 +226,7 @@ EOF,
         ]);
     }
 
-    public function updateDepartment(Department $old, Department $new): void
+    public function updateDepartment(Department $department): void
     {
         $this->elastic->updateByQuery([
             'index' => ElasticConfig::WRITE_INDEX,
@@ -370,8 +234,13 @@ EOF,
                 'query' => [
                     'bool' => [
                         'should' => [
-                            ['match' => ['departments.id' => $old->getId()]],
-                            ['match' => ['dossiers.departments.id' => $old->getId()]],
+                            ['match' => ['departments.id' => $department->getId()]],
+                            ['nested' => [
+                                'path' => 'dossiers',
+                                'query' => [
+                                    'term' => ['dossiers.departments.id' => $department->getId()],
+                                ],
+                            ]],
                         ],
                         'minimum_should_match' => 1,
                     ],
@@ -380,8 +249,8 @@ EOF,
                     'source' => <<< EOF
                         if (ctx._source.departments != null) {
                             for (int i = 0; i < ctx._source.departments.length; i++) {
-                                if (ctx._source.departments[i].id.equals(params.old.id)) {
-                                    ctx._source.departments[i] = params.new;
+                                if (ctx._source.departments[i].id.equals(params.department.id)) {
+                                    ctx._source.departments[i] = params.department;
                                 }
                             }
                         }
@@ -390,8 +259,8 @@ EOF,
                             for (int i = 0; i < ctx._source.dossiers.length; i++) {
                                 if (ctx._source.dossiers[i].departments != null) {
                                     for (int j = 0; j < ctx._source.dossiers[i].departments.length; j++) {
-                                        if (ctx._source.dossiers[i].departments[j].id.equals(params.old.id)) {
-                                            ctx._source.dossiers[i].departments[j] = params.new;
+                                        if (ctx._source.dossiers[i].departments[j].id.equals(params.department.id)) {
+                                            ctx._source.dossiers[i].departments[j] = params.department;
                                         }
                                     }
                                 }
@@ -400,42 +269,14 @@ EOF,
 EOF,
                     'lang' => 'painless',
                     'params' => [
-                        'old' => [
-                            'name' => $old->getName(),
-                            'id' => $old->getId(),
-                        ],
-                        'new' => [
-                            'name' => $new->getName(),
-                            'id' => $new->getId(),
+                        'department' => [
+                            'name' => $department->getName(),
+                            'id' => $department->getId(),
                         ],
                     ],
                 ],
             ],
         ]);
-    }
-
-    /**
-     * @return mixed[]
-     */
-    protected function getDepartmentsAndOfficials(Dossier $dossier): array
-    {
-        $departments = [];
-        foreach ($dossier->getDepartments() as $department) {
-            $departments[] = [
-                'name' => $department->getName(),
-                'id' => $department->getId(),
-            ];
-        }
-
-        $officials = [];
-        foreach ($dossier->getGovernmentOfficials() as $official) {
-            $officials[] = [
-                'name' => $official->getName(),
-                'id' => $official->getId(),
-            ];
-        }
-
-        return [$departments, $officials];
     }
 
     public function setLogger(LoggerInterface $logger): void
@@ -486,41 +327,6 @@ EOF,
         });
     }
 
-    // Removes the nested dossier entry from all documents that have this dossier. Note that this can
-    // leave orphaned documents (documents that do not have any dossiers as nested entities). We assume
-    // that these are cleaned up BEFORE running this function.
-    private function removeAllDocumentsForDossier(Dossier $dossier): void
-    {
-        $this->retry(function () use ($dossier) {
-            $this->elastic->updateByQuery([
-                'index' => ElasticConfig::WRITE_INDEX,
-                'body' => [
-                    'query' => [
-                        'bool' => [
-                            'must' => [
-                                ['match' => ['type' => Config::TYPE_DOCUMENT]],
-                                ['match' => ['dossier_nr' => $dossier->getDossierNr()]],
-                            ],
-                        ],
-                    ],
-                    'script' => [
-                        'source' => <<< EOF
-                            for (int i = ctx._source.dossiers.length-1; i>=0; i-) {
-                                if (ctx._source.dossiers[i].dossier_nr == params.dossier_nr) {
-                                    ctx._source.dossiers.remove(i);
-                                }
-                            }
-EOF,
-                        'lang' => 'painless',
-                        'params' => [
-                            'dossier_nr' => $dossier->getDossierNr(),
-                        ],
-                    ],
-                ],
-            ]);
-        });
-    }
-
     // Removes a given document
     public function removeDocument(string $documentNr): void
     {
@@ -540,14 +346,19 @@ EOF,
     // Removes a dossier and all references inside documents that have this dossier as nested object.
     public function removeDossier(Dossier $dossier): void
     {
-        // Remove all dossier entries found in documents
-        $this->removeAllDocumentsForDossier($dossier);
+        try {
+            // Delete dossier document
+            $this->elastic->delete([
+                'index' => ElasticConfig::WRITE_INDEX,
+                'id' => $dossier->getDossierNr(),
+            ]);
+        } catch (ClientResponseException $exception) {
+            if ($exception->getCode() === 404) {
+                return; // Dossier was not in the index (already deleted?) that's ok
+            }
 
-        // Delete dossier document
-        $this->elastic->delete([
-            'index' => ElasticConfig::WRITE_INDEX,
-            'id' => $dossier->getDossierNr(),
-        ]);
+            throw $exception;
+        }
     }
 
     // Will retry a callable for a specified number of times. If the callable throws a ClientResponseException with a 409 code, it will

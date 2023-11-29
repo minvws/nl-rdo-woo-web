@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\MessageHandler;
 
 use App\Message\UpdateOfficialMessage;
+use App\Repository\GovernmentOfficialRepository;
 use App\Service\Elastic\ElasticService;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -16,27 +16,25 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 class UpdateOfficialHandler
 {
-    protected EntityManagerInterface $doctrine;
-    protected LoggerInterface $logger;
-    protected ElasticService $elasticService;
-
     public function __construct(
-        ElasticService $elasticService,
-        LoggerInterface $logger
+        private readonly ElasticService $elasticService,
+        private readonly LoggerInterface $logger,
+        private readonly GovernmentOfficialRepository $repository,
     ) {
-        $this->elasticService = $elasticService;
-        $this->logger = $logger;
     }
 
     public function __invoke(UpdateOfficialMessage $message): void
     {
+        $official = $this->repository->find($message->getUuid());
+        if (! $official) {
+            throw new \RuntimeException('Cannot find government official with UUID ' . $message->getUuid());
+        }
+
         try {
-            $this->elasticService->updateOfficial($message->getOld(), $message->getNew());
+            $this->elasticService->updateOfficial($official);
         } catch (\Exception $e) {
             $this->logger->error('Failed to update official in elasticsearch', [
-                'id' => $message->getOld()->getId(),
-                'old' => $message->getOld()->getName(),
-                'new' => $message->getNew()->getName(),
+                'id' => $message->getUuid()->toRfc4122(),
                 'exception' => $e->getMessage(),
             ]);
         }

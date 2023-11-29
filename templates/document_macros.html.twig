@@ -3,64 +3,101 @@
 
     public_docs: a list of at least partially public documents
     not_public_docs: a list of not public documents (already_public or not_public)
+    not_online_docs: a list of documents that are not (yet) online ()
     fragment: the fragment to use for the pagination links, like #documenten
 #}
-{% macro document_tabs(public_docs, not_public_docs, fragment) %}
+{% macro document_tabs(public_docs, not_public_docs, not_online_docs, fragment, dossier) %}
     {% set hasPublicDocuments = public_docs | length > 0 %}
     {% set hasNotPublicDocuments = not_public_docs | length > 0 %}
+    {% set hasNotOnlineDocuments = not_online_docs | length > 0 %}
 
-    {% if hasPublicDocuments and hasNotPublicDocuments %}
-    <div class="tabs w-full gap-0">
-        <ul class="p-0" role="tablist" aria-label="{{ "Documents" | trans() }}">
-            <li>
-                <button
-                    aria-controls="tab1"
-                    aria-label="{{ "Documents that match the request" | trans() }}"
-                    aria-selected="true"
-                    class="active tab"
-                    data-tab-target="#tab1"
-                    id="tabcontrol-1"
-                    role="tab"
-                >
-                    <span class="copy-desktop" id="a11y-tab1">
-                        {{ "Documents that match the request" | trans() }}
-                    </span>
-                    <span class="copy-mobile">
-                        {{ "Public" | trans() }}
-                    </span>
-                </button>
-            </li>
-            <li>
-                <button
-                    aria-controls="tab2"
-                    aria-label="{{ "Not made public" | trans() }}"
-                    class="tab"
-                    data-tab-target="#tab2"
-                    id="tabcontrol-2"
-                    role="tab"
-                >
-                    <span class="copy-desktop">
-                        {{ "Not made public" | trans() }}
-                    </span>
-                    <span class="copy-mobile">
-                        {{ "Not public" | trans() }}
-                    </span>
-                </button>
-            </li>
-        </ul>
+    {% if hasPublicDocuments or hasNotPublicDocuments or hasNotOnlineDocuments %}
+        <div class="tabs w-full gap-0">
+            <ul class="tablist" role="tablist" aria-label="{{ "Documents" | trans() }}">
+                {% if hasPublicDocuments %}
+                <li class="tablist__item">
+                    <button
+                        aria-controls="tab1"
+                        aria-label="{{ "Documents that match the request" | trans() }}"
+                        aria-selected="true"
+                        class="tab"
+                        data-tab-target="#tabcontrol-1"
+                        id="tabcontrol-1"
+                        role="tab"
+                    >
+                        <span class="tab__copy--desktop">
+                            {{ "Documents that match the request" | trans() }}
+                        </span>
+                        <span class="tab__copy--mobile">
+                            {{ "Public" | trans() }}
+                        </span>
+                    </button>
+                </li>
+                {% endif %}
+                {% if hasNotPublicDocuments %}
+                <li class="tablist__item">
+                    <button
+                        aria-controls="tab2"
+                        aria-label="{{ "Not made public" | trans() }}"
+                        {% if not hasPublicDocuments %}
+                        aria-selected="true"
+                        {% endif %}
+                        class="tab"
+                        data-tab-target="#tabcontrol-2"
+                        id="tabcontrol-2"
+                        role="tab"
+                    >
+                        <span class="tab__copy--desktop">
+                            {{ "Not made public" | trans() }}
+                        </span>
+                        <span class="tab__copy--mobile">
+                            {{ "Not public" | trans() }}
+                        </span>
+                    </button>
+                </li>
+                {% endif %}
+                 {% if hasNotOnlineDocuments %}
+                <li class="tablist__item">
+                    <button
+                        aria-controls="tab3"
+                        aria-label="{{ "Not (yet) online" | trans() }}"
+                        {% if not hasPublicDocuments and not hasNotPublicDocuments %}
+                        aria-selected="true"
+                        {% endif %}
+                        class="tab"
+                        data-tab-target="#tabcontrol-3"
+                        id="tabcontrol-3"
+                        role="tab"
+                    >
+                        <span class="tab__copy--desktop">
+                            {{ "Not (yet) online" | trans() }}
+                        </span>
+                        <span class="tab__copy--mobile">
+                            {{ "Not online" | trans() }}
+                        </span>
+                    </button>
+                </li>
+                {% endif %}
+            </ul>
 
-        <div id="tab1" data-tab-content class="active block w-full" role="tabpanel" tabindex="0" aria-labelledby="tabcontrol-1">
-            {{ _self.documents_table(public_docs, "Documents that match the request", '#tabcontrol-1') }}
+            {% if hasPublicDocuments %}
+            <div id="tab1" data-tab-content class="block w-full" role="tabpanel" aria-labelledby="tabcontrol-1">
+                {{ _self.documents_table(public_docs, "Documents that match the request", '#tabcontrol-1', dossier) }}
+            </div>
+            {% endif %}
+
+            {% if hasNotPublicDocuments %}
+            <div id="tab2" data-tab-content class="block w-full" role="tabpanel" aria-labelledby="tabcontrol-2" {% if hasPublicDocuments %}hidden{% endif %}>
+                {{ _self.documents_table(not_public_docs, "Not made public", '#tabcontrol-2', dossier) }}
+            </div>
+            {% endif %}
+
+            {% if hasNotOnlineDocuments %}
+            <div id="tab3" data-tab-content class="block w-full" role="tabpanel" aria-labelledby="tabcontrol-3" {% if hasPublicDocuments or hasNotPublicDocuments %}hidden{% endif %}>
+                {{ _self.documents_table(not_online_docs, "Not (yet) online", '#tabcontrol-3', dossier) }}
+            </div>
+            {% endif %}
         </div>
-
-        <div id="tab2" data-tab-content class="block w-full" role="tabpanel" tabindex="0" aria-labelledby="tabcontrol-2" hidden>
-            {{ _self.documents_table(not_public_docs, "Not made public", '#tabcontrol-2') }}
-        </div>
-    </div>
-    {% elseif hasPublicDocuments %}
-        {{ _self.documents_table(public_docs, "Documents that match the request", fragment) }}
-    {% elseif hasNotPublicDocuments %}
-        {{ _self.documents_table(not_public_docs, "Not made public", fragment) }}
     {% endif %}
 {% endmacro %}
 
@@ -70,17 +107,18 @@
     documents: a list of documents to display
     tableTitleTranslationKey: the translation key of the table caption
 #}
-{% macro documents_table(documents, tableTitleTranslationKey, fragment) %}
+{% macro documents_table(documents, tableTitleTranslationKey, fragment, dossier) %}
     <table>
         <caption class="visually-hidden">
-            {{ tableTitleTranslationKey | trans() }}
+            <span>{{ tableTitleTranslationKey | trans() }}</span>
+            <span>{{ "A columnhead with a link is sortable" | trans() }}</span>
         </caption>
-        <thead class="table-default__thead">
+        <thead>
             <tr>
-                <th>{{ "Document number" | trans() }}</th>
+                {{ knp_pagination_sortable(documents, "Document number" | trans() | trans, 'doc.documentNr', { mobileTitle: "Number" | trans(), 'fragment': fragment }) }}
                 <th>{{ "Type" | trans() }}</th>
-                <th>{{ "Name" | trans() }}</th>
-                <th class="text-right th-date">{{ "Date" | trans() }}</th>
+                {{ knp_pagination_sortable(documents, "Name" | trans() | trans, 'doc.fileInfo.name', { 'fragment': fragment }) }}
+                {{ knp_pagination_sortable(documents, "Date" | trans() | trans, 'doc.documentDate', { thClassName: 'text-right th-date', 'fragment': fragment }) }}
             </tr>
         </thead>
         <tbody>
@@ -91,15 +129,15 @@
                 </td>
                 <td>
                     {% if doc.judgement.value is defined and doc.judgement.value is same as ('already_public') %}
-                        <div class="svg-icon svg-web w-[24px] h-[24px] block mt-[5px]" aria-hidden="true"></div>
+                        <twig:Icon name="web" class="!block mt-[5px]" />
                     {% else %}
-                        <div class="svg-icon svg-{{ doc.fileInfo.sourceType }} w-[24px] h-[24px] block mt-[5px]" aria-hidden="true"></div>
+                        <twig:Icon name="{{ doc.fileInfo.sourceType }}" class="!block mt-[5px]" />
                     {% endif %}
                     <span class="visually-hidden">{{ doc.fileInfo.sourceType | trans() }}</span>
                 </td>
                 <td>
                     <div class="width-delimiter block">
-                        <a href="{{ path('app_document_detail', { dossierId: doc.dossiers.first.dossierNr, documentId: doc.documentNr }) }}">{{ doc.fileInfo.name }}</a>
+                        <a href="{{ path('app_document_detail', { dossierId: dossier.dossierNr ?? doc.dossiers.first.dossierNr, documentId: doc.documentNr }) }}">{{ doc.fileInfo.name }}</a>
                     </div>
                 </td>
                 <td class="text-right">
@@ -109,10 +147,11 @@
         {% endfor %}
         </tbody>
     </table>
-
+    {% if documents.pageCount is defined and documents.pageCount > 1 %}
     <div class="pt-10">
         {{ knp_pagination_render(documents, null, {}, { 'fragment': fragment }) }}
     </div>
+    {% endif %}
 {% endmacro %}
 
 {#
@@ -127,5 +166,21 @@
         <a href="https://wetten.overheid.nl/BWBR0005252/2018-07-28#HoofdstukV">{{ ground }} {{ ground|classification }}</a>
     {% else %}
         {{ ground }}
+    {% endif %}
+{% endmacro %}
+
+{#
+    documents_section displays a section with a title and a table of documents
+
+    documents: a list of documents to display
+    titleTranslationKey: the translation key of the title
+#}
+{% macro documents_section(documents, titleTranslationKey) %}
+    {% if documents|length > 0 %}
+        <section>
+            <h2>{{ titleTranslationKey | trans }}</h2>
+
+            {{ _self.documents_table(documents, titleTranslationKey) }}
+        </section>
     {% endif %}
 {% endmacro %}

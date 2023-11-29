@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Entity\Document;
 use App\Entity\Judgement;
 
 /**
@@ -39,8 +38,13 @@ class DocumentMetadata
         return $this->date;
     }
 
-    public function getFilename(): string
+    public function getFilename(string $documentNr): string
     {
+        if (empty($this->filename)) {
+            // Assume that when we have no filename, we can use the documentNr as filename and its extension is PDF.
+            return $documentNr . '.pdf';
+        }
+
         return $this->filename;
     }
 
@@ -116,31 +120,5 @@ class DocumentMetadata
     public function getMatter(): ?string
     {
         return $this->matter;
-    }
-
-    public function mapToDocument(Document $document, string $documentNr): void
-    {
-        $document->setDocumentDate($this->date);
-        $document->setFamilyId($this->familyId);
-        $document->setDocumentId($this->id);
-        $document->setThreadId($this->threadId);
-        $document->setJudgement($this->judgement);
-        $document->setGrounds($this->grounds);
-        $document->setSubjects($this->subjects);
-        $document->setPeriod($this->period);
-        $document->setDocumentNr($documentNr);
-        $document->setSuspended($this->suspended);
-        $document->setLink($this->link);
-        $document->setRemark($this->remark);
-
-        $fileName = $this->filename;
-        if (empty($fileName)) {
-            // @TODO: FILETYPE DOES NOT HAVE TO BE PDF
-            $fileName = $documentNr . '.pdf';
-        }
-
-        $file = $document->getFileInfo();
-        $file->setSourceType($this->sourceType);
-        $file->setName($fileName);
     }
 }

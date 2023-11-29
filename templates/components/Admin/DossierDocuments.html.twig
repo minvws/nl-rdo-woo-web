@@ -1,0 +1,45 @@
+<div
+    class="pb-6"
+    {% if not uploadStatus.isComplete %}
+        id="js-dossier-documents-status"
+        data-endpoint="{{ path('app_admin_document_upload_status', { dossierId: dossier.dossierNr }) }}"
+    {% endif %}
+>
+    {% if not uploadStatus.isComplete %}
+        <twig:Admin:UploadArea
+            accept="{{[
+                'application/pdf',
+                'application/x-pdf',
+                'application/zip',
+                'application/x-zip-compressed',
+            ]}}"
+            css="pb-6"
+            endpoint="{{ path('app_admin_dossier_documents_upload', { 'dossierId': dossier.dossierNr }) }}"
+            name="document_upload[upload]"
+            maxFileSize="{{ 1024 * 1024 * 1024 * 32 }}"
+            multiple="{{ true }}"
+            tip="Tip: je kunt meerdere documenten tegelijkertijd uploaden. Sleep je hele selectie (of een zip-bestand) naar dit venster."
+        >
+            {% if not uploadStatus.isComplete %}
+            <div class="js-uploads-processing">
+                {% include 'admin/dossier/document/status-uploads-processing.html.twig' with {uploadStatus: uploadStatus, dossier: dossier} %}
+            </div>
+            {% endif %}
+        </twig:Admin:UploadArea>
+
+        <div
+            class="js-uploads-remaining"
+        >
+            {% include 'admin/dossier/document/status-uploads-remaining.html.twig' with {uploadStatus: uploadStatus, dossier: dossier} %}
+        </div>
+    {% endif %}
+
+    <div
+        {% if not uploadStatus.isComplete %}class="hidden"{% endif %}
+        id="js-dossier-documents-completed"
+    >
+        <twig:Admin:Alert type="success">
+            <strong>Uploaden gelukt:</strong> Alle  documenten op de inventarislijst zijn geüpload.
+        </twig:Admin:Alert>
+    </div>
+</div>

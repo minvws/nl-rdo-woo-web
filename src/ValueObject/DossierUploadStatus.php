@@ -30,10 +30,7 @@ class DossierUploadStatus
 
     public function isComplete(): bool
     {
-        return $this->dossier->getDocuments()->filter(
-            /* @phpstan-ignore-next-line */
-            static fn (Document $doc): bool => $doc->shouldBeUploaded() && ! $doc->isUploaded()
-        )->count() === 0;
+        return $this->getMissingDocuments()->count() === 0;
     }
 
     public function getUploadedDocuments(): ReadableCollection
@@ -49,6 +46,33 @@ class DossierUploadStatus
         return $this->dossier->getDocuments()->filter(
             /* @phpstan-ignore-next-line */
             static fn (Document $doc): bool => $doc->shouldBeUploaded()
+        );
+    }
+
+    public function getMissingDocuments(): ReadableCollection
+    {
+        return $this->dossier->getDocuments()->filter(
+            /* @phpstan-ignore-next-line */
+            static fn (Document $doc): bool => $doc->shouldBeUploaded() && ! $doc->isUploaded()
+        );
+    }
+
+    /**
+     * @param string[] $uploadedFilenames
+     */
+    public function getDocumentsToUpload(array $uploadedFilenames): ReadableCollection
+    {
+        $docIdsToIgnore = [];
+        foreach ($uploadedFilenames as $filename) {
+            $docIdsToIgnore[intval($filename)] = 1;
+        }
+
+        return $this->getMissingDocuments()->filter(
+            /* @phpstan-ignore-next-line */
+            static function (Document $doc) use ($docIdsToIgnore): bool {
+                return $doc->getDocumentId() !== null
+                    && ! array_key_exists($doc->getDocumentId(), $docIdsToIgnore);
+            }
         );
     }
 }

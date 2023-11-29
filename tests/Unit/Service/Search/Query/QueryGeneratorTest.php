@@ -12,6 +12,8 @@ use App\Service\Search\Query\Condition\FacetConditions;
 use App\Service\Search\Query\Condition\SearchTermConditions;
 use App\Service\Search\Query\Facet\FacetMappingService;
 use App\Service\Search\Query\QueryGenerator;
+use App\Service\Search\Query\SortField;
+use App\Service\Search\Query\SortOrder;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class QueryGeneratorTest extends MockeryTestCase
@@ -134,7 +136,10 @@ class QueryGeneratorTest extends MockeryTestCase
                     "field": "document_nr"
                 }
             }
-        }
+        },
+        "sort": [
+            "_score"
+        ]
     },
     "index": "{$this->index}",
     "from": 0,
@@ -209,7 +214,10 @@ END,
                     "field": "document_nr"
                 }
             }
-        }
+        },
+        "sort": [
+            "_score"
+        ]
     },
     "index": "{$this->index}",
     "from": 0,
@@ -228,7 +236,9 @@ END,
                 offset: 6,
                 query: 'search terms',
                 documentInquiries: ['doc-inq-1'],
-                dossierInquiries: ['dos-inq-1', 'dos-inq-2']
+                dossierInquiries: ['dos-inq-1', 'dos-inq-2'],
+                sortField: SortField::DECISION_DATE,
+                sortOrder: SortOrder::ASC,
             )
         );
 
@@ -449,10 +459,10 @@ END,
         "highlight": {
             "max_analyzed_offset": 1000000,
             "pre_tags": [
-                "<span class='result-highlight'>"
+                "[[hl_start]]"
             ],
             "post_tags": [
-                "<\/span>"
+                "[[hl_end]]"
             ],
             "fields": {
                 "pages.content": {
@@ -603,7 +613,15 @@ END,
                     "field": "document_nr"
                 }
             }
-        }
+        },
+        "sort": [
+            {
+                "decision_date": {
+                    "missing": "_last",
+                    "order": "asc"
+                }
+            }
+        ]
     },
     "index": "{$this->index}",
     "from": 6,

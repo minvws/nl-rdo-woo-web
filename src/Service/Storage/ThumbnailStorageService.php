@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\File\File;
 /**
  * This class is responsible for storing and retrieving thumbnails. See DocumentStorageService for more information.
  */
-class ThumbnailStorageService
+class ThumbnailStorageService implements StorageAliveInterface
 {
     protected FilesystemOperator $storage;
     protected LoggerInterface $logger;
@@ -244,5 +244,20 @@ class ThumbnailStorageService
         $rootPath = $this->getRootPathForDocument($document);
 
         return sprintf('%s/thumbs/thumb.png', $rootPath);
+    }
+
+    public function isAlive(): bool
+    {
+        $suffix = hash('sha256', random_bytes(32));
+
+        try {
+            $this->storage->write("healthcheck.{$suffix}", $suffix);
+            $content = $this->storage->read("healthcheck.{$suffix}");
+            $this->storage->delete("healthcheck.{$suffix}");
+        } catch (\Exception) {
+            return false;
+        }
+
+        return $content == $suffix;
     }
 }

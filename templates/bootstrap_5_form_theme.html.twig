@@ -9,7 +9,7 @@
                 valid: valid,
             }) -}}
             {% if child.vars.help is defined %}
-                <div class="form-text">{{ child.vars.help }}</div>
+                <div class="form-text">{{ child.vars.help | trans() }}</div>
             {% endif %}
         {% endfor -%}
     </div>

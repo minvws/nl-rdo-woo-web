@@ -44,7 +44,7 @@ class GenerateArchiveHandler
 
         if (! $this->archiveService->generateArchive($batch)) {
             $this->logger->error('Failed to generate ZIP archive file', [
-                'id' => $message->getUuid(),
+                'id' => $message->getUuid()->toRfc4122(),
             ]);
         }
     }

@@ -6,9 +6,10 @@ namespace App\Controller;
 
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Entity\WorkerStats;
 use App\Service\Search\Model\Config;
 use App\Service\Search\SearchService;
+use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\ThumbnailStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Predis\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,13 +17,19 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.LongVariable)
+ */
 class StatsController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
         private readonly Client $redis,
         private readonly SearchService $searchService,
-        private readonly string $rabbitMqStatUrl
+        private readonly string $rabbitMqStatUrl,
+        private readonly DocumentStorageService $documentStorageService,
+        private readonly ThumbnailStorageService $thumbnailStorageService,
     ) {
     }
 
@@ -34,17 +41,6 @@ class StatsController extends AbstractController
                 'document_count' => $this->doctrine->getRepository(Document::class)->count([]),
                 'dossier_count' => $this->doctrine->getRepository(Dossier::class)->count([]),
                 'page_count' => $this->doctrine->getRepository(Document::class)->pagecount(),
-            ],
-            'worker' => [
-                'pdf' => [
-                    'create_temp_dir' => $this->doctrine->getRepository(WorkerStats::class)->getDuration('pdf.create_temp_dir'),
-                    'cat_page_from_pdf' => $this->doctrine->getRepository(WorkerStats::class)->getDuration('pdf.cat_page_from_pdf'),
-                    'run_tika' => $this->doctrine->getRepository(WorkerStats::class)->getDuration('pdf.run_tika'),
-                    'page_to_png' => $this->doctrine->getRepository(WorkerStats::class)->getDuration('pdf.page_to_png'),
-                    'tesseract' => $this->doctrine->getRepository(WorkerStats::class)->getDuration('pdf.tesseract'),
-                    'delete_temp_dir' => $this->doctrine->getRepository(WorkerStats::class)->getDuration('pdf.delete_temp_dir'),
-                    'index_page' => $this->doctrine->getRepository(WorkerStats::class)->getDuration('pdf.index_page'),
-                ],
             ],
         ]);
 
@@ -61,6 +57,10 @@ class StatsController extends AbstractController
             'redis' => $this->isRedisAlive(),
             'elastic' => $this->isElasticAlive(),
             'rabbitmq' => $this->isRabbitMqAlive(),
+            'storage' => [
+                'document' => $this->documentStorageService->isAlive(),
+                'thumbnail' => $this->thumbnailStorageService->isAlive(),
+            ],
         ];
 
         $statusCode = Response::HTTP_OK;
@@ -70,15 +70,16 @@ class StatsController extends AbstractController
             }
         }
 
-        $healthy = $services['postgres'] && $services['redis'] && $services['elastic'] && $services['rabbitmq'];
+        $healthy = $services['postgres']
+            && $services['redis']
+            && $services['elastic']
+            && $services['rabbitmq']
+            && $services['storage']['document']
+            && $services['storage']['thumbnail']
+        ;
         $response = new JsonResponse([
             'healthy' => $healthy,
-            'externals' => [
-                'postgres' => $services['postgres'],
-                'redis' => $services['redis'],
-                'elastic' => $services['elastic'],
-                'rabbitmq' => $services['rabbitmq'],
-            ],
+            'externals' => $services,
         ], $statusCode);
 
         return $response->setPrivate();

@@ -9,16 +9,18 @@ use App\Entity\Document;
 use App\Entity\DocumentPrefix;
 use App\Entity\Dossier;
 use App\Entity\GovernmentOfficial;
+use App\Entity\InventoryProcessRun;
+use App\Entity\Judgement;
+use App\Entity\Organisation;
 use App\Exception\FixtureInventoryException;
 use App\Message\ProcessDocumentMessage;
 use App\Service\Elastic\ElasticService;
 use App\Service\Ingest\IngestService;
 use App\Service\Ingest\Options;
-use App\Service\Inventory\InventoryService;
+use App\Service\Inventory\InventoryRunProcessor;
 use App\Service\Storage\DocumentStorageService;
 use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
@@ -28,25 +30,14 @@ use Symfony\Component\Messenger\MessageBusInterface;
  */
 class FixtureService
 {
-    protected EntityManagerInterface $doctrine;
-    protected IngestService $ingester;
-    protected InventoryService $inventoryService;
-    protected MessageBusInterface $messageBus;
-    protected ElasticService $elasticService;
-
     public function __construct(
-        EntityManagerInterface $doctrine,
-        IngestService $ingester,
-        InventoryService $inventoryService,
-        MessageBusInterface $messageBus,
-        ElasticService $elasticService,
-        protected DocumentStorageService $documentStorage,
+        private readonly EntityManagerInterface $doctrine,
+        private readonly IngestService $ingester,
+        private readonly InventoryRunProcessor $runProcessor,
+        private readonly MessageBusInterface $messageBus,
+        private readonly ElasticService $elasticService,
+        private readonly DocumentStorageService $documentStorage,
     ) {
-        $this->doctrine = $doctrine;
-        $this->ingester = $ingester;
-        $this->inventoryService = $inventoryService;
-        $this->messageBus = $messageBus;
-        $this->elasticService = $elasticService;
     }
 
     /**
@@ -100,11 +91,16 @@ class FixtureService
         $this->doctrine->persist($dossier);
         $this->doctrine->flush();
 
-        $file = new UploadedFile($inventoryPath, 'inventory.pdf', 'application/pdf', null, true);
-        $result = $this->inventoryService->processInventory($file, $dossier);
+        $run = new InventoryProcessRun($dossier);
+        $this->doctrine->persist($run);
+        $this->doctrine->flush();
 
-        if (! $result->isSuccessful()) {
-            throw FixtureInventoryException::forProcessingErrors($result->getAllErrors());
+        $this->documentStorage->storeDocument(new \SplFileInfo($inventoryPath), $run);
+
+        $this->runProcessor->process($run);
+
+        if (! $run->isFinished()) {
+            throw FixtureInventoryException::forProcessingErrors($run);
         }
 
         if ($documentsPath) {
@@ -165,6 +161,7 @@ class FixtureService
         $data['subjects'] ??= [];
         $data['suspended'] ??= false;
         $data['withdrawn'] ??= false;
+        $data['judgement'] ??= Judgement::PUBLIC;
 
         $document = new Document();
         $document->setDocumentid($data['document_id']);
@@ -179,6 +176,7 @@ class FixtureService
         $document->setSummary($data['summary']);
         $document->setSubjects($data['subjects']);
         $document->setSuspended($data['suspended']);
+        $document->setJudgement($data['judgement']);
 
         $file = $document->getFileInfo();
         $file->setUploaded($data['uploaded']);
@@ -200,9 +198,12 @@ class FixtureService
     private function ensurePrefixExists(string $prefix): void
     {
         if ($this->doctrine->getRepository(DocumentPrefix::class)->count(['prefix' => $prefix]) === 0) {
+            $organisation = $this->doctrine->getRepository(Organisation::class)->findAll()[0];
+
             $documentPrefix = new DocumentPrefix();
             $documentPrefix->setPrefix($prefix);
             $documentPrefix->setDescription($prefix);
+            $documentPrefix->setOrganisation($organisation);
 
             $this->doctrine->persist($documentPrefix);
             $this->doctrine->flush();

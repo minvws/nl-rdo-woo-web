@@ -5,8 +5,8 @@ scheb_two_factor:
         - Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken
     totp:
         enabled: true
-        server_name: 'WooPIE'
-        issuer: 'WooPIE'
+        server_name: 'WOO'
+        issuer: 'WOO'
         window: 2
         template: security/login_2fa.html.twig
     backup_codes:

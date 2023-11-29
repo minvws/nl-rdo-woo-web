@@ -10,22 +10,22 @@ Cleanup script
     Should Be Empty  ${stderr}      Error creating admin ${stderr}
 
 Woo Suite Setup
-    Cleanup script
-    Create Woo Admin User
-    Fill Testdata from Fixture
-    Run Consume Worker
-    First Time Login With Admin
+    #Cleanup script
+    #Create Woo Admin User
+    #Fill Testdata from Fixture
+    #Run Consume Worker
+    #First Time Login With Admin
     Open Browser and BaseUrl
 
 Open Browser and BaseUrl
-    New Browser     chromium    headless=${headless}     args=["--ignore-certificate-errors", "--lang=nl"]  
-    # New Context   locale=nl-NL
+    New Browser     chromium    headless=${headless}     args=["--ignore-certificate-errors", "--lang=nl"]  #slowMo=0:00:01
+    New Context   locale=nl-NL  acceptDownloads=True  
     New Page    ${base_url}  
 
 
 Search For   
     [Arguments]  ${SEARCH_TERM}=  ${SEARCH_RESULTS}=  ${SEARCH_RESULTS2}=  ${SEARCH_RESULTS3}=  ${SEARCH_RESULTS4}=  ${SEARCH_RESULTS5}=  ${SEARCH_RESULTS6}=  ${SEARCH_RESULTS7}=   ${NOT_VISIBLE1}=default
-    Go To  ${base_url}/search?q=
+    Go To  ${base_url}
     Fill Text   id=search-field  ${SEARCH_TERM}  
     Keyboard Key    press  Enter
     Get Text   //*[@id="main-content"]  *=  ${SEARCH_RESULTS}  
@@ -95,6 +95,16 @@ First Time Login With Admin
     Click       " Uitloggen "
     Close Page    CURRENT
 
+Login Balie
+    Go To  ${base_url_balie}
+    Fill Text   id=inputEmail        ${tst_balie_user}
+    Fill Text   id=inputPassword     ${tst_balie_password}
+    Click       " Inloggen "
+    ${otp}      get otp         ${otp_code}
+    Fill Text   id=_auth_code         ${otp}
+    Click       " Controleren "
+    Get Text   //body  *=  Uitloggen
+
 Login With Admin
     New Browser     chromium    headless=${headless}     args=["--ignore-certificate-errors"]
     New Page    ${base_url}/balie/login
@@ -118,6 +128,88 @@ Create a new prefix
     Click       "Opslaan"
     Get Text   //body  *=  ROBOTPREFIXTITEL
     Get Text   //body  *=  Robot_Prefix_Omschrijving
+
+
+Create nieuw besluit(dossier)
+    Click  "Nieuw besluit (dossier) aanmaken"
+    Get Text   //body  *=  Nieuw besluitdossier - basisgegevens
+    Get Text   //body  *=  Onderwerp van het besluit
+    Get Text   //body  *=  Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals Woo, besluit etc.
+    ${current_time}    Get Time
+    Fill Text   id=details_title         Robot ${current_time}
+    Select Options By    id=details_date_from    value    2021-12-01T00:00:00+00:00
+    Select Options By    id=details_date_to    value    2023-01-31T00:00:00+00:00
+    Select Options By    id=details_departments    index  0
+    # ${suggestSearchElement}  Get Element  //a[normalize-space()='documenten']
+    # ${details_departments}    Get Element    #details_departments
+    # ${details_departments}  Set Variable  Get Element Attribute    id:details_departments    index=1
+    #details_departments
+    #Select Options By    id=details_departments    text    Ministerie van Volksgezondheid, Welzijn en Sport (minVWS)
+    Select Options By    id=details_governmentofficials    text    Hugo de Jonge
+    Get Checkbox State    id=details_publication_reason_1    ==    checked
+    Check Checkbox    id=details_publication_reason_0
+    Get Checkbox State    id=details_publication_reason_1    ==    unchecked
+    Select Options By    id=details_default_subjects    text    Testen
+    Select Options By    id=details_documentPrefix_documentPrefix    text    TEST1 (test)
+    ${current_epoch}  Get Time  format=epoch
+    Fill Text   id=details_dossierNr  ${current_epoch}  
+    # Click  "Concept opslaan"
+    Click  "Opslaan en verder"
+    Get Text   //body  *=  Robot ${current_time}
+    Check Checkbox    id=decision_decision_2
+    Fill Text   id=decision_summary         Samenvatting voor het besluitdossier Robot ${current_time}
+    Upload File By Selector   id=decision_decision_document   tests/robot_framework/files/officiele_besluitbrief.pdf
+    #${current_date}    Get Time  format=year/month
+    ${yyyy}  ${mm}  ${dd}=  Get Time  year,month,day
+    ${current_date}=    Catenate    SEPARATOR=-    ${yyyy}    ${mm}    ${dd}
+    Get Text   //body  *=  ${current_date}
+    # Click  "Concept opslaan"
+    Click  "Opslaan en verder"
+    Upload File By Selector   id=inventory_inventory   tests/robot_framework/files/ongeldige_inventarislijst.xlsx
+    Upload File By Selector   id=inventory_inventory   tests/robot_framework/files/ongeldige_inventarislijst.xlsx
+    Click  xpath=//*[@id="inventory_submit"]
+    Sleep    5s
+    Get Text   //body  *=  De inventarislijst mist de kolom matter
+    Upload File By Selector   id=inventory_inventory   tests/Fixtures/000-inventory-001.xlsx
+    Upload File By Selector   id=inventory_inventory   tests/Fixtures/000-inventory-001.xlsx
+    Click  xpath=//*[@id="inventory_submit"]
+    Sleep    5s
+    Get Text   //body  *=  Regel 2: documentnummer 5034 bestaat al in een ander dossier
+    Get Text   //body  *=  Regel 11: documentnummer 5118 bestaat al in een ander dossier
+    Get Text   //body  *=  Regel 20: documentnummer 5291 bestaat al in een ander dossier
+    Click  "Besluitdossiers"
+    #Fill Text   id=search-previews         Robot ${current_time}
+    Type Text  id=search-previews      Robot ${current_time}  delay=50 ms  clear=Yes
+    Take Screenshot    fullPage=True
+    Click  xpath=//*[@id="js-dossier-search-previews"]/div[3]/table/tbody/tr/td[2]
+    Take Screenshot    fullPage=True
+    Get Text   //body  *=  Robot ${current_time}
+    Get Text   //body  *=  December 2021 - januari 2023
+    #todo checken verantwoordelijk bestuursorgaan
+    Get Text   //body  *=  Openbaar
+    Get Text   //body  *=  Samenvatting voor het besluitdossier Robot ${current_time}
+    Get Text   //body  *=  officiele_besluitbrief.pdf
+    #todo datum besluit
+    Get Text   //body  *=  Niet opgegeven
+    Get Text   //body  *=  0 bestanden geüpload
+    Get Text   //body  *=  Maak eerst documenten compleet
+    Get Text   //body  *=  Besluit verwijderen
+    Click  xpath=//*[@id="inhoud"]/div/div[2]/section[5]/a
+    Get Text   //body  *=  Bevestig de verwijdering van dit dossier. Kan niet ongedaan gemaakt worden!
+    Click  xpath=//*[@id="delete_form_submit"]
+    Get Text   //body  *=  Het dossier wordt verwijderd, het kan even duren voor dit verwerkt is.
+    Click  "Naar overzicht besluitdossiers"
+    Fill Text   id=search-previews         Robot ${current_time}
+    Click  xpath=//*[@id="js-dossier-search-previews"]/div[3]/table/tbody/tr/td[2]
+    #todo controleren of dossier is verwijderd? Eerst uitzoeken hoe het proces van verwijderen besluitdossier in elkaar zit. 
+
+
+
+
+    
+
+
+
 
 Create a new dossier
     Click       " Counter"

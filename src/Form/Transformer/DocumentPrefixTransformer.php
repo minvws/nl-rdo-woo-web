@@ -31,10 +31,10 @@ class DocumentPrefixTransformer implements DataTransformerInterface
 
     public function reverseTransform(mixed $value): string
     {
-        if (! $value instanceof DocumentPrefix) {
+        if (! is_array($value) || ! isset($value['documentPrefix']) || ! $value['documentPrefix'] instanceof DocumentPrefix) {
             return '';
         }
 
-        return $value->getPrefix();
+        return $value['documentPrefix']->getPrefix();
     }
 }

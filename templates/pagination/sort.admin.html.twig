@@ -1,0 +1,9 @@
+{% set iconName = sorted ? ( direction == 'desc' ? 'sort-down' : 'sort-up' ) : 'sort' %}
+{% set ariaSortValue = sorted ? ( direction == 'desc' ? 'descending' : 'ascending' ) : 'none' %}
+
+<th aria-sort="{{ ariaSortValue }}" class="bhr-column-head bhr-column-head--gray {{ options.thClassName|default('') }}" scope="col">
+    <a class="block whitespace-nowrap {{ sorted ? 'font-bold' : '' }}" href="{{ options.href }}">
+        {{ title }}
+        <twig:Admin:Icon name="{{ iconName }}" />
+    </a>
+</th>

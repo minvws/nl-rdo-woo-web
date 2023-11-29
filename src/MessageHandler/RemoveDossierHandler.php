@@ -6,36 +6,36 @@ namespace App\MessageHandler;
 
 use App\Entity\Dossier;
 use App\Message\RemoveDossierMessage;
+use App\Service\BatchDownloadService;
+use App\Service\DocumentService;
 use App\Service\Elastic\ElasticService;
+use App\Service\Inquiry\InquiryService;
+use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Update a dossier data based on info in the database into elasticsearch.
+ * Removes a dossier from the database and elasticsearch. Also removes document relations and deletes orphan documents.
  */
 #[AsMessageHandler]
 class RemoveDossierHandler
 {
-    protected EntityManagerInterface $doctrine;
-    protected LoggerInterface $logger;
-    protected ElasticService $elasticService;
-
     public function __construct(
-        EntityManagerInterface $doctrine,
-        ElasticService $elasticService,
-        LoggerInterface $logger
+        private readonly EntityManagerInterface $doctrine,
+        private readonly ElasticService $elasticService,
+        private readonly LoggerInterface $logger,
+        private readonly DocumentService $documentService,
+        private readonly DocumentStorageService $storageService,
+        private readonly BatchDownloadService $downloadService,
+        private readonly InquiryService $inquiryService,
     ) {
-        $this->elasticService = $elasticService;
-        $this->logger = $logger;
-        $this->doctrine = $doctrine;
     }
 
     public function __invoke(RemoveDossierMessage $message): void
     {
         $dossier = $this->doctrine->getRepository(Dossier::class)->find($message->getUuid());
         if (! $dossier) {
-            // No dossier found for this message
             $this->logger->warning('No dossier found for this message', [
                 'uuid' => $message->getUuid(),
             ]);
@@ -43,24 +43,29 @@ class RemoveDossierHandler
             return;
         }
 
-        // Remove documents that are only attached to this dossier
-        $orphanedDocuments = [];
+        $this->elasticService->removeDossier($dossier);
+
         foreach ($dossier->getDocuments() as $document) {
-            if ($document->getDossiers()->count() === 1) {
-                $orphanedDocuments[] = $document->getDocumentNr();
-                $this->doctrine->remove($document);
-            }
+            $this->documentService->removeDocumentFromDossier($dossier, $document, false);
         }
 
-        // Remove dossier
+        if ($dossier->getInventory()) {
+            $this->storageService->removeFileForEntity($dossier->getInventory());
+        }
+
+        if ($dossier->getRawInventory()) {
+            $this->storageService->removeFileForEntity($dossier->getRawInventory());
+        }
+
+        if ($dossier->getDecisionDocument()) {
+            $this->storageService->removeFileForEntity($dossier->getDecisionDocument());
+        }
+
+        $this->downloadService->removeAllDownloadsForEntity($dossier);
+
+        $this->inquiryService->removeDossierFromInquiries($dossier);
+
         $this->doctrine->remove($dossier);
         $this->doctrine->flush();
-
-        // Remove from elasticsearch
-        foreach ($orphanedDocuments as $documentNr) {
-            $this->elasticService->removeDocument($documentNr);
-        }
-
-        $this->elasticService->removeDossier($dossier);
     }
 }

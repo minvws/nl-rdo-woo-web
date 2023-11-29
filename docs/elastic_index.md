@@ -4,6 +4,7 @@ For the actual mapping, see the `config/elastic/mapping.json`. Additional settin
 
 Note that we currently use a single index as defined in `\App\ElasticConfig::INDEX`.
 
+```json
 {
     "properties": {
         "dossier_nr": {                     // Unique dossier number. This is also the ID of the document.
@@ -143,3 +144,4 @@ Note that we currently use a single index as defined in `\App\ElasticConfig::IND
         }
     }
 }
+```

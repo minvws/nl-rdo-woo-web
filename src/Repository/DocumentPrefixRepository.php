@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\DocumentPrefix;
+use App\Entity\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -41,28 +42,18 @@ class DocumentPrefixRepository extends ServiceEntityRepository
         }
     }
 
-    //    /**
-    //     * @return DocumentPrefix[] Returns an array of DocumentPrefix objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('d')
-    //            ->andWhere('d.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('d.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?DocumentPrefix
-    //    {
-    //        return $this->createQueryBuilder('d')
-    //            ->andWhere('d.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * @return array<DocumentPrefix>
+     */
+    public function findAllForOrganisation(Organisation $organisation): array
+    {
+        return $this->createQueryBuilder('d')
+            ->join('d.organisation', 'o')
+            ->andWhere('o.id = :val')
+            ->setParameter('val', $organisation->getId())
+            ->orderBy('d.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

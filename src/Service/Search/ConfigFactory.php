@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Service\Search;
 
-use App\Service\InquiryService;
+use App\Service\Inquiry\InquirySessionService;
 use App\Service\Search\Model\Config;
 use App\Service\Search\Query\Facet\FacetMappingService;
+use App\Service\Search\Query\SortField;
+use App\Service\Search\Query\SortOrder;
 use Symfony\Component\HttpFoundation\Request;
 
 class ConfigFactory
@@ -16,7 +18,7 @@ class ConfigFactory
     public const MAX_PAGE_SIZE = 100;
 
     public function __construct(
-        private readonly InquiryService $inquiryService,
+        private readonly InquirySessionService $inquirySession,
         private readonly FacetMappingService $facetMapping,
     ) {
     }
@@ -76,6 +78,8 @@ class ConfigFactory
             searchType: $searchType,
             documentInquiries: $documentInquiries,
             dossierInquiries: $dossierInquiries,
+            sortField: SortField::fromValue($request->query->getString('sort')),
+            sortOrder: SortOrder::fromValue($request->query->getString('sortorder'))
         );
 
         return $config;
@@ -97,7 +101,7 @@ class ConfigFactory
             return [];
         }
 
-        $validInquiries = $this->inquiryService->getInquiries();
+        $validInquiries = $this->inquirySession->getInquiries();
         if (empty($validInquiries)) {
             return [];
         }

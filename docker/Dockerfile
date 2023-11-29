@@ -5,8 +5,8 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists/* /var/cache/apk/*
 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
- && docker-php-ext-install intl mbstring pdo_pgsql \
- && docker-php-ext-enable intl mbstring pdo_pgsql
+ && docker-php-ext-install intl mbstring pdo_pgsql sockets \
+ && docker-php-ext-enable intl mbstring pdo_pgsql sockets
 
 RUN pecl install amqp && docker-php-ext-enable amqp
 

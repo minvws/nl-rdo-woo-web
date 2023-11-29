@@ -1,0 +1,5 @@
+@layer components {
+    .bhr-dialog::backdrop {
+        @apply bg-black bg-opacity-70 transition-opacity backdrop-blur-sm;
+    }
+}

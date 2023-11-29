@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Annotation\Route;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
@@ -94,7 +95,7 @@ class SearchController extends AbstractController
             // Redirect to GET request, so we have the q in the query string.
             return $this->redirect($this->generateUrl(
                 'app_search',
-                array_merge($request->query->all(), ['q' => $q])
+                array_merge($request->query->all(), ['q' => $q, 'page' => null])
             ));
         }
 
@@ -119,6 +120,7 @@ class SearchController extends AbstractController
         ]);
     }
 
+    #[Cache(public: true, maxage: 600, mustRevalidate: true)]
     #[Route('/browse', name: 'app_browse')]
     public function browse(Request $request, Breadcrumbs $breadcrumbs): Response
     {

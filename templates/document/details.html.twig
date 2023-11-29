@@ -4,14 +4,13 @@
 {% set page_title = document.fileInfo.name %}
 
 {% block body %}
-
     <section>
         <div class="gap-0">
 
             <h1 class="leading-tight flex items-center">
-                <span class="svg-icon svg-{{ document.fileInfo.sourceType }} mr-4  w-[32px] h-[32px] shrink-0" aria-hidden="true"></span>
+                <twig:Icon name="{{ document.fileInfo.sourceType }}" size="32" class="mr-4 shrink-0 self-baseline mt-3" />
                 <span class="visually-hidden">{{ document.fileInfo.sourceType | trans() }}</span>
-                {{ document.fileInfo.name }}
+                <span class="min-w-0">{{ document.fileInfo.name }}</span>
             </h1>
 
             <dl class="nota-bene text-lg">
@@ -28,15 +27,21 @@
             {% include "document/snippets/notifications.html.twig" %}
 
             {# todo how to resolve parent?
-            <p>{{ "Attachment of" | trans }} <a href="{{ path('app_document_detail', { dossierId: dossier.dossierNr, documentId: familyParent.documentNr }) }}"><i class="{{ familyParent.fileInfo.sourceType | sourceTypeIcon }}"></i> {{ familyParent.fileInfo.name }}</a></p>
+                <p>{{ "Attachment of" | trans }} <a href="{{ path('app_document_detail', { dossierId: dossier.dossierNr, documentId: familyParent.documentNr }) }}"><i class="{{ familyParent.fileInfo.sourceType | sourceTypeIcon }}"></i> {{ familyParent.fileInfo.name }}</a></p>
             #}
 
-            {% if ingested and document.fileInfo.isUploaded %}
+            {% if ingested and document.shouldBeUploaded and document.fileInfo.isUploaded %}
                 <a id="above-carousel"></a>
-                <a href="#below-carousel" class="mt-8 skiplink-carousel-down">Sla document pagina voorvertoning over</a>
+                <a href="#below-carousel" class="mt-8 skiplink-carousel-down">{{ "Skip documents preview" | trans() }}</a>
 
                 {% if document.fileInfo.type == "pdf" and document.pageCount > 0 %}
-                    <div class="pt-4 block w-full">
+                    <div class="block w-full">
+                        <p class="pb-1 de-emphasized">
+                            {{
+                                "Click on a page to open the {fileInfo} ({fileSize}) in your browser" |
+                                trans({ fileInfo: document.fileInfo.type|upper, fileSize: document.fileInfo.size != "0" ? document.fileInfo.size | size : ""  })
+                            }}
+                        </p>
                         {% include "document/snippets/carousel.html.twig" %}
                     </div>
                 {% endif %}
@@ -51,27 +56,27 @@
                     </div>
                 {% endif %}
 
-                <a href="#above-carousel" class="skiplink-carousel-up">Sla document pagina voorvertoning over</a>
+                <a href="#above-carousel" class="skiplink-carousel-up">{{ "Go back to documents preview" | trans() }}</a>
                 <a id="below-carousel"></a>
             {% endif %}
 
-            {% if document.isUploaded and (document.fileInfo.size != "0") %}
+            {% if document.shouldBeUploaded and document.isUploaded and (document.fileInfo.size != "0") %}
             <div class="button-container pt-8">
-                <a class="button button-pink" download href="{{ path('app_document_download', { dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">
-                    <span class="svg-icon svg-download w-[24px] h-[24px]" aria-hidden="true" ></span>
+                <a class="button" download href="{{ path('app_document_download', { dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">
+                    <twig:Icon name="download" />
                     {{ "Download" | trans }} ({{ document.fileInfo.type|upper }} {{ document.fileInfo.size | size }})
                 </a>
-                {# <a class="button ghost" href="">{{ "View online (beta)" | trans() }}</a> #}
+                {# <a class="button" href="">{{ "View online (beta)" | trans() }}</a> #}
             </div>
             {% endif %}
 
             {% include "document/snippets/about.html.twig" %}
 
             {% if document.fileInfo.sourceType == constant('App\\SourceType::SOURCE_EMAIL') %}
-                {% include "document/snippets/thread.html.twig" %}
-                {% include "document/snippets/attachments.html.twig" %}
+                {{ macro.documents_section(thread, "Messages from the same e-mail conversation") }}
+                {{ macro.documents_section(family, "Attachments to this e-mail message") }}
             {% else %}
-                {% include "document/snippets/family.html.twig" %}
+                {{ macro.documents_section(family, "Related documents") }}
             {% endif %}
 
             {% include "document/snippets/background.html.twig" %}
@@ -79,7 +84,6 @@
             {#    {% if document.fileInfo.sourceType != constant('App\\SourceType::SOURCE_EMAIL') and document.familyId != document.documentId %} #}
             {#        <a class="btn" href="#">Link to the e-mail with this attachment</a> #}
             {#    {% endif %} #}
-
         </div>
     </section>
 {% endblock %}

@@ -6,7 +6,7 @@ namespace App\MessageHandler;
 
 use App\ElasticConfig;
 use App\Message\IngestDossiersMessage;
-use App\Message\InitializeElasticRolloverMessage;
+use App\Message\InitiateElasticRolloverMessage;
 use App\Service\Elastic\IndexService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -25,7 +25,7 @@ class InitializeElasticRolloverHandler
     ) {
     }
 
-    public function __invoke(InitializeElasticRolloverMessage $message): void
+    public function __invoke(InitiateElasticRolloverMessage $message): void
     {
         try {
             $this->indexService->create(

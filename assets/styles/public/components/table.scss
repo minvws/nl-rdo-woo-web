@@ -1,0 +1,92 @@
+:root {
+    --table-head-background-color: transparent;
+    --table-body-head-cell-background-color: var(--table-head-background-color);
+    --table-head-text-color: var(--grey-6);
+    --table-body-head-cell-text-color: var(--table-head-text-color);
+    --table-head-border-color: var(--table-cell-border-color);
+    --table-head-border-width: 0 0 1px;
+    --table-head-cell-font-weight: 400;
+    --table-body-head-cell-font-weight: var(--table-head-cell-font-weight);
+    --table-row-background-color-striping: transparent;
+    --table-body-head-cell-border-width: 1px 0;
+    --table-cell-border-width: 1px 0;
+}
+
+table {
+    th,
+    td {
+        vertical-align: top;
+    }
+
+    thead th {
+        font-style: italic;
+    }
+
+    tbody th,
+    tbody td {
+        white-space: normal;
+    }
+
+    tbody tr:first-child {
+        td,
+        th {
+            border-top-width: 0;
+        }
+    }
+
+    .th-date {
+        min-width: 100%;
+
+        @media (min-width: $breakpoint-2) {
+            min-width: 12ch;
+        }
+
+        @media (min-width: $breakpoint-3) {
+            min-width: 25ch;
+        }
+    }
+
+    .th-sort {
+        a {
+            display: flex;
+            gap: 0.25rem;
+            text-decoration: none;
+            align-items: center;
+        }
+
+        &.text-right {
+            a {
+                justify-content: flex-end;
+            }
+        }
+    }
+
+    .th-sort--active a {
+        font-style: normal;
+        font-weight: bold;
+    }
+}
+
+.table-cell--desktop {
+    display: none;
+}
+
+@media (min-width: $breakpoint-2) {
+    .table-cell--desktop {
+        display: table-cell;
+    }
+}
+
+.table-copy--desktop {
+    display: none;
+}
+
+@media (min-width: $breakpoint-2) {
+    .table-copy--mobile {
+        display: none;
+    }
+
+    .table-copy--desktop {
+        display: initial;
+    }
+}

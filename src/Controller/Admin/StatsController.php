@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Attribute\AuthMatrix;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +24,7 @@ class StatsController extends AbstractController
     }
 
     #[Route('/balie/stats', name: 'app_admin_stats', methods: ['GET'])]
+    #[AuthMatrix('stat.read')]
     public function stats(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');

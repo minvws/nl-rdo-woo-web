@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Worker\Pdf\Extractor;
 
 use App\Entity\Document;
+use App\Service\Stats\WorkerStatsService;
 use App\Service\Storage\DocumentStorageService;
 use App\Service\Storage\ThumbnailStorageService;
 use App\Service\Worker\Pdf\Tools\FileUtils;
@@ -20,12 +21,18 @@ class PageExtractor implements PageExtractorInterface
     protected ThumbnailStorageService $thumbnailStorage;
     protected DocumentStorageService $documentStorage;
     protected FileUtils $fileUtils;
+    protected WorkerStatsService $statsService;
 
-    public function __construct(LoggerInterface $logger, ThumbnailStorageService $thumbnailStorage, DocumentStorageService $documentStorage)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        ThumbnailStorageService $thumbnailStorage,
+        DocumentStorageService $documentStorage,
+        WorkerStatsService $statsService,
+    ) {
         $this->logger = $logger;
         $this->thumbnailStorage = $thumbnailStorage;
         $this->documentStorage = $documentStorage;
+        $this->statsService = $statsService;
 
         $this->fileUtils = new FileUtils();
     }
@@ -37,7 +44,11 @@ class PageExtractor implements PageExtractorInterface
             return;
         }
 
-        $localPath = $this->documentStorage->downloadDocument($document);
+        /** @var string $localPath */
+        $localPath = $this->statsService->measure('download.document', function ($document) {
+            return $this->documentStorage->downloadDocument($document);
+        }, [$document]);
+
         if (! $localPath) {
             $this->logger->error('cannot download document from storage', [
                 'document' => $document->getId(),
@@ -49,10 +60,15 @@ class PageExtractor implements PageExtractorInterface
         $tempDir = $this->fileUtils->createTempDir();
         $targetPath = $tempDir . '/page.pdf';
 
-        $params = ['/usr/bin/pdftk', $localPath, 'cat', $pageNr, 'output', $targetPath];
-        $this->logger->debug('EXEC: ' . join(' ', $params));
-        $process = new Process($params);
-        $process->run();
+        /** @var Process $process */
+        $process = $this->statsService->measure('pdftk', function ($localPath, $pageNr, $targetPath, $logger) {
+            $params = ['/usr/bin/pdftk', $localPath, 'cat', $pageNr, 'output', $targetPath];
+            $logger->debug('EXEC: ' . join(' ', $params));
+            $process = new Process($params);
+            $process->run();
+
+            return $process;
+        }, [$localPath, $pageNr, $targetPath, $this->logger]);
 
         // Remove local file
         $this->documentStorage->removeDownload($localPath);
