@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Security\Authorization;
 
+use App\Entity\Organisation;
 use App\Entity\User;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\Entry;
+use App\Service\Security\OrganisationSwitcher;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -24,6 +26,7 @@ class AuthorizationMatrixTest extends MockeryTestCase
     protected Security|Mockery\MockInterface|Mockery\LegacyMockInterface $mockSecurity;
     protected RequestStack|Mockery\MockInterface|Mockery\LegacyMockInterface $mockRequestStack;
     protected AuthorizationCheckerInterface|Mockery\MockInterface|Mockery\LegacyMockInterface $mockAuthorizationChecker;
+    private OrganisationSwitcher|Mockery\MockInterface $organisationSwitcher;
 
     public function testAdminUser()
     {
@@ -81,6 +84,22 @@ class AuthorizationMatrixTest extends MockeryTestCase
 
         $this->expectException(\RuntimeException::class);
         $this->assertFalse($matrix->getFilter('unknown_filter'));
+    }
+
+    public function testGetActiveOrganisationReturnsTheOrganisationUsingTheOrganisationSwitcher(): void
+    {
+        $user = new User();
+        $user->setRoles(['ROLE_USER']);
+        $matrix = $this->generateMatrix($user);
+
+        $organisation = \Mockery::mock(Organisation::class);
+
+        $this->organisationSwitcher->expects('getActiveOrganisation')->with($user)->andReturn($organisation);
+
+        $this->assertEquals(
+            $organisation,
+            $matrix->getActiveOrganisation(),
+        );
     }
 
     /**
@@ -141,10 +160,13 @@ class AuthorizationMatrixTest extends MockeryTestCase
         $decisionManager = new AccessDecisionManager([$voter]);
         $this->mockAuthorizationChecker = new AuthorizationChecker($tokenStorage, $decisionManager);
 
+        $this->organisationSwitcher = \Mockery::mock(OrganisationSwitcher::class);
+
         return new AuthorizationMatrix(
             $this->mockSecurity,
             $this->mockRequestStack,
             $this->mockAuthorizationChecker,
+            $this->organisationSwitcher,
             $this->getEntries(),
         );
     }

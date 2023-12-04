@@ -14,13 +14,12 @@
         <tbody>
             {% for dossier in dossiers %}
             <tr>
-                <td class="w-48" tabindex="-1">{{ dossier.dossierNr }}</td>
-                <td tabindex="-1">{{ dossier.title }}</td>
+                <td class="w-48">{{ dossier.dossierNr }}</td>
+                <td>{{ dossier.title }}</td>
                 <td class="text-right">
                     <a
                         class="js-clickable-row__focusable"
                         href="{{ path('app_admin_dossier', {'dossierId': dossier.dossierNr}) }}"
-                        tabindex="-1"
                     >
                         <span class="sr-only">Details {{ dossier.dossierNr }}</span>
                         <twig:Admin:Icon name="chevron-right" />
@@ -46,13 +45,12 @@
         <tbody>
             {% for document in documents %}
             <tr>
-                <td class="w-48" tabindex="-1">{{ document.documentNr }}</td>
-                <td tabindex="-1">{{ document.fileInfo.name }}</td>
+                <td class="w-48">{{ document.documentNr }}</td>
+                <td>{{ document.fileInfo.name }}</td>
                 <td class="text-right">
                     <a
                         class="js-clickable-row__focusable"
                         href="{{ path('app_admin_document', {dossierId: document.dossiers.first.dossierNr, documentId: document.documentNr}) }}"
-                        tabindex="-1"
                     >
                         <span class="sr-only">Details {{ document.documentNr }}</span>
                         <twig:Admin:Icon name="chevron-right" />

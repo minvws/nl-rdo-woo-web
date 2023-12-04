@@ -11,6 +11,9 @@ use App\Service\Search\Query\SortField;
 use App\Service\Search\Query\SortOrder;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ */
 class ConfigFactory
 {
     public const DEFAULT_PAGE_SIZE = 10;
@@ -67,6 +70,8 @@ class ConfigFactory
         $documentInquiries = $this->getInquiries('dci', $request);
         $dossierInquiries = $this->getInquiries('dsi', $request);
 
+        $query = $this->convertQueryStringToNegativeAndValues($request->query->getString('q', ''));
+
         $config = new Config(
             operator: Config::OPERATOR_PHRASE,
             facets: $facets,
@@ -74,7 +79,7 @@ class ConfigFactory
             offset: $pageNum * $pageSize,
             pagination: $pagination,
             aggregations: $aggregations,
-            query: urldecode(strval($request->query->get('q', ''))),
+            query: $query,
             searchType: $searchType,
             documentInquiries: $documentInquiries,
             dossierInquiries: $dossierInquiries,
@@ -114,5 +119,35 @@ class ConfigFactory
         $validatedInquiries = array_values($validatedInquiries);
 
         return $validatedInquiries;
+    }
+
+    // Converts negative words into AND values by adding a + in front of them.
+    public function convertQueryStringToNegativeAndValues(string $queryString): string
+    {
+        $queryString = trim($queryString);
+        $newQueryString = '';
+
+        $inPhrase = false;
+        $inWord = false;
+        for ($i = 0; $i != strlen($queryString); $i++) {
+            if ($queryString[$i] == '"') {
+                $inPhrase = ! $inPhrase;
+            }
+
+            if ($queryString[$i] == ' ' && ! $inPhrase) {
+                $inWord = ! $inWord;
+            }
+
+            if (! $inPhrase && $queryString[$i] != ' ' && $queryString[$i] != '"' && $queryString[$i] != '+' && $queryString[$i] != '-') {
+                $inWord = true;
+            }
+
+            if ($queryString[$i] == '-' && ! $inPhrase && ! $inWord) {
+                $newQueryString .= '+';
+            }
+            $newQueryString .= $queryString[$i];
+        }
+
+        return $newQueryString;
     }
 }

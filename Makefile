@@ -53,7 +53,10 @@ test_markdown: ## Lint markdown files
 	section "MARKDOWN-LINT" ;\
 	npm run mdlint
 
-fix: ## Fixes coding style
+fix:
+	echo "Make fix is deprecated. Use 'make format' instead"
+
+format: ## Fixes coding style
 	vendor/bin/php-cs-fixer fix
 	vendor/bin/phpcbf
 

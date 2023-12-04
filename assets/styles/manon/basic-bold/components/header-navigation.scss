@@ -1,0 +1,25 @@
+/* Header navigation */
+
+:root {
+  --header-navigation-padding-top: 0.5rem;
+  --header-navigation-padding-right: var(--page-whitespace-right);
+  --header-navigation-padding-bottom: 0.5rem;
+  --header-navigation-padding-left: var(--page-whitespace-right);
+  --header-navigation-border-width: 0 0 1px 0;
+  --header-navigation-border-style: solid;
+  --header-navigation-border-color: #ccc;
+
+  /* Header navigation */
+  --header-navigation-background-color: #fff;
+  --header-navigation-text-color: var(--text-set-text-color);
+  --header-navigation-max-width: 100%;
+  --header-navigation-align-items: stretch;
+  --header-navigation-justify-content: space-between;
+
+  /* List */
+  --header-navigation-list-align-content: stretch;
+  --header-navigation-list-width: auto;
+
+  /* Collapsed icon */
+  --navigation-collapsible-menu-icon-font-size: 2rem;
+}

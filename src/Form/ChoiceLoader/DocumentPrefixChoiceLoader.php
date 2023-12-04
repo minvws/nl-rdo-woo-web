@@ -41,15 +41,10 @@ class DocumentPrefixChoiceLoader implements ChoiceLoaderInterface
             return new ArrayChoiceList([]);
         }
 
-        $repository = $this->doctrine->getRepository(DocumentPrefix::class);
-        if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_ORGANISATION_ONLY)) {
-            $entities = $user->getOrganisation()->getDocumentPrefixes();
-        } else {
-            $entities = $repository->findAll();
-        }
+        $prefixes = $this->authorizationMatrix->getActiveOrganisation()->getDocumentPrefixes();
 
         $choices = [];
-        foreach ($entities as $entity) {
+        foreach ($prefixes as $entity) {
             $choices[$entity->getPrefix()] = (string) $entity->getId();
         }
 

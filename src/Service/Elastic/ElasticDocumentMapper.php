@@ -70,7 +70,7 @@ class ElasticDocumentMapper
      */
     public function mapDossierToElasticDocument(Dossier $dossier): array
     {
-        list($departments, $officials) = $this->getDepartmentsAndOfficials($dossier);
+        $departments = $this->getDepartments($dossier);
 
         $inquiryIds = [];
         foreach ($dossier->getInquiries() as $inquiry) {
@@ -85,7 +85,6 @@ class ElasticDocumentMapper
             'summary' => $dossier->getSummary(),
             'document_prefix' => $dossier->getDocumentPrefix(),
             'departments' => $departments,
-            'government_officials' => $officials,
             'date_from' => $dossier->getDateFrom()?->format(\DateTimeInterface::ATOM),
             'date_to' => $dossier->getDateTo()?->format(\DateTimeInterface::ATOM),
             'date_range' => [
@@ -104,7 +103,7 @@ class ElasticDocumentMapper
     /**
      * @return mixed[]
      */
-    protected function getDepartmentsAndOfficials(Dossier $dossier): array
+    protected function getDepartments(Dossier $dossier): array
     {
         $departments = [];
         foreach ($dossier->getDepartments() as $department) {
@@ -114,14 +113,6 @@ class ElasticDocumentMapper
             ];
         }
 
-        $officials = [];
-        foreach ($dossier->getGovernmentOfficials() as $official) {
-            $officials[] = [
-                'name' => $official->getName(),
-                'id' => $official->getId(),
-            ];
-        }
-
-        return [$departments, $officials];
+        return $departments;
     }
 }

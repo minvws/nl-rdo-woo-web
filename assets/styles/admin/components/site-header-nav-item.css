@@ -11,7 +11,19 @@
         @apply bg-davys-grey;
     }
 
+    .bhr-site-header-nav-item--divider {
+        @apply relative after:content-[''] after:bg-dim-gray after:absolute after:w-px after:inset-y-0 after:right-0 after:my-2;
+    }
+
     .bhr-site-header-nav-item--skip-link {
         @apply sr-only focus:not-sr-only focus:px-4 focus:py-8;
+    }
+
+    .bhr-site-header-sub-nav-item {
+        @apply block text-black px-4 py-2 border-b border-platinum hover:bg-lavender-web;
+    }
+
+    .bhr-site-header-sub-nav-item--active {
+        @apply font-bold text-white bg-ocean-boat-blue pointer-events-none;
     }
 }

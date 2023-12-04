@@ -61,6 +61,10 @@
         @apply bhr-input-text leading-tight;
     }
 
+    .bhr-textarea--invalid {
+        @apply bhr-input-text--invalid;
+    }
+
     .bhr-choice-row {
         @apply flex py-0.5;
     }

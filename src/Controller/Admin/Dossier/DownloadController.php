@@ -7,7 +7,6 @@ namespace App\Controller\Admin\Dossier;
 use App\Attribute\AuthMatrix;
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Entity\User;
 use App\Service\DownloadResponseHelper;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -31,9 +30,7 @@ class DownloadController extends AbstractController
     public function downloadDecision(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
     ): StreamedResponse {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         return $this->downloadHelper->getResponseForEntityWithFileInfo($dossier->getDecisionDocument());
     }
@@ -43,9 +40,7 @@ class DownloadController extends AbstractController
     public function downloadInventory(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
     ): StreamedResponse {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         return $this->downloadHelper->getResponseForEntityWithFileInfo($dossier->getRawInventory());
     }
@@ -64,9 +59,7 @@ class DownloadController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
         #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document,
     ): StreamedResponse {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         if (! $dossier->getDocuments()->contains($document)) {
             throw new NotFoundHttpException('Document not found in dossier');

@@ -6,7 +6,6 @@ namespace App\Controller\Admin\Dossier;
 
 use App\Attribute\AuthMatrix;
 use App\Entity\Dossier;
-use App\Entity\User;
 use App\Form\Dossier\DecisionType;
 use App\Form\Dossier\DetailsType;
 use App\Form\Dossier\DocumentUploadType;
@@ -79,9 +78,7 @@ class DossierConceptController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $workflowStatus = $this->workflow->getStatus($dossier, StepName::DETAILS);
         $currentStep = $workflowStatus->getCurrentStep();
@@ -118,9 +115,7 @@ class DossierConceptController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $workflowStatus = $this->workflow->getStatus($dossier, StepName::DECISION);
         $currentStep = $workflowStatus->getCurrentStep();
@@ -164,9 +159,7 @@ class DossierConceptController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $workflowStatus = $this->workflow->getStatus($dossier, StepName::DOCUMENTS);
         $currentStep = $workflowStatus->getCurrentStep();
@@ -213,9 +206,7 @@ class DossierConceptController extends AbstractController
     public function inventoryProcess(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $inventoryForm = $this->createForm(InventoryType::class);
 
@@ -249,9 +240,7 @@ class DossierConceptController extends AbstractController
     public function deleteInventory(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $workflowStatus = $this->workflow->getStatus($dossier, StepName::DOCUMENTS);
         $currentStep = $workflowStatus->getCurrentStep();
@@ -275,9 +264,7 @@ class DossierConceptController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $workflowStatus = $this->workflow->getStatus($dossier, StepName::PUBLICATION);
         $currentStep = $workflowStatus->getCurrentStep();

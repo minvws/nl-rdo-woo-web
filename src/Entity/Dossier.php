@@ -82,10 +82,6 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
     #[ORM\ManyToMany(targetEntity: Department::class)]
     private Collection $departments;
 
-    /** @var Collection|GovernmentOfficial[] */
-    #[ORM\ManyToMany(targetEntity: GovernmentOfficial::class)]
-    private Collection $governmentOfficials;
-
     #[ORM\Column(type: Types::TEXT)]
     private string $summary;
 
@@ -143,7 +139,6 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
     {
         $this->documents = new ArrayCollection();
         $this->departments = new ArrayCollection();
-        $this->governmentOfficials = new ArrayCollection();
         $this->inquiries = new ArrayCollection();
     }
 
@@ -231,34 +226,6 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
     {
         $this->departments->clear();
         $this->departments->add(...$departments);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|GovernmentOfficial[]
-     */
-    public function getGovernmentOfficials(): Collection
-    {
-        return $this->governmentOfficials;
-    }
-
-    public function addGovernmentOfficial(?GovernmentOfficial $governmentOfficial): self
-    {
-        if ($governmentOfficial === null) {
-            return $this;
-        }
-
-        if (! $this->governmentOfficials->contains($governmentOfficial)) {
-            $this->governmentOfficials->add($governmentOfficial);
-        }
-
-        return $this;
-    }
-
-    public function removeGovernmentOfficial(GovernmentOfficial $governmentOfficial): self
-    {
-        $this->governmentOfficials->removeElement($governmentOfficial);
 
         return $this;
     }

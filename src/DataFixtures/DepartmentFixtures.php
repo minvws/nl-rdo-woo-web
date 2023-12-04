@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Department;
-use App\Entity\GovernmentOfficial;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * This is a set of fixtures for the Department and officials entities. It is not meant to be used in production.
+ * This is a set of fixtures for the Department entities. It is not meant to be used in production.
  */
 class DepartmentFixtures extends Fixture
 {
@@ -35,37 +34,6 @@ class DepartmentFixtures extends Fixture
             $entity = new Department();
             $entity->setName($department);
             $entity->setShortTag($short);
-            $manager->persist($entity);
-        }
-
-        $heads = [
-            'Minister-President Mark Rutte',
-            'Minister Kajsa Ollongren',
-            'Minister Stef Blok',
-            'Minister Ank Bijleveld-Schouten',
-            'Minister Eric Wiebes',
-            'Minister Wopke Hoekstra',
-            'Minister Cora van Nieuwenhuizen',
-            'Minister Ferd Grapperhaus',
-            'Minister Carola Schouten',
-            'Minister Ingrid van Engelshoven',
-            'Minister Wouter Koolmees',
-            'Minister Hugo de Jonge',
-            'Staatssecretaris Raymond Knops',
-            'Staatssecretaris Mona Keijzer',
-            'Staatssecretaris Stientje van Veldhoven',
-            'Staatssecretaris Paul Blokhuis',
-            'Staatssecretaris Tamara van Ark',
-            'Staatssecretaris Barbara Visser',
-            'Staatssecretaris Ankie Broekers-Knol',
-            'Staatssecretaris Alexandra van Huffelen',
-            'Staatssecretaris Hans Vijlbrief',
-            'Staatssecretaris Bas van \'t Wout',
-        ];
-
-        foreach ($heads as $head) {
-            $entity = new GovernmentOfficial();
-            $entity->setName($head);
             $manager->persist($entity);
         }
 

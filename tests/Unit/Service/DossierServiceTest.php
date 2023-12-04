@@ -9,7 +9,6 @@ use App\Entity\Department;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\FileInfo;
-use App\Entity\GovernmentOfficial;
 use App\Entity\Inquiry;
 use App\Entity\Inventory;
 use App\Entity\Judgement;
@@ -20,6 +19,7 @@ use App\Service\DossierWorkflow\Step\DetailsStep;
 use App\Service\DossierWorkflow\Step\DocumentsStep;
 use App\Service\DossierWorkflow\Step\PublicationStep;
 use App\Service\DossierWorkflow\WorkflowStatusFactory;
+use App\Service\HistoryService;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Inquiry\InquirySessionService;
 use App\Service\Storage\DocumentStorageService;
@@ -69,7 +69,10 @@ class DossierServiceTest extends MockeryTestCase
             $this->workflowFactory,
             \Mockery::mock(DocumentService::class),
             $this->inquiryService,
+            \Mockery::mock(HistoryService::class),
         );
+
+        $this->entityManager->shouldReceive('getUnitOfWork->getOriginalEntityData')->zeroOrMoreTimes()->andReturn([]);
 
         $this->decisionDocument = $this->createDocument('decision', uploaded: true);
         $inventory = $this->createDocument('inventory', uploaded: true);
@@ -218,7 +221,6 @@ class DossierServiceTest extends MockeryTestCase
         $dossier->setSummary('aaa');
         $dossier->setTitle('aaa');
         $dossier->addDepartment(new Department());
-        $dossier->addGovernmentOfficial(new GovernmentOfficial());
         $dossier->setDocumentPrefix('foo');
         $dossier->setPublicationReason('bar');
         $dossier->setDefaultSubjects(['baz']);

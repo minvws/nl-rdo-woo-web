@@ -14,16 +14,6 @@ dossiers. There can be multiple departments attached to a dossier.
 | id    | UUID   | The internal ID of the department |
 | name  | string | The name of the department        |
 
-## GovernmentOfficial
-
-The `GovernmentOfficial` entity defines a government official. It is used to group dossiers.
-There can be multiple government officials attached to a dossier.
-
-| Field | Type   | Description                              |
-|-------|--------|------------------------------------------|
-| id    | UUID   | The internal ID of the officials         |
-| name  | string | The full name and title of the officials |
-
 ## Document
 
 The `Document` entity defines a document that is attached to a dossier. Each dossier has one
@@ -63,8 +53,7 @@ Documents have an m:n relation with documents through the `document_dossier` tab
 ## Dossier
 
 A `Dossier` is the main entity in the system. It defines a dossier. A dossier can have one or more
-documents attached to it. A dossier can have one or more departments attached to it. A dossier can
-have one or more government officials attached to it.
+documents attached to it. A dossier can have one or more departments attached to it.
 
 When creating a dossier, an inventory spreadsheet must be uploaded as well. This defines all the
 documents that should be uploaded for this dossier. After a dossier has been completed by uploading
@@ -86,7 +75,6 @@ all documents, it can be published.
 
 Dossiers have an m:n relation with documents through the `document_dossier` table.
 Dossiers have an m:n relation with departments through the `dossier_department` table.
-Dossiers have an m:n relation with government officials through the `dossier_government_official` table.
 
 ## User
 

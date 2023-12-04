@@ -45,3 +45,30 @@ To execute the E2E tests headless use the following command:
 ```shell
     make test-rf/E2E
 ```
+
+## E2E Coverage
+
+TST & ACC runs every night. CI is executed after a PR.
+|        |                                                   | CI                 | TST                | ACC                           |
+|--------|---------------------------------------------------|--------------------|--------------------|-------------------------------|
+| Portal |                                                   |                    |                    |                               |
+|        | Zoeken                                            | :construction:     | :white_check_mark: | :white_check_mark:            |
+|        | Zoekresultaten filteren                           | :construction:     |                    | :construction:                |
+|        | Document overzichtpagina                          | :construction:     |                    |                               |
+|        | Document downloaden                               | :construction:     |                    | :construction:                |
+|        | Besluitdossier overzichtpagina                    | :construction:     |                    |                               |
+|        | Besluitdossier filteren                           | :construction:     |                    |                               |
+|        | Besluitdossier downloaden                         | :construction:     |                    | :white_check_mark:            |
+|        | Besluitbrief downloaden                           | :construction:     |                    | :construction:                |
+|        | Inventarislijst downloaden                        | :construction:     |                    | :construction:                |
+| Balie  |                                                   |                    |                    |                               |
+|        | Inlogmodule                                       | :white_check_mark: | :white_check_mark: | :white_check_mark:            |
+|        | Besluitdossier filteren                           | :construction:     |                    | :construction:                |
+|        | Besluitdossier zoeken                             | :white_check_mark: | :white_check_mark: |                               |
+|        | Besluitdossier aanmaken                           | :white_check_mark: | :white_check_mark: |                               |
+|        | Besluitdossier documenten intrekken               | :white_check_mark: |                    |                               |
+|        | Besluitdossier documenten vervangen               | :construction:     |                    |                               |
+|        | Gebruikers aanmaken, bijwerken, ww reset, 2fa     | :construction:     | :construction:     |                               |
+|        | Authorisatie (rollen toekennen, (de)activeren)    | :construction:     | :construction:     |                               |
+|        | Bestuursorganen beheren                           | :construction:     | :construction:     |                               |
+|        | Zakenpagina (documenten/besluiten (ont)koppelen)  | :construction:     | :construction:     |                               |

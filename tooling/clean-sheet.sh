@@ -39,6 +39,7 @@ echo "TRUNCATE dossier CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user po
 echo "TRUNCATE document CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user postgres woopie
 echo "TRUNCATE ingest_log CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user postgres woopie
 echo "TRUNCATE inquiry CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user postgres woopie
+echo "TRUNCATE history CASCADE" | PGPASSWORD=postgres psql -h $DB_HOST --user postgres woopie
 echo
 
 # Delete all messages from RabbitMQ

@@ -8,7 +8,6 @@ use App\ElasticConfig;
 use App\Entity\Department;
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Entity\GovernmentOfficial;
 use App\Service\Search\Model\Config;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
@@ -171,59 +170,6 @@ EOF,
 
         /** @var Elasticsearch $result */
         return new TypeArray($result->asArray());
-    }
-
-    public function updateOfficial(GovernmentOfficial $official): void
-    {
-        $this->elastic->updateByQuery([
-            'index' => ElasticConfig::WRITE_INDEX,
-            'body' => [
-                'query' => [
-                    'bool' => [
-                        'should' => [
-                            ['match' => ['government_officials.id' => $official->getId()]],
-                            ['nested' => [
-                                'path' => 'dossiers',
-                                'query' => [
-                                    'term' => ['dossiers.government_officials.id' => $official->getId()],
-                                ],
-                            ]],
-                        ],
-                        'minimum_should_match' => 1,
-                    ],
-                ],
-                'script' => [
-                    'source' => <<< EOF
-                        if (ctx._source.government_officials != null) {
-                            for (int i = 0; i < ctx._source.government_officials.length; i++) {
-                                if (ctx._source.government_officials[i].id.equals(params.official.id)) {
-                                    ctx._source.government_officials[i] = params.official;
-                                }
-                            }
-                        }
-
-                        if (ctx._source.dossiers != null) {
-                            for (int i = 0; i < ctx._source.dossiers.length; i++) {
-                                if (ctx._source.dossiers[i].government_officials != null) {
-                                    for (int j = 0; j < ctx._source.dossiers[i].government_officials.length; j++) {
-                                        if (ctx._source.dossiers[i].government_officials[j].id.equals(params.official.id)) {
-                                            ctx._source.dossiers[i].government_officials[j] = params.official;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-EOF,
-                    'lang' => 'painless',
-                    'params' => [
-                        'official' => [
-                            'name' => $official->getName(),
-                            'id' => $official->getId(),
-                        ],
-                    ],
-                ],
-            ],
-        ]);
     }
 
     public function updateDepartment(Department $department): void

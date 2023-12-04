@@ -5,7 +5,7 @@ Department: Department
 "Filters": "Filters"
 "Close Filters": "Close Filters"
 Decision files: Decision files
-Departments and government officials: Departments and government officials
+Departments: Departments
 Access control: Access control
 Subject: Subject
 Period: Period
@@ -299,8 +299,6 @@ Responsible(s): Responsible(s)
 "Document has been removed": "Document has been removed"
 "Document is scheduled for ingestion": "Document is scheduled for ingestion"
 "Organisation created": "Organisation created"
-"Official created": "Official created"
-"Official modified": "Official modified"
 "Organisation modified": "Organisation modified"
 "No documents selected": "No documents selected"
 "This document is not yet processed. It is not possible to view individual pages, but you can download the complete document.": "This document is not yet processed. It is not possible to view individual pages, but you can download the complete document."
@@ -328,9 +326,6 @@ Admin: Admin
 "New department": "Create new department"
 "Department modified": "Department modified"
 "Department created": "Department created"
-"All officials": "All officials"
-"New official": "Create new official"
-"Edit official": "Edit official"
 "Edit organisation": "Edit organisation"
 Edit department: Edit department
 "Prefix management": "Prefix management"
@@ -411,9 +406,6 @@ Prefix: Prefix
 "Modify prefix {prefix}": "Modify prefix {prefix}"
 "Create new organisation": "Create new organisation"
 "Create new department": "Create new department"
-Official: Official
-"Modify official {name}": "Modify official {name}"
-"Create new government official": "Create new government official"
 "Modify department {name}": "Modify department {name}"
 Last updated: "Last updated"
 Msg Delivered Rate: "Msg Delivered Rate"
@@ -570,7 +562,7 @@ New decision file - basic data: "New decision file - basic data"
 "Default subject": "Default subject"
 "Decision date": "Decision date"
 "Description of the decision": "Description of the decision"
-'Keep it short and be specific. So do not use unnecessary prepositions, articles and obvious substantive words such as Woo, decision, etc.<ul class="my-4"><li class="bhr-form-help__dont text-sm">Not: Woo decision regarding the discussion between the ministry and a number of hospitals about the initial situation of the number of IC beds available</li><li class="bhr-form-help__do text-sm">Well: Discussion between the ministry and hospitals about the initial situation of the number of IC beds</li></ ul>': 'Keep it short and be specific. So do not use unnecessary prepositions, articles and obvious substantive words such as Woo, decision, etc.<ul class="my-4"><li class="bhr-form-help__dont text-sm">Not: Woo decision regarding the discussion between the ministry and a number of hospitals about the initial situation of the number of IC beds available</li><li class="bhr-form-help__do text-sm">Well: Discussion between the ministry and hospitals about the initial situation of the number of IC beds</li></ ul>'
+'create_dossier_decision_help': 'Keep it short (but at least 2 characters) and be specific. So do not use unnecessary prepositions, articles and obvious substantive words such as Woo, decision, etc.<ul class="my-4"><li class="bhr-form-help__dont text-sm">Not: Woo decision regarding the discussion between the ministry and a number of hospitals about the initial situation of the number of IC beds available</li><li class="bhr-form-help__do text-sm">Well: Discussion between the ministry and hospitals about the initial situation of the number of IC beds</li></ ul>'
 "Choose the category under which this decision falls. The chosen topic will also be linked to all documents in this decision.": "Choose the category under which this decision falls. The chosen topic will also be linked to all documents in this decision."
 "Choose the type of decision": "Choose the type of decision"
 "On to conclusion": "On to conclusion"
@@ -638,8 +630,8 @@ New decision file - basic data: "New decision file - basic data"
 "New phone or authenticator app?": "New phone or authenticator app?"
 "Reset the two factor code. You will receive new login instructions that allow the user to reset the two-factor authenticator.": "Reset the two factor code. You will receive new login instructions that allow the user to reset the two-factor authenticator."
 "Short name": "Short name"
-"Name of the department": "Name of the department"
-"Short name of the department": "Short name of the department"
+"Name of the department": "Name of the department (at least 2 characters)"
+"Short name of the department": "Short name of the department (at least 2 and maximum 10 characters)"
 "Users identify themselves with their email address. We do not use the email address to provide passwords or other login information.": "Users identify themselves with their email address. We do not use the email address to provide passwords or other login information."
 "Deactivate account": "Deactivate account"
 "Activate account": "Activate account"
@@ -693,8 +685,10 @@ New decision file - basic data: "New decision file - basic data"
     =1{# document with casenumber {casenumber} in {dossierTitle}}
     other{# documents with casenumber {casenumber} in {dossierTitle}}
   }
+"Download and browse selected documents": "Download and browse selected documents"
+"Filter documents. By changing the value this page will refresh and show the data for the selected value.": "Filter documents. By changing the value this page will refresh and show the data for the selected value."
 "Download the inventory for casenumber {casenumber}": "Download the inventory for casenumber {casenumber}"
-"Separate multiple case numbers with commas": "Separate multiple case numbers with commas"
+"Separate multiple case numbers with commas": "Separate multiple case numbers with commas, for example 100-2465, 102-2384"
 "Nothing chosen yet": "Nothing chosen yet"
 "Published decisions": "Published decisions"
 "Document {documentNr} does not exist": "Documentnumber {documentNr} does not exist"
@@ -729,7 +723,37 @@ New decision file - basic data: "New decision file - basic data"
 "Resetting the two factor code means that we remove the old two factor code from our system forever. If you request a new two-factor code, make sure you keep it for yourself in a safe manner. If you click 'Yes' you will receive the new two factor code.": "Resetting the two factor code means that we remove the old two factor code from our system forever. If you request a new two-factor code, make sure you keep it for yourself in a safe manner. If you click 'Yes' you will receive the new two factor code."
 'Yes, reset the password': 'Yes, reset the password'
 'Yes, reset the two factor code': 'Yes, reset the two factor code'
-'Departments': 'Departments'
 'At this moment no documents are available for the inquiry with casenumber {casenumber}': 'At this moment no documents are available for the inquiry with casenumber {casenumber}'
 'On {dates} new dossiers will be available on this page': 'On {dates} new dossiers will be available on this page.'
 'and on': 'and on'
+'Organisation management': 'Organisation management'
+
+history.dossier_updated.title: 'Decision Updated'
+history.dossier_updated.description: 'This decision has been updated. The following data has been changed: {changes}'
+history.dossier_created.title: 'Decision Created'
+history.dossier_created.description: 'This decision has been created on the platform'
+history.dossier_published.title: 'Decision Published'
+history.dossier_published.description: 'This decision has been published on the platform'
+history.dossier_removed.title: 'Decision Removed'
+history.dossier_removed.description: 'This decision has been removed from the platform'
+history.dossier_state_changed.title: 'Decision Status Changed'
+history.dossier_state_changed.description: 'Decision status has been changed from {old} to {new}'
+history.dossier_update_decision.title: 'Decision Document Updated'
+history.dossier_update_decision.description: 'The decision document has been updated'
+history.dossier_update_inventory.title: 'Decision Inventory Updated'
+history.dossier_update_inventory.description: 'The inventory list of this decision has been updated'
+history.inquiry_added.title: 'Case Number Added'
+history.inquiry_added.description: 'The following case number has been added to this decision: {casenr}'
+history.inquiry_removed.title: 'Case Number Removed'
+history.inquiry_removed.description: 'The following case number has been removed from this decision: {casenr}'
+history.dossier_withdraw_all.title: 'All Documents Within This Decision Have Been Withdrawn'
+history.dossier_withdraw_all.description: 'Reason for withdrawal: {explanation}'
+history.document_uploaded.title: 'Document Uploaded'
+history.document_uploaded.description: 'Document {document} has been uploaded to the platform'
+history.document_withdraw.title: 'This Document Has Been Withdrawn'
+history.document_withdraw.description: 'Reason for withdrawal: {explanation}'
+history.document_removed.title: 'This Document Has Been Removed'
+history.document_removed.description: 'This document has been permanently removed from the platform'
+history.document_replaced.title: 'This Document Has Been Replaced'
+history.document_replaced.description: 'This document has been replaced by another document. This can occur if there were personal data or other sensitive information in the document.'
+Manage organisations: 'Manage organisations'

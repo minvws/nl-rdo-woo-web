@@ -128,12 +128,14 @@ class QueryGeneratorTest extends MockeryTestCase
         "aggs": {
             "unique_dossiers": {
                 "cardinality": {
-                    "field": "dossier_nr"
+                    "field": "dossier_nr",
+                    "precision_threshold": 40000
                 }
             },
             "unique_documents": {
                 "cardinality": {
-                    "field": "document_nr"
+                    "field": "document_nr",
+                    "precision_threshold": 40000
                 }
             }
         },
@@ -206,12 +208,14 @@ END,
         "aggs": {
             "unique_dossiers": {
                 "cardinality": {
-                    "field": "dossier_nr"
+                    "field": "dossier_nr",
+                    "precision_threshold": 40000
                 }
             },
             "unique_documents": {
                 "cardinality": {
-                    "field": "document_nr"
+                    "field": "document_nr",
+                    "precision_threshold": 40000
                 }
             }
         },
@@ -282,7 +286,7 @@ END,
                                                 "minimum_should_match": 1,
                                                 "should": [
                                                     {
-                                                        "query_string": {
+                                                        "simple_query_string": {
                                                             "query": "search terms",
                                                             "fields": [
                                                                 "dossiers.title"
@@ -291,7 +295,7 @@ END,
                                                         }
                                                     },
                                                     {
-                                                        "query_string": {
+                                                        "simple_query_string": {
                                                             "query": "search terms",
                                                             "fields": [
                                                                 "dossiers.summary"
@@ -308,7 +312,7 @@ END,
                                     "nested": {
                                         "path": "pages",
                                         "query": {
-                                            "query_string": {
+                                            "simple_query_string": {
                                                 "query": "search terms",
                                                 "fields": [
                                                     "pages.content"
@@ -319,7 +323,7 @@ END,
                                     }
                                 },
                                 {
-                                    "query_string": {
+                                    "simple_query_string": {
                                         "query": "search terms",
                                         "fields": [
                                             "filename"
@@ -344,7 +348,7 @@ END,
                             "minimum_should_match": 1,
                             "should": [
                                 {
-                                    "query_string": {
+                                    "simple_query_string": {
                                         "query": "search terms",
                                         "fields": [
                                             "title"
@@ -353,7 +357,7 @@ END,
                                     }
                                 },
                                 {
-                                    "query_string": {
+                                    "simple_query_string": {
                                         "query": "search terms",
                                         "fields": [
                                             "summary"
@@ -362,7 +366,7 @@ END,
                                     }
                                 },
                                 {
-                                    "query_string": {
+                                    "simple_query_string": {
                                         "query": "search terms",
                                         "fields": [
                                             "decision_content"
@@ -498,7 +502,7 @@ END,
             },
             "require_field_match": true,
             "highlight_query": {
-                "query_string": {
+                "simple_query_string": {
                     "query": "search terms",
                     "fields": [
                         "title",
@@ -569,23 +573,6 @@ END,
                     }
                 }
             },
-            "dossiers-official": {
-                "nested": {
-                    "path": "dossiers"
-                },
-                "aggs": {
-                    "official": {
-                        "terms": {
-                            "field": "dossiers.government_officials.name",
-                            "size": 25,
-                            "order": {
-                                "_count": "desc"
-                            },
-                            "min_doc_count": 1
-                        }
-                    }
-                }
-            },
             "dossiers-period": {
                 "nested": {
                     "path": "dossiers"
@@ -605,12 +592,14 @@ END,
             },
             "unique_dossiers": {
                 "cardinality": {
-                    "field": "dossier_nr"
+                    "field": "dossier_nr",
+                    "precision_threshold": 40000
                 }
             },
             "unique_documents": {
                 "cardinality": {
-                    "field": "document_nr"
+                    "field": "document_nr",
+                    "precision_threshold": 40000
                 }
             }
         },

@@ -65,7 +65,6 @@ framework:
 
             App\Message\UpdateDossierMessage: esupdater                # Updates the dossier in the elastic index
             App\Message\UpdateDepartmentMessage: esupdater             # Updates the dossier in the elastic index
-            App\Message\UpdateOfficialMessage: esupdater               # Updates the dossier in the elastic index
             App\Message\RemoveDossierMessage: esupdater                # Removes a dossier in the elastic index
             App\Message\RemoveDocumentMessage: esupdater
 

@@ -50,72 +50,14 @@ auth_matrix:
             }
         }
 
-      # -- Official ----------------------------------------------------------------------------
-        {
-            prefix: "official",
-            roles: [ "ROLE_GLOBAL_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-                delete: true,
-            },
-            filters: {
-                organisation_only: false,
-            }
-        }
-        {
-            prefix: "official",
-            roles: [ "ROLE_ORGANISATION_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-                delete: false,
-            },
-            filters: {
-                organisation_only: true,
-            }
-        }
-        {
-            prefix: "official",
-            roles: [ "ROLE_SUPER_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-                delete: true,
-            },
-            filters: {
-                organisation_only: false,
-            }
-        },
-
       # -- Department ----------------------------------------------------------------------------
         {
             prefix: "department",
             roles: [ "ROLE_GLOBAL_ADMIN" ],
             permissions: {
-                create: true,
+                create: false,
                 read: true,
                 update: true,
-                delete: true,
-            },
-            filters: {
-                organisation_only: false,
-            }
-        }
-        {
-            prefix: "department",
-            roles: [ "ROLE_ORGANISATION_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-                delete: false,
-            },
-            filters: {
-                organisation_only: true,
             }
         }
         {
@@ -125,10 +67,6 @@ auth_matrix:
                 create: true,
                 read: true,
                 update: true,
-                delete: true,
-            },
-            filters: {
-                organisation_only: false,
             }
         },
 
@@ -143,7 +81,6 @@ auth_matrix:
                 delete: false,
             },
             filters: {
-                organisation_only: true,
                 published_dossiers: true,
             }
         }
@@ -157,7 +94,6 @@ auth_matrix:
                 delete: true,
             },
             filters: {
-                organisation_only: true,
                 published_dossiers: false,
                 unpublished_dossiers: true,
             }
@@ -172,7 +108,6 @@ auth_matrix:
                 delete: false,
             },
             filters: {
-                organisation_only: true,
                 published_dossiers: true,
                 unpublished_dossiers: true,
             }
@@ -189,7 +124,6 @@ auth_matrix:
                 administration: true,
             },
             filters: {
-                organisation_only: false,
                 published_dossiers: true,
                 unpublished_dossiers: true,
             }
@@ -205,7 +139,6 @@ auth_matrix:
                 execute: true,
             },
             filters: {
-                organisation_only: false,
                 published_dossiers: true,
             }
         }
@@ -220,7 +153,6 @@ auth_matrix:
                 execute: true,
             },
             filters: {
-                organisation_only: false,
                 unpublished_dossiers: true,
             }
         }

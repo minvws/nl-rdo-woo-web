@@ -53,41 +53,5 @@
             </tbody>
         </table>
     </div>
-
-    <div class="pt-16">
-        <twig:Admin:LeftAndRight>
-            <h2 class="bhr-title">{{ "All officials" | trans }}</h2>
-
-            <twig:block name="right">
-                <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_governmentofficial_create') }}">{{ "New official" | trans }}</a>
-            </twig:block>
-        </twig:Admin:LeftAndRight>
-
-        <div class="bhr-card">
-            <table class="bhr-table">
-                <thead>
-                    <tr>
-                        <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ "Official" | trans() }}</th>
-                        <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                            <span class="sr-only">{{ "Edit official" | trans() }}</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for head in heads %}
-                        <tr>
-                            <td>{{ head.name }}</td>
-                            <td class="text-right">
-                                <a class="js-clickable-row__focusable" href="{{ path('app_admin_governmentofficial_edit', { officialId: head.id.toBase58 }) }}">
-                                    <span class="sr-only">Details {{ head.name }}</span>
-                                    <twig:Admin:Icon name="chevron-right" />
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
 {% endblock %}

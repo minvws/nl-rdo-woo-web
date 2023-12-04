@@ -1,0 +1,10 @@
+/* Main */
+
+:root {
+  --main-padding-top: 0;
+  --main-padding-bottom: 0;
+  --main-flex-direction: column;
+
+  --sidemenu-main-padding-top: var(--main-padding-top);
+  --sidemenu-main-padding-bottom: var(--main-padding-bottom);
+}

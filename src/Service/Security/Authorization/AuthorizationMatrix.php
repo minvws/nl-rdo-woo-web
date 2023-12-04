@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Security\Authorization;
 
+use App\Entity\Organisation;
 use App\Entity\User;
+use App\Service\Security\OrganisationSwitcher;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -23,6 +25,7 @@ class AuthorizationMatrix
         private readonly Security $security,
         private readonly RequestStack $requestStack,
         private readonly AuthorizationCheckerInterface $authorizationChecker,
+        private readonly OrganisationSwitcher $organisationSwitcher,
         private readonly array $entries
     ) {
     }
@@ -111,5 +114,16 @@ class AuthorizationMatrix
         }
 
         return false;
+    }
+
+    public function getActiveOrganisation(): Organisation
+    {
+        /** @var User|null $user */
+        $user = $this->security->getUser();
+        if ($user === null) {
+            throw new \RuntimeException('No active user to get active organisation for');
+        }
+
+        return $this->organisationSwitcher->getActiveOrganisation($user);
     }
 }

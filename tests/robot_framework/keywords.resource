@@ -101,7 +101,7 @@ Login Balie
     Fill Text   id=inputPassword     ${tst_balie_password}
     Click       " Inloggen "
     ${otp}      get otp         ${otp_code}
-    Fill Text   id=_auth_code         ${otp}
+    Fill Text   id=auth-code         ${otp}
     Click       " Controleren "
     Get Text   //body  *=  Uitloggen
 
@@ -145,7 +145,7 @@ Create nieuw besluit(dossier)
     # ${details_departments}  Set Variable  Get Element Attribute    id:details_departments    index=1
     #details_departments
     #Select Options By    id=details_departments    text    Ministerie van Volksgezondheid, Welzijn en Sport (minVWS)
-    Select Options By    id=details_governmentofficials    text    Hugo de Jonge
+    #Select Options By    id=details_governmentofficials    index    1
     Get Checkbox State    id=details_publication_reason_1    ==    checked
     Check Checkbox    id=details_publication_reason_0
     Get Checkbox State    id=details_publication_reason_1    ==    unchecked
@@ -194,14 +194,14 @@ Create nieuw besluit(dossier)
     Get Text   //body  *=  0 bestanden geüpload
     Get Text   //body  *=  Maak eerst documenten compleet
     Get Text   //body  *=  Besluit verwijderen
-    Click  xpath=//*[@id="inhoud"]/div/div[2]/section[5]/a
+    Click  xpath=//*[@id="inhoud"]/div/div[2]/section[6]/a
     Get Text   //body  *=  Bevestig de verwijdering van dit dossier. Kan niet ongedaan gemaakt worden!
     Click  xpath=//*[@id="delete_form_submit"]
     Get Text   //body  *=  Het dossier wordt verwijderd, het kan even duren voor dit verwerkt is.
     Click  "Naar overzicht besluitdossiers"
-    Fill Text   id=search-previews         Robot ${current_time}
+    Type Text   id=search-previews         Robot ${current_time}    delay=50 ms  clear=Yes
     Click  xpath=//*[@id="js-dossier-search-previews"]/div[3]/table/tbody/tr/td[2]
-    #todo controleren of dossier is verwijderd? Eerst uitzoeken hoe het proces van verwijderen besluitdossier in elkaar zit. 
+    # verwijderen conceptdossier is nog niet mogelijk. Known issue: https://github.com/minvws/nl-rdo-woo-web-private/issues/1504
 
 
 
@@ -221,7 +221,6 @@ Create a new dossier
     Fill Text   id=dossier_title         Robot_Dossier_Titel
     Fill Text   id=dossier_summary         Robot_Dossier_Omschrijving
     Select Options By    id=dossier_departments    text    Ministerie van Algemene Zaken
-    Select Options By    id=dossier_governmentofficials    text    Minister-President Mark Rutte
     Select Options By    id=dossier_documentPrefix    text    ROBOTPREFIXTITEL
     Select Options By    id=dossier_publication_reason    text    Woo-verzoek
     Select Options By    id=dossier_decision    text    Openbaar

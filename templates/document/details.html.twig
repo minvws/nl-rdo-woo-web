@@ -72,6 +72,8 @@
 
             {% include "document/snippets/about.html.twig" %}
 
+            {% include "document/snippets/history.html.twig" %}
+
             {% if document.fileInfo.sourceType == constant('App\\SourceType::SOURCE_EMAIL') %}
                 {{ macro.documents_section(thread, "Messages from the same e-mail conversation") }}
                 {{ macro.documents_section(family, "Attachments to this e-mail message") }}

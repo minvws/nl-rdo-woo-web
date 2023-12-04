@@ -83,11 +83,19 @@ class AggregationGenerator
     public function addDocTypeAggregations(QueryBuilder $queryBuilder): void
     {
         $queryBuilder->addAggregation(
-            new CardinalityAggregation('unique_dossiers', 'dossier_nr')
+            new CardinalityAggregation(
+                nameAndField: 'unique_dossiers',
+                fieldOrSource: 'dossier_nr',
+                precisionThreshold: 40000,
+            )
         );
 
         $queryBuilder->addAggregation(
-            new CardinalityAggregation('unique_documents', 'document_nr')
+            new CardinalityAggregation(
+                nameAndField: 'unique_documents',
+                fieldOrSource: 'document_nr',
+                precisionThreshold: 40000,
+            )
         );
     }
 

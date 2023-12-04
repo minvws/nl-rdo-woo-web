@@ -105,6 +105,7 @@ export const searchPreviews = () => {
     }, { signal: abortControllerTemporary?.signal });
 
     onKeyDown('Escape', () => {
+      inputElement?.focus();
       hide();
     }, { signal: abortControllerTemporary?.signal });
   };

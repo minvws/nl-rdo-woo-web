@@ -1,0 +1,31 @@
+/* Application base styling - Variables */
+/* This file contains styling on high level elements such as the body */
+
+:root {
+  --application-base-text-color: #1a1a1a;
+  --application-font-size: 1rem;
+
+  /* Accent color */
+  --application-base-accent-color: #c4d8c4;
+  --application-base-accent-color-text-color: #000;
+
+  /* Accent color hover */
+  --application-base-accent-color-hover: var(--application-base-accent-color);
+  --application-base-accent-color-hover-text-color: var(
+    --application-base-accent-color-text-color
+  );
+
+  /* Accent color active */
+  --application-base-accent-color-active: var(--application-base-accent-color);
+  --application-base-accent-color-active-text-color: black;
+
+  /* Accent color focus */
+  --application-base-accent-color-focus: var(--application-base-accent-color);
+  --application-base-accent-color-focus-text-color: black;
+
+  /* Accent color selected */
+  --application-base-accent-color-selected: var(
+    --application-base-accent-color
+  );
+  --application-base-accent-color-selected-text-color: black;
+}

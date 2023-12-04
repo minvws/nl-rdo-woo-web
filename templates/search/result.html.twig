@@ -7,9 +7,7 @@
 %}
 
 {% block search_form_top %}
-{% if result.type != constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
-    {% include "search/searchbar.html.twig" %}
-{% endif %}
+{% include "search/searchbar.html.twig" %}
 {% endblock %}
 
 {% block body %}

@@ -22,7 +22,6 @@ Each entry within `dossiers` has the following properties:
 | title              | The title of the dossier                                                                     | Yes       | string                     |
 | summary            | The summary of the dossier                                                                   | Yes       | string                     |
 | department         | Use the `name` of one of the existing values in the admin (Balie).                           | Yes       | string or array of strings |
-| official           | Use the `name` of one of the existing values defined in the admin (Balie).                   | Yes       | string or array of strings |
 | period_from        | The start date of the dossier                                                                | Yes       | string YYYY-MM-DD          |
 | period_to          | The end date of the dossier                                                                  | Yes       | string YYYY-MM-DD          |
 | decision           | One of `already_public`, `public`, `partial_public`, `not_public` or `nothing_found`         | Yes       | string                     |
@@ -151,7 +150,7 @@ Ensure queued processing is executing by running:
 ### Reset the system to a clean sheet
 
 This removes all dossiers, documents and inquiries from the database and elasticsearch. Also clears any worker messages still in the queue.
-Any other data, like logins or officials or departments will not be affected.
+Any other data, like logins or departments will not be affected.
 
 This is very important, as the system currently does not allow duplicate documents in multiple dossiers, which is exactly what will happen if you load the same fixture twice.
 

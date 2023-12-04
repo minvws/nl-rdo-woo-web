@@ -139,6 +139,21 @@
                 </div>
             </div>
 
+            <div class="pb-12">
+                <div class="horizontal-scroll">
+                    <table>
+                        <caption>
+                            <h3>{{ "History" | trans() }}</h3>
+                        </caption>
+                        <tbody>
+
+                        {% include "/dossier/history-table.html.twig" with { id: dossier.id } %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             {% if dossier.needsInventoryAndDocuments and (public_docs.count > 0 or not_public_docs.count > 0) %}
                 <h3 id="documenten">{{ "Documents" | trans() }}</h3>
 

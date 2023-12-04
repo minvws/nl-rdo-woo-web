@@ -12,11 +12,15 @@ use App\Entity\InquiryInventory;
 use App\Message\GenerateInquiryArchivesMessage;
 use App\Message\GenerateInquiryInventoryMessage;
 use App\Service\BatchDownloadService;
+use App\Service\HistoryService;
 use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class InquiryService
 {
     /**
@@ -33,6 +37,7 @@ class InquiryService
         private readonly MessageBusInterface $messageBus,
         private readonly BatchDownloadService $batchDownloadService,
         private readonly DocumentStorageService $storageService,
+        private readonly HistoryService $historyService,
     ) {
     }
 
@@ -56,6 +61,7 @@ class InquiryService
             $inquiry->addDocument($document);
             foreach ($document->getDossiers() as $dossier) {
                 $inquiry->addDossier($dossier);
+                $this->historyService->addDossierEntry($dossier, 'inquiry_added', ['casenr' => $caseNr]);
             }
 
             $this->doctrine->persist($inquiry);
@@ -117,6 +123,8 @@ class InquiryService
         foreach ($this->doctrine->getRepository(Inquiry::class)->findByDossier($dossier) as $inquiry) {
             /** @var Inquiry $inquiry */
             $inquiry->removeDossier($dossier);
+
+            $this->historyService->addDossierEntry($dossier, 'inquiry_removed', ['casenr' => $inquiry->getCasenr()]);
 
             if ($inquiry->getDossiers()->isEmpty()) {
                 $inventory = $inquiry->getInventory();

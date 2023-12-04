@@ -6,14 +6,16 @@
 {%- endblock form_start -%}
 
 {%- block choice_widget_expanded -%}
-    <div {{ block('widget_container_attributes') }}>
+    <fieldset class="grouped-choice-list">
+        {%- set formVars = form.vars -%}
+        <legend {% for attrname, attrvalue in formVars.label_attr %}{{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ formVars.label }}</legend>
         {%- for child in form %}
-            <div class="flex flex-row">
-                {{- form_widget(child) -}}
-                {{- form_label(child, null, { translation_domain: choice_translation_domain }) -}}
-            </div>
+        <div class="radio">
+            {{- form_widget(child) -}}
+            {{- form_label(child, null, { translation_domain: choice_translation_domain }) -}}
+        </div>
         {% endfor -%}
-    </div>
+    </fieldset>
 {%- endblock choice_widget_expanded -%}
 
 {% block button_attributes %}

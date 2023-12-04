@@ -220,6 +220,14 @@
         {% set canWithdrawDocuments = not workflowStatus.isConcept %}
         {% set canDeleteDossier = matrix_has_permission('dossier.delete') %}
 
+        <section class="bhr-card mt-10">
+            <twig:Admin:LeftAndRight>
+                <h2 class="bhr-title">{{ "History" | trans }}</h2>
+            </twig:Admin:LeftAndRight>
+
+            {% include "dossier/history-table.html.twig" with { id: dossier.id } %}
+        </section>
+
         {% if canWithdrawDocuments or canDeleteDossier %}
             <section class="bhr-card mt-10">
                 <twig:Admin:LeftAndRight>

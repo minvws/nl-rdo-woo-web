@@ -27,7 +27,7 @@ class TokenType extends AbstractType
             ->add('remark', TextType::class, [
                 'label' => 'Remark',
                 'required' => true,
-                'help' => 'Informatie over het token, bijvoorbeeld de naam van de gebruiker.',
+                'help' => 'Informatie over het token, bijvoorbeeld de naam van de gebruiker. Minimaal 2 en maximaal 255 karakters.',
                 'constraints' => [
                     new NotBlank(),
                     new Length(['min' => 2, 'max' => 255]),

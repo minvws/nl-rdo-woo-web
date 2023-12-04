@@ -51,7 +51,7 @@ class InquiryController extends AbstractController
 
         $documentCount = $this->inquiryRepository->countDocumentsByJudgement($inquiry);
 
-        $form = $this->createForm(InquiryFilterFormType::class, $inquiry);
+        $form = $this->createForm(InquiryFilterFormType::class, $inquiry, ['filterParam' => $request->query->getString('filter')]);
         $form->handleRequest($request);
 
         $filter = $form->isSubmitted() && $form->isValid() ? $form->get('filter')->getData() : InquiryFilterFormType::CASE;

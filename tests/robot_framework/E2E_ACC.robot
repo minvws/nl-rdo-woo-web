@@ -16,14 +16,13 @@ ${acc_user}       %{USERNAME_WOO_STAGING}
 ${acc_password}   %{PASSWORD_WOO_STAGING}
 
 *** Test Cases ***
-#Check if search engine is active and returns results
-Search for notulen
+Basic search
     [Documentation]  Do a basic search and check if it returns results
     Search For  SEARCH_TERM=notulen  
     ...    SEARCH_RESULTS=50 documenten in
     Get Text   //body  *=  notulen
     
-Check searchurl
+Basic search and check URL
     [Documentation]  Do a basic search and check if the URL contains the search term
     Search For  SEARCH_TERM=notulen  
     ...    SEARCH_RESULTS=50 documenten in
@@ -31,7 +30,7 @@ Check searchurl
     Should Contain  ${url}   search?q=notulen
     Get Text   //body  *=  notulen
 
-Check documanten should suggest documenten
+arch returns search suggestions
     [Documentation]  Do a basic search with a typo (DocumAnten instead of DocumEnten) and check if Woo returns search suggestions
     Search For  SEARCH_TERM=documanten  
     ...    SEARCH_RESULTS=0 documenten in 0 besluiten

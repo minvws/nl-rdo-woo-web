@@ -76,7 +76,6 @@
             {% endif %}
 
             {{ macro.facet_pills('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}
-            {# {{ macro.facet_pills('Official' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::OFFICIAL').value, result) }} #}
             {{ macro.facet_pills('Subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
             {{ macro.facet_pills('Source document type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
             {{ macro.facet_pills('Judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}

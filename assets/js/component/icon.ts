@@ -14,7 +14,7 @@ export const icon = (properties: IconProperties) => {
     name,
     size = 24,
   } = properties;
-  return `<svg aria-hidden="true" class="inline-block ${color} ${css}" height="${size}" width=${size}>
+  return `<svg aria-hidden="true" class="inline-block ${color} ${css}" height="${size}" width="${size}">
     <use xlink:href="${filePath}#${name}" />
   </svg>`;
 };

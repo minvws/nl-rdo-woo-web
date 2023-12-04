@@ -32,6 +32,7 @@ class Tesseract
         $params = ['/usr/bin/pdftoppm', '-png', '-r', '300', '-singlefile', $sourcePdfPath, $targetPngPath];
         $this->logger->debug('EXEC: ' . join(' ', $params));
         $process = new Process($params);
+        $process->setTimeout(120);
         $process->run();
 
         if (! $process->isSuccessful()) {
@@ -49,6 +50,7 @@ class Tesseract
         $params = ['/usr/bin/tesseract', $targetPngPath . '.png', 'stdout'];
         $this->logger->debug('EXEC: ' . join(' ', $params));
         $process = new Process($params);
+        $process->setTimeout(120);
         $process->run();
 
         if (! $process->isSuccessful()) {

@@ -27,14 +27,54 @@
 
         {% macro nav_item(routeName, titleTranslationKey, activeRouteNames) %}
             {% set isActivePage = app.request.get('_route') in activeRouteNames %}
-            <li><a class="bhr-site-header-nav-item bhr-site-header-nav-item--anchor {% if isActivePage %}bhr-site-header-nav-item--active{% endif %}" href="{{ path(routeName) }}" {% if isActivePage %}aria-current="page"{% endif %}>{{ titleTranslationKey | trans() }}</a></li>
+            <li><a class="bhr-site-header-nav-item bhr-site-header-nav-item--anchor{% if isActivePage %} bhr-site-header-nav-item--active{% endif %}" href="{{ path(routeName) }}" {% if isActivePage %}aria-current="page"{% endif %}>{{ titleTranslationKey | trans() }}</a></li>
         {% endmacro %}
 
         <header class="bg-eerie-black print:hidden">
             <div class="mx-auto max-w-[1152px] px-4">
                 {% if isAuthenticated %}
                 <nav class="flex text-white">
-                    <ul class="grow flex">
+                    {% set organisationSwitcher = get_organisation_switcher() %}
+                    {% if organisationSwitcher.isSwitchAllowed(app.user) %}
+                        {% set activeOrganisation = organisationSwitcher.activeOrganisation(app.user) %}
+                        <ul class="flex items-center cursor-pointer">
+                            <li>
+                                <details class="js-details">
+                                    <summary
+                                        class="bhr-site-header-nav-item bhr-site-header-nav-item--anchor bhr-site-header-nav-item--divider max-h-20 flex items-center"
+                                        href="/balie/dossiers">
+                                        <div class="flex flex-col">
+                                            <p class="text-sm font-normal">{{ 'Organisation'|trans }}</p>
+                                            <p>
+                                                <span
+                                                    class="block text-md whitespace-nowrap text-ellipsis overflow-hidden max-w-[165px]">{{ activeOrganisation.name }}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <twig:Admin:Icon name="chevron-down" color="fill-white" class="ml-2" />
+                                    </summary>
+                                    <div class="bhr-overlay-card max-w-sm mt-2 text-black flex flex-col px-0 pt-0 pb-2">
+                                        <a class="font-bold text-davys-grey text-right border-b border-platinum px-4 py-3"
+                                           href="{{ path('app_admin_user_organisation') }}">
+                                            {{ 'Manage organisations' | trans }}
+                                            <twig:Admin:Icon name="manage" class="ml-1" />
+                                        </a>
+                                        <ul>
+                                            {% for organisation in organisationSwitcher.organisations(app.user) %}
+                                                <li>
+                                                    <a class="bhr-site-header-sub-nav-item{% if activeOrganisation == organisation %} bhr-site-header-sub-nav-item--active{% endif %}"
+                                                       href="{{ path('app_admin_switch_organisation', {'id': organisation.id.toRfc4122}) }}">{{ organisation.name }}</a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </details>
+                            </li>
+                        </ul>
+                    {% endif %}
+                    {# ########################################################### #}
+
+                    <ul class="grow flex items-center">
                         <li><a href="#inhoud" class="bhr-site-header-nav-item bhr-site-header-nav-item--anchor bhr-site-header-nav-item--skip-link">{{ "Go directly to content" | trans() }}</a></li>
 
                         {% if matrix_has_permission('dossier.read') %}
@@ -66,13 +106,11 @@
                             {{ _self.nav_item('app_admin_inquiries', 'Cases', activeRouteNames) }}
                         {% endif %}
 
-                        {% if matrix_has_permission('department.read') or matrix_has_permission('organisation.read') or matrix_has_permission('official.read') %}
+                        {% if matrix_has_permission('department.read') %}
                             {% set activeRouteNames = [
                                 'app_admin_departments',
                                 'app_admin_department_create',
                                 'app_admin_department_edit',
-                                'app_admin_governmentofficial_create',
-                                'app_admin_governmentofficial_edit',
                             ] %}
                             {{ _self.nav_item('app_admin_departments', 'Departments', activeRouteNames) }}
                         {% endif %}
@@ -87,7 +125,7 @@
                         {% endif %}
                     </ul>
 
-                    <ul class="flex">
+                    <ul class="flex items-center">
                         <li><span class="bhr-site-header-nav-item font-normal">{{ app.user.name|default("unknown user") }}</span></li>
                         {{ _self.nav_item('app_logout', 'Logout') }}
                     </ul>
@@ -105,7 +143,7 @@
             {% block body %}{% endblock %}
         </main>
 
-        <footer class="pb-8 pt-16 px-4 print:hidden">
+        <footer class="pb-8 pt-16 px-4 two-thirds-one-third print:hidden">
             {% if isAuthenticated %}
                 <div class="leading-tight pb-4 screen:pt-24 screen:text-center text-dim-gray print:border-b print:border-gray-900">
                     <div><strong class="text-2xl">{{ SITE_NAME }}</strong></div>

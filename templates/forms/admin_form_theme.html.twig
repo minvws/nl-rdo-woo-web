@@ -6,17 +6,21 @@
 {%- endblock form_start -%}
 
 {%- block choice_widget_expanded -%}
-    <div {{ block('widget_container_attributes') }}>
+    <fieldset>
+        <legend class="bhr-legend">{{ form.vars.label | trans }}{% if form.vars.required is not same as (true) %} <span class="font-normal">(optioneel)</span>{% endif %}</legend>
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+
         {%- for child in form %}
             <div class="bhr-choice-row">
                 <span>{{- form_widget(child) -}}</span>
                 <div class="flex flex-col">
-                {{- form_label(child, null, { 'label_attr': {'class': 'bhr-choice-label'}, translation_domain: choice_translation_domain }) -}}
-                {{- form_help(child, {'help_attr': {'class': 'bhr-form-help text-sm pb-2'}}) -}}
+                    {{- form_label(child, null, { 'label_attr': { 'class': 'bhr-choice-label', displayIsOptional: false }, translation_domain: choice_translation_domain }) -}}
+                    {{- form_help(child, {'help_attr': {'class': 'bhr-form-help text-sm pb-2'}}) -}}
                 </div>
             </div>
         {% endfor -%}
-    </div>
+    </fieldset>
 {%- endblock choice_widget_expanded -%}
 
 {%- block choice_widget_collapsed -%}
@@ -45,7 +49,7 @@
 {%- endblock choice_widget_collapsed -%}
 
 {%- block form_errors -%}
-    <twig:Admin:InputErrors :errors="errors" />
+    <twig:Admin:InputErrors id="{{ id ~ "-error" }}" errors="{{ errors }}" />
 {%- endblock form_errors -%}
 
 {%- block form_help -%}
@@ -70,21 +74,38 @@
 {%- endblock form_help_content %}
 
 {%- block form_label -%}
-    {%- set label_attr = label_attr|merge({ class: label_attr.class|default(label_class|default('bhr-label')) }) -%}
-    {{- parent() -}}
+    {% if label is not same as(false) -%}
+        {%- set label_attr = label_attr|merge({ class: label_attr.class|default(label_class|default('bhr-label')) }) -%}
+        {% if not compound -%}
+            {% set label_attr = label_attr|merge({'for': id}) %}
+        {%- endif -%}
+        {% set displayIsOptional = required is not same as (true) and (label_attr.displayIsOptional ?? true) is not same as (false) %}
+        <label {% if label_attr %}{% with { attr: label_attr } %}{{ block('attributes') }}{% endwith %}{% endif %}>
+            {{ label }}{% if displayIsOptional %} <span class="font-normal">(optioneel)</span>{% endif %}
+        </label>
+    {%- endif -%}
 {%- endblock form_label -%}
 
 {%- block form_fieldset -%}
-    <fieldset class="flex gap-4">
-        {% set fields = field_set_fields|split(' ') %}
-        {% for item in fields %}
-        <div class="woo-form-field">
-            {{- form_label(form.parent.children[item]) -}}
-            {{- form_help(form.parent.children[item]) -}}
-            {{- form_errors(form.parent.children[item]) -}}
-            {{- form_widget(form.parent.children[item], widget_attr) -}}
+    <fieldset>
+        <legend class="bhr-legend">
+            {{ row_attr | default([])['data-legend'] | default('') }}
+            {% set isOptional = (row_attr|default([])['data-required'] ?? true) is same as (false) %}
+            {% if isOptional %}
+                <span class="font-normal">(optioneel)</span>
+            {% endif %}
+        </legend>
+
+        <div class="flex gap-4">
+            {% for item in field_set_fields|split(' ') %}
+            <div>
+                {{- form_label(form.parent.children[item], null, { label_attr: { displayIsOptional: false }, label_class: 'block text-dim-gray text-lg mb-1' }) -}}
+                {{- form_help(form.parent.children[item]) -}}
+                {{- form_errors(form.parent.children[item]) -}}
+                {{- form_widget(form.parent.children[item], widget_attr) -}}
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </fieldset>
 {%- endblock -%}
 
@@ -101,21 +122,27 @@
 {%- block form_row -%}
     {%- set row_attr = row_attr|merge({ class: ('bhr-form-row ' ~ (errors|length > 0 ? 'bhr-form-row--invalid ' : '') ~ row_attr.class|default(''))|trim }) -%}
     {%- set widget_attr = {} -%}
-    {%- if help is not empty -%}
+    {% if errors|length > 0 %}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"-error"}} -%}
+    {%- elseif help is not empty -%}
         {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
     {%- endif -%}
+
     {% if(row_attr['data-fieldset'] is defined) %}
         {%- set field_set_fields = row_attr['data-fieldset'] -%}
         {% set row_attr = row_attr|filter((value, key) => key != 'data-fieldset') %}
     {% endif %}
+    {% set isFieldset = expanded ?? false %}
     <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
         {% if field_set_fields is defined %}
             {{ block('form_fieldset') }}
+        {% elseif isFieldset %}
+            {{- form_widget(form, widget_attr) -}}
         {% else %}
-        {{- form_label(form) -}}
-        {{- form_help(form) -}}
-        {{- form_errors(form) -}}
-        {{- form_widget(form, widget_attr) -}}
+            {{- form_label(form) -}}
+            {{- form_help(form) -}}
+            {{- form_errors(form) -}}
+            {{- form_widget(form, widget_attr) -}}
         {% endif %}
     </div>
 {%- endblock form_row -%}
@@ -142,7 +169,7 @@
         <div class="flex">
             {{- form_widget(form, widget_attr) -}}
             <div class="flex flex-col">
-                {{- form_label(form, null, { 'label_attr': {'class': 'bhr-choice-label'}}) -}}
+                {{- form_label(form, null, { 'label_attr': {'class': 'bhr-choice-label', displayIsOptional: false }}) -}}
                 {{- form_help(form, {'help_attr': {'class': 'bhr-form-help text-sm pb-2'}}) -}}
             </div>
         </div>
@@ -156,7 +183,7 @@
 {% endblock button_attributes %}
 
 {%- block textarea_widget -%}
-    {%- set attr = attr|merge({ class: 'bhr-textarea' }) -%}
+    {%- set attr = attr|merge({ class: 'bhr-textarea ' ~ (errors|length > 0 ? 'bhr-textarea--invalid ' : '') }) -%}
     <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
 {%- endblock textarea_widget -%}
 

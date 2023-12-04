@@ -18,9 +18,9 @@
         <table class="bhr-table">
             <thead>
                 <tr>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Name" | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Department" | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Created at" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Organisation" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Afkorting" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Prefixes" | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">
                         <span class="sr-only">{{ "Edit organisation" | trans() }}</span>
                     </th>
@@ -30,8 +30,9 @@
                 {% for organisation in organisations %}
                     <tr>
                         <td><span class="font-bold">{{ organisation.name }}</span></td>
-                        <td>({{ organisation.department.shortTag }}) {{ organisation.department.name }}</td>
-                        <td>{{ organisation.createdAt | carbon.diffForHumans }}</td>
+                        <td>{{ organisation.department.shortTag }}</td>
+                        <td>DUMMY PREFIX</td>
+{#                        <td>{{ organisation.createdAt | carbon.diffForHumans }}</td>#}
                         <td class="text-right">
                             <a class="js-clickable-row__focusable" href="{{ path('app_admin_user_organisation_edit', { id: organisation.id }) }}">
                                 <span class="sr-only">Details {{ organisation.name }}</span>

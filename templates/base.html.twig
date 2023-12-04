@@ -28,7 +28,7 @@
             {% form_theme form 'forms/public_form_theme.html.twig' %}
         {% endif %}
         <header>
-            <a href="#main-content" class="button skip-to-content">{{ "Go directly to content" | trans() }}</a>
+            <a href="#main-content" class="button focus-only skip-to-content">{{ "Go directly to content" | trans() }}</a>
 
             <a href="{{ path('app_home') }}" class="ro-logo">
                 <img src="{{ asset('/img/ro-logo.svg') }}" alt="Logo Rijksoverheid">
@@ -92,26 +92,24 @@
         <footer>
             <h2 class="visually-hidden">Footer</h2>
             <div class="grid md:grid-cols-2">
-                <span class="slogan leading-9">
-                    {# {{ "The central government. For the Netherlands" | trans }} #}
-                </span>
+                <span class="slogan leading-9">WOO</span>
 
                 <div class="py-8 md:pt-0 md:justify-self-end">
                     <div class="grid sm:grid-cols-2 gap-x-12 gap-y-6">
-                        <nav aria-labelledby="page-footer-nav-1-heading">
-                            <h3 id="page-footer-nav-1-heading">Service</h3>
-                            <ul>
-                                <li><a href="{{ path('app_contact') }}">Contact</a></li>
-                                {# <li><a href="">{{ "RSS recent publications" | trans }}</a></li> #}
-                                {# <li><a href="https://wobcovid19.rijksoverheid.nl/archief/">{{ "Archive" | trans }}</a></li>#}
-                                {% if not app.user %}
-                                {#<li><a href="{{ path('app_login') }}">{{ "Login" | trans }}</a></li>#}
-                                {% else %}
-                                    <li><a href="{{ path('app_admin') }}">{{ "Counter" | trans() }}</a></li>
-                                    <li><a href="{{ path('app_logout') }}">{{ "Logout" | trans }}</a></li>
-                                {% endif %}
-                            </ul>
-                        </nav>
+						<nav aria-labelledby="page-footer-nav-1-heading">
+							<h3 id="page-footer-nav-1-heading">Service</h3>
+							<ul>
+								<li><a href="{{ path('app_contact') }}">Contact</a></li>
+								{# <li><a href="">{{ "RSS recent publications" | trans }}</a></li> #}
+								{# <li><a href="https://wobcovid19.rijksoverheid.nl/archief/">{{ "Archive" | trans }}</a></li>#}
+								{% if not app.user %}
+								{#<li><a href="{{ path('app_login') }}">{{ "Login" | trans }}</a></li>#}
+								{% else %}
+									<li><a href="{{ path('app_admin') }}">{{ "Counter" | trans() }}</a></li>
+									<li><a href="{{ path('app_logout') }}">{{ "Logout" | trans }}</a></li>
+								{% endif %}
+							</ul>
+						</nav>
 
                         <nav aria-labelledby="page-footer-nav-2-heading">
                             <h3 id="page-footer-nav-2-heading">{{ "About this site" | trans() }}</h3>

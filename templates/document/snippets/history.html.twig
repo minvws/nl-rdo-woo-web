@@ -1,0 +1,15 @@
+
+<section>
+    <h2>{{ "History" | trans }}</h2>
+
+    <table>
+        <caption class="visually-hidden">
+            {{ "History" | trans }}
+        </caption>
+        <tbody>
+
+        {% include "document/history-table.html.twig" with { id: document.id } %}
+
+        </tbody>
+    </table>
+</section>

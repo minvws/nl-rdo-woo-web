@@ -1,0 +1,37 @@
+/* Theme: Basic bold */
+
+/* Styling on the highest level */
+@use "application-base";
+
+/* Fundamentals */
+@use "fundamentals/spot-large"; /* color set */
+@use "fundamentals/colors";
+@use "fundamentals/body-text-set";
+@use "fundamentals/headings-base-set";
+@use "fundamentals/spacing";
+
+/* Layout */
+@use "layout/article";
+@use "layout/main";
+@use "layout/section";
+
+/* Components */
+@use "components/breadcrumb-bar";
+
+@use "components/logo";
+@use "components/pagination";
+@use "components/sidemenu";
+@use "components/tile";
+@use "components/button-base";
+@use "components/button-cta";
+@use "components/form-input";
+@use "components/footer";
+@use "components/footer-navigation-link";
+@use "components/skip-to-content";
+
+/* Header */
+@use "components/header";
+@use "components/header-content-wrapper";
+@use "components/header-navigation";
+@use "components/header-navigation-content-wrapper";
+@use "components/header-navigation-link";

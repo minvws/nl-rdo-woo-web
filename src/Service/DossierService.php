@@ -48,11 +48,41 @@ class DossierService
         private readonly WorkflowStatusFactory $statusFactory,
         private readonly DocumentService $documentService,
         private readonly InquiryService $inquiryService,
+        private readonly HistoryService $historyService,
     ) {
+    }
+
+    public function updateHistory(Dossier $dossier): void
+    {
+        /** @var mixed[] $oldDossier */
+        $oldDossier = $this->doctrine->getUnitOfWork()->getOriginalEntityData($dossier);
+        if (empty($oldDossier)) {
+            // There is no old dossier, so this is probably not an update, but a create.
+            return;
+        }
+
+        $changes = [];
+        if ($oldDossier['publicationDate'] != $dossier->getPublicationDate()) {
+            $changes = 'publication_date';
+        }
+        if ($oldDossier['decisionDate'] != $dossier->getDecisionDate()) {
+            $changes = 'decision_date';
+        }
+        if ($oldDossier['title'] != $dossier->getTitle()) {
+            $changes = 'title';
+        }
+        if ($oldDossier['summary'] != $dossier->getSummary()) {
+            $changes = 'summary';
+        }
+
+        if ($changes) {
+            $this->historyService->addDossierEntry($dossier, 'dossier_updated', ['changes' => $changes]);
+        }
     }
 
     public function updateDecision(Dossier $dossier): void
     {
+        $this->updateHistory($dossier);
         $this->persist($dossier);
 
         // If the dossier no longer needs inventory and documents: remove them
@@ -70,6 +100,8 @@ class DossierService
         }
 
         $this->messageBus->dispatch(RemoveDossierMessage::forDossier($dossier));
+
+        $this->historyService->addDossierEntry($dossier, 'dossier_removed', []);
     }
 
     public function ingest(Dossier $dossier): void
@@ -114,6 +146,8 @@ class DossierService
             return;
         }
 
+        $oldState = $dossier->getStatus();
+
         if (! $dossier->isAllowedState($newState)) {
             $this->logger->error('Invalid state change', [
                 'dossier' => $dossier->getId(),
@@ -131,9 +165,14 @@ class DossierService
 
         $this->messageBus->dispatch(UpdateDossierArchivesMessage::forDossier($dossier));
 
+        $this->historyService->addDossierEntry($dossier, 'dossier_state_changed', [
+            'old' => $oldState,
+            'new' => $newState,
+        ]);
+
         $this->logger->info('Dossier state changed', [
             'dossier' => $dossier->getId(),
-            'oldState' => $dossier->getStatus(),
+            'oldState' => $oldState,
             'newState' => $newState,
         ]);
     }
@@ -180,6 +219,8 @@ class DossierService
         }
 
         $this->validateCompletion($dossier);
+
+        $this->historyService->addDossierEntry($dossier, 'dossier_update_decision', []);
 
         $this->messageBus->dispatch(
             IngestDecisionMessage::forDossier($dossier)
@@ -285,6 +326,8 @@ class DossierService
         $this->doctrine->persist($run);
         $this->doctrine->flush();
 
+        $this->historyService->addDossierEntry($dossier, 'dossier_update_inventory', []);
+
         $this->messageBus->dispatch(
             new InventoryProcessRunMessage($run->getId())
         );
@@ -354,6 +397,7 @@ class DossierService
 
     public function updateDetails(Dossier $dossier): void
     {
+        $this->updateHistory($dossier);
         $this->persist($dossier);
     }
 
@@ -368,6 +412,11 @@ class DossierService
 
     public function withdrawAllDocuments(Dossier $dossier, WithdrawReason $reason, string $explanation): void
     {
+        $this->historyService->addDossierEntry($dossier, 'dossier_withdraw_all', [
+            'reason' => $reason->value,
+            'explanation' => $explanation,
+        ]);
+
         foreach ($dossier->getDocuments() as $document) {
             $documentStatus = new DocumentWorkflowStatus($document);
             if ($documentStatus->canWithdraw()) {

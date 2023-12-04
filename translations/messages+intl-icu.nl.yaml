@@ -5,11 +5,10 @@ Department: Bestuursorgaan
 "Filters": "Filters"
 "Close Filters": "Sluit Filters"
 Decision files: Besluitdossiers
-Departments and government officials: Bestuursorganen en bewindspersonen
+Departments: Bestuursorganen
 Access control: Toegangsbeheer
 Subject: Onderwerp
 Period: Periode
-Minister: Bewindspersoon
 "Decision made": "Soort besluit"
 "To all categories": "Naar alle categorieën"
 "Recent decisions": "Recente besluiten"
@@ -304,8 +303,6 @@ Responsible(s): Verantwoordelijk(en)
 "Document has been removed": "Document is verwijderd"
 "Document is scheduled for ingestion": "Document is ingepland voor verwerking"
 "Organisation created": "Organisatie aangemaakt"
-"Official created": "Bewindspersoon aangemaakt"
-"Official modified": "Bewindspersoon gewijzigd"
 "Organisation modified": "Organisatie gewijzigd"
 "No documents selected": "Geen documenten geselecteerd"
 "This document is not yet processed. It is not possible to view individual pages, but you can download the complete document.": "Dit document is nog niet geconverteerd in ons systeem. Het is niet mogelijk om individuele pagina's in te zien, maar het is mogelijk om het hele document te downloaden."
@@ -334,9 +331,6 @@ Department management: Alle bestuursorganen
 New department: Nieuw bestuursorgaan aanmaken
 Department modified: Het bestuursorgaan is aangepast
 Department created: Het bestuursorgaan is aangemaakt
-All officials: Alle bewindspersonen
-New official: Nieuw bewindspersoon aanmaken
-Edit official: Bewindspersoon wijzigen
 Edit organisation: Organisatie wijzigen
 Edit department: Bestuursorgaan wijzigen
 Prefix management: Prefix beheer
@@ -426,11 +420,8 @@ disabled: gedeactiveerd
 "Create new prefix": "Nieuwe prefix aanmaken"
 Prefix: Prefix
 "Modify prefix {prefix}": "Wijzig prefix {prefix}"
-"Create new organisation": "Nieuwe organisatie aanmaken"
+"Create new organisation": "Organisatie toevoegen"
 "Create new department": "Nieuw bestuursorgaan aanmaken"
-Official: Bewindspersoon
-"Modify official {name}": "Wijzig bewindspersoon {name}"
-"Create new government official": "Nieuwe bewindspersoon aanmaken"
 "Modify department {name}": "Wijzig bestuursorgaan {name}"
 Last updated: "Laatst bijgewerkt"
 Msg Delivered Rate: "Msg Delivered Rate"
@@ -591,7 +582,7 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Default subject": "Standaard onderwerp"
 "Decision date": "Datum besluit"
 "Description of the decision": "Onderwerp van het besluit"
-'Keep it short and be specific. So do not use unnecessary prepositions, articles and obvious substantive words such as Woo, decision, etc.<ul class="my-4"><li class="bhr-form-help__dont text-sm">Not: Woo decision regarding the discussion between the ministry and a number of hospitals about the initial situation of the number of IC beds available</li><li class="bhr-form-help__do text-sm">Well: Discussion between the ministry and hospitals about the initial situation of the number of IC beds</li></ ul>': 'Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals Woo, besluit etc.<ul class="my-4"><li class="bhr-form-help__dont text-sm">Niet: Woo-besluit aangaande de discussie tussen het ministerie en een aantal ziekenhuizen over de uitgangssituatie van het aantal aanwezige IC-bedden</li><li class="bhr-form-help__do text-sm">Wel: Discussie tussen ministerie en ziekenhuizen over uitgangssituatie aantal IC-bedden</li></ul>'
+'create_dossier_decision_help': 'Houd het kort (maar minimaal 2 karakters) en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals Woo, besluit etc.<ul class="my-4"><li class="bhr-form-help__dont text-sm">Niet: Woo-besluit aangaande de discussie tussen het ministerie en een aantal ziekenhuizen over de uitgangssituatie van het aantal aanwezige IC-bedden</li><li class="bhr-form-help__do text-sm">Wel: Discussie tussen ministerie en ziekenhuizen over uitgangssituatie aantal IC-bedden</li></ul>'
 "Choose the category under which this decision falls. The chosen topic will also be linked to all documents in this decision.": "Kies de categorie waaronder dit besluit valt. Het gekozen onderwerp wordt ook gekoppeld aan alle documenten in dit besluit."
 "Choose the type of decision": "Kies het type besluit"
 "On to conclusion": "Verder naar besluit"
@@ -659,8 +650,8 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "New phone or authenticator app?": "Nieuwe telefoon of authenticator app?"
 "Reset the two factor code. You will receive new login instructions that allow the user to reset the two-factor authenticator.": "Reset de twee factor code. Je krijgt nieuwe inloginstructies waarmee de gebruiker de twee factor authenticator opnieuw kan instellen."
 "Short name": "Afkorting"
-"Name of the department": "Naam van het bestuursorgaan"
-"Short name of the department": "Afkorting van het bestuursorgaan"
+"Name of the department": "Naam van het bestuursorgaan (minimaal 2 karakters)"
+"Short name of the department": "Afkorting van het bestuursorgaan (minimaal 2 en maximaal 10 karakters)"
 "Users identify themselves with their email address. We do not use the email address to provide passwords or other login information.": "Gebruikers identificeren zich met hun e-mailadres. We gebruiken het e-mailadres niet voor het verstrekken van wachtwoorden of andere login-gegevens."
 "Deactivate account": "Account deactiveren"
 "Activate account": "Account activeren"
@@ -714,10 +705,12 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
     =1{# document met zaaknummer {casenumber} in <em>{dossierTitle}</em>}
     other{# documenten met zaaknummer {casenumber} in <em>{dossierTitle}</em>}
   }
+"Download and browse selected documents": "Download en doorzoek geselecteerde documenten"
+"Filter documents. By changing the value this page will refresh and show the data for the selected value.": "Filter de documenten. Bij het veranderen van de selectie wordt deze pagina herladen en worden de gegevens voor de geselecteerde waarde getoond."
 "Download the inventory for casenumber {casenumber}": "Download de inventarislijst zaaknummer {casenumber}"
 "filename-decision-{dossierNr}": "besluit-{dossierNr}"
 "filename-inquiry-{caseNr}": "zaaknummer-{caseNr}"
-"Separate multiple case numbers with commas": "Scheid meerdere zaaknummers met komma's"
+"Separate multiple case numbers with commas": "Scheid meerdere zaaknummers met komma's, bijvoorbeeld 100-2465, 102-2384"
 "Nothing chosen yet": "Nog niets gekozen"
 "Published decisions": "Gepubliceerde besluiten"
 "Document {documentNr} does not exist": "Documentnummer {documentNr} bestaat niet"
@@ -752,7 +745,40 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Resetting the two factor code means that we remove the old two factor code from our system forever. If you request a new two-factor code, make sure you keep it for yourself in a safe manner. If you click 'Yes' you will receive the new two factor code.": "Resetten van de twee factor code betekent dat we de oude twee factor code voor altijd verwijderen uit ons systeem. Als je een nieuwe twee factor code aanvraagt zorg dan dat je deze op een veilige manier voor jezelf bewaart. Als je op 'Ja' klikt zal je de nieuwe twee factor code ontvangen."
 'Yes, reset the password': 'Ja, reset het wachtwoord'
 'Yes, reset the two factor code': 'Ja, reset de twee factor code'
-'Departments': 'Bestuursorganen'
 'At this moment no documents are available for the inquiry with casenumber {casenumber}': 'Er zijn op dit moment geen documenten beschikbaar voor het verzoek met zaaknummer {casenumber}'
 'On {dates} new dossiers will be available on this page': 'Op {dates} komt op deze pagina een nieuw (deel)besluit beschikbaar.'
 'and on': 'en op'
+'Organisation management': 'Organisaties beheren'
+
+'History': 'Geschiedenis'
+'history': 'geschiedenis'
+
+history.dossier_updated.title: 'Besluit bijgewerkt'
+history.dossier_updated.description: 'Dit besluit is bijgewerkt. De volgende gegevens zijn aangepast: {changes}'
+history.dossier_created.title: 'Besluit aangemaakt'
+history.dossier_created.description: 'Dit besluit is aangemaakt op het platform'
+history.dossier_published.title: 'Besluit gepubliceerd'
+history.dossier_published.description: 'Dit besluit is gepubliceerd op het platform'
+history.dossier_removed.title: 'Besluit is verwijderd'
+history.dossier_removed.description: 'Dit besluit is verwijderd van het platform'
+history.dossier_state_changed.title: 'Besluit status aangepast'
+history.dossier_state_changed.description: 'Besluit status is aangepast van {old} naar {new}'
+history.dossier_update_decision.title: 'Besluitdocument is aangepast'
+history.dossier_update_decision.description: 'Het besluitdocument is aangepast'
+history.dossier_update_inventory.title: 'Besluit inventarislijst is aangepast'
+history.dossier_update_inventory.description: 'De inventarislijst van dit besluit is aangepast'
+history.inquiry_added.title: 'Zaaknummer toegevoegd'
+history.inquiry_added.description: 'Het volgende zaaknummer is toegevoegd aan dit besluit: {casenr}'
+history.inquiry_removed.title: 'Zaaknummer verwijderd'
+history.inquiry_removed.description: 'Het volgende zaaknummer is verwijderd van dit besluit: {casenr}'
+history.dossier_withdraw_all.title: 'Alle documenten binnen dit besluit zijn ingetrokken'
+history.dossier_withdraw_all.description: 'Rede van intrekking: {explanation}'
+history.document_uploaded.title: 'Document is geupload'
+history.document_uploaded.description: 'Document {document} is geupload op het platform'
+history.document_withdraw.title: 'Dit document is ingetrokken'
+history.document_withdraw.description: 'Reden van intrekking: {explanation}'
+history.document_removed.title: 'Dit document is verwijderd'
+history.document_removed.description: 'Dit document is permanent verwijderd van het platform'
+history.document_replaced.title: 'Dit document is vervangen'
+history.document_replaced.description: 'Dit document is vervangen voor een ander document. Dit kan gebeuren indien er persoonsgegevens of andere gevoelige informatie in het document stond.'
+Manage organisations: 'Organisaties beheren'

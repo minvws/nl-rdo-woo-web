@@ -60,13 +60,6 @@ class FacetMappingService
                 aggregationStrategy: new NestedTermsAggregationStrategy('dossiers'),
             ),
             new FacetDefinition(
-                key: FacetKey::OFFICIAL,
-                path: 'government_officials.name',
-                queryParam: 'off',
-                filter: new DossierAndNestedDossierFilter(new OrTermFilter()),
-                aggregationStrategy: new NestedTermsAggregationStrategy('dossiers'),
-            ),
-            new FacetDefinition(
                 key: FacetKey::PERIOD,
                 path: 'date_period',
                 queryParam: 'prd',
