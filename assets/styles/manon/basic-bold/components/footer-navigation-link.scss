@@ -1,0 +1,19 @@
+/* Footer navigation link styling */
+
+:root {
+  --footer-navigation-link-text-color: #fff;
+  --footer-navigation-link-hover-text-color: var(
+    --footer-navigation-link-text-color
+  );
+  --footer-navigation-link-focus-text-color: var(
+    --footer-navigation-link-text-color
+  );
+
+  /* Visited */
+  --footer-navigation-link-visited-text-color: var(
+    --footer-navigation-link-text-color
+  );
+  --footer-navigation-link-visited-hover-text-color: var(
+    --footer-navigation-link-text-color
+  );
+}

@@ -26,6 +26,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * This class handles Document entity management. Not to be confused with 'ES documents' or 'upload document' (files)!
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
 class DocumentService
 {
@@ -39,6 +40,7 @@ class DocumentService
         private readonly ElasticService $elasticService,
         private readonly MessageBusInterface $messageBus,
         private readonly FileProcessService $fileProcessService,
+        private readonly HistoryService $historyService,
     ) {
     }
 
@@ -66,6 +68,11 @@ class DocumentService
             )
         );
 
+        $this->historyService->addDocumentEntry($document, 'document_withdraw', [
+            'reason' => $reason->value,
+            'explanation' => $explanation,
+        ]);
+
         foreach ($document->getDossiers() as $dossier) {
             $this->messageBus->dispatch(
                 UpdateDossierArchivesMessage::forDossier($dossier)
@@ -80,6 +87,8 @@ class DocumentService
             $dossier->removeDocument($document);
             $this->doctrine->persist($dossier);
         }
+
+        $this->historyService->addDocumentEntry($document, 'document_removed', []);
 
         // In any case: clean up orphaned documents completely, otherwise update ES
         if ($document->getDossiers()->count() === 0) {
@@ -130,6 +139,8 @@ class DocumentService
         if ($dossier->getId() === null) {
             throw new \RuntimeException('Cannot replace document for dossier without an ID');
         }
+
+        $this->historyService->addDocumentEntry($document, 'document_replaced', []);
 
         $filename = $uploadedFile->getClientOriginalName();
         try {

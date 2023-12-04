@@ -1,0 +1,44 @@
+/* Theme spacing */
+
+:root {
+  --spacing-xxxl: 5rem;
+  --spacing-xxl: 4rem;
+  --spacing-xl: 3rem;
+  --spacing-l: 2rem;
+  --spacing-m: 1.5rem;
+  --spacing-s: 1rem;
+  --spacing-xs: 0.5rem;
+  --spacing-xxs: 0.25rem;
+}
+
+.spacing-xxxl {
+  gap: var(--spacing-xxxl);
+}
+
+.spacing-xxl {
+  gap: var(--spacing-xxl);
+}
+
+.spacing-xl {
+  gap: var(--spacing-xl);
+}
+
+.spacing-l {
+  gap: var(--spacing-l);
+}
+
+.spacing-m {
+  gap: var(--spacing-m);
+}
+
+.spacing-s {
+  gap: var(--spacing-s);
+}
+
+.spacing-xs {
+  gap: var(--spacing-xs);
+}
+
+.spacing-xxs {
+  gap: var(--spacing-xxs);
+}

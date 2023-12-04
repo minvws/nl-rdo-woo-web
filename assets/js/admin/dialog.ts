@@ -1,5 +1,6 @@
 export const toggleDialog = () => {
   let abortController: AbortController;
+  let activeElement: HTMLElement | null;
 
   const initialize = () => {
     cleanup();
@@ -20,16 +21,19 @@ export const toggleDialog = () => {
         }
 
         if (dialogAction === 'open') {
+          activeElement = document.activeElement as HTMLElement;
           dialogTarget.showModal();
           return;
         }
 
         dialogTarget.close();
+        activeElement?.focus();
       }, { signal: abortController.signal! });
     });
   };
 
   const cleanup = () => {
+    activeElement = null;
     if (abortController) {
       abortController.abort();
     }

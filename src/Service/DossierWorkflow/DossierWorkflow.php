@@ -7,6 +7,7 @@ namespace App\Service\DossierWorkflow;
 use App\Entity\Dossier;
 use App\Entity\WithdrawReason;
 use App\Service\DossierService;
+use App\Service\HistoryService;
 use App\Service\Inventory\InventoryService;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -21,6 +22,7 @@ class DossierWorkflow
         private readonly DossierService $dossierService,
         private readonly InventoryService $inventoryService,
         private readonly WorkflowStatusFactory $statusFactory,
+        private readonly HistoryService $historyService,
     ) {
     }
 
@@ -36,6 +38,7 @@ class DossierWorkflow
         $dossier->setSummary(''); // TODO make nullable, this will not be set before step 2
 
         $this->dossierService->updateDetails($dossier);
+        $this->historyService->addDossierEntry($dossier, 'dossier_created', []);
     }
 
     public function updateDetails(Dossier $dossier): void

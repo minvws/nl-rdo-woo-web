@@ -11,6 +11,7 @@ use App\Message\IngestMetadataOnlyMessage;
 use App\Service\DocumentService;
 use App\Service\Elastic\ElasticService;
 use App\Service\FileProcessService;
+use App\Service\HistoryService;
 use App\Service\Ingest\IngestLogger;
 use App\Service\Ingest\IngestService;
 use App\Service\Storage\DocumentStorageService;
@@ -36,6 +37,7 @@ class DocumentServiceTest extends MockeryTestCase
     private ElasticService|MockInterface $elasticService;
     private MessageBusInterface|MockInterface $messageBus;
     private FileProcessService|MockInterface $fileProcessService;
+    private HistoryService|MockInterface $historyService;
 
     public function setUp(): void
     {
@@ -49,8 +51,11 @@ class DocumentServiceTest extends MockeryTestCase
         $this->elasticService = \Mockery::mock(ElasticService::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->fileProcessService = \Mockery::mock(FileProcessService::class);
+        $this->historyService = \Mockery::mock(HistoryService::class);
 
         $this->translator->shouldReceive('trans')->zeroOrMoreTimes();
+
+        $this->historyService->shouldReceive('addDocumentEntry')->zeroOrMoreTimes();
 
         $this->documentService = new DocumentService(
             $this->entityManager,
@@ -62,6 +67,7 @@ class DocumentServiceTest extends MockeryTestCase
             $this->elasticService,
             $this->messageBus,
             $this->fileProcessService,
+            $this->historyService
         );
 
         parent::setUp();

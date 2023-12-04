@@ -13,7 +13,6 @@ class DetailsStep implements StepInterface
     {
         return ! empty($dossier->getTitle())
             && ! $dossier->getDepartments()->isEmpty()
-            && ! $dossier->getGovernmentOfficials()->isEmpty()
             && ! empty($dossier->getDocumentPrefix())
             && ! empty($dossier->getPublicationReason());
     }

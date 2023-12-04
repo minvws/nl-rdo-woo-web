@@ -36,7 +36,10 @@ class PublishType extends AbstractType
                 'data' => $dossier->getPreviewDate() ?? new \DateTimeImmutable(),
                 'constraints' => [
                     new NotBlank(),
-                    new GreaterThanOrEqual(new \DateTimeImmutable('today midnight')),
+                    new GreaterThanOrEqual(
+                        new \DateTimeImmutable('today midnight'),
+                        message: 'De datum van feitelijke verstrekking moet gelijk of later zijn dan vandaag'
+                    ),
                 ],
             ]);
             $builder->add('publication_date', DateType::class, [
@@ -50,6 +53,7 @@ class PublishType extends AbstractType
                     new NotBlank(),
                     new GreaterThanOrEqual([
                         'propertyPath' => 'parent.all[preview_date].data',
+                        'message' => 'De datum van openbare publicatie moet gelijk of later zijn dan de datum van feitelijke verstrekking',
                     ]),
                 ],
             ]);
@@ -61,7 +65,10 @@ class PublishType extends AbstractType
                 'input' => 'datetime_immutable',
                 'constraints' => [
                     new NotBlank(),
-                    new GreaterThanOrEqual(new \DateTimeImmutable('today midnight')),
+                    new GreaterThanOrEqual(
+                        new \DateTimeImmutable('today midnight'),
+                        message: 'De datum van feitelijke verstrekking moet gelijk of later zijn dan vandaag'
+                    ),
                 ],
             ]);
         }

@@ -22,4 +22,15 @@ class OrganisationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Organisation::class);
     }
+
+    /**
+     * @return Organisation[]
+     */
+    public function getAllSortedByName(): array
+    {
+        $qb = $this->createQueryBuilder('o')
+            ->orderBy('o.name', 'asc');
+
+        return $qb->getQuery()->getResult();
+    }
 }

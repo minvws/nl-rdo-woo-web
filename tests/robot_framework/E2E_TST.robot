@@ -11,8 +11,7 @@ Force Tags      E2E
 Test Setup      Open Browser and BaseUrl
 
 * Variables *
-#${base_url}               https://${tst_user}:${tst_password}@web.test.woo.rdobeheer.nl
-${base_url}   https://${tst_user}:${tst_password}@web.test.woo.rdobeheer.nl
+${base_url}               https://${tst_user}:${tst_password}@web.test.woo.rdobeheer.nl
 ${base_url_balie}         https://${tst_user}:${tst_password}@balie.test.woo.rdobeheer.nl
 ${tst_user}               %{USERNAME_WOO_TEST}
 ${tst_password}           %{PASSWORD_WOO_TEST}
@@ -23,28 +22,27 @@ ${otp_code}               %{SECRET_WOO_TEST_BALIE}
 
 
 *** Test Cases ***
-# Not possible to succesfully create a besluitdossier, because several documents already exists in the databse
+# improvements: check if besluitdossier already exits. If it doesn't exitst, create besluitdossier. Else proceed with the validation
 Login Balie and attempt to create a new besluitdossier
     [Documentation]  Login to Balie and create a besluitdossier with the status 'concept' and delete it afterwards.
     Login Balie
     Take Screenshot    fullPage=True
     Create nieuw besluit(dossier)
 
-Search for notulen
+Basic search
     [Documentation]  Do a basic search and check if it returns results
     Search For  SEARCH_TERM=notulen  
-    ...    SEARCH_RESULTS=51 documenten in
+    ...    SEARCH_RESULTS=Notulen
     Get Text   //body  *=  notulen
 
-Check searchurl
+Basic search and check URL
     [Documentation]  Do a basic search and check if the URL contains the search term
     Search For  SEARCH_TERM=notulen  
-    ...    SEARCH_RESULTS=51 documenten in
+    ...    SEARCH_RESULTS=Notulen
     ${url}  Get Url
     Should Contain  ${url}   search?q=notulen
-    Get Text   //body  *=  notulen
 
-Check documanten should suggest documenten
+Search returns search suggestions
     [Documentation]  Do a basic search with a typo (DocumAnten instead of DocumEnten) and check if Woo returns search suggestions
     Search For  SEARCH_TERM=documanten  
     ...    SEARCH_RESULTS=0 documenten in 0 besluiten

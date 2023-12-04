@@ -14,18 +14,24 @@
             <twig:Admin:LeftAndRight class="pt-1">
                 {% if dossier.rawInventory is not null  %}
                 <a
-                    class="bhr-button bhr-button--primary bhr-button--with-icon-right mr-6"
+                    class="bhr-button bhr-button--primary bhr-button--with-icon-right mr-2"
                     href="{{ path('app_admin_dossier_inventory_download', {dossierId: dossier.dossierNr}) }}"
                 >
-                    Inventarislijst downloaden
+                    Download inventarislijst
 
                     <twig:Admin:Icon class="bhr-button__icon bhr-button__icon--right right-4 -mt-0.5" color="fill-white" size="16" name="download" />
                 </a>
                 {% endif %}
 
-                <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_dossier_replace_inventory', { dossierId: dossier.dossierNr }) }}">
-                    Inventarislijst vervangen
+                <a class="bhr-button bhr-button--secondary mr-2" href="{{ path('app_admin_dossier_replace_inventory', { dossierId: dossier.dossierNr }) }}">
+                    Vervang inventarislijst
                 </a>
+
+                {% if dossier.needsInventoryAndDocuments and not dossier.uploadStatus.isComplete %}
+                <button type="button" class="bhr-button bhr-button--secondary js-visibility-toggler" data-selector="edit-documents">
+                    Vervang bestanden...
+                </button>
+                {% endif %}
 
                 <twig:block name="right">
                     <twig:Admin:Search:SearchPreviewsForm
@@ -38,15 +44,19 @@
             {% if dossier.needsInventoryAndDocuments %}
                 {% set uploadStatus = dossier.uploadStatus %}
                 {% if not uploadStatus.isComplete %}
-                    <twig:Admin:DossierDocuments
-                        dossier="{{ dossier }}"
-                        uploadStatus="{{ uploadStatus }}"
-                    />
+                    <div class="flex" id="edit-documents">
+                        <div class="grow">
+                            <twig:Admin:DossierDocuments
+                                dossier="{{ dossier }}"
+                                uploadStatus="{{ uploadStatus }}"
+                            />
+                        </div>
+                    </div>
                 {% endif %}
 
                 {% if hasDocuments %}
                     <table class="bhr-table" id="resultaten">
-                        <caption class="sr-only">Kolomkoppen met links zijn sorteerbaar</caption>
+                        <caption class="sr-only">Documenten bij dit besluit. Kolomkoppen met links zijn sorteerbaar.</caption>
                         <thead>
                             <tr>
                                 {{ knp_pagination_sortable(pagination, 'Document number' | trans, 'doc.documentNr', { thClassName: 'w-40' }, {}, 'pagination/sort.admin.html.twig') }}

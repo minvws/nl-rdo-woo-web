@@ -8,7 +8,6 @@ use App\Entity\Department;
 use App\Entity\Document;
 use App\Entity\DocumentPrefix;
 use App\Entity\Dossier;
-use App\Entity\GovernmentOfficial;
 use App\Entity\InventoryProcessRun;
 use App\Entity\Judgement;
 use App\Entity\Organisation;
@@ -86,7 +85,6 @@ class FixtureService
         $dossier->setPublicationReason($data['publication_reason']);
 
         $this->mapDepartmentsToDossier($data, $dossier);
-        $this->mapOfficialsToDossier($data, $dossier);
 
         $this->doctrine->persist($dossier);
         $this->doctrine->flush();
@@ -222,22 +220,6 @@ class FixtureService
                 throw new \RuntimeException("Department $departmentName does not exist");
             }
             $dossier->addDepartment($department);
-        }
-    }
-
-    private function mapOfficialsToDossier(array $data, Dossier $dossier): void
-    {
-        if (! is_array($data['official'])) {
-            $data['official'] = [$data['official']];
-        }
-
-        foreach ($data['official'] as $officialName) {
-            $official = $this->doctrine->getRepository(GovernmentOfficial::class)->findOneBy(['name' => $officialName]);
-            if (! $official) {
-                throw new \RuntimeException("Official $officialName does not exist");
-            }
-
-            $dossier->addGovernmentOfficial($official);
         }
     }
 }

@@ -7,7 +7,6 @@ namespace App\Service;
 use App\Entity\Department;
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Entity\GovernmentOfficial;
 use App\Entity\Judgement;
 use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,12 +31,8 @@ class FakeDataGenerator
     public function generateDossier(string $dossierNr): Dossier
     {
         $deps = $this->doctrine->getRepository(Department::class)->findAll();
-        $officials = $this->doctrine->getRepository(GovernmentOfficial::class)->findAll();
-
         shuffle($deps);
         $deps = array_slice($deps, 0, 2);
-        shuffle($officials);
-        $officials = array_slice($officials, 0, 2);
 
         /** @var string $sentences */
         $sentences = $this->faker->sentences(4, true);
@@ -74,9 +69,6 @@ class FakeDataGenerator
         $dossier->setStatus(Dossier::STATUS_PUBLISHED);
         foreach ($deps as $dep) {
             $dossier->addDepartment($dep);
-        }
-        foreach ($officials as $official) {
-            $dossier->addGovernmentOfficial($official);
         }
 
         $a = new \DateTimeImmutable('01-' . random_int(1, 12) . '-' . random_int(2010, 2023));

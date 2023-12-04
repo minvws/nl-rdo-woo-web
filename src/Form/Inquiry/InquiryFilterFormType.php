@@ -61,8 +61,20 @@ class InquiryFilterFormType extends AbstractType
             $choices[$label] = $row['dossierNr'];
         }
 
+        // Add 'autofocus' attribute to the choice for the active filter, but only if it was actively chosen (not using the default)
+        $choiceAttributes = [];
+        if (! empty($options['filterParam'])) {
+            foreach ($choices as $key => $choice) {
+                if ($choice === $options['filterParam']) {
+                    $choiceAttributes[$key] = ['autofocus' => true];
+                    break;
+                }
+            }
+        }
+
         $builder
             ->add('filter', ChoiceType::class, [
+                'label' => $submitLabel,
                 'multiple' => false,
                 'expanded' => true,
                 'required' => true,
@@ -73,6 +85,7 @@ class InquiryFilterFormType extends AbstractType
                     'class' => 'sr-only',
                 ],
                 'label_html' => true,
+                'choice_attr' => $choiceAttributes,
             ])
             ->add('submit', SubmitType::class, [
                 'label' => $submitLabel,
@@ -87,6 +100,7 @@ class InquiryFilterFormType extends AbstractType
         $resolver->setDefaults([
             'csrf_protection' => false,
             'method' => 'GET',
+            'filterParam' => '',
         ]);
     }
 

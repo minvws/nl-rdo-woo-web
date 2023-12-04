@@ -14,7 +14,6 @@
     </fieldset>
 
 {#    {{ macro.facet_select('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}#}
-    {# {{ macro.facet_select('Official' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::OFFICIAL').value, result) }} #}
     {{ macro.facet_select('Subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
     {{ macro.facet_select('Source document type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
     {{ macro.facet_select('Judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}

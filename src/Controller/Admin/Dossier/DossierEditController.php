@@ -6,7 +6,6 @@ namespace App\Controller\Admin\Dossier;
 
 use App\Attribute\AuthMatrix;
 use App\Entity\Dossier;
-use App\Entity\User;
 use App\Entity\WithdrawReason;
 use App\Form\Document\WithdrawFormType;
 use App\Form\Dossier\DecisionType;
@@ -53,9 +52,7 @@ class DossierEditController extends AbstractController
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $workflowStatus = $this->workflow->getStatus($dossier, StepName::DETAILS);
         $currentStep = $workflowStatus->getCurrentStep();
@@ -98,9 +95,7 @@ class DossierEditController extends AbstractController
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $workflowStatus = $this->workflow->getStatus($dossier, StepName::DECISION);
         $currentStep = $workflowStatus->getCurrentStep();
@@ -139,9 +134,7 @@ class DossierEditController extends AbstractController
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $workflowStatus = $this->workflow->getStatus($dossier, StepName::DOCUMENTS);
         $currentStep = $workflowStatus->getCurrentStep();
@@ -180,9 +173,7 @@ class DossierEditController extends AbstractController
     public function inventoryProcess(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $inventoryForm = $this->createForm(InventoryType::class);
 
@@ -218,9 +209,7 @@ class DossierEditController extends AbstractController
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $workflowStatus = $this->workflow->getStatus($dossier, StepName::DOCUMENTS);
         $currentStep = $workflowStatus->getCurrentStep();
@@ -277,9 +266,7 @@ class DossierEditController extends AbstractController
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $workflowStatus = $this->workflow->getStatus($dossier, StepName::PUBLICATION);
         $currentStep = $workflowStatus->getCurrentStep();
@@ -313,9 +300,7 @@ class DossierEditController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $searchTerm = urldecode(strval($request->getPayload()->get('q', '')));
 
@@ -344,9 +329,7 @@ class DossierEditController extends AbstractController
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $form = $this->createForm(WithdrawFormType::class);
         $form->handleRequest($request);
@@ -387,9 +370,7 @@ class DossierEditController extends AbstractController
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $success = false;
         $form = $this->createForm(DeleteFormType::class);

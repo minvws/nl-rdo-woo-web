@@ -7,11 +7,14 @@ namespace App\Twig\Runtime;
 use App\Citation;
 use App\Entity\Document;
 use App\Entity\Dossier;
+use App\Entity\History;
 use App\Repository\DocumentRepository;
 use App\Service\DateRangeConverter;
 use App\Service\DocumentUploadQueue;
+use App\Service\HistoryService;
 use App\Service\Search\Query\Facet\FacetMappingService;
 use App\Service\Search\Query\QueryGenerator;
+use App\Service\Security\OrganisationSwitcher;
 use App\Service\Storage\ThumbnailStorageService;
 use App\SourceType;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,26 +29,17 @@ use Twig\Extension\RuntimeExtensionInterface;
  */
 class WooExtensionRuntime implements RuntimeExtensionInterface
 {
-    protected RequestStack $requestStack;
-    protected ThumbnailStorageService $storageService;
-    protected DocumentRepository $documentRepository;
-    protected UrlGeneratorInterface $urlGenerator;
-    protected TranslatorInterface $translator;
-
     public function __construct(
-        RequestStack $requestStack,
-        ThumbnailStorageService $storageService,
-        TranslatorInterface $translator,
-        DocumentRepository $documentRepository,
-        UrlGeneratorInterface $urlGenerator,
+        private readonly RequestStack $requestStack,
+        private readonly ThumbnailStorageService $storageService,
+        private readonly TranslatorInterface $translator,
+        private readonly DocumentRepository $documentRepository,
+        private readonly UrlGeneratorInterface $urlGenerator,
         private readonly FacetMappingService $facetMapping,
         private readonly DocumentUploadQueue $uploadQueue,
+        private readonly OrganisationSwitcher $organisationSwitcher,
+        private readonly HistoryService $historyService,
     ) {
-        $this->requestStack = $requestStack;
-        $this->storageService = $storageService;
-        $this->translator = $translator;
-        $this->documentRepository = $documentRepository;
-        $this->urlGenerator = $urlGenerator;
     }
 
     /**
@@ -292,5 +286,18 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
             ['<strong>', '</strong>'],
             $input,
         );
+    }
+
+    public function getOrganisationSwitcher(): OrganisationSwitcher
+    {
+        return $this->organisationSwitcher;
+    }
+
+    /**
+     * @return History[]|array
+     */
+    public function getHistory(string $type, string $identifier): array
+    {
+        return $this->historyService->getHistory($type, $identifier);
     }
 }

@@ -7,7 +7,6 @@ namespace App\Controller\Admin\Dossier;
 use App\Attribute\AuthMatrix;
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Entity\User;
 use App\Entity\WithdrawReason;
 use App\Exception\DocumentReplaceException;
 use App\Form\Document\ReplaceFormType;
@@ -43,9 +42,7 @@ class DocumentActionController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
         #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(dossierId,documentId)')] Document $document,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $breadcrumbs->addRouteItem($dossier->getDossierNr(), 'app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
         $breadcrumbs->addRouteItem('Documenten', 'app_admin_documents', ['dossierId' => $dossier->getDossierNr()]);
@@ -96,9 +93,7 @@ class DocumentActionController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
         #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(dossierId,documentId)')] Document $document,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $status = $this->workflow->getStatus($document);
         if (! $status->canReplace()) {

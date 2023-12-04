@@ -1,0 +1,10 @@
+/* Button base styling */
+
+:root {
+  --button-base-border-radius: 5rem;
+  --button-base-background-color: #c4d8c4;
+
+  /* Hover */
+  --button-base-hover-background-color: #d5eed5;
+  --button-base-hover-border-color: var(--button-base-hover-background-color);
+}

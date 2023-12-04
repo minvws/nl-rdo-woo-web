@@ -1,0 +1,14 @@
+/* Side menu */
+
+:root {
+  /* Nav */
+  --sidemenu-nav-border-width: 0;
+  --sidemenu-nav-padding-top: 0;
+
+  /* List */
+  --sidemenu-ul-padding: 0;
+
+  /* List item */
+  --sidemenu-list-item-text-color: var(--application-base-text-color);
+  --sidemenu-list-item-list-style: none;
+}

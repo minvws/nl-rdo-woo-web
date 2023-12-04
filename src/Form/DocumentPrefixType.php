@@ -37,7 +37,7 @@ class DocumentPrefixType extends AbstractType implements DataTransformerInterfac
                     new Length(['min' => 5, 'max' => 30]),
                     new Regex('/^[0-9a-zA-Z-]+$/', 'Prefix mag alleen bestaan uit letters, cijfers en streepjes'),
                 ],
-                'help' => 'Prefix',
+                'help' => 'Minaal 5 en maximaal 30 karakters. Mag alleen bestaan uit letters, cijfers en streepjes',
             ])
             ->add('organisation', EntityType::class, [
                 'label' => 'Organisatie',
@@ -55,7 +55,7 @@ class DocumentPrefixType extends AbstractType implements DataTransformerInterfac
                     new NotBlank(),
                     new Length(['min' => 2, 'max' => 255]),
                 ],
-                'help' => 'Beknopte omschrijving voor deze prefix',
+                'help' => 'Beknopte omschrijving voor deze prefix. Minimaal 2 en maximaal 255 karakters.',
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Opslaan',

@@ -10,8 +10,8 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 class Alert
 {
     public ?string $class = '';
+    public ?string $type = '';
     public bool $hasRole = false;
-    public string $type;
 
     public function mount(string $type): void
     {

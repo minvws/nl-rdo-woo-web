@@ -7,7 +7,6 @@ namespace App\Controller\Admin\Dossier;
 use App\Attribute\AuthMatrix;
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Entity\User;
 use App\Service\DocumentWorkflow\DocumentWorkflow;
 use App\Service\FileUploader;
 use App\Service\Security\Authorization\AuthorizationMatrix;
@@ -39,9 +38,7 @@ class DocumentController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
         #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(dossierId,documentId)')] Document $document,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         $breadcrumbs->addRouteItem($dossier->getTitle() ?? '', 'app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
         $breadcrumbs->addRouteItem('workflow_step_documents', 'app_admin_documents', ['dossierId' => $dossier->getDossierNr()]);
@@ -81,9 +78,7 @@ class DocumentController extends AbstractController
         Request $request,
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         try {
             $completed = $this->fileUploader->handleUpload($request, $dossier);

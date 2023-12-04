@@ -27,7 +27,6 @@ class InquiryLinkDossierFormType extends AbstractType
                 'label' => 'Zaaknummer(s)',
                 'attr' => [
                     'class' => 'w-2/3',
-                    'placeholder' => '100-2465, 102-2384',
                 ],
                 'help' => 'Separate multiple case numbers with commas',
                 'required' => true,

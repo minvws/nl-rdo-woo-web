@@ -38,12 +38,12 @@ class UserInfoFormType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Full name',
+                'label' => 'Voor- en achternaam',
                 'empty_data' => '',
                 'attr' => [
                     'help' => 'The name of this user',
                 ],
-                'help' => 'For example John Doe',
+                'help' => 'Minimaal 1 en maximaal 255 karakters. Bijvoorbeeld John Doe.',
                 'constraints' => [
                     new Length(['min' => 1, 'max' => 255]),
                 ],
@@ -56,7 +56,7 @@ class UserInfoFormType extends AbstractType
             ])
             ->add('email', EmailType::class, [
                 'disabled' => true,
-                'label' => 'E-mail address', // @codingStandardsIgnoreStart
+                'label' => 'E-mailadres', // @codingStandardsIgnoreStart
                 'help' => 'Users identify themselves with their email address. We do not use the email address to provide passwords or other login information.', // @codingStandardsIgnoreEnd
                 'help_attr' => [
                     'class' => 'bhr-form-help text-sm pb-2',

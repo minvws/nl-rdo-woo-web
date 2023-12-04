@@ -6,13 +6,10 @@ namespace App\Form\Dossier;
 
 use App\Entity\Department;
 use App\Entity\Dossier;
-use App\Entity\GovernmentOfficial;
 use App\Entity\User;
-use App\Form\Transformer\EntityToArrayTransformer;
 use App\Form\Transformer\TextToArrayTransformer;
 use App\Form\YearMonthType;
-use App\Roles;
-use Doctrine\ORM\EntityRepository;
+use App\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -24,7 +21,6 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\ReversedTransformer;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -36,7 +32,8 @@ use Symfony\Component\Validator\Constraints\Regex;
 class DetailsType extends AbstractDossierStepType
 {
     public function __construct(
-        private readonly Security $security
+        private readonly Security $security,
+        private readonly AuthorizationMatrix $authMatrix,
     ) {
     }
 
@@ -49,12 +46,20 @@ class DetailsType extends AbstractDossierStepType
         $builder
             ->add('title', TextType::class, [
                 'label' => 'Description of the decision',
-                'required' => true, // @codingStandardsIgnoreStart
-                'help' => 'Keep it short and be specific. So do not use unnecessary prepositions, articles and obvious substantive words such as Woo, decision, etc.<ul class="my-4"><li class="bhr-form-help__dont text-sm">Not: Woo decision regarding the discussion between the ministry and a number of hospitals about the initial situation of the number of IC beds available</li><li class="bhr-form-help__do text-sm">Well: Discussion between the ministry and hospitals about the initial situation of the number of IC beds</li></ ul>', // @codingStandardsIgnoreEnd
+                'required' => true,
+                /*
+                 * The translation below contains the following class names:
+                 * bhr-form-help__do
+                 * bhr-form-help__dont
+                 * my-4
+                 * text-sm
+                 *
+                 * We mention these here so that Tailwind will pick them up.
+                 */
+                'help' => 'create_dossier_decision_help',
                 'help_html' => true,
                 'attr' => [
                     'class' => 'w-full',
-                    'placeholder' => 'Give a name to the decision',
                 ],
                 'empty_data' => '',
                 'constraints' => [
@@ -63,41 +68,31 @@ class DetailsType extends AbstractDossierStepType
                 ],
             ])
             ->add('date_from', YearMonthType::class, [
-                'label' => 'Periode vanaf (optioneel)',
+                'label' => 'Van',
                 'row_attr' => [
                     'data-fieldset' => 'date_from date_to',
+                    'data-legend' => 'Periode waarop verzoek ziet',
+                    'data-required' => false,
                 ],
                 'required' => false,
                 'placeholder' => 'kies beginmaand',
                 'day_mode' => YearMonthType::MODE_FROM,
             ])
             ->add('date_to', YearMonthType::class, [
-                'label' => 'tot en met (optioneel)',
+                'label' => 'tot en met',
                 'required' => false,
                 'placeholder' => 'kies eindmaand',
                 'day_mode' => YearMonthType::MODE_TO,
                 'constraints' => [
                     new GreaterThanOrEqual([
                         'propertyPath' => 'parent.all[date_from].data',
+                        'message' => 'Einddatum dient na begindatum te liggen',
                     ]),
                 ],
             ])
             // Used as a placeholder to make sure the department is at the correct order
             ->add('departments', HiddenType::class, [
                 'mapped' => false,
-            ])
-            ->add('governmentofficials', EntityType::class, [
-                'class' => GovernmentOfficial::class,
-                'label' => 'Bewindspersoon',
-                'required' => true,
-                'multiple' => false,
-                'choice_label' => 'name',
-                'placeholder' => 'Kies een bewindspersoon',
-                'constraints' => [
-                    new All([
-                        'constraints' => [new NotBlank()],
-                    ]),
-                ],
             ])
             ->add('publication_reason', ChoiceType::class, [
                 'label' => 'Choose the type of decision',
@@ -114,7 +109,7 @@ class DetailsType extends AbstractDossierStepType
                 ],
             ])
             ->add('default_subjects', ChoiceType::class, [
-                'label' => 'Standaard onderwerp (optioneel)',
+                'label' => 'Standaard onderwerp',
                 'required' => false, // @codingStandardsIgnoreStart
                 'help' => 'Choose the category under which this decision falls. The chosen topic will also be linked to all documents in this decision.', // @codingStandardsIgnoreEnd
                 'choices' => [
@@ -175,12 +170,6 @@ class DetailsType extends AbstractDossierStepType
     {
         // Default subjects is a text field, but holds semicolon separated files
         $builder->get('default_subjects')->addModelTransformer(new ReversedTransformer(new TextToArrayTransformer(';')), forceAppend: true);
-
-        // If we are editing an entity, we need to transform the entity to an array if the choice is not multiple. This is because the dossier
-        // entity always expects an array of entities, even if the choice is not multiple.
-        if ($builder->get('governmentofficials')->getOption('multiple') === false) {
-            $builder->get('governmentofficials')->addModelTransformer(new ReversedTransformer(new EntityToArrayTransformer()), forceAppend: true);
-        }
     }
 
     /**
@@ -195,11 +184,9 @@ class DetailsType extends AbstractDossierStepType
             $builder
                 ->add('dossierNr', TextType::class, [
                     'label' => 'Referentienummer besluit',
-                    'required' => true,
-                    'help' => 'Let op, je kan deze na het opslaan van de basisgegevens niet meer aanpassen.',
-                    'attr' => [
-                        'placeholder' => 'Vul het nummer in',
-                    ],
+                    'required' => true, // @codingStandardsIgnoreStart
+                    'help' => 'Miniaal 3 en maximaal 50 karakters. Gebruik alleen letters, cijfers en verbindingstekens. <strong>Let op</strong>: dit nummer is na het opslaan van de basisgegevens niet meer aan te passen.', // @codingStandardsIgnoreEnd
+                    'help_html' => true,
                     'empty_data' => '',
                     'constraints' => [
                         new NotBlank(),
@@ -283,19 +270,8 @@ class DetailsType extends AbstractDossierStepType
                 ],
             ];
 
-            /** @var User $user */
-            if ($user->hasRole(Roles::ROLE_SUPER_ADMIN)) {
-                $options['query_builder'] = function (EntityRepository $er) {
-                    return $er->createQueryBuilder('d')->select('d')->orderBy('d.name', 'ASC');
-                };
-
-                $form->add('departments', EntityType::class, $options);
-
-                return;
-            }
-
             // If we have more than one entity, we need to use a choice type
-            $departments = [$user->getOrganisation()->getDepartment()];
+            $departments = [$this->authMatrix->getActiveOrganisation()->getDepartment()];
             if (count($departments) > 1) {
                 $options['choices'] = $departments;
                 $form->add('departments', EntityType::class, $options);

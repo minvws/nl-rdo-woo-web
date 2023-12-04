@@ -29,6 +29,7 @@ class OrganisationCreateFormType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Name',
+                'help' => 'Minimaal 3 en maximaal 255 karakters',
                 'constraints' => [
                     new NotBlank(),
                     new Length(['min' => 3, 'max' => 255]),

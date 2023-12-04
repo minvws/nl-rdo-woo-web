@@ -20,15 +20,6 @@
                 <td><a href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a></td>
             </tr>
             {% endif %}
-            {% if dossier.governmentOfficials[0].name is defined %}
-            <tr>
-                <th scope="row">{{ "Responsible" | trans() }}</th>
-                <td>
-                    {# Only display the first entries #}
-                    {{ dossier.departments[0].name }}
-                </td>
-            </tr>
-            {% endif %}
             {% if dossier.summary is defined %}
             <tr>
                 <th scope="row">{{ "Summary of request" | trans() }}</th>

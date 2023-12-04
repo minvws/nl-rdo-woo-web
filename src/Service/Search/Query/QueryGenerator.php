@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Service\Search\Query;
 
 use App\ElasticConfig;
+use App\Service\Elastic\SimpleQueryStringQuery;
 use App\Service\Search\Model\Config;
 use App\Service\Search\Query\Condition\ContentAccessConditions;
 use App\Service\Search\Query\Condition\FacetConditions;
 use App\Service\Search\Query\Condition\SearchTermConditions;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
-use Erichard\ElasticQueryBuilder\Query\QueryStringQuery;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
 
 class QueryGenerator
@@ -138,7 +138,7 @@ class QueryGenerator
 
         // Hightlighting uses a 'clean' query with additional filters like status.
         // This is very important, otherwise filter values like 'document' and statuses will be highlighted in content.
-        $query = new QueryStringQuery(
+        $query = new SimpleQueryStringQuery(
             query: $config->query,
             fields: ['title', 'summary', 'decision_content', 'dossiers.summary', 'dossiers.title', 'pages.content'],
         );

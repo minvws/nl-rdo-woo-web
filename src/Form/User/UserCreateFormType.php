@@ -46,11 +46,11 @@ class UserCreateFormType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'First and last name',
+                'label' => 'Voor- en achternaam',
                 'label_attr' => [
-                    'class' => 'bhr-label text-xl mb-0',
+                    'class' => 'bhr-label mb-0',
                 ],
-                'help' => 'For example John Doe',
+                'help' => 'Minimaal 1 en maximaal 255 karakters. Bijvoorbeeld John Doe.',
                 'empty_data' => '',
                 'constraints' => [
                     new Length(['min' => 1, 'max' => 255]),
@@ -59,7 +59,7 @@ class UserCreateFormType extends AbstractType
             ->add('organisation', EntityType::class, [
                 'label' => 'Organisatie',
                 'label_attr' => [
-                    'class' => 'bhr-label text-xl mb-2',
+                    'class' => 'bhr-label mb-2',
                 ],
                 'class' => Organisation::class,
                 'choice_label' => function (Organisation $organisation) {
@@ -73,8 +73,8 @@ class UserCreateFormType extends AbstractType
             ])
             ->add('roles', HiddenType::class)
             ->add('email', EmailType::class, [
-                'label' => 'E-mail address', // @codingStandardsIgnoreStart
-                'help' => 'Users identify themselves with their email address. We do not use the email address to share password or other login information.', // @codingStandardsIgnoreEnd
+                'label' => 'E-mailadres', // @codingStandardsIgnoreStart
+                'help' => 'Minimaal 4 en maximaal 180 karakters. Gebruikers identificeren zich met hun e-mailadres. We gebruiken het e-mailadres niet voor het delen van wachtwoord of andere login-gegevens.', // @codingStandardsIgnoreEnd
                 'constraints' => [
                     new NotBlank(),
                     new Email(),
@@ -107,9 +107,6 @@ class UserCreateFormType extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'label' => 'Access roles',
-                'label_attr' => [
-                    'class' => 'bhr-label text-xl mb-0',
-                ],
                 'help' => 'Indicate what this user is allowed to do, multiple options are possible',
                 'constraints' => [
                     new NotBlank([

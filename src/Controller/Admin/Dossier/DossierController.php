@@ -7,7 +7,6 @@ namespace App\Controller\Admin\Dossier;
 use App\Attribute\AuthMatrix;
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Entity\User;
 use App\Form\Dossier\SearchFormType;
 use App\Service\DossierWorkflow\DossierWorkflow;
 use App\Service\Security\Authorization\AuthorizationMatrix;
@@ -52,18 +51,11 @@ class DossierController extends AbstractController
         $form = $this->createForm(SearchFormType::class);
         $form->handleRequest($request);
 
-        if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_ORGANISATION_ONLY)) {
-            /** @var User $user */
-            $user = $this->getUser();
-            $prefixes = $user->getOrganisationPrefixes();
+        $organisation = $this->authorizationMatrix->getActiveOrganisation();
 
-            $query = $this->doctrine->getRepository(Dossier::class)->createQueryBuilder('dos');
-            $query->leftJoin('dos.inquiries', 'inq')->addSelect('inq');
-            $query->andWhere('dos.documentPrefix IN (:prefixes)')->setParameter('prefixes', $prefixes);
-        } else {
-            $query = $this->doctrine->getRepository(Dossier::class)->createQueryBuilder('dos');
-            $query->leftJoin('dos.inquiries', 'inq')->addSelect('inq');
-        }
+        $query = $this->doctrine->getRepository(Dossier::class)->createQueryBuilder('dos');
+        $query->leftJoin('dos.inquiries', 'inq')->addSelect('inq');
+        $query->andWhere('dos.documentPrefix IN (:prefixes)')->setParameter('prefixes', $organisation->getPrefixesAsArray());
 
         $statuses = [];
         if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_PUBLISHED_DOSSIERS)) {
@@ -102,12 +94,8 @@ class DossierController extends AbstractController
     {
         $searchTerm = urldecode(strval($request->getPayload()->get('q', '')));
 
-        $prefixes = null;
-        if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_ORGANISATION_ONLY) === true) {
-            /** @var User $user */
-            $user = $this->getUser();
-            $prefixes = $user->getOrganisationPrefixes();
-        }
+        $organisation = $this->authorizationMatrix->getActiveOrganisation();
+        $prefixes = $organisation->getPrefixesAsArray();
 
         $dossiers = $this->doctrine->getRepository(Dossier::class)->findBySearchTerm($searchTerm, 4, $prefixes);
         $documents = $this->doctrine->getRepository(Document::class)->findBySearchTerm($searchTerm, 4, $prefixes);
@@ -135,12 +123,8 @@ class DossierController extends AbstractController
     {
         $searchTerm = urldecode(strval($request->getPayload()->get('q', '')));
 
-        $prefixes = null;
-        if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_ORGANISATION_ONLY) === true) {
-            /** @var User $user */
-            $user = $this->getUser();
-            $prefixes = $user->getOrganisationPrefixes();
-        }
+        $organisation = $this->authorizationMatrix->getActiveOrganisation();
+        $prefixes = $organisation->getPrefixesAsArray();
 
         $dossiers = $this->doctrine->getRepository(Dossier::class)->findBySearchTerm($searchTerm, 4, $prefixes);
 
@@ -171,9 +155,7 @@ class DossierController extends AbstractController
         $breadcrumbs->addRouteItem('Dossier management', 'app_admin_dossiers');
         $breadcrumbs->addItem('View dossier');
 
-        /** @var User $user */
-        $user = $this->getUser();
-        $this->testIfDossierIsAllowedByUser($user, $dossier);
+        $this->testIfDossierIsAllowedByUser($dossier);
 
         return $this->render('admin/dossier/view.html.twig', [
             'dossier' => $dossier,

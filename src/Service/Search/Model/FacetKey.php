@@ -7,7 +7,6 @@ namespace App\Service\Search\Model;
 enum FacetKey: string
 {
     case DEPARTMENT = 'department';
-    case OFFICIAL = 'official';
     case SUBJECT = 'subject';
     case SOURCE = 'source';
     case PERIOD = 'period';

@@ -29,7 +29,10 @@ export const autoSubmitForm = () => {
 
     formInputs.forEach((formInput) => {
       formInput.addEventListener('change', () => {
-        window.location.hash = form.id ? form.id : '';
+        if (form.id) {
+          window.location.hash = form.id;
+        }
+
         form.submit();
       }, { signal: abortController?.signal });
     });

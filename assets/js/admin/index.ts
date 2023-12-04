@@ -9,6 +9,7 @@ import { toggleDialog } from './dialog';
 import { dossierDocumentsStatus, dossierInventoryStatus, dossierLinkSearch, dossierSearch } from './dossier';
 import { printPage } from './print';
 import { uploadAreas } from './upload-areas';
+import { visibilityToggler } from './visibility-toggler';
 
 onDomReady(() => {
   jsEnabled();
@@ -25,6 +26,7 @@ onDomReady(() => {
     printPage(),
     toggleDialog(),
     uploadAreas(),
+    visibilityToggler(),
   ];
 
   functionalities.forEach((functionality) => {

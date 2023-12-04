@@ -16,11 +16,14 @@
 
                 <div class="bhr-form-row no-js:hidden" id="js-selected-dossiers">
                     <label class="bhr-label" for="inquiry_link_dossier_form_dossiers">Gepubliceerde besluiten</label>
-                    <div class="bhr-form-error"></div>
+                    <div class="js-input-errors"></div>
                     <div class="bhr-textarea mb-8">
-                        <ul id="js-selected-dossiers-list" class="mb-3">
-                            <li>{{ "Nothing chosen yet"|trans }}</li>
-                        </ul>
+                        <div role="status">
+                            <ul aria-label="Gekozen besluiten" id="js-selected-dossiers-list" class="mb-3">
+                                <li>{{ "Nothing chosen yet"|trans }}</li>
+                            </ul>
+                        </div>
+
                         {% set dialogId="js-link-dossiers-dialog" %}
                         <button
                             class="bhr-button bhr-button--secondary js-dialog-toggle"
@@ -70,7 +73,7 @@
         <div class="bhr-form-row">
             <input type="hidden" id="js-hidden-dossiers-input" />
             <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary" id="js-link-dossier">Koppelen</button>
-            <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary js-dialog-toggle" data-for="{{ dialogId }}" data-action="close">Annuleren</button>
+            <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary js-dialog-toggle" data-dialog-for="{{ dialogId }}" data-action="close">Annuleren</button>
         </div>
     </twig:Admin:Dialog>
 {% endblock %}

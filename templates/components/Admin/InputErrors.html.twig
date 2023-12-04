@@ -1,7 +1,7 @@
 {% set numberOfErrors = errors | default([]) | length %}
 {% set hasError = error is defined %}
 {% if numberOfErrors > 0 or hasError %}
-<div class="flex pb-3 bhr-form-error" {% if id is defined %}id="{{ id }}"{% endif %}>
+<div class="flex pb-3 js-input-errors" {% if id is defined %}id="{{ id }}"{% endif %}>
     <span class="mr-2">
         <twig:Admin:Icon color="fill-maximum-red" name="exclamation" />
     </span>

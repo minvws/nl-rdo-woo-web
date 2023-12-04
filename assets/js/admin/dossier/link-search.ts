@@ -36,7 +36,7 @@ export const dossierLinkSearch = () => {
   const displayPossibleErrors = () => {
     const errorNotification = selectedDossiersFallbackElement?.closest('.bhr-form-row--invalid') as HTMLDivElement;
     if (errorNotification) {
-      selectedDossiersElement.querySelector('.bhr-form-error')!.outerHTML = errorNotification.querySelector('.bhr-form-error')!.outerHTML;
+      selectedDossiersElement.querySelector('.js-input-errors')!.outerHTML = errorNotification.querySelector('.js-input-errors')!.outerHTML;
       selectedDossiersElement.classList.add('bhr-form-row--invalid');
     }
   };
