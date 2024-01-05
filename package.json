@@ -22,7 +22,7 @@
         "jest-environment-jsdom": "^29.7.0",
         "markdownlint-cli2": "^0.11.0",
         "postcss": "^8.4.32",
-        "postcss-loader": "^7.3.3",
+        "postcss-loader": "^7.3.4",
         "quoted-printable": "^1.0.1",
         "regenerator-runtime": "^0.14.1",
         "sass": "^1.69.5",
