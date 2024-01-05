@@ -62,7 +62,7 @@ class HomeController extends AbstractController
             'doccount' => $this->doctrine->getRepository(Dossier::class)->count([]),
             'recents' => $this->doctrine->getRepository(Dossier::class)->findBy(
                 ['status' => Dossier::STATUS_PUBLISHED],
-                ['publicationDate' => 'DESC'],
+                ['decisionDate' => 'DESC'],
                 5
             ),
             'facets' => $facetResult,

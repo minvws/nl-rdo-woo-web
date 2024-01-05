@@ -8,6 +8,7 @@ use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\FileInfo;
 use App\Entity\Judgement;
+use App\Entity\Organisation;
 use App\Message\IngestMetadataOnlyMessage;
 use App\Message\RemoveDocumentMessage;
 use App\Repository\DocumentRepository;
@@ -29,6 +30,7 @@ class DocumentUpdaterTest extends MockeryTestCase
     private DocumentUpdater $documentUpdater;
     private Dossier|MockInterface $dossier;
     private DocumentRepository|MockInterface $repository;
+    private Organisation|MockInterface $organisation;
 
     public function setUp(): void
     {
@@ -42,8 +44,10 @@ class DocumentUpdaterTest extends MockeryTestCase
         $this->dossier->shouldReceive('getDocumentPrefix')->andReturn('PREFIX');
         $this->dossier->shouldReceive('getStatus')->andReturn(Dossier::STATUS_CONCEPT);
 
+        $this->organisation = \Mockery::mock(Organisation::class);
+        $this->dossier->shouldReceive('getOrganisation')->andReturn($this->organisation);
+
         $this->documentUpdater = new DocumentUpdater(
-            $this->inquiryService,
             $this->messageBus,
             $this->documentStorage,
             $this->repository,
@@ -61,7 +65,7 @@ class DocumentUpdaterTest extends MockeryTestCase
         $existingDocument = \Mockery::mock(Document::class);
         $existingDocument->expects('getDocumentNr')->andReturn('tst-123');
         $existingDocument->expects('setJudgement')->with($documentMetadata->getJudgement());
-        $existingDocument->expects('getDocumentId')->andReturn(456)->zeroOrMoreTimes();
+        $existingDocument->expects('getDocumentId')->andReturn('456')->zeroOrMoreTimes();
         $existingDocument->expects('setDocumentDate')->with($documentMetadata->getDate());
         $existingDocument->expects('setFamilyId')->with($documentMetadata->getFamilyId());
         $existingDocument->expects('setDocumentId')->with($documentMetadata->getId());
@@ -70,22 +74,16 @@ class DocumentUpdaterTest extends MockeryTestCase
         $existingDocument->expects('setSubjects')->with($documentMetadata->getSubjects());
         $existingDocument->expects('setPeriod')->with($documentMetadata->getPeriod());
         $existingDocument->expects('setSuspended')->with($documentMetadata->isSuspended());
-        $existingDocument->expects('setLink')->with($documentMetadata->getLink());
+        $existingDocument->expects('setLinks')->with($documentMetadata->getLinks());
         $existingDocument->expects('setRemark')->with($documentMetadata->getRemark());
         $existingDocument->expects('getFileInfo')->andReturn($fileInfo)->zeroOrMoreTimes();
         $existingDocument->expects('shouldBeUploaded')->andReturnFalse()->zeroOrMoreTimes();
+        $existingDocument->expects('addDossier')->with($this->dossier);
 
         $fileInfo->expects('setSourceType')->with($documentMetadata->getSourceType());
         $fileInfo->expects('setName')->with('file.doc');
 
-        $this->dossier->expects('addDocument')->with($existingDocument);
-
         $this->repository->expects('save')->with($existingDocument);
-
-        $this->inquiryService->expects('updateDocumentInquiries')->with(
-            $existingDocument,
-            array_combine($documentMetadata->getCaseNumbers(), $documentMetadata->getCaseNumbers())
-        );
 
         $this->documentStorage->shouldReceive('deleteAllFilesForDocument')->with($existingDocument);
         $fileInfo->expects('removeFileProperties');
@@ -101,7 +99,7 @@ class DocumentUpdaterTest extends MockeryTestCase
         $existingDocument = \Mockery::mock(Document::class);
         $existingDocument->expects('getDocumentNr')->andReturn('tst-123');
         $existingDocument->expects('setJudgement')->with($documentMetadata->getJudgement());
-        $existingDocument->expects('getDocumentId')->andReturn(456)->zeroOrMoreTimes();
+        $existingDocument->expects('getDocumentId')->andReturn('456')->zeroOrMoreTimes();
         $existingDocument->expects('setDocumentDate')->with($documentMetadata->getDate());
         $existingDocument->expects('setFamilyId')->with($documentMetadata->getFamilyId());
         $existingDocument->expects('setDocumentId')->with($documentMetadata->getId());
@@ -110,19 +108,13 @@ class DocumentUpdaterTest extends MockeryTestCase
         $existingDocument->expects('setSubjects')->with($documentMetadata->getSubjects());
         $existingDocument->expects('setPeriod')->with($documentMetadata->getPeriod());
         $existingDocument->expects('setSuspended')->with($documentMetadata->isSuspended());
-        $existingDocument->expects('setLink')->with($documentMetadata->getLink());
+        $existingDocument->expects('setLinks')->with($documentMetadata->getLinks());
         $existingDocument->expects('setRemark')->with($documentMetadata->getRemark());
         $existingDocument->expects('getFileInfo')->andReturn(new FileInfo());
         $existingDocument->expects('shouldBeUploaded')->andReturnTrue()->zeroOrMoreTimes();
-
-        $this->dossier->expects('addDocument')->with($existingDocument);
+        $existingDocument->expects('addDossier')->with($this->dossier);
 
         $this->repository->expects('save')->with($existingDocument);
-
-        $this->inquiryService->expects('updateDocumentInquiries')->with(
-            $existingDocument,
-            array_combine($documentMetadata->getCaseNumbers(), $documentMetadata->getCaseNumbers())
-        );
 
         $this->documentUpdater->databaseUpdate($documentMetadata, $this->dossier, $existingDocument);
     }
@@ -173,14 +165,14 @@ class DocumentUpdaterTest extends MockeryTestCase
             familyId: 1,
             sourceType: 'email',
             grounds: ['5.1.1a', '5.1.1b'],
-            id: 123,
+            id: '123',
             judgement: $judgement,
             period: '',
             subjects: ['subject a', 'subject b'],
             threadId: 456,
             caseNumbers: ['12-b', '13-a'],
             suspended: true,
-            link: 'https://a.dummy.link/here',
+            links: ['https://a.dummy.link/here'],
             remark: 'remark',
             matter: '987'
         );

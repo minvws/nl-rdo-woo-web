@@ -42,7 +42,7 @@ class ElasticDocumentMapper
             'date' => $document->getDocumentDate()->format(\DateTimeInterface::ATOM),
             'filename' => $file->getName(),
             'family_id' => $document->getFamilyId() ?? 0,
-            'document_id' => $document->getDocumentId() ?? 0,
+            'document_id' => $document->getDocumentId() ?? '',
             'thread_id' => $document->getThreadId() ?? 0,
             'judgement' => $document->getJudgement(),
             'grounds' => $document->getGrounds(),

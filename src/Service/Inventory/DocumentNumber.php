@@ -24,11 +24,7 @@ class DocumentNumber
 
     public static function fromDossierAndDocumentMetadata(Dossier $dossier, DocumentMetadata $metadata): self
     {
-        if (! empty($metadata->getMatter())) {
-            $documentNr = $dossier->getDocumentPrefix() . '-' . $metadata->getMatter() . '-' . $metadata->getId();
-        } else {
-            $documentNr = $dossier->getDocumentPrefix() . '-' . $metadata->getId();
-        }
+        $documentNr = $dossier->getDocumentPrefix() . '-' . $metadata->getMatter() . '-' . $metadata->getId();
 
         return new self($documentNr);
     }

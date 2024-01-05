@@ -7,6 +7,7 @@ import { copyToClipboard } from './copy-to-clipboard';
 import { detailsComponents } from './details';
 import { toggleDialog } from './dialog';
 import { dossierDocumentsStatus, dossierInventoryStatus, dossierLinkSearch, dossierSearch } from './dossier';
+import { manageWidget } from './manage-widget';
 import { printPage } from './print';
 import { uploadAreas } from './upload-areas';
 import { visibilityToggler } from './visibility-toggler';
@@ -23,6 +24,7 @@ onDomReady(() => {
     dossierInventoryStatus(),
     dossierLinkSearch(),
     dossierSearch(),
+    manageWidget(),
     printPage(),
     toggleDialog(),
     uploadAreas(),

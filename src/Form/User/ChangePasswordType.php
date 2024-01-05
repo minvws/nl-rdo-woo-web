@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 
 /**
@@ -29,27 +30,28 @@ class ChangePasswordType extends AbstractType
         $builder
             ->add('current_password', PasswordType::class, [
                 'required' => true,
-                'label_attr' => ['class' => 'text-sm'],
-                'row_attr' => ['class' => 'mb-4'],
                 'constraints' => [
                     new UserPassword(),
                 ],
+                'label' => 'Current password',
                 'mapped' => false,
             ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'invalid_message' => 'The password fields must match.',
-                'options' => [
-                    'label_attr' => ['class' => 'text-sm'],
-                    'row_attr' => ['class' => 'mb-4'],
-                ],
+                'invalid_message' => 'The password fields must match',
                 'required' => true,
-                'first_options' => ['label' => 'New Password'],
-                'second_options' => ['label' => 'Repeat Password'],
+                'first_options' => [
+                    'label' => 'New password',
+                    'attr' => [
+                        'aria-describedby' => 'password-instructions',
+                    ],
+                ],
+                'second_options' => ['label' => 'Repeat new password'],
                 'attr' => [
                     'autocomplete' => 'off',
                 ],
                 'constraints' => [
+                    new NotBlank(),
                     new Length([
                         'min' => 14,
                         'minMessage' => 'Your password should be at least {{ limit }} characters',
@@ -67,9 +69,6 @@ class ChangePasswordType extends AbstractType
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Wachtwoord aanpassen',
-                'attr' => [
-                    'class' => 'bhr-button bhr-button--primary bhr-button--full-width mt-4',
-                ],
             ])
         ;
     }

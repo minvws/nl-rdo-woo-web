@@ -9,6 +9,8 @@ export interface UploadArea {
 }
 
 export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnThisPage: boolean) => {
+  const SELECT_FILES_CLASS_NAME = 'js-select-files';
+
   let abortController: AbortController;
   let filesArea: FilesArea | AutoUploadFilesArea;
   let inputElement: HTMLInputElement | null = null;
@@ -24,7 +26,9 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
       return;
     }
 
+    inputElement.setAttribute('aria-hidden', 'true');
     inputElement.setAttribute('tabindex', '-1');
+
     invalidFiles = initializeInvalidFiles(invalidFilesElement, getValidMimeTypes(), getMaxFileSize());
     uploadVisual = initializeUploadVisual(uploadVisualElement);
 
@@ -34,6 +38,7 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
         canUploadMultipleFiles: canUploadMultipleFiles(),
         onFileRemovedFunction: onFileRemoved,
         onFileUploadFailedFunction: onFileUploadFailed,
+        returnFocusToElement: getSelectFilesButtonElement(),
       });
     } else {
       filesArea = new FilesArea({
@@ -41,6 +46,7 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
         canUploadMultipleFiles: canUploadMultipleFiles(),
         onFileRemovedFunction: onFileRemoved,
         onFileUploadFailedFunction: onFileUploadFailed,
+        returnFocusToElement: getSelectFilesButtonElement(),
       });
     }
 
@@ -62,7 +68,7 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
 
     inputElement?.addEventListener('change', onFilesSelected, { signal: abortController.signal });
 
-    Array.from(areaElement.getElementsByClassName('js-select-files')).forEach((selectFilesElement) => {
+    Array.from(areaElement.getElementsByClassName(SELECT_FILES_CLASS_NAME)).forEach((selectFilesElement) => {
       selectFilesElement.removeAttribute('tabindex');
       selectFilesElement.addEventListener('click', () => {
         inputElement?.click();
@@ -209,6 +215,8 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
 
     return parseInt(maxFileSize, 10);
   };
+
+  const getSelectFilesButtonElement = () => areaElement.querySelector(`.${SELECT_FILES_CLASS_NAME}`) as HTMLElement;
 
   const canUploadMultipleFiles = () => Boolean(inputElement?.hasAttribute('multiple'));
   const isAutoUploadEnabled = () => getAutoUploadFileArea() !== null;

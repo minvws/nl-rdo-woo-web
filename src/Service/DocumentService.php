@@ -17,6 +17,7 @@ use App\Service\Ingest\IngestService;
 use App\Service\Ingest\Options;
 use App\Service\Storage\DocumentStorageService;
 use App\Service\Storage\ThumbnailStorageService;
+use App\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -58,6 +59,12 @@ class DocumentService
             new IngestMetadataOnlyMessage($document->getId(), true)
         );
 
+        foreach ($document->getDossiers() as $dossier) {
+            $this->messageBus->dispatch(
+                UpdateDossierArchivesMessage::forDossier($dossier)
+            );
+        }
+
         $this->ingestLogger->success(
             $document,
             'withdraw',
@@ -69,15 +76,9 @@ class DocumentService
         );
 
         $this->historyService->addDocumentEntry($document, 'document_withdraw', [
-            'reason' => $reason->value,
-            'explanation' => $explanation,
+            'explanation' => '%' . $reason->value . '%',
+            'explanation_details' => $explanation,
         ]);
-
-        foreach ($document->getDossiers() as $dossier) {
-            $this->messageBus->dispatch(
-                UpdateDossierArchivesMessage::forDossier($dossier)
-            );
-        }
     }
 
     public function removeDocumentFromDossier(Dossier $dossier, Document $document, bool $flush = true): void
@@ -87,8 +88,6 @@ class DocumentService
             $dossier->removeDocument($document);
             $this->doctrine->persist($dossier);
         }
-
-        $this->historyService->addDocumentEntry($document, 'document_removed', []);
 
         // In any case: clean up orphaned documents completely, otherwise update ES
         if ($document->getDossiers()->count() === 0) {
@@ -104,6 +103,8 @@ class DocumentService
         if ($flush) {
             $this->doctrine->flush();
         }
+
+        $this->historyService->addDocumentEntry($document, 'document_removed', []);
     }
 
     public function republish(Document $document): void
@@ -140,12 +141,10 @@ class DocumentService
             throw new \RuntimeException('Cannot replace document for dossier without an ID');
         }
 
-        $this->historyService->addDocumentEntry($document, 'document_replaced', []);
-
         $filename = $uploadedFile->getClientOriginalName();
         try {
             $fileDocumentNr = $this->fileProcessService->getDocumentNumberFromFilename($filename, $dossier);
-            if ($fileDocumentNr !== strval($document->getDocumentId())) {
+            if ($fileDocumentNr !== $document->getDocumentId()) {
                 throw DocumentReplaceException::forFilenameMismatch($document, $filename);
             }
         } catch (\RuntimeException) {
@@ -166,6 +165,11 @@ class DocumentService
         );
 
         $this->messageBus->dispatch($message);
+
+        $this->historyService->addDocumentEntry($document, 'document_replaced', [
+            'filetype' => $document->getFileInfo()->getType(),
+            'filesize' => Utils::size(strval($uploadedFile->getSize())),
+        ]);
 
         $this->ingestLogger->success(
             $document,

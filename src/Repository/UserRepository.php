@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Organisation;
 use App\Entity\User;
+use App\Roles;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -62,15 +63,20 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * @return array<User>
      */
-    public function findAllForOrganisation(Organisation $organisation): array
+    public function findAllForOrganisation(Organisation $organisation, bool $includeSuperAdmins): array
     {
-        return $this->createQueryBuilder('u')
+        $qb = $this->createQueryBuilder('u')
             ->join('u.organisation', 'o')
             ->andWhere('o.id = :val')
             ->setParameter('val', $organisation->getId())
-            ->orderBy('u.id', 'ASC')
-            ->getQuery()
-            ->getResult()
-        ;
+            ->orderBy('u.id', 'ASC');
+
+        if ($includeSuperAdmins) {
+            $qb->orWhere("JSONB_CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = true");
+        } else {
+            $qb->andWhere("JSONB_CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = false");
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

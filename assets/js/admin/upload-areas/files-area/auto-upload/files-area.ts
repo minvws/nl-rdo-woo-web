@@ -1,4 +1,4 @@
-import { hideElement, showElement } from '@utils';
+import { hideElement, isFocusWithinElement, showElement } from '@utils';
 import { FilesArea } from '../files-area';
 import { chunksStore as createChunksStore, Chunk } from './chunks-store';
 
@@ -150,20 +150,29 @@ export class AutoUploadFilesArea extends FilesArea {
     }
 
     if (progress === 100) {
+      const doesThisListItemContainFocus = isFocusWithinElement(listItemElement);
       this.hideRemoveButton(listItemElement);
       this.showSpinner(listItemElement);
+      if (doesThisListItemContainFocus) {
+        this.#getSpinnerElement(listItemElement)?.focus();
+      }
     }
 
     progressElement.value = progress;
   }
 
   displayUploadResultIcon(listItemElement: HTMLElement, isUploadSuccess: boolean) {
+    const isFocusWithinListItem = isFocusWithinElement(listItemElement);
     this.hideRemoveButton(listItemElement);
     this.hideSpinner(listItemElement);
 
     const elementClass = isUploadSuccess ? this.uploadSuccessClass : this.uploadFailedClass;
-    const iconElement = listItemElement.querySelector(`.${elementClass}`);
+    const iconElement = listItemElement.querySelector(`.${elementClass}`) as HTMLElement | null;
     showElement(iconElement);
+
+    if (isFocusWithinListItem) {
+      iconElement?.focus();
+    }
   }
 
   hideProgress(listItemElement: HTMLElement) {
@@ -192,6 +201,6 @@ export class AutoUploadFilesArea extends FilesArea {
   }
 
   #getSpinnerElement(listItemElement: HTMLElement) {
-    return listItemElement.querySelector(`.${this.spinnerClass}`);
+    return listItemElement.querySelector(`.${this.spinnerClass}`) as HTMLElement | null;
   }
 }

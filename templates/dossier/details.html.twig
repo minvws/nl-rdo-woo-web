@@ -9,9 +9,8 @@
 {% set page_title = dossier.title ~ preview_mode %}
 
 {% block body %}
-
-    <section>
-        <div class="block">
+    <section class="content-detail-container">
+        <div>
             <h1 class="mb-0 leading-tight">
                 <span class="font-normal block">{{ "Decision about" | trans() }}:</span>
                 {{ dossier.title }}
@@ -34,148 +33,17 @@
                 </div>
             </dl>
 
-            <div class="block py-8">
-                <p>
-                    {{ "Woo Wob request info" | trans() }}
-                </p>
-                <p><a href="{{ path('app_about') }}">{{ "More about Woo Wob requests" | trans() }}</a></p>
-            </div>
+            {% include "dossier/snippets/info.html.twig" %}
 
-            {% if dossier.status == constant('\\App\\Entity\\Dossier::STATUS_PREVIEW') %}
-                <div class="pb-8 block">
-                    <div class="warning">
-                        <div class="width-delimiter block">
-                            <h2 class="visually-hidden">{{ "preview" | trans() }}</h2>
-                            <p>
-                                <span></span>
-                                {{ "You have untill {date} exclusive access to these documents" | trans({ date: dossier.publicationDate | date_modify('-1 minute') | format_datetime(pattern="d LLLL y 'om' H:m 'uur'") }) }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
+            {% include "dossier/snippets/notifications.html.twig" %}
 
-            {# if extra information about this information request, give it an h3
-                and similar styling to the dossier summary below #}
-            {% if dossier.summary is defined %}
-                <div class="bg-anti-flash-white p-6 my-8">
-                    <div class="width-delimiter block">
-                        <h3 class="font-normal leading-tight mb-3">{{ "Summary" | trans() }}</h3>
-                        <p>{{ dossier.summary }}</p>
-                    </div>
-                </div>
-            {% endif %}
+            {% include "dossier/snippets/summary.html.twig" %}
 
-            <div class="pb-12">
-                <div class="horizontal-scroll">
-                    <table>
-                        <caption>
-                            <h3>{{ "About this decision" | trans() }}</h3>
-                        </caption>
-                        <tbody>
-                            {% if dossier.decision is defined %}
-                            <tr>
-                                <th class="ps-0 w-2/5 lg:w-1/4" scope="row">{{ "Decision made" | trans() }}</th>
-                                <td class="pe-0 font-bold">{{ dossier.decision | decision }}</td>
-                            </tr>
-                            {% endif %}
-                            {% if dossier.decisionDocument.fileInfo.isUploaded|default(false) %}
-                            <tr>
-                                <th scope="row" class="ps-0">{{ "Reasoning for decision" | trans() }}</th>
-                                <td class="pe-0">
-                                    <a download href="{{ path('app_dossier_decision_download', { dossierId: dossier.dossierNr }) }}">{{ "Download decision" | trans() }}</a> ({{ dossier.decisionDocument.fileInfo.size | size }})
-                                </td>
-                            </tr>
-                            {% endif %}
-                            {% if dossier.departments[0].name is defined %}
-                            <tr>
-                                <th scope="row" class="ps-0">{{ "Responsible(s)" | trans() }}</th>
-                                <td class="pe-0">
-                                    {# Only display the first entries #}
-                                    {{ dossier.departments[0].name }}
-                                </td>
-                            </tr>
-                            {% endif %}
-                            {% if period(dossier.dateFrom, dossier.dateTo) %}
-                            <tr>
-                                <th scope="row" class="ps-0">{{ "Period" | trans() }}</th>
-                                <td class="pe-0">{{ period(dossier.dateFrom, dossier.dateTo) }}</td>
-                            </tr>
-                            {% endif %}
-                            <tr>
-                                <th scope="row" class="ps-0">{{ "Decision date" | trans() }}</th>
-                                <td class="pe-0"><time datetime="{{ dossier.decisionDate | date("Y-m-d") }}">{{ dossier.decisionDate | format_date('long') }}</time></td>
-                            </tr>
-                            {% if dossier.publicationReason is defined %}
-                            <tr>
-                                <th scope="row" class="ps-0">{{ "Type of decision" | trans() }}</th>
-                                <td class="pe-0">{{ dossier.publicationReason | trans }}</td>
-                            </tr>
-                            {% endif %}
+            {% include "dossier/snippets/about.html.twig" %}
 
-                            {% set thereAreDocuments = dossier.documents|length > 0 %}
-                            {% set thereArePages = dossier.pagecount|default(0) > 0 %}
+            {% include "dossier/snippets/documents.html.twig" %}
 
-                            {% if (thereAreDocuments and thereArePages) or (dossier.inventory is not null) %}
-                            <tr>
-                                <th scope="row" class="ps-0">{{ "Scope of disclosure" | trans() }}</th>
-                                <td class="pe-0">
-                                    {% if thereAreDocuments %}
-                                        {{ "# documents" | trans({"count": dossier.documents|length})}}{% if thereAreDocuments and thereArePages %},{% endif %}
-                                    {% endif %}
-
-                                    {% if thereArePages %}
-                                        {{ "# pages" | trans({"count": dossier.pagecount|default(0)})}}
-                                    {% endif %}
-
-                                    {% if dossier.inventory is not null  %}
-                                        <a download href="{{ path('app_dossier_inventory_download', { dossierId: dossier.dossierNr }) }}">{{ "Inventory list" | trans() }}</a>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="pb-12">
-                <div class="horizontal-scroll">
-                    <table>
-                        <caption>
-                            <h3>{{ "History" | trans() }}</h3>
-                        </caption>
-                        <tbody>
-
-                        {% include "/dossier/history-table.html.twig" with { id: dossier.id } %}
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {% if dossier.needsInventoryAndDocuments and (public_docs.count > 0 or not_public_docs.count > 0) %}
-                <h3 id="documenten">{{ "Documents" | trans() }}</h3>
-
-                <div class="gap-0 items-center pb-8 pt-4">
-                    <form class="p-0 flex flex-col sm:flex-row items-stretch sm:items-center" method="post" action="{{ path('app_dossier_batch', { dossierId: dossier.dossierNr }) }}">
-                        {% if dossier.uploadStatus.getActualUploadCount > 0 and public_docs.count > 0 %}
-                        <button type="submit" download class="button button--light flex items-center mb-2 sm:mr-4 sm:mb-0">
-                            <twig:Icon name="download" />
-                            <span class="px-4">{{ "Download" | trans() }}</span>
-                        </button>
-                        {% endif %}
-                        <span class="inline-block">
-                            <a href="{{ path('app_search') }}?dnr[]={{ dossier.dossierNr }}">
-                                {{ "Search in these documents..." | trans() }}
-                            </a>
-                        </span>
-                    </form>
-                </div>
-
-                {{ macro.document_tabs(public_docs, not_public_docs, not_online_docs, '#documenten', dossier) }}
-            {% endif %}
+            {{ macro.history_section(get_frontend_history('dossier', dossier.id), "History") }}
         </div>
     </section>
-
 {% endblock %}

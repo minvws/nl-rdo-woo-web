@@ -4,7 +4,7 @@
     }
 
     .bhr-upload-area__input {
-        @apply block border-t border-platinum pt-2 pb-3 text-dim-gray w-full;
+        @apply block border-t border-platinum cursor-pointer py-4 text-dim-gray w-full;
     }
 
     .bhr-upload-area__input::file-selector-button {
@@ -16,8 +16,7 @@
     }
 
     .bhr-upload-area__no-files {
-        @apply cursor-pointer block text-left pt-2 pb-3 w-full;
-        @apply min-h-[56px]; /* height of .bhr-upload-area__files-list with one item in it so it doesn't jump */
+        @apply cursor-pointer block text-left py-4 w-full;
     }
 
     .bhr-upload-area__files-list {

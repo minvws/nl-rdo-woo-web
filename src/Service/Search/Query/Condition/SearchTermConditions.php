@@ -42,11 +42,13 @@ class SearchTermConditions implements QueryConditions
                         should: [
                             new SimpleQueryStringQuery(
                                 query: $config->query,
+                                defaultOperator: $config->operator,
                                 fields: ['dossiers.title'],
                                 boost: 3,
                             ),
                             new SimpleQueryStringQuery(
                                 query: $config->query,
+                                defaultOperator: $config->operator,
                                 fields: ['dossiers.summary'],
                                 boost: 2,
                             ),
@@ -58,12 +60,14 @@ class SearchTermConditions implements QueryConditions
                     path: 'pages',
                     query: new SimpleQueryStringQuery(
                         query: $config->query,
+                        defaultOperator: $config->operator,
                         fields: ['pages.content'],
                         boost: 1,
                     ),
                 ),
                 new SimpleQueryStringQuery(
                     query: $config->query,
+                    defaultOperator: $config->operator,
                     fields: ['filename'],
                     boost: 4,
                 ),
@@ -84,16 +88,19 @@ class SearchTermConditions implements QueryConditions
             should: [
                 new SimpleQueryStringQuery(
                     query: $config->query,
+                    defaultOperator: $config->operator,
                     fields: ['title'],
                     boost: 5,
                 ),
                 new SimpleQueryStringQuery(
                     query: $config->query,
+                    defaultOperator: $config->operator,
                     fields: ['summary'],
                     boost: 4,
                 ),
                 new SimpleQueryStringQuery(
                     query: $config->query,
+                    defaultOperator: $config->operator,
                     fields: ['decision_content'],
                     boost: 3,
                 ),

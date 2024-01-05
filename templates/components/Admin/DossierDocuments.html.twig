@@ -12,6 +12,7 @@
                 'application/x-pdf',
                 'application/zip',
                 'application/x-zip-compressed',
+                'application/x-7z-compressed',
             ]}}"
             css="pb-6"
             endpoint="{{ path('app_admin_dossier_documents_upload', { 'dossierId': dossier.dossierNr }) }}"
@@ -21,17 +22,28 @@
             tip="Tip: je kunt meerdere documenten tegelijkertijd uploaden. Sleep je hele selectie (of een zip-bestand) naar dit venster."
         >
             {% if not uploadStatus.isComplete %}
-            <div class="js-uploads-processing">
-                {% include 'admin/dossier/document/status-uploads-processing.html.twig' with {uploadStatus: uploadStatus, dossier: dossier} %}
-            </div>
+                {% set uploadedQueue = get_upload_queue(dossier) %}
+                {% set hasUploadedQueue = uploadedQueue | length > 0 %}
+
+                {% if hasUploadedQueue %}
+                    <div class="js-uploads-processing">
+                        {% include 'admin/dossier/document/status-uploads-processing.html.twig' with {uploadStatus: uploadStatus, dossier: dossier} %}
+                    </div>
+                {% endif %}
             {% endif %}
         </twig:Admin:UploadArea>
 
-        <div
-            class="js-uploads-remaining"
-        >
-            {% include 'admin/dossier/document/status-uploads-remaining.html.twig' with {uploadStatus: uploadStatus, dossier: dossier} %}
-        </div>
+        {% set uploadedQueue = get_upload_queue(dossier) %}
+        {% set missingDocuments = uploadStatus.getDocumentsToUpload(uploadedQueue) %}
+        {% set hasMissingDocuments = missingDocuments | length > 0 %}
+
+        {% if hasMissingDocuments %}
+            <div
+                class="js-uploads-remaining"
+            >
+                {% include 'admin/dossier/document/status-uploads-remaining.html.twig' with {uploadStatus: uploadStatus, dossier: dossier} %}
+            </div>
+        {% endif %}
     {% endif %}
 
     <div
@@ -39,7 +51,7 @@
         id="js-dossier-documents-completed"
     >
         <twig:Admin:Alert type="success">
-            <strong>Uploaden gelukt:</strong> Alle  documenten op de inventarislijst zijn geüpload.
+            <strong>Uploaden gelukt:</strong> Alle documenten uit het productierapport zijn geüpload.
         </twig:Admin:Alert>
     </div>
 </div>

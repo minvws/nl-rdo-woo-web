@@ -31,7 +31,6 @@ class DepartmentController extends AbstractController
     public function index(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addItem('Department management');
 
         $departments = $this->repository->findAll();
@@ -46,7 +45,6 @@ class DepartmentController extends AbstractController
     public function create(Breadcrumbs $breadcrumbs, Request $request): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addRouteItem('Department management', 'app_admin_departments');
         $breadcrumbs->addItem('New department');
 
@@ -72,7 +70,6 @@ class DepartmentController extends AbstractController
     public function modify(Breadcrumbs $breadcrumbs, Request $request, Department $department): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addRouteItem('Department management', 'app_admin_departments');
         $breadcrumbs->addItem('Edit department');
 

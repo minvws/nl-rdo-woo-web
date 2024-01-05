@@ -4,7 +4,7 @@ SHELL=/usr/bin/env bash -O globstar
 
 all: help
 
-test: test_phpcs test_phpstan test_phpcsfixer test_phpmd test_unit test_psalm test_twig test_markdown test_translations ## Runs tests
+test: test_phpcs test_phpstan test_phpcsfixer test_phpmd test_unit test_twig test_markdown test_translations ## Runs tests
 
 test_phpcs:
 	source test-utils.sh ;\
@@ -15,11 +15,6 @@ test_phpstan:
 	source test-utils.sh ;\
 	section "PHPSTAN" ;\
 	vendor/bin/phpstan analyse
-
-test_psalm:
-	source test-utils.sh ;\
-	section "PSALM" ;\
-	vendor/bin/psalm --threads=1
 
 test_phpmd:
 	source test-utils.sh ;\

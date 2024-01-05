@@ -1,0 +1,13 @@
+{% if dossier.status == constant('\\App\\Entity\\Dossier::STATUS_PREVIEW') %}
+<div class="block pt-8 w-full">
+    <div class="warning">
+        <div class="width-delimiter block">
+            <h2 class="visually-hidden">{{ "preview" | trans() }}</h2>
+            <p>
+                <span></span>
+                {{ "You have untill {date} exclusive access to these documents" | trans({ date: dossier.publicationDate | date_modify('-1 minute') | format_datetime(pattern="d LLLL y 'om' H:m 'uur'") }) }}
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}

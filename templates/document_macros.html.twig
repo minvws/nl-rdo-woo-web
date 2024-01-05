@@ -176,11 +176,46 @@
     titleTranslationKey: the translation key of the title
 #}
 {% macro documents_section(documents, titleTranslationKey) %}
-    {% if documents|length > 0 %}
+    {% if documents | length > 0 %}
         <section>
             <h2>{{ titleTranslationKey | trans }}</h2>
 
             {{ _self.documents_table(documents, titleTranslationKey) }}
         </section>
     {% endif %}
+{% endmacro %}
+
+{#
+    history_section displays a section with a title and a table of history
+
+    history: a list of history to display
+    titleTranslationKey: the translation key of the title
+#}
+{% macro history_section(history, titleTranslationKey) %}
+    {# {% if history | length > 0 %}
+        <section>
+            <h2>{{ titleTranslationKey | trans }}</h2>
+
+            <table>
+                <caption class="visually-hidden">{{ titleTranslationKey | trans }}</caption>
+                <thead>
+                    <th class="w-2/5 lg:w-1/4" scope="col">{{ "Date" | trans() }}</th>
+                    <th scope="col">{{ "Action" | trans() }}</th>
+                </thead>
+                <tbody>
+                {% for entry in history %}
+                    {% set tr = history_trans(entry, "public") %}
+                    {% if tr is not empty %}
+                        <tr>
+                            <td>{{ entry.createdDt | format_datetime(pattern="d LLLL y H:m") }}</td>
+                            <td>
+                                <span class="block">{{ tr }}</span>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    {% endif %} #}
 {% endmacro %}

@@ -71,9 +71,13 @@ class SourceType
     ];
 
     // Finds the given source type in the list of known types
-    public static function getType(string $target): string
+    public static function getType(?string $target): string
     {
-        $target = strtolower($target);
+        if ($target === null) {
+            return self::SOURCE_UNKNOWN;
+        }
+
+        $target = strtolower(trim($target));
 
         foreach (self::$types as $type => $format) {
             if (in_array($target, $format)) {

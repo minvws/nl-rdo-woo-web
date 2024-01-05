@@ -71,6 +71,14 @@ class FixtureService
      */
     protected function createDossier(array $data, string $inventoryPath, ?string $documentsPath): Dossier
     {
+        $orgs = $this->doctrine->getRepository(Organisation::class)->findAll();
+        shuffle($orgs);
+        $organisation = reset($orgs);
+
+        if (! $organisation instanceof Organisation) {
+            throw new \RuntimeException('No organisations found');
+        }
+
         $this->ensurePrefixExists($data['document_prefix']);
 
         $dossier = new Dossier();
@@ -83,6 +91,7 @@ class FixtureService
         $dossier->setSummary($data['summary']);
         $dossier->setTitle($data['title']);
         $dossier->setPublicationReason($data['publication_reason']);
+        $dossier->setOrganisation($organisation);
 
         $this->mapDepartmentsToDossier($data, $dossier);
 
@@ -141,7 +150,7 @@ class FixtureService
      */
     protected function createDocument(Dossier $dossier, array $data): void
     {
-        $data['document_id'] ??= random_int(100000, 999999);
+        $data['document_id'] ??= strval(random_int(100000, 999999));
         $data['document_nr'] ??= 'PREF-' . $data['document_id'];
         $data['created_at'] = new \DateTimeImmutable($data['created_at'] ??= 'now');
         $data['updated_at'] = new \DateTimeImmutable($data['updated_at'] ??= 'now');
@@ -200,7 +209,6 @@ class FixtureService
 
             $documentPrefix = new DocumentPrefix();
             $documentPrefix->setPrefix($prefix);
-            $documentPrefix->setDescription($prefix);
             $documentPrefix->setOrganisation($organisation);
 
             $this->doctrine->persist($documentPrefix);

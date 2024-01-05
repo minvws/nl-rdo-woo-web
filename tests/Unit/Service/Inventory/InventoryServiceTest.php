@@ -64,6 +64,7 @@ class InventoryServiceTest extends MockeryTestCase
     public function testGetReaderReturnsAnOpenReaderAndSetsTmpFilenameOnRun(): void
     {
         $this->run->shouldReceive('getFileInfo->isUploaded')->andReturnTrue();
+        $this->run->shouldReceive('getFileInfo->getMimetype')->andReturn('text/csv');
 
         $filename = 'tst/123.csv';
         $this->documentStorage->expects('downloadDocument')->with($this->run)->andReturn($filename);

@@ -10,7 +10,7 @@ use App\Message\GenerateSanitizedInventoryMessage;
 use App\Message\UpdateDossierArchivesMessage;
 use App\Message\UpdateDossierMessage;
 use App\Repository\DocumentRepository;
-use App\Service\Inquiry\InquiryService;
+use App\Service\HistoryService;
 use App\Service\Inventory\Progress\RunProgress;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,6 +18,9 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 class InventoryUpdater
 {
@@ -26,7 +29,7 @@ class InventoryUpdater
         private readonly DocumentUpdater $documentUpdater,
         private readonly DocumentRepository $documentRepository,
         private readonly MessageBusInterface $messageBus,
-        private readonly InquiryService $inquiryService,
+        private readonly HistoryService $historyService,
     ) {
     }
 
@@ -41,8 +44,19 @@ class InventoryUpdater
     ): void {
         $documentGenerator = $reader->getDocumentMetadataGenerator($dossier);
 
+        $inquiryUpdater = new InquiryUpdater($dossier->getOrganisation(), $this->messageBus);
+
+        $documentsToUpdate = [];
         $currentProgress = $runProgress->getCurrentCount();
         foreach ($documentGenerator as $inventoryItem) {
+            if (count($documentsToUpdate) > 1000) {
+                $this->doctrine->flush();
+                foreach ($documentsToUpdate as $doc) {
+                    $this->doctrine->detach($doc);
+                }
+                $documentsToUpdate = [];
+            }
+
             $rowIndex = $inventoryItem->getIndex();
             $runProgress->update($currentProgress + $rowIndex);
 
@@ -52,7 +66,7 @@ class InventoryUpdater
             }
 
             $documentNr = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
-            $document = $this->loadDocumentFromDossierEntity($dossier, $documentNr->getValue());
+            $document = $this->getDocument($documentNr->getValue());
 
             $action = $changeset->getAction($documentNr);
 
@@ -67,12 +81,48 @@ class InventoryUpdater
                 $this->doctrine->persist($document); // For getting ID
 
                 $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
+                $inquiryUpdater->addToChangeset($documentMetadata, $document);
+
+                $documentsToUpdate[] = $document;
 
                 continue;
             }
 
+            // Get diffs
+            $changes = [];
+            $this->doctrine->getUnitOfWork()->computeChangeSets();
+            if ($document) {
+                foreach ($this->doctrine->getUnitOfWork()->getEntityChangeSet($document) as $key => $entry) {
+                    /** @var array<string, mixed> $entry */
+                    $data = $entry[$key];
+                    /** @var array<int, string> $data */
+                    $changes[$key] = $data[1] ?? '';
+                }
+            }
+
             if ($action === InventoryChangeset::ACTION_UPDATE && $document instanceof Document) {
+                if ($documentMetadata->getJudgement() != $document->getJudgement()) {
+                    $this->historyService->addDocumentEntry($document, 'document_judgement_' . $documentMetadata->getJudgement()->value, [
+                        'old' => '%' . ($document->getJudgement()->value ?? '') . '%',
+                        'new' => '%' . $documentMetadata->getJudgement()->value . '%',
+                    ], flush: false);
+                }
+
+                if ($changes) {
+                    // All changes are translated
+                    foreach ($changes as $key => $value) {
+                        $changes['%' . $key . '%'] = $value;
+                    }
+
+                    $this->historyService->addDocumentEntry($document, 'document_inventory_updated', [
+                        'changes' => $changes,
+                    ], flush: false);
+                }
+
                 $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
+                $inquiryUpdater->addToChangeset($documentMetadata, $document);
+
+                $documentsToUpdate[] = $document;
 
                 continue;
             }
@@ -80,72 +130,65 @@ class InventoryUpdater
             throw new \RuntimeException('State mismatch between database and changeset');
         }
 
+        $this->doctrine->flush();
+        foreach ($documentsToUpdate as $doc) {
+            $this->doctrine->detach($doc);
+        }
+        unset($documentsToUpdate);
+
+        $inquiryUpdater->flushChangeset();
+
         $this->applyDeletes($changeset, $dossier);
     }
 
     private function applyDeletes(InventoryChangeset $changeset, Dossier $dossier): void
     {
         foreach ($changeset->getDeletes() as $documentNr) {
-            $document = $this->loadDocumentFromDossierEntity($dossier, $documentNr);
+            $document = $this->getDocument($documentNr);
             if (! $document instanceof Document || $dossier->getStatus() !== Dossier::STATUS_CONCEPT) {
                 throw new \RuntimeException('State mismatch between database and changeset');
             }
 
-            $this->documentUpdater->databaseRemove($document, $dossier);
+            // Remove the dossier-document relationship immediately, if needed the document and related files removed asynchronously
+            $document->getDossiers()->removeElement($dossier);
+            $this->doctrine->persist($document);
         }
+
+        $this->doctrine->flush();
     }
 
     public function sendMessagesForChangeset(InventoryChangeset $changeset, Dossier $dossier, RunProgress $runProgress): void
     {
-        if ($dossier->getStatus() === Dossier::STATUS_PUBLISHED || $dossier->getStatus() === Dossier::STATUS_PREVIEW) {
-            foreach ($dossier->getInquiries() as $inquiry) {
-                $this->inquiryService->generateInventory($inquiry);
-                $this->inquiryService->generateArchives($inquiry);
-            }
-        }
-
         $this->messageBus->dispatch(GenerateSanitizedInventoryMessage::forDossier($dossier));
-        $this->messageBus->dispatch(UpdateDossierArchivesMessage::forDossier($dossier));
-        $this->messageBus->dispatch(UpdateDossierMessage::forDossier($dossier));
+
+        if (! $dossier->isConcept()) {
+            $this->messageBus->dispatch(UpdateDossierArchivesMessage::forDossier($dossier));
+            $this->messageBus->dispatch(UpdateDossierMessage::forDossier($dossier));
+        }
 
         foreach ($changeset->getAll() as $documentNr => $action) {
             $runProgress->tick();
+            $document = $this->getDocument($documentNr);
 
-            if ($action === InventoryChangeset::ACTION_DELETE) {
-                // Since the document is already removed from the dossier entity we need to fetch it from DB
-                $document = $this->loadDocumentFromDatabase($documentNr);
-                if (! $document instanceof Document) {
-                    throw new \RuntimeException('State mismatch between database and changeset');
-                }
-
-                $this->documentUpdater->asyncRemove($document, $dossier);
-                continue;
-            }
-
-            $document = $this->loadDocumentFromDossierEntity($dossier, $documentNr);
             if (! $document instanceof Document) {
                 throw new \RuntimeException('State mismatch between database and changeset');
             }
 
-            $this->documentUpdater->asyncUpdate($document);
+            if ($action === InventoryChangeset::ACTION_DELETE) {
+                $this->documentUpdater->asyncRemove($document, $dossier);
+                continue;
+            }
+
+            if (! $dossier->isConcept()) {
+                $this->documentUpdater->asyncUpdate($document);
+            }
+
+            $this->doctrine->detach($document);
         }
     }
 
-    private function loadDocumentFromDatabase(int|string $documentNr): ?Document
+    private function getDocument(int|string $documentNr): ?Document
     {
         return $this->documentRepository->findOneBy(['documentNr' => $documentNr]);
-    }
-
-    private function loadDocumentFromDossierEntity(Dossier $dossier, string $documentNr): ?Document
-    {
-        /** @var Document|false $document */
-        $document = $dossier->getDocuments()->filter(
-            /* @phpstan-ignore-next-line */
-            function (Document $doc) use ($documentNr): bool {
-                return $doc->getDocumentNr() === $documentNr;
-            }
-        )->first();
-
-        return $document ?: null;
     }
 }

@@ -4,7 +4,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
@@ -19,6 +19,7 @@
         "endroid/qr-code": "^4.8",
         "erichard/elasticsearch-query-builder": "^3.0@beta",
         "fakerphp/faker": "^1.21",
+        "gemorroj/archive7z": "^5.6",
         "indiehd/filename-sanitizer": "^0.1.0",
         "jaytaph/typearray": "^0.0",
         "knplabs/knp-paginator-bundle": "^6.2",
@@ -41,6 +42,7 @@
         "scheb/2fa-bundle": "^6.8",
         "scheb/2fa-email": "^6.8",
         "scheb/2fa-totp": "^6.8",
+        "scienta/doctrine-json-functions": "^5.3",
         "snc/redis-bundle": "^4.6",
         "spatie/elasticsearch-query-builder": "^2.1",
         "symfony/amqp-messenger": "6.3.*",
@@ -151,16 +153,14 @@
         "phpstan/phpstan-mockery": "^1.1",
         "phpstan/phpstan-symfony": "^1.3",
         "phpunit/phpunit": "^10.0",
-        "psalm/plugin-symfony": "^5.0",
         "slevomat/coding-standard": "^8.11",
-        "squizlabs/php_codesniffer": "^3.7",
+        "phpcsstandards/php_codesniffer": "^3.7",
         "stefanocbt/phpdotenv-sync": "^1.2",
         "symfony/browser-kit": "6.3.*",
         "symfony/css-selector": "6.3.*",
         "symfony/debug-bundle": "6.3.*",
         "symfony/maker-bundle": "^1.0",
         "symfony/phpunit-bridge": "^6.3",
-        "symfony/web-profiler-bundle": "6.3.*",
-        "vimeo/psalm": "5.9"
+        "symfony/web-profiler-bundle": "6.3.*"
     }
 }

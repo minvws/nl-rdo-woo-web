@@ -10,6 +10,8 @@ use App\Repository\DocumentRepository;
 use App\Service\Ingest\IngestService;
 use App\Service\Ingest\Options;
 use App\Service\Storage\DocumentStorageService;
+use App\Utils;
+use Archive7z\Archive7z;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\File;
@@ -18,6 +20,8 @@ use Symfony\Component\HttpFoundation\File\File;
  * This class will process files that are uploaded to the system. It can process either a PDF file and add it to a dossier, or a ZIP where
  * it will find PDFs and add them to the dossier. Note that only PDFs are added when the filename of the PDF matches a document number in
  * the dossier.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class FileProcessService
 {
@@ -26,6 +30,7 @@ class FileProcessService
         private readonly DocumentStorageService $storage,
         private readonly LoggerInterface $logger,
         private readonly IngestService $ingestService,
+        private readonly HistoryService $historyService,
     ) {
     }
 
@@ -39,6 +44,8 @@ class FileProcessService
                 return $this->processSingleFile($file, $dossier, $originalFile, 'audio');
             case 'zip':
                 return $this->processZip($file, $dossier);
+            case '7z':
+                return $this->process7z($file, $dossier);
             case 'pdf':
                 return $this->processSingleFile($file, $dossier, $originalFile, 'pdf');
             default:
@@ -60,7 +67,7 @@ class FileProcessService
     ): bool {
         $documentId = $this->getDocumentNumberFromFilename($originalFile, $dossier);
 
-        if ($document->getDocumentId() !== intval($documentId)) {
+        if ($document->getDocumentId() !== $documentId) {
             $this->logger->warning("Filename does not match the document with id $documentId", [
                 'documentId' => $documentId,
                 'dossierId' => $dossier->getId()?->toRfc4122(),
@@ -103,11 +110,25 @@ class FileProcessService
             return true;
         }
 
+        $replaced = $document->getFileInfo()->isUploaded();
+
         $this->storeFileForDocument($file, $document, $documentId, $type);
 
         $options = new Options();
         $options->setForceRefresh(true);
         $this->ingestService->ingest($document, $options);
+
+        if (! $replaced) {
+            $this->historyService->addDocumentEntry($document, 'document_uploaded', [
+                'filetype' => $document->getFileInfo()->getType(),
+                'filesize' => Utils::size(strval($document->getFileInfo()->getSize())),
+            ]);
+        } else {
+            $this->historyService->addDocumentEntry($document, 'document_replaced', [
+                'filetype' => $document->getFileInfo()->getType(),
+                'filesize' => Utils::size(strval($document->getFileInfo()->getSize())),
+            ]);
+        }
 
         return true;
     }
@@ -148,10 +169,38 @@ class FileProcessService
         return true;
     }
 
+    protected function process7z(\SplFileInfo $file, Dossier $dossier): bool
+    {
+        $archive = new Archive7z($file->getPathname());
+        foreach ($archive->getEntries() as $entry) {
+            $pathInfo = pathinfo($entry->getPath());
+            $filename = $pathInfo['basename'];
+            if (! isset($pathInfo['extension']) || $pathInfo['extension'] !== 'pdf') {
+                continue;
+            }
+
+            try {
+                $entry->extractTo(sys_get_temp_dir());
+                $tmpPath = sprintf('%s/%s', sys_get_temp_dir(), $entry->getPath());
+
+                $this->processSingleFile(new File($tmpPath), $dossier, $filename, 'pdf');
+
+                // Cleanup tmp file if needed
+                if (file_exists($tmpPath)) {
+                    unlink($tmpPath);
+                }
+            } catch (\Exception) {
+                // Just skip if a file cannot be processed, so we can at least try the other files
+            }
+        }
+
+        return true;
+    }
+
     public function getDocumentNumberFromFilename(string $originalFile, Dossier $dossier): string
     {
         $originalFile = basename($originalFile);
-        preg_match('/^(\d+)/', $originalFile, $matches);
+        preg_match('/^([a-zA-Z0-9\-]+)/', $originalFile, $matches);
         $documentId = $matches[1] ?? null;
 
         if (is_null($documentId)) {

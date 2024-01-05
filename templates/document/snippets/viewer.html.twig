@@ -1,0 +1,29 @@
+{% if ingested and document.shouldBeUploaded and document.fileInfo.isUploaded %}
+<div id="above-carousel"></div>
+<a href="#below-carousel" class="mt-8 skiplink-carousel-down">{{ "Skip documents preview" | trans() }}</a>
+
+{% if document.fileInfo.type == "pdf" and document.pageCount > 0 %}
+<div class="block w-full pb-8">
+    <p class="pb-1 de-emphasized">
+        {{
+            "Click on a page to open the {fileInfo} ({fileSize}) in your browser" |
+            trans({ fileInfo: document.fileInfo.type|upper, fileSize: document.fileInfo.size != "0" ? document.fileInfo.size | size : ""  })
+        }}
+    </p>
+    {% include "document/snippets/carousel.html.twig" %}
+</div>
+{% endif %}
+
+{% if document.fileInfo.type == "audio" %}
+<div class="pb-8">
+    <img
+        width="100%"
+        alt="{{ "Audio" | trans }}"
+        src="{{ path('app_document_thumbnail', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: 0}) }}"
+    />
+</div>
+{% endif %}
+
+<div id="below-carousel"></div>
+<a href="#above-carousel" class="skiplink-carousel-up">{{ "Go back to documents preview" | trans() }}</a>
+{% endif %}

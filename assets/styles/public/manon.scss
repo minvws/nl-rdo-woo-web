@@ -1,2 +1,4 @@
 /* Manon */
-@import "@minvws/nl-rdo-rijksoverheid-ui-theme/scss/main";
+@import "../manon/manon-components";
+@import "../manon/basic-bold/theme";
+@import "../manon/manon-temporary-overrides";

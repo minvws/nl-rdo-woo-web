@@ -74,11 +74,11 @@ class AuthMatrixSubscriber implements EventSubscriberInterface
             '/balie/2fa',
             '/balie/2fa_check',
             '/balie/admin',
-            '/balie/change-password',
             '/balie/contact',
             '/balie/login',
             '/balie/logout',
             '/balie/privacy',
+            '/balie/profiel',
         ];
         if (in_array($uri, $allowedRoutes)) {
             return;

@@ -43,6 +43,7 @@ class InventorySanitizer
             'Beoordelingsgrond',
             'Toelichting',
             'Publieke link',
+            'Locatie open.minvws.nl',
             'Opgeschort',
             'Definitief ID',
         );
@@ -69,12 +70,13 @@ class InventorySanitizer
         $dossier = $document->getDossiers()->first();
 
         return [
-            strval($document->getDocumentId()),
+            $document->getDocumentId() ?: '',
             $document->getDocumentNr(),
             $document->getFileInfo()->getName() ?: '',
             $document->getJudgement() ? $this->translator->trans($document->getJudgement()->value) : '',
             $document->getGrounds(),
             $document->getRemark() ?: '',
+            implode("\n", $document->getLinks()),
             $this->publicBaseUrl . $this->urlGenerator->generate(
                 'app_document_detail',
                 ['dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()],

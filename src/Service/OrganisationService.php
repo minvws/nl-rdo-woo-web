@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Department;
 use App\Entity\Organisation;
 use Doctrine\ORM\EntityManagerInterface;
 use MinVWS\AuditLogger\AuditLogger;
@@ -37,12 +36,8 @@ class OrganisationService
         $this->tokenStorage = $tokenStorage;
     }
 
-    public function create(string $name, Department $department): Organisation
+    public function create(Organisation $organisation): void
     {
-        $organisation = new Organisation();
-        $organisation->setName($name);
-        $organisation->setDepartment($department);
-
         $this->doctrine->persist($organisation);
         $this->doctrine->flush();
 
@@ -63,19 +58,15 @@ class OrganisationService
             ->withSource('woo')
             ->withData([
                 'organisation_id' => $organisation->getId(),
-                'name' => $name,
-                'department' => $department,
+                'name' => $organisation->getName(),
+                'department' => $organisation->getDepartment(),
             ]));
-
-        return $organisation;
     }
 
-    public function update(Organisation $organisation, string $name, Department $department): Organisation
+    public function update(Organisation $organisation): Organisation
     {
-        $oldOrganisation = clone $organisation;
-
-        $organisation->setName($name);
-        $organisation->setDepartment($department);
+        $this->doctrine->getUnitOfWork()->computeChangeSets();
+        $changes = $this->doctrine->getUnitOfWork()->getEntityChangeSet($organisation);
 
         $this->doctrine->persist($organisation);
         $this->doctrine->flush();
@@ -90,6 +81,7 @@ class OrganisationService
         if ($loggedInUser === null) {
             $loggedInUser = new AuditUser('cli user', 'system', [], 'system@localhost');
         }
+
         /** @var LoggableUser $loggedInUser */
         $this->auditLogger->log((new OrganisationChangeLogEvent())
             ->asUpdate()
@@ -100,12 +92,12 @@ class OrganisationService
             ])
             ->withPiiData([
                 'old' => [
-                    'name' => $oldOrganisation->getName(),
-                    'department' => $oldOrganisation->getDepartment(),
+                    'name' => $changes['name'][0] ?? $organisation->getName(),
+                    'department' => $changes['department'][0] ?? $organisation->getDepartment(),
                 ],
                 'new' => [
-                    'name' => $organisation->getName(),
-                    'department' => $organisation->getDepartment(),
+                    'name' => $changes['name'][1] ?? $organisation->getName(),
+                    'department' => $changes['department'][1] ?? $organisation->getDepartment(),
                 ],
             ]));
 

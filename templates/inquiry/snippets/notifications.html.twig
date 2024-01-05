@@ -1,0 +1,20 @@
+{% if scheduledDossiers.count > 0 %}
+<div class="block pt-8 w-full">
+    <div class="warning">
+        <div class="width-delimiter block">
+            <h2 class="visually-hidden">{{ "Warning" | trans() }}</h2>
+            <p>
+                <span></span>
+                {% set dates = '' %}
+                {% for scheduledDossier in scheduledDossiers %}
+                    {% if not loop.first %}
+                        {% set dates = dates ~ " " ~ "and on" | trans ~ " " %}
+                    {% endif %}
+                    {% set dates = dates ~ scheduledDossier.previewDate | format_date('long')  %}
+                {% endfor %}
+                {{ "On {dates} new dossiers will be available on this page" | trans({'{dates}': dates}) }}
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}

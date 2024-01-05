@@ -4,9 +4,8 @@
 {% set page_title = document.fileInfo.name %}
 
 {% block body %}
-    <section>
-        <div class="gap-0">
-
+    <section class="content-detail-container">
+        <div>
             <h1 class="leading-tight flex items-center">
                 <twig:Icon name="{{ document.fileInfo.sourceType }}" size="32" class="mr-4 shrink-0 self-baseline mt-3" />
                 <span class="visually-hidden">{{ document.fileInfo.sourceType | trans() }}</span>
@@ -26,53 +25,11 @@
 
             {% include "document/snippets/notifications.html.twig" %}
 
-            {# todo how to resolve parent?
-                <p>{{ "Attachment of" | trans }} <a href="{{ path('app_document_detail', { dossierId: dossier.dossierNr, documentId: familyParent.documentNr }) }}"><i class="{{ familyParent.fileInfo.sourceType | sourceTypeIcon }}"></i> {{ familyParent.fileInfo.name }}</a></p>
-            #}
+            {% include "document/snippets/viewer.html.twig" %}
 
-            {% if ingested and document.shouldBeUploaded and document.fileInfo.isUploaded %}
-                <a id="above-carousel"></a>
-                <a href="#below-carousel" class="mt-8 skiplink-carousel-down">{{ "Skip documents preview" | trans() }}</a>
-
-                {% if document.fileInfo.type == "pdf" and document.pageCount > 0 %}
-                    <div class="block w-full">
-                        <p class="pb-1 de-emphasized">
-                            {{
-                                "Click on a page to open the {fileInfo} ({fileSize}) in your browser" |
-                                trans({ fileInfo: document.fileInfo.type|upper, fileSize: document.fileInfo.size != "0" ? document.fileInfo.size | size : ""  })
-                            }}
-                        </p>
-                        {% include "document/snippets/carousel.html.twig" %}
-                    </div>
-                {% endif %}
-
-                {% if document.fileInfo.type == "audio" %}
-                    <div class="pt-8">
-                        <img
-                            width="100%"
-                            alt="{{ "Audio" | trans }}"
-                            src="{{ path('app_document_thumbnail', { dossierId: dossier.dossierNr, documentId: document.documentNr, pageNr: 0}) }}"
-                        />
-                    </div>
-                {% endif %}
-
-                <a href="#above-carousel" class="skiplink-carousel-up">{{ "Go back to documents preview" | trans() }}</a>
-                <a id="below-carousel"></a>
-            {% endif %}
-
-            {% if document.shouldBeUploaded and document.isUploaded and (document.fileInfo.size != "0") %}
-            <div class="button-container pt-8">
-                <a class="button" download href="{{ path('app_document_download', { dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">
-                    <twig:Icon name="download" />
-                    {{ "Download" | trans }} ({{ document.fileInfo.type|upper }} {{ document.fileInfo.size | size }})
-                </a>
-                {# <a class="button" href="">{{ "View online (beta)" | trans() }}</a> #}
-            </div>
-            {% endif %}
+            {% include "document/snippets/download.html.twig" %}
 
             {% include "document/snippets/about.html.twig" %}
-
-            {% include "document/snippets/history.html.twig" %}
 
             {% if document.fileInfo.sourceType == constant('App\\SourceType::SOURCE_EMAIL') %}
                 {{ macro.documents_section(thread, "Messages from the same e-mail conversation") }}
@@ -83,9 +40,7 @@
 
             {% include "document/snippets/background.html.twig" %}
 
-            {#    {% if document.fileInfo.sourceType != constant('App\\SourceType::SOURCE_EMAIL') and document.familyId != document.documentId %} #}
-            {#        <a class="btn" href="#">Link to the e-mail with this attachment</a> #}
-            {#    {% endif %} #}
+            {{ macro.history_section(get_frontend_history('document', document.id), "History of this document") }}
         </div>
     </section>
 {% endblock %}

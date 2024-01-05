@@ -1,11 +1,12 @@
-import { icon } from '@js/admin/component';
-import { areFilesEqual, getIconNameByMimeType, hideElement, showElement, uniqueId } from '@utils';
+import { icon, skipLink } from '@js/admin/component';
+import { areFilesEqual, getIconNameByMimeType, hideElement, isFocusWithinElement, showElement, uniqueId } from '@utils';
 
 interface FilesAreaOptions {
   areaElement: HTMLElement | null;
   canUploadMultipleFiles: boolean;
   onFileRemovedFunction: (file: File) => void;
   onFileUploadFailedFunction: (file: File, message: string) => void;
+  returnFocusToElement: HTMLElement | null;
 }
 
 export class FilesArea {
@@ -14,8 +15,11 @@ export class FilesArea {
 
   areaElement: HTMLElement | null;
   canUploadMultipleFiles = false;
-  listElement: HTMLElement | null;
+  listElement: HTMLElement;
+  returnFocusToElement: HTMLElement | null;
+  skipLinkClassName = 'js-files-area-skip-link';
 
+  onBeforeFileRemoveFunction: () => void = () => {};
   onFileRemovedFunction: (file: File) => void = () => {};
   onFileUploadFailedFunction: (file: File, message: string) => void = () => {};
 
@@ -25,6 +29,7 @@ export class FilesArea {
       canUploadMultipleFiles,
       onFileRemovedFunction,
       onFileUploadFailedFunction,
+      returnFocusToElement,
     } = options;
 
     this.#noFilesMessageElement = areaElement?.querySelector('.js-no-files-message') as HTMLElement;
@@ -33,9 +38,14 @@ export class FilesArea {
     this.canUploadMultipleFiles = canUploadMultipleFiles;
     this.onFileUploadFailedFunction = onFileUploadFailedFunction;
     this.onFileRemovedFunction = onFileRemovedFunction;
+    this.returnFocusToElement = returnFocusToElement;
 
     this.listElement = this.#createListElement();
     this.listElement.classList.add('bhr-upload-area__files-list');
+
+    this.areaElement?.appendChild(this.#createAboveListSkipLink());
+    this.areaElement?.appendChild(this.listElement);
+    this.areaElement?.appendChild(this.#createBelowListSkipLink());
   }
 
   cleanup() {
@@ -79,9 +89,15 @@ export class FilesArea {
 
   removeFile(fileId: string, shouldNotify = true) {
     const { file, remove } = this.getFromStore(fileId);
+    const isFocusWithinListItem = isFocusWithinElement(document.getElementById(fileId));
+
     remove();
     this.removeFromStore(fileId);
     this.afterListUpdated();
+
+    if (isFocusWithinListItem) {
+      this.returnFocusToElement?.focus();
+    }
 
     if (shouldNotify) {
       this.onFileRemovedFunction(file);
@@ -98,6 +114,7 @@ export class FilesArea {
   addElement(file: File) {
     const fileId = uniqueId('file', 32);
     const element = this.createElement(fileId, file);
+    element.id = fileId;
     this.listElement?.appendChild(element);
 
     const cleanup = this.addElementFunctionality(element, fileId, file);
@@ -127,13 +144,13 @@ export class FilesArea {
                 <button class="cursor-pointer py-1 px-2 mr-2 hover-focus:text-maximum-red ${this.removeButtonClass}" type="button">
                     ${icon({ color: 'fill-current', name: 'trash-bin', size: 16 })} <span class="sr-only">Verwijder ${file.name}</span>
                 </button>
-                <div class="py-1 px-2 mr-2 hidden ${this.spinnerClass}">
+                <div class="py-1 px-2 mr-2 hidden ${this.spinnerClass}" tabindex="-1">
                     ${icon({ name: 'loader', css: 'animate-spin', size: 16 })}
                 </div>
-                <div class="py-1 px-2 mr-2 hidden ${this.uploadFailedClass}">
+                <div class="py-1 px-2 mr-2 hidden ${this.uploadFailedClass}" tabindex="-1">
                     ${icon({ name: 'cross-rounded-filled', color: 'fill-maximum-red', size: 16 })}
                 </div>
-                <div class="py-1 px-2 mr-2 hidden ${this.uploadSuccessClass}">
+                <div class="py-1 px-2 mr-2 hidden ${this.uploadSuccessClass}" tabindex="-1">
                     ${icon({ name: 'check-rounded-filled', color: 'fill-philippine-green', size: 16 })}
                 </div>
             </div>
@@ -194,20 +211,46 @@ export class FilesArea {
   #createListElement = () => {
     const listElement = document.createElement('ul');
     hideElement(listElement);
-    this.areaElement?.appendChild(listElement);
 
     return listElement;
   };
 
+  #createAboveListSkipLink() {
+    return skipLink({
+      content: 'Naar einde van lijst met te uploaden bestanden',
+      css: `focus:mt-2 hidden ${this.skipLinkClassName}`,
+      id: 'begin-van-lijst-met-te-uploaden-bestanden',
+      href: '#einde-van-lijst-met-te-uploaden-bestanden',
+    });
+  }
+
+  #createBelowListSkipLink() {
+    return skipLink({
+      content: 'Naar begin van lijst met te uploaden bestanden',
+      css: `focus:mb-2 hidden ${this.skipLinkClassName}`,
+      id: 'einde-van-lijst-met-te-uploaden-bestanden',
+      href: '#begin-van-lijst-met-te-uploaden-bestanden',
+    });
+  }
+
   afterListUpdated() {
+    const doesOneOfSkipLinksHaveFocus = this.isFocusOnOneOfSkipLinks();
+
     if (this.getNumberOfFiles() === 0) {
       this.hideList();
+      this.hideSkipLinks();
       this.showNoMessagesElement();
       this.updateListGrid();
+
+      if (doesOneOfSkipLinksHaveFocus) {
+        this.returnFocusToElement?.focus();
+      }
+
       return;
     }
 
     this.showList();
+    this.showSkipLinks();
     this.hideNoMessagesElement();
     this.updateListGrid();
   }
@@ -224,6 +267,23 @@ export class FilesArea {
     if (numberOfFiles === 2) {
       this.listElement?.classList.add('grid', 'grid-cols-2');
     }
+  }
+
+  isFocusOnOneOfSkipLinks(): boolean {
+    return this.getSkipLinks().some((skipLinkElement) => isFocusWithinElement(skipLinkElement)) ?? false;
+  }
+
+  getSkipLinks() {
+    const nodeList = this.areaElement?.querySelectorAll(`.${this.skipLinkClassName}`) as NodeListOf<HTMLElement> | null;
+    return Array.from(nodeList || []);
+  }
+
+  hideSkipLinks() {
+    this.getSkipLinks().forEach((hideElement));
+  }
+
+  showSkipLinks() {
+    this.getSkipLinks().forEach((showElement));
   }
 
   hideList() {
@@ -267,6 +327,6 @@ export class FilesArea {
   }
 
   getRemoveButton(listItemElement: HTMLElement) {
-    return listItemElement.querySelector(`.${this.removeButtonClass}`);
+    return listItemElement.querySelector(`.${this.removeButtonClass}`) as HTMLElement | null;
   }
 }

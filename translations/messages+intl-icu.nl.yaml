@@ -103,10 +103,11 @@ Responsible: Verantwoordelijk bestuursorgaan
 Summary: Samenvatting
 "Summary of request": "Samenvatting verzoek"
 "Time period": Periode
-"Date of disclosure": "Datum openbaarmaking"
+"Date of disclosure": "Datum besluit"
 "Type of decision": "Type besluit"
 "Scope of disclosure": "Omvang openbaarmaking"
 "Inventory list": Inventarislijst
+"Production report": "Productierapport"
 "Other decisions in which this document appears": "Andere besluiten waar dit document in voorkomt"
 Title: Titel
 Description: Omschrijving
@@ -230,6 +231,7 @@ Decision about: "Besluit over"
 Page: Pagina
 "Document number": Documentnummer
 Date: Datum
+Action: Actie
 from: vanaf
 to: tot en met
 Organisation: Organisatie
@@ -282,7 +284,9 @@ t/m: t/m
 "All COVID-19 related Wob and Woo documents and decisions will be published on this website from September 2023. Decisions from the previous period can be found on wobcovid19.rijksoverheid.nl and will soon also be available here.": "Op deze website worden alle COVID-19 gerelateerde Woo-documenten en besluiten vanaf september 2023 gepubliceerd. Besluiten uit de periode daarvoor zijn te vinden op wobcovid19.rijksoverheid.nl en komen binnenkort ook hier beschikbaar."
 "Type in a search term": "Typ een zoekterm in"
 "Published on": "Gepubliceerd op"
+"published on": "gepubliceerd op"
 "Date of publication": "Datum publicatie"
+"Decided on": "Besluit genomen op"
 Request: Verzoek
 Responsible(s): Verantwoordelijk(en)
 "Taken decision": "Soort besluit"
@@ -347,7 +351,6 @@ Edit user: Gebruiker bewerken
 "Dossier management": "Besluit beheer"
 "This link provides access to the management of Woo requests, where you can view, manage and process new requests. Here you can also keep track of the status of existing requests and perform relevant actions.": "Deze link biedt toegang tot het beheer van Woo aanvragen, waar u nieuwe aanvragen kunt bekijken, beheren en verwerken. Hier kunt u ook de status van bestaande aanvragen bijhouden en relevante acties uitvoeren."
 "This link provides access to the management of tokens for dossier previews.": "Deze link biedt toegang tot het beheer van tokens voor besluit previews."
-"This link provides access to the management of document prefixes.": "Deze link biedt toegang tot het beheer van document prefixes."
 "This link provides access to system statistics and monitoring.": "Deze link biedt toegang tot statistieken en monitoring van het systeem."
 "This link provides access to dossier admin actions.": "Deze link biedt toegang tot beheerdersacties voor besluiten."
 "Statistics & Monitoring": "Statistieken & Monitoring"
@@ -554,6 +557,13 @@ DATA_IN_FILE: 'Ongelakte gegevens in de bestandsnaam'
 SUSPENDED_DOCUMENT: 'Document is nog opgeschort'
 UNREADABLE_DOCUMENT: 'Document is onleesbaar'
 INCORRECT_ATTACHMENT: 'De bijlage hoort niet bij het document'
+
+data_in_document: 'Ongelakte gegevens in het document'
+data_in_file: 'Ongelakte gegevens in de bestandsnaam'
+suspended_document: 'Document is nog opgeschort'
+unreadable_document: 'Document is onleesbaar'
+incorrect_attachment: 'De bijlage hoort niet bij het document'
+
 Withdraw document: 'Document intrekken'
 Withdraw: 'Intrekken'
 Document has been withdrawn: 'Het document is ingetrokken'
@@ -591,7 +601,7 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Particulars": "Bijzonderheden"
 "Reference number": "Referentienummer"
 "Give a name to the decision": "Geef een naam aan het besluit"
-"Replace inventory": "Inventarislijst vervangen"
+"Replace inventory": "Productierapport vervangen"
 "Delete dossier": "Besluit verwijderen"
 "Line {line_number} error: {error}": "Regel {line_number}: {error}"
 "Document {document_id} already exists in another dossier": "documentnummer {document_id} bestaat al in een ander dossier"
@@ -599,19 +609,19 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Cannot store the inventory spreadsheet": "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
 "Could not download the inventory from document storage": "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
 "Error while generating sanitized inventory": "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
-"Missing inventory header {headername}": "De inventarislijst mist de kolom {headername}"
+"Missing inventory header {headername}": "Het productierapport mist de kolom {headername}"
 "Error while processing inventory row {rowIndex}": "De verwerking van rij {rowIndex} veroorzaakt een fout"
-"Error while opening the inventory spreadsheet": "Er is een fout opgetreden bij het openen van de inventarislijst, controleer de structuur"
-"Error while reading spreadsheet cell": "Er is een fout opgetreden bij het lezen van de inventarislijst, controleer de structuur"
+"Error while opening the inventory spreadsheet": "Er is een fout opgetreden bij het openen van het productierapport, controleer de structuur"
+"Error while reading spreadsheet cell": "Er is een fout opgetreden bij het lezen van het productierapport, controleer de structuur"
 "Missing document number in row {rownumber}": "Rij {rownumber} heeft geen documentnummer"
 "Link too long in row {rownumber}": "Rij {rownumber} heeft een te lange link (max 2048 tekens)"
 "Filename too long in row {rownumber}": "Rij {rownumber} heeft een te lange bestandsnaam (max 1024 tekens)"
 "A generic document update exception occurred": "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
 "Exception occurred during inventory processing": "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
 "Inventory row processing failed with errors": "Er zijn fouten opgetreden tijdens de verwerking van de rijen in de inventaris"
-"Inventory file has no changes": "De nieuwe inventarislijst is gelijk aan de huidige lijst"
-"Missing document {documentNumber} in the inventory": "Document {documentNumber} mist in de inventarislijst"
-"Inventory processing exceeded maximum runtime": "De verwerking van de inventarislijst heeft de maximale duur overschreden"
+"Inventory file has no changes": "Het nieuwe productierapport is gelijk aan het huidige rapport"
+"Missing document {documentNumber} in the inventory": "Document {documentNumber} mist in het productierapport"
+"Inventory processing exceeded maximum runtime": "De verwerking van het productierapport heeft de maximale duur overschreden"
 "Save": "Opslaan"
 "Users identify themselves with their email address. We do not use the email address to share password or other login information.": "Gebruikers identificeren zich met hun e-mailadres. We gebruiken het e-mailadres niet voor het delen van wachtwoord of andere login-gegevens."
 "Management platform woo publications Ministry of Health, Welfare and Sport": "Beheer platform woo-publicaties Ministerie van VWS"
@@ -632,9 +642,11 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Indicate what this user is allowed to do.": "Geef aan wat deze gebruiker mag doen."
 "Login page": "Loginpagina"
 "Recovery codes": "Herstelcodes"
-"Current password": "Huidige wachtwoord"
-"New Password": "Nieuwe wachtwoord"
-"Repeat Password": "Herhaal ter controle het nieuwe wachtwoord"
+"Current password": "Huidig wachtwoord"
+"New password": "Nieuw wachtwoord"
+"Repeat new password": "Herhaal nieuw wachtwoord"
+"The password fields must match": "Vul voor het nieuwe wachtwoord twee keer hetzelfde wachtwoord in"
+"The password is a common password or similar": "Het wachtwoord is een veelvoorkomend wachtwoord of vergelijkbaar"
 "Login instructions for": "Login instructies voor"
 "Download these instructions and send them to the user in a secure manner.": "Download deze instructies en stuur ze op een veilige manier naar de gebruiker."
 "Have you shared the login instructions?": "Heb je de inlog-instructies gedeeld?"
@@ -662,6 +674,7 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Privacy statement for platform employees Open Government Act (Woo)": "Privacyverklaring voor medewerkers platform Wet open overheid (Woo)"
 "Cases": "Zaken"
 "Famous case numbers": "Alle zaaknummers"
+"Link to case": "Link naar zaak"
 "Link case numbers to decisions or documents": "Zaaknummer aan besluiten of documenten koppelen"
 "Link case number": "Zaaknummer koppelen"
 "Link case numbers to previously published documents on the platform or to previously published decisions.": "Koppel zaaknummers aan eerder gepubliceerde documenten op het platform of aan eerder gepubliceerde besluiten"
@@ -683,10 +696,10 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
     =1{# bestaand document wordt aangepast.}
     other{# bestaande documenten worden aangepast.}
   }
-"if you continue the inventory will be replaced": "Als je verdergaat, wordt de oude inventarislijst in dit besluit vervangen."
+"if you continue the inventory will be replaced": "Als je verdergaat, wordt het oude productierapport in dit besluit vervangen."
 "This has the following consequences": "Dit heeft de volgende gevolgen"
-"Inventory uploaded and checked": "Inventarislijst geüpload en gecontroleerd"
-"Confirm inventory replacement": "Ok, vervang inventarislijst"
+"Inventory uploaded and checked": "Productierapport geüpload en gecontroleerd"
+"Confirm inventory replacement": "Ok, vervang productierapport"
 "Reject inventory replacement": "Annuleren"
 "Indicate what this user is allowed to do, multiple options are possible": "Geef aan wat deze gebruiker mag doen, meerdere opties zijn mogelijk"
 "Your new password cannot be the same as your current password": "Je nieuwe wachtwoord mag niet hetzelfde zijn als je huidige wachtwoord"
@@ -749,36 +762,59 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 'On {dates} new dossiers will be available on this page': 'Op {dates} komt op deze pagina een nieuw (deel)besluit beschikbaar.'
 'and on': 'en op'
 'Organisation management': 'Organisaties beheren'
-
 'History': 'Geschiedenis'
+'History of this document': 'Geschiedenis van dit document'
 'history': 'geschiedenis'
-
-history.dossier_updated.title: 'Besluit bijgewerkt'
-history.dossier_updated.description: 'Dit besluit is bijgewerkt. De volgende gegevens zijn aangepast: {changes}'
-history.dossier_created.title: 'Besluit aangemaakt'
-history.dossier_created.description: 'Dit besluit is aangemaakt op het platform'
-history.dossier_published.title: 'Besluit gepubliceerd'
-history.dossier_published.description: 'Dit besluit is gepubliceerd op het platform'
-history.dossier_removed.title: 'Besluit is verwijderd'
-history.dossier_removed.description: 'Dit besluit is verwijderd van het platform'
-history.dossier_state_changed.title: 'Besluit status aangepast'
-history.dossier_state_changed.description: 'Besluit status is aangepast van {old} naar {new}'
-history.dossier_update_decision.title: 'Besluitdocument is aangepast'
-history.dossier_update_decision.description: 'Het besluitdocument is aangepast'
-history.dossier_update_inventory.title: 'Besluit inventarislijst is aangepast'
-history.dossier_update_inventory.description: 'De inventarislijst van dit besluit is aangepast'
-history.inquiry_added.title: 'Zaaknummer toegevoegd'
-history.inquiry_added.description: 'Het volgende zaaknummer is toegevoegd aan dit besluit: {casenr}'
-history.inquiry_removed.title: 'Zaaknummer verwijderd'
-history.inquiry_removed.description: 'Het volgende zaaknummer is verwijderd van dit besluit: {casenr}'
-history.dossier_withdraw_all.title: 'Alle documenten binnen dit besluit zijn ingetrokken'
-history.dossier_withdraw_all.description: 'Rede van intrekking: {explanation}'
-history.document_uploaded.title: 'Document is geupload'
-history.document_uploaded.description: 'Document {document} is geupload op het platform'
-history.document_withdraw.title: 'Dit document is ingetrokken'
-history.document_withdraw.description: 'Reden van intrekking: {explanation}'
-history.document_removed.title: 'Dit document is verwijderd'
-history.document_removed.description: 'Dit document is permanent verwijderd van het platform'
-history.document_replaced.title: 'Dit document is vervangen'
-history.document_replaced.description: 'Dit document is vervangen voor een ander document. Dit kan gebeuren indien er persoonsgegevens of andere gevoelige informatie in het document stond.'
 Manage organisations: 'Organisaties beheren'
+Modify organisation {name}: 'Wijzig organisatie {name}'
+Create organisation: 'Organisatie aanmaken'
+No dossiers match the filters: 'Er zijn geen besluiten gevonden die aan de filters voldoen.'
+No dossiers have been created yet: 'Er zijn nog geen besluiten aangemaakt.'
+
+history.dossier_created.private: 'Besluitdossier aangemaakt'
+history.dossier_created.public: null
+history.dossier_updated.private: 'De volgende gegevens zijn aangepast: {changes}'
+history.dossier_updated.public: 'Informatie over het besluit bijgwerkt'
+history.dossier_state_concept.private: 'Status aangepast naar concept'
+history.dossier_state_concept.public: null
+history.dossier_state_scheduled.private: 'Publicatie gepland'
+history.dossier_state_scheduled.public: null
+history.dossier_state_preview.private: 'Online voor verzoekers'
+history.dossier_state_preview.public: 'Online voor verzoekers'
+history.dossier_state_published.private: 'Openbaar voor iedereen'
+history.dossier_state_published.public: 'Gepubliceerd'
+history.dossier_state_retracted.private: 'Teruggetrokken'
+history.dossier_state_retracted.public: 'Teruggetrokken'
+history.dossier_update_decision.private: 'Nieuwe besluitbrief toegevoegd ({filename}, {filesize})'
+history.dossier_update_decision.public: 'Besluitbrief vervangen ({filetype}, {filesize})'
+history.dossier_update_inventory.private: 'Nieuwe inventarislijst toegevoegd ({filename}, {filesize})'
+history.dossier_update_inventory.public: 'Inventarislijst vervangen'
+history.dossier_inquiry_added.public: null
+"history.dossier_inquiry_added.private": >-
+  { count, plural,
+    =1{Toegevoegd aan zaak {casenrs}}
+    other{Toegevoegd aan zaken {casennrs}}
+  }
+history.dossier_inquiry_removed.public: null
+history.dossier_inquiry_removed.private: 'Verwijderd uit zaak: {casenrs}'
+history.dossier_withdraw_all.private: 'Alle doucmenten ingetrokken: {explanation} ({explation_details})'
+history.dossier_withdraw_all.public: 'Alle documenten in dit besluit zijn ingetrokken met reden: {explanation}'
+history.document_inventory_updated.private: 'Gegevens aangepast via inventarislijst: {changes}'
+history.document_inventory_updated.public: 'Gegevens over document aangepast'
+history.document_judgement_public.private: 'Beoordeling aangepast naar openbaar'
+history.document_judgement_public.public: 'Beoordeling aangepast naar openbaar'
+history.document_judgement_already_public.private: 'Beoordeling aangepast naar reeds openbaar'
+history.document_judgement_already_public.public: 'Beoordeling aangepast naar reeds openbaar'
+history.document_judgement_partial_public.private: 'Beoordeling aangepast naar deels openbaar'
+history.document_judgement_partial_public.public: 'Beoordeling aangepast naar deels openbaar'
+history.document_judgement_not_public.private: 'Beoordeling aangepast naar niet openbaar'
+history.document_judgement_not_public.public: 'Beoordeling aangepast naar niet openbaar'
+history.document_uploaded.private: 'Nieuw bronbestand geüpload ({filetype}, {filesize})'
+history.document_uploaded.public: 'Bronbestand toegevoegd ({filetype}, {filesize})'
+history.document_replaced.private: 'Nieuwe versie bronbestand geüpload ({filetype}, {filesize})'
+history.document_replaced.public: 'Bronbestand vervangen ({filetype}, {filesize})'
+history.document_withdraw.private: 'Ingetrokken: {explanation} ({explation_details})'
+history.document_withdraw.public: 'Ingetrokken met reden: {explanation}'
+history.document_removed.private: 'Verwijderd'
+history.document_removed.public: 'Verwijderd'
+'date {date} cannot be parsed': 'de datum "{date}" heeft niet het juiste formaat'

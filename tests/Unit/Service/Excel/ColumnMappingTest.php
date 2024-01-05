@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Excel;
 
-use App\Service\Excel\ColumnMapping;
+use App\Service\FileReader\ColumnMapping;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class ColumnMappingTest extends MockeryTestCase

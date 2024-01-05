@@ -20,7 +20,7 @@ use App\SourceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Translation\Translator;
 use Twig\Extension\RuntimeExtensionInterface;
 
 /**
@@ -32,7 +32,7 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
     public function __construct(
         private readonly RequestStack $requestStack,
         private readonly ThumbnailStorageService $storageService,
-        private readonly TranslatorInterface $translator,
+        private readonly Translator $translator,
         private readonly DocumentRepository $documentRepository,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly FacetMappingService $facetMapping,
@@ -296,8 +296,29 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
     /**
      * @return History[]|array
      */
+    public function getFrontendHistory(string $type, string $identifier): array
+    {
+        return $this->historyService->getHistory($type, $identifier, HistoryService::MODE_PUBLIC);
+    }
+
+    /**
+     * @return History[]|array
+     */
+    public function getBackendHistory(string $type, string $identifier): array
+    {
+        return $this->historyService->getHistory($type, $identifier, HistoryService::MODE_PRIVATE);
+    }
+
+    /**
+     * @return History[]|array
+     */
     public function getHistory(string $type, string $identifier): array
     {
-        return $this->historyService->getHistory($type, $identifier);
+        return $this->historyService->getHistory($type, $identifier, HistoryService::MODE_BOTH);
+    }
+
+    public function historyTranslation(History $entry, string $mode = HistoryService::MODE_PUBLIC): string
+    {
+        return $this->historyService->translate($entry, $mode);
     }
 }

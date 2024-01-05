@@ -42,6 +42,7 @@ describe('The file utility functions', () => {
 
     test('should return "file-zip" for zip mimetypes', () => {
       expect(getIconNameByMimeType('application/zip')).toBe('file-zip');
+      expect(getIconNameByMimeType('application/x-7z-compressed')).toBe('file-zip');
     });
 
     test('should return "file-unknown" for unknown mimetypes', () => {

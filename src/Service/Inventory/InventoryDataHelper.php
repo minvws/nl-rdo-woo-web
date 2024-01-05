@@ -20,6 +20,45 @@ class InventoryDataHelper
         return in_array(strtolower(strval($value)), ['true', 'ja', 'yes', '1', 'y', 'j']);
     }
 
+    public static function toDateTimeImmutable(string $value): \DateTimeImmutable
+    {
+        if (empty($value)) {
+            throw new \RuntimeException('Cannot parse empty date string');
+        }
+
+        $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $value);
+        if ($date) {
+            return $date;
+        }
+
+        $date = \DateTimeImmutable::createFromFormat('!d-m-Y', $value);
+        if ($date) {
+            return $date;
+        }
+
+        $date = \DateTimeImmutable::createFromFormat('!Y/m/d', $value);
+        if ($date) {
+            return $date;
+        }
+
+        $date = \DateTimeImmutable::createFromFormat('!d/m/Y', $value);
+        if ($date) {
+            return $date;
+        }
+
+        $date = \DateTimeImmutable::createFromFormat('d/m/Y H:i', $value);
+        if ($date) {
+            return $date;
+        }
+
+        $date = \DateTimeImmutable::createFromFormat('m/d/Y h:i a T', $value);
+        if ($date) {
+            return $date;
+        }
+
+        throw new \RuntimeException('Cannot parse empty date string');
+    }
+
     /**
      * Splits a string by separators, trims all values and removes any empty values.
      *

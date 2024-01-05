@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
+use App\Entity\Organisation;
 use App\Service\Elastic\Model\DocumentCounts;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -156,11 +157,9 @@ class DocumentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string[]|null $prefixFilter
-     *
      * @return Document[]
      */
-    public function findBySearchTerm(string $searchTerm, int $limit, ?array $prefixFilter): array
+    public function findBySearchTerm(string $searchTerm, int $limit, Organisation $organisation): array
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds')
@@ -168,14 +167,12 @@ class DocumentRepository extends ServiceEntityRepository
             ->where('d.fileInfo.name LIKE :searchTerm')
             ->orWhere('d.documentNr LIKE :searchTerm')
             ->orWhere('i.casenr LIKE :searchTerm')
+            ->andWhere('ds.organisation = :organisation')
             ->orderBy('d.updatedAt', 'DESC')
             ->setMaxResults($limit)
             ->setParameter('searchTerm', '%' . $searchTerm . '%')
+            ->setParameter('organisation', $organisation)
         ;
-
-        if ($prefixFilter) {
-            $qb->andWhere('ds.documentPrefix IN (:prefixes)')->setParameter('prefixes', $prefixFilter);
-        }
 
         return $qb->getQuery()->getResult();
     }
@@ -264,5 +261,19 @@ class DocumentRepository extends ServiceEntityRepository
         ;
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllDocumentNumbersForDossier(Dossier $dossier): array
+    {
+        /** @var string[] $docNumbers */
+        $docNumbers = $this->getDossierDocumentsQueryBuilder($dossier)
+            ->select('doc.documentNr')
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return $docNumbers;
     }
 }

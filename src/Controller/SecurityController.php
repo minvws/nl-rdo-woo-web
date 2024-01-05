@@ -6,7 +6,9 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\User\ChangePasswordType;
+use App\Roles;
 use Doctrine\ORM\EntityManagerInterface;
+use MinVWS\AuditLogger\Contracts\LoggableUser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,8 +44,8 @@ class SecurityController extends AbstractController
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
-    #[Route(path: '/balie/change-password', name: 'app_change_password')]
-    public function changePassword(Request $request): Response
+    #[Route(path: '/balie/profiel', name: 'app_admin_user_profile')]
+    public function viewLoggedInUser(Request $request): Response
     {
         $form = $this->createForm(ChangePasswordType::class);
 
@@ -68,11 +70,24 @@ class SecurityController extends AbstractController
                 return $this->redirect($targetPath);
             }
 
-            return $this->redirectToRoute('app_admin');
+            return $this->redirectToRoute('app_admin_user_profile');
         }
 
-        return $this->render('security/change_password.html.twig', [
+        /** @var LoggableUser $loggedInUser */
+        /** @phpstan-ignore-next-line */
+        $loggedInUser = $this->getUser();
+
+        $roles = Roles::roleDetails();
+        $roleDetails = [];
+        foreach ($roles as $role) {
+            $roleDetails[$role['role']] = $role['description'];
+        }
+
+        return $this->render('security/profile.html.twig', [
             'form' => $form->createView(),
+            'hasFormErrors' => count($form->getErrors(true)) > 0,
+            'user' => $loggedInUser,
+            'role_details' => $roleDetails,
         ]);
     }
 }

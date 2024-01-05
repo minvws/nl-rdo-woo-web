@@ -2,15 +2,13 @@
 
 {% set page_title = "Home" | trans() %}
 
-{% import "facet_macros.html.twig" as macro %}
-
 {% block body %}
 
     <section class="hero">
         <img src="{{ asset('/img/hero/documenten.jpeg') }}" alt="">
     </section>
 
-        {% include "search/searchbar.html.twig" with { isHeroSearchForm: true } %}
+    {% include "search/searchbar.html.twig" with { isHeroSearchForm: true } %}
 
     <section class="content-container mx-auto">
         <div>
@@ -18,94 +16,13 @@
                 <span class="block mb-2">{{ "OGA platform" | trans() }}</span>
                 <span>{{ "OGA decisions of the Dutch Ministry of Health, Welfare and Sport" | trans() | raw }}</span>
             </h1>
-            <p>
-                {{ "Here you will find documents that the Ministry of Health, Welfare and Sport has made public on the basis of the Open Government Act (Woo). The documents are limited to the time of the corona pandemic." | trans }}
-            </p>
-            <p>
-                <a class="ro-font-bold arrowed-link reverse-underline" href="{{ path('app_about') }}">{{ "About the VWS Woo publication platform" | trans }}</a>
-            </p>
+            {% include "home/snippets/about.html.twig" %}
 
-            <h2 class="leading-tight">{{ "Recent decisions" | trans() }}</h2>
-
-            {% if recents | length > 0 %}
-                <ul class="list-unstyled list-overview -mt-3">
-                    {% for dossier in recents %}
-                    <li>
-                        <a class="block-link py-3" href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">
-                            <h3 class="!leading-tight">{{ dossier.title | default("No title available" | trans()) }}</h3>
-                            <div class="leading-4 block">
-                                <time class="ro-font-bold" datetime="{{ dossier.publicationDate | date("Y-m-d") }}">{{ dossier.publicationDate | format_date('long') }}</time>
-                                {% set thereAreDocuments = dossier.documents|length > 0 %}
-                                {% set thereArePages = dossier.pagecount|default(0) > 0 %}
-                                {% if (thereAreDocuments or thereArePages) %}
-                                    <p>
-                                        {% if thereAreDocuments %}
-                                            {{ "# documents" | trans({"count": dossier.documents|length})}}{% if thereAreDocuments and thereArePages %},{% endif %}
-                                        {% endif %}
-
-                                        {% if thereArePages %}
-                                            {{ "# pages" | trans({"count": dossier.pagecount|default(0)})}}
-                                        {% endif %}
-                                    </p>
-                                {% endif %}
-                            </div>
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-
-                <a class="ro-font-bold arrowed-link reverse-underline" href="{{ path('app_dossier_index') }}">{{ "View all decisions" | trans }}</a>
-            {% endif %}
+            {% include "home/snippets/recent-documents.html.twig" %}
         </div>
     </section>
 
-    <section class="background-color-offset">
-        <div>
-            <h2 class="leading-tight reduce-width">{{ "Search or browse decisions and published documents through the categories" | trans | raw }}</h2>
+    {% include "home/snippets/browse.html.twig" %}
 
-            {% include "search/searchbar.html.twig" with { id: "search-field-bottom", isHalfWidth: true } %}
-
-            <div class="column-3">
-                {# {{ macro.facet_preview("Department" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, facets) }} #}
-                {{ macro.facet_preview("Subject" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, facets) }}
-                {{ macro.facet_preview("Source document type" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, facets) }}
-                {# {{ macro.facet_preview("Period" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::PERIOD').value, facets) }} #}
-                {{ macro.facet_preview("Judgement" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, facets) }}
-                {{ macro.facet_preview("Grounds" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, facets) }}
-            </div>
-
-            <div class="centered pt-2">
-                <a class="arrowed-link ro-font-bold reverse-underline" href="{{ path('app_browse') }}">{{ "To all categories" | trans() }}</a>
-            </div>
-        </div>
-    </section>
-
-    <section class="content-container mx-auto">
-        <div>
-            <h2 class="leading-tight">{{ "Submit a freedom of information request" | trans() }}</h2>
-            <p>
-                {{ "You may request information about what the government does. This is stated in the <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Open Government Act (Woo)</a>. You do this via a Woo request. Good to know in advance:" | trans() | raw }}
-            </p>
-
-            <ul>
-                <li>
-                    {{ "Before making a request, check if the information you are looking for is already public. Check, for example, <a href='https://www.rijksoverheid.nl/documenten'>rijksoverheid.nl</a>, <a href='https://wobcovid19.rijksoverheid.nl/'>wobcovid19.rijksoverheid.nl</a>, <a href='https://zoek.officielebekendmakingen.nl/uitbeddenzoeken/parlementair'>the archive of the Senate and the House of Representatives</a> or <a href='https://open.overheid.nl/'>open.overheid.nl</a>." | trans() | raw }}
-                </li>
-                <li>
-                    {{ "Check which department you should submit the request to. Do you have a request for the Ministry of Health, Welfare and Sport (VWS):" | trans() | raw }}
-                    <ul>
-                        <li>{{ "and is it about the COVID-19 period? See the page <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/aanpak-vws-woo-verzoeken-corona'>Approach VWS Woo requests corona;</a>" | trans() | raw }}</li>
-                        <li>{{ "for other requests, see the page Submitting a <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-verzoek-indienen'>Woo request to the Ministry of Health, Welfare and Sport.</a>" | trans() | raw }}</li>
-                    </ul>
-                    {# {{ "Check which department you should submit the request to. Do you have a request for the Ministry of VWS? <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-vragen-vragen'>Send the request to us</a>." | trans() | raw }} #}
-                </li>
-                <li>
-                    {{ "Please indicate as precisely as possible what information you are looking for. About what subject, with what people involved, from what period?" | trans() | raw }}
-                </li>
-                <li>
-                    {{ "After submitting your request, the ministry may call you with some additional questions. It is therefore useful if you also provide your telephone number with the request." | trans() | raw }}
-                </li>
-            </ul>
-        </div>
-    </section>
+    {% include "home/snippets/info.html.twig" %}
 {% endblock %}

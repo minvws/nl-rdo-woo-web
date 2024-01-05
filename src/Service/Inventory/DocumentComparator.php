@@ -50,7 +50,7 @@ class DocumentComparator
             return true;
         }
 
-        if ($document->getLink() !== $metadata->getLink()) {
+        if ($document->getLinks() !== $metadata->getLinks()) {
             return true;
         }
 

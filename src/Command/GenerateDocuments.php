@@ -7,6 +7,7 @@ namespace App\Command;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
+use App\Entity\Organisation;
 use App\Service\Elastic\ElasticService;
 use App\Service\FakeDataGenerator;
 use App\Service\Inquiry\InquiryService;
@@ -51,14 +52,22 @@ class GenerateDocuments extends Command
         $stopwatch = new Stopwatch();
         $stopwatch->start('generate-documents');
 
+        $orgs = $this->doctrine->getRepository(Organisation::class)->findAll();
+        shuffle($orgs);
+        $organisation = reset($orgs);
+
+        if (! $organisation instanceof Organisation) {
+            throw new \RuntimeException('No organisations found');
+        }
+
         $numberOfDossiers = intval($input->getOption('dossiers'));
-        $inquiries = $this->generateInquiries();
+        $inquiries = $this->generateInquiries($organisation);
 
         for ($i = 0; $i !== $numberOfDossiers; $i++) {
             $dossierInquiries = $this->pickInquiries($inquiries, $i, 3);
 
             print "Creating dossier $i / $numberOfDossiers\n";
-            $dossier = $this->createDossier('DOSSIER-' . random_int(1000, 9999) . '-' . random_int(10000, 99999), $dossierInquiries);
+            $dossier = $this->createDossier($organisation, 'DOSSIER-' . random_int(1000, 9999) . '-' . random_int(10000, 99999), $dossierInquiries);
 
             $docCount = random_int(10, 100);
             for ($j = 0; $j !== $docCount; $j++) {
@@ -88,13 +97,13 @@ class GenerateDocuments extends Command
     /**
      * @return Inquiry[]
      */
-    protected function generateInquiries(): array
+    protected function generateInquiries(Organisation $organisation): array
     {
         $inquiries = [];
 
         for ($i = 0; $i < 10; $i++) {
             $caseNumber = (string) ($i + 100);
-            $inquiries[] = $this->inquiryService->findOrCreateInquiryForCaseNumber($caseNumber);
+            $inquiries[] = $this->inquiryService->findOrCreateInquiryForCaseNumber($organisation, $caseNumber);
         }
 
         return $inquiries;
@@ -123,9 +132,9 @@ class GenerateDocuments extends Command
     /**
      * @param Inquiry[] $inquiries
      */
-    protected function createDossier(string $dossierNr, array $inquiries): Dossier
+    protected function createDossier(Organisation $organisation, string $dossierNr, array $inquiries): Dossier
     {
-        $dossier = $this->fakeDataGenerator->generateDossier($dossierNr);
+        $dossier = $this->fakeDataGenerator->generateDossier($organisation, $dossierNr);
 
         foreach ($inquiries as $inquiry) {
             $dossier->addInquiry($inquiry);

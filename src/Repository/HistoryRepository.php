@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Dossier;
 use App\Entity\History;
+use App\Service\HistoryService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -23,28 +25,33 @@ class HistoryRepository extends ServiceEntityRepository
         parent::__construct($registry, History::class);
     }
 
-    //    /**
-    //     * @return History[] Returns an array of History objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('h')
-    //            ->andWhere('h.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('h.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * @return array<History>
+     */
+    public function getHistory(string $type, string $identifier, string $mode, ?int $max): array
+    {
+        $qb = $this->createQueryBuilder('h')
+            ->andWhere('h.type = :type')
+            ->andWhere('h.identifier = :identifier')
+            ->setParameter('type', $type)
+            ->setParameter('identifier', $identifier)
+            ->orderBy('h.createdDt', 'DESC')
+        ;
 
-    //    public function findOneBySomeField($value): ?History
-    //    {
-    //        return $this->createQueryBuilder('h')
-    //            ->andWhere('h.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if ($mode === HistoryService::MODE_PUBLIC) {
+            if ($type == HistoryService::TYPE_DOSSIER) {
+                // If we show frontend dossiers, we only have to show entries since publication date
+                $qb->leftJoin(Dossier::class, 'd', 'WITH', 'd.id = h.identifier')
+                    ->andWhere('h.createdDt >= d.publicationDate');
+            }
+        }
+
+        $qb->andWhere('h.site IN (:mode, :both)')->setParameter('mode', $mode)->setParameter('both', HistoryService::MODE_BOTH);
+
+        if ($max !== null) {
+            $qb->setMaxResults($max);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

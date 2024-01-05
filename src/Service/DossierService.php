@@ -25,6 +25,7 @@ use App\Service\Inquiry\InquiryService;
 use App\Service\Inquiry\InquirySessionService;
 use App\Service\Storage\DocumentStorageService;
 use App\SourceType;
+use App\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -63,19 +64,24 @@ class DossierService
 
         $changes = [];
         if ($oldDossier['publicationDate'] != $dossier->getPublicationDate()) {
-            $changes = 'publication_date';
+            $changes[] = 'publication_date';
         }
         if ($oldDossier['decisionDate'] != $dossier->getDecisionDate()) {
-            $changes = 'decision_date';
+            $changes[] = 'decision_date';
         }
         if ($oldDossier['title'] != $dossier->getTitle()) {
-            $changes = 'title';
+            $changes[] = 'title';
         }
         if ($oldDossier['summary'] != $dossier->getSummary()) {
-            $changes = 'summary';
+            $changes[] = 'summary';
         }
 
         if ($changes) {
+            // All changes are translated
+            foreach ($changes as $key => $value) {
+                $changes['%' . $key . '%'] = $value;
+            }
+
             $this->historyService->addDossierEntry($dossier, 'dossier_updated', ['changes' => $changes]);
         }
     }
@@ -100,8 +106,6 @@ class DossierService
         }
 
         $this->messageBus->dispatch(RemoveDossierMessage::forDossier($dossier));
-
-        $this->historyService->addDossierEntry($dossier, 'dossier_removed', []);
     }
 
     public function ingest(Dossier $dossier): void
@@ -165,9 +169,9 @@ class DossierService
 
         $this->messageBus->dispatch(UpdateDossierArchivesMessage::forDossier($dossier));
 
-        $this->historyService->addDossierEntry($dossier, 'dossier_state_changed', [
-            'old' => $oldState,
-            'new' => $newState,
+        $this->historyService->addDossierEntry($dossier, 'dossier_state_' . $newState, [
+            'old' => '%' . $oldState . '%',
+            'new' => '%' . $newState . '%',
         ]);
 
         $this->logger->info('Dossier state changed', [
@@ -220,7 +224,11 @@ class DossierService
 
         $this->validateCompletion($dossier);
 
-        $this->historyService->addDossierEntry($dossier, 'dossier_update_decision', []);
+        $this->historyService->addDossierEntry($dossier, 'dossier_update_decision', [
+            'filetype' => $fileInfo->getType(),
+            'filename' => $upload->getClientOriginalName(),
+            'filesize' => Utils::size(strval($upload->getSize())),
+        ]);
 
         $this->messageBus->dispatch(
             IngestDecisionMessage::forDossier($dossier)
@@ -326,7 +334,12 @@ class DossierService
         $this->doctrine->persist($run);
         $this->doctrine->flush();
 
-        $this->historyService->addDossierEntry($dossier, 'dossier_update_inventory', []);
+        $fileInfo = $run->getFileInfo();
+        $this->historyService->addDossierEntry($dossier, 'dossier_update_inventory', [
+            'filetype' => $fileInfo->getType(),
+            'filename' => $fileInfo->getName(),
+            'filesize' => Utils::size(strval($fileInfo->getSize())),
+        ]);
 
         $this->messageBus->dispatch(
             new InventoryProcessRunMessage($run->getId())
@@ -413,7 +426,7 @@ class DossierService
     public function withdrawAllDocuments(Dossier $dossier, WithdrawReason $reason, string $explanation): void
     {
         $this->historyService->addDossierEntry($dossier, 'dossier_withdraw_all', [
-            'reason' => $reason->value,
+            'reason' => '%' . $reason->value . '%',
             'explanation' => $explanation,
         ]);
 

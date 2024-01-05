@@ -1,4 +1,5 @@
 {% extends 'admin.html.twig' %}
+{% import "admin/document_macros.html.twig" as macro %}
 
 {% set page_title = "Dossier " | trans() ~ dossier.dossierNr %}
 {% set uploadStatus = dossier.uploadStatus %}
@@ -110,7 +111,7 @@
                 <p class="font-bold text-lg text-center py-6">{{ "Not applicable to decision" | trans({'decision': dossier.decision | decision}) }}</p>
             {% elseif workflowStatus.isReadyForDocuments %}
                 <dl class="text-lg">
-                    <twig:Admin:Definition term="{{ "Inventory list" | trans() }}">
+                    <twig:Admin:Definition term="{{ "Production report" | trans() }}">
                         {% if dossier.rawInventory is not null  %}
                             <twig:Admin:IconLink
                                 href="{{ path('app_admin_dossier_raw_inventory_download', {dossierId: dossier.dossierNr}) }}"
@@ -184,28 +185,30 @@
                     </twig:Admin:Definition>
 
                     <twig:Admin:Definition term="Unieke link per zaaknummer">
-                            {% if dossier.inquiries | length %}
-                            <table class="bhr-table table-fixed">
-                                <thead>
-                                    <th class="bhr-column-head w-32" scope="col">Zaaknummer</th>
-                                    <th class="bhr-column-head" scope="col">Link voor verzoeker</th>
-                                </thead>
-                                <tbody>
-                                    {% for inquiry in dossier.inquiries %}
-                                    <tr>
-                                        <td>{{ inquiry.casenr }}</td>
-                                        <td class="!pr-0">
-                                            {% set url = PUBLIC_BASE_URL ~ path('app_inquiry_detail', {token: inquiry.token}) %}
-                                            <twig:Admin:CopyToClipboardLayout copy="{{ url }}">
-                                                <a class="bhr-a" href="{{ url }}">
-                                                    {{ url }}
-                                                </a>
-                                            </twig:Admin:CopyToClipboardLayout>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        {% if dossier.inquiries | length %}
+                            <div class="text-base text-black">
+                                <table class="bhr-table table-fixed">
+                                    <thead>
+                                        <th class="bhr-column-head w-32" scope="col">Zaaknummer</th>
+                                        <th class="bhr-column-head" scope="col">Link voor verzoeker</th>
+                                    </thead>
+                                    <tbody>
+                                        {% for inquiry in dossier.inquiries|sort((a, b) => a.casenr <=> b.casenr) %}
+                                        <tr>
+                                            <td>{{ inquiry.casenr }}</td>
+                                            <td class="!pr-0">
+                                                {% set url = PUBLIC_BASE_URL ~ path('app_inquiry_detail', {token: inquiry.token}) %}
+                                                <twig:Admin:CopyToClipboardLayout copy="{{ url }}">
+                                                    <a class="bhr-a" href="{{ url }}">
+                                                        {{ url }}
+                                                    </a>
+                                                </twig:Admin:CopyToClipboardLayout>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         {% else %}
                             Dit besluit heeft geen zaaknummers
                         {% endif %}
@@ -220,19 +223,9 @@
         {% set canWithdrawDocuments = not workflowStatus.isConcept %}
         {% set canDeleteDossier = matrix_has_permission('dossier.delete') %}
 
-        <section class="bhr-card mt-10">
-            <twig:Admin:LeftAndRight>
-                <h2 class="bhr-title">{{ "History" | trans }}</h2>
-            </twig:Admin:LeftAndRight>
-
-            {% include "dossier/history-table.html.twig" with { id: dossier.id } %}
-        </section>
-
         {% if canWithdrawDocuments or canDeleteDossier %}
             <section class="bhr-card mt-10">
-                <twig:Admin:LeftAndRight>
-                    <h2 class="bhr-title">{{ "Danger zone" | trans }}</h2>
-                </twig:Admin:LeftAndRight>
+                <h2 class="bhr-title mb-6">{{ "Danger zone" | trans }}</h2>
 
                 {% if canWithdrawDocuments %}
                     <h3 class="font-bold">Alle documenten intrekken</h3>
@@ -259,6 +252,35 @@
                     {% endif %}
                 {% endif %}
             </section>
+        {% endif %}
+
+        {% set entries = get_history('dossier', dossier.id) %}
+        {% if entries | length > 0 %}
+            <div class="bhr-card mt-10">
+                <h2 class="bhr-title mb-6">{{ "History" | trans }}</h2>
+
+                <table class="bhr-table table-fixed">
+                    <thead>
+                        <th class="bhr-column-head w-52" scope="col">Datum</th>
+                        <th class="bhr-column-head" scope="col">Actie</th>
+                    </thead>
+                    <tbody>
+                    {% for entry in entries %}
+                        {% set tr = history_trans(entry, "private") %}
+                        {% if tr is not empty %}
+                        <tr>
+                            <td>
+                                <time datetime="{{ entry.createdDt | date("Y-m-d G:i") }}">{{ entry.createdDt | format_datetime(pattern="d LLLL y H:m") }}</time>
+                            </td>
+                            <td>
+                                {{ tr }}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% endif %}
     </div>
 </div>

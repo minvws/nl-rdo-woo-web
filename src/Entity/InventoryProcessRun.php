@@ -302,10 +302,8 @@ class InventoryProcessRun implements EntityWithFileInfo
     {
         $this->changeset = $changeset->getAll();
 
-        $isUpdate = $this->dossier->getRawInventory() !== null;
-
         // If there is no existing inventory it is an initial import, so we can skip confirmation
-        $this->status = $isUpdate ? self::STATUS_NEEDS_CONFIRMATION : self::STATUS_CONFIRMED;
+        $this->status = $this->dossier->isPubliclyAvailable() ? self::STATUS_NEEDS_CONFIRMATION : self::STATUS_CONFIRMED;
     }
 
     public function isFinal(): bool

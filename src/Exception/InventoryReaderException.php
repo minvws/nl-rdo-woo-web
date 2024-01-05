@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Exception;
 
-class InventoryReaderException extends ExcelReaderException
+class InventoryReaderException extends FileReaderException
 {
     public static function forMissingDocumentIdInRow(int $rowIndex): self
     {

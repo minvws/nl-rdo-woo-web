@@ -135,6 +135,10 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: InventoryProcessRun::class)]
     private ?InventoryProcessRun $processRun = null;
 
+    #[ORM\ManyToOne(inversedBy: 'dossiers')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Organisation $organisation;
+
     public function __construct()
     {
         $this->documents = new ArrayCollection();
@@ -516,7 +520,7 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
 
     public function isAvailableForBatchDownload(): bool
     {
-        if ($this->getStatus() !== self::STATUS_PUBLISHED && $this->getStatus() !== self::STATUS_PREVIEW) {
+        if (! $this->isPubliclyAvailable()) {
             return false;
         }
 
@@ -527,6 +531,11 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
         return true;
     }
 
+    public function isConcept(): bool
+    {
+        return $this->status === self::STATUS_CONCEPT;
+    }
+
     public function getDownloadFilePrefix(): TranslatableMessage
     {
         return new TranslatableMessage(
@@ -535,5 +544,22 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
                 'dossierNr' => $this->dossierNr,
             ]
         );
+    }
+
+    public function getOrganisation(): Organisation
+    {
+        return $this->organisation;
+    }
+
+    public function setOrganisation(Organisation $organisation): static
+    {
+        $this->organisation = $organisation;
+
+        return $this;
+    }
+
+    public function isPubliclyAvailable(): bool
+    {
+        return $this->getStatus() === self::STATUS_PUBLISHED || $this->getStatus() === self::STATUS_PREVIEW;
     }
 }

@@ -1,0 +1,24 @@
+<section>
+    <h2>{{ "Dossiers" | trans() }}</h2>
+
+    {% if dossiers.count > 0 %}
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">{{ "Dossier" | trans() }}</th>
+                <th scope="col" class="text-right th-date">{{ "Date of disclosure" | trans() }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dossier in dossiers %}
+            <tr>
+                <td><a href="{{ path('app_dossier_detail', {dossierId: dossier.dossierNr}) }}">{{ dossier.title }}</a></td>
+                <td class="text-right">{{ dossier.decisionDate | format_date('long') }}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>{{ "No dossiers" | trans }}</p>
+    {% endif %}
+</section>

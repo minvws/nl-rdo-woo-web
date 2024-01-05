@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Twig\Runtime;
 
+use App\Utils;
 use Carbon\Carbon;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,17 +29,7 @@ class AppExtensionRuntime implements RuntimeExtensionInterface
 
     public function size(string $value): string
     {
-        $value = (int) $value;
-
-        if ($value < 1024) {
-            return $value . ' bytes';
-        } elseif ($value < 1048576) {
-            return round($value / 1024, 2) . ' KB';
-        } elseif ($value < 1073741824) {
-            return round($value / 1048576, 2) . ' MB';
-        } else {
-            return round($value / 1073741824, 2) . ' GB';
-        }
+        return Utils::size($value);
     }
 
     public function carbon(\DateTimeInterface|string|null $value): Carbon

@@ -13,8 +13,7 @@ trait DossierAuthorizationTrait
     protected function testIfDossierIsAllowedByUser(Dossier $dossier): void
     {
         // Filter on active organisation
-        $organisation = $this->authorizationMatrix->getActiveOrganisation();
-        if (! in_array($dossier->getDocumentPrefix(), $organisation->getPrefixesAsArray())) {
+        if ($dossier->getOrganisation() !== $this->authorizationMatrix->getActiveOrganisation()) {
             throw new AccessDeniedHttpException('You are not allowed to access this dossier');
         }
 

@@ -21,7 +21,7 @@ export const getIconNameByMimeType = (mimeType: string) => {
     'file-pdf': ['application/pdf'],
     'file-video': ['video/mp4'],
     'file-word': ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-    'file-zip': ['application/zip'],
+    'file-zip': ['application/zip', 'application/x-7z-compressed'],
   };
 
   const foundIconName = (Object.keys(mappings) as (keyof typeof mappings)[]).find((key) => mappings[key].includes(mimeType));

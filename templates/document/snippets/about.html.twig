@@ -58,12 +58,17 @@
             </tr>
             {% endif %}
             {% set documentIsAlreadyPublic = document.judgement.value is defined and document.judgement.value is same as ('already_public') %}
-            {% if document.remark or (document.link and not documentIsAlreadyPublic) %}
+            {% if document.remark or (document.links | length > 0 and not documentIsAlreadyPublic) %}
             <tr>
                 <th scope="row">{{ "Explanation" | trans() }}</th>
                 <td>
-                    {% if document.remark and document.remark != document.link  %}{{ document.remark }}{% endif %}
-                    {% if document.link and not documentIsAlreadyPublic %}<a href="{{document.link}}">{{ document.link }}</a>{% endif %}
+                    {% if document.remark and document.remark != document.links|first  %}{{ document.remark }}{% endif %}
+                    {% if document.links | length > 0 and not documentIsAlreadyPublic %}
+                        {% for link in document.links %}
+                            {% if not loop.first %}, {% endif %}
+                            <a href="{{ link }}">{{ link }}</a>
+                        {% endfor %}
+                    {% endif %}
                 </td>
             </tr>
             {% endif %}

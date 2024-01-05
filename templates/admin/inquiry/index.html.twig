@@ -21,9 +21,9 @@
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Case number" | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Dossiers" | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Documents" | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Last update" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ "Last update" | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                        <span class="sr-only">{{ "Link case" | trans() }}</span>
+                        <span class="sr-only">{{ "Link to case" | trans }}</span>
                     </th>
                 </tr>
             </thead>
@@ -34,9 +34,9 @@
                         <td>{{ row.dossierCount }}</td>
                         <td>{{ row.documentCount }}</td>
                         <td>{{ row.inquiry.updatedAt | format_datetime('medium') }}</td>
-                        <td>
+                        <td class="text-right">
                             <a class="js-clickable-row__focusable" href="{{ PUBLIC_BASE_URL }}{{ path('app_inquiry_detail', { token: row.inquiry.token }) }}">
-                                <span class="sr-only">Details {{ row.inquiry.token }}</span>
+                                <span class="sr-only">Details {{ row.inquiry.casenr }}</span>
                                 <twig:Admin:Icon name="chevron-right"/>
                             </a>
                         </td>

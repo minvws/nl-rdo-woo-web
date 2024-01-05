@@ -7,6 +7,7 @@ namespace App\MessageHandler;
 use App\Entity\Dossier;
 use App\Message\ProcessDocumentMessage;
 use App\Service\DocumentUploadQueue;
+use App\Service\DossierService;
 use App\Service\FileProcessService;
 use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,6 +26,7 @@ class ProcessDocumentHandler
         private readonly EntityManagerInterface $doctrine,
         private readonly LoggerInterface $logger,
         private readonly DocumentUploadQueue $uploadQueue,
+        private readonly DossierService $dossierService,
     ) {
     }
 
@@ -58,7 +60,7 @@ class ProcessDocumentHandler
             $this->fileProcessService->processFile($localFile, $dossier, $message->getOriginalFilename());
             unlink($localFile->getPathname());
 
-            $this->uploadQueue->remove($dossier, $message->getOriginalFilename());
+            $this->updateUploadQueueAndDossierCompletion($dossier, $message);
 
             return;
         }
@@ -71,7 +73,7 @@ class ProcessDocumentHandler
                 'file_path' => $message->getRemotePath(),
             ]);
 
-            $this->uploadQueue->remove($dossier, $message->getOriginalFilename());
+            $this->updateUploadQueueAndDossierCompletion($dossier, $message);
 
             return;
         }
@@ -84,7 +86,7 @@ class ProcessDocumentHandler
         } finally {
             $this->storageService->removeDownload($localFilePath, true);
 
-            $this->uploadQueue->remove($dossier, $message->getOriginalFilename());
+            $this->updateUploadQueueAndDossierCompletion($dossier, $message);
         }
     }
 
@@ -124,5 +126,11 @@ class ProcessDocumentHandler
         }
 
         return $stitchedFile->getFileInfo();
+    }
+
+    public function updateUploadQueueAndDossierCompletion(Dossier $dossier, ProcessDocumentMessage $message): void
+    {
+        $this->uploadQueue->remove($dossier, $message->getOriginalFilename());
+        $this->dossierService->validateCompletion($dossier);
     }
 }

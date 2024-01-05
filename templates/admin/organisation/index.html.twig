@@ -31,8 +31,11 @@
                     <tr>
                         <td><span class="font-bold">{{ organisation.name }}</span></td>
                         <td>{{ organisation.department.shortTag }}</td>
-                        <td>DUMMY PREFIX</td>
-{#                        <td>{{ organisation.createdAt | carbon.diffForHumans }}</td>#}
+                        <td>
+                            {% for prefix in organisation.documentPrefixes %}
+                                {{ prefix.prefix }}{% if not loop.last %},{% endif %}
+                            {% endfor %}
+                        </td>
                         <td class="text-right">
                             <a class="js-clickable-row__focusable" href="{{ path('app_admin_user_organisation_edit', { id: organisation.id }) }}">
                                 <span class="sr-only">Details {{ organisation.name }}</span>

@@ -1,16 +1,21 @@
 <h3 class="text-xl flex flex-col-reverse">
     <a class="reverse-underline" href="{{ path('app_document_detail', { dossierId: entry.document.dossiers[0].dossierNr, documentId: entry.document.documentNr }) }}">{{ entry.document.fileInfo.name }}</a>
 
-    <div class="de-emphasized mb-0 flex items-center">
-        <twig:Icon name="{{ entry.document.fileInfo.sourceType }}" class="mr-2" />
-        <span class="pipe-after">{{ entry.document.fileInfo.sourceType | trans() }}</span>
+     <ul class="list-unstyled de-emphasized mb-0 items-center pipe-after">
+        <li>
+            <twig:Icon name="{{ entry.document.fileInfo.sourceType }}" class="mr-2" />
+            <span class="de-emphasized">{{ entry.document.fileInfo.sourceType | trans() }}</span>
+        </li>
+
         {% if entry.document.fileInfo.isUploaded %}
-        <span class="pipe-after">
-            {{ "# pages" | trans({"count": entry.document.pagecount})}}
-        </span>
+        <li>
+            <span class="de-emphasized">{{ "# pages" | trans({"count": entry.document.pagecount})}}</span>
+        </li>
         {% endif %}
-        <span>{{ entry.document.judgement.value | decision }}</span>
-    </div>
+        <li>
+            <span class="de-emphasized">{{ entry.document.judgement.value | decision }}</span>
+        </li>
+    </ul>
 </h3>
 
 {% if entry.highlights | length > 0 %}
@@ -22,21 +27,29 @@
 {% endif %}
 
 <ul class="list-unstyled de-emphasized mb-0 flex items-center pipe-after">
-    <li><time datetime="{{ entry.document.documentDate | date("Y-m-d") }}" class="pipe-after de-emphasized">{{ entry.document.documentDate | format_date('long') }}</time></li>
-        {% if entry.document.fileInfo.isUploaded %}
-        <li>
-            <span class="de-emphasized">{{ entry.document.fileInfo.size | size}}</span>
-        </li>
-        {% endif %}
-    <li><span class="de-emphasized">{{ "Document number" | trans() }} {{ entry.document.documentId }}</span></li>
+    <li>
+        <time class="de-emphasized" datetime="{{ entry.document.documentDate | date("Y-m-d") }}">
+            {{ entry.document.documentDate | format_date('long') }}
+        </time>
+    </li>
+    {% if entry.document.fileInfo.isUploaded %}
+    <li>
+        <span class="de-emphasized">{{ entry.document.fileInfo.size | size}}</span>
+    </li>
+    {% endif %}
+    <li>
+        <span class="de-emphasized">{{ "Document number" | trans() }} {{ entry.document.documentId }}</span>
+    </li>
 </ul>
 
 {% if entry.document.dossiers | length > 0 %}
-<ul class="list-unstyled">
+<ul class="list-unstyled de-emphasized mb-0 flex items-center pipe-after">
     {% for dossier in entry.document.dossiers %}
-    <li class="py-0 ro-text-small leading-5">
-        <a href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
-        <span class="de-emphasized">{{dossier.dossierNr}}</span>
+    <li class="py-0 ro-text-small">
+        <span>
+            <a href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
+            <span class="de-emphasized">{{dossier.dossierNr}}</span>
+        </span>
     </li>
     {% endfor %}
 </ul>

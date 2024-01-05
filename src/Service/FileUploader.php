@@ -8,6 +8,7 @@ use App\Entity\Dossier;
 use App\Form\Dossier\DocumentUploadType;
 use App\Message\ProcessDocumentMessage;
 use App\Service\Storage\DocumentStorageService;
+use Predis\Client;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -34,6 +35,7 @@ class FileUploader
         private readonly DocumentStorageService $documentStorage,
         private readonly LoggerInterface $logger,
         private readonly DocumentUploadQueue $uploadQueue,
+        private readonly Client $redis,
     ) {
     }
 
@@ -135,10 +137,16 @@ class FileUploader
 
         $this->documentStorage->store($uploadedFile, $remoteChunkFile);
 
+        // We use redis to store the number of chunks uploaded for a given uuid so we can check if
+        // all the chunks have been uploaded. We cannot use the file system to count chunks because
+        // we run into the issue that we count chunks that are still being moved to the storage.
+        $this->redis->incr('chunked_upload:' . $uuid);
+
         // Check if all parts have been uploaded (ie: all chunks are found in the chunk upload dir)
         $chunkCount = intval($request->request->get('totalchunkcount'));
-        $parts = $this->documentStorage->list($remoteChunkPath, '*');
-        if (count($parts) < $chunkCount) {
+        $chunksUploaded = $this->redis->get('chunked_upload:' . $uuid);
+        if ($chunksUploaded < $chunkCount) {
+            // Return when not all chunks have been uploaded yet
             return false;
         }
 
@@ -153,6 +161,7 @@ class FileUploader
             chunkUuid: $uuid,
             chunkCount: $chunkCount,
         );
+
         $this->messageBus->dispatch($message);
 
         return true;

@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -38,8 +39,17 @@ class Organisation
     private Collection $users;
 
     /** @var Collection|DocumentPrefix[] */
-    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: DocumentPrefix::class)]
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: DocumentPrefix::class, cascade: ['persist'])]
+    #[Assert\Valid]
     private Collection $documentPrefixes;
+
+    /** @var Collection|Inquiry[] */
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Inquiry::class)]
+    private Collection $inquiries;
+
+    /** @var Collection|Dossier[] */
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Dossier::class)]
+    private Collection $dossiers;
 
     public function __construct()
     {
@@ -100,11 +110,20 @@ class Organisation
     }
 
     /**
-     * @return Collection|DocumentPrefix[]
+     * @return ArrayCollection|DocumentPrefix[]
      */
-    public function getDocumentPrefixes(): Collection
+    public function getDocumentPrefixes(): ArrayCollection
     {
-        return $this->documentPrefixes;
+        $values = $this->documentPrefixes->filter(
+            /** @phpstan-ignore-next-line */
+            fn (DocumentPrefix $prefix) => ! $prefix->isArchived()
+        )->getValues();
+
+        // Create a new instance to reset keys, this is important for use in the CollectionType form field
+        /** @var ArrayCollection|DocumentPrefix[] $collection */
+        $collection = new ArrayCollection($values);
+
+        return $collection;
     }
 
     /**
@@ -115,7 +134,7 @@ class Organisation
         return array_map(
             // @phpstan-ignore-next-line
             fn ($prefix) => $prefix->getPrefix(),
-            $this->documentPrefixes->toArray()
+            $this->getDocumentPrefixes()->toArray()
         );
     }
 
@@ -131,8 +150,41 @@ class Organisation
 
     public function removeDocumentPrefix(DocumentPrefix $documentPrefix): static
     {
-        $this->documentPrefixes->removeElement($documentPrefix);
+        // Archive (soft-delete) instead of actual removal, this prevents the prefix from being re-used
+        $documentPrefix->archive();
 
         return $this;
+    }
+
+    /**
+     * @param Collection|Inquiry[] $inquiries
+     */
+    public function setInquiries(Collection $inquiries): void
+    {
+        $this->inquiries = $inquiries;
+    }
+
+    /**
+     * @param Collection|Dossier[] $dossiers
+     */
+    public function setDossiers(Collection $dossiers): void
+    {
+        $this->dossiers = $dossiers;
+    }
+
+    /**
+     * @return Collection|Inquiry[]
+     */
+    public function getInquiries(): Collection
+    {
+        return $this->inquiries;
+    }
+
+    /**
+     * @return Collection|Dossier[]
+     */
+    public function getDossiers(): Collection
+    {
+        return $this->dossiers;
     }
 }

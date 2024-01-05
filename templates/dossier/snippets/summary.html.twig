@@ -1,0 +1,14 @@
+{#
+    if extra information about this information request, give it an h2
+    and similar styling to the dossier summary below
+#}
+{% if dossier.summary is defined %}
+<section class="block w-full pt-16">
+    <div class="bg-anti-flash-white p-6">
+        <div class="width-delimiter block">
+            <h2 class="font-normal leading-tight mb-3">{{ "Summary" | trans() }}</h2>
+            <p>{{ dossier.summary }}</p>
+        </div>
+    </div>
+</section>
+{% endif %}

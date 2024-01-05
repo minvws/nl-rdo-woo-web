@@ -1,0 +1,58 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = "Profiel" %}
+{% if hasFormErrors %}
+    {% set page_title = "Ongeldige invoer" %}
+{% endif %}
+
+{% block body %}
+    <div class="bhr-container bhr-container--sm">
+        <h1 class="bhr-title-lg mb-10">Profiel</h1>
+
+        <div class="px-11">
+            <div class="bhr-card">
+                <h2 class="bhr-title mb-8">{{ "Update your password" | trans }}</h1>
+
+                <div class="bhr-content text-lg mb-8" id="password-instructions">
+                    <p>{{ "A password should follow the following rules:" | trans() }}</p>
+                    <ul>
+                        <li>{{ "At least 14 characters" | trans() }}</li>
+                        <li>{{ "Should not be a common word" | trans() }}</li>
+                        <li>{{ "Does not contain only digits" | trans() }}</li>
+                        <li>{{ "May not be similar to your e-mail address" | trans() }}</li>
+                    </ul>
+                </div>
+
+                {{ form(form) }}
+
+            </div>
+
+            <div class="bhr-card mt-10">
+                <h2 class="bhr-title mb-8">Accountgegevens</h2>
+
+                <dl class="text-lg">
+                    <twig:Admin:Definition term="Volledige naam">
+                        {{ user.name }}
+                    </twig:Admin:Definition>
+
+                    <twig:Admin:Definition term="Organisatie">
+                        {{ get_organisation_switcher().activeOrganisation(app.user).name }}
+                    </twig:Admin:Definition>
+
+                    <twig:Admin:Definition term="Rollen">
+                        {% set roles = [] %}
+                        {% for user_role in user.roles %}
+                            {% set roles = roles|merge([role_details[user_role]|trans]) %}
+                        {% endfor %}
+                        {{ roles|join(', ') }}
+                    </twig:Admin:Definition>
+
+                    <twig:Admin:Definition term="E-mailadres">
+                        {{ user.email }}
+                    </twig:Admin:Definition>
+                </dl>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

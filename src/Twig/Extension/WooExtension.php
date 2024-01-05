@@ -51,7 +51,10 @@ class WooExtension extends AbstractExtension
             new TwigFunction('query_string_with_params', [$this->runtime, 'getQuerystringWithParams']),
             new TwigFunction('get_upload_queue', [$this->runtime, 'getUploadQueue']),
             new TwigFunction('get_organisation_switcher', [$this->runtime, 'getOrganisationSwitcher']),
+            new TwigFunction('get_frontend_history', [$this->runtime, 'getFrontendHistory']),
+            new TwigFunction('get_backend_history', [$this->runtime, 'getBackendHistory']),
             new TwigFunction('get_history', [$this->runtime, 'getHistory']),
+            new TwigFunction('history_trans', [$this->runtime, 'historyTranslation']),
         ];
     }
 }

@@ -1,0 +1,31 @@
+{% if recents | length > 0 %}
+<h2 class="leading-tight">{{ "Recent decisions" | trans() }}</h2>
+
+<ul class="list-unstyled list-overview -mt-3">
+    {% for dossier in recents %}
+    <li>
+        <a class="block-link py-3" href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">
+            <h3 class="!leading-tight">{{ dossier.title | default("No title available" | trans()) }}</h3>
+            <div class="leading-4 block">
+                <time class="ro-font-bold" datetime="{{ dossier.publicationDate | date("Y-m-d") }}">{{ dossier.publicationDate | format_date('long') }}</time>
+                {% set thereAreDocuments = dossier.documents|length > 0 %}
+                {% set thereArePages = dossier.pagecount|default(0) > 0 %}
+                {% if (thereAreDocuments or thereArePages) %}
+                    <p>
+                        {% if thereAreDocuments %}
+                            {{ "# documents" | trans({"count": dossier.documents|length})}}{% if thereAreDocuments and thereArePages %},{% endif %}
+                        {% endif %}
+
+                        {% if thereArePages %}
+                            {{ "# pages" | trans({"count": dossier.pagecount|default(0)})}}
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </div>
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+
+<a class="ro-font-bold arrowed-link reverse-underline" href="{{ path('app_dossier_index') }}">{{ "View all decisions" | trans }}</a>
+{% endif %}

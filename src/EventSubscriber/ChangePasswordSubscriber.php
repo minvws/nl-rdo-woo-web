@@ -26,7 +26,7 @@ class ChangePasswordSubscriber implements EventSubscriberInterface
     protected array $skipRoutes = [
         '2fa_check',
         '2fa_login',
-        'app_change_password',
+        'app_admin_user_profile',
     ];
 
     public function __construct(Security $security, UrlGeneratorInterface $urlGenerator)
@@ -63,7 +63,7 @@ class ChangePasswordSubscriber implements EventSubscriberInterface
         if ($user->isPasswordChangeRequired()) {
             // Set target path so we return back to the correct page after changing the password
             $event->getRequest()->getSession()->set('target_path', $event->getRequest()->getRequestUri());
-            $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_change_password')));
+            $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_admin_user_profile')));
         }
     }
 }

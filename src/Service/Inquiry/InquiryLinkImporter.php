@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace App\Service\Inquiry;
 
 use App\Entity\DocumentPrefix;
-use App\Exception\ExcelReaderException;
+use App\Entity\Organisation;
+use App\Exception\FileReaderException;
 use App\Exception\InquiryLinkImportException;
 use App\Exception\InventoryReaderException;
 use App\Exception\TranslatableException;
 use App\Repository\DocumentRepository;
-use App\Service\Excel\ColumnMapping;
-use App\Service\Excel\ExcelReader;
-use App\Service\Excel\ExcelReaderFactory;
+use App\Service\FileReader\ColumnMapping;
+use App\Service\FileReader\ExcelReaderFactory;
+use App\Service\FileReader\FileReaderInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class InquiryLinkImporter
 {
     private const COLUMN_CASE_NR = 'caseNr';
@@ -31,7 +35,7 @@ class InquiryLinkImporter
     /**
      * @return array<string, mixed>
      */
-    public function processSpreadsheet(UploadedFile $uploadedFile, DocumentPrefix $prefix): array
+    public function processSpreadsheet(Organisation $activeOrganisation, UploadedFile $uploadedFile, DocumentPrefix $prefix): array
     {
         $errors = [
             'generic' => [],
@@ -39,19 +43,24 @@ class InquiryLinkImporter
         ];
 
         try {
-            $reader = $this->getReader($uploadedFile);
+            if ($activeOrganisation !== $prefix->getOrganisation()) {
+                throw new \RuntimeException('Cannot link to prefixes outside of the active organisation');
+            }
 
-            foreach ($reader as $row) {
-                $documentId = $reader->getString($row->getRowIndex(), self::COLUMN_DOCUMENT_ID);
-                $matter = $reader->getString($row->getRowIndex(), self::COLUMN_MATTER);
-                $caseNrs = $reader->getString($row->getRowIndex(), self::COLUMN_CASE_NR);
+            $reader = $this->getReader($uploadedFile);
+            foreach ($reader as $rowIdx => $row) {
+                unset($row);
+                $rowIdx = intval($rowIdx);
+                $documentId = $reader->getString($rowIdx, self::COLUMN_DOCUMENT_ID);
+                $matter = $reader->getString($rowIdx, self::COLUMN_MATTER);
+                $caseNrs = $reader->getString($rowIdx, self::COLUMN_CASE_NR);
                 $caseNrs = explode(',', $caseNrs);
 
                 $documentNr = sprintf('%s-%s-%s', $prefix->getPrefix(), $matter, $documentId);
                 try {
-                    $this->handleDocumentLink($documentNr, $caseNrs);
+                    $this->handleDocumentLink($prefix->getOrganisation(), $documentNr, $caseNrs);
                 } catch (TranslatableException $exception) {
-                    $errors['row'][$row->getRowIndex()] = [[
+                    $errors['row'][$rowIdx] = [[
                         'message' => $exception->getMessage(),
                         'translation' => $exception->getTranslationKey(),
                         'placeholders' => $exception->getPlaceholders(),
@@ -77,10 +86,10 @@ class InquiryLinkImporter
         return $errors;
     }
 
-    private function getReader(UploadedFile $uploadedFile): ExcelReader
+    private function getReader(UploadedFile $uploadedFile): FileReaderInterface
     {
         try {
-            return $this->readerFactory->getReader(
+            return $this->readerFactory->createReader(
                 $uploadedFile->getRealPath(),
                 new ColumnMapping(
                     name: self::COLUMN_MATTER,
@@ -99,20 +108,20 @@ class InquiryLinkImporter
                 ),
             );
         } catch (\Exception $exception) {
-            throw ExcelReaderException::forOpenSpreadsheetException($exception);
+            throw FileReaderException::forOpenSpreadsheetException($exception);
         }
     }
 
     /**
      * @param string[] $caseNrs
      */
-    private function handleDocumentLink(string $documentNr, array $caseNrs): void
+    private function handleDocumentLink(Organisation $organisation, string $documentNr, array $caseNrs): void
     {
         $document = $this->documentRepository->findOneBy(['documentNr' => $documentNr]);
         if (! $document) {
             throw InquiryLinkImportException::forMissingDocument($documentNr);
         }
 
-        $this->inquiryService->updateDocumentInquiries($document, $caseNrs);
+        $this->inquiryService->updateDocumentInquiries($organisation, $document, $caseNrs);
     }
 }

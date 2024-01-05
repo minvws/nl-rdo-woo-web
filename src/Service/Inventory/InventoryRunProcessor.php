@@ -81,6 +81,7 @@ class InventoryRunProcessor
         $runProgress = new RunProgress($this->progressUpdater, $run, $inventoryReader->getCount());
 
         $changeset = $this->inventoryComparator->determineChangeset($run, $inventoryReader, $runProgress);
+
         if ($changeset->isEmpty()) {
             $run->addGenericException(ProcessInventoryException::forNoChanges());
         }

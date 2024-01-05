@@ -8,11 +8,17 @@
     </p>
 
     <ul class="grid grid-cols-4 gap-x-4">
-        {% for document in missingDocuments %}
+        {% for document in missingDocuments | slice(0, 100) %}
         <li class="py-1">
             <twig:Admin:FileWithIcon fileName="{{ document.documentId }}.pdf" mimeType="application/pdf" />
         </li>
         {% endfor %}
     </ul>
+
+    {% if missingDocuments|length > 100 %}
+    <p class="mb-3 text-lg">
+        En nog {{ missingDocuments | length - 100 }} documenten...
+    </p>
+    {% endif %}
 </div>
 {% endif %}

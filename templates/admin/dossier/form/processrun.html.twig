@@ -8,14 +8,14 @@
 
     {% if inventoryStatus.isComparing %}
         <div class="text-lg">
-            <h2 class="font-bold pb-2"><label for="{{ id }}">Bezig met het verwerken van de inventarislijst</label></h2>
+            <h2 class="font-bold pb-2">Bezig met het verwerken van het productierapport</h2>
             <p class="bhr-text-muted">Dit duurt meestal maximaal een paar minuten. Als je wilt kan je deze pagina verlaten en later terugkomen.</p>
         </div>
     {% endif %}
 
     {% if inventoryStatus.isUpdating %}
         <div class="text-lg">
-            <h2 class="font-bold pb-2"><label for="{{ id }}">Bezig met het toepassen van wijzigingen in de inventarislijst</label></h2>
+            <h2 class="font-bold pb-2">Bezig met het toepassen van wijzigingen in het productierapport</h2>
             <p class="bhr-text-muted">Dit duurt meestal maximaal een paar minuten. Als je wilt kan je deze pagina verlaten en later terugkomen.</p>
         </div>
     {% endif %}
@@ -54,7 +54,7 @@
             </div>
 
             <div class="mt-8">
-                <a class="bhr-button bhr-button--secondary bhr-button--fixed-width" href="?confirm=1">{{ "Confirm inventory replacement" | trans }}</a>
+                <a class="bhr-button bhr-button--primary bhr-button--fixed-width mr-4" href="?confirm=1">{{ "Confirm inventory replacement" | trans }}</a>
                 <a class="bhr-button bhr-button--secondary bhr-button--fixed-width" href="?reject=1">{{ "Reject inventory replacement" | trans }}</a>
             </div>
         </div>

@@ -288,6 +288,7 @@ END,
                                                     {
                                                         "simple_query_string": {
                                                             "query": "search terms",
+                                                            "default_operator": "and",
                                                             "fields": [
                                                                 "dossiers.title"
                                                             ],
@@ -297,6 +298,7 @@ END,
                                                     {
                                                         "simple_query_string": {
                                                             "query": "search terms",
+                                                            "default_operator": "and",
                                                             "fields": [
                                                                 "dossiers.summary"
                                                             ],
@@ -314,6 +316,7 @@ END,
                                         "query": {
                                             "simple_query_string": {
                                                 "query": "search terms",
+                                                "default_operator": "and",
                                                 "fields": [
                                                     "pages.content"
                                                 ],
@@ -325,6 +328,7 @@ END,
                                 {
                                     "simple_query_string": {
                                         "query": "search terms",
+                                        "default_operator": "and",
                                         "fields": [
                                             "filename"
                                         ],
@@ -350,6 +354,7 @@ END,
                                 {
                                     "simple_query_string": {
                                         "query": "search terms",
+                                        "default_operator": "and",
                                         "fields": [
                                             "title"
                                         ],
@@ -359,6 +364,7 @@ END,
                                 {
                                     "simple_query_string": {
                                         "query": "search terms",
+                                        "default_operator": "and",
                                         "fields": [
                                             "summary"
                                         ],
@@ -368,6 +374,7 @@ END,
                                 {
                                     "simple_query_string": {
                                         "query": "search terms",
+                                        "default_operator": "and",
                                         "fields": [
                                             "decision_content"
                                         ],
@@ -504,6 +511,7 @@ END,
             "highlight_query": {
                 "simple_query_string": {
                     "query": "search terms",
+                    "default_operator": "and",
                     "fields": [
                         "title",
                         "summary",

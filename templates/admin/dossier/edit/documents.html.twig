@@ -17,18 +17,18 @@
                     class="bhr-button bhr-button--primary bhr-button--with-icon-right mr-2"
                     href="{{ path('app_admin_dossier_inventory_download', {dossierId: dossier.dossierNr}) }}"
                 >
-                    Download inventarislijst
+                    Download productierapport
 
                     <twig:Admin:Icon class="bhr-button__icon bhr-button__icon--right right-4 -mt-0.5" color="fill-white" size="16" name="download" />
                 </a>
                 {% endif %}
 
                 <a class="bhr-button bhr-button--secondary mr-2" href="{{ path('app_admin_dossier_replace_inventory', { dossierId: dossier.dossierNr }) }}">
-                    Vervang inventarislijst
+                    Vervang productierapport
                 </a>
 
                 {% if dossier.needsInventoryAndDocuments and not dossier.uploadStatus.isComplete %}
-                <button type="button" class="bhr-button bhr-button--secondary js-visibility-toggler" data-selector="edit-documents">
+                <button type="button" class="bhr-button bhr-button--secondary js-visibility-toggler" aria-controls="edit-documents" aria-expanded="true">
                     Vervang bestanden...
                 </button>
                 {% endif %}
@@ -44,13 +44,11 @@
             {% if dossier.needsInventoryAndDocuments %}
                 {% set uploadStatus = dossier.uploadStatus %}
                 {% if not uploadStatus.isComplete %}
-                    <div class="flex" id="edit-documents">
-                        <div class="grow">
-                            <twig:Admin:DossierDocuments
-                                dossier="{{ dossier }}"
-                                uploadStatus="{{ uploadStatus }}"
-                            />
-                        </div>
+                    <div id="edit-documents">
+                        <twig:Admin:DossierDocuments
+                            dossier="{{ dossier }}"
+                            uploadStatus="{{ uploadStatus }}"
+                        />
                     </div>
                 {% endif %}
 

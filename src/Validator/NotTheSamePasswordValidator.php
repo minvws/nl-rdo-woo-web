@@ -28,14 +28,16 @@ class NotTheSamePasswordValidator extends ConstraintValidator
     {
         $user = $this->security->getUser();
 
+        if ($value === null) {
+            return;
+        }
+
         /** @var User $user */
         if ($this->passwordHasher->isPasswordValid($user, $value)) {
             /** @var NotTheSamePassword $constraint */
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $value)
                 ->addViolation();
-
-            return;
         }
     }
 }
