@@ -123,7 +123,7 @@ class DetailsType extends AbstractDossierStepType
                     'Medische hulpmiddelen' => 'Medische hulpmiddelen',
                     'Capaciteit ziekenhuis' => 'Capaciteit ziekenhuis',
                     'Testen' => 'Testen',
-                    'Vaccinaties & medicatie' => 'Vaccinaties & medicatie',
+                    'Vaccinaties en medicatie' => 'Vaccinaties en medicatie',
                 ],
                 'placeholder' => 'Kies een onderwerp',
             ])

@@ -81,7 +81,7 @@
         {%- endif -%}
         {% set displayIsOptional = required is not same as (true) and (label_attr.displayIsOptional ?? true) is not same as (false) %}
         <label {% if label_attr %}{% with { attr: label_attr } %}{{ block('attributes') }}{% endwith %}{% endif %}>
-            {{ label }}{% if displayIsOptional %} <span class="font-normal">(optioneel)</span>{% endif %}
+            {{ label | trans }}{% if displayIsOptional %} <span class="font-normal">(optioneel)</span>{% endif %}
         </label>
     {%- endif -%}
 {%- endblock form_label -%}
@@ -123,7 +123,7 @@
     {%- set row_attr = row_attr|merge({ class: ('bhr-form-row ' ~ (errors|length > 0 ? 'bhr-form-row--invalid ' : '') ~ row_attr.class|default(''))|trim }) -%}
     {%- set widget_attr = {} -%}
     {% if errors|length > 0 %}
-        {%- set widget_attr = {attr: {'aria-describedby': id ~"-error"}} -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"-error", 'aria-invalid': 'true' }} -%}
     {%- elseif help is not empty -%}
         {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
     {%- endif -%}
@@ -133,7 +133,9 @@
         {% set row_attr = row_attr|filter((value, key) => key != 'data-fieldset') %}
     {% endif %}
     {% set isFieldset = expanded ?? false %}
-    <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+    {% if not form.vars.attr.no_container|default(false) %}
+        <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+    {% endif %}
         {% if field_set_fields is defined %}
             {{ block('form_fieldset') }}
         {% elseif isFieldset %}
@@ -144,7 +146,9 @@
             {{- form_errors(form) -}}
             {{- form_widget(form, widget_attr) -}}
         {% endif %}
-    </div>
+    {% if not form.vars.attr.no_container|default(false) %}
+        </div>
+    {% endif %}
 {%- endblock form_row -%}
 
 {%- block button_row -%}

@@ -23,12 +23,12 @@ class DocumentPrefix
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private string $prefix;
 
-    #[ORM\Column(length: 1024, nullable: false)]
-    private string $description;
-
     #[ORM\ManyToOne(inversedBy: 'documentPrefixes')]
     #[ORM\JoinColumn(nullable: false)]
     private Organisation $organisation;
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $archived = false;
 
     public function getId(): Uuid
     {
@@ -42,26 +42,13 @@ class DocumentPrefix
 
     public function setPrefix(string $prefix): static
     {
+        if (isset($this->prefix)) {
+            throw new \RuntimeException('The prefix can only be set on creation, never updated');
+        }
+
         $this->prefix = strtoupper($prefix);
 
         return $this;
-    }
-
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function prefixAndDescription(): string
-    {
-        return $this->prefix . ' (' . $this->description . ')';
     }
 
     public function getOrganisation(): Organisation
@@ -74,5 +61,15 @@ class DocumentPrefix
         $this->organisation = $organisation;
 
         return $this;
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->archived;
+    }
+
+    public function archive(): void
+    {
+        $this->archived = true;
     }
 }

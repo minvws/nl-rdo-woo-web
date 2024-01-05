@@ -8,24 +8,33 @@
 
         <div class="px-11">
             <div class="bhr-card">
-                <div class="flex justify-between">
-                    <h2 class="bhr-title-sm mb-4">{{ "User information" | trans() }}</h2>
-                    {% if user.enabled %}
-                        {{ form_start(user_disable) }}
-                        {{ form_errors(user_disable) }}
-                        <button type="submit" id="{{ user_disable.submit.vars.id }}"
+                <twig:Admin:LeftAndRight>
+                    <h2 class="bhr-title-sm">{{ "User information" | trans }}</h2>
+
+                    <twig:block name="right">
+                        {% if user.enabled %}
+                            {{ form_start(user_disable) }}
+                            {{ form_errors(user_disable) }}
+                            <button
+                                class="bhr-button bhr-button--secondary"
+                                id="{{ user_disable.submit.vars.id }}"
                                 name="{{ field_name(user_disable.submit) }}"
-                                class="bhr-button bhr-button--secondary">{{ "Deactivate account" | trans }}</button>
-                        {{ form_end(user_disable) }}
-                    {% else %}
-                        {{ form_start(user_enable) }}
-                        {{ form_errors(user_enable) }}
-                        <button type="submit" id="{{ user_enable.submit.vars.id }}"
+                                type="submit"
+                            >{{ "Deactivate account" | trans }}</button>
+                            {{ form_end(user_disable) }}
+                        {% else %}
+                            {{ form_start(user_enable) }}
+                            {{ form_errors(user_enable) }}
+                            <button
+                                class="bhr-button bhr-button--secondary"
+                                id="{{ user_enable.submit.vars.id }}"
                                 name="{{ field_name(user_enable.submit) }}"
-                                class="bhr-button bhr-button--secondary">{{ "Activate account" | trans }}</button>
-                        {{ form_end(user_enable) }}
-                    {% endif %}
-                </div>
+                                type="submit"
+                                >{{ "Activate account" | trans }}</button>
+                            {{ form_end(user_enable) }}
+                        {% endif %}
+                    </twig:block>
+                </twig:Admin:LeftAndRight>
 
                 {% if not user.enabled %}
                     <div class="my-4">
@@ -43,14 +52,8 @@
                 </div>
 
                 <div class="bhr-form-row">
-                    {{ form_label(user_info.organisation) }}
-                    {{ form_help(user_info.organisation) }}
-                    <p><strong>{{ field_value(user_info.organisation) }}</strong></p>
-                    {% do user_info.organisation.setRendered %}
-                </div>
+                    <h3 class="bhr-label">{{ user_info.email.vars.label | default('E-mailadres') }}</h3>
 
-                <div class="bhr-form-row">
-                    {{ form_label(user_info.email) }}
                     {{ form_help(user_info.email) }}
                     <p><strong>{{ field_value(user_info.email) }}</strong></p>
                     {% do user_info.email.setRendered %}

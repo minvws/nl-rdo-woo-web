@@ -1,0 +1,36 @@
+{#
+    history_section displays a section with a title and a table of history
+
+    history: a list of history to display
+    titleTranslationKey: the translation key of the title
+#}
+{% macro history_section(history, titleTranslationKey) %}
+    {% if history | length > 0 %}
+        <div class="bhr-card mt-10">
+            <h2 class="bhr-title mb-6">{{ titleTranslationKey | trans }}</h2>
+
+            <table class="bhr-table table-fixed">
+                <caption class="sr-only">{{ titleTranslationKey | trans }}</caption>
+                <thead>
+                    <th class="bhr-column-head w-52" scope="col">{{ "Date" | trans() }}</th>
+                    <th class="bhr-column-head" scope="col">{{ "Action" | trans() }}</th>
+                </thead>
+                <tbody>
+                {% for entry in history %}
+                    {% set tr = history_trans(entry, "public") %}
+                    {% if tr is not empty %}
+                        <tr>
+                            <td>
+                                <time datetime="{{ entry.createdDt | date("Y-m-d G:i") }}">{{ entry.createdDt | format_datetime(pattern="d LLLL y H:m") }}</time>
+                            </td>
+                            <td>
+                                {{ tr }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endmacro %}

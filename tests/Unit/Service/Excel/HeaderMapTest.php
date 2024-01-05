@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Excel;
 
-use App\Exception\ExcelReaderException;
-use App\Service\Excel\HeaderMap;
+use App\Exception\FileReaderException;
+use App\Service\FileReader\HeaderMap;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class HeaderMapTest extends MockeryTestCase
@@ -23,7 +23,7 @@ class HeaderMapTest extends MockeryTestCase
 
         $this->assertFalse($headerMap->has('foobar'));
 
-        $this->expectExceptionObject(ExcelReaderException::forUnknownHeader('foobar'));
+        $this->expectExceptionObject(FileReaderException::forUnknownHeader('foobar'));
         $headerMap->getCellCoordinate('foobar');
     }
 }

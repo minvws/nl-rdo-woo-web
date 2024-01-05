@@ -4,26 +4,38 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory\Reader;
 
-use App\Service\Excel\ColumnMapping;
-use App\Service\Excel\ExcelReaderFactory;
+use App\Service\FileReader\ColumnMapping;
+use App\Service\FileReader\ReaderFactoryInterface;
 use App\Service\Inventory\MetadataField;
 
 /**
  * Creates an InventoryReaderInterface configured with mapping.
+ * It can be used to read any file format, as long as a ReaderFactoryInterface is provided for that format.
  *
  * For now there is only one use-case, so the mapping is hardcoded. To be refactored when new use-cases are implemented.
  */
 class InventoryReaderFactory
 {
-    public function __construct(
-        private readonly ExcelReaderFactory $excelReaderFactory,
-    ) {
+    /** @var ReaderFactoryInterface[] */
+    protected array $factories;
+
+    /**
+     * @param ReaderFactoryInterface[] $factories
+     */
+    public function __construct(iterable $factories)
+    {
+        $this->factories = $factories instanceof \Traversable ? iterator_to_array($factories) : $factories;
     }
 
-    public function create(): InventoryReaderInterface
+    public function create(string $mimetype): InventoryReaderInterface
     {
-        return new ExcelInventoryReader(
-            $this->excelReaderFactory,
+        $readerFactory = $this->findFactoryForFile($mimetype);
+        if ($readerFactory === null) {
+            throw new \RuntimeException('No reader factory found for type ' . $mimetype);
+        }
+
+        return new InventoryReader(
+            $readerFactory,
             ...[
                 new ColumnMapping(
                     name: MetadataField::DATE->value,
@@ -33,16 +45,16 @@ class InventoryReaderFactory
                 new ColumnMapping(
                     name: MetadataField::DOCUMENT->value,
                     required: true,
-                    columnNames: ['document', 'document id', 'documentnr', 'document nr', 'documentnr.', 'document nr.'],
+                    columnNames: ['document', 'document id', 'documentnr', 'document nr', 'documentnr.', 'document nr.', 'nr.', 'omschrijving'],
                 ),
                 new ColumnMapping(
                     name: MetadataField::FAMILY->value,
-                    required: true,
+                    required: false,
                     columnNames: ['family', 'familie', 'family id'],
                 ),
                 new ColumnMapping(
                     name: MetadataField::SOURCETYPE->value,
-                    required: true,
+                    required: false,
                     columnNames: ['file type', 'filetype'],
                 ),
                 new ColumnMapping(
@@ -61,18 +73,8 @@ class InventoryReaderFactory
                     columnNames: ['beoordeling'],
                 ),
                 new ColumnMapping(
-                    name: MetadataField::PERIOD->value,
-                    required: true,
-                    columnNames: ['periode', 'period'],
-                ),
-                new ColumnMapping(
-                    name: MetadataField::SUBJECT->value,
-                    required: true,
-                    columnNames: ['onderwerp', 'subject'],
-                ),
-                new ColumnMapping(
                     name: MetadataField::THREADID->value,
-                    required: true,
+                    required: false,
                     columnNames: ['thread id', 'email thread id', 'email thread'],
                 ),
                 new ColumnMapping(
@@ -93,12 +95,12 @@ class InventoryReaderFactory
                 new ColumnMapping(
                     name: MetadataField::LINK->value,
                     required: false,
-                    columnNames: ['publiekelinktag', 'publieke link', 'publiekelink'],
+                    columnNames: ['publiekelinktag', 'publieke link', 'publiekelink', 'publicatielink', 'publicatie link'],
                 ),
                 new ColumnMapping(
                     name: MetadataField::REMARK->value,
                     required: false,
-                    columnNames: ['toelichting'],
+                    columnNames: ['toelichting', 'opmerking'],
                 ),
                 new ColumnMapping(
                     name: MetadataField::MATTER->value,
@@ -107,5 +109,16 @@ class InventoryReaderFactory
                 ),
             ]
         );
+    }
+
+    protected function findFactoryForFile(string $mimetype): ?ReaderFactoryInterface
+    {
+        foreach ($this->factories as $factory) {
+            if ($factory->supports($mimetype)) {
+                return $factory;
+            }
+        }
+
+        return null;
     }
 }

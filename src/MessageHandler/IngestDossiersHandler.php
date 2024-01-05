@@ -6,25 +6,17 @@ namespace App\MessageHandler;
 
 use App\Message\IngestDossiersMessage;
 use App\Repository\DossierRepository;
-use App\Service\Elastic\ElasticService;
-use App\Service\Ingest\IngestService;
-use App\Service\Ingest\Options;
+use App\Service\DossierService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\MessageBusInterface;
 
-/**
- * Ingest multiple dossiers that are publishable into the system. Used primarily for reindexing.
- */
 #[AsMessageHandler]
 class IngestDossiersHandler
 {
     public function __construct(
-        protected DossierRepository $dossierRepository,
-        protected IngestService $ingester,
-        protected MessageBusInterface $bus,
-        protected ElasticService $elasticService,
-        protected LoggerInterface $logger,
+        readonly private DossierRepository $dossierRepository,
+        readonly private LoggerInterface $logger,
+        readonly private DossierService $dossierService,
     ) {
     }
 
@@ -34,18 +26,14 @@ class IngestDossiersHandler
     public function __invoke(IngestDossiersMessage $message): void
     {
         try {
-            $options = new Options();
-
-            $dossiers = $this->dossierRepository->findAll();
-            foreach ($dossiers as $dossier) {
-                $this->elasticService->updateDossier($dossier, false);
-
-                foreach ($dossier->getDocuments() as $document) {
-                    $this->ingester->ingest($document, $options);
-                }
+            // Important: use an iterator instead of fetching all dossiers into memory at once
+            $query = $this->dossierRepository->createQueryBuilder('d')->getQuery();
+            foreach ($query->toIterable() as $dossier) {
+                // This call will dispatch a message per dossier => per dossier doc => per doc page (fan-out)
+                $this->dossierService->ingest($dossier);
             }
         } catch (\Exception $e) {
-            $this->logger->error('Error when ingesting all dossiers', [
+            $this->logger->error('Error while triggering ingest for all dossiers', [
                 'exception' => $e->getMessage(),
             ]);
         }

@@ -6,11 +6,14 @@
         {{ "Page" | trans() }} {{ entry.elastic._source.page_nr }} {{ entry.document.fileInfo.name }}
     </a>
 
-    <div class="de-emphasized mb-0 flex items-center">
-        <twig:Icon name="html" class="mr-2" />
-        <span class="visually-hidden">{{ entry.document.fileInfo.sourceType | trans() }}</span>
-        <span class="de-emphasized ro-font-bold"> {{ entry.document.fileInfo.sourceType | trans() }}</span>
-        <span>{{ "# pages" | trans({"count": entry.document.pagecount|default(0)})}}</span>
+    <ul class="list-unstyled de-emphasized mb-0 items-center pipe-after">
+        <li>
+            <twig:Icon name="html" class="mr-2" />
+            <span class="de-emphasized ro-font-bold"> {{ entry.document.fileInfo.sourceType | trans() }}</span>
+        </li>
+        <li>
+            <span>{{ "# pages" | trans({"count": entry.document.pagecount|default(0)})}}</span>
+        </li>
     </div>
 </h3>
 
@@ -24,23 +27,23 @@
 
 <ul class="list-unstyled de-emphasized mb-0 flex items-center pipe-after">
     <li>
-        <time datetime="{{ entry.document.documentDate | date("Y-m-d") }}">
-        {{ entry.document.documentDate | format_date('long') }}
+        <time class="de-emphasized" datetime="{{ entry.document.documentDate | date("Y-m-d") }}">
+            {{ entry.document.documentDate | format_date('long') }}
         </time>
     </li>
     <li>
-        <span>{{ "Document number" | trans }} {{ entry.document.documentId }}</span>
+        <span class="de-emphasized">{{ "Document number" | trans() }} {{ entry.document.documentId }}</span>
     </li>
 </ul>
 
 {% if entry.document.dossiers | length > 0 %}
-<ul class="list-unstyled">
+<ul class="list-unstyled de-emphasized mb-0 flex items-center pipe-after">
     {% for dossier in entry.document.dossiers %}
-    <li class="py-0 ro-text-small leading-5">
-        <a href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">Besluit {{ dossier.title }}</a>
-    </li>
-    <li>
-        <span class="de-emphasized">{{ "# documents" | trans({"count": dossier.documents|length})}}</span>
+    <li class="py-0 ro-text-small">
+        <span>
+            <a href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
+            <span class="de-emphasized">{{dossier.dossierNr}}</span>
+        </span>
     </li>
     {% endfor %}
 </ul>

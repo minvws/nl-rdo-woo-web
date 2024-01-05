@@ -44,5 +44,9 @@ echo
 
 # Delete all messages from RabbitMQ
 echo -e "${notice}* Deleting all messages from RabbitMQ${expand}${reset}"
-curl -q -u guest:guest -XDELETE http://${RABBITMQ_HOST}:15672/api/queues/%2f/messages/contents
+curl -q -u guest:guest -XDELETE http://${RABBITMQ_HOST}:15672/api/queues/%2f/es_updates/contents
+curl -q -u guest:guest -XDELETE http://${RABBITMQ_HOST}:15672/api/queues/%2f/global/contents
+curl -q -u guest:guest -XDELETE http://${RABBITMQ_HOST}:15672/api/queues/%2f/high/contents
+curl -q -u guest:guest -XDELETE http://${RABBITMQ_HOST}:15672/api/queues/%2f/ingester/contents
+curl -q -u guest:guest -XDELETE http://${RABBITMQ_HOST}:15672/api/queues/%2f/audit_log/contents
 echo

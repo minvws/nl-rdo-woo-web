@@ -54,6 +54,8 @@ class InventorySanitizerTest extends MockeryTestCase
 
     public function testFileIsWrittenAndInventoryPersisted(): void
     {
+        $urls = ['http://dummy.url', 'https://x.y.z'];
+
         $this->writer->expects('open');
         $this->writer->expects('addHeaders');
         $this->writer->expects('addRow')->with(
@@ -63,6 +65,7 @@ class InventorySanitizerTest extends MockeryTestCase
             'deels openbaar',
             ['a', 'b'],
             '',
+            "http://dummy.url\nhttps://x.y.z",
             'test-url',
             'ja',
             ''
@@ -93,6 +96,7 @@ class InventorySanitizerTest extends MockeryTestCase
         $document->expects('getRemark')->andReturnNull();
         $document->expects('isSuspended')->andReturnTrue();
         $document->expects('getDossiers->first')->andReturn($dossier);
+        $document->expects('getLinks')->andReturn($urls);
 
         $this->urlGenerator
             ->expects('generate')

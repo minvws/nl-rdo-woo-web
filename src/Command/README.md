@@ -8,7 +8,6 @@ Global commands that can be run on either production or development platforms.
 |---------------------------|-----------------------------------------------------------------|
 | `woopie:check:production` | Checks if the current environment is ready for the application. |
 | `woopie:document:upload`  | Triggers the ingestion of an uploaded document                  |
-| `woopie:index:regenerate` | Regenerates the search index                                    |
 | `woopie:page:check`       | Checks if there are pages not yet indexed                       |
 | `woopie:user:create`      | Creates a new admin user                                        |
 | `woopie:user:reset`       | Reset a user's password and 2fa                                 |

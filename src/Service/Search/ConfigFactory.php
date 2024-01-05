@@ -70,10 +70,12 @@ class ConfigFactory
         $documentInquiries = $this->getInquiries('dci', $request);
         $dossierInquiries = $this->getInquiries('dsi', $request);
 
-        $query = $this->convertQueryStringToNegativeAndValues($request->query->getString('q', ''));
+        // We don't do this anymore since default search operator is now AND
+        // $query = $this->convertQueryStringToNegativeAndValues($request->query->getString('q', ''));
+        $query = $request->query->getString('q', '');
 
         $config = new Config(
-            operator: Config::OPERATOR_PHRASE,
+            operator: Config::OPERATOR_AND,
             facets: $facets,
             limit: $pageSize,
             offset: $pageNum * $pageSize,

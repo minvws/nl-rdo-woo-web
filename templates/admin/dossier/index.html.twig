@@ -30,7 +30,8 @@
                 {% endfor %}
             </div>
         {% endif %}
-        {% if pagination | length > 0 %}
+
+        {% if pagination | length > 0 or (formData.status is defined) or (formData.department is defined) %}
             <twig:Admin:LeftAndRight class="pt-1">
                 {% include 'admin/dossier/snippets/filter.html.twig' with { 'form': form } %}
 
@@ -41,18 +42,20 @@
                     />
                 </twig:block>
             </twig:Admin:LeftAndRight>
+        {% endif %}
 
-            {% if (formData.status is defined) or (formData.department is defined) %}
-                <ul class="px-4 pb-6">
-                    {% for status in formData.status|default([]) %}
-                        {{ macro.active_facet('Status' | trans() ~ ': ' ~ status, '?' ~ query_string_without_param('status', status)) }}
-                    {% endfor%}
-                    {% for department in formData.department|default([]) %}
-                        {{ macro.active_facet('Department' | trans() ~ ': ' ~ department.name, '?' ~ query_string_without_param('department', department.id)) }}
-                    {% endfor%}
-                </ul>
-            {% endif %}
+        {% if (formData.status is defined) or (formData.department is defined) %}
+            <ul class="px-4 pb-6">
+                {% for status in formData.status|default([]) %}
+                    {{ macro.active_facet('Status' | trans() ~ ': ' ~ status, '?' ~ query_string_without_param('status', status)) }}
+                {% endfor%}
+                {% for department in formData.department|default([]) %}
+                    {{ macro.active_facet('Department' | trans() ~ ': ' ~ department.name, '?' ~ query_string_without_param('department', department.id)) }}
+                {% endfor%}
+            </ul>
+        {% endif %}
 
+        {% if pagination | length > 0 %}
             <table class="bhr-table" id="resultaten">
                 <caption class="sr-only">Alle dossiers. Kolomkoppen met links zijn sorteerbaar.</caption>
                 <thead>
@@ -83,7 +86,7 @@
                         </td>
                         <td>
                             <a class="js-clickable-row__focusable" href="{{ path('app_admin_dossier', {dossierId: dossier.dossierNr}) }}">
-                                <span class="sr-only">Details {{ dossier.dossierNr }}</span>
+                                <span class="sr-only">Details {{ dossier.title }}</span>
                                 <twig:Admin:Icon name="chevron-right" />
                             </a>
                         </td>
@@ -93,9 +96,14 @@
             </table>
 
             {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
+        {% elseif (formData.status is defined) or (formData.department is defined) %}
+            <p class="text-center">
+                {{ "No dossiers match the filters" | trans }}
+            </p>
         {% else %}
             <p class="text-center">
-                Er zijn nog geen besluiten aangemaakt.
+                {{ "No dossiers have been created yet" | trans }}
+
             </p>
         {% endif %}
     </div>

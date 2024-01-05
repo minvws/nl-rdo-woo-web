@@ -8,7 +8,6 @@ use App\Entity\DocumentPrefix;
 use App\Form\Transformer\DocumentPrefixTransformer;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -43,12 +42,13 @@ class DocumentPrefixType extends AbstractType
     private function addDocumentPrefixField(FormBuilderInterface $builder): void
     {
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
+            $form = $event->getForm();
             $prefixes = $this->authorizationMatrix->getActiveOrganisation()->getDocumentPrefixes();
 
             $options = [
                 'class' => DocumentPrefix::class,
                 'label' => 'Prefix voor documenten',
-                'choice_label' => 'prefix_and_description',
+                'choice_label' => 'prefix',
                 'required' => true,
                 'help' => 'Deze voegen we automatisch toe aan de bestandsnaam van documenten. '
                     . '<strong>Let op</strong>: deze prefix is na het opslaan van de basisgegevens niet meer aan te passen.',
@@ -57,32 +57,16 @@ class DocumentPrefixType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                 ],
+                'choices' => $prefixes,
             ];
 
-            $form = $event->getForm();
-
-            // No entities given means we can select all entities (ie: user admin)
-            if (count($prefixes) === 0) {
-                $options['query_builder'] = function (EntityRepository $er) {
-                    return $er->createQueryBuilder('d')->select('d')->orderBy('d.prefix', 'ASC');
-                };
-
-                $form->add('documentPrefix', EntityType::class, $options);
-
-                return;
+            // If we have just one prefix preselect it
+            if (count($prefixes) === 1) {
+                /** @var DocumentPrefix $prefix */
+                $prefix = $prefixes->first();
+                $options['data'] = $this->doctrine->getReference(DocumentPrefix::class, $prefix->getId());
             }
 
-            // If we have more than one entity, we need to use a choice type
-            if (count($prefixes) > 1) {
-                $options['choices'] = $prefixes;
-                $form->add('documentPrefix', EntityType::class, $options);
-
-                return;
-            }
-
-            // One entity does not give us a choice, so we remove the placeholder
-            unset($options['placeholder']);
-            $options['choices'] = $prefixes;
             $form->add('documentPrefix', EntityType::class, $options);
         });
     }

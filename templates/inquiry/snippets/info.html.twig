@@ -1,0 +1,39 @@
+<section class="block w-full pt-16">
+    <div class="bg-anti-flash-white p-6">
+        <div class="width-delimiter block">
+            {% if dossiers.count > 0 %}
+                <p class="font-bold">
+                    {{
+                        "{number_of_decisions} made for case" | trans({
+                            '{are_or_is}': "are_or_is" | trans({ 'count': dossiers.count }),
+                            '{number_of_decisions}': "# decisions" | trans({ 'count': dossiers.count }),
+                            '{case_number}': inquiry.casenr,
+                        })
+                    }}:
+                </p>
+
+                <ul class="my-4">
+                    {% if documentCount.public > 0 %}
+                        <li>{{ "# documents made public" | trans({ 'count': documentCount.public }) }}</li>
+                    {% endif %}
+                    {% if documentCount.partial_public > 0 %}
+                        <li>{{ "# documents made partial public" | trans({ 'count': documentCount.partial_public}) }}</li>
+                    {% endif %}
+                    {% if documentCount.already_public > 0 %}
+                        <li>{{ "# documents were already public" | trans({ 'count': documentCount.already_public}) }}</li>
+                    {% endif %}
+                    {% if documentCount.not_public > 0 %}
+                        <li>{{ "# documents will not be published" | trans({ 'count': documentCount.not_public}) }}</li>
+                    {% endif %}
+                </ul>
+                <p class="mt-8">
+                    <a href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}" download>{{ "Download the inventory for casenumber {casenumber}" | trans({'{casenumber}': inquiry.casenr}) }}</a>
+                </p>
+            {% else %}
+                <p class="font-bold">
+                    {{ "At this moment no documents are available for the inquiry with casenumber {casenumber}" | trans({'casenumber': inquiry.casenr}) }}
+                </p>
+            {% endif %}
+        </<div>
+    </div>
+</section>

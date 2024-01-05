@@ -13,20 +13,22 @@ export const visibilityToggler = () => {
     }
 
     abortController = new AbortController();
-    visibilityTogglerElements.forEach((triggeringElement) => {
-      const { selector } = triggeringElement.dataset;
-      const selectorElement = document.getElementById(selector as string) as HTMLDialogElement;
-      if (!selectorElement) {
+    visibilityTogglerElements.forEach((visibilityTogglerElement) => {
+      const idOfElementToToggle = visibilityTogglerElement.getAttribute('aria-controls') || '';
+      const elementToToggle = document.getElementById(idOfElementToToggle);
+      if (!elementToToggle) {
         return;
       }
 
-      triggeringElement.addEventListener('click', () => {
-        if (isElementHidden(selectorElement)) {
-          showElement(selectorElement);
+      visibilityTogglerElement.addEventListener('click', () => {
+        if (isElementHidden(elementToToggle)) {
+          showElement(elementToToggle);
+          visibilityTogglerElement.setAttribute('aria-expanded', 'true');
           return;
         }
 
-        hideElement(selectorElement);
+        hideElement(elementToToggle);
+        visibilityTogglerElement.setAttribute('aria-expanded', 'false');
       }, { signal: abortController.signal! });
     });
   };

@@ -14,22 +14,23 @@ class DocumentMetadata
     public function __construct(
         private readonly \DateTimeImmutable $date,
         private readonly string $filename,
-        private readonly int $familyId,
+        private readonly ?int $familyId,
         private readonly string $sourceType,
         /** @var string[] */
         private readonly array $grounds,
-        private readonly int $id,
+        private readonly string $id,
         private readonly Judgement $judgement,
-        private readonly string $period,
+        private readonly ?string $period,
         /** @var string[] */
         private readonly array $subjects,
-        private readonly int $threadId,
+        private readonly ?int $threadId,
         /** @var string[] */
         private readonly array $caseNumbers,
         private readonly bool $suspended,
-        private readonly ?string $link,
+        /** @var string[] */
+        private readonly array $links,
         private readonly ?string $remark,
-        private readonly ?string $matter,
+        private readonly string $matter,
     ) {
     }
 
@@ -48,7 +49,7 @@ class DocumentMetadata
         return $this->filename;
     }
 
-    public function getFamilyId(): int
+    public function getFamilyId(): ?int
     {
         return $this->familyId;
     }
@@ -66,7 +67,7 @@ class DocumentMetadata
         return $this->grounds;
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -76,7 +77,7 @@ class DocumentMetadata
         return $this->judgement;
     }
 
-    public function getPeriod(): string
+    public function getPeriod(): ?string
     {
         return $this->period;
     }
@@ -89,7 +90,7 @@ class DocumentMetadata
         return $this->subjects;
     }
 
-    public function getThreadId(): int
+    public function getThreadId(): ?int
     {
         return $this->threadId;
     }
@@ -107,9 +108,12 @@ class DocumentMetadata
         return $this->suspended;
     }
 
-    public function getLink(): ?string
+    /**
+     * @return string[]
+     */
+    public function getLinks(): array
     {
-        return $this->link;
+        return $this->links;
     }
 
     public function getRemark(): ?string
@@ -117,7 +121,7 @@ class DocumentMetadata
         return $this->remark;
     }
 
-    public function getMatter(): ?string
+    public function getMatter(): string
     {
         return $this->matter;
     }

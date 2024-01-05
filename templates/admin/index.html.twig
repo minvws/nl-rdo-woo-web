@@ -65,21 +65,6 @@
 
                 <div>
 
-                    {% if matrix_has_permission('prefix.read') %}
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h2 class="card-title text-center" aria-labelledby="prefixMgmtButton"><i class="fa-solid fa-arrow-right fa-5x"></i></h2>
-                                <p class="card-text">{{ "This link provides access to the management of document prefixes." | trans() }}</p>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <a href="{{ path('app_admin_prefixes') }}" class="button" id="prefixMgmtButton">{{ "Prefix management" | trans() }}</a>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                </div>
-                <div>
-
                     {% if matrix_has_permission('stat.read') %}
                         <div class="card h-100">
                             <div class="card-body">

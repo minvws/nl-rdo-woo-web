@@ -4,11 +4,11 @@ ul.pipe-after {
 
     li {
         display: inline-flex;
+        align-items: center;
     }
 }
 
-ul.pipe-after li:not(:last-child)::after,
-span.pipe-after::after {
+ul.pipe-after li:not(:last-child)::after {
     content: " | ";
     color: white;
     border-right: 1px solid #696969;

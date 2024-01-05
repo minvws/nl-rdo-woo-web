@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Dossier;
+use App\Entity\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -42,25 +44,21 @@ class DossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string[]|null $prefixFilter
-     *
      * @return Dossier[]
      */
-    public function findBySearchTerm(string $searchTerm, int $limit, ?array $prefixFilter): array
+    public function findBySearchTerm(string $searchTerm, int $limit, Organisation $organisation): array
     {
         $qb = $this->createQueryBuilder('d')
             ->leftJoin('d.inquiries', 'i')
             ->where('d.title LIKE :searchTerm')
             ->orWhere('d.dossierNr LIKE :searchTerm')
             ->orWhere('i.casenr LIKE :searchTerm')
+            ->andWhere('d.organisation = :organisation')
             ->orderBy('d.updatedAt', 'DESC')
             ->setMaxResults($limit)
             ->setParameter('searchTerm', '%' . $searchTerm . '%')
+            ->setParameter('organisation', $organisation)
         ;
-
-        if ($prefixFilter) {
-            $qb->andWhere('d.documentPrefix IN (:prefixes)')->setParameter('prefixes', $prefixFilter);
-        }
 
         return $qb->getQuery()->getResult();
     }
@@ -99,17 +97,29 @@ class DossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string[] $prefixes
-     *
      * @return Dossier[]
      */
-    public function findAllForPrefixes(array $prefixes): array
+    public function findAllForOrganisation(Organisation $organisation): array
     {
         $qb = $this->createQueryBuilder('d')
-            ->where('d.documentPrefix IN (:prefixes)')
-            ->setParameter('prefixes', $prefixes)
+            ->where('d.organisation = :organisation')
+            ->setParameter('organisation', $organisation)
         ;
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param string[] $statuses
+     */
+    public function getDossiersForOrganisationQueryBuilder(Organisation $organisation, array $statuses): QueryBuilder
+    {
+        return $this->createQueryBuilder('dos')
+            ->leftJoin('dos.inquiries', 'inq')
+            ->addSelect('inq')
+            ->andWhere('dos.organisation = :organisation')
+            ->andWhere('dos.status IN (:statuses)')
+            ->setParameter('organisation', $organisation)
+            ->setParameter('statuses', $statuses);
     }
 }

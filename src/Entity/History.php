@@ -35,6 +35,9 @@ class History
     #[ORM\Column]
     private array $context = [];
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $site = null;
+
     public function getId(): Uuid
     {
         return $this->id;
@@ -104,6 +107,18 @@ class History
     public function setContext(array $context): static
     {
         $this->context = $context;
+
+        return $this;
+    }
+
+    public function getSite(): ?string
+    {
+        return $this->site;
+    }
+
+    public function setSite(?string $site): static
+    {
+        $this->site = $site;
 
         return $this;
     }

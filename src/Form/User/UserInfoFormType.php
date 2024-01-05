@@ -32,6 +32,8 @@ class UserInfoFormType extends AbstractType
     }
 
     /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     *
      * @param array{data: User} $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -40,30 +42,15 @@ class UserInfoFormType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Voor- en achternaam',
                 'empty_data' => '',
-                'attr' => [
-                    'help' => 'The name of this user',
-                ],
                 'help' => 'Minimaal 1 en maximaal 255 karakters. Bijvoorbeeld John Doe.',
                 'constraints' => [
                     new Length(['min' => 1, 'max' => 255]),
                 ],
             ])
-            ->add('organisation', TextType::class, [
-                'disabled' => true,
-                'label' => 'Organisatie',
-                'data' => $options['data']->getOrganisation()->getName() .
-                    ' (' . $options['data']->getOrganisation()->getDepartment()->getShortTag() . ')',
-            ])
             ->add('email', EmailType::class, [
                 'disabled' => true,
                 'label' => 'E-mailadres', // @codingStandardsIgnoreStart
                 'help' => 'Users identify themselves with their email address. We do not use the email address to provide passwords or other login information.', // @codingStandardsIgnoreEnd
-                'help_attr' => [
-                    'class' => 'bhr-form-help text-sm pb-2',
-                ],
-                'attr' => [
-                    'class' => 'bhr-value',
-                ],
             ])
             ->add('roles', HiddenType::class)
             ->add('submit', SubmitType::class, [

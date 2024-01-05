@@ -17,6 +17,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class InventoryType extends AbstractType
 {
     protected const SPREADSHEET_MIMETYPES = [
+        'text/csv',
         'application/xls',
         'application/vnd.ms-excel',
         'application/vnd.oasis.opendocument.spreadsheet',
@@ -46,7 +47,7 @@ class InventoryType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Upload inventarislijst',
+                'label' => 'Upload productierapport',
             ]);
     }
 }

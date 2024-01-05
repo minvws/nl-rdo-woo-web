@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Doctrine;
 
-use App\Entity\Dossier;
+use App\Entity\Judgement;
 use Doctrine\ORM\QueryBuilder;
 
 class DocumentConditions
@@ -13,9 +13,9 @@ class DocumentConditions
     {
         $queryBuilder = clone $queryBuilder;
 
-        $queryBuilder->andWhere("$docAlias.judgement IN (:docStatuses)");
+        $queryBuilder->andWhere("$docAlias.judgement IN (:judgements)");
         $queryBuilder->andWhere("$docAlias.suspended != true AND $docAlias.withdrawn != true");
-        $queryBuilder->setParameter('docStatuses', [Dossier::DECISION_PUBLIC, Dossier::DECISION_PARTIAL_PUBLIC]);
+        $queryBuilder->setParameter('judgements', [Judgement::PUBLIC, Judgement::PARTIAL_PUBLIC, Judgement::ALREADY_PUBLIC]);
 
         return $queryBuilder;
     }
@@ -24,9 +24,9 @@ class DocumentConditions
     {
         $queryBuilder = clone $queryBuilder;
 
-        $queryBuilder->andWhere("$docAlias.judgement NOT IN (:docStatuses)");
+        $queryBuilder->andWhere("$docAlias.judgement = :judgement");
         $queryBuilder->andWhere("$docAlias.suspended != true AND $docAlias.withdrawn != true");
-        $queryBuilder->setParameter('docStatuses', [Dossier::DECISION_PUBLIC, Dossier::DECISION_PARTIAL_PUBLIC]);
+        $queryBuilder->setParameter('judgement', Judgement::NOT_PUBLIC);
 
         return $queryBuilder;
     }

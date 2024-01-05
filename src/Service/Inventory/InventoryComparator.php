@@ -106,12 +106,11 @@ class InventoryComparator
      */
     private function getDocumentNrList(Dossier $dossier): array
     {
-        $documentNrs = [];
-        foreach ($dossier->getDocuments() as $entry) {
-            $documentNrs[$entry->getDocumentNr()] = 1;
-        }
+        // Important: don't use $dossier->getDocuments which loads all document entities into memory and the entitymanager
+        $documentNrs = $this->documentRepository->getAllDocumentNumbersForDossier($dossier);
 
-        return $documentNrs;
+        // Use values as keys for faster lookups
+        return array_fill_keys($documentNrs, 1);
     }
 
     /**

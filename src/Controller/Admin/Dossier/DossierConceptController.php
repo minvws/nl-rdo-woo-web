@@ -46,6 +46,7 @@ class DossierConceptController extends AbstractController
     {
         $dossier = new Dossier();
         $dossier->setPublicationReason(Dossier::REASON_WOO_REQUEST);
+        $dossier->setOrganisation($this->authorizationMatrix->getActiveOrganisation());
 
         $form = $this->createForm(DetailsType::class, $dossier);
         $form->handleRequest($request);

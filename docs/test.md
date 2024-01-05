@@ -52,22 +52,22 @@ TST & ACC runs every night. CI is executed after a PR.
 |        |                                                   | CI                 | TST                | ACC                           |
 |--------|---------------------------------------------------|--------------------|--------------------|-------------------------------|
 | Portal |                                                   |                    |                    |                               |
-|        | Zoeken                                            | :construction:     | :white_check_mark: | :white_check_mark:            |
+|        | Zoeken                                            | :white_check_mark: | :white_check_mark: | :white_check_mark:            |
 |        | Zoekresultaten filteren                           | :construction:     |                    | :construction:                |
-|        | Document overzichtpagina                          | :construction:     |                    |                               |
-|        | Document downloaden                               | :construction:     |                    | :construction:                |
-|        | Besluitdossier overzichtpagina                    | :construction:     |                    |                               |
-|        | Besluitdossier filteren                           | :construction:     |                    |                               |
-|        | Besluitdossier downloaden                         | :construction:     |                    | :white_check_mark:            |
-|        | Besluitbrief downloaden                           | :construction:     |                    | :construction:                |
-|        | Inventarislijst downloaden                        | :construction:     |                    | :construction:                |
+|        | Document overzichtpagina                          | :white_check_mark: |                    |                               |
+|        | Document downloaden                               | :white_check_mark: |                    | :white_check_mark:            |
+|        | Besluitdossier overzichtpagina                    | :white_check_mark: |                    |                               |
+|        | Besluitdossier filteren                           | :white_check_mark: |                    |                               |
+|        | Besluitdossier downloaden                         | :white_check_mark: |                    | :white_check_mark:            |
+|        | Besluitbrief downloaden                           | :white_check_mark: |                    | :white_check_mark:            |
+|        | Inventarislijst downloaden                        | :white_check_mark: |                    | :white_check_mark:            |
 | Balie  |                                                   |                    |                    |                               |
 |        | Inlogmodule                                       | :white_check_mark: | :white_check_mark: | :white_check_mark:            |
 |        | Besluitdossier filteren                           | :construction:     |                    | :construction:                |
 |        | Besluitdossier zoeken                             | :white_check_mark: | :white_check_mark: |                               |
 |        | Besluitdossier aanmaken                           | :white_check_mark: | :white_check_mark: |                               |
 |        | Besluitdossier documenten intrekken               | :white_check_mark: |                    |                               |
-|        | Besluitdossier documenten vervangen               | :construction:     |                    |                               |
+|        | Besluitdossier documenten vervangen               | :white_check_mark: |                    |                               |
 |        | Gebruikers aanmaken, bijwerken, ww reset, 2fa     | :construction:     | :construction:     |                               |
 |        | Authorisatie (rollen toekennen, (de)activeren)    | :construction:     | :construction:     |                               |
 |        | Bestuursorganen beheren                           | :construction:     | :construction:     |                               |

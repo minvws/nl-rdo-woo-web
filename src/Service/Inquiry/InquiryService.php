@@ -9,6 +9,7 @@ use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\InquiryInventory;
+use App\Entity\Organisation;
 use App\Message\GenerateInquiryArchivesMessage;
 use App\Message\GenerateInquiryInventoryMessage;
 use App\Service\BatchDownloadService;
@@ -17,9 +18,11 @@ use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class InquiryService
 {
@@ -28,7 +31,7 @@ class InquiryService
      * - Performance vs database lookup. For big inventories this service is called thousands of times in a row, with many reuse of inquiries.
      * - The findOrCreateInquiryForCaseNumber doesn't flush (for performance) so a newly created inquiry would not be found in next iteration.
      *
-     * @var array<string, Inquiry>
+     * @var array<string, array<string, Inquiry>>
      */
     private array $inquiries = [];
 
@@ -52,22 +55,30 @@ class InquiryService
      *
      * @param array<string, string> $caseNrs
      */
-    public function updateDocumentInquiries(Document $document, array $caseNrs): void
+    public function updateDocumentInquiries(Organisation $organisation, Document $document, array $caseNrs): void
     {
+        $added = [];
         foreach ($caseNrs as $caseNr) {
-            $inquiry = $this->findOrCreateInquiryForCaseNumber($caseNr);
+            $inquiry = $this->findOrCreateInquiryForCaseNumber($organisation, $caseNr);
 
             // Add this document, and the dossiers it belongs to, to the inquiry
             $inquiry->addDocument($document);
             foreach ($document->getDossiers() as $dossier) {
+                if ($inquiry->getDossiers()->contains($dossier)) {
+                    continue;
+                }
+                $added[] = $caseNr;
                 $inquiry->addDossier($dossier);
-                $this->historyService->addDossierEntry($dossier, 'inquiry_added', ['casenr' => $caseNr]);
             }
 
             $this->doctrine->persist($inquiry);
 
             $this->generateInventory($inquiry);
             $this->generateArchives($inquiry);
+        }
+
+        if (count($added) > 0 && isset($dossier)) {
+            $this->historyService->addDossierEntry($dossier, 'dossier_inquiry_added', ['count' => count($added), 'casenrs' => $added]);
         }
     }
 
@@ -77,7 +88,7 @@ class InquiryService
     public function addDossierToInquiries(Dossier $dossier, array $caseNrs): void
     {
         foreach ($caseNrs as $caseNr) {
-            $inquiry = $this->findOrCreateInquiryForCaseNumber($caseNr);
+            $inquiry = $this->findOrCreateInquiryForCaseNumber($dossier->getOrganisation(), $caseNr);
 
             $inquiry->addDossier($dossier);
             $this->doctrine->persist($inquiry);
@@ -89,22 +100,28 @@ class InquiryService
         }
     }
 
-    public function findOrCreateInquiryForCaseNumber(string $caseNumber): Inquiry
+    public function findOrCreateInquiryForCaseNumber(Organisation $organisation, string $caseNumber): Inquiry
     {
-        if (array_key_exists($caseNumber, $this->inquiries)) {
-            return $this->inquiries[$caseNumber];
+        $orgId = $organisation->getId()->toRfc4122();
+        if (! array_key_exists($orgId, $this->inquiries)) {
+            $this->inquiries[$orgId] = [];
         }
 
-        $inquiry = $this->doctrine->getRepository(Inquiry::class)->findOneBy(['casenr' => $caseNumber]);
+        if (array_key_exists($caseNumber, $this->inquiries[$orgId])) {
+            return $this->inquiries[$orgId][$caseNumber];
+        }
+
+        $inquiry = $this->doctrine->getRepository(Inquiry::class)->findOneBy(['organisation' => $organisation, 'casenr' => $caseNumber]);
 
         if (! $inquiry) {
             $inquiry = new Inquiry();
             $inquiry->setCasenr($caseNumber);
+            $inquiry->setOrganisation($organisation);
 
             $this->doctrine->persist($inquiry);
         }
 
-        $this->inquiries[$inquiry->getCasenr()] = $inquiry;
+        $this->inquiries[$orgId][$inquiry->getCasenr()] = $inquiry;
 
         return $inquiry;
     }
@@ -124,7 +141,7 @@ class InquiryService
             /** @var Inquiry $inquiry */
             $inquiry->removeDossier($dossier);
 
-            $this->historyService->addDossierEntry($dossier, 'inquiry_removed', ['casenr' => $inquiry->getCasenr()]);
+            $this->historyService->addDossierEntry($dossier, 'dossier_inquiry_removed', ['casenr' => $inquiry->getCasenr()]);
 
             if ($inquiry->getDossiers()->isEmpty()) {
                 $inventory = $inquiry->getInventory();
@@ -176,5 +193,54 @@ class InquiryService
         }
 
         return $this->batchDownloadService->findOrCreate($inquiry, $documentNrs, false);
+    }
+
+    /**
+     * @param Uuid[] $docIdsToAdd
+     * @param Uuid[] $docIdsToDelete
+     */
+    public function updateDocumentsForCase(
+        Organisation $organisation,
+        string $caseNr,
+        array $docIdsToAdd,
+        array $docIdsToDelete
+    ): void {
+        $generateFiles = false;
+        $inquiry = $this->findOrCreateInquiryForCaseNumber($organisation, $caseNr);
+
+        foreach ($docIdsToAdd as $docIdToAdd) {
+            $document = $this->doctrine->getRepository(Document::class)->find($docIdToAdd);
+            if ($document) {
+                $inquiry->addDocument($document);
+                foreach ($document->getDossiers() as $dossier) {
+                    if ($inquiry->getDossiers()->contains($dossier)) {
+                        continue;
+                    }
+                    $inquiry->addDossier($dossier);
+                    $this->historyService->addDossierEntry($dossier, 'inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
+
+                    if ($dossier->isPubliclyAvailable()) {
+                        $generateFiles = true;
+                    }
+                }
+            }
+        }
+
+        foreach ($docIdsToDelete as $docIdToDelete) {
+            $document = $this->doctrine->getRepository(Document::class)->find($docIdToDelete);
+            if ($document) {
+                $inquiry->removeDocument($document);
+            }
+
+            $generateFiles = true;
+        }
+
+        $this->doctrine->persist($inquiry);
+        $this->doctrine->flush();
+
+        if ($generateFiles) {
+            $this->generateInventory($inquiry);
+            $this->generateArchives($inquiry);
+        }
     }
 }

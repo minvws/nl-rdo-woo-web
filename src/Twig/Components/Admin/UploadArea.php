@@ -66,6 +66,29 @@ class UploadArea
         return $this->getFormattedValidExtensions('of');
     }
 
+    #[ExposeInTemplate]
+    public function getFilesLimitationsElementId(): string
+    {
+        return $this->appendIdWith('files-limitations');
+    }
+
+    #[ExposeInTemplate]
+    public function getSelectFilesElementId(): string
+    {
+        return $this->appendIdWith('select-files');
+    }
+
+    #[ExposeInTemplate]
+    public function getTipElementId(): string
+    {
+        return $this->appendIdWith('tip');
+    }
+
+    protected function appendIdWith(string $suffix): string
+    {
+        return $this->id . "-$suffix";
+    }
+
     protected function getFormattedValidExtensions(string $glue): string
     {
         $extensions = $this->getValidExtensions();
@@ -94,6 +117,7 @@ class UploadArea
             'application/vnd.oasis.opendocument.spreadsheet' => '.ods',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => '.xlsx',
             'application/vnd.ms-excel' => '.xls',
+            'application/x-7z-compressed' => '.7z',
             'application/x-pdf' => '.pdf',
             'application/x-zip-compressed' => '.zip',
             'application/xls' => '.xls',

@@ -64,7 +64,7 @@ class DossierUploadStatus
     {
         $docIdsToIgnore = [];
         foreach ($uploadedFilenames as $filename) {
-            $docIdsToIgnore[intval($filename)] = 1;
+            $docIdsToIgnore[$filename] = 1;
         }
 
         return $this->getMissingDocuments()->filter(

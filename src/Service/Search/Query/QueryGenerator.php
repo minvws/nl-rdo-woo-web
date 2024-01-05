@@ -140,7 +140,8 @@ class QueryGenerator
         // This is very important, otherwise filter values like 'document' and statuses will be highlighted in content.
         $query = new SimpleQueryStringQuery(
             query: $config->query,
-            fields: ['title', 'summary', 'decision_content', 'dossiers.summary', 'dossiers.title', 'pages.content'],
+            defaultOperator: $config->operator,
+            fields: ['title', 'summary', 'decision_content', 'dossiers.summary', 'dossiers.title', 'pages.content']
         );
 
         $queryBuilder->setHighlight([

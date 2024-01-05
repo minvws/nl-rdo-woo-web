@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
 use Scheb\TwoFactorBundle\Model\BackupCodeInterface;
@@ -33,7 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     private string $email;
 
     /** @var string[] */
-    #[ORM\Column]
+    #[ORM\Column(type: Types::JSON, options: ['jsonb' => true])]
     private array $roles = [];
 
     /**
@@ -309,20 +310,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $this->organisation = $organisation;
 
         return $this;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getOrganisationPrefixes(): array
-    {
-        /** @var DocumentPrefix[] $prefixes */
-        $prefixes = $this->getOrganisation()->getDocumentPrefixes()->toArray() ?? [];
-
-        return array_map(
-            static fn (DocumentPrefix $prefix) => $prefix->getPrefix(),
-            $prefixes
-        );
     }
 
     /**

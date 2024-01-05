@@ -1,7 +1,9 @@
-FROM php:8.1-apache
+FROM php:8.2-apache
 
 RUN apt-get update -qq && \
-    apt-get install -y openjdk-17-jdk git libicu-dev libpq-dev libonig-dev tesseract-ocr tesseract-ocr-nld poppler-utils pdftk librabbitmq-dev && \
+    apt-get install -y  \
+        openjdk-17-jdk git libicu-dev libpq-dev libonig-dev tesseract-ocr tesseract-ocr-nld poppler-utils \
+        pdftk librabbitmq-dev p7zip-full xlsx2csv && \
     rm -rf /var/lib/apt/lists/* /var/cache/apk/*
 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \

@@ -67,9 +67,12 @@
             <h2 class="visually-hidden">{{ "Public" | trans() }}</h2>
             <p>
                 {{ "Document already public" | trans }}
-                {% if document.link is defined and document.link %}
+                {% if document.links | length > 0 %}
                     {{ "You can find this content at" | trans }}
-                    <a href="{{document.link}}">{{ document.link }}</a>
+                    {% for link in document.links %}
+                        {% if not loop.first %}, {% endif %}
+                        <a href="{{ link }}">{{ link }}</a>
+                    {% endfor %}
                 {% endif %}
             </p>
         </div>
@@ -78,6 +81,7 @@
 {% endif %}
 
 {% if document.isUploaded and not ingested %}
+<div class="block pt-8 w-full">
     <div class="warning">
         <div class="width-delimiter block">
             <h2 class="visually-hidden">{{ "Not yet processed" | trans() }}</h2>
@@ -87,4 +91,5 @@
             </p>
         </div>
     </div>
+</div>
 {% endif %}

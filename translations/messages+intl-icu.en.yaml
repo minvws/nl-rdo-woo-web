@@ -104,6 +104,7 @@ Summary: Summary
 "Type of decision": "Type of decision"
 "Scope of disclosure": "Scope of disclosure"
 "Inventory list": "Inventory list"
+"Production report": "Production report"
 "Other decisions in which this document appears": "Other decisions in which this document appears"
 Title: Title
 Description: Description
@@ -226,6 +227,7 @@ Decision about: "Decision about"
 Page: Page
 "Document number": "Document number"
 Date: Date
+Action: Action
 from: from
 to: to
 Organisation: Organisation
@@ -278,7 +280,9 @@ t/m: t/m
 "On this site all COVID-19 related Wob and Woo decisions are published. These are decisions from the period xx to yy.": "On this site all COVID-19 related Wob and Woo decisions are published. These are decisions from the period xx to yy."
 "Type in a search term": "Type in a search term"
 "Published on": "Published on"
+"published on": "published on"
 "Date of publication": "Date of publication"
+"Decided on": "Decided on"
 Request: Request
 Responsible(s): Responsible(s)
 "Taken decision": "Taken decision"
@@ -341,7 +345,6 @@ Edit department: Edit department
 "This link provides access to user management, where you have the opportunity to create, modify and delete user accounts, and manage their access rights.": "This link provides access to user management, where you have the opportunity to create, modify and delete user accounts, and manage their access rights."
 "This link provides access to the management of Woo requests, where you can view, manage and process new requests. Here you can also keep track of the status of existing requests and perform relevant actions.": "This link provides access to the management of Woo requests, where you can view, manage and process new requests. Here you can also keep track of the status of existing requests and perform relevant actions."
 "This link provides access to the management of tokens for dossier previews.": "This link provides access to the management of tokens for dossier previews."
-"This link provides access to the management of document prefixes.": "This link provides access to the management of document prefixes."
 "This link provides access to system statistics and monitoring.": "This link provides access to system statistics and monitoring."
 "This link provides access to dossier admin actions.": "This link provides access to dossier admin actions."
 "Statistics & Monitoring": "Statistics & Monitoring"
@@ -613,8 +616,10 @@ New decision file - basic data: "New decision file - basic data"
 "Login page": "Login page"
 "Recovery codes": "Recovery codes"
 "Current password": "Current password"
-"New Password": "New Password"
-"Repeat Password": "Repeat Password"
+"New password": "New password"
+"Repeat new password": "Repeat new password"
+"The password fields must match": "The password fields must match"
+"The password is a common password or similar": "The password is a common password or similar"
 "Login instructions for": "Login instructions for"
 "Download these instructions and send them to the user in a secure manner.": "Download these instructions and send them to the user in a secure manner."
 "Have you shared the login instructions?": "Have you shared the login instructions?"
@@ -642,6 +647,7 @@ New decision file - basic data: "New decision file - basic data"
 "Privacy statement for platform employees Open Government Act (Woo)": "Privacy statement for platform employees Open Government Act (Woo)"
 "Cases": "Cases"
 "Famous case numbers": "Famous case numbers"
+"Link to case": "Link to case"
 "Link case numbers to decisions or documents": "Link case numbers to decisions or documents"
 "Link case number": "Link case number"
 "Link case numbers to previously published documents on the platform or to previously published decisions.": "Link case numbers to previously published documents on the platform or to previously published decisions."
@@ -727,33 +733,59 @@ New decision file - basic data: "New decision file - basic data"
 'On {dates} new dossiers will be available on this page': 'On {dates} new dossiers will be available on this page.'
 'and on': 'and on'
 'Organisation management': 'Organisation management'
-
-history.dossier_updated.title: 'Decision Updated'
-history.dossier_updated.description: 'This decision has been updated. The following data has been changed: {changes}'
-history.dossier_created.title: 'Decision Created'
-history.dossier_created.description: 'This decision has been created on the platform'
-history.dossier_published.title: 'Decision Published'
-history.dossier_published.description: 'This decision has been published on the platform'
-history.dossier_removed.title: 'Decision Removed'
-history.dossier_removed.description: 'This decision has been removed from the platform'
-history.dossier_state_changed.title: 'Decision Status Changed'
-history.dossier_state_changed.description: 'Decision status has been changed from {old} to {new}'
-history.dossier_update_decision.title: 'Decision Document Updated'
-history.dossier_update_decision.description: 'The decision document has been updated'
-history.dossier_update_inventory.title: 'Decision Inventory Updated'
-history.dossier_update_inventory.description: 'The inventory list of this decision has been updated'
-history.inquiry_added.title: 'Case Number Added'
-history.inquiry_added.description: 'The following case number has been added to this decision: {casenr}'
-history.inquiry_removed.title: 'Case Number Removed'
-history.inquiry_removed.description: 'The following case number has been removed from this decision: {casenr}'
-history.dossier_withdraw_all.title: 'All Documents Within This Decision Have Been Withdrawn'
-history.dossier_withdraw_all.description: 'Reason for withdrawal: {explanation}'
-history.document_uploaded.title: 'Document Uploaded'
-history.document_uploaded.description: 'Document {document} has been uploaded to the platform'
-history.document_withdraw.title: 'This Document Has Been Withdrawn'
-history.document_withdraw.description: 'Reason for withdrawal: {explanation}'
-history.document_removed.title: 'This Document Has Been Removed'
-history.document_removed.description: 'This document has been permanently removed from the platform'
-history.document_replaced.title: 'This Document Has Been Replaced'
-history.document_replaced.description: 'This document has been replaced by another document. This can occur if there were personal data or other sensitive information in the document.'
+'History': 'History'
+'History of this document': 'History of this document'
+'history': 'history'
 Manage organisations: 'Manage organisations'
+Modify organisation {name}: 'Modify organisation {name}'
+Create organisation: 'Create organisation'
+No dossiers match the filters: 'There are no dossiers that match the filters.'
+No dossiers have been created yet: 'No dossiers have been created yet.'
+
+history.dossier_created.private: 'Besluitdossier aangemaakt'
+history.dossier_created.public: null
+history.dossier_updated.private: 'De volgende gegevens zijn aangepast: {changes}'
+history.dossier_updated.public: 'Informatie over het besluit bijgwerkt'
+history.dossier_state_concept.private: 'Status aangepast naar concept'
+history.dossier_state_concept.public: null
+history.dossier_state_scheduled.private: 'Publicatie gepland'
+history.dossier_state_scheduled.public: null
+history.dossier_state_preview.private: 'Online voor verzoekers'
+history.dossier_state_preview.public: 'Online voor verzoekers'
+history.dossier_state_published.private: 'Openbaar voor iedereen'
+history.dossier_state_published.public: 'Gepubliceerd'
+history.dossier_state_retracted.private: 'Teruggetrokken'
+history.dossier_state_retracted.public: 'Teruggetrokken'
+history.dossier_update_decision.private: 'Nieuwe besluitbrief toegevoegd (({filename}, {filesize})'
+history.dossier_update_decision.public: 'Besluitbrief vervangen ({filetype}, {filesize})'
+history.dossier_update_inventory.private: 'Nieuwe inventarislijst toegevoegd ({filename}, {filesize})'
+history.dossier_update_inventory.public: 'Inventarislijst vervangen'
+history.dossier_inquiry_added.public: null
+"history.dossier_inquiry_added.private": >-
+  { count, plural,
+    =1{Toegevoegd aan zaak {casenrs}}
+    other{Toegevoegd aan zaken {casennrs}}
+  }
+history.dossier_inquiry_removed.public: null
+history.dossier_inquiry_removed.private: 'Verwijderd uit zaak: {casenrs}'
+history.dossier_withdraw_all.private: 'Alle doucmenten ingetrokken: {explanation} ({explation_details})'
+history.dossier_withdraw_all.public: 'Alle documenten in dit besluit zijn ingetrokken met reden: {explanation}'
+history.document_inventory_updated.private: 'Gegevens aangepast via inventarislijst: {changes}'
+history.document_inventory_updated.public: 'Gegevens over document aangepast'
+history.document_judgement_public.private: 'Beoordeling aangepast naar openbaar'
+history.document_judgement_public.public: 'Beoordeling aangepast naar openbaar'
+history.document_judgement_already_public.private: 'Beoordeling aangepast naar reeds openbaar'
+history.document_judgement_already_public.public: 'Beoordeling aangepast naar reeds openbaar'
+history.document_judgement_partial_public.private: 'Beoordeling aangepast naar deels openbaar'
+history.document_judgement_partial_public.public: 'Beoordeling aangepast naar deels openbaar'
+history.document_judgement_not_public.private: 'Beoordeling aangepast naar niet openbaar'
+history.document_judgement_not_public.public: 'Beoordeling aangepast naar niet openbaar'
+history.document_uploaded.private: 'Nieuw bronbestand geüpload ({filetype}, {filesize})'
+history.document_uploaded.public: 'Bronbestand toegevoegd ({filetype}, {filesize})'
+history.document_replaced.private: 'Nieuwe versie bronbestand geüpload ({filetype}, {filesize})'
+history.document_replaced.public: 'Bronbestand vervangen ({filetype}, {filesize})'
+history.document_withdraw.private: 'Ingetrokken: {explanation} ({explation_details})'
+history.document_withdraw.public: 'Ingetrokken met reden: {explanation}'
+history.document_removed.private: 'Verwijderd'
+history.document_removed.public: 'Verwijderd'
+'date {date} cannot be parsed': 'the date "{date}" cannot be parsed'

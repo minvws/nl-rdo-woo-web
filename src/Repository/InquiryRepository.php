@@ -8,6 +8,7 @@ use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Judgement;
+use App\Entity\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
@@ -85,18 +86,20 @@ class InquiryRepository extends ServiceEntityRepository
         ;
     }
 
-    public function getQueryWithDocCountAndDossierCount(): Query
+    public function getQueryWithDocCountAndDossierCount(Organisation $organisation): Query
     {
         return $this->createQueryBuilder('inq')
             ->select('inq as inquiry')
             ->addSelect('inv')
             ->addSelect('count(distinct(doc.id)) as documentCount')
             ->addSelect('count(distinct(dos.id)) as dossierCount')
+            ->where('inq.organisation = :organisation')
             ->leftJoin('inq.dossiers', 'dos')
             ->leftJoin('inq.documents', 'doc')
             ->leftJoin('inq.inventory', 'inv')
             ->groupBy('inq.id, inv.id')
             ->orderBy('inq.updatedAt', 'DESC')
+            ->setParameter('organisation', $organisation)
             ->getQuery()
         ;
     }

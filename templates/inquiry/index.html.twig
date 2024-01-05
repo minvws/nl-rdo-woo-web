@@ -4,120 +4,19 @@
 {% set page_title = "Dossiers and documents for case number {case_number}" | trans({'{case_number}': inquiry.casenr}) %}
 
 {% block body %}
-<section>
-    <div class="block w-full">
-        <h1 class="leading-tight mb-10">{{ page_title }}</h1>
+<section class="content-detail-container">
+    <div>
+        <h1 class="mb-0 leading-tight">{{ page_title }}</h1>
 
-        {% if scheduledDossiers.count > 0 %}
-            <div class="block pb-8">
-                <div class="warning">
-                    <div class="width-delimiter block">
-                        <h2 class="visually-hidden">{{ "Warning" | trans() }}</h2>
-                        <p>
-                            <span></span>
-                            {% set dates = '' %}
-                            {% for scheduledDossier in scheduledDossiers %}
-                                {% if not loop.first %}
-                                    {% set dates = dates ~ " " ~ "and on" | trans ~ " " %}
-                                {% endif %}
-                                {% set dates = dates ~ scheduledDossier.previewDate | format_date('long')  %}
-                            {% endfor %}
-                            {{ "On {dates} new dossiers will be available on this page" | trans({'{dates}': dates}) }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
+        {% include "inquiry/snippets/notifications.html.twig" %}
 
-        <div class="bg-anti-flash-white block p-6 leading-tight mb-10">
-            {% if dossiers.count > 0 %}
-                <p class="font-bold">
-                    {{
-                        "{number_of_decisions} made for case" | trans({
-                            '{are_or_is}': "are_or_is" | trans({ 'count': dossiers.count }),
-                            '{number_of_decisions}': "# decisions" | trans({ 'count': dossiers.count }),
-                            '{case_number}': inquiry.casenr,
-                        })
-                    }}:
-                </p>
+        {% include "inquiry/snippets/info.html.twig" %}
 
-                <ul class="my-4">
-                    {% if documentCount.public > 0 %}
-                        <li>{{ "# documents made public" | trans({ 'count': documentCount.public }) }}</li>
-                    {% endif %}
-                    {% if documentCount.partial_public > 0 %}
-                        <li>{{ "# documents made partial public" | trans({ 'count': documentCount.partial_public}) }}</li>
-                    {% endif %}
-                    {% if documentCount.already_public > 0 %}
-                        <li>{{ "# documents were already public" | trans({ 'count': documentCount.already_public}) }}</li>
-                    {% endif %}
-                    {% if documentCount.not_public > 0 %}
-                        <li>{{ "# documents will not be published" | trans({ 'count': documentCount.not_public}) }}</li>
-                    {% endif %}
-                </ul>
-                <p class="mt-8">
-                    <a href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}" download>{{ "Download the inventory for casenumber {casenumber}" | trans({'{casenumber}': inquiry.casenr}) }}</a>
-                </p>
-            {% else %}
-                <p class="font-bold">
-                    {{ "At this moment no documents are available for the inquiry with casenumber {casenumber}" | trans({'casenumber': inquiry.casenr}) }}
-                </p>
-            {% endif %}
-        </div>
+        {% include "inquiry/snippets/dossiers.html.twig" %}
 
-        {% if dossiers.count > 0 %}
-        <div class="block mb-10">
-            <h2>{{ "Dossiers" | trans() }}</h2>
-            {% if dossiers | length > 0 %}
-            <table>
-                <thead>
-                    <tr>
-                        <th scope="col">{{ "Dossier" | trans() }}</th>
-                        <th scope="col" class="text-right th-date">{{ "Date of disclosure" | trans() }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for dossier in dossiers %}
-                    <tr>
-                        <td><a href="{{ path('app_dossier_detail', {dossierId: dossier.dossierNr}) }}">{{ dossier.title }}</a></td>
-                        <td class="text-right">{{ dossier.decisionDate | format_date('long') }}
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <p>{{ "No dossiers" | trans }}</p>
-            {% endif %}
-        </div>
-        {% endif %}
+        {% include "inquiry/snippets/documents.html.twig" %}
 
-        {% if documentCount.total > 0 %}
-            <div class="block">
-                <h2 id="documenten">{{ "Documents" | trans }}</h2>
-                {{ form_start(form, { 'attr' : { 'class': 'js-auto-submit-form p-0 pt-2' }}) }}
-                    <h3 class="sr-only">{{ "Filter documents. By changing the value this page will refresh and show the data for the selected value." | trans() }}</h3>
-                {{ form_end(form) }}
-
-                <div class="gap-0 items-center pb-8 pt-1">
-                    <form class="p-0 flex flex-col sm:flex-row items-stretch sm:items-center" method="post" action="{{ downloadUrl }}">
-                        <h3 class="sr-only">{{ "Download and browse selected documents" | trans() }}</h3>
-                        {% if public_docs.count > 0 %}
-                        <button type="submit" download class="button button--light flex items-center mb-2 sm:mr-4 sm:mb-0">
-                            <twig:Icon name="download" />
-                            <span class="px-4">{{ "Download" | trans() }}</span>
-                        </button>
-                        {% endif %}
-                        <span class="inline-block">
-                            <a href="{{ searchUrl }}">
-                                {{ "Search in these documents..." | trans() }}
-                            </a>
-                        </span>
-                    </form>
-                </div>
-
-                {{ macro.document_tabs(public_docs, not_public_docs, not_online_docs, '#documenten') }}
-            </div>
-        {% endif %}
+        {{ macro.history_section(get_frontend_history('inquiry', inquiry.id), "History") }}
     </div>
 </section>
 {% endblock %}

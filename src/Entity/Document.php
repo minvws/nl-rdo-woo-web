@@ -60,7 +60,7 @@ class Document implements EntityWithFileInfo
     private ?int $familyId = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $documentId = null;
+    private ?string $documentId = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $threadId = null;
@@ -105,8 +105,9 @@ class Document implements EntityWithFileInfo
     #[Embedded(class: FileInfo::class, columnPrefix: 'file_')]
     private FileInfo $fileInfo;
 
-    #[ORM\Column(length: 2048, nullable: true)]
-    private ?string $link = null;
+    /** @var array<string> */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private array $links = [];
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $remark = null;
@@ -206,19 +207,19 @@ class Document implements EntityWithFileInfo
         return $this->familyId;
     }
 
-    public function setFamilyId(int $familyId): self
+    public function setFamilyId(?int $familyId): self
     {
         $this->familyId = $familyId;
 
         return $this;
     }
 
-    public function getDocumentId(): ?int
+    public function getDocumentId(): ?string
     {
         return $this->documentId;
     }
 
-    public function setDocumentId(int $documentId): self
+    public function setDocumentId(string $documentId): self
     {
         $this->documentId = $documentId;
 
@@ -230,7 +231,7 @@ class Document implements EntityWithFileInfo
         return $this->threadId;
     }
 
-    public function setThreadId(int $threadId): self
+    public function setThreadId(?int $threadId): self
     {
         $this->threadId = $threadId;
 
@@ -294,7 +295,7 @@ class Document implements EntityWithFileInfo
         return $this->period;
     }
 
-    public function setPeriod(string $period): self
+    public function setPeriod(?string $period): self
     {
         $this->period = $period;
 
@@ -452,14 +453,20 @@ class Document implements EntityWithFileInfo
         return $this;
     }
 
-    public function getLink(): ?string
+    /**
+     * @return string[]
+     */
+    public function getLinks(): array
     {
-        return $this->link;
+        return array_values($this->links);
     }
 
-    public function setLink(?string $link): static
+    /**
+     * @param string[] $links
+     */
+    public function setLinks(array $links): static
     {
-        $this->link = $link;
+        $this->links = $links;
 
         return $this;
     }

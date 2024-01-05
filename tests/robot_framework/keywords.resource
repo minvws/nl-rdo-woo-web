@@ -134,7 +134,7 @@ Create nieuw besluit(dossier)
     Click  "Nieuw besluit (dossier) aanmaken"
     Get Text   //body  *=  Nieuw besluitdossier - basisgegevens
     Get Text   //body  *=  Onderwerp van het besluit
-    Get Text   //body  *=  Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals Woo, besluit etc.
+    Get Text   //body  *=  Houd het kort (maar minimaal 2 karakters) en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals Woo, besluit etc.
     ${current_time}    Get Time
     Fill Text   id=details_title         Robot ${current_time}
     Select Options By    id=details_date_from    value    2021-12-01T00:00:00+00:00
@@ -149,8 +149,10 @@ Create nieuw besluit(dossier)
     Get Checkbox State    id=details_publication_reason_1    ==    checked
     Check Checkbox    id=details_publication_reason_0
     Get Checkbox State    id=details_publication_reason_1    ==    unchecked
-    Select Options By    id=details_default_subjects    text    Testen
-    Select Options By    id=details_documentPrefix_documentPrefix    text    TEST1 (test)
+    #Select Options By    id=details_default_subjects    text    Testen
+    Select Options By    id=details_default_subjects    index    1
+    #Select Options By    id=details_documentPrefix_documentPrefix    text    TEST1
+    Select Options By    id=details_documentPrefix_documentPrefix    index    1
     ${current_epoch}  Get Time  format=epoch
     Fill Text   id=details_dossierNr  ${current_epoch}  
     # Click  "Concept opslaan"
@@ -169,14 +171,15 @@ Create nieuw besluit(dossier)
     Upload File By Selector   id=inventory_inventory   tests/robot_framework/files/ongeldige_inventarislijst.xlsx
     Click  xpath=//*[@id="inventory_submit"]
     Sleep    5s
-    Get Text   //body  *=  De inventarislijst mist de kolom matter
+    Get Text   //body  *=  Het productierapport mist de kolom matter
     Upload File By Selector   id=inventory_inventory   tests/Fixtures/000-inventory-001.xlsx
     Upload File By Selector   id=inventory_inventory   tests/Fixtures/000-inventory-001.xlsx
     Click  xpath=//*[@id="inventory_submit"]
     Sleep    5s
-    Get Text   //body  *=  Regel 2: documentnummer 5034 bestaat al in een ander dossier
-    Get Text   //body  *=  Regel 11: documentnummer 5118 bestaat al in een ander dossier
-    Get Text   //body  *=  Regel 20: documentnummer 5291 bestaat al in een ander dossier
+    Get Text   //body  *=  documentnummer 5034 bestaat al in een ander dossier
+    Get Text   //body  *=  documentnummer 5118 bestaat al in een ander dossier
+    Get Text   //body  *=  documentnummer 5291 bestaat al in een ander dossier
+    Take Screenshot    fullPage=True
     Click  "Besluitdossiers"
     #Fill Text   id=search-previews         Robot ${current_time}
     Type Text  id=search-previews      Robot ${current_time}  delay=50 ms  clear=Yes
@@ -198,15 +201,11 @@ Create nieuw besluit(dossier)
     Get Text   //body  *=  Bevestig de verwijdering van dit dossier. Kan niet ongedaan gemaakt worden!
     Click  xpath=//*[@id="delete_form_submit"]
     Get Text   //body  *=  Het dossier wordt verwijderd, het kan even duren voor dit verwerkt is.
+    Sleep  30s
     Click  "Naar overzicht besluitdossiers"
-    Type Text   id=search-previews         Robot ${current_time}    delay=50 ms  clear=Yes
-    Click  xpath=//*[@id="js-dossier-search-previews"]/div[3]/table/tbody/tr/td[2]
-    # verwijderen conceptdossier is nog niet mogelijk. Known issue: https://github.com/minvws/nl-rdo-woo-web-private/issues/1504
+    Log     Robot ${current_time} 
+    Get Text  //body   not contains  Robot ${current_time}
 
-
-
-
-    
 
 
 

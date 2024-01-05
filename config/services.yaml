@@ -55,6 +55,11 @@ services:
         arguments:
             - !tagged_iterator app.ingest.handler
 
+    App\Service\Inventory\Reader\InventoryReaderFactory:
+        arguments:
+            $factories:
+                - '@App\Service\FileReader\ExcelCsvReaderFactory'
+
     App\Service\Stats\WorkerStatsService:
         arguments:
             $handlers:
@@ -193,8 +198,6 @@ services:
           - '@App\Service\DossierWorkflow\Step\DocumentsStep'
           - '@App\Service\DossierWorkflow\Step\PublicationStep'
 
-
-
     App\Service\Security\Authorization\AuthorizationMatrix:
         arguments:
             $entries: '@=service("App\\Service\\Security\\Authorization\\ConfigFactory").create()'
@@ -211,3 +214,15 @@ services:
         arguments:
             $writer: '@App\Service\Inventory\Sanitizer\ExcelWriter'
             $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
+
+    App\Twig\Runtime\WooExtensionRuntime:
+        arguments:
+            $translator: '@translator.default'
+
+    App\Service\HistoryService:
+        arguments:
+            $translator: '@translator.default'
+
+    App\Service\FileUploader:
+        arguments:
+            $redis: '@snc_redis.admin'

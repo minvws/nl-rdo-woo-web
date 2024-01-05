@@ -18,7 +18,7 @@
 
     .bhr-input-text {
         @apply border
-            border-spanish-gray
+            border-dim-gray
             leading-none
             p-3
             text-lg
@@ -76,7 +76,7 @@
 
     .bhr-choice-input {
         /* radio or checkbox input */
-        @apply border border-spanish-gray h-4 w-4 mr-2 mt-px;
+        @apply border border-dim-gray h-4 w-4 mr-2 mt-px;
     }
 
     .bhr-input-icon {

@@ -12,7 +12,7 @@
 
         <ul class="grid grid-cols-2 gap-x-4 max-h-72 overflow-y-auto">
             {% for fileName in uploadedQueue %}
-                {% set mimeType = fileName ends with '.zip' ? 'application/zip' : 'application/pdf' %}
+                {% set mimeType = fileName ends with '.zip' or fileName ends with '.7z' ? 'application/zip' : 'application/pdf' %}
                 <li class="py-1">
                     <twig:Admin:FileWithIcon fileName="{{ fileName }}" mimeType="{{ mimeType }}" />
                 </li>

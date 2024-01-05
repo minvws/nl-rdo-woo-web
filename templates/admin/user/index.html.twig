@@ -31,7 +31,6 @@
             <thead>
                 <tr>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "User" | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Organisation" | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Roles" | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ "Last log in" | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">
@@ -52,7 +51,6 @@
                                 <span class="bhr-badge bhr-badge--red">{{ "Deactivated" | trans() }}</span>
                             {% endif %}
                         </th>
-                        <td>{{ user.organisation.name }}</td>
                         <td>{{ roles|join(', ') }}</td>
                         <td>
                             {% set last_login = user.loginActivities|last %}
@@ -61,12 +59,11 @@
                             {% endif %}
                         </td>
                         <td class="text-right">
-                            {% if app.user.id != user.id %}
-                                <a class="js-clickable-row__focusable" href="{{ path('app_admin_user', { id: user.id }) }}">
-                                    <span class="sr-only">Details {{ user.name }}</span>
-                                    <twig:Admin:Icon name="chevron-right" />
-                                </a>
-                            {% endif %}
+                            {% set toUrl = app.user.id is same as (user.id) ? path('app_admin_user_profile') : path('app_admin_user', { id: user.id }) %}
+                            <a class="js-clickable-row__focusable" href="{{ toUrl }}">
+                                <span class="sr-only">Details {{ user.name }}</span>
+                                <twig:Admin:Icon name="chevron-right" />
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}

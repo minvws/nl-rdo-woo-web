@@ -1,0 +1,8 @@
+{% if document.shouldBeUploaded and document.isUploaded and (document.fileInfo.size != "0") %}
+<div class="button-container pb-8">
+    <a class="button" download href="{{ path('app_document_download', { dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">
+        <twig:Icon name="download" />
+        {{ "Download" | trans }} ({{ document.fileInfo.type|upper }} {{ document.fileInfo.size | size }})
+    </a>
+</div>
+{% endif %}

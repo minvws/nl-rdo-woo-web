@@ -40,7 +40,7 @@ class InventoryService
 
         $run->setTmpFilename($tmpFilename);
 
-        $inventoryReader = $this->readerFactory->create();
+        $inventoryReader = $this->readerFactory->create($run->getFileInfo()->getMimetype() ?? '');
         $inventoryReader->open($tmpFilename);
 
         return $inventoryReader;

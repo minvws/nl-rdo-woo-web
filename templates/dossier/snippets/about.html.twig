@@ -1,0 +1,72 @@
+<section>
+    <h2>{{ "About this decision" | trans }}</h2>
+
+    <table>
+        <caption class="visually-hidden">
+            {{ "About this decision" | trans }}
+        </caption>
+        <tbody>
+            {% if dossier.decision is defined %}
+            <tr>
+                <th class="ps-0 w-2/5 lg:w-1/4" scope="row">{{ "Decision made" | trans() }}</th>
+                <td class="pe-0 font-bold">{{ dossier.decision | decision }}</td>
+            </tr>
+            {% endif %}
+            {% if dossier.decisionDocument.fileInfo.isUploaded|default(false) %}
+            <tr>
+                <th scope="row" class="ps-0">{{ "Reasoning for decision" | trans() }}</th>
+                <td class="pe-0">
+                    <a download href="{{ path('app_dossier_decision_download', { dossierId: dossier.dossierNr }) }}">{{ "Download decision" | trans() }}</a> ({{ dossier.decisionDocument.fileInfo.size | size }})
+                </td>
+            </tr>
+            {% endif %}
+            {% if dossier.departments[0].name is defined %}
+            <tr>
+                <th scope="row" class="ps-0">{{ "Responsible(s)" | trans() }}</th>
+                <td class="pe-0">
+                    {# Only display the first entries #}
+                    {{ dossier.departments[0].name }}
+                </td>
+            </tr>
+            {% endif %}
+            {% if period(dossier.dateFrom, dossier.dateTo) %}
+            <tr>
+                <th scope="row" class="ps-0">{{ "Period" | trans() }}</th>
+                <td class="pe-0">{{ period(dossier.dateFrom, dossier.dateTo) }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th scope="row" class="ps-0">{{ "Decision date" | trans() }}</th>
+                <td class="pe-0"><time datetime="{{ dossier.decisionDate | date("Y-m-d") }}">{{ dossier.decisionDate | format_date('long') }}</time></td>
+            </tr>
+            {% if dossier.publicationReason is defined %}
+            <tr>
+                <th scope="row" class="ps-0">{{ "Type of decision" | trans() }}</th>
+                <td class="pe-0">{{ dossier.publicationReason | trans }}</td>
+            </tr>
+            {% endif %}
+
+            {% set thereAreDocuments = dossier.documents|length > 0 %}
+            {% set thereArePages = dossier.pagecount|default(0) > 0 %}
+
+            {% if (thereAreDocuments and thereArePages) or (dossier.inventory is not null) %}
+            <tr>
+                <th scope="row" class="ps-0">{{ "Scope of disclosure" | trans() }}</th>
+                <td class="pe-0">
+                    {% if thereAreDocuments %}
+                        {{ "# documents" | trans({"count": dossier.documents|length})}}{% if thereAreDocuments and thereArePages %},{% endif %}
+                    {% endif %}
+
+                    {% if thereArePages %}
+                        {{ "# pages" | trans({"count": dossier.pagecount|default(0)})}}
+                    {% endif %}
+
+                    {% if dossier.inventory is not null  %}
+                        <a download href="{{ path('app_dossier_inventory_download', { dossierId: dossier.dossierNr }) }}">{{ "Inventory list" | trans() }}</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</section>

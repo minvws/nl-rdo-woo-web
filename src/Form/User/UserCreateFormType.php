@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Form\User;
 
-use App\Entity\Organisation;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Roles;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -23,7 +21,6 @@ use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Required;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
@@ -54,21 +51,6 @@ class UserCreateFormType extends AbstractType
                 'empty_data' => '',
                 'constraints' => [
                     new Length(['min' => 1, 'max' => 255]),
-                ],
-            ])
-            ->add('organisation', EntityType::class, [
-                'label' => 'Organisatie',
-                'label_attr' => [
-                    'class' => 'bhr-label mb-2',
-                ],
-                'class' => Organisation::class,
-                'choice_label' => function (Organisation $organisation) {
-                    return $organisation->getName() . ' (' . $organisation->getDepartment()->getShortTag() . ')';
-                },
-                'placeholder' => 'Selecteer een organisatie',
-                'required' => true,
-                'constraints' => [
-                    new Required(),
                 ],
             ])
             ->add('roles', HiddenType::class)

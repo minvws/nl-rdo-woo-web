@@ -42,6 +42,10 @@ class Inquiry implements EntityWithBatchDownload
     #[ORM\OneToOne(mappedBy: 'inquiry', targetEntity: InquiryInventory::class)]
     private ?InquiryInventory $inventory = null;
 
+    #[ORM\ManyToOne(inversedBy: 'inquiries')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Organisation $organisation;
+
     public function __construct()
     {
         $this->documents = new ArrayCollection();
@@ -175,5 +179,17 @@ class Inquiry implements EntityWithBatchDownload
     public function isAvailableForBatchDownload(): bool
     {
         return true;
+    }
+
+    public function getOrganisation(): Organisation
+    {
+        return $this->organisation;
+    }
+
+    public function setOrganisation(Organisation $organisation): static
+    {
+        $this->organisation = $organisation;
+
+        return $this;
     }
 }

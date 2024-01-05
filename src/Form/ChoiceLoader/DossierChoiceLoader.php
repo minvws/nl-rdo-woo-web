@@ -42,9 +42,7 @@ class DossierChoiceLoader implements ChoiceLoaderInterface
         }
 
         $repository = $this->doctrine->getRepository(Dossier::class);
-
-        $prefixes = $this->authorizationMatrix->getActiveOrganisation()->getPrefixesAsArray();
-        $entities = $repository->findAllForPrefixes($prefixes);
+        $entities = $repository->findAllForOrganisation($this->authorizationMatrix->getActiveOrganisation());
 
         $choices = [];
         foreach ($entities as $entity) {

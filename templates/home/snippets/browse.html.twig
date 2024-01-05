@@ -1,0 +1,20 @@
+{% import "facet_macros.html.twig" as macro %}
+
+<section class="background-color-offset">
+    <div>
+        <h2 class="leading-tight reduce-width">{{ "Search or browse decisions and published documents through the categories" | trans | raw }}</h2>
+
+        {% include "search/searchbar.html.twig" with { id: "search-field-bottom", isHalfWidth: true } %}
+
+        <div class="column-3">
+            {{ macro.facet_preview("Subject" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, facets) }}
+            {{ macro.facet_preview("Source document type" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, facets) }}
+            {{ macro.facet_preview("Judgement" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, facets) }}
+            {{ macro.facet_preview("Grounds" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, facets) }}
+        </div>
+
+        <div class="centered pt-2">
+            <a class="arrowed-link ro-font-bold reverse-underline" href="{{ path('app_browse') }}">{{ "To all categories" | trans() }}</a>
+        </div>
+    </div>
+</section>

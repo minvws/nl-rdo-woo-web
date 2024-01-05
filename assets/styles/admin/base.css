@@ -18,11 +18,16 @@
 
     summary {
         /* Don't show the default ugly arrow */
-        @apply block;
+        @apply block cursor-pointer;
     }
 
     summary::-webkit-details-marker {
         /* Also don't show it in Safari */
         @apply hidden;
+    }
+
+    /* Not all buttons are clickable, so override the pointer cursor set by Tailwind on all buttons */
+    button[tabindex="-1"] {
+        @apply cursor-auto;
     }
 }

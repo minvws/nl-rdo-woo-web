@@ -8,6 +8,7 @@ use App\Entity\Department;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Judgement;
+use App\Entity\Organisation;
 use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
 use Faker\Factory;
@@ -28,7 +29,7 @@ class FakeDataGenerator
         $this->faker = Factory::create('nl_NL');
     }
 
-    public function generateDossier(string $dossierNr): Dossier
+    public function generateDossier(Organisation $organisation, string $dossierNr): Dossier
     {
         $deps = $this->doctrine->getRepository(Department::class)->findAll();
         shuffle($deps);
@@ -39,7 +40,7 @@ class FakeDataGenerator
 
         /** @var string $reason */
         $reason = $this->faker->randomElement([
-            \App\Entity\Dossier::REASON_WOB_REQUEST,
+            Dossier::REASON_WOB_REQUEST,
             Dossier::REASON_WOO_REQUEST,
             Dossier::REASON_WOO_ACTIVE,
         ]);
@@ -67,6 +68,7 @@ class FakeDataGenerator
         $dossier->setPublicationReason($reason);
         $dossier->setDecision($decision);
         $dossier->setStatus(Dossier::STATUS_PUBLISHED);
+        $dossier->setOrganisation($organisation);
         foreach ($deps as $dep) {
             $dossier->addDepartment($dep);
         }
@@ -94,7 +96,7 @@ class FakeDataGenerator
         $document->setDocumentNr($documentNr);
         $document->setDuration(0);
         $document->setFamilyId($documentId);
-        $document->setDocumentid($documentId);
+        $document->setDocumentid(strval($documentId));
         $document->setThreadId(0);
         $document->setPageCount(random_int(1, 20));
         $document->setSummary('summary of the document');
@@ -126,7 +128,7 @@ class FakeDataGenerator
         }
 
         if (random_int(0, 1) === 1) {
-            $document->setLink($this->faker->url());
+            $document->setLinks([$this->faker->url()]);
         }
 
         if (random_int(0, 1) === 1) {

@@ -13,7 +13,7 @@
         {% if dossier.needsInventoryAndDocuments %}
             {% include 'admin/dossier/form/documents.html.twig' %}
         {% else %}
-            Op basis van het besluit '{{ dossier.decision | decision }}' heeft dit dossier geen inventarislijst en/of documenten.
+            Op basis van het besluit '{{ dossier.decision | decision }}' heeft dit dossier geen productierapport en/of documenten.
         {% endif %}
     </div>
 {% endblock %}

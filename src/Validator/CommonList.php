@@ -17,5 +17,5 @@ class CommonList extends Constraint
      * Any public properties become valid options for the annotation.
      * Then, use these in your validator class.
      */
-    public string $message = 'The password is a common password or similar.';
+    public string $message = 'The password is a common password or similar';
 }

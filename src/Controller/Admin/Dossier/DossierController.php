@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Controller\Admin\Dossier;
 
 use App\Attribute\AuthMatrix;
-use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Form\Dossier\SearchFormType;
+use App\Repository\DocumentRepository;
+use App\Repository\DossierRepository;
 use App\Service\DossierWorkflow\DossierWorkflow;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -33,7 +33,8 @@ class DossierController extends AbstractController
     protected const MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
-        private readonly EntityManagerInterface $doctrine,
+        private readonly DossierRepository $dossierRepository,
+        private readonly DocumentRepository $documentRepository,
         private readonly PaginatorInterface $paginator,
         private readonly DossierWorkflow $workflow,
         private readonly AuthorizationMatrix $authorizationMatrix,
@@ -45,17 +46,10 @@ class DossierController extends AbstractController
     public function index(Breadcrumbs $breadcrumbs, Request $request): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Balie', 'app_admin');
         $breadcrumbs->addItem('Dossier management');
 
         $form = $this->createForm(SearchFormType::class);
         $form->handleRequest($request);
-
-        $organisation = $this->authorizationMatrix->getActiveOrganisation();
-
-        $query = $this->doctrine->getRepository(Dossier::class)->createQueryBuilder('dos');
-        $query->leftJoin('dos.inquiries', 'inq')->addSelect('inq');
-        $query->andWhere('dos.documentPrefix IN (:prefixes)')->setParameter('prefixes', $organisation->getPrefixesAsArray());
 
         $statuses = [];
         if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_PUBLISHED_DOSSIERS)) {
@@ -71,7 +65,11 @@ class DossierController extends AbstractController
                 Dossier::STATUS_CONCEPT,
             ]);
         }
-        $query->andWhere('dos.status IN (:statuses)')->setParameter('statuses', $statuses);
+
+        $query = $this->dossierRepository->getDossiersForOrganisationQueryBuilder(
+            $this->authorizationMatrix->getActiveOrganisation(),
+            $statuses
+        );
 
         $this->applyFilter($form, $query);
 
@@ -95,10 +93,9 @@ class DossierController extends AbstractController
         $searchTerm = urldecode(strval($request->getPayload()->get('q', '')));
 
         $organisation = $this->authorizationMatrix->getActiveOrganisation();
-        $prefixes = $organisation->getPrefixesAsArray();
 
-        $dossiers = $this->doctrine->getRepository(Dossier::class)->findBySearchTerm($searchTerm, 4, $prefixes);
-        $documents = $this->doctrine->getRepository(Document::class)->findBySearchTerm($searchTerm, 4, $prefixes);
+        $dossiers = $this->dossierRepository->findBySearchTerm($searchTerm, 4, $organisation);
+        $documents = $this->documentRepository->findBySearchTerm($searchTerm, 4, $organisation);
 
         $ret = [
             'results' => json_encode(
@@ -124,9 +121,8 @@ class DossierController extends AbstractController
         $searchTerm = urldecode(strval($request->getPayload()->get('q', '')));
 
         $organisation = $this->authorizationMatrix->getActiveOrganisation();
-        $prefixes = $organisation->getPrefixesAsArray();
 
-        $dossiers = $this->doctrine->getRepository(Dossier::class)->findBySearchTerm($searchTerm, 4, $prefixes);
+        $dossiers = $this->dossierRepository->findBySearchTerm($searchTerm, 4, $organisation);
 
         $ret = [
             'results' => json_encode(
@@ -151,7 +147,6 @@ class DossierController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
     ): Response {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Balie', 'app_admin');
         $breadcrumbs->addRouteItem('Dossier management', 'app_admin_dossiers');
         $breadcrumbs->addItem('View dossier');
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\ThumbnailStorageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,6 +13,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Check extends Command
 {
     protected OutputInterface $output;
+
+    protected DocumentStorageService $docStoreService;
+    protected ThumbnailStorageService $thumbStoreService;
+
+    protected int $returnCode = 0;
+
+    public function __construct(
+        DocumentStorageService $docStoreService,
+        ThumbnailStorageService $thumbStoreService,
+    ) {
+        parent::__construct();
+
+        $this->docStoreService = $docStoreService;
+        $this->thumbStoreService = $thumbStoreService;
+    }
 
     protected function configure(): void
     {
@@ -34,17 +51,19 @@ class Check extends Command
         $this->checkExtension('pgsql', 'PGSQL');
         $this->checkExtension('intl', 'INTL');
 
-        $this->checkWritablePath('var/documents');
-        $this->checkWritablePath('var/thumbnails');
+        $this->checkAlive('document store', $this->docStoreService->isAlive());
+        $this->checkAlive('thumbnail store', $this->thumbStoreService->isAlive());
 
         $this->checkFile('/usr/bin/tesseract');
         $this->checkFile('/usr/bin/pdftk');
         $this->checkFile('/usr/bin/pdfseparate');
         $this->checkFile('/usr/bin/pdftoppm');
+        $this->checkFile('/usr/bin/7za');
+        $this->checkFile('/usr/bin/xlsx2csv');
 
         $output->writeln("\n");
 
-        return 0;
+        return $this->returnCode;
     }
 
     protected function checkFile(string $path): void
@@ -59,19 +78,16 @@ class Check extends Command
         $this->success();
     }
 
-    protected function checkWritablePath(string $path): void
+    protected function checkAlive(string $system, bool $alive): void
     {
-        $this->output->write("<comment>📋 Checking if $path is writeable</comment>: ");
-        $filename = $path . '/test-' . uniqid() . '.txt';
-        $this->output->write($filename);
-        if (! touch($filename)) {
-            $this->error('not writable');
+        $this->output->write("<comment>📋 Checking if $system is alive</comment>: ");
+        if ($alive) {
+            $this->success();
 
             return;
         }
 
-        unlink($filename);
-        $this->success();
+        $this->error('not writable');
     }
 
     protected function checkExtension(string $extension, string $name): void
@@ -89,6 +105,8 @@ class Check extends Command
     protected function error(string $message): void
     {
         $this->output->writeln('<error>💀 ' . $message . '</error>');
+
+        $this->returnCode = 1;
     }
 
     protected function success(string $message = 'ok'): void

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Attribute\AuthMatrix;
+use App\Controller\Admin\Dossier\DossierAuthorizationTrait;
 use App\Entity\DocumentPrefix;
 use App\Entity\Dossier;
 use App\Form\ChoiceLoader\DocumentPrefixChoiceLoader;
@@ -32,6 +33,8 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
  */
 class InquiryController extends AbstractController
 {
+    use DossierAuthorizationTrait;
+
     protected const MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
@@ -51,11 +54,10 @@ class InquiryController extends AbstractController
     public function index(Breadcrumbs $breadcrumbs, Request $request): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addItem('Inquiry management');
 
         $pagination = $this->paginator->paginate(
-            $this->repository->getQueryWithDocCountAndDossierCount(),
+            $this->repository->getQueryWithDocCountAndDossierCount($this->authorizationMatrix->getActiveOrganisation()),
             $request->query->getInt('page', 1),
             self::MAX_ITEMS_PER_PAGE
         );
@@ -70,7 +72,6 @@ class InquiryController extends AbstractController
     public function link(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addItem('Inquiry link');
 
         return $this->render('admin/inquiry/link.html.twig', [
@@ -83,7 +84,6 @@ class InquiryController extends AbstractController
     public function linkDocuments(Breadcrumbs $breadcrumbs, Request $request): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addItem('Inquiry link');
 
         $choiceLoader = new DocumentPrefixChoiceLoader($this->doctrine, $this->authorizationMatrix, $this->security);
@@ -102,7 +102,11 @@ class InquiryController extends AbstractController
             if ($uploadedFile instanceof UploadedFile) {
                 /** @var DocumentPrefix $prefix */
                 $prefix = $form->get('prefix')->getData();
-                $errors = $this->inquiryImporter->processSpreadsheet($uploadedFile, $prefix);
+                $errors = $this->inquiryImporter->processSpreadsheet(
+                    $this->authorizationMatrix->getActiveOrganisation(),
+                    $uploadedFile,
+                    $prefix
+                );
 
                 if (count($errors) === 0) {
                     return $this->redirectToRoute('app_admin_inquiries');
@@ -127,7 +131,6 @@ class InquiryController extends AbstractController
     public function linkDossiers(Breadcrumbs $breadcrumbs, Request $request): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addItem('Inquiry link');
 
         $choiceLoader = new DossierChoiceLoader($this->doctrine, $this->authorizationMatrix, $this->security);
@@ -148,6 +151,7 @@ class InquiryController extends AbstractController
             /** @var Dossier[] $dossiers */
             $dossiers = $form->get('dossiers')->getData();
             foreach ($dossiers as $dossier) {
+                $this->testIfDossierIsAllowedByUser($dossier);
                 $this->inquiryService->addDossierToInquiries($dossier, $inquiries);
             }
             $this->doctrine->flush();

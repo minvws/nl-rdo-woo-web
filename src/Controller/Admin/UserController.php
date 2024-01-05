@@ -12,10 +12,10 @@ use App\Form\User\EnableUserFormType;
 use App\Form\User\ResetCredentialsFormType;
 use App\Form\User\UserCreateFormType;
 use App\Form\User\UserInfoFormType;
+use App\Repository\UserRepository;
 use App\Roles;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\UserService;
-use Doctrine\ORM\EntityManagerInterface;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
 use MinVWS\AuditLogger\Events\Logging\AccountChangeLogEvent;
@@ -33,26 +33,15 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
  */
 class UserController extends AbstractController
 {
-    protected EntityManagerInterface $doctrine;
-    protected UserService $userService;
-    protected TranslatorInterface $translator;
-    protected AuditLogger $auditLogger;
-    protected AuthorizationMatrix $authorizationMatrix;
-
     protected const RESET_USER_KEY = 'reset_user';
 
     public function __construct(
-        EntityManagerInterface $doctrine,
-        UserService $userService,
-        TranslatorInterface $translator,
-        AuditLogger $auditLogger,
-        AuthorizationMatrix $authorizationMatrix
+        private readonly UserRepository $repository,
+        private readonly UserService $userService,
+        private readonly TranslatorInterface $translator,
+        private readonly AuditLogger $auditLogger,
+        private readonly AuthorizationMatrix $authorizationMatrix
     ) {
-        $this->doctrine = $doctrine;
-        $this->userService = $userService;
-        $this->translator = $translator;
-        $this->auditLogger = $auditLogger;
-        $this->authorizationMatrix = $authorizationMatrix;
     }
 
     #[Route('/balie/gebruikers', name: 'app_admin_users', methods: ['GET'])]
@@ -60,7 +49,6 @@ class UserController extends AbstractController
     public function index(Request $request, Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addItem('User management');
 
         // Remove any reset data from the session as soon as we return back to the user list. This is not
@@ -70,13 +58,12 @@ class UserController extends AbstractController
             $request->getSession()->remove(self::RESET_USER_KEY);
         }
 
-        if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_ORGANISATION_ONLY)) {
-            /** @var User $user */
-            $user = $this->getUser();
-            $users = $this->doctrine->getRepository(User::class)->findAllForOrganisation($user->getOrganisation());
-        } else {
-            $users = $this->doctrine->getRepository(User::class)->findAll();
-        }
+        /** @var User $user */
+        $user = $this->getUser();
+        $users = $this->repository->findAllForOrganisation(
+            $this->authorizationMatrix->getActiveOrganisation(),
+            $user->hasRole(Roles::ROLE_SUPER_ADMIN)
+        );
 
         $roles = Roles::roleDetails();
         $roleDetails = [];
@@ -95,7 +82,6 @@ class UserController extends AbstractController
     public function create(Breadcrumbs $breadcrumbs, Request $request): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addRouteItem('User management', 'app_admin_users');
         $breadcrumbs->addItem('New user');
 
@@ -103,21 +89,13 @@ class UserController extends AbstractController
 
         $userForm->handleRequest($request);
         if ($userForm->isSubmitted() && $userForm->isValid()) {
-            // If the user has organisation only filter, we need to force set the organisation in case the user somehow
-            // managed to change it in the form.
-            if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_ORGANISATION_ONLY) == true) {
-                /** @var User $user */
-                $user = $this->getUser();
-                $data['organisation'] = $user->getOrganisation();
-            }
-
             /** @var array{name: string, email: string, roles: string[], organisation: Organisation} $data */
             $data = $userForm->getData();
             ['plainPassword' => $plainPassword, 'user' => $user] = $this->userService->createUser(
                 name: $data['name'],
                 email: $data['email'],
                 roles: $data['roles'],
-                organisation: $data['organisation']
+                organisation: $this->authorizationMatrix->getActiveOrganisation(),
             );
 
             // We need to save the user id and password in the session so we can show it on the next page.
@@ -155,7 +133,7 @@ class UserController extends AbstractController
         $request->getSession()->remove('reset_user');
 
         /** @var array{user_id: int, plainTextPassword: string} $data */
-        $user = $this->doctrine->getRepository(User::class)->find($data['user_id']);
+        $user = $this->repository->find($data['user_id']);
         if (! $user) {
             throw new NotFoundHttpException();
         }
@@ -172,24 +150,25 @@ class UserController extends AbstractController
     public function modify(Breadcrumbs $breadcrumbs, Request $request, User $user): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addRouteItem('User management', 'app_admin_users');
         $breadcrumbs->addItem('Edit user');
 
-        if ($user === $this->getUser()) {
+        /** @var User $loggedInUser */
+        $loggedInUser = $this->getUser();
+
+        if ($user === $loggedInUser) {
             $this->addFlash('backend', ['warning' => $this->translator->trans('Modifying your own account is not allowed')]);
 
             return $this->redirectToRoute('app_admin_users');
         }
 
-        if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_ORGANISATION_ONLY)) {
-            /** @var User $currentUser */
-            $currentUser = $this->getUser();
-            if ($user->getOrganisation() !== $currentUser->getOrganisation()) {
-                $this->addFlash('backend', ['warning' => $this->translator->trans('Modifying this account is not allowed')]);
+        if (
+            $this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_ORGANISATION_ONLY)
+            && $user->getOrganisation() !== $this->authorizationMatrix->getActiveOrganisation()
+        ) {
+            $this->addFlash('backend', ['warning' => $this->translator->trans('Modifying this account is not allowed')]);
 
-                return $this->redirectToRoute('app_admin_users');
-            }
+            return $this->redirectToRoute('app_admin_users');
         }
 
         $userInfoForm = $this->createForm(UserInfoFormType::class, $user);
@@ -235,7 +214,6 @@ class UserController extends AbstractController
         /** @var LoggableUser $loggedInUser */
         $this->userService->updateRoles($loggedInUser, $user, $roles);
 
-        $this->doctrine->flush();
         $this->addFlash('backend', ['success' => $this->translator->trans('The user has been modified')]);
 
         $this->auditLogger->log((new AccountChangeLogEvent())
@@ -269,7 +247,7 @@ class UserController extends AbstractController
         }
 
         $user->setEnabled(false);
-        $this->doctrine->flush();
+        $this->repository->save($user, true);
 
         // User name.
         $userName = $user->getName();
@@ -302,7 +280,7 @@ class UserController extends AbstractController
         }
 
         $user->setEnabled(true);
-        $this->doctrine->flush();
+        $this->repository->save($user, true);
 
         $userName = $user->getName();
         $this->addFlash(

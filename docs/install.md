@@ -37,6 +37,8 @@ Start the docker containers we need to run (app, elasticsearch, tika, postgres, 
 > To administer your elasticsearch instance, you can use <https://app.elasticvue.com>
 > To administer your rabbitmq instance, you can use <https://localhost:15672> (guest/guest)
 
+### Note: The Docker containers in this repository are for development purposes only and they are not meant for production use
+
 ## Step 4: Setup .env.local
 
 Copy the `.env.development` file to `.env.local`. Most settings are correct for docker development.

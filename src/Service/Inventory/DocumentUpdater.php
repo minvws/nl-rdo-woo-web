@@ -9,7 +9,6 @@ use App\Entity\Dossier;
 use App\Message\IngestMetadataOnlyMessage;
 use App\Message\RemoveDocumentMessage;
 use App\Repository\DocumentRepository;
-use App\Service\Inquiry\InquiryService;
 use App\Service\Storage\DocumentStorageService;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -19,7 +18,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class DocumentUpdater
 {
     public function __construct(
-        private readonly InquiryService $inquiryService,
         private readonly MessageBusInterface $messageBus,
         private readonly DocumentStorageService $documentStorage,
         private readonly DocumentRepository $documentRepository,
@@ -28,7 +26,6 @@ class DocumentUpdater
 
     /**
      * Process DocumentMetadata, maps it to the document.
-     * Adds document to the dossier if needed and also generates or updates inquiries/cases.
      *
      * NOTE: this method does not flush the changes to the database.
      *
@@ -38,13 +35,7 @@ class DocumentUpdater
     {
         $this->mapMetadataToDocument($documentMetadata, $document, $document->getDocumentNr());
 
-        $dossier->addDocument($document);
-
-        // Add document to woo request case nr (if any), or create new woo request if not already present
-        $this->inquiryService->updateDocumentInquiries(
-            $document,
-            array_combine($documentMetadata->getCaseNumbers(), $documentMetadata->getCaseNumbers())
-        );
+        $document->addDossier($dossier);
 
         $this->removeObsoleteUpload($document);
 
@@ -88,7 +79,7 @@ class DocumentUpdater
         $document->setSubjects($documentMetadata->getSubjects());
         $document->setPeriod($documentMetadata->getPeriod());
         $document->setSuspended($documentMetadata->isSuspended());
-        $document->setLink($this->maxLen($documentMetadata->getLink(), 2048));
+        $document->setLinks($documentMetadata->getLinks());
         $document->setRemark($documentMetadata->getRemark());
 
         $fileName = $documentMetadata->getFilename($documentNr);

@@ -62,6 +62,7 @@ framework:
             App\Message\IngestMetadataOnlyMessage: ingestor
             App\Message\GenerateInquiryInventoryMessage: ingestor
             App\Message\GenerateInquiryArchivesMessage: ingestor
+            App\Message\UpdateInquiryLinksMessage: ingestor
 
             App\Message\UpdateDossierMessage: esupdater                # Updates the dossier in the elastic index
             App\Message\UpdateDepartmentMessage: esupdater             # Updates the dossier in the elastic index

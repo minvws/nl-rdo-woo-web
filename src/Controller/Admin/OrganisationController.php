@@ -6,9 +6,7 @@ namespace App\Controller\Admin;
 
 use App\Attribute\AuthMatrix;
 use App\Entity\Organisation;
-use App\Entity\User;
-use App\Form\Organisation\OrganisationCreateFormType;
-use App\Form\Organisation\OrganisationUpdateFormType;
+use App\Form\Organisation\OrganisationFormType;
 use App\Service\OrganisationService;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\ORM\EntityManagerInterface;
@@ -51,16 +49,9 @@ class OrganisationController extends AbstractController
     public function index(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addItem('Organisation management');
 
-        if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_ORGANISATION_ONLY)) {
-            /** @var User $user */
-            $user = $this->getUser();
-            $organisations = $this->doctrine->getRepository(Organisation::class)->findBy(['id' => $user->getOrganisation()->getId()]);
-        } else {
-            $organisations = $this->doctrine->getRepository(Organisation::class)->findAll();
-        }
+        $organisations = $this->doctrine->getRepository(Organisation::class)->findAll();
 
         return $this->render('admin/organisation/index.html.twig', [
             'organisations' => $organisations,
@@ -72,23 +63,19 @@ class OrganisationController extends AbstractController
     public function create(Breadcrumbs $breadcrumbs, Request $request): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addRouteItem('User management', 'app_admin_users');
         $breadcrumbs->addRouteItem('Organisation management', 'app_admin_user_organisation');
         $breadcrumbs->addItem('New organisation');
 
-        $organisationForm = $this->createForm(OrganisationCreateFormType::class);
+        $organisationForm = $this->createForm(OrganisationFormType::class);
         $organisationForm->handleRequest($request);
+
         if ($organisationForm->isSubmitted() && $organisationForm->isValid()) {
             /** @var Organisation $organisation */
             $organisation = $organisationForm->getData();
 
-            // This seems double work as we already got an organisation object from the form
-            // but it will do more work like audit logging etc.
-            $this->organisationService->create(
-                name: $organisation->getName(),
-                department: $organisation->getDepartment()
-            );
+            // Use the service instead of the repo directly as it will do more work like audit logging
+            $this->organisationService->create($organisation);
 
             return new RedirectResponse($this->generateUrl('app_admin_user_organisation', []));
         }
@@ -103,31 +90,25 @@ class OrganisationController extends AbstractController
     public function modify(Breadcrumbs $breadcrumbs, Request $request, Organisation $organisation): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addRouteItem('User management', 'app_admin_users');
         $breadcrumbs->addRouteItem('Organisation management', 'app_admin_user_organisation');
         $breadcrumbs->addItem('Edit organisation');
 
-        $organisationForm = $this->createForm(OrganisationUpdateFormType::class, $organisation);
+        $organisationForm = $this->createForm(OrganisationFormType::class, $organisation);
         $organisationForm->handleRequest($request);
         if ($organisationForm->isSubmitted() && $organisationForm->isValid()) {
-            /** @var Organisation $newOrganisationData */
-            $newOrganisationData = $organisationForm->getData();
+            /** @var Organisation $organisation */
+            $organisation = $organisationForm->getData();
 
-            // This seems double work as we already got an organisation object from the form
-            // but it will do more work like audit logging etc.
-            $this->organisationService->update(
-                $organisation,
-                name: $newOrganisationData->getName(),
-                department: $newOrganisationData->getDepartment()
-            );
+            // Use the service instead of the repo directly as it will do more work like audit logging
+            $this->organisationService->update($organisation);
 
             return new RedirectResponse($this->generateUrl('app_admin_user_organisation', []));
         }
 
         return $this->render('admin/organisation/edit.html.twig', [
             'organisation' => $organisation,
-            'organisation_info' => $organisationForm->createView(),
+            'organisationForm' => $organisationForm->createView(),
         ]);
     }
 }

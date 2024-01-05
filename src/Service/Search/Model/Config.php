@@ -26,7 +26,7 @@ class Config
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
-        public readonly string $operator = self::OPERATOR_OR,
+        public readonly string $operator = self::OPERATOR_AND,
         public readonly array $facets = [],
         public readonly int $limit = 0,
         public readonly int $offset = 0,
