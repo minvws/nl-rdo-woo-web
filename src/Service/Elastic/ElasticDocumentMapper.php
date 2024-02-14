@@ -16,7 +16,7 @@ class ElasticDocumentMapper
      *
      * @return array<string, mixed>
      */
-    public function mapDocumentToElasticDocument(Document $document, array $metadata = null, array $pages = null): array
+    public function mapDocumentToElasticDocument(Document $document, ?array $metadata = null, ?array $pages = null): array
     {
         $dossiers = [];
         $dossierIds = [];
@@ -39,7 +39,7 @@ class ElasticDocumentMapper
             'file_size' => $file->getSize(),
             'file_type' => $file->getType(),
             'source_type' => $file->getSourceType(),
-            'date' => $document->getDocumentDate()->format(\DateTimeInterface::ATOM),
+            'date' => $document->getDocumentDate()?->format(\DateTimeInterface::ATOM),
             'filename' => $file->getName(),
             'family_id' => $document->getFamilyId() ?? 0,
             'document_id' => $document->getDocumentId() ?? '',
@@ -48,7 +48,6 @@ class ElasticDocumentMapper
             'grounds' => $document->getGrounds(),
             'subjects' => $document->getSubjects(),
             'date_period' => $document->getPeriod(),
-            'audio_duration' => $document->getDuration(),
             'document_pages' => $document->getPageCount(),
             'dossiers' => $dossiers,
             'inquiry_ids' => $inquiryIds,

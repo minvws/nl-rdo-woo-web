@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command\Cron;
 
 use App\Entity\Dossier;
+use App\Enum\PublicationStatus;
 use App\Service\DossierService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -44,12 +45,12 @@ class DossierPublisher extends Command
         $dossiers = $this->doctrine->getRepository(Dossier::class)->findPendingPreviewDossiers($date);
         foreach ($dossiers as $dossier) {
             $output->writeln('Moving dossier to status PREVIEW: ' . $dossier->getDossierNr());
-            $this->dossierService->changeState($dossier, Dossier::STATUS_PREVIEW);
+            $this->dossierService->changeState($dossier, PublicationStatus::PREVIEW);
         }
         $dossiers = $this->doctrine->getRepository(Dossier::class)->findPendingPublishDossiers($date);
         foreach ($dossiers as $dossier) {
             $output->writeln('Moving dossier to status PUBLISHED: ' . $dossier->getDossierNr());
-            $this->dossierService->changeState($dossier, Dossier::STATUS_PUBLISHED);
+            $this->dossierService->changeState($dossier, PublicationStatus::PUBLISHED);
         }
 
         return 0;

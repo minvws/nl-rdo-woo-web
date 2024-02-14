@@ -55,11 +55,6 @@ class FileUploader
 
     protected function handleCompleteFiles(Request $request, Dossier $dossier): bool
     {
-        $dossierId = $dossier->getId();
-        if ($dossierId === null) {
-            return false;
-        }
-
         $form = $this->formFactory->create(DocumentUploadType::class, $dossier, ['csrf_protection' => false]);
         $form->handleRequest($request);
         if (! $form->isSubmitted() || ! $form->isValid()) {
@@ -85,7 +80,7 @@ class FileUploader
             $this->uploadQueue->add($dossier, $uploadedFile->getClientOriginalName());
 
             $message = new ProcessDocumentMessage(
-                dossierUuid: $dossierId,
+                dossierUuid: $dossier->getId(),
                 remotePath: $remotePath,
                 originalFilename: $uploadedFile->getClientOriginalName(),
                 chunked: false,

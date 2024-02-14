@@ -23,7 +23,6 @@ class DossierUploadStatus
     public function getActualUploadCount(): int
     {
         return $this->dossier->getDocuments()->filter(
-            /* @phpstan-ignore-next-line */
             static fn (Document $doc): bool => $doc->shouldBeUploaded() && $doc->isUploaded()
         )->count();
     }
@@ -33,26 +32,32 @@ class DossierUploadStatus
         return $this->getMissingDocuments()->count() === 0;
     }
 
+    /**
+     * @return ReadableCollection<array-key,Document>
+     */
     public function getUploadedDocuments(): ReadableCollection
     {
         return $this->dossier->getDocuments()->filter(
-            /* @phpstan-ignore-next-line */
             static fn (Document $doc): bool => $doc->isUploaded()
         );
     }
 
+    /**
+     * @return ReadableCollection<array-key,Document>
+     */
     public function getExpectedDocuments(): ReadableCollection
     {
         return $this->dossier->getDocuments()->filter(
-            /* @phpstan-ignore-next-line */
             static fn (Document $doc): bool => $doc->shouldBeUploaded()
         );
     }
 
+    /**
+     * @return ReadableCollection<array-key,Document>
+     */
     public function getMissingDocuments(): ReadableCollection
     {
         return $this->dossier->getDocuments()->filter(
-            /* @phpstan-ignore-next-line */
             static fn (Document $doc): bool => $doc->shouldBeUploaded() && ! $doc->isUploaded()
         );
     }
@@ -68,7 +73,6 @@ class DossierUploadStatus
         }
 
         return $this->getMissingDocuments()->filter(
-            /* @phpstan-ignore-next-line */
             static function (Document $doc) use ($docIdsToIgnore): bool {
                 return $doc->getDocumentId() !== null
                     && ! array_key_exists($doc->getDocumentId(), $docIdsToIgnore);

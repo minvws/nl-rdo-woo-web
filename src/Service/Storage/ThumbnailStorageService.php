@@ -27,7 +27,7 @@ class ThumbnailStorageService implements StorageAliveInterface
     /**
      * This will read in-memory. You probably do not want to do this for large files and use retrieveResource() instead.
      */
-    public function retrieve(Document $document, int $pageNr = null): ?string
+    public function retrieve(Document $document, ?int $pageNr = null): ?string
     {
         if ($pageNr) {
             $path = $this->generatePagePath($document, $pageNr);
@@ -52,7 +52,7 @@ class ThumbnailStorageService implements StorageAliveInterface
      *
      * @return resource|null
      */
-    public function retrieveResource(Document $document, int $pageNr = null)
+    public function retrieveResource(Document $document, ?int $pageNr = null)
     {
         if ($pageNr) {
             $path = $this->generatePagePath($document, $pageNr);
@@ -75,7 +75,7 @@ class ThumbnailStorageService implements StorageAliveInterface
     /**
      * Store a file in the storage adapter and update the document record with the file information.
      */
-    public function store(Document $document, File $file, int $pageNr = null): bool
+    public function store(Document $document, File $file, ?int $pageNr = null): bool
     {
         if ($pageNr) {
             $path = $this->generatePagePath($document, $pageNr);
@@ -136,7 +136,7 @@ class ThumbnailStorageService implements StorageAliveInterface
     /**
      * Returns true if the document thumbnail or pageNr exists.
      */
-    public function exists(Document $document, int $pageNr = null): bool
+    public function exists(Document $document, ?int $pageNr = null): bool
     {
         if ($pageNr) {
             $path = $this->generatePagePath($document, $pageNr);
@@ -164,7 +164,7 @@ class ThumbnailStorageService implements StorageAliveInterface
     /**
      * Returns the filesize in bytes, or 0 when file is not found (or empty, not readable etc).
      */
-    public function fileSize(Document $document, int $pageNr = null): int
+    public function fileSize(Document $document, ?int $pageNr = null): int
     {
         if ($pageNr) {
             $path = $this->generatePagePath($document, $pageNr);

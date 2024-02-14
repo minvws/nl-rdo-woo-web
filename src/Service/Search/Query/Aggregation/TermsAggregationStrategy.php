@@ -5,29 +5,37 @@ declare(strict_types=1);
 namespace App\Service\Search\Query\Aggregation;
 
 use App\Service\Search\Model\Config;
-use App\Service\Search\Query\Dsl\TermsAggregationWithMinDocCount;
-use App\Service\Search\Query\Facet\FacetDefinition;
+use App\Service\Search\Query\Aggregation;
+use App\Service\Search\Query\Facet\Facet;
 use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
 use Erichard\ElasticQueryBuilder\Constants\SortDirections;
 
-class TermsAggregationStrategy implements AggregationStrategyInterface
+readonly class TermsAggregationStrategy implements AggregationStrategyInterface
 {
+    /**
+     * @param bool $excludeOwnFilters Set to false for AND behaviour in facet counts
+     */
     public function __construct(
-        // Set to false for AND behaviour in facet counts.
-        private readonly bool $excludeOwnFilters = true,
+        private bool $excludeOwnFilters = true,
+        private bool $orderByKey = false,
     ) {
     }
 
-    public function getAggregation(FacetDefinition $facet, Config $config, int $maxCount): AbstractAggregation
+    public function getAggregation(Facet $facet, Config $config, int $maxCount): AbstractAggregation
     {
-        return new TermsAggregationWithMinDocCount(
-            name: $facet->getFacetKey(),
+        $aggregation = Aggregation::termsWithMinDocCount(
+            name: $facet->getFacetKey()->value,
             fieldOrSource: $facet->getPath(),
             minDocCount: 1,
-            orderField: '_count',
-            orderValue: SortDirections::DESC,
-            size: $maxCount,
-        );
+        )->setSize($maxCount);
+
+        if ($this->orderByKey) {
+            $aggregation->setOrder('_key');
+        } else {
+            $aggregation->setOrder('_count', SortDirections::DESC);
+        }
+
+        return $aggregation;
     }
 
     public function excludeOwnFilters(): bool

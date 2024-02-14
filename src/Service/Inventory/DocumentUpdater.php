@@ -110,4 +110,34 @@ class DocumentUpdater
 
         return $subject;
     }
+
+    /**
+     * @param string[] $refersTo
+     */
+    public function updateDocumentReferrals(Dossier $dossier, Document $document, array $refersTo): void
+    {
+        // First convert '[matter]-[documentId]' string format to DocumentNumber instances that include the dossier prefix.
+        $newReferrals = array_map(
+            static fn (string $referral): DocumentNumber => DocumentNumber::fromReferral($dossier, $document, $referral),
+            $refersTo,
+        );
+
+        $currentReferrals = $document->getRefersTo()->map(
+            fn (Document $doc): DocumentNumber => DocumentNumber::fromDossierAndDocument($dossier, $doc),
+        )->toArray();
+
+        foreach (array_diff($currentReferrals, $newReferrals) as $referralToRemove) {
+            $documentToRemove = $this->documentRepository->findByDocumentNumber($referralToRemove);
+            if ($documentToRemove) {
+                $document->removeReferralTo($documentToRemove);
+            }
+        }
+
+        foreach (array_diff($newReferrals, $currentReferrals) as $referralToAdd) {
+            $documentToAdd = $this->documentRepository->findByDocumentNumber($referralToAdd);
+            if ($documentToAdd) {
+                $document->addReferralTo($documentToAdd);
+            }
+        }
+    }
 }

@@ -1,46 +1,49 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% block body %}
+<div class="bhr-container">
+    <h1 class="bhr-title mb-6">{{ "Index" | trans() }} {{ details.index.name }}</h1>
 
-    <section>
-        <div>
-
-            <h1>{{ "Index" | trans() }} {{ details.index.name }}</h1>
-
-            <table>
+    <div class="bhr-card">
+        <table class="bhr-table">
+            <tbody>
                 <tr>
-                    <th>{{ "Label" | trans() }}</th>
-                    <th>{{ "Expected" | trans() }}</th>
-                    <th>{{ "In Elasticsearch" | trans() }}</th>
-                    <th>{{ "Percentage" | trans() }}</th>
+                    <th class="text-left" scope="col">{{ "Label" | trans() }}</th>
+                    <th class="text-right" scope="col">{{ "Expected" | trans() }}</th>
+                    <th class="text-right" scope="col">{{ "In Elasticsearch" | trans() }}</th>
+                    <th class="text-right" scope="col">{{ "Percentage" | trans() }}</th>
                 </tr>
-
                 <tr>
                     <td>{{ "Dossier count" | trans() }}</td>
-                    <td>{{ details.expectedDossierCount }}</td>
-                    <td>{{ details.actualDossierCount }}</td>
-                    <td>{{ details.getDossierPercentage() }}%</td>
+                    <td class="text-right">{{ details.expectedDossierCount }}</td>
+                    <td class="text-right">{{ details.actualDossierCount }}</td>
+                    <td class="text-right">{{ details.getDossierPercentage() }}%</td>
                 </tr>
                 <tr>
                     <td>{{ "Document count" | trans() }}</td>
-                    <td>{{ details.expectedDocCount }}</td>
-                    <td>{{ details.actualDocCount }}</td>
-                    <td>{{ details.getDocumentPercentage() }}%</td>
+                    <td class="text-right">{{ details.expectedDocCount }}</td>
+                    <td class="text-right">{{ details.actualDocCount }}</td>
+                    <td class="text-right">{{ details.getDocumentPercentage() }}%</td>
                 </tr>
                 <tr>
                     <td>{{ "Page count" | trans() }}</td>
-                    <td>{{ details.expectedPageCount }}</td>
-                    <td>{{ details.actualPageCount }}</td>
-                    <td>{{ details.getPagePercentage() }}%</td>
+                    <td class="text-right">{{ details.expectedPageCount }}</td>
+                    <td class="text-right">{{ details.actualPageCount }}</td>
+                    <td class="text-right">{{ details.getPagePercentage() }}%</td>
                 </tr>
+            </tbody>
+        </table>
 
-            </table>
+        <p class="mt-6">
+            <a
+                class="bhr-button bhr-button--primary"
+                href="{{ path('app_admin_elastic_live', {indexName: index.name}) }}"
+            >{{ "Promote to Live" | trans() }}</a>
+        </p>
 
-            <a href="{{ path('app_admin_elastic_live', {indexName: index.name}) }}" class="button">{{ "Promote to Live" | trans() }}</a>
-
-            {% if matrix_has_permission('elastic.update') and index.aliases | length == 0 %}
-                {{ form(deleteForm) }}
-            {% endif %}
-        </div>
-    </section>
+        {% if matrix_has_permission('elastic.update') and index.aliases | length == 0 %}
+            {{ form(deleteForm) }}
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

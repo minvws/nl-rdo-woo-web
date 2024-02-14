@@ -1,24 +1,26 @@
-<section>
-    <h2>{{ "Dossiers" | trans() }}</h2>
+<div class="mt-16">
+    <h2 class="woo-h2 woo-h2-spacing">{{ "Dossiers" | trans() }}</h2>
 
     {% if dossiers.count > 0 %}
-    <table>
-        <thead>
-            <tr>
-                <th scope="col">{{ "Dossier" | trans() }}</th>
-                <th scope="col" class="text-right th-date">{{ "Date of disclosure" | trans() }}</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for dossier in dossiers %}
-            <tr>
-                <td><a href="{{ path('app_dossier_detail', {dossierId: dossier.dossierNr}) }}">{{ dossier.title }}</a></td>
-                <td class="text-right">{{ dossier.decisionDate | format_date('long') }}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="overflow-x-auto">
+        <table class="woo-table">
+            <thead>
+                <tr>
+                    <th class="min-w-64" scope="col">{{ "Dossier" | trans }}</th>
+                    <th class="min-w-64 !text-right" scope="col">{{ "Date of disclosure" | trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for dossier in dossiers %}
+                <tr>
+                    <td><a class="woo-a" href="{{ path('app_dossier_detail', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">{{ dossier.title }}</a></td>
+                    <td class="text-right">{{ dossier.decisionDate | format_date('long') }}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
-    <p>{{ "No dossiers" | trans }}</p>
+        <p>{{ "No dossiers" | trans }}</p>
     {% endif %}
 </section>

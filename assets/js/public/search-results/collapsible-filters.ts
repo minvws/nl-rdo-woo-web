@@ -1,11 +1,11 @@
+import { collapseElement, expandElement } from '@js/utils';
+
 export const collapsibleFilters = () => {
   let abortController: AbortController;
 
-  const TOGGLE_BUTTON_COLLAPSED_CLASS = 'toggle-button--collapsed';
-  const TOGGLE_BUTTON_WITH_ANIMATION_CLASS = 'toggle-button--with-animation';
+  const TOGGLE_BUTTON_COLLAPSED_CLASS = 'rotate-180';
+  const TOGGLE_BUTTON_ANIMATION_CLASS_NAMES = ['transition-transform', 'motion-reduce:transition-none'];
   const GROUP_STORAGE_KEY = 'collapsed-search-filter-groups';
-  const IS_COLLAPSING_ATTRIBUTE = 'data-is-collapsing';
-  const IS_EXPANDING_ATTRIBUTE = 'data-is-expanding';
   const ITEMS_STORAGE_KEY = 'expanded-search-filter-items';
 
   const getFilterItemsCollapsibeElement = (filtersGroupElement: HTMLElement) => filtersGroupElement
@@ -18,6 +18,9 @@ export const collapsibleFilters = () => {
 
   const getToggleGroupButtonElement = (filtersGroupElement: HTMLElement) => filtersGroupElement
     .querySelector('.js-toggle-filters-group-button') as HTMLElement;
+
+  const getToggleGroupButtonIconElement = (toggleGroupButtonElement: HTMLElement) => toggleGroupButtonElement
+    .querySelector('.js-toggle-filters-group-button-icon') as HTMLElement;
 
   const getToggleItemsButtonElement = (filtersGroupElement: HTMLElement) => filtersGroupElement
     .querySelector('.js-toggle-filter-items-button') as HTMLElement;
@@ -47,7 +50,7 @@ export const collapsibleFilters = () => {
     }
 
     setTimeout(() => {
-      toggleGroupButtonElement.classList.add(TOGGLE_BUTTON_WITH_ANIMATION_CLASS);
+      getToggleGroupButtonIconElement(toggleGroupButtonElement).classList.add(...TOGGLE_BUTTON_ANIMATION_CLASS_NAMES);
     }, 0);
 
     toggleGroupButtonElement.addEventListener('click', () => {
@@ -131,82 +134,16 @@ export const collapsibleFilters = () => {
   const markToggleButtonAs = (toggleButtonElement: HTMLElement, markAs: 'collapsed' | 'expanded') => {
     if (markAs === 'collapsed') {
       toggleButtonElement.setAttribute('aria-expanded', 'false');
-      toggleButtonElement.classList.add(TOGGLE_BUTTON_COLLAPSED_CLASS);
+      getToggleGroupButtonIconElement(toggleButtonElement)?.classList.add(TOGGLE_BUTTON_COLLAPSED_CLASS);
       return;
     }
 
     toggleButtonElement.setAttribute('aria-expanded', 'true');
-    toggleButtonElement.classList.remove(TOGGLE_BUTTON_COLLAPSED_CLASS);
+    getToggleGroupButtonIconElement(toggleButtonElement)?.classList.remove(TOGGLE_BUTTON_COLLAPSED_CLASS);
   };
 
-  const isToggleButtonMarkedAsCollapsed = (toggleButtonElement: HTMLElement) => toggleButtonElement.classList
-    .contains(TOGGLE_BUTTON_COLLAPSED_CLASS);
-
-  const collapseElement = (element: HTMLElement, withAnimation: boolean) => {
-    if (withAnimation === false) {
-      element.setAttribute('hidden', '');
-      element.style.height = '0px';
-      element.style.overflow = 'hidden';
-      return;
-    }
-
-    markElementAsCollapsing(element);
-
-    element.style.overflow = 'hidden';
-    element.style.height = `${element.scrollHeight}px`;
-
-    setTimeout(() => {
-      element.style.height = '0px';
-    }, 0);
-
-    element.addEventListener('transitionend', () => {
-      markElementAsNotCollapsing(element);
-
-      if (isElementMarkedAsExpanding(element)) {
-        // The user clicked fast enough to expand the group again before the animation ended.
-        return;
-      }
-
-      element.setAttribute('hidden', '');
-    }, { once: true });
-  };
-
-  const expandElement = (element: HTMLElement, withAnimation: boolean) => {
-    if (withAnimation === false) {
-      element.removeAttribute('hidden');
-      element.style.height = 'auto';
-      element.style.overflow = '';
-      return;
-    }
-
-    markElementAsExpanding(element);
-
-    element.removeAttribute('hidden');
-    element.style.height = `${element.scrollHeight}px`;
-    element.style.overflow = 'hidden';
-
-    element.addEventListener('transitionend', () => {
-      markElementAsNotExpanding(element);
-
-      if (isElementMarkedAsCollapsing(element)) {
-        // The user clicked fast enough to collapse the group again before the animation ended.
-        return;
-      }
-      element.style.height = '';
-      element.style.overflow = '';
-    }, { once: true });
-  };
-
-  const markElementAsCollapsing = (element: HTMLElement) => markElementAs(element, IS_COLLAPSING_ATTRIBUTE);
-  const markElementAsNotCollapsing = (element: HTMLElement) => markElementAsNot(element, IS_COLLAPSING_ATTRIBUTE);
-  const isElementMarkedAsCollapsing = (element: HTMLElement) => element.getAttribute(IS_COLLAPSING_ATTRIBUTE) !== null;
-  const markElementAsExpanding = (element: HTMLElement) => markElementAs(element, IS_EXPANDING_ATTRIBUTE);
-  const markElementAsNotExpanding = (element: HTMLElement) => markElementAsNot(element, IS_EXPANDING_ATTRIBUTE);
-  const isElementMarkedAsExpanding = (element: HTMLElement) => isElementMarkedAs(element, IS_EXPANDING_ATTRIBUTE);
-
-  const markElementAs = (element: HTMLElement, attribute: string) => element.setAttribute(attribute, '');
-  const markElementAsNot = (element: HTMLElement, attribute: string) => element.removeAttribute(attribute);
-  const isElementMarkedAs = (element: HTMLElement, attribute: string) => element.hasAttribute(attribute);
+  const isToggleButtonMarkedAsCollapsed = (toggleButtonElement: HTMLElement) => toggleButtonElement.getAttribute('aria-expanded')
+    === 'false';
 
   const toggleElementText = (element: HTMLElement, state: 'collapsed' | 'expanded') => {
     const readFromAttribute = state === 'collapsed' ? 'data-text-collapsed' : 'data-text-expanded';

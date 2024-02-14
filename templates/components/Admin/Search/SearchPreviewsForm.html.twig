@@ -2,7 +2,7 @@
     {% block content %}
         <div class="fixed inset-0 pointer-events-none bg-black/25 hidden js-overlay"></div>
         <div class="flex items-center">
-            <label class="block text-dim-gray mr-3 leading-tight" for="search-previews">
+            <label class="block text-bhr-dim-gray mr-3 leading-tight" for="search-previews">
                 {{ label }}
             </label>
             <div class="relative">
@@ -23,6 +23,7 @@
 
         <div
             class="bhr-overlay-card hidden right-0 mt-2 w-[56rem] js-placeholder"
+            data-e2e-name="search-previews-results"
             id="search-previews-results"
             role="dialog"
         ></div>

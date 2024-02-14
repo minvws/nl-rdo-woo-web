@@ -48,8 +48,9 @@ class Check extends Command
 
         $this->checkExtension('amqp', 'AMQP');
         $this->checkExtension('json', 'JSON');
-        $this->checkExtension('pgsql', 'PGSQL');
+        $this->checkExtension('pdo_pgsql', 'PDO_PGSQL');
         $this->checkExtension('intl', 'INTL');
+        $this->checkExtension('zip', 'ZIP');
 
         $this->checkAlive('document store', $this->docStoreService->isAlive());
         $this->checkAlive('thumbnail store', $this->thumbStoreService->isAlive());

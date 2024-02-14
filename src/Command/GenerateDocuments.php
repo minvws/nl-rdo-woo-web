@@ -82,7 +82,6 @@ class GenerateDocuments extends Command
 
             $this->doctrine->flush();
 
-            /* @phpstan-ignore-next-line */
             $this->doctrine->clear(Document::class);
         }
 

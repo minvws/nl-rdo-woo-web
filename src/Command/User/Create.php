@@ -55,7 +55,7 @@ class Create extends Command
         } elseif ($input->getOption('admin')) {
             $role = ['ROLE_ADMIN'];
         } else {
-            $role = ['ROLE_USER', 'ROLE_BALIE'];
+            $role = ['ROLE_BALIE'];
         }
 
         // We assume that the created user is always part of the first organisation

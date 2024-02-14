@@ -1,8 +1,8 @@
 
 {# Results #}
 {% if result.entries | length > 0 %}
-<h2 class="visually-hidden">{{ "Results" | trans() }}</h2>
-<ul class=" list-unstyled list-results">
+<h2 class="sr-only">{{ "Results" | trans() }}</h2>
+<ul>
     {% for entry in result.entries %}
     <li>
         {% include "search/entries/" ~ entry.type ~ ".html.twig" %}

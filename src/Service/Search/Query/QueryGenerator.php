@@ -5,50 +5,55 @@ declare(strict_types=1);
 namespace App\Service\Search\Query;
 
 use App\ElasticConfig;
-use App\Service\Elastic\SimpleQueryStringQuery;
 use App\Service\Search\Model\Config;
 use App\Service\Search\Query\Condition\ContentAccessConditions;
 use App\Service\Search\Query\Condition\FacetConditions;
 use App\Service\Search\Query\Condition\SearchTermConditions;
-use Erichard\ElasticQueryBuilder\Query\BoolQuery;
+use App\Service\Search\Query\Facet\FacetList;
+use App\Service\Search\Query\Facet\FacetListFactory;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
 
-class QueryGenerator
+final readonly class QueryGenerator
 {
     public const HL_START = '[[hl_start]]';
     public const HL_END = '[[hl_end]]';
 
     public function __construct(
-        private readonly AggregationGenerator $aggregationGenerator,
-        private readonly ContentAccessConditions $accessConditions,
-        private readonly FacetConditions $facetConditions,
-        private readonly SearchTermConditions $searchTermConditions,
+        private AggregationGenerator $aggregationGenerator,
+        private ContentAccessConditions $accessConditions,
+        private FacetConditions $facetConditions,
+        private SearchTermConditions $searchTermConditions,
+        private FacetListFactory $facetListFactory,
     ) {
     }
 
     public function createFacetsQuery(Config $config): QueryBuilder
     {
+        $facetList = $this->facetListFactory->fromFacetInputs($config->facetInputs);
+
         $queryBuilder = new QueryBuilder();
         $queryBuilder->setIndex(ElasticConfig::READ_INDEX);
         $queryBuilder->setSize(0);
         $queryBuilder->setSource(false);
 
-        $this->addQuery($queryBuilder, $config);
+        $this->addQuery($facetList, $queryBuilder, $config);
 
-        $this->aggregationGenerator->addAggregations($queryBuilder, $config, 5);
+        $this->aggregationGenerator->addAggregations($facetList, $queryBuilder, $config, 5);
 
         return $queryBuilder;
     }
 
     public function createExtendedFacetsQuery(Config $config): QueryBuilder
     {
+        $facetList = $this->facetListFactory->fromFacetInputs($config->facetInputs);
+
         $queryBuilder = new QueryBuilder();
         $queryBuilder->setIndex(ElasticConfig::READ_INDEX);
         $queryBuilder->setSize(0);
         $queryBuilder->setSource(false);
 
-        $this->addQuery($queryBuilder, $config);
-        $this->aggregationGenerator->addAggregations($queryBuilder, $config, 25);
+        $this->addQuery($facetList, $queryBuilder, $config);
+        $this->aggregationGenerator->addAggregations($facetList, $queryBuilder, $config, 25);
 
         return $queryBuilder;
     }
@@ -62,14 +67,13 @@ class QueryGenerator
 
         $params = [
             'body' => [
-                '_source' => [
-                    'excludes' => [
-                        'content',
-                        'pages',
-                        'inquiry_ids',
-                        'dossiers.inquiry_ids',
-                    ],
+                'docvalue_fields' => [
+                    'type',
+                    'document_nr',
+                    'document_prefix',
+                    'dossier_nr',
                 ],
+                '_source' => false,
             ],
         ];
 
@@ -92,21 +96,23 @@ class QueryGenerator
 
         $queryBuilder->setParams($params);
 
-        $this->addQuery($queryBuilder, $config);
-        $this->aggregationGenerator->addAggregations($queryBuilder, $config, 25);
+        $facetList = $this->facetListFactory->fromFacetInputs($config->facetInputs);
+
+        $this->addQuery($facetList, $queryBuilder, $config);
+        $this->aggregationGenerator->addAggregations($facetList, $queryBuilder, $config, 25);
         $this->aggregationGenerator->addDocTypeAggregations($queryBuilder);
         $this->addHighlight($queryBuilder, $config);
 
         return $queryBuilder;
     }
 
-    private function addQuery(QueryBuilder $queryBuilder, Config $config): void
+    private function addQuery(FacetList $facetList, QueryBuilder $queryBuilder, Config $config): void
     {
-        $query = new BoolQuery();
+        $query = Query::bool();
 
-        $this->accessConditions->applyToQuery($config, $query);
-        $this->facetConditions->applyToQuery($config, $query);
-        $this->searchTermConditions->applyToQuery($config, $query);
+        $this->accessConditions->applyToQuery($facetList, $config, $query);
+        $this->facetConditions->applyToQuery($facetList, $config, $query);
+        $this->searchTermConditions->applyToQuery($facetList, $config, $query);
 
         $queryBuilder->setQuery($query);
     }
@@ -138,11 +144,10 @@ class QueryGenerator
 
         // Hightlighting uses a 'clean' query with additional filters like status.
         // This is very important, otherwise filter values like 'document' and statuses will be highlighted in content.
-        $query = new SimpleQueryStringQuery(
+        $query = Query::simpleQueryString(
+            fields: ['title', 'summary', 'decision_content', 'dossiers.summary', 'dossiers.title', 'pages.content'],
             query: $config->query,
-            defaultOperator: $config->operator,
-            fields: ['title', 'summary', 'decision_content', 'dossiers.summary', 'dossiers.title', 'pages.content']
-        );
+        )->setDefaultOperator($config->operator);
 
         $queryBuilder->setHighlight([
             'max_analyzed_offset' => 1000000,

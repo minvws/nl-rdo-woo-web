@@ -1,10 +1,8 @@
 {% if scheduledDossiers.count > 0 %}
-<div class="block pt-8 w-full">
-    <div class="warning">
-        <div class="width-delimiter block">
-            <h2 class="visually-hidden">{{ "Warning" | trans() }}</h2>
+    <div class="pb-8">
+        <twig:Public:Alert>
+            <h2 class="sr-only">{{ "Warning" | trans() }}</h2>
             <p>
-                <span></span>
                 {% set dates = '' %}
                 {% for scheduledDossier in scheduledDossiers %}
                     {% if not loop.first %}
@@ -14,7 +12,6 @@
                 {% endfor %}
                 {{ "On {dates} new dossiers will be available on this page" | trans({'{dates}': dates}) }}
             </p>
-        </div>
+        </twig:Public:Alert>
     </div>
-</div>
 {% endif %}

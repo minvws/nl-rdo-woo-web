@@ -1,5 +1,5 @@
-import { searchPreviews } from '../utils';
 import { listboxRole } from '../../utils';
+import { searchPreviews } from './search-previews';
 
 export const dossierLinkSearch = () => {
   let clickDossierAbortController: AbortController | null;

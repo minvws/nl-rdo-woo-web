@@ -82,4 +82,49 @@ class InventoryDataHelper
     {
         return Judgement::fromString(strval($value));
     }
+
+    /**
+     * Splits a string by separator and normalizes values.
+     *
+     * @return string[]
+     */
+    public static function getGrounds(string $input): array
+    {
+        $grounds = static::separateValues($input);
+
+        $normalizations = [
+            '5.1.1.a' => '5.1.1a',
+            '5.1.1.b' => '5.1.1b',
+            '5.1.1.c' => '5.1.1c',
+            '5.1.1.d' => '5.1.1d',
+            '5.1.1.e' => '5.1.1e',
+            '5.1.2.a' => '5.1.2a',
+            '5.1.2.b' => '5.1.2b',
+            '5.1.2.c' => '5.1.2c',
+            '5.1.2.d' => '5.1.2d',
+            '5.1.2.e' => '5.1.2e',
+            '5.1.2.f' => '5.1.2f',
+            '5.1.2.g' => '5.1.2g',
+            '5.1.2.h' => '5.1.2h',
+            '5.1.2.i' => '5.1.2i',
+            '10.1.a' => '10.1a',
+            '10.1.b' => '10.1b',
+            '10.1.c' => '10.1c',
+            '10.1.d' => '10.1d',
+            '10.2.a' => '10.2a',
+            '10.2.b' => '10.2b',
+            '10.2.c' => '10.2c',
+            '10.2.d' => '10.2d',
+            '10.2.e' => '10.2e',
+            '10.2.g' => '10.2g',
+        ];
+
+        foreach ($grounds as $key => $ground) {
+            if (array_key_exists($ground, $normalizations)) {
+                $grounds[$key] = $normalizations[$ground];
+            }
+        }
+
+        return $grounds;
+    }
 }

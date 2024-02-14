@@ -1,6 +1,6 @@
 @layer utilities {
     .bhr-text-muted {
-        @apply text-independence;
+        @apply text-bhr-independence;
     }
 
     .bhr-outline {

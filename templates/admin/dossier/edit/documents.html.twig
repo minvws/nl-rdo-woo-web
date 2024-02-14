@@ -15,7 +15,7 @@
                 {% if dossier.rawInventory is not null  %}
                 <a
                     class="bhr-button bhr-button--primary bhr-button--with-icon-right mr-2"
-                    href="{{ path('app_admin_dossier_inventory_download', {dossierId: dossier.dossierNr}) }}"
+                    href="{{ path('app_admin_dossier_inventory_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
                 >
                     Download productierapport
 
@@ -23,7 +23,7 @@
                 </a>
                 {% endif %}
 
-                <a class="bhr-button bhr-button--secondary mr-2" href="{{ path('app_admin_dossier_replace_inventory', { dossierId: dossier.dossierNr }) }}">
+                <a class="bhr-button bhr-button--secondary mr-2" href="{{ path('app_admin_dossier_replace_inventory', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">
                     Vervang productierapport
                 </a>
 
@@ -35,7 +35,7 @@
 
                 <twig:block name="right">
                     <twig:Admin:Search:SearchPreviewsForm
-                        endpoint="{{ path('app_admin_dossier_documents_search', { 'dossierId': dossier.dossierNr }) }}"
+                        endpoint="{{ path('app_admin_dossier_documents_search', { prefix: dossier.documentPrefix, 'dossierId': dossier.dossierNr }) }}"
                         label="{{ 'Zoek op documentnummer of -naam' }}"
                     />
                 </twig:block>
@@ -82,7 +82,7 @@
                                     {% if document.withdrawn %}{{ "Withdrawn" | trans }} {% endif %}
                                 </td>
                                 <td class="text-right">
-                                    <a class="js-clickable-row__focusable" href="{{ path('app_admin_document', {dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">
+                                    <a class="js-clickable-row__focusable" href="{{ path('app_admin_document', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">
                                         <span class="sr-only">Details {{ document.documentNr }}</span>
                                         <twig:Admin:Icon name="chevron-right" />
                                     </a>

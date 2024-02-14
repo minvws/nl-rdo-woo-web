@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier;
 
-use App\Attribute\AuthMatrix;
 use App\Entity\Dossier;
 use App\Form\Dossier\DecisionType;
 use App\Form\Dossier\DetailsType;
@@ -25,6 +24,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -41,7 +41,7 @@ class DossierConceptController extends AbstractController
     }
 
     #[Route('/balie/dossier/concept/create', name: 'app_admin_dossier_concept_create', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.create')]
+    #[IsGranted('AuthMatrix.dossier.create')]
     public function create(Request $request): Response
     {
         $dossier = new Dossier();
@@ -59,11 +59,11 @@ class DossierConceptController extends AbstractController
 
             /** @var SubmitButton $next */
             $next = $form->get('next');
-            if ($next->isClicked()) {
-                return $this->redirectToRoute($nextStep->getRouteName(), ['dossierId' => $dossier->getDossierNr()]);
-            }
 
-            return $this->redirectToRoute($currentStep->getRouteName(), ['dossierId' => $dossier->getDossierNr()]);
+            return $this->redirectToRoute(
+                $next->isClicked() ? $nextStep->getRouteName() : $currentStep->getRouteName(),
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            );
         }
 
         return $this->render('admin/dossier/concept/details.html.twig', [
@@ -73,10 +73,10 @@ class DossierConceptController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/concept/details', name: 'app_admin_dossier_concept_details', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.create')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/concept/details', name: 'app_admin_dossier_concept_details', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.create')]
     public function details(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
     ): Response {
         $this->testIfDossierIsAllowedByUser($dossier);
@@ -86,7 +86,13 @@ class DossierConceptController extends AbstractController
         $nextStep = $workflowStatus->getNextStep();
 
         if (! $workflowStatus->isConcept()) {
-            return $this->redirectToRoute($currentStep->getEditRouteName(), ['dossierId' => $dossier->getDossierNr()]);
+            return $this->redirectToRoute(
+                $currentStep->getEditRouteName(),
+                [
+                    'prefix' => $dossier->getDocumentPrefix(),
+                    'dossierId' => $dossier->getDossierNr(),
+                ]
+            );
         }
 
         $form = $this->createForm(DetailsType::class, $dossier);
@@ -96,11 +102,11 @@ class DossierConceptController extends AbstractController
 
             /** @var SubmitButton $next */
             $next = $form->get('next');
-            if ($next->isClicked()) {
-                return $this->redirectToRoute($nextStep->getRouteName(), ['dossierId' => $dossier->getDossierNr()]);
-            }
 
-            return $this->redirectToRoute($currentStep->getRouteName(), ['dossierId' => $dossier->getDossierNr()]);
+            return $this->redirectToRoute(
+                $next->isClicked() ? $nextStep->getRouteName() : $currentStep->getRouteName(),
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            );
         }
 
         return $this->render('admin/dossier/concept/details.html.twig', [
@@ -110,10 +116,10 @@ class DossierConceptController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/concept/decision', name: 'app_admin_dossier_concept_decision', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.create')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/concept/decision', name: 'app_admin_dossier_concept_decision', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.create')]
     public function decision(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
     ): Response {
         $this->testIfDossierIsAllowedByUser($dossier);
@@ -122,7 +128,13 @@ class DossierConceptController extends AbstractController
         $currentStep = $workflowStatus->getCurrentStep();
 
         if (! $workflowStatus->isConcept()) {
-            return $this->redirectToRoute($currentStep->getEditRouteName(), ['dossierId' => $dossier->getDossierNr()]);
+            return $this->redirectToRoute(
+                $currentStep->getEditRouteName(),
+                [
+                    'prefix' => $dossier->getDocumentPrefix(),
+                    'dossierId' => $dossier->getDossierNr(),
+                ]
+            );
         }
 
         if (! $workflowStatus->isReadyForDecision()) {
@@ -140,11 +152,11 @@ class DossierConceptController extends AbstractController
 
             /** @var SubmitButton $next */
             $next = $form->get('next');
-            if ($next->isClicked()) {
-                return $this->redirectToRoute($nextStep->getRouteName(), ['dossierId' => $dossier->getDossierNr()]);
-            }
 
-            return $this->redirectToRoute($currentStep->getRouteName(), ['dossierId' => $dossier->getDossierNr()]);
+            return $this->redirectToRoute(
+                $next->isClicked() ? $nextStep->getRouteName() : $currentStep->getRouteName(),
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+            );
         }
 
         return $this->render('admin/dossier/concept/decision.html.twig', [
@@ -154,10 +166,10 @@ class DossierConceptController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/concept/documents', name: 'app_admin_dossier_concept_documents', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.create')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/concept/documents', name: 'app_admin_dossier_concept_documents', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.create')]
     public function documents(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
     ): Response {
         $this->testIfDossierIsAllowedByUser($dossier);
@@ -166,7 +178,13 @@ class DossierConceptController extends AbstractController
         $currentStep = $workflowStatus->getCurrentStep();
 
         if (! $workflowStatus->isConcept()) {
-            return $this->redirectToRoute($currentStep->getEditRouteName(), ['dossierId' => $dossier->getDossierNr()]);
+            return $this->redirectToRoute(
+                $currentStep->getEditRouteName(),
+                [
+                    'prefix' => $dossier->getDocumentPrefix(),
+                    'dossierId' => $dossier->getDossierNr(),
+                ]
+            );
         }
 
         if (! $workflowStatus->isReadyForDocuments()) {
@@ -202,10 +220,10 @@ class DossierConceptController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/concept/inventory-status', name: 'app_admin_dossier_concept_inventory_status', methods: ['GET'])]
-    #[AuthMatrix('dossier.create')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/concept/inventory-status', name: 'app_admin_dossier_concept_inventory_status', methods: ['GET'])]
+    #[IsGranted('AuthMatrix.dossier.create')]
     public function inventoryProcess(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
     ): Response {
         $this->testIfDossierIsAllowedByUser($dossier);
 
@@ -236,10 +254,10 @@ class DossierConceptController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/concept/delete-inventory', name: 'app_admin_dossier_concept_delete_inventory', methods: ['GET'])]
-    #[AuthMatrix('dossier.create')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/concept/delete-inventory', name: 'app_admin_dossier_concept_delete_inventory', methods: ['GET'])]
+    #[IsGranted('AuthMatrix.dossier.create')]
     public function deleteInventory(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
     ): Response {
         $this->testIfDossierIsAllowedByUser($dossier);
 
@@ -247,7 +265,10 @@ class DossierConceptController extends AbstractController
         $currentStep = $workflowStatus->getCurrentStep();
 
         if (! $workflowStatus->isConcept()) {
-            return $this->redirectToRoute($currentStep->getEditRouteName(), ['dossierId' => $dossier->getDossierNr()]);
+            return $this->redirectToRoute(
+                $currentStep->getEditRouteName(),
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+            );
         }
 
         if (! $workflowStatus->isReadyForDocuments()) {
@@ -256,13 +277,16 @@ class DossierConceptController extends AbstractController
 
         $this->workflow->removeInventory($dossier);
 
-        return $this->redirectToRoute($currentStep->getRouteName(), ['dossierId' => $dossier->getDossierNr()]);
+        return $this->redirectToRoute(
+            $currentStep->getRouteName(),
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+        );
     }
 
-    #[Route('/balie/dossier/{dossierId}/concept/publish', name: 'app_admin_dossier_concept_publish', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.create')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/concept/publish', name: 'app_admin_dossier_concept_publish', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.create')]
     public function publish(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
     ): Response {
         $this->testIfDossierIsAllowedByUser($dossier);
@@ -271,7 +295,13 @@ class DossierConceptController extends AbstractController
         $currentStep = $workflowStatus->getCurrentStep();
 
         if (! $workflowStatus->isConcept()) {
-            return $this->redirectToRoute($currentStep->getEditRouteName(), ['dossierId' => $dossier->getDossierNr()]);
+            return $this->redirectToRoute(
+                $currentStep->getEditRouteName(),
+                [
+                    'prefix' => $dossier->getDocumentPrefix(),
+                    'dossierId' => $dossier->getDossierNr(),
+                ]
+            );
         }
 
         if (! $workflowStatus->isReadyForPublication()) {
@@ -283,7 +313,10 @@ class DossierConceptController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->workflow->publish($dossier);
 
-            return $this->redirectToRoute('app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+            return $this->redirectToRoute(
+                'app_admin_dossier',
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            );
         }
 
         return $this->render('admin/dossier/concept/publish.html.twig', [
@@ -299,10 +332,13 @@ class DossierConceptController extends AbstractController
         if ($openStep) {
             return $this->redirectToRoute(
                 $openStep->getRouteName(),
-                ['dossierId' => $dossier->getDossierNr()]
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
             );
         }
 
-        return $this->redirectToRoute('app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+        return $this->redirectToRoute('app_admin_dossier', [
+            'prefix' => $dossier->getDocumentPrefix(),
+            'dossierId' => $dossier->getDossierNr(),
+        ]);
     }
 }

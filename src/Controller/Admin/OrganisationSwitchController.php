@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Attribute\AuthMatrix;
 use App\Entity\Organisation;
 use App\Entity\User;
 use App\Service\Security\OrganisationSwitcher;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class OrganisationSwitchController extends AbstractController
 {
@@ -20,7 +20,7 @@ class OrganisationSwitchController extends AbstractController
     }
 
     #[Route('/balie/organisatie-wissel/{id}', name: 'app_admin_switch_organisation', methods: ['GET'])]
-    #[AuthMatrix('organisation.read')]
+    #[IsGranted('AuthMatrix.organisation.read')]
     public function index(Organisation $organisation): Response
     {
         /** @var User $user */

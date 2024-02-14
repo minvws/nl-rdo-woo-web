@@ -7,6 +7,7 @@ namespace App\Command;
 use App\Service\SqlDump\NodeVisitor;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
+use PhpParser\PhpVersion;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,7 +32,7 @@ class SqlDump extends Command
         unset($input);
         unset($output);
 
-        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $parser = (new ParserFactory())->createForVersion(PhpVersion::fromString('7.0'));
         $finder = new Finder();
         foreach ($finder->in(__DIR__ . '/../../migrations')->files()->name('*.php') as $file) {
             $sqlFilename = $file->getBasename('.php') . '.sql';

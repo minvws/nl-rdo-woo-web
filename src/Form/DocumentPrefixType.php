@@ -29,6 +29,10 @@ class DocumentPrefixType extends AbstractType
                     'no_container' => true,
                     'class' => 'w-full',
                 ],
+                'label' => 'Prefix',
+                'label_attr' => [
+                    'class' => 'sr-only',
+                ],
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),

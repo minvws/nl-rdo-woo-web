@@ -47,7 +47,7 @@
         {% if (formData.status is defined) or (formData.department is defined) %}
             <ul class="px-4 pb-6">
                 {% for status in formData.status|default([]) %}
-                    {{ macro.active_facet('Status' | trans() ~ ': ' ~ status, '?' ~ query_string_without_param('status', status)) }}
+                    {{ macro.active_facet('Status' | trans() ~ ': ' ~ status.value | trans, '?' ~ query_string_without_param('status', status.value)) }}
                 {% endfor%}
                 {% for department in formData.department|default([]) %}
                     {{ macro.active_facet('Department' | trans() ~ ': ' ~ department.name, '?' ~ query_string_without_param('department', department.id)) }}
@@ -62,7 +62,7 @@
                     <tr>
                         {{ knp_pagination_sortable(pagination, 'Status' | trans, 'dos.status', {}, {}, 'pagination/sort.admin.html.twig') }}
                         {{ knp_pagination_sortable(pagination, 'Published date' | trans, 'dos.publicationDate', {}, {}, 'pagination/sort.admin.html.twig') }}
-                        {{ knp_pagination_sortable(pagination, 'Org & reference' | trans, 'dos.dossierNr', {}, {}, 'pagination/sort.admin.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'Org & reference' | trans, ['dos.documentPrefix','dos.dossierNr'], {}, {}, 'pagination/sort.admin.html.twig') }}
                         {{ knp_pagination_sortable(pagination, 'Decision about...' | trans, 'dos.title', {}, {}, 'pagination/sort.admin.html.twig') }}
                         <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ "Case number" | trans() }}</th>
                         <th class="bhr-column-head bhr-column-head--gray" scope="col">
@@ -79,13 +79,16 @@
                         <td>{{ dossier.title }}</td>
                         <td>
                             {% set case_numbers = [] %}
-                            {%- for inquiry in dossier.inquiries -%}
+                            {%- for inquiry in dossier.inquiries | slice(0, 6) -%}
                                 {% set case_numbers = case_numbers|merge([inquiry.casenr]) %}
                             {%- endfor -%}
                             {{ case_numbers|join(', ') }}
+                            {%- if dossier.inquiries|length > 6 -%}
+                            <span>, (…)</span>
+                            {%- endif -%}
                         </td>
                         <td>
-                            <a class="js-clickable-row__focusable" href="{{ path('app_admin_dossier', {dossierId: dossier.dossierNr}) }}">
+                            <a class="js-clickable-row__focusable" href="{{ path('app_admin_dossier', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">
                                 <span class="sr-only">Details {{ dossier.title }}</span>
                                 <twig:Admin:Icon name="chevron-right" />
                             </a>

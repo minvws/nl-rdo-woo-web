@@ -3,24 +3,30 @@
 {% set page_title = "An error occurred" | trans() %}
 
 {% block body %}
-<section class="mb-3">
-    <div>
-        <h1>{{ "An error occurred" | trans() }}</h1>
-        <p>
-            {{ "Something went wrong during the search. Try again later." | trans() }}
-        </p>
+<div class="woo-container woo-container--small">
+    <h1 class="woo-h1 woo-h1-spacing">{{ "An error occurred" | trans() }}</h1>
 
-        {% if app.debug %}
-            <div class="card bg-light mt-5">
-                <div class="card-body">
-                    <table class="table table-borderless">
-                        <tr><th class="col-2">{{ "Error message" | trans() }}</th><td>{{ result.message }}</td></tr>
-                        <tr><th>{{ "Time" | trans() }}</th><td>{{ "now" | date('d-m-Y H:i:s') }}</td></tr>
-                        <tr><th>{{ "Query" | trans() }}</th><td><code><pre>{{ result.query | json_encode(128) }}</pre></code></td></tr>
-                    </table>
-                </div>
-            </div>
-        {% endif %}
-    <div>
-</section>
+    <p>
+        {{ "Something went wrong during the search. Try again later." | trans() }}
+    </p>
+
+    {% if app.debug %}
+        <div class="pt-6">
+            <table>
+                <tr>
+                    <th>{{ "Error message" | trans() }}</th>
+                    <td>{{ result.message }}</td>
+                </tr>
+                <tr>
+                    <th>{{ "Time" | trans() }}</th>
+                    <td>{{ "now" | date('d-m-Y H:i:s') }}</td>
+                </tr>
+                <tr>
+                    <th>{{ "Query" | trans() }}</th>
+                    <td><code><pre>{{ result.query | json_encode(128) }}</pre></code></td>
+                </tr>
+            </table>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

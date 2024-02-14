@@ -40,6 +40,11 @@ Period: Periode
     =1{is}
     other{zijn}
   }
+"has_or_have": >-
+  { count, plural,
+    =1{heeft}
+    other{hebben}
+  }
 "will": >-
   { count, plural,
     =1{zal}
@@ -47,9 +52,9 @@ Period: Periode
   }
 "View all decisions": "Bekijk alle besluiten"
 "OGA platform": "OpenVWS"
-"OGA decisions of the Dutch Ministry of Health, Welfare and Sport": "Woo-besluiten gerelateerd aan COVID-19, van het <span class='no-break'>Ministerie van Volksgezondheid, Welzijn en Sport</span>"
+"OGA decisions of the Dutch Ministry of Health, Welfare and Sport": "Woo-besluiten gerelateerd aan COVID-19, van het <span class='md:whitespace-nowrap'>Ministerie van Volksgezondheid, Welzijn en Sport</span>"
 "OGA dossier": "Woo-besluit over:"
-"Here you will find documents that the Ministry of Health, Welfare and Sport has made public on the basis of the Open Government Act (Woo). The documents are limited to the time of the corona pandemic.": "Op deze website worden alle COVID-19 gerelateerde Woo-documenten en besluiten vanaf september 2023 gepubliceerd. Besluiten uit de periode daarvoor zijn te vinden op wobcovid19.rijksoverheid.nl en komen binnenkort ook hier beschikbaar."
+"public.intro.maintext": "Op deze website worden alle COVID-19 gerelateerde Woo-documenten en besluiten gepubliceerd. Besluiten die zijn genomen voor september 2023 zijn eerder gepubliceerd op wobcovid19.rijksoverheid.nl en worden de komende tijd allemaal overgezet naar deze website."
 "About the VWS Woo publication platform": "Meer over deze website"
 "On this website you will find documents that the Ministry of Health, Welfare and Sport has made public on the basis of the Open Government Act (Woo). These documents have been made public for requests submitted under the Woo and are about the corona period.": "Op deze website vindt u documenten die openbaar zijn gemaakt naar aanleiding van verzoeken die betrekking hebben op COVID-19. Deze verzoeken zijn ingediend op grond van de Wet openbaarheid van bestuur (Wob) en de Wet open overheid (Woo)."
 "From these documents it can be concluded how VWS has tackled the corona fight in collaboration with other ministries, institutions and organisations. Anyone can submit a request to make documents public under the Woo. Documents are still being added.": "Uit deze documenten kan worden opgemaakt hoe VWS de coronabestrijding in samenwerking met andere ministeries, instellingen en organisaties heeft aangepakt. Iedereen kan op grond van de Woo een verzoek indienen om documenten openbaar te maken."
@@ -175,14 +180,20 @@ Cookies: Cookies
 "Piwik retrieves this information from the web server's log files. These log files remain in the Piwik database for 31 days. Then they are deleted. Only a merged log file remains. It provides us with an annual report on website visits.": "Deze gegevens haalt Piwik uit de logfiles van de webserver. Deze logfiles blijven 31 dagen in de database van Piwik staan. Daarna worden ze verwijderd. Er blijft dan alleen een samengevoegde logfile over. Die geeft ons een jaarrapportage over het websitebezoek."
 "We do not share personal data with third parties, unless this is necessary to report criminal offences. Read more about <a href='https://www.rijksoverheid.nl/cookies'>the use of cookies by Rijksoverheid.nl</a>.": "Wij delen geen persoonsgegevens met derden, tenzij dat noodzakelijk is om aangifte te doen van strafbare feiten. Lees meer over het <a href='https://www.rijksoverheid.nl/cookies'>cookiegebruik door Rijksoverheid.nl</a>."
 Accessibility: Toegankelijkheid
-"We would like everyone to be able to use this website. Do you come across a page that is not accessible? Or do you have another question? <a href='#'>Please contact us</a>.": "Wij willen graag dat iedereen deze website kan gebruiken. Komt u toch een pagina tegen die niet toegankelijk is? Of heeft u een andere vraag? <a href='https://www.toegankelijkheidsverklaring.nl/register/10602/'>Neem dan contact met ons op</a>."
-"What is an accessible website?": "Wat is een toegankelijke website?"
-"An accessible website is easier to use for all visitors. That is why functional-technical and editorial <a href='https://www.digiaccessible.nl/'>accessibility requirements</a> or (formerly: web guidelines) apply to government websites. These are described in the <a href='https://www.forumstandaardisatie.nl/standaard/digiaccessible-en-301-549-met-wcag-21'>accessibility standard Digiaccessible EN 301 549</a>.": "Een toegankelijke website is voor alle bezoekers beter te gebruiken. Daarom gelden er functioneel-technische en redactionele <a href='https://www.digitoegankelijk.nl/'>toegankelijkheidseisen</a> of (voorheen: webrichtlijnen) voor websites van de overheid. Deze zijn beschreven in de <a href='https://www.forumstandaardisatie.nl/standaard/digitoegankelijk-en-301-549-met-wcag-21'>toegankelijkheidsstandaard Digitoegankelijk EN 301 549</a>. "
-"How do we ensure this website is accessible?": "Borging van toegankelijkheid"
-"We guarantee good accessibility in various ways within our (daily) processes:": "Wij waarborgen goede toegankelijkheid op verschillende manieren binnen onze (dagelijkse) processen:"
-"Accessibility by design: Accessibility is part of all steps in the design, construction and editorial process of this website from the start.": "Toegankelijkheid ‘by design’: toegankelijkheid is vanaf de start onderdeel van alle stappen in het ontwerp-, bouw en redactionele proces van deze website."
-"Research: we regularly check (parts of) our website for accessibility. Both for the functional-technical parts and the editorial aspects. We solve any bottlenecks found in a sustainable manner.": "Onderzoek: wij controleren regelmatig (onderdelen van) onze website op toegankelijkheid. Zowel voor de functioneel-technische onderdelen als de redactionele aspecten. Gevonden knelpunten lossen wij duurzaam op."
-"Employee knowledge: our employees keep their knowledge about accessibility up to date and apply it where necessary.": "Kennis medewerkers: onze medewerkers houden hun kennis over toegankelijkheid op peil en passen dit waar nodig toe."
+"accessibility.title.whatisaccessibility": "Wat is een toegankelijke website?"
+"accessibility.title.howtokeepaccessibility": "Borging van toegankelijkheid"
+"accessibility.text.guarantees": "Wij waarborgen goede toegankelijkheid op verschillende manieren binnen onze (dagelijkse) processen:"
+"accessibility.list.guarantees.bullet.01": "Toegankelijkheid ‘by design’: toegankelijkheid is vanaf de start onderdeel van alle stappen in het ontwerp-, bouw en redactionele proces van deze website."
+"accessibility.list.guarantees.bullet.02": "Onderzoek: wij controleren regelmatig (onderdelen van) onze website op toegankelijkheid. Zowel voor de functioneel-technische onderdelen als de redactionele aspecten. Gevonden knelpunten lossen wij duurzaam op."
+"accessibility.list.guarantees.bullet.03": "Kennis medewerkers: onze medewerkers houden hun kennis over toegankelijkheid op peil en passen dit waar nodig toe."
+"admin.accessibility.introduction": "Wij willen graag dat iedereen deze website kan gebruiken. Komt u toch een pagina tegen die niet toegankelijk is? Of heeft u een andere vraag? <a href='https://www.toegankelijkheidsverklaring.nl/register/12522#verklaring-feedback-en-contactgegevens'>Neem dan contact op</a>."
+"admin.accessibility.statement": "<a href='https://www.toegankelijkheidsverklaring.nl/register/12522'>Toegankelijkheidsverklaring Beheer OpenVWS</a>."
+"admin.accessibility.downloadreport": "<a href='/documenten/2023-12-14.Toegankelijkheidsonderzoek.Beheer.OpenVWS.open.minvws.nl.versie.1.0.pdf'>Download het toegankelijkheidsonderzoek (PDF 267 KB)</a>."
+"admin.accessibility.text.whatisaccessibility": "Een toegankelijke website is voor alle bezoekers beter te gebruiken. Daarom gelden er functioneel-technische en redactionele <a href='https://www.digitoegankelijk.nl/'>toegankelijkheidseisen</a> of (voorheen: webrichtlijnen) voor websites van de overheid. Deze zijn beschreven in de <a href='https://www.forumstandaardisatie.nl/standaard/digitoegankelijk-en-301-549-met-wcag-21'>toegankelijkheidsstandaard Digitoegankelijk EN 301 549</a>. "
+"public.accessibility.introduction": "Wij willen graag dat iedereen deze website kan gebruiken. Komt u toch een pagina tegen die niet toegankelijk is? Of heeft u een andere vraag? <a href='https://www.toegankelijkheidsverklaring.nl/register/10602/'>Neem dan contact met ons op</a>."
+"public.accessibility.statement": "<a href='https://www.toegankelijkheidsverklaring.nl/register/10602'>Toegankelijkheidsverklaring open.minvws.nl</a>."
+"public.accessibility.downloadreport": "<a href='/documenten/2024-02-13.Toegankelijkheidsonderzoek.OpenVWS.open.minvws.nl.versie.2.1.pdf'>Download het toegankelijkheidsonderzoek (PDF 304 KB)</a>."
+"public.accessibility.text.whatisaccessibility": "Een toegankelijke website is voor alle bezoekers beter te gebruiken. Daarom gelden er functioneel-technische en redactionele <a href='https://www.digitoegankelijk.nl/'>toegankelijkheidseisen</a> of (voorheen: webrichtlijnen) voor websites van de overheid. Deze zijn beschreven in de <a href='https://www.forumstandaardisatie.nl/standaard/digitoegankelijk-en-301-549-met-wcag-21'>toegankelijkheidsstandaard Digitoegankelijk EN 301 549</a>. "
 "Log in": Inloggen
 "You are logged in as {name}": "Je bent ingelogd als {name}"
 "Please sign in": "Log in alstublieft"
@@ -311,9 +322,9 @@ Responsible(s): Verantwoordelijk(en)
 "No documents selected": "Geen documenten geselecteerd"
 "This document is not yet processed. It is not possible to view individual pages, but you can download the complete document.": "Dit document is nog niet geconverteerd in ons systeem. Het is niet mogelijk om individuele pagina's in te zien, maar het is mogelijk om het hele document te downloaden."
 "Not yet processed": "Nog niet verwerkt"
-"Document preview": "Document voorvertoning"
-"Skip documents preview": "Sla document pagina voorvertoning over"
-"Go back to documents preview": "Ga terug naar document pagina voorvertoning"
+"Document preview": "Pagina-voorvertoning"
+"Skip documents preview": "Sla pagina-voorvertoning over"
+"Go back to documents preview": "Ga terug naar pagina-voorvertoning"
 Home: Home
 Go to homepage: ga naar de homepage
 You are here: Je bent hier
@@ -353,6 +364,8 @@ Edit user: Gebruiker bewerken
 "This link provides access to the management of tokens for dossier previews.": "Deze link biedt toegang tot het beheer van tokens voor besluit previews."
 "This link provides access to system statistics and monitoring.": "Deze link biedt toegang tot statistieken en monitoring van het systeem."
 "This link provides access to dossier admin actions.": "Deze link biedt toegang tot beheerdersacties voor besluiten."
+"This link provides access to inquiry admin actions.": "Deze link biedt toegang tot beheerdersacties voor zaken."
+"This link provides access to Elasticsearch index management.": "Deze link biedt toegang tot beheerdersacties voor ElasticSearch."
 "Statistics & Monitoring": "Statistieken & Monitoring"
 "Create new token": "Nieuwe token aanmaken"
 Token: Token
@@ -454,7 +467,6 @@ image: "Afbeelding"
 html: "Webpagina"
 note: "Notitie"
 unknown: "Onbekend"
-audio: "Audio"
 database: "Database"
 xml: "XML"
 video: "Video"
@@ -478,6 +490,7 @@ New rollover: Nieuwe rollover
 Index: Index
 Promote index to the live index: Promoveer index naar de live index
 "Are you sure you want to make this the live index?": "Weet je zeker dat je dit de live index wilt maken?"
+new: Nieuw
 concept: Concept
 completed: "Klaar voor publicatie"
 preview: "Online voor verzoekers"
@@ -525,12 +538,11 @@ User administrator: Gebruikers-beheer
 Dossier administrator: Besluiten-beheer
 Request administrator: Aanvraag beheerder
 Reset password: Wachtwoord resetten
+Password changed: Wachtwoord succesvol gewijzigd
 Reset two factor authentication: Twee factor authenticatie resetten
 Woo Wob request info: "Een Woo-verzoek is een verzoek om toegang tot overheidsinformatie in Nederland volgens de Wet Open Overheid. Een Wob-verzoek is een officieel verzoek aan een overheidsinstantie om specifieke informatie of documenten openbaar te maken volgens de Wet openbaarheid van bestuur."
 More about Woo Wob requests: "Meer weten over Woo/Wob-verzoeken"
 "Go to search results": "Ga naar de zoekresultaten"
-"Accessibility statement {site}": "<a href='https://www.toegankelijkheidsverklaring.nl/register/10602'>Toegankelijkheidsverklaring {site}</a>."
-"Download accessibility report": "<a href='/documenten/2023-10-13.Toegankelijkheidsonderzoek.OpenVWS.open.minvws.nl.versie.1.pdf'>Download het toegankelijkheidsonderzoek (PDF 524 KB)</a>."
 No search results: "Geen zoekresultaten"
 No documents found related to {query}: 'We konden geen documenten vinden die passen bij uw zoekopdracht "{query}"'
 Suggestions: "Suggesties"
@@ -543,6 +555,8 @@ Dossiers and documents for case number {case_number}: "Besluiten en documenten v
 Document withdrawn: "Dit document is op dit moment niet beschikbaar. Het is op {date} ingetrokken. De reden dat het document is ingetrokken: {reason}."
 Document suspended: "Er loopt nog een procedure over dit document met een betrokkene. We kunnen dit document daarom nog niet tonen."
 Suspended: "Er loopt een procedure"
+publication.status.suspended: "Opgeschort"
+publication.status.withdrawn: "Ingetrokken"
 Document determined to be not public: "Tijdens de beoordeling van het {dossier_type} heeft {department} besloten dit document niet openbaar te maken."
 Document already public: "Tijdens het beoordelen van dit document bleek dat de inhoud ervan al openbaar is."
 You can find this content at: "U kunt deze inhoud vinden op:"
@@ -595,7 +609,7 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 'create_dossier_decision_help': 'Houd het kort (maar minimaal 2 karakters) en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals Woo, besluit etc.<ul class="my-4"><li class="bhr-form-help__dont text-sm">Niet: Woo-besluit aangaande de discussie tussen het ministerie en een aantal ziekenhuizen over de uitgangssituatie van het aantal aanwezige IC-bedden</li><li class="bhr-form-help__do text-sm">Wel: Discussie tussen ministerie en ziekenhuizen over uitgangssituatie aantal IC-bedden</li></ul>'
 "Choose the category under which this decision falls. The chosen topic will also be linked to all documents in this decision.": "Kies de categorie waaronder dit besluit valt. Het gekozen onderwerp wordt ook gekoppeld aan alle documenten in dit besluit."
 "Choose the type of decision": "Kies het type besluit"
-"On to conclusion": "Verder naar besluit"
+"On to publication": "Verder naar publiceren"
 "Prefix for documents": "Prefix for documenten"
 "You can no longer edit this after creating the decision file.": "Dit kan je na het aanmaken van het besluitdossier niet meer bewerken."
 "Particulars": "Bijzonderheden"
@@ -614,13 +628,17 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Error while opening the inventory spreadsheet": "Er is een fout opgetreden bij het openen van het productierapport, controleer de structuur"
 "Error while reading spreadsheet cell": "Er is een fout opgetreden bij het lezen van het productierapport, controleer de structuur"
 "Missing document number in row {rownumber}": "Rij {rownumber} heeft geen documentnummer"
+"Invalid document number in row {rownumber}": "Rij {rownumber} heeft een ongeldig documentnummer"
+"Missing matter in row {rownumber}": "Rij {rownumber} heeft geen matter"
 "Link too long in row {rownumber}": "Rij {rownumber} heeft een te lange link (max 2048 tekens)"
 "Filename too long in row {rownumber}": "Rij {rownumber} heeft een te lange bestandsnaam (max 1024 tekens)"
-"A generic document update exception occurred": "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
+"A generic document row exception occurred": "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
 "Exception occurred during inventory processing": "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
 "Inventory row processing failed with errors": "Er zijn fouten opgetreden tijdens de verwerking van de rijen in de inventaris"
 "Inventory file has no changes": "Het nieuwe productierapport is gelijk aan het huidige rapport"
 "Missing document {documentNumber} in the inventory": "Document {documentNumber} mist in het productierapport"
+"The referred document {documentNumber} does not exist": "Gerelateerd ID {documentNumber} is niet bekend"
+"The document number {documentNumber} is not unique within the inventory": "Het documentnummer {documentNumber} is niet uniek binnen het productierapport"
 "Inventory processing exceeded maximum runtime": "De verwerking van het productierapport heeft de maximale duur overschreden"
 "Save": "Opslaan"
 "Users identify themselves with their email address. We do not use the email address to share password or other login information.": "Gebruikers identificeren zich met hun e-mailadres. We gebruiken het e-mailadres niet voor het delen van wachtwoord of andere login-gegevens."
@@ -676,6 +694,7 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Famous case numbers": "Alle zaaknummers"
 "Link to case": "Link naar zaak"
 "Link case numbers to decisions or documents": "Zaaknummer aan besluiten of documenten koppelen"
+"Case numbers are being been linked": "De zaaknummers worden gekoppeld"
 "Link case number": "Zaaknummer koppelen"
 "Link case numbers to previously published documents on the platform or to previously published decisions.": "Koppel zaaknummers aan eerder gepubliceerde documenten op het platform of aan eerder gepubliceerde besluiten"
 "Choose where you want to link the case numbers and then see how you can link them in a new screen.": "Kies aan waar je de zaaknummers wilt koppelen en zie vervolgens in een nieuw scherm hoe je deze kunt koppelen."
@@ -702,7 +721,6 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Confirm inventory replacement": "Ok, vervang productierapport"
 "Reject inventory replacement": "Annuleren"
 "Indicate what this user is allowed to do, multiple options are possible": "Geef aan wat deze gebruiker mag doen, meerdere opties zijn mogelijk"
-"Your new password cannot be the same as your current password": "Je nieuwe wachtwoord mag niet hetzelfde zijn als je huidige wachtwoord"
 "these # dossiers": >-
   { count, plural,
     =1{dit besluit}
@@ -752,9 +770,9 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 'Question about how something works?': 'Vraag over hoe iets werkt?'
 'Please contact your coordinator.': 'Neem dan even contact op met je coördinator.'
 'Question or comment for the developers?': 'Vraag of opmerking voor de ontwikkelaars?'
-"Are you encountering technical problems while using this website? Or do you have ideas that would make the system easier to use? Please let us know via woo-platform@irealisatie.nl.": "Loop je tijdens het gebruiken van deze website tegen technische problemen aan? Of heb je ideeën die het systeem makkelijker in gebruik zouden maken? Laat het ons dan weten via <a class='text-sea-blue underline' href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl.</a>"
+"Are you encountering technical problems while using this website? Or do you have ideas that would make the system easier to use? Please let us know via woo-platform@irealisatie.nl.": "Loop je tijdens het gebruiken van deze website tegen technische problemen aan? Of heb je ideeën die het systeem makkelijker in gebruik zouden maken? Laat het ons dan weten via <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl.</a>"
 'Are you sure?': 'Weet je het zeker?'
-'If you continue, you will no longer be able to log in with your old password. You can download your new temporary login instructions on the next page. Make sure you keep this safe.': 'Als je doorgaat kan je niet meer inloggen met je oude wachtwoord. Je kan op de volgende pagina je nieuwe, tijdelijke inloginstructies downloaden. Zorg dat je deze veilig bewaart.'
+'If you continue, you will no longer be able to log in with your old password. You can download your new temporary login instructions on the next page. Make sure you keep this safe.': 'Als je doorgaat kan de gebruiker niet meer inloggen met het oude wachtwoord. Je kan op de volgende pagina de nieuwe, tijdelijke inloginstructies downloaden voor de gebruiker. Zorg dat de gebruiker deze veilig bewaart.'
 "Resetting the two factor code means that we remove the old two factor code from our system forever. If you request a new two-factor code, make sure you keep it for yourself in a safe manner. If you click 'Yes' you will receive the new two factor code.": "Resetten van de twee factor code betekent dat we de oude twee factor code voor altijd verwijderen uit ons systeem. Als je een nieuwe twee factor code aanvraagt zorg dan dat je deze op een veilige manier voor jezelf bewaart. Als je op 'Ja' klikt zal je de nieuwe twee factor code ontvangen."
 'Yes, reset the password': 'Ja, reset het wachtwoord'
 'Yes, reset the two factor code': 'Ja, reset de twee factor code'
@@ -774,13 +792,13 @@ No dossiers have been created yet: 'Er zijn nog geen besluiten aangemaakt.'
 history.dossier_created.private: 'Besluitdossier aangemaakt'
 history.dossier_created.public: null
 history.dossier_updated.private: 'De volgende gegevens zijn aangepast: {changes}'
-history.dossier_updated.public: 'Informatie over het besluit bijgwerkt'
+history.dossier_updated.public: 'Informatie over het besluit bijgewerkt'
 history.dossier_state_concept.private: 'Status aangepast naar concept'
 history.dossier_state_concept.public: null
 history.dossier_state_scheduled.private: 'Publicatie gepland'
 history.dossier_state_scheduled.public: null
 history.dossier_state_preview.private: 'Online voor verzoekers'
-history.dossier_state_preview.public: 'Online voor verzoekers'
+history.dossier_state_preview.public: null
 history.dossier_state_published.private: 'Openbaar voor iedereen'
 history.dossier_state_published.public: 'Gepubliceerd'
 history.dossier_state_retracted.private: 'Teruggetrokken'
@@ -789,15 +807,17 @@ history.dossier_update_decision.private: 'Nieuwe besluitbrief toegevoegd ({filen
 history.dossier_update_decision.public: 'Besluitbrief vervangen ({filetype}, {filesize})'
 history.dossier_update_inventory.private: 'Nieuwe inventarislijst toegevoegd ({filename}, {filesize})'
 history.dossier_update_inventory.public: 'Inventarislijst vervangen'
+history.dossier_update_preview_date.private: 'Datum feitelijke verstrekking aangepast naar {date}'
+history.dossier_update_preview_date.public: null
+history.dossier_update_publication_date.private: 'Datum publicatie aangepast naar {date}'
+history.dossier_update_publication_date.public: null
 history.dossier_inquiry_added.public: null
 "history.dossier_inquiry_added.private": >-
   { count, plural,
     =1{Toegevoegd aan zaak {casenrs}}
     other{Toegevoegd aan zaken {casennrs}}
   }
-history.dossier_inquiry_removed.public: null
-history.dossier_inquiry_removed.private: 'Verwijderd uit zaak: {casenrs}'
-history.dossier_withdraw_all.private: 'Alle doucmenten ingetrokken: {explanation} ({explation_details})'
+history.dossier_withdraw_all.private: 'Alle documenten ingetrokken: {explanation} ({explanation_details})'
 history.dossier_withdraw_all.public: 'Alle documenten in dit besluit zijn ingetrokken met reden: {explanation}'
 history.document_inventory_updated.private: 'Gegevens aangepast via inventarislijst: {changes}'
 history.document_inventory_updated.public: 'Gegevens over document aangepast'
@@ -813,8 +833,38 @@ history.document_uploaded.private: 'Nieuw bronbestand geüpload ({filetype}, {fi
 history.document_uploaded.public: 'Bronbestand toegevoegd ({filetype}, {filesize})'
 history.document_replaced.private: 'Nieuwe versie bronbestand geüpload ({filetype}, {filesize})'
 history.document_replaced.public: 'Bronbestand vervangen ({filetype}, {filesize})'
-history.document_withdraw.private: 'Ingetrokken: {explanation} ({explation_details})'
+history.document_withdraw.private: 'Ingetrokken: {explanation} ({explanation_details})'
 history.document_withdraw.public: 'Ingetrokken met reden: {explanation}'
 history.document_removed.private: 'Verwijderd'
 history.document_removed.public: 'Verwijderd'
 'date {date} cannot be parsed': 'de datum "{date}" heeft niet het juiste formaat'
+'history.value.decision_date': 'Besluit datum'
+'history.value.summary': 'Samenvatting'
+'history.value.title': 'Titel'
+history.dossiers_added.private: '{count} besluitdossier(s) toegevoegd'
+history.dossiers_added.public: '{count} besluitdossier(s) toegevoegd'
+history.documents_added.private: '{count} document(en) toegevoegd'
+history.documents_added.public: '{count} document(en) toegevoegd'
+
+document.date.date_not_available: 'Datum niet beschikbaar'
+document.date.not_available: 'niet beschikbaar'
+"public.documents.strong_relationship": "Sterke relatie"
+"public.documents.refers_to": "{has_or_have} een sterke relatie met dit document."
+"public.documents.referred_by": "Documenten die naar dit document verwijzen"
+
+"generic.and": "en"
+"generic.or": "of"
+
+"public.navigation.label": "Menu"
+
+"public.then_contact_ministry": 'Neem dan contact op met het <span class="font-bold">{ministry}</span>'
+
+"public.other_ministry_responsible": '{source} valt niet onder de verantwoordelijkheid van het Ministerie van Volksgezondheid, Welzijn en Sport. Voor vragen of toelichting verwijzen we naar het <span class="font-bold">{ministry}</span>.'
+"public.dossier.this_dossier": "dit besluit"
+"public.document.this_document": "dit document"
+
+search.results_without_date: >-
+  { count, plural,
+    =1 {Er is {pre_document}1 document of dossier{post_document} waarvan we de datum niet weten, die verder wel aan je zoekopdracht voldoet.}
+    other {Er zijn {pre_document}# documenten en/of dossiers{post_document} waarvan we de datum niet weten, die verder wel aan je zoekopdracht voldoen.}
+  }

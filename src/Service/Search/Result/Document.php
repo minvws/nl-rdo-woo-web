@@ -4,26 +4,18 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Result;
 
-use App\Entity\Document as BaseDocument;
+use App\ViewModel\DocumentSearchEntry;
+use App\ViewModel\DossierReference;
 
 class Document implements ResultEntry
 {
-    protected BaseDocument $document;
-
-    /** @var string[] */
-    protected array $highlights;
-    /** @var mixed[] */
-    protected array $elasticData;
-
-    /**
-     * @param string[] $highlights
-     * @param mixed[]  $elasticData
-     */
-    public function __construct(BaseDocument $document, array $highlights, array $elasticData)
-    {
-        $this->document = $document;
-        $this->highlights = $highlights;
-        $this->elasticData = $elasticData;
+    public function __construct(
+        private readonly DocumentSearchEntry $document,
+        /** @var DossierReference[] */
+        private readonly array $dossiers,
+        /** @var string[] */
+        private readonly array $highlights,
+    ) {
     }
 
     public function getType(): string
@@ -31,7 +23,7 @@ class Document implements ResultEntry
         return ResultEntry::TYPE_DOCUMENT;
     }
 
-    public function getDocument(): BaseDocument
+    public function getDocument(): DocumentSearchEntry
     {
         return $this->document;
     }
@@ -45,10 +37,10 @@ class Document implements ResultEntry
     }
 
     /**
-     * @return mixed[]
+     * @return DossierReference[]
      */
-    public function getElastic(): array
+    public function getDossiers(): array
     {
-        return $this->elasticData;
+        return $this->dossiers;
     }
 }

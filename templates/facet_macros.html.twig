@@ -23,17 +23,17 @@ Display facet with hyperlinks
     {% set entries = result.aggregation(facetKey).entries|default([]) %}
 
     {% if entries | length > 0 %}
-    <div class="block border-0 border-b last:border-b-0 border-solid border-[#ccc] pb-8 mb-8">
-        <h3 class="ro-font-normal">{{ title }}</h3>
+    <div class="border-b last:border-b-0 border-woo-chinese-silver pb-8 mb-8">
+        <h2 class="woo-h3 font-normal mb-6">{{ title }}</h2>
 
-        <ul class="list-unstyled list-densed grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-x-12">
+        <ul class="list-unstyled list-densed sm:columns-2 lg:columns-3 sm:gap-x-12">
             {% for entry in entries %}
             <li>
                 {# parenthesis around searchkey are important, otherwise it will be used as a literal 'searchkey' value #}
-                <a class="arrowed-link split-link" href="{{ path('app_search', { q: '', (facet2query(facetKey) ~ '[]'):  entry.key|url_encode }) }}">
-                    <span class="split-link__underline">{{ entry.displayValue }}</span>
-                    <span class="split-link__suffix de-emphasized">({{ entry.count }})</span>
-                </a>
+                <twig:Public:ArrowedLink
+                    to="{{ path('app_search', { q: '', (facet2query(facetKey) ~ '[]'):  entry.key|url_encode }) }}"
+                    suffix="{{ entry.count }}"
+                >{{ entry.displayValue }}</twig:Public:ArrowedLink>
             </li>
             {% endfor %}
         </ul>
@@ -45,17 +45,17 @@ Display facet with hyperlinks
     {% set entries = result.aggregation(facetKey).entries|default([])[:3] %}
 
     {% if entries | length > 0 %}
-    <div class="gap-0">
-        <h3 class="ro-font-normal">{{ title }}</h3>
+    <div>
+        <h3 class="woo-h3 font-normal mb-6">{{ title }}</h3>
 
-        <ul class="list-unstyled list-densed">
+        <ul>
             {% for entry in entries %}
             <li>
                 {# parenthesis around searchkey are important, otherwise it will be used as a literal 'searchkey' value #}
-                <a class="arrowed-link split-link" href="{{ path('app_search', { q: '', (facet2query(facetKey) ~ '[]'):  entry.key|url_encode }) }}">
-                    <span class="split-link__underline">{{ entry.displayValue }}</span>
-                    <span class="split-link__suffix de-emphasized">({{ entry.count }})</span>
-                </a>
+                <twig:Public:ArrowedLink
+                    to="{{ path('app_search', { q: '', (facet2query(facetKey) ~ '[]'):  entry.key|url_encode }) }}"
+                    suffix="{{ entry.count }}"
+                >{{ entry.displayValue }}</twig:Public:ArrowedLink>
             </li>
             {% endfor %}
         </ul>
@@ -69,9 +69,16 @@ Display facet with hyperlinks
     when displaying date range pills.
 #}
 {% macro facet_pill(title, key, value) %}
-    <li>
-        <a class="pill js-active-filter-pill" data-key="{{ key }}" data-value="{{ value }}"  href="?{{ query_string_without_param(key, value) }}">
-            <span class="visually-hidden">{{ "Remove filter" | trans() }}</span> {{ title }} <i class="fa fa-xmark ml-1 mt-1" aria-hidden="true"></i>
+    <li class="mb-2">
+        <a
+            class="bg-woo-anti-flash-white text-woo-davys-grey leading-none text-sm py-1.5 px-3 rounded-2xl js-active-filter-pill group"
+            data-key="{{ key }}"
+            data-value="{{ value }}"
+            href="?{{ query_string_without_param(key, value) }}"
+        >
+            <span class="sr-only">{{ "Remove filter" | trans }}</span>
+            <span class="group-hover:line-through group-focus:line-through">{{ title }}</span>
+            <twig:Public:Icon class="ml-1" color="fill-woo-davys-grey" name="cross" size="16" />
         </a>
     </li>
 {% endmacro %}
@@ -104,26 +111,26 @@ Display facet with hyperlinks
     {% set queryKey = facet2query(facetKey) %}
 
     {% if entries|length > 0 %}
-    <fieldset class="js-filters-group" data-key="{{ facetKey }}">
-        <legend>
+    <fieldset class="mt-4 js-filters-group" data-key="{{ facetKey }}">
+        <legend class="w-full">
             <button
                 aria-expanded="true"
                 aria-controls="filters-group-{{ facetKey }}"
-                class="toggle-filters-group-button js-toggle-filters-group-button"
+                class="woo-legend w-full text-left relative border-b border-woo-chinese-silver py-2 js-toggle-filters-group-button"
                 type="button"
             >
                 {{ title }}
-                <img class="no-js:hidden" src="/img/chevron-up.svg" alt="" />
+                <twig:Public:Icon class="absolute right-0 js-toggle-filters-group-button-icon" name="chevron-up-thin" />
             </button>
         </legend>
 
-        <div class="filters-collapsible js-filters-group-collapsible" id="filters-group-{{ facetKey }}">
+        <div class="js-filters-group-collapsible" id="filters-group-{{ facetKey }}">
             {% for entry in entries[:5] %}
                 {{ _self._facet_entry(entry, queryKey, facetKey) }}
             {% endfor %}
 
             {% if entries | length > 5 %}
-                <div class="filters-collapsible js-filters-item-collapsible" id="filter-items-{{ facetKey }}">
+                <div class="js-filters-item-collapsible" id="filter-items-{{ facetKey }}">
                     {% for entry in entries[5:] %}
                         {{ _self._facet_entry(entry, queryKey, facetKey) }}
                     {% endfor %}
@@ -131,15 +138,15 @@ Display facet with hyperlinks
                 <button
                     aria-expanded="true"
                     aria-controls="filter-items-{{ facetKey }}"
-                    class="toggle-filter-items-button js-toggle-filter-items-button no-js:hidden"
-                    data-text-collapsed="{{ "Show more" | trans() }}"
-                    data-text-expanded="{{ "Show less" | trans() }}"
+                    class="text-woo-sea-blue text-sm w-full text-left py-2 js-toggle-filter-items-button no-js:hidden"
+                    data-text-collapsed="{{ "Show more" | trans }}"
+                    data-text-expanded="{{ "Show less" | trans }}"
                     type="button"
-                >{{ "Show more" | trans() }}</button>
+                >{{ "Show more" | trans }}</button>
             {% endif %}
 
-            <a href="#search-results" class="sr-only focus:not-sr-only">
-                {{ "Go to search results" | trans() }}
+            <a href="#search-results" class="woo-skip-link text-sm text-left">
+                {{ "Go to search results" | trans }}
             </a>
         </div>
     </fieldset>
@@ -148,19 +155,21 @@ Display facet with hyperlinks
 
 
 {% macro _facet_entry(entry, queryKey, facetKey) %}
-    <div class="checkbox">
-        <input
-            class="js-search-filter-checkbox"
-            id="input_{{ entry.key|url_encode }}"
-            type="checkbox"
-            name="{{ queryKey }}[]"
-            value="{{ entry.key }}"
-            {% if facet_checked(queryKey, entry.key) %}checked{% endif %}
-        >
-        <label for="input_{{ entry.key|url_encode }}">
+    <div class="woo-choice-row py-1">
+        <span>
+            <input
+                class="woo-choice-input js-search-filter-checkbox"
+                id="input_{{ entry.key|url_encode }}"
+                type="checkbox"
+                name="{{ queryKey }}[]"
+                value="{{ entry.key }}"
+                {% if facet_checked(queryKey, entry.key) %}checked{% endif %}
+            >
+        </span>
+        <label class="grow cursor-pointer" for="input_{{ entry.key|url_encode }}">
             <span class="flex">
-                <span class="grow mr-2">{{ entry.displayValue }}</span>
-                <span class="de-emphasized">({{ entry.count }})</span>
+                <span class="grow mr-2 text-base leading-tight">{{ entry.displayValue }}</span>
+                <span class="woo-muted text-sm">({{ entry.count }})</span>
             </span>
         </label>
     </div>

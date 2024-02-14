@@ -11,6 +11,7 @@ use App\Entity\Dossier;
 use App\Entity\InventoryProcessRun;
 use App\Entity\Judgement;
 use App\Entity\Organisation;
+use App\Enum\PublicationStatus;
 use App\Exception\FixtureInventoryException;
 use App\Message\ProcessDocumentMessage;
 use App\Service\Elastic\ElasticService;
@@ -87,7 +88,7 @@ class FixtureService
         $dossier->setDecision($data['decision']);
         $dossier->setDocumentPrefix($data['document_prefix']);
         $dossier->setDossierNr($data['id']);
-        $dossier->setStatus($data['status'] ?? Dossier::STATUS_PUBLISHED);
+        $dossier->setStatus(PublicationStatus::tryFrom($data['status']) ?? PublicationStatus::PUBLISHED);
         $dossier->setSummary($data['summary']);
         $dossier->setTitle($data['title']);
         $dossier->setPublicationReason($data['publication_reason']);
@@ -157,7 +158,6 @@ class FixtureService
         $data['document_date'] = new \DateTimeImmutable($data['document_date'] ??= 'now');
         $data['pages'] ??= [];
         $data['source_type'] ??= SourceType::SOURCE_PDF;
-        $data['duration'] ??= 0;
         $data['family_id'] ??= $data['document_id'];
         $data['thread_id'] ??= 0;
         $data['summary'] ??= '';
@@ -176,7 +176,6 @@ class FixtureService
         $document->setCreatedAt($data['created_at']);
         $document->setUpdatedAt($data['updated_at']);
         $document->setDocumentDate($data['document_date']);
-        $document->setDuration($data['duration']);
         $document->setFamilyId($data['family_id']);
         $document->setThreadId($data['thread_id']);
         $document->setPageCount(count($data['pages']));

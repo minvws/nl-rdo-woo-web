@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query\Condition;
 
-use App\Service\Elastic\SimpleQueryStringQuery;
 use App\Service\Search\Model\Config;
-use App\Service\Search\Query\Dsl\MatchAllQuery;
+use App\Service\Search\Query\Facet\FacetList;
+use App\Service\Search\Query\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
-use Erichard\ElasticQueryBuilder\Query\NestedQuery;
-use Erichard\ElasticQueryBuilder\Query\TermQuery;
 
 class SearchTermConditions implements QueryConditions
 {
-    public function applyToQuery(Config $config, BoolQuery $query): void
+    public function applyToQuery(FacetList $facetList, Config $config, BoolQuery $query): void
     {
         if ($config->query === '') {
-            $query->addShould(new MatchAllQuery());
+            $query->addShould(Query::matchAll());
 
             return;
         }
@@ -34,84 +32,81 @@ class SearchTermConditions implements QueryConditions
 
     public function createDocumentQuery(Config $config): BoolQuery
     {
-        return new BoolQuery(
+        return Query::bool(
             should: [
-                new NestedQuery(
+                Query::nested(
                     path: 'dossiers',
-                    query: new BoolQuery(
+                    query: Query::bool(
                         should: [
-                            new SimpleQueryStringQuery(
-                                query: $config->query,
-                                defaultOperator: $config->operator,
+                            Query::simpleQueryString(
                                 fields: ['dossiers.title'],
-                                boost: 3,
-                            ),
-                            new SimpleQueryStringQuery(
                                 query: $config->query,
-                                defaultOperator: $config->operator,
+                            )
+                                ->setDefaultOperator($config->operator)
+                                ->setBoost(3),
+                            Query::simpleQueryString(
                                 fields: ['dossiers.summary'],
-                                boost: 2,
-                            ),
+                                query: $config->query,
+                            )
+                                ->setDefaultOperator($config->operator)
+                                ->setBoost(2),
                         ],
-                        params: ['minimum_should_match' => 1],
-                    )
+                    )->setParams(['minimum_should_match' => 1])
                 ),
-                new NestedQuery(
+                Query::nested(
                     path: 'pages',
-                    query: new SimpleQueryStringQuery(
-                        query: $config->query,
-                        defaultOperator: $config->operator,
+                    query: Query::simpleQueryString(
                         fields: ['pages.content'],
-                        boost: 1,
-                    ),
+                        query: $config->query,
+                    )
+                        ->setDefaultOperator($config->operator)
+                        ->setBoost(1),
                 ),
-                new SimpleQueryStringQuery(
-                    query: $config->query,
-                    defaultOperator: $config->operator,
+                Query::simpleQueryString(
                     fields: ['filename'],
-                    boost: 4,
-                ),
+                    query: $config->query,
+                )
+                    ->setDefaultOperator($config->operator)
+                    ->setBoost(4),
             ],
             filter: [
-                new TermQuery(
+                Query::term(
                     field: 'type',
                     value: Config::TYPE_DOCUMENT
                 ),
             ],
-            params: ['minimum_should_match' => 1]
-        );
+        )->setParams(['minimum_should_match' => 1]);
     }
 
     public function createDossierQuery(Config $config): BoolQuery
     {
-        return new BoolQuery(
+        return Query::bool(
             should: [
-                new SimpleQueryStringQuery(
-                    query: $config->query,
-                    defaultOperator: $config->operator,
+                Query::simpleQueryString(
                     fields: ['title'],
-                    boost: 5,
-                ),
-                new SimpleQueryStringQuery(
                     query: $config->query,
-                    defaultOperator: $config->operator,
+                )
+                    ->setDefaultOperator($config->operator)
+                    ->setBoost(5),
+                Query::simpleQueryString(
                     fields: ['summary'],
-                    boost: 4,
-                ),
-                new SimpleQueryStringQuery(
                     query: $config->query,
-                    defaultOperator: $config->operator,
+                )
+                    ->setDefaultOperator($config->operator)
+                    ->setBoost(4),
+                Query::simpleQueryString(
                     fields: ['decision_content'],
-                    boost: 3,
-                ),
+                    query: $config->query,
+                )
+                    ->setDefaultOperator($config->operator)
+                    ->setBoost(3),
             ],
             filter: [
-                new TermQuery(
+                Query::term(
                     field: 'type',
                     value: Config::TYPE_DOSSIER,
                 ),
             ],
-            params: ['minimum_should_match' => 1]
-        );
+        )->setParams(['minimum_should_match' => 1]);
     }
 }

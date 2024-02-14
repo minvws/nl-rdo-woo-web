@@ -100,11 +100,16 @@ class DocumentService
             $this->elasticService->updateDocument($document);
         }
 
+        $this->historyService->addDocumentEntry(
+            document: $document,
+            key: 'document_removed',
+            context: [],
+            flush: false
+        );
+
         if ($flush) {
             $this->doctrine->flush();
         }
-
-        $this->historyService->addDocumentEntry($document, 'document_removed', []);
     }
 
     public function republish(Document $document): void
@@ -137,10 +142,6 @@ class DocumentService
 
     public function replace(Dossier $dossier, Document $document, UploadedFile $uploadedFile): void
     {
-        if ($dossier->getId() === null) {
-            throw new \RuntimeException('Cannot replace document for dossier without an ID');
-        }
-
         $filename = $uploadedFile->getClientOriginalName();
         try {
             $fileDocumentNr = $this->fileProcessService->getDocumentNumberFromFilename($filename, $dossier);

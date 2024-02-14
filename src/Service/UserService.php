@@ -86,7 +86,6 @@ class UserService
         ]);
 
         /** @var LoggableUser|null $loggedInUser */
-        /** @phpstan-ignore-next-line */
         $loggedInUser = $this->tokenStorage->getToken()?->getUser() ?? null;
         if ($loggedInUser === null) {
             $loggedInUser = new AuditUser('cli user', 'system', [], 'system@localhost');
@@ -152,7 +151,6 @@ class UserService
         ]);
 
         /** @var LoggableUser|null $loggedInUser */
-        /** @phpstan-ignore-next-line */
         $loggedInUser = $this->tokenStorage->getToken()?->getUser() ?? null;
         if ($loggedInUser === null) {
             $loggedInUser = new AuditUser('cli user', 'system', [], 'system@localhost');

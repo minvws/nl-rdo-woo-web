@@ -31,7 +31,7 @@ class WorkflowStatusFactory
                 $beforeCurrentStep = false;
             }
 
-            if (! $dossier->getId()) {
+            if ($dossier->getStatus()->isNew()) {
                 $status = new StepStatus(
                     $step->getStepName(),
                     false,
@@ -45,7 +45,7 @@ class WorkflowStatusFactory
                 $status = new StepStatus(
                     $step->getStepName(),
                     $step->isCompleted($dossier),
-                    $dossier->getStatus() === Dossier::STATUS_CONCEPT ? $step->getConceptEditPath() : $step->getEditPath(),
+                    $dossier->getStatus()->isConcept() ? $step->getConceptEditPath() : $step->getEditPath(),
                     $step->getConceptEditPath(),
                     $step->getEditPath(),
                     $beforeCurrentStep,
@@ -62,9 +62,8 @@ class WorkflowStatusFactory
 
         return new DossierWorkflowStatus(
             $currentStep,
-            $dossier->getId(),
             $stepStatuses,
-            $dossier->getId() ? ($dossier->getStatus() ?? Dossier::STATUS_CONCEPT) : Dossier::STATUS_CONCEPT,
+            $dossier->getStatus(),
         );
     }
 }

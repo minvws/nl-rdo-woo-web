@@ -8,6 +8,7 @@ use App\Entity\BatchDownload;
 use App\Entity\Document;
 use App\Entity\DocumentPrefix;
 use App\Entity\Dossier;
+use App\Entity\History;
 use App\Entity\IngestLog;
 use App\Entity\Inquiry;
 use App\Entity\User;
@@ -79,6 +80,7 @@ class CleanSheet extends Command
         $this->deleteAllEntities(Dossier::class, $output);
         $this->deleteAllEntities(Document::class, $output);
         $this->deleteAllEntities(Inquiry::class, $output);
+        $this->deleteAllEntities(History::class, $output);
 
         if ($input->getOption('users')) {
             $this->deleteAllEntities(User::class, $output);

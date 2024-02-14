@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Inventory;
 
 use App\Entity\Dossier;
+use App\Exception\InventoryReaderException;
 use App\Service\FileReader\ExcelReaderFactory;
 use App\Service\Inventory\Reader\InventoryReaderFactory;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
@@ -91,5 +92,43 @@ class InventoryReaderTest extends MockeryTestCase
 
         $this->assertEquals(SourceType::SOURCE_UNKNOWN, $result[0]->getDocumentMetaData()->getSourceType());
         $this->assertEquals(SourceType::SOURCE_UNKNOWN, $result[1]->getDocumentMetaData()->getSourceType());
+    }
+
+    public function testInventoryReaderAddsExceptionsForEmptyMatterCells(): void
+    {
+        $dossier = new Dossier();
+        $dossier->setDefaultSubjects(['foo', 'bar']);
+
+        $this->reader->open(__DIR__ . '/inventory-empty-matter.xlsx');
+
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
+
+        $this->assertEquals(InventoryReaderException::forMissingMatterInRow(2), $result[0]->getException());
+        $this->assertEquals(InventoryReaderException::forMissingMatterInRow(3), $result[1]->getException());
+    }
+
+    public function testInventoryWithEmptyDates(): void
+    {
+        $dossier = new Dossier();
+
+        $this->reader->open(__DIR__ . '/inventory-empty-date.xlsx');
+
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
+
+        $this->assertEquals(new \DateTimeImmutable('2023-11-04'), $result[0]->getDocumentMetadata()->getDate());
+        $this->assertEquals(null, $result[1]->getDocumentMetadata()->getDate());
+    }
+
+    public function testInventoryReaderAddsExceptionForInvalidDocumentId(): void
+    {
+        $dossier = new Dossier();
+        $dossier->setDefaultSubjects(['foo', 'bar']);
+
+        $this->reader->open(__DIR__ . '/inventory-invalid-document-id.xlsx');
+
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
+
+        $this->assertNull($result[0]->getException());
+        $this->assertEquals(InventoryReaderException::forInvalidDocumentId(3), $result[1]->getException());
     }
 }

@@ -21,14 +21,14 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class IngestPdfHandler
 {
     protected EntityManagerInterface $doctrine;
-    protected PageCountExtractor $extractor;
+    protected PagecountExtractor $extractor;
     protected LoggerInterface $logger;
     protected MessageBusInterface $bus;
     protected PdfProcessor $processor;
 
     public function __construct(
         EntityManagerInterface $doctrine,
-        PageCountExtractor $extractor,
+        PagecountExtractor $extractor,
         MessageBusInterface $bus,
         PdfProcessor $processor,
         LoggerInterface $logger

@@ -12,7 +12,7 @@ use App\Entity\Judgement;
 class DocumentMetadata
 {
     public function __construct(
-        private readonly \DateTimeImmutable $date,
+        private readonly ?\DateTimeImmutable $date,
         private readonly string $filename,
         private readonly ?int $familyId,
         private readonly string $sourceType,
@@ -31,10 +31,12 @@ class DocumentMetadata
         private readonly array $links,
         private readonly ?string $remark,
         private readonly string $matter,
+        /** @var string[] */
+        private readonly array $refersTo,
     ) {
     }
 
-    public function getDate(): \DateTimeImmutable
+    public function getDate(): ?\DateTimeImmutable
     {
         return $this->date;
     }
@@ -124,5 +126,13 @@ class DocumentMetadata
     public function getMatter(): string
     {
         return $this->matter;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRefersTo(): array
+    {
+        return $this->refersTo;
     }
 }

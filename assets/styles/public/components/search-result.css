@@ -1,0 +1,26 @@
+@layer components {
+    .woo-search-result {
+        @apply py-4 text-sm;
+    }
+
+    .woo-search-result__header {
+        @apply flex flex-col-reverse;
+    }
+
+    .woo-search-result__title {
+        @apply font-bold text-xl leading-tight mt-1;
+    }
+
+    .woo-search-result__main-link {
+        @apply block text-woo-sea-blue hover-focus:underline hover-focus:text-woo-ateneo-blue;
+        @apply visited:text-woo-plum visited:hover-focus:no-underline;
+    }
+
+    .woo-search-result__spec-list {
+        @apply woo-muted mt-1;
+    }
+
+    .woo-search-result__spec {
+        @apply inline not-last:after:content-['|'] not-last:after:px-1;
+    }
+}

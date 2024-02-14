@@ -55,7 +55,7 @@ class BatchDownload
         return $this->id;
     }
 
-    public function setId(UUid $uuid): void
+    public function setId(Uuid $uuid): void
     {
         $this->id = $uuid;
     }

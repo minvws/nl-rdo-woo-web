@@ -27,7 +27,7 @@ Holds all repositories that are used for the database.
 #### Path: /src/Message
 
 Holds all messages that are used for the rabbitMQ queue. Each type of message corresponds to a ingest task.
-There are for instance currently a PDF ingester (ie IngestPdfMessage) and an Audio ingester (ie IngestAudioMessage).
+There is for instance a PDF ingester (ie IngestPdfMessage) and an MetadataOnly ingester (ie IngestMetadataOnlyMessage).
 
 These messages are send through the rabbitMQ queue and are consumed by the worker.
 
@@ -48,7 +48,7 @@ message handlers.
 The main class to call for ingesting a document. This class will check all handlers (found in
 `App/Service/Ingest/Handler`), and see if there is a candidate that can handle the given document (based on
 mimetype). If so, that handler will be used to prepare the document and send ingester messages to the queue.
-For instance, an audio file will generate a single audio ingest message, but a pdf file will generate a ingest
+For instance, a metadata only handler will generate a single ingest message, but a pdf file will generate a ingest
 message per page.
 
 #### Path: /src/Service/Ingest/Handler
@@ -58,7 +58,7 @@ These classes are used to prepare a document for ingesting.
 #### Path: /src/Service/Ingest/Processor
 
 These classes are used to process given documents for ingesting. In some cases, it is needed to fetch some
-metadata like pagecount, audio duration etc. These processor classes will fetch this information from the
+metadata like pagecount etc. These processor classes will fetch this information from the
 files. Note that these are NOT the same as the processors found in `\App\Service\Worker` even though in theory
 the can overlap in functionality.
 

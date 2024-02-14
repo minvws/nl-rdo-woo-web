@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace App\Service\DossierWorkflow;
 
-use App\Entity\Dossier;
-use Symfony\Component\Uid\Uuid;
+use App\Enum\PublicationStatus;
 
-class DossierWorkflowStatus
+readonly class DossierWorkflowStatus
 {
     public function __construct(
-        private readonly StepName $currentStep,
-        private readonly ?Uuid $dossierId,
+        private StepName $currentStep,
         /** @var StepStatus[] $steps */
-        private readonly array $steps,
-        private readonly string $status,
+        private array $steps,
+        private PublicationStatus $status,
     ) {
     }
 
@@ -31,7 +29,7 @@ class DossierWorkflowStatus
 
     public function isConcept(): bool
     {
-        return $this->dossierId && $this->status === Dossier::STATUS_CONCEPT;
+        return $this->status->isConcept();
     }
 
     public function isReadyForDecision(): bool
@@ -50,9 +48,7 @@ class DossierWorkflowStatus
         return $this->getStep(StepName::DETAILS)->isCompleted()
             && $this->getStep(StepName::DECISION)->isCompleted()
             && $this->getStep(StepName::DOCUMENTS)->isCompleted()
-            && ($this->status === Dossier::STATUS_CONCEPT
-                || $this->status === Dossier::STATUS_SCHEDULED
-                || $this->status === Dossier::STATUS_PREVIEW);
+            && ! $this->status->isPublishedOrRetracted();
     }
 
     public function getDetailsPath(): string
@@ -121,8 +117,7 @@ class DossierWorkflowStatus
 
     public function isPubliclyAvailable(): bool
     {
-        return $this->status === Dossier::STATUS_PUBLISHED
-            || $this->status === Dossier::STATUS_PREVIEW;
+        return $this->status->isPubliclyAvailable();
     }
 
     private function getStep(StepName $stepName): StepStatus
@@ -132,27 +127,5 @@ class DossierWorkflowStatus
         }
 
         return $this->steps[$stepName->value];
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getAllowedStatusUpdates(): array
-    {
-        if ($this->status === Dossier::STATUS_CONCEPT) {
-            return [
-                Dossier::STATUS_SCHEDULED,
-                Dossier::STATUS_PREVIEW,
-                Dossier::STATUS_PUBLISHED,
-            ];
-        }
-
-        if ($this->status === Dossier::STATUS_PREVIEW) {
-            return [
-                Dossier::STATUS_PUBLISHED,
-            ];
-        }
-
-        return [];
     }
 }

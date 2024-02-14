@@ -8,25 +8,21 @@ use App\Service\Search\Model\Config;
 use App\Service\Search\Query\Condition\ContentAccessConditions;
 use App\Service\Search\Query\Condition\FacetConditions;
 use App\Service\Search\Query\Condition\SearchTermConditions;
-use App\Service\Search\Query\Dsl\GlobalAggregation;
-use App\Service\Search\Query\Facet\FacetDefinition;
-use App\Service\Search\Query\Facet\FacetMappingService;
-use Erichard\ElasticQueryBuilder\Aggregation\CardinalityAggregation;
+use App\Service\Search\Query\Facet\Facet;
+use App\Service\Search\Query\Facet\FacetList;
 use Erichard\ElasticQueryBuilder\Aggregation\FilterAggregation;
-use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
 
 class AggregationGenerator
 {
     public function __construct(
-        private readonly FacetMappingService $facetMapping,
         private readonly ContentAccessConditions $accessConditions,
         private readonly FacetConditions $facetConditions,
         private readonly SearchTermConditions $searchTermConditions,
     ) {
     }
 
-    public function addAggregations(QueryBuilder $queryBuilder, Config $config, int $maxCount): void
+    public function addAggregations(FacetList $facetList, QueryBuilder $queryBuilder, Config $config, int $maxCount): void
     {
         if (! $config->aggregations) {
             return;
@@ -35,10 +31,12 @@ class AggregationGenerator
         // First split the facets into two groups: 'facets affected by filters' and 'regular facets'.
         // All facets that have no selected value(s) in the Config object are not affected by filters.
         // Additionally, some aggregations don't exclude their own filters (AND) so are also not affected by filters.
+        /** @var list<Facet> $regularFacets */
         $regularFacets = [];
+        /** @var list<Facet> $filterAffectedFacets */
         $filterAffectedFacets = [];
-        foreach ($this->facetMapping->getAll() as $facet) {
-            if ($config->hasFacetValues($facet) && $facet->getAggregationStrategy()?->excludeOwnFilters() === true) {
+        foreach ($facetList as $facet) {
+            if ($facet->isActive() && $facet->shouldExcludeOwnFilter()) {
                 $filterAffectedFacets[] = $facet;
             } else {
                 $regularFacets[] = $facet;
@@ -47,8 +45,8 @@ class AggregationGenerator
 
         // Regular facets are not affected by facet filters, so can be added directly
         foreach ($regularFacets as $facet) {
-            $aggregation = $facet->getAggregationStrategy()?->getAggregation($facet, $config, $maxCount);
-            if ($aggregation) {
+            $aggregation = $facet->getOptionalAggregation($facet, $config, $maxCount);
+            if (! is_null($aggregation)) {
                 $queryBuilder->addAggregation($aggregation);
             }
         }
@@ -58,21 +56,21 @@ class AggregationGenerator
         // filters to apply per facet.
         if (count($filterAffectedFacets) > 0) {
             // Add a 'global' aggregation, this basically excludes all main query conditions
-            $globalAggregation = new GlobalAggregation('all');
+            $globalAggregation = Aggregation::global('all');
 
             // Because the main query is excluded we need to re-apply all non-facet conditions.
             // As a small optimization we can do this for all active facets at once, instead of repeating for each.
-            $baseConditionsQuery = new BoolQuery();
-            $this->accessConditions->applyToQuery($config, $baseConditionsQuery);
-            $this->searchTermConditions->applyToQuery($config, $baseConditionsQuery);
-            $baseFilterAgg = new FilterAggregation(
-                'facet-base-filter',
-                $baseConditionsQuery,
+            $baseConditionsQuery = Query::bool();
+            $this->accessConditions->applyToQuery($facetList, $config, $baseConditionsQuery);
+            $this->searchTermConditions->applyToQuery($facetList, $config, $baseConditionsQuery);
+            $baseFilterAgg = Aggregation::filter(
+                name: 'facet-base-filter',
+                query: $baseConditionsQuery,
             );
 
             // Now add aggregations for all active facets within the base filter aggregation
             foreach ($filterAffectedFacets as $facet) {
-                $this->addAggregationToParent($facet, $config, $baseFilterAgg, $maxCount);
+                $this->addAggregationToParent($facetList, $facet, $config, $baseFilterAgg, $maxCount);
             }
 
             $globalAggregation->addAggregation($baseFilterAgg);
@@ -83,38 +81,37 @@ class AggregationGenerator
     public function addDocTypeAggregations(QueryBuilder $queryBuilder): void
     {
         $queryBuilder->addAggregation(
-            new CardinalityAggregation(
+            Aggregation::cardinality(
                 nameAndField: 'unique_dossiers',
                 fieldOrSource: 'dossier_nr',
-                precisionThreshold: 40000,
-            )
+            )->setPrecisionThreshold(40_000),
         );
 
         $queryBuilder->addAggregation(
-            new CardinalityAggregation(
+            Aggregation::cardinality(
                 nameAndField: 'unique_documents',
                 fieldOrSource: 'document_nr',
-                precisionThreshold: 40000,
-            )
+            )->setPrecisionThreshold(40_000),
         );
     }
 
     private function addAggregationToParent(
-        FacetDefinition $facet,
+        FacetList $facetList,
+        Facet $facet,
         Config $config,
         FilterAggregation $parentAggregation,
         int $maxCount
     ): void {
         // Some facet definitions have no strategy (only used for filtering, not actual faceting). In that case skip.
-        $aggregation = $facet->getAggregationStrategy()?->getAggregation($facet, $config, $maxCount);
-        if (! $aggregation) {
+        $aggregation = $facet->getOptionalAggregation($facet, $config, $maxCount);
+        if (is_null($aggregation)) {
             return;
         }
 
-        $filterQuery = new BoolQuery();
+        $filterQuery = Query::bool();
 
         // Apply the filters of all other active facets to this one, except its own filter.
-        $this->facetConditions->applyToQuery($config, $filterQuery, $facet->getFacetKey());
+        $this->facetConditions->applyToQuery($facetList, $config, $filterQuery, $facet->getFacetKey());
 
         // If there are no other facet filter no filter sub-query is needed, directly add the aggregation.
         if ($filterQuery->isEmpty()) {
@@ -125,11 +122,10 @@ class AggregationGenerator
 
         // Wrap the aggregation with the filters for the other active facets and add it to the parent aggregation
         $parentAggregation->addAggregation(
-            new FilterAggregation(
-                'facet-filter-' . $facet->getFacetKey(),
-                $filterQuery,
-                [$aggregation]
-            )
+            Aggregation::filter(
+                name: 'facet-filter-' . $facet->getFacetKey()->value,
+                query: $filterQuery,
+            )->setAggregations([$aggregation])
         );
     }
 }

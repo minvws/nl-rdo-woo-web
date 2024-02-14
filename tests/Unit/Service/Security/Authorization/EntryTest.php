@@ -9,7 +9,7 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class EntryTest extends MockeryTestCase
 {
-    public function testEmptyEntry()
+    public function testEmptyEntry(): void
     {
         $entry = Entry::createFrom([]);
 
@@ -19,7 +19,7 @@ class EntryTest extends MockeryTestCase
         $this->assertEquals('', $entry->getPrefix());
     }
 
-    public function testCorrectEntry()
+    public function testCorrectEntry(): void
     {
         $entry = Entry::createFrom([
             'prefix' => 'prefix',

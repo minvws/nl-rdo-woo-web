@@ -33,8 +33,8 @@ class Alert
     {
         return match ($this->type) {
             'danger' => 'fill-current',
-            'info' => 'fill-ocean-boat-blue',
-            'success' => 'fill-philippine-green',
+            'info' => 'fill-bhr-ocean-boat-blue',
+            'success' => 'fill-bhr-philippine-green',
             default => 'check',
         };
     }

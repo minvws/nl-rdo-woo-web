@@ -9,8 +9,11 @@ use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Service\Search\Model\Aggregation;
 use App\Service\Search\Model\Config;
+use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Model\Suggestion;
 use App\Service\Search\Model\SuggestionEntry;
+use App\Service\Search\Query\Facet\Input\DateFacetInput;
+use App\Service\Search\Query\Facet\Input\StringValuesFacetInput;
 use App\ValueObject\FilterDetails;
 use App\ValueObject\InquiryDescription;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,6 +21,7 @@ use Elastic\Elasticsearch\Response\Elasticsearch;
 use Jaytaph\TypeArray\TypeArray;
 use Knp\Component\Pager\PaginatorInterface;
 use Psr\Log\LoggerInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -33,7 +37,7 @@ class ResultTransformer
     }
 
     /**
-     * @param array<string, mixed> $query
+     * @param array<string,mixed> $query
      */
     public function transform(array $query, Config $config, ?Elasticsearch $response): Result
     {
@@ -90,6 +94,11 @@ class ResultTransformer
         $result->setResultCount($typedResponse->getInt('[hits][total][value]', 0));
         $result->setDossierCount($typedResponse->getInt('[aggregations][unique_dossiers][value]', 0));
         $result->setDocumentCount($typedResponse->getInt('[aggregations][unique_documents][value]', 0));
+
+        $documentCountWithoutDate = $typedResponse->getIntOrNull('[aggregations][all][facet-base-filter][date_filter][doc_count]')
+            ?? $typedResponse->getIntOrNull('[aggregations][all][facet-base-filter][facet-filter-date][date_filter][doc_count]');
+        $result->setDocumentCountWithoutDate($documentCountWithoutDate);
+        $result->setDisplayWithoutDateMessage($this->displayWithoutDateMessage($config, $documentCountWithoutDate));
 
         $suggestions = $this->transformSuggestions($typedResponse);
         if ($suggestions) {
@@ -180,7 +189,7 @@ class ResultTransformer
 
     protected function extractDocument(TypeArray $hit): ?ResultEntry
     {
-        return match ($hit->getString('[_source][type]')) {
+        return match ($hit->getString('[fields][type][0]')) {
             'document' => $this->extractDocumentEntry($hit),
             'dossier' => $this->extractDossierEntry($hit),
             default => null,
@@ -189,15 +198,17 @@ class ResultTransformer
 
     protected function extractDocumentEntry(TypeArray $hit): ?ResultEntry
     {
-        $documentNr = $hit->getStringOrNull('[_source][document_nr]');
+        $documentNr = $hit->getStringOrNull('[fields][document_nr][0]');
         if (is_null($documentNr)) {
             return null;
         }
 
-        $document = $this->doctrine->getRepository(Document::class)->findOneBy(['documentNr' => $documentNr]);
+        $document = $this->doctrine->getRepository(Document::class)->getDocumentSearchEntry($documentNr);
         if (! $document) {
             return null;
         }
+
+        $dossiers = $this->doctrine->getRepository(Dossier::class)->getDossierReferencesForDocument($documentNr);
 
         $highlightPaths = [
             '[highlight][pages.content]',
@@ -206,24 +217,22 @@ class ResultTransformer
         ];
         $highlightData = $this->getHighlightData($hit, $highlightPaths);
 
-        /** @var string[] $hitData */
-        $hitData = $hit->toArray();
-
         return new \App\Service\Search\Result\Document(
             $document,
+            $dossiers,
             $highlightData,
-            $hitData
         );
     }
 
     protected function extractDossierEntry(TypeArray $hit): ?ResultEntry
     {
-        $dossierNr = $hit->getStringOrNull('[_source][dossier_nr]');
-        if (is_null($dossierNr)) {
+        $prefix = $hit->getStringOrNull('[fields][document_prefix][0]');
+        $dossierNr = $hit->getStringOrNull('[fields][dossier_nr][0]');
+        if (is_null($prefix) || is_null($dossierNr)) {
             return null;
         }
 
-        $dossier = $this->doctrine->getRepository(Dossier::class)->findOneBy(['dossierNr' => $dossierNr]);
+        $dossier = $this->doctrine->getRepository(Dossier::class)->getDossierSearchEntry($prefix, $dossierNr);
         if (! $dossier) {
             return null;
         }
@@ -235,13 +244,9 @@ class ResultTransformer
         ];
         $highlightData = $this->getHighlightData($hit, $highlightPaths);
 
-        /** @var string[] $hitData */
-        $hitData = $hit->toArray();
-
         return new \App\Service\Search\Result\Dossier(
             $dossier,
             $highlightData,
-            $hitData
         );
     }
 
@@ -282,13 +287,39 @@ class ResultTransformer
 
     private function getFilterDetails(Config $config): FilterDetails
     {
-        /** @var string[] $dossierNrs */
-        $dossierNrs = $config->facets['dnr'] ?? [];
+        Assert::keyExists($config->facetInputs, FacetKey::DOSSIER_NR->name);
+
+        /** @var StringValuesFacetInput $facetInput */
+        $facetInput = $config->facetInputs[FacetKey::DOSSIER_NR->name];
+
+        $inputClass = FacetKey::DOSSIER_NR->getInputClass();
+        Assert::isInstanceOf($facetInput, $inputClass);
 
         return new FilterDetails(
             $this->getInquiryDescriptions($config->dossierInquiries),
             $this->getInquiryDescriptions($config->documentInquiries),
-            $dossierNrs,
+            $facetInput->getStringValues(),
         );
+    }
+
+    private function displayWithoutDateMessage(Config $config, ?int $documentCountWithoutDate): bool
+    {
+        Assert::keyExists($config->facetInputs, FacetKey::DATE->name);
+
+        /** @var DateFacetInput $facetInput */
+        $facetInput = $config->facetInputs[FacetKey::DATE->name];
+
+        $inputClass = FacetKey::DATE->getInputClass();
+        Assert::isInstanceOf($facetInput, $inputClass);
+
+        if ($facetInput->isWithoutDate()) {
+            return false;
+        }
+
+        if ($facetInput->hasAnyPeriodFilterDates()) {
+            return ($documentCountWithoutDate ?? 0) > 0;
+        }
+
+        return false;
     }
 }

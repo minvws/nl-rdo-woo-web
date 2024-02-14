@@ -1,73 +1,72 @@
-<section>
-    <h2>{{ "Background" | trans() }}</h2>
+<div class="mt-16">
+    <h2 class="woo-h2 woo-h2-spacing">{{ "Background" | trans() }}</h2>
 
-    {%if document.judgement.value is defined %}
-    <div class="block">
-        <p class="width-delimiter">
-            {{ ("Document judged as " ~ document.judgement.value) | trans() }} {{ "Why judgement was made" | trans }} {{ "More info about request below" | trans }}:
-        </p>
-    </div>
+    {%if document.entity.judgement.value is defined %}
+    <p class="mb-6 woo-readable-width">
+        {{ ("Document judged as " ~ document.entity.judgement.value) | trans() }} {{ "Why judgement was made" | trans }} {{ "More info about request below" | trans }}:
+    </p>
     {% endif %}
 
-    <table>
-        <caption class="visually-hidden">
-            {{ "Background" | trans }}
-        </caption>
-        <tbody>
-            {% if dossier.title is defined %}
-            <tr>
-                <th class="w-2/5 lg:w-1/4" scope="row">{{ "Part of" | trans() }}</th>
-                <td><a href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a></td>
-            </tr>
-            {% endif %}
-            {% if dossier.summary is defined %}
-            <tr>
-                <th scope="row">{{ "Summary of request" | trans() }}</th>
-                <td>
-                    <p class="width-delimiter">{{ dossier.summary }}</p>
-                </td>
-            </tr>
-            {% endif %}
-            {% if period(dossier.dateFrom, dossier.dateTo) %}
-            <tr>
-                <th scope="row">{{ "Time period" | trans() }}</th>
-                <td>{{ period(dossier.dateFrom, dossier.dateTo) }}</td>
-            </tr>
-            {% endif %}
-            {% if dossier.publicationReason is defined %}
-            <tr>
-                <th scope="row">{{ "Type of decision" | trans() }}</th>
-                <td>{{ dossier.publicationReason | trans }}</td>
-            </tr>
-            {% endif %}
-            {% if dossier.decisionDate is defined %}
-            <tr>
-                <th scope="row">{{ "Date of disclosure" | trans() }}</th>
-                <td>{{ dossier.decisionDate | format_date('long') }}</td>
-            </tr>
-            {% endif %}
+    <div class="overflow-x-auto">
+        <table class="woo-table">
+            <caption class="sr-only">
+                {{ "Background" | trans }}
+            </caption>
+            <tbody>
+                {% if dossier.entity.title is defined %}
+                <tr>
+                    <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ "Part of" | trans() }}</th>
+                    <td class="min-w-64">
+                        <a class="woo-a" href="{{ path('app_dossier_detail', { prefix: dossier.entity.documentPrefix, dossierId: dossier.entity.dossierNr }) }}">{{ dossier.entity.title }}</a>
+                    </td>
+                </tr>
+                {% endif %}
+                {% if dossier.entity.summary is defined %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ "Summary of request" | trans() }}</th>
+                    <td>
+                        <p class="woo-readable-width">{{ dossier.entity.summary }}</p>
+                    </td>
+                </tr>
+                {% endif %}
+                {% if period(dossier.entity.dateFrom, dossier.entity.dateTo) %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ "Time period" | trans() }}</th>
+                    <td>{{ period(dossier.entity.dateFrom, dossier.entity.dateTo) }}</td>
+                </tr>
+                {% endif %}
+                {% if dossier.entity.publicationReason is defined %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ "Type of decision" | trans() }}</th>
+                    <td>{{ dossier.entity.publicationReason | trans }}</td>
+                </tr>
+                {% endif %}
+                {% if dossier.entity.decisionDate is defined %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ "Date of disclosure" | trans() }}</th>
+                    <td><time datetime="{{ dossier.entity.decisionDate | date("Y-m-d") }}">{{ dossier.entity.decisionDate | format_date('long') }}</time></td>
+                </tr>
+                {% endif %}
 
-            {% set thereAreDocuments = dossier.documents|length > 0 %}
-            {% set thereArePages = dossier.pagecount|default(0) > 0 %}
+                {% if (dossier.counts.hasDocuments and dossier.counts.hasPages) or (dossier.entity.inventory is not null) %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ "Scope of disclosure" | trans() }}</th>
+                    <td>
+                        {% if dossier.counts.hasDocuments %}
+                            {{ "# documents" | trans({"count": dossier.counts.documentCount})}}{% if dossier.counts.hasDocuments and dossier.counts.hasPages %},{% endif %}
+                        {% endif %}
 
-            {% if (thereAreDocuments and thereArePages) or (dossier.inventory is not null) %}
-            <tr>
-                <th scope="row">{{ "Scope of disclosure" | trans() }}</th>
-                <td>
-                    {% if thereAreDocuments %}
-                        {{ "# documents" | trans({"count": dossier.documents|length})}}{% if thereAreDocuments and thereArePages %},{% endif %}
-                    {% endif %}
+                        {% if dossier.counts.hasPages %}
+                            {{ "# pages" | trans({"count": dossier.counts.pageCount})}}
+                        {% endif %}
 
-                    {% if thereArePages %}
-                        {{ "# pages" | trans({"count": dossier.pagecount|default(0)})}}
-                    {% endif %}
-
-                    {% if dossier.inventory is not null  %}
-                        <a download href="{{ path('app_dossier_inventory_download', { dossierId: dossier.dossierNr }) }}">{{ "Inventory list" | trans() }}</a>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endif %}
-        </tbody>
-    </table>
-</section>
+                        {% if dossier.entity.inventory is not null  %}
+                            <a class="woo-a" href="{{ path('app_dossier_inventory_download', { prefix: dossier.entity.documentPrefix, dossierId: dossier.entity.dossierNr }) }}" download>{{ "Inventory list" | trans() }}</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>

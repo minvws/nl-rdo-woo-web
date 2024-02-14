@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Attribute\AuthMatrix;
 use App\Entity\WorkerStats;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class WorkerStatsController extends AbstractController
 {
@@ -22,13 +21,9 @@ class WorkerStatsController extends AbstractController
     }
 
     #[Route('/balie/workerstats', name: 'app_admin_worker_stats', methods: ['GET'])]
-    #[AuthMatrix('stat.read')]
-    public function stats(Breadcrumbs $breadcrumbs): Response
+    #[IsGranted('AuthMatrix.stat.read')]
+    public function stats(): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
-        $breadcrumbs->addItem('Worker statistics');
-
         $entries = $this->doctrine->getRepository(WorkerStats::class)->findAll();
 
         $data = [];

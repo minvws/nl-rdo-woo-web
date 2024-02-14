@@ -50,10 +50,8 @@ class IngestDossierHandler
 
         $this->doctrine->flush();
 
-        if ($dossier->getId()) {
-            $this->bus->dispatch(
-                new IngestDecisionMessage($dossier->getId(), false)
-            );
-        }
+        $this->bus->dispatch(
+            new IngestDecisionMessage($dossier->getId(), false)
+        );
     }
 }

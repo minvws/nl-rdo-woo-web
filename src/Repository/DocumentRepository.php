@@ -8,7 +8,10 @@ use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Organisation;
+use App\Enum\PublicationStatus;
 use App\Service\Elastic\Model\DocumentCounts;
+use App\Service\Inventory\DocumentNumber;
+use App\ViewModel\DocumentSearchEntry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\Expr\Join;
@@ -16,6 +19,8 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ *
  * @extends ServiceEntityRepository<Document>
  *
  * @method Document|null find($id, $lockMode = null, $lockVersion = null)
@@ -61,7 +66,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->orderBy('d.documentDate', 'ASC')
             ->setParameter('threadId', $threadId)
             ->setParameter('dossier', $dossier)
-            ->setParameter('status', Dossier::STATUS_PUBLISHED)
+            ->setParameter('status', PublicationStatus::PUBLISHED)
         ;
 
         return $qb->getQuery()->getResult();
@@ -80,7 +85,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->orderBy('d.documentDate', 'ASC')
             ->setParameter('familyId', $familyId)
             ->setParameter('dossier', $dossier)
-            ->setParameter('status', Dossier::STATUS_PUBLISHED)
+            ->setParameter('status', PublicationStatus::PUBLISHED)
         ;
 
         return $qb->getQuery()->getResult();
@@ -130,7 +135,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->setParameter('threadId', $threadId)
             ->setParameter('dossier', $dossier)
             ->setParameter('document', $document)
-            ->setParameter('status', Dossier::STATUS_PUBLISHED)
+            ->setParameter('status', PublicationStatus::PUBLISHED)
         ;
     }
 
@@ -152,7 +157,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->setParameter('familyId', $familyId)
             ->setParameter('dossier', $dossier)
             ->setParameter('document', $document)
-            ->setParameter('status', Dossier::STATUS_PUBLISHED)
+            ->setParameter('status', PublicationStatus::PUBLISHED)
         ;
     }
 
@@ -164,9 +169,9 @@ class DocumentRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds')
             ->leftJoin('d.inquiries', 'i')
-            ->where('d.fileInfo.name LIKE :searchTerm')
-            ->orWhere('d.documentNr LIKE :searchTerm')
-            ->orWhere('i.casenr LIKE :searchTerm')
+            ->where('ILIKE(d.fileInfo.name, :searchTerm) = true')
+            ->orWhere('ILIKE(d.documentNr, :searchTerm) = true')
+            ->orWhere('ILIKE(i.casenr, :searchTerm) = true')
             ->andWhere('ds.organisation = :organisation')
             ->orderBy('d.updatedAt', 'DESC')
             ->setMaxResults($limit)
@@ -193,14 +198,16 @@ class DocumentRepository extends ServiceEntityRepository
         return $document;
     }
 
-    public function findOneByDossierNrAndDocumentNr(string $dossierNr, string $documentNr): ?Document
+    public function findOneByDossierNrAndDocumentNr(string $prefix, string $dossierNr, string $documentNr): ?Document
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds')
             ->where('d.documentNr = :documentNr')
             ->andWhere('ds.dossierNr = :dossierNr')
+            ->andWhere('ds.documentPrefix = :prefix')
             ->setParameter('documentNr', $documentNr)
             ->setParameter('dossierNr', $dossierNr)
+            ->setParameter('prefix', $prefix)
         ;
 
         /** @var ?Document $document */
@@ -225,8 +232,8 @@ class DocumentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds', Join::WITH, 'ds.id = :dossierId')
-            ->where('d.fileInfo.name LIKE :searchTerm')
-            ->orWhere('d.documentNr LIKE :searchTerm')
+            ->where('ILIKE(d.fileInfo.name, :searchTerm) = true')
+            ->orWhere('ILIKE(d.documentNr, :searchTerm) = true')
             ->orderBy('d.updatedAt', 'DESC')
             ->setMaxResults($limit)
             ->setParameter('searchTerm', '%' . $searchTerm . '%')
@@ -275,5 +282,57 @@ class DocumentRepository extends ServiceEntityRepository
             ->getSingleColumnResult();
 
         return $docNumbers;
+    }
+
+    public function findByDocumentNumber(DocumentNumber $documentNumber): ?Document
+    {
+        return $this->findOneBy(['documentNr' => $documentNumber->getValue()]);
+    }
+
+    /**
+     * @return Document[]
+     */
+    public function getPublishedDocuments(int $limit = 50000, int $offset = 0): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->innerJoin('d.dossiers', 'ds')
+            ->where('ds.status = :status')
+            ->orderBy('d.createdAt', 'ASC')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->setParameter('status', PublicationStatus::PUBLISHED);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getDocumentSearchEntry(string $documentNr): ?DocumentSearchEntry
+    {
+        $qb = $this->createQueryBuilder('doc')
+            ->select(sprintf(
+                'new %s(
+                    doc.documentId,
+                    doc.documentNr,
+                    doc.fileInfo.name,
+                    doc.fileInfo.sourceType,
+                    doc.fileInfo.uploaded,
+                    doc.fileInfo.size,
+                    doc.pageCount,
+                    doc.judgement,
+                    doc.documentDate
+                )',
+                DocumentSearchEntry::class,
+            ))
+            ->where('doc.documentNr = :documentNr')
+            ->andWhere('dos.status IN (:statuses)')
+            ->innerJoin('doc.dossiers', 'dos')
+            ->groupBy('doc.id')
+            ->setParameter('documentNr', $documentNr)
+            ->setParameter('statuses', [PublicationStatus::PREVIEW, PublicationStatus::PUBLISHED])
+        ;
+
+        /** @var ?DocumentSearchEntry $result */
+        $result = $qb->getQuery()->getOneOrNullResult();
+
+        return $result;
     }
 }

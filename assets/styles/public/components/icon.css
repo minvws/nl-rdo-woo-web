@@ -1,0 +1,5 @@
+@layer components {
+    .woo-icon {
+        @apply inline-block;
+    }
+}

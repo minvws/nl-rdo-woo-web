@@ -19,11 +19,11 @@ use Mockery\MockInterface;
 
 class InventoryServiceTest extends MockeryTestCase
 {
-    private EntityManagerInterface|MockInterface $entityManager;
-    private DocumentStorageService|MockInterface $documentStorage;
-    private InventoryReaderFactory|MockInterface $readerFactory;
+    private EntityManagerInterface&MockInterface $entityManager;
+    private DocumentStorageService&MockInterface $documentStorage;
+    private InventoryReaderFactory&MockInterface $readerFactory;
     private InventoryService $inventoryService;
-    private InventoryProcessRun|MockInterface $run;
+    private InventoryProcessRun&MockInterface $run;
 
     public function setUp(): void
     {
@@ -91,7 +91,7 @@ class InventoryServiceTest extends MockeryTestCase
     public function testCleanupTmpFileRemovesAndResetsTmpFile(): void
     {
         $filename = 'tst/123.csv';
-        $this->run->shouldReceive('getTmpFilename')->zeroOrMoreTimes()->andReturn($filename);
+        $this->run->shouldReceive('getTmpFilename')->andReturn($filename);
         $this->run->expects('setTmpFilename')->with(null);
 
         $this->documentStorage->expects('removeDownload')->with($filename);

@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Inventory;
 
 use App\Service\Inventory\InventoryDataHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class InventoryDataHelperTest extends TestCase
 {
     /**
-     * @dataProvider separateValuesProvider
-     *
      * @param string[] $expectedResult
      */
+    #[DataProvider('separateValuesProvider')]
     public function testSeparateValues(string $input, string $separator, array $expectedResult): void
     {
         $this->assertEquals($expectedResult, array_values(InventoryDataHelper::separateValues($input, $separator)));
@@ -40,7 +40,7 @@ class InventoryDataHelperTest extends TestCase
                 'separator' => '|',
                 'expectedResult' => ['test', '123; x'],
             ],
-            'empty-values-and-adjecent-separators-are-ignored' => [
+            'empty-values-and-adjacent-separators-are-ignored' => [
                 'input' => ' test|| | 123',
                 'separator' => '|',
                 'expectedResult' => ['test', '123'],
@@ -48,9 +48,7 @@ class InventoryDataHelperTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider toDateTimeImmutableProvider
-     */
+    #[DataProvider('toDateTimeImmutableProvider')]
     public function testToDateTimeImmutable(string $input, ?\DateTimeImmutable $expectedResult): void
     {
         if ($expectedResult === null) {
@@ -103,6 +101,44 @@ class InventoryDataHelperTest extends TestCase
             'unsupported-format-throws-exception' => [
                 'input' => '06/05/2021 23:11 UTC',
                 'expectedResult' => null,
+            ],
+        ];
+    }
+
+    /**
+     * @param array<array-key, array{input:string, expectedResult:string[]}> $expectedResult
+     */
+    #[DataProvider('getGroundsProvider')]
+    public function testGetGrounds(string $input, array $expectedResult): void
+    {
+        $this->assertEquals($expectedResult, InventoryDataHelper::getGrounds($input));
+    }
+
+    /**
+     * @return array<array-key, array{input:string, expectedResult:string[]}>
+     */
+    public static function getGroundsProvider(): array
+    {
+        return [
+            'single-value-without-normalization-is-returned-as-is' => [
+                'input' => 'foo',
+                'expectedResult' => ['foo'],
+            ],
+            'single-value-with-normalization' => [
+                'input' => '5.1.2.i',
+                'expectedResult' => ['5.1.2i'],
+            ],
+            'two-values-with-and-without-normalization' => [
+                'input' => 'foo;5.1.2.i',
+                'expectedResult' => ['foo', '5.1.2i'],
+            ],
+            'two-values-with-and-without-normalization-including-whitespace' => [
+                'input' => '  foo ;   5.1.2.i  ',
+                'expectedResult' => ['foo', '5.1.2i'],
+            ],
+            'empty-string' => [
+                'input' => '',
+                'expectedResult' => [],
             ],
         ];
     }

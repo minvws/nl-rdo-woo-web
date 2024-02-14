@@ -27,7 +27,7 @@ class Kernel extends BaseKernel
     protected function build(ContainerBuilder $container): void
     {
         parent::build($container);
-        $container->registerExtension(new \App\DependencyInjection\AuthMatrixExtension());
+        $container->registerExtension(new DependencyInjection\AuthMatrixExtension());
     }
 
     protected function injectEncryptionServiceIntoDbalTypes(): void

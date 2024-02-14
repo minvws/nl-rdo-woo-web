@@ -1,0 +1,43 @@
+# https://taskfile.dev
+version: "3"
+
+vars:
+  NETWORK_NAME: nl-rdo-woo-web-private_woopie
+
+tasks:
+  build:
+    desc: Build Robot docker image
+    cmds:
+      - docker build --tag "{{.PROJECT_NAME}}-robot:latest" .
+
+  build:if-not-exists:
+    vars:
+      IMAGE_EXISTS:
+        sh: 'docker images -q "{{.PROJECT_NAME}}-robot:latest" 2> /dev/null'
+    status:
+      - test ! -z "{{.IMAGE_EXISTS}}"
+    cmds:
+      - task: build
+
+  shell:
+    desc: Shell into environment with Robot Framework
+    cmds:
+      - task: build:if-not-exists
+      - docker network create {{.NETWORK_NAME}} 2> /dev/null || true
+      - docker run --rm --interactive --tty
+        --network "{{.NETWORK_NAME}}"
+        --volume "$(pwd):/workspace"
+        --volume /var/run/docker.sock:/var/run/docker.sock
+        "{{.PROJECT_NAME}}-robot:latest" bash
+
+  test:
+    desc: Run Robot tests
+    cmds:
+      - task: build:if-not-exists
+      - docker network create {{.NETWORK_NAME}} 2> /dev/null || true
+      - docker run --rm
+        --network "{{.NETWORK_NAME}}"
+        --volume "$(pwd):/workspace"
+        --volume /var/run/docker.sock:/var/run/docker.sock
+        "{{.PROJECT_NAME}}-robot:latest"
+        python -m robot --outputdir results --xunit outputxunit.xml --include CI --variable headless:true {{.CLI_ARGS}} .

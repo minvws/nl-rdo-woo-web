@@ -15,29 +15,37 @@
     }
 
     .bhr-button--primary {
-        @apply bg-ocean-boat-blue
-            border-blue-sapphire/40
+        @apply bg-bhr-ocean-boat-blue
+            border-bhr-blue-sapphire/40
             text-white
 
-            hover:bg-blue-sapphire;
+            hover:bg-bhr-blue-sapphire;
     }
 
     .bhr-button--secondary {
         @apply bg-white
             border
-            border-light-silver
-            text-dim-gray
+            border-bhr-light-silver
+            text-bhr-dim-gray
 
-            hover:bg-anti-flash-white
-            hover:border-chinese-silver
-            hover:text-black-olive;
+            hover:bg-bhr-anti-flash-white
+            hover:border-bhr-chinese-silver
+            hover:text-bhr-black-olive;
     }
 
     .bhr-button--danger {
-        @apply bg-maximum-red
+        @apply bg-bhr-maximum-red
             border
-            border-maximum-red
+            border-bhr-maximum-red
             text-white;
+    }
+
+    .bhr-button--clear {
+        @apply text-bhr-dim-gray 
+            hover-focus:text-bhr-maximum-red 
+            absolute 
+            right-0
+            bottom-0;
     }
 
     .bhr-button--fixed-width {

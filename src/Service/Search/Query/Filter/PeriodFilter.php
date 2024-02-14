@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Service\Search\Query\Filter;
 
 use App\Service\Search\Model\Config;
-use App\Service\Search\Query\Facet\FacetDefinition;
+use App\Service\Search\Query\Facet\Facet;
+use App\Service\Search\Query\Facet\Input\DateFacetInputInterface;
+use App\Service\Search\Query\Query;
 use Erichard\ElasticQueryBuilder\Contracts\QueryInterface;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
-use Erichard\ElasticQueryBuilder\Query\RangeQuery;
-use Erichard\ElasticQueryBuilder\Query\TermQuery;
 
 /**
  * This filter will match dates in both dossiers and documents, even though both date fields are named differently and act differently.
@@ -19,81 +19,129 @@ use Erichard\ElasticQueryBuilder\Query\TermQuery;
  */
 class PeriodFilter implements FilterInterface
 {
-    public function addToQuery(FacetDefinition $facet, BoolQuery $query, Config $config, string $prefix = ''): void
+    public function addToQuery(Facet $facet, BoolQuery $query, Config $config, string $prefix = ''): void
     {
-        $values = $config->getFacetValues($facet);
-        $fromDate = $this->asDate($values['from'] ?? null);
-        $toDate = $this->asDate($values['to'] ?? null);
-
-        if ($fromDate == null && $toDate == null) {
+        if ($facet->isNotActive()) {
             return;
         }
 
+        $input = $this->getInput($facet);
+        if (is_null($input)) {
+            return;
+        }
+
+        switch (true) {
+            case $input->isWithoutDate():
+                $this->handleWithoutDate($query);
+                break;
+            case $input->hasAnyPeriodFilterDates():
+                $this->handleWithDate($query, $input);
+                break;
+        }
+    }
+
+    private function handleWithoutDate(BoolQuery $query): void
+    {
         $query->addFilter(
-            new BoolQuery(
-                should: [
-                    new BoolQuery(
-                        filter: [
-                            new TermQuery(
-                                field: 'type',
-                                value: Config::TYPE_DOCUMENT,
-                            ),
-                            $this->getDocumentDateQuery($fromDate, $toDate),
-                        ]
-                    ),
-                    new BoolQuery(
-                        filter: [
-                            new TermQuery(
-                                field: 'type',
-                                value: Config::TYPE_DOSSIER,
-                            ),
-                            $this->getDossierDateQuery($fromDate, $toDate),
-                        ]
-                    ),
-                ],
-                params: ['minimum_should_match' => 1],
-            )
+            Query::bool(should: [
+                Query::bool(
+                    filter: [
+                        Query::term(
+                            field: 'type',
+                            value: Config::TYPE_DOCUMENT,
+                        ),
+                    ],
+                    mustNot: [
+                        Query::exists(field: 'date'),
+                    ],
+                ),
+                Query::bool(
+                    filter: [
+                        Query::term(
+                            field: 'type',
+                            value: Config::TYPE_DOSSIER,
+                        ),
+                    ],
+                    mustNot: [
+                        Query::exists(field: 'date_to'),
+                        Query::exists(field: 'date_from'),
+                    ],
+                ),
+            ])->setParams(['minimum_should_match' => 1]),
         );
     }
 
-    private function getDocumentDateQuery(?\DateTimeImmutable $fromDate, ?\DateTimeImmutable $toDate): QueryInterface
+    private function handleWithDate(BoolQuery $query, DateFacetInputInterface $input): void
     {
-        $query = new RangeQuery('date');
-        if ($toDate) {
-            $query->lte($toDate->format('Y-m-d'));
+        $query->addFilter(
+            Query::bool(
+                should: [
+                    Query::bool(
+                        filter: [
+                            Query::term(
+                                field: 'type',
+                                value: Config::TYPE_DOCUMENT,
+                            ),
+                            $this->getDocumentDateQuery($input),
+                        ]
+                    ),
+                    Query::bool(
+                        filter: [
+                            Query::term(
+                                field: 'type',
+                                value: Config::TYPE_DOSSIER,
+                            ),
+                            $this->getDossierDateQuery($input),
+                        ]
+                    ),
+                ],
+            )->setParams(['minimum_should_match' => 1])
+        );
+    }
+
+    private function getDocumentDateQuery(DateFacetInputInterface $input): QueryInterface
+    {
+        $query = Query::range('date');
+
+        $toDate = $input->getPeriodFilterTo();
+        if (! is_null($toDate)) {
+            $query->lte($toDate);
         }
-        if ($fromDate) {
-            $query->gte($fromDate->format('Y-m-d'));
+
+        $fromDate = $input->getPeriodFilterFrom();
+        if (! is_null($fromDate)) {
+            $query->gte($fromDate);
         }
 
         return $query;
     }
 
-    private function getDossierDateQuery(?\DateTimeImmutable $fromDate, ?\DateTimeImmutable $toDate): QueryInterface
+    private function getDossierDateQuery(DateFacetInputInterface $input): QueryInterface
     {
-        $query = new RangeQuery('date_range');
-        if ($fromDate) {
-            $query->gte($fromDate->format('Y-m-d'));
+        $query = Query::range('date_range');
+
+        $toDate = $input->getPeriodFilterTo();
+        if (! is_null($toDate)) {
+            $query->lte($toDate);
         }
-        if ($toDate) {
-            $query->lte($toDate->format('Y-m-d'));
+
+        $fromDate = $input->getPeriodFilterFrom();
+        if (! is_null($fromDate)) {
+            $query->gte($fromDate);
         }
+
         // RangeQuery we use does not have a relation method, so we use params to manually set it
         $query->setParams(['relation' => 'intersects']);
 
         return $query;
     }
 
-    private function asDate(mixed $value): ?\DateTimeImmutable
+    public function getInput(Facet $facet): ?DateFacetInputInterface
     {
-        if (! is_string($value)) {
-            return null;
+        if ($facet->input instanceof DateFacetInputInterface) {
+            return $facet->input;
         }
 
-        try {
-            return new \DateTimeImmutable($value);
-        } catch (\Exception) {
-            return null;
-        }
+        return null;
     }
 }

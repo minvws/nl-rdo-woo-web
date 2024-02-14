@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Attribute\AuthMatrix;
 use App\Entity\Organisation;
 use App\Entity\User;
 use App\Form\User\DisableUserFormType;
@@ -25,8 +24,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -45,12 +44,9 @@ class UserController extends AbstractController
     }
 
     #[Route('/balie/gebruikers', name: 'app_admin_users', methods: ['GET'])]
-    #[AuthMatrix('user.read')]
-    public function index(Request $request, Breadcrumbs $breadcrumbs): Response
+    #[IsGranted('AuthMatrix.user.read')]
+    public function index(Request $request): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addItem('User management');
-
         // Remove any reset data from the session as soon as we return back to the user list. This is not
         // 100% foolproof but it should work in most cases. In cases it doesn't, there is nothing wrong as
         // the data is never shown to the user.
@@ -78,13 +74,9 @@ class UserController extends AbstractController
     }
 
     #[Route('/balie/gebruiker/new', name: 'app_admin_user_create', methods: ['GET', 'POST'])]
-    #[AuthMatrix('user.create')]
-    public function create(Breadcrumbs $breadcrumbs, Request $request): Response
+    #[IsGranted('AuthMatrix.user.create')]
+    public function create(Request $request): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('User management', 'app_admin_users');
-        $breadcrumbs->addItem('New user');
-
         $userForm = $this->createForm(UserCreateFormType::class);
 
         $userForm->handleRequest($request);
@@ -121,7 +113,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/balie/gebruiker/pdf', name: 'app_admin_user_pdf', methods: ['GET'])]
-    #[AuthMatrix('user.update')]
+    #[IsGranted('AuthMatrix.user.update')]
     public function viewUserCredentials(Request $request): Response
     {
         if (! $request->getSession()->has(self::RESET_USER_KEY)) {
@@ -146,13 +138,9 @@ class UserController extends AbstractController
     }
 
     #[Route('/balie/gebruiker/{id}', name: 'app_admin_user', methods: ['GET', 'POST'])]
-    #[AuthMatrix('user.update')]
-    public function modify(Breadcrumbs $breadcrumbs, Request $request, User $user): Response
+    #[IsGranted('AuthMatrix.user.update')]
+    public function modify(Request $request, User $user): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('User management', 'app_admin_users');
-        $breadcrumbs->addItem('Edit user');
-
         /** @var User $loggedInUser */
         $loggedInUser = $this->getUser();
 
@@ -206,7 +194,6 @@ class UserController extends AbstractController
         }
 
         /** @var LoggableUser $loggedInUser */
-        /** @phpstan-ignore-next-line */
         $loggedInUser = $this->getUser();
 
         /** @var string[] $roles */
@@ -255,7 +242,6 @@ class UserController extends AbstractController
             ->trans('Account of {name} has been disabled.', ['{name}' => $userName])]);
 
         /** @var LoggableUser $loggedInUser */
-        /** @phpstan-ignore-next-line */
         $loggedInUser = $this->getUser();
         /** @var LoggableUser $loggedInUser */
         $this->auditLogger->log((new AccountChangeLogEvent())
@@ -289,7 +275,6 @@ class UserController extends AbstractController
         );
 
         /** @var LoggableUser $loggedInUser */
-        /** @phpstan-ignore-next-line */
         $loggedInUser = $this->getUser();
         /** @var LoggableUser $loggedInUser */
         $this->auditLogger->log((new AccountChangeLogEvent())

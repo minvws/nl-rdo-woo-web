@@ -66,13 +66,13 @@
             </div>
 
             <div class="bhr-card mt-10">
-                <h2 class="bhr-title-sm mb-4">{{ "Help with login problems?" | trans() }}</h2>
+                <h2 class="bhr-title-sm mb-6">{{ "Help with login problems?" | trans() }}</h2>
 
                 <div class="bhr-form-row">
                     {{ form_start(user_reset_password, {'attr': {'id': 'form_reset_password'}}) }}
                     {% do user_reset_password.reset_2fa.setRendered %}
                     {{ form_row(user_reset_password.reset_pw) }}
-                    <p class="bhr-label">{{ "Forgot your password?" | trans }}</p>
+                    <h3 class="bhr-label">{{ "Forgot your password?" | trans }}</h3>
                     <p class="bhr-form-help">{{ "Reset the password. You will receive new login instructions that allow the user to choose a new password themselves." | trans }}</p>
                     {{ form_row(user_reset_password.submit, {
                         'label': 'Reset password',
@@ -83,10 +83,12 @@
                     }) }}
                     {{ form_end(user_reset_password) }}
                     <button
+                        aria-haspopup="dialog"
                         class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary mt-6 js-dialog-toggle no-js:hidden"
                         data-dialog-action="open"
                         data-dialog-for="js-reset-password"
                         type="button"
+                        data-e2e-name="password-reset-button"
                     >{{ 'Reset password'|trans }}</button>
                 </div>
 
@@ -94,7 +96,7 @@
                     {{ form_start(user_reset_2fa, {'attr': {'id': 'form_reset_2fa'}}) }}
                     {% do user_reset_2fa.reset_pw.setRendered %}
                     {{ form_row(user_reset_2fa.reset_2fa) }}
-                    <p class="bhr-label">{{ "New phone or authenticator app?" | trans }}</p>
+                    <h3 class="bhr-label">{{ "New phone or authenticator app?" | trans }}</h3>
                     <p class="bhr-form-help">{{ "Reset the two factor code. You will receive new login instructions that allow the user to reset the two-factor authenticator." | trans }}</p>
                     {{ form_row(user_reset_2fa.submit, {
                         'label': 'Reset 2FA',
@@ -105,34 +107,26 @@
                     }) }}
                     {{ form_end(user_reset_2fa) }}
                     <button
+                        aria-haspopup="dialog"
                         class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary mt-6 js-dialog-toggle no-js:hidden"
                         data-dialog-action="open"
                         data-dialog-for="js-reset-2fa"
                         type="button"
+                        data-e2e-name="2fa-reset-button"
                     >{{ 'Reset 2FA'|trans }}</button>
                 </div>
             </div>
         </div>
     </div>
 
-    {% set dialogClasses = [
-        'max-w-screen-sm',
-        'rounded-lg',
-    ] %}
-    <twig:Admin:Dialog
-        id="js-reset-password"
-        dialogClasses="{{ dialogClasses }}">
-        <h2 class="bhr-title-sm">{{ 'Are you sure?'|trans }}</h2>
-        <p class="mt-4 mb-8 text-lg">{{ 'If you continue, you will no longer be able to log in with your old password. You can download your new temporary login instructions on the next page. Make sure you keep this safe.'|trans }}</p>
-        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary js-click-on-selector" data-selector="reset_credentials_password_form_submit">{{ 'Yes, reset the password'|trans }}</button>
+    <twig:Admin:Dialog id="js-reset-password" title="{{ 'Are you sure?'|trans }}">
+        <p class="mb-8 text-lg" data-e2e-name="password-reset-instructions">{{ 'If you continue, you will no longer be able to log in with your old password. You can download your new temporary login instructions on the next page. Make sure you keep this safe.'|trans }}</p>
+        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary js-click-on-selector" data-e2e-name="password-reset-confirmation-button" data-selector="reset_credentials_password_form_submit">{{ 'Yes, reset the password'|trans }}</button>
         <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary js-dialog-toggle" data-dialog-for="js-reset-password" data-dialog-action="close">{{ 'Cancel'|trans }}</button>
     </twig:Admin:Dialog>
 
-    <twig:Admin:Dialog
-        id="js-reset-2fa"
-        dialogClasses="{{ dialogClasses }}">
-        <h2 class="bhr-title-sm">{{ 'Are you sure?'|trans }}</h2>
-        <p class="mt-4 mb-8 text-lg">{{ 'Resetting the two factor code means that we remove the old two factor code from our system forever. If you request a new two-factor code, make sure you keep it for yourself in a safe manner. If you click \'Yes\' you will receive the new two factor code.'|trans }}</p>
+    <twig:Admin:Dialog id="js-reset-2fa" title="{{ 'Are you sure?'|trans }}">
+        <p class="mb-8 text-lg">{{ 'Resetting the two factor code means that we remove the old two factor code from our system forever. If you request a new two-factor code, make sure you keep it for yourself in a safe manner. If you click \'Yes\' you will receive the new two factor code.'|trans }}</p>
         <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary js-click-on-selector" data-selector="reset_credentials_2fa_form_submit">{{ 'Yes, reset the two factor code'|trans }}</button>
         <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary js-dialog-toggle" data-dialog-for="js-reset-2fa" data-dialog-action="close">{{ 'Cancel'|trans }}</button><div class="js-button-placeholder"></div>
     </twig:Admin:Dialog>

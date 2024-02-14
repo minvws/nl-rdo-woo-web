@@ -4,29 +4,25 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query\Facet;
 
+use App\Service\Search\Model\Config;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Aggregation\AggregationStrategyInterface;
 use App\Service\Search\Query\Filter\FilterInterface;
+use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
+use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 
-class FacetDefinition
+final readonly class FacetDefinition
 {
     public function __construct(
-        private readonly FacetKey $key,
-        private readonly string $path,
-        private readonly string $queryParam,
-        private readonly ?FilterInterface $filter = null,
-        private readonly ?AggregationStrategyInterface $aggregationStrategy = null,
+        private FacetKey $key,
+        private ?FilterInterface $filter = null,
+        private ?AggregationStrategyInterface $aggregationStrategy = null,
     ) {
     }
 
-    public function getFacetKey(): string
+    public function getFacetKey(): FacetKey
     {
-        return $this->key->value;
-    }
-
-    public function getPath(): string
-    {
-        return $this->path;
+        return $this->key;
     }
 
     public function getFilter(): ?FilterInterface
@@ -34,13 +30,38 @@ class FacetDefinition
         return $this->filter;
     }
 
-    public function getQueryParam(): string
-    {
-        return $this->queryParam;
-    }
-
     public function getAggregationStrategy(): ?AggregationStrategyInterface
     {
         return $this->aggregationStrategy;
+    }
+
+    public function getPath(): string
+    {
+        return $this->key->getPath();
+    }
+
+    public function getDataClass(): string
+    {
+        return $this->key->getInputClass();
+    }
+
+    public function getParamName(): string
+    {
+        return $this->key->getParamName();
+    }
+
+    public function optionallyAddQueryToFilter(Facet $facet, BoolQuery $query, Config $config): void
+    {
+        $this->filter?->addToQuery($facet, $query, $config);
+    }
+
+    public function shouldExcludeOwnFilter(): bool
+    {
+        return $this->aggregationStrategy?->excludeOwnFilters() === true;
+    }
+
+    public function getOptionalAggregation(Facet $facet, Config $config, int $maxCount): ?AbstractAggregation
+    {
+        return $this->aggregationStrategy?->getAggregation($facet, $config, $maxCount);
     }
 }

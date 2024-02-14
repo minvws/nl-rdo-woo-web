@@ -13,7 +13,7 @@ interface EntityWithBatchDownload
     public function getId(): ?Uuid;
 
     /**
-     * @return Collection|Document[]
+     * @return Collection<array-key,Document>
      */
     public function getDocuments(): Collection;
 

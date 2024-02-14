@@ -9,7 +9,6 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 #[AsTwigComponent]
 class Dialog
 {
-    /** @var array<string> */
-    public ?array $dialogClasses = [];
-    public string $id = '';
+    public string $id;
+    public string $title;
 }

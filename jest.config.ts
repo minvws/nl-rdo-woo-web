@@ -98,6 +98,7 @@ const config: Config = {
      * - webpack.config.js
      */
     '^@js(.*)': ['<rootDir>/assets/js$1'],
+    '^@fonts(.*)': ['<rootDir>/public/fonts$1'],
     '^@img(.*)$': ['<rootDir>/assets/img$1'],
     '^@styles(.*)$': ['<rootDir>/assets/styles$1'],
     '^@test(.*)$': ['<rootDir>/assets/js/test$1'],

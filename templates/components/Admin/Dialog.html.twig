@@ -1,6 +1,18 @@
-<dialog class="{{ ('bhr-dialog js-dialog ' ~ dialogClasses|join(' '))|trim }}" id="{{ id  }}">
-    <div class="bhr-card">
-    {% block content %}
-    {% endblock %}
+<dialog
+    aria-labelledby="{{ id }}-title"
+    class="bhr-dialog"
+    id="{{ id  }}"
+>
+    <div class="bhr-dialog__content">
+        <h1 class="bhr-dialog__title" id="{{ id }}-title">{{ title }}</h1>
+        {% block content %}{% endblock %}
+        <form method="dialog">
+            <button
+                class="bhr-dialog__close-btn"
+            >
+                <span class="sr-only">Sluit venster</span>
+                <twig:Admin:Icon name="cross" />
+            </button>
+        </form>
     </div>
 </dialog>

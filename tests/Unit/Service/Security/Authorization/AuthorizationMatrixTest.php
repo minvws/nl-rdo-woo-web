@@ -6,11 +6,12 @@ namespace App\Tests\Unit\Service\Security\Authorization;
 
 use App\Entity\Organisation;
 use App\Entity\User;
+use App\Service\Security\Authorization\AuthorizationEntryRequestStore;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\Entry;
 use App\Service\Security\OrganisationSwitcher;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\MockInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -23,82 +24,104 @@ use Symfony\Component\Security\Core\Authorization\Voter\RoleVoter;
 
 class AuthorizationMatrixTest extends MockeryTestCase
 {
-    protected Security|Mockery\MockInterface|Mockery\LegacyMockInterface $mockSecurity;
-    protected RequestStack|Mockery\MockInterface|Mockery\LegacyMockInterface $mockRequestStack;
-    protected AuthorizationCheckerInterface|Mockery\MockInterface|Mockery\LegacyMockInterface $mockAuthorizationChecker;
-    private OrganisationSwitcher|Mockery\MockInterface $organisationSwitcher;
+    private Security&MockInterface $mockSecurity;
+    private RequestStack&MockInterface $mockRequestStack;
+    private AuthorizationCheckerInterface $authorizationChecker;
+    private OrganisationSwitcher&MockInterface $organisationSwitcher;
+    private User&MockInterface $user;
+    private TokenStorage $tokenStorage;
+    private AuthorizationMatrix $authorizationMatrix;
+    private AuthorizationEntryRequestStore $entryStore;
 
-    public function testAdminUser()
+    public function setUp(): void
     {
-        $user = new User();
-        $user->setRoles(['ROLE_ADMIN']);
-        $matrix = $this->generateMatrix($user);
+        $this->user = \Mockery::mock(User::class);
 
-        $this->assertTrue($matrix->isAuthorized('user', 'create'));
-        $this->assertTrue($matrix->isAuthorized('user', 'read'));
-        $this->assertTrue($matrix->isAuthorized('user', 'update'));
-        $this->assertTrue($matrix->isAuthorized('user', 'delete'));
+        $this->mockSecurity = \Mockery::mock(Security::class);
+        $this->mockSecurity->shouldReceive('getUser')->andReturn($this->user);
 
-        $this->assertFalse($matrix->isAuthorized('user', 'something_else'));
-        $this->assertFalse($matrix->isAuthorized('document', 'read'));
+        $this->mockRequestStack = \Mockery::mock(RequestStack::class);
+        $this->entryStore = new AuthorizationEntryRequestStore($this->mockRequestStack);
 
-        $this->assertCount(1, $matrix->getAuthorizedMatches('user', 'read'));
-        $this->assertCount(0, $matrix->getAuthorizedMatches('user', 'not_existing'));
-        $this->assertCount(0, $matrix->getAuthorizedMatches('document', 'read'));
+        $this->tokenStorage = new TokenStorage();
+        $voter = new RoleVoter();
+        $decisionManager = new AccessDecisionManager([$voter]);
+        $this->authorizationChecker = new AuthorizationChecker($this->tokenStorage, $decisionManager);
+
+        $this->organisationSwitcher = \Mockery::mock(OrganisationSwitcher::class);
+
+        $this->authorizationMatrix = new AuthorizationMatrix(
+            $this->mockSecurity,
+            $this->authorizationChecker,
+            $this->organisationSwitcher,
+            $this->entryStore,
+            $this->getEntries(),
+        );
     }
 
-    public function testRegularUser()
+    public function testAdminUser(): void
     {
-        $user = new User();
-        $user->setRoles(['ROLE_USER']);
-        $matrix = $this->generateMatrix($user);
+        $this->setupRoles(['ROLE_ADMIN']);
 
-        $this->assertFalse($matrix->isAuthorized('user', 'create'));
-        $this->assertTrue($matrix->isAuthorized('user', 'read'));
-        $this->assertFalse($matrix->isAuthorized('user', 'update'));
-        $this->assertFalse($matrix->isAuthorized('user', 'delete'));
+        $this->assertTrue($this->authorizationMatrix->isAuthorized('user', 'create'));
+        $this->assertTrue($this->authorizationMatrix->isAuthorized('user', 'read'));
+        $this->assertTrue($this->authorizationMatrix->isAuthorized('user', 'update'));
+        $this->assertTrue($this->authorizationMatrix->isAuthorized('user', 'delete'));
 
-        $this->assertFalse($matrix->isAuthorized('user', 'something_else'));
-        $this->assertTrue($matrix->isAuthorized('document', 'read'));
+        $this->assertFalse($this->authorizationMatrix->isAuthorized('user', 'something_else'));
+        $this->assertFalse($this->authorizationMatrix->isAuthorized('document', 'read'));
 
-        $this->assertCount(1, $matrix->getAuthorizedMatches('user', 'read'));
-        $this->assertCount(0, $matrix->getAuthorizedMatches('user', 'not_existing'));
-        $this->assertCount(1, $matrix->getAuthorizedMatches('document', 'read'));
+        $this->assertCount(1, $this->authorizationMatrix->getAuthorizedMatches('user', 'read'));
+        $this->assertCount(0, $this->authorizationMatrix->getAuthorizedMatches('user', 'not_existing'));
+        $this->assertCount(0, $this->authorizationMatrix->getAuthorizedMatches('document', 'read'));
     }
 
-    public function testFilters()
+    public function testRegularUser(): void
     {
-        $user = new User();
-        $user->setRoles(['ROLE_ADMIN']);
-        $matrix = $this->generateMatrix($user);
+        $this->setupRoles(['ROLE_BALIE']);
+
+        $this->assertFalse($this->authorizationMatrix->isAuthorized('user', 'create'));
+        $this->assertTrue($this->authorizationMatrix->isAuthorized('user', 'read'));
+        $this->assertFalse($this->authorizationMatrix->isAuthorized('user', 'update'));
+        $this->assertFalse($this->authorizationMatrix->isAuthorized('user', 'delete'));
+
+        $this->assertFalse($this->authorizationMatrix->isAuthorized('user', 'something_else'));
+        $this->assertTrue($this->authorizationMatrix->isAuthorized('document', 'read'));
+
+        $this->assertCount(1, $this->authorizationMatrix->getAuthorizedMatches('user', 'read'));
+        $this->assertCount(0, $this->authorizationMatrix->getAuthorizedMatches('user', 'not_existing'));
+        $this->assertCount(1, $this->authorizationMatrix->getAuthorizedMatches('document', 'read'));
+    }
+
+    public function testFilters(): void
+    {
+        $this->setupRoles(['ROLE_ADMIN']);
 
         $entries = $this->getEntries();
         $request = new Request();
         $request->attributes->set(AuthorizationMatrix::AUTH_MATRIX_ATTRIB, [$entries[0]]);
-        $this->mockRequestStack->shouldReceive('getCurrentRequest')->andReturn($request)->zeroOrMoreTimes();
+        $this->mockRequestStack->shouldReceive('getCurrentRequest')->andReturn($request);
 
         // Get the filter for the current entry that matched and is stored in the route
-        $this->assertTrue($matrix->getFilter(AuthorizationMatrix::FILTER_ORGANISATION_ONLY));
-        $this->assertFalse($matrix->getFilter(AuthorizationMatrix::FILTER_PUBLISHED_DOSSIERS));
-        $this->assertFalse($matrix->getFilter(AuthorizationMatrix::FILTER_UNPUBLISHED_DOSSIERS));
+        $this->assertTrue($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_ORGANISATION_ONLY));
+        $this->assertFalse($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_PUBLISHED_DOSSIERS));
+        $this->assertFalse($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_UNPUBLISHED_DOSSIERS));
 
         $this->expectException(\RuntimeException::class);
-        $this->assertFalse($matrix->getFilter('unknown_filter'));
+        $this->assertFalse($this->authorizationMatrix->getFilter('unknown_filter'));
     }
 
     public function testGetActiveOrganisationReturnsTheOrganisationUsingTheOrganisationSwitcher(): void
     {
-        $user = new User();
-        $user->setRoles(['ROLE_USER']);
-        $matrix = $this->generateMatrix($user);
+        $this->setupRoles(['ROLE_BALIE']);
 
         $organisation = \Mockery::mock(Organisation::class);
 
-        $this->organisationSwitcher->expects('getActiveOrganisation')->with($user)->andReturn($organisation);
+        $this->organisationSwitcher->expects('getActiveOrganisation')->with($this->user)->andReturn($organisation);
 
         $this->assertEquals(
             $organisation,
-            $matrix->getActiveOrganisation(),
+            $this->authorizationMatrix->getActiveOrganisation(),
         );
     }
 
@@ -124,7 +147,7 @@ class AuthorizationMatrixTest extends MockeryTestCase
             ]),
             Entry::createFrom([
                 'prefix' => 'user',
-                'roles' => ['ROLE_USER'],
+                'roles' => ['ROLE_BALIE'],
                 'permissions' => [
                     'read' => true,
                 ],
@@ -135,7 +158,7 @@ class AuthorizationMatrixTest extends MockeryTestCase
             ]),
             Entry::createFrom([
                 'prefix' => 'document',
-                'roles' => ['ROLE_USER'],
+                'roles' => ['ROLE_BALIE'],
                 'permissions' => [
                     'read' => true,
                 ],
@@ -147,27 +170,11 @@ class AuthorizationMatrixTest extends MockeryTestCase
         ];
     }
 
-    protected function generateMatrix(User $user): AuthorizationMatrix
+    /**
+     * @param string[] $roles
+     */
+    private function setupRoles(array $roles): void
     {
-        $this->mockSecurity = \Mockery::mock(Security::class);
-        $this->mockSecurity->shouldReceive('getUser')->andReturn($user)->zeroOrMoreTimes();
-
-        $this->mockRequestStack = \Mockery::mock(RequestStack::class);
-
-        $tokenStorage = new TokenStorage();
-        $tokenStorage->setToken(new UsernamePasswordToken($user, 'main', $user->getRoles()));
-        $voter = new RoleVoter();
-        $decisionManager = new AccessDecisionManager([$voter]);
-        $this->mockAuthorizationChecker = new AuthorizationChecker($tokenStorage, $decisionManager);
-
-        $this->organisationSwitcher = \Mockery::mock(OrganisationSwitcher::class);
-
-        return new AuthorizationMatrix(
-            $this->mockSecurity,
-            $this->mockRequestStack,
-            $this->mockAuthorizationChecker,
-            $this->organisationSwitcher,
-            $this->getEntries(),
-        );
+        $this->tokenStorage->setToken(new UsernamePasswordToken($this->user, 'main', $roles));
     }
 }

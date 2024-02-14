@@ -69,20 +69,15 @@ class CollectorClient implements ClientInterface, ElasticClientInterface
         return $this->elastic->getResponseException();
     }
 
-    /**
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
-     */
-    public function sendRequest(RequestInterface $request)
+    public function sendRequest(RequestInterface $request): Elasticsearch|Promise
     {
         return $this->elastic->sendRequest($request);
     }
 
     /**
      * @param mixed[] $arguments
-     *
-     * @return Elasticsearch|Promise
      */
-    protected function collectData(string $method, array $arguments, string $type = 'array')
+    protected function collectData(string $method, array $arguments, string $type = 'array'): Elasticsearch|Promise
     {
         $response = $this->elastic->$method($arguments);
 
@@ -92,7 +87,7 @@ class CollectorClient implements ClientInterface, ElasticClientInterface
         return $response;
     }
 
-    public function search(array $params = [])
+    public function search(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('search', $params);
     }
@@ -107,7 +102,7 @@ class CollectorClient implements ClientInterface, ElasticClientInterface
         return $this->elastic->indices();
     }
 
-    public function count(array $params = [])
+    public function count(array $params = []): Elasticsearch|Promise
     {
         /** @var ElasticSearch|Promise $response */
         $response = $this->elastic->count($params);
@@ -115,67 +110,67 @@ class CollectorClient implements ClientInterface, ElasticClientInterface
         return $response;
     }
 
-    public function update(array $params = [])
+    public function update(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('update', $params);
     }
 
-    public function exists(array $params = [])
+    public function exists(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('exists', $params, 'bool');
     }
 
-    public function updateByQuery(array $params = [])
+    public function updateByQuery(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('updateByQuery', $params);
     }
 
-    public function get(array $params = [])
+    public function get(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('get', $params);
     }
 
-    public function create(array $params = [])
+    public function create(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('create', $params);
     }
 
-    public function close(array $params = [])
+    public function close(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('close', $params, 'bool');
     }
 
-    public function putSettings(array $params = [])
+    public function putSettings(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('putSettings', $params);
     }
 
-    public function putMapping(array $params = [])
+    public function putMapping(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('putMapping', $params);
     }
 
-    public function open(array $params = [])
+    public function open(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('open', $params);
     }
 
-    public function delete(array $params = [])
+    public function delete(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('delete', $params);
     }
 
-    public function deleteAlias(array $params = [])
+    public function deleteAlias(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('deleteAlias', $params);
     }
 
-    public function putAlias(array $params = [])
+    public function putAlias(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('putAlias', $params);
     }
 
-    public function updateAliases(array $params = [])
+    public function updateAliases(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('updateAlias', $params);
     }

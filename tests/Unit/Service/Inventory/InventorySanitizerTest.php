@@ -22,13 +22,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class InventorySanitizerTest extends MockeryTestCase
 {
-    private EntityManagerInterface|MockInterface $entityManager;
-    private DocumentStorageService|MockInterface $documentStorage;
-    private TranslatorInterface|MockInterface $translator;
-    private InventoryWriterInterface|MockInterface $writer;
-    private UrlGeneratorInterface|MockInterface $urlGenerator;
+    private EntityManagerInterface&MockInterface $entityManager;
+    private DocumentStorageService&MockInterface $documentStorage;
+    private TranslatorInterface&MockInterface $translator;
+    private InventoryWriterInterface&MockInterface $writer;
+    private UrlGeneratorInterface&MockInterface $urlGenerator;
     private InventorySanitizer $sanitizer;
-    private InventoryDataProviderInterface|MockInterface $dataProvider;
+    private InventoryDataProviderInterface&MockInterface $dataProvider;
 
     public function setUp(): void
     {
@@ -77,6 +77,7 @@ class InventorySanitizerTest extends MockeryTestCase
 
         $dossier = \Mockery::mock(Dossier::class);
         $dossier->expects('getDossierNr')->andReturn('tst-123');
+        $dossier->expects('getDocumentPrefix')->andReturn('PREFIX');
 
         $inventory = \Mockery::mock(Inventory::class);
         $inventory->expects('setFileInfo')->with(\Mockery::on(
@@ -100,7 +101,7 @@ class InventorySanitizerTest extends MockeryTestCase
 
         $this->urlGenerator
             ->expects('generate')
-            ->with('app_document_detail', ['dossierId' => 'tst-123', 'documentId' => 'test-doc-nr'])
+            ->with('app_document_detail', ['prefix' => 'PREFIX', 'dossierId' => 'tst-123', 'documentId' => 'test-doc-nr'])
             ->andReturn('test-url');
 
         $this->dataProvider->expects('getDocuments')->andReturn(new ArrayCollection([$document]));

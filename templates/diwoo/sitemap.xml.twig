@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:diwoo="https://standaarden.overheid.nl/diwoo/metadata/"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd
+  https://standaarden.overheid.nl/diwoo/metadata/ https://standaarden.overheid.nl/diwoo/metadata/0.9.1/xsd/diwoo-metadata.xsd">
+    {% for url in urls %}
+        {%- if url.document.documentDate is not null -%}
+            {%-  set documentDate = url.document.documentDate -%}
+        {%- else -%}
+            {%- set documentDate = url.document.dossiers.first.publicationDate -%}
+        {%- endif -%}
+    <url>
+        <loc>{{ url('app_document_download', { prefix: url.document.dossiers.first.documentPrefix, dossierId: url.document.dossiers.first.dossierNr, documentId: url.document.documentNr}) }}</loc>
+        <diwoo:Document>
+            <diwoo:DiWoo>
+                <diwoo:creatiedatum>
+                    {{ documentDate | date("Y-m-d") }}
+                </diwoo:creatiedatum>
+                <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
+                <diwoo:titelcollectie>
+                    <diwoo:officieleTitel>{{ url.document.fileInfo.name }}</diwoo:officieleTitel>
+                </diwoo:titelcollectie>
+                <diwoo:classificatiecollectie>
+                    <diwoo:informatiecategorieen>
+                        <diwoo:informatiecategorie resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_3baef532">Woo-verzoek of -besluit</diwoo:informatiecategorie>
+                    </diwoo:informatiecategorieen>
+                </diwoo:classificatiecollectie>
+                <diwoo:documenthandelingen>
+                    <diwoo:documenthandeling>
+                        <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_e1ec050e">ondertekening</diwoo:soortHandeling>
+                        <diwoo:atTime>{{ documentDate | date('Y-m-d\TH:i') }}</diwoo:atTime>
+                    </diwoo:documenthandeling>
+                </diwoo:documenthandelingen>
+            </diwoo:DiWoo>
+        </diwoo:Document>
+        {% if url.lastmod is defined %}
+        <lastmod>{{url.lastmod}}</lastmod>
+        {% endif %}
+        {% if url.changefreq is defined %}
+        <changefreq>{{url.changefreq}}</changefreq>
+        {% endif %}
+        {% if url.priority is defined %}
+        <priority>{{url.priority}}</priority>
+        {% endif %}
+    </url>
+    {% endfor %}
+</urlset>

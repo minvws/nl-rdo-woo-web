@@ -113,8 +113,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function getRoles(): array
     {
         $roles = $this->roles;
-        /*        // guarantee every user at least has ROLE_USER
-                $roles[] = 'ROLE_USER';*/
 
         return array_unique($roles);
     }
@@ -129,7 +127,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
      *
      * @return $this
      */
-    public function setRoles(array $roles): self
+    public function setRoles(array $roles): static
     {
         $this->roles = $roles;
 
@@ -197,7 +195,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
      *
      * @return $this
      */
-    public function setMfaRecovery(?array $mfaRecovery): self
+    public function setMfaRecovery(?array $mfaRecovery): static
     {
         $this->mfaRecovery = $mfaRecovery;
 
@@ -313,7 +311,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     }
 
     /**
-     * @return Collection|LoginActivity[]
+     * @return Collection<array-key,LoginActivity>
      */
     public function getLoginActivities(): Collection
     {

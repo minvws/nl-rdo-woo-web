@@ -6,16 +6,12 @@ namespace App\Service\Inventory;
 
 use App\Entity\Dossier;
 use App\Entity\InventoryProcessRun;
-use App\Exception\DocumentUpdateException;
 use App\Exception\ProcessInventoryException;
 use App\Exception\TranslatableException;
 use App\Repository\DocumentRepository;
 use App\Service\Inventory\Progress\RunProgress;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
 class InventoryComparator
 {
     public function __construct(
@@ -54,26 +50,27 @@ class InventoryComparator
                 continue;
             }
 
-            $documentNr = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
-            $document = $this->documentRepository->findOneBy(['documentNr' => $documentNr->getValue()]);
-
-            if ($document === null) {
-                $changeset->addCreate($documentNr);
-
-                continue;
-            }
-
-            if ($document->getDossiers()->contains($dossier) === false) {
-                $run->addRowException($rowIndex, DocumentUpdateException::forNonUniqueDocument($document));
-            }
-
-            // This document is still in the inventory, so remove it from the tobeRemovedDocs array
-            unset($tobeRemovedDocs[$document->getDocumentNr()]);
-
-            // The 'needsUpdate' check also includes validation and might throw an exception
             try {
-                if ($this->documentComparator->needsUpdate($document, $documentMetadata)) {
-                    $changeset->addUpdate($documentNr);
+                $documentNr = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
+                $document = $this->documentRepository->findByDocumentNumber($documentNr);
+
+                if ($document === null) {
+                    $changeset->markAsAdded($documentNr);
+
+                    continue;
+                }
+
+                if ($document->getDossiers()->contains($dossier) === false) {
+                    $run->addRowException($rowIndex, ProcessInventoryException::forDocumentExistsInAnotherDossier($document));
+                }
+
+                // This document is still in the inventory, so remove it from the tobeRemovedDocs array
+                unset($tobeRemovedDocs[$document->getDocumentNr()]);
+
+                if ($this->documentComparator->needsUpdate($dossier, $document, $documentMetadata)) {
+                    $changeset->markAsUpdated($documentNr);
+                } else {
+                    $changeset->markAsUnchanged($documentNr);
                 }
             } catch (TranslatableException $exception) {
                 $run->addRowException($rowIndex, $exception);
@@ -95,7 +92,7 @@ class InventoryComparator
     ): void {
         // Exception occurred, but we still continue with the next row. Just log the error
         if (! $exception instanceof TranslatableException) {
-            $exception = DocumentUpdateException::forGenericException($exception);
+            $exception = ProcessInventoryException::forGenericRowException($exception);
         }
 
         $run->addRowException($rowIndex, $exception);
@@ -123,11 +120,11 @@ class InventoryComparator
         InventoryChangeset $changeset
     ): void {
         foreach (array_keys($tobeRemovedDocs) as $documentNr) {
-            if ($dossier->getStatus() !== Dossier::STATUS_CONCEPT) {
+            if (! $dossier->getStatus()->isConcept()) {
                 $run->addGenericException(ProcessInventoryException::forMissingDocument($documentNr));
             }
 
-            $changeset->addDelete($documentNr);
+            $changeset->markAsDeleted($documentNr);
         }
     }
 }

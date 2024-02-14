@@ -15,11 +15,11 @@ class ElasticClientFactory
 {
     public static function create(
         string $host,
-        string $username = null,
-        string $password = null,
-        string $mtlsCertPath = null,
-        string $mtlsKeyPath = null,
-        string $mtlsCAPath = null
+        ?string $username = null,
+        ?string $password = null,
+        ?string $mtlsCertPath = null,
+        ?string $mtlsKeyPath = null,
+        ?string $mtlsCAPath = null
     ): ClientInterface {
         $builder = new ClientBuilder();
         $builder->setHttpClient(new Client([

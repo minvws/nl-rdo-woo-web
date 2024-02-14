@@ -3,12 +3,11 @@
 {% set page_title = page_title | trans() %}
 
 {% block body %}
+<div class="woo-container woo-container--sm">
+    <div class="woo-rich-text">
+        <h1>{{ page_title }}</h1>
 
-    <section>
-        <div class="container">
-
-            <h1>{{ page_title }}</h1>
-
+        <div class="woo-readable-width">
             {% if batch.status == constant("App\\Entity\\BatchDownload::STATUS_PENDING") %}
                 <p>{{ "The archive is not yet ready for download. Try again in a few minutes." | trans() }}</p>
             {% endif %}
@@ -16,41 +15,41 @@
             {% if batch.status == constant("App\\Entity\\BatchDownload::STATUS_FAILED") %}
                 <p>{{ "Something went wrong while generating the archive. Please try again." | trans() }}</p>
             {% endif %}
-
-            {% if batch.status == constant("App\\Entity\\BatchDownload::STATUS_COMPLETED") %}
-                <p>
-                    {{ "The archive is ready for download. You can download the archive until {date}. After that, the archive needs to be generated again." | trans({'date': batch.expiration | format_datetime('long') }) }}
-                </p>
-
-            <table>
-               <thead>
-                    <tr>
-                        <th>{{ "File" | trans() }}</th>
-                        <th class="table-cell--desktop">{{ "Documents" | trans() }}</th>
-                        <th class="table-cell--desktop">{{ "Expires" | trans() }}</th>
-                        <th class="text-right">{{ "Link" | trans() }}</th>
-                    </tr>
-               </thead>
-                <tr>
-                    <td class="align-middle">
-                        <span class="flex">
-                            <twig:Icon name="zipper" class="mt-1 mr-1 shrink-0" />
-                            <span>{{ batch.filename }}</span>
-                        </span>
-                    </td>
-                    <td class="table-cell--desktop align-middle">{{ batch.documents|length }}</td>
-                    <td class="table-cell--desktop align-middle">{{ batch.expiration | format_datetime('long') }}</td>
-                    <td class="align-middle">
-                        <a class="button button--light flex items-center float-right" download href="{{ download_path }}">
-                            <twig:Icon name="download"/>
-                            <span class="px-4 nowrap">{{ "Download" | trans() }} ({{ batch.size| size }})</span>
-                        </a>
-                    </td>
-                </tr>
-            </table>
-            {% endif %}
-
         </div>
-    </section>
+    </div>
 
+    {% if batch.status == constant("App\\Entity\\BatchDownload::STATUS_COMPLETED") %}
+        <p class="woo-readable-width mb-6">
+            {{ "The archive is ready for download. You can download the archive until {date}. After that, the archive needs to be generated again." | trans({'date': batch.expiration | format_datetime('long') }) }}
+        </p>
+
+        <div class="overflow-x-auto">
+            <table class="woo-table">
+                <tbody>
+                    <tr>
+                        <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ "File" | trans }}</th>
+                        <td class="min-w-64">
+                            <twig:Public:Icon name="zipper" color="fill-woo-dim-gray" class="mr-0.5 -mt-0.5" />
+                            <span class="break-all" data-e2e-name="file-name">{{ batch.filename }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ "Documents" | trans() }}</th>
+                        <td>{{ batch.documents|length }}</td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ "Expires" | trans() }}</th>
+                        <td><time datetime="{{ batch.expiration | date("Y-m-d") }}">{{ batch.expiration | format_datetime('long') }}</time></td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ "Link" | trans() }}</th>
+                        <td>
+                            <a class="woo-a" data-e2e-name="download-file-link" href="{{ download_path}}" download>{{ "Download" | trans }}</a> ({{ batch.size| size }})
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

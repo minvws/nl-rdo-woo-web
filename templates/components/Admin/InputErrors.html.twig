@@ -3,10 +3,10 @@
 {% if numberOfErrors > 0 or hasError %}
 <div class="flex pb-3 js-input-errors" {% if id is defined %}id="{{ id }}"{% endif %}>
     <span class="mr-2">
-        <twig:Admin:Icon color="fill-maximum-red" name="exclamation" />
+        <twig:Admin:Icon color="fill-bhr-maximum-red" name="exclamation" />
     </span>
 
-    <div class="text-maximum-red">
+    <div class="text-bhr-maximum-red">
         {% if numberOfErrors > 1 %}
         <ul class="bhr-ul">
             {% for error in errors %}

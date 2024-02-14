@@ -5,15 +5,22 @@ declare(strict_types=1);
 namespace App\Service\Inventory;
 
 use App\Entity\Document;
+use App\Entity\Dossier;
 use App\Entity\Inquiry;
+use App\Repository\DocumentRepository;
 
-class DocumentComparator
+readonly class DocumentComparator
 {
+    public function __construct(
+        private DocumentRepository $documentRepository,
+    ) {
+    }
+
     /**
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public function needsUpdate(Document $document, DocumentMetadata $metadata): bool
+    public function needsUpdate(Dossier $dossier, Document $document, DocumentMetadata $metadata): bool
     {
         // No comparison for 'id' and 'matter', these are part of the documentNr that was used to fetch $document, so they certainly match.
 
@@ -21,7 +28,7 @@ class DocumentComparator
             return true;
         }
 
-        // Comparison is intentionally non-strict because we compare DateTime with DateTimeImmutable
+        // Important: compare by value, not by identity (!==)
         if ($document->getDocumentDate() != $metadata->getDate()) {
             return true;
         }
@@ -67,17 +74,40 @@ class DocumentComparator
             return true;
         }
 
-        return $this->hasCaseNrUpdate($document, $metadata);
+        if ($this->hasCaseNrUpdate($document, $metadata)) {
+            return true;
+        }
+
+        return $this->hasRefersToUpdate($dossier, $document, $metadata);
     }
 
     private function hasCaseNrUpdate(Document $document, DocumentMetadata $metadata): bool
     {
-        $currentDocNrs = $document->getInquiries()->map(
-            /* @phpstan-ignore-next-line */
+        $currentCaseNrs = $document->getInquiries()->map(
             fn (Inquiry $inquiry) => $inquiry->getCasenr()
         )->toArray();
 
-        $newDocNrs = $metadata->getCaseNumbers();
+        $newCaseNrs = $metadata->getCaseNumbers();
+
+        return count($currentCaseNrs) !== count($newCaseNrs) || array_diff($currentCaseNrs, $newCaseNrs);
+    }
+
+    public function hasRefersToUpdate(Dossier $dossier, Document $document, DocumentMetadata $metadata): bool
+    {
+        $currentDocNrs = $document->getRefersTo()->map(
+            fn (Document $doc) => $doc->getDocumentNr()
+        )->toArray();
+
+        $newDocNrs = [];
+        foreach ($metadata->getRefersTo() as $referral) {
+            $documentNr = DocumentNumber::fromReferral($dossier, $document, $referral);
+            $referredDocument = $this->documentRepository->findByDocumentNumber($documentNr);
+            if (! $referredDocument) {
+                continue;
+            }
+
+            $newDocNrs[] = $referredDocument->getDocumentNr();
+        }
 
         return count($currentDocNrs) !== count($newDocNrs) || array_diff($currentDocNrs, $newDocNrs);
     }

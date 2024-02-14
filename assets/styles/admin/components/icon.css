@@ -1,5 +1,5 @@
 @layer components {
-    .icon {
+    .bhr-icon {
         @apply inline-block;
     }
 }

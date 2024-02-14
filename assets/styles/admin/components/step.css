@@ -20,11 +20,11 @@
     }
 
     .bhr-steps__icon {
-        @apply rounded-full bg-ocean-boat-blue;
+        @apply rounded-full bg-bhr-ocean-boat-blue;
     }
 
     .bhr-steps__icon--future {
-        @apply bg-dim-gray;
+        @apply bg-bhr-dim-gray;
     }
 
     .bhr-steps__step-text {
@@ -45,10 +45,10 @@
     }
 
     .bhr-steps__progress {
-        @apply absolute bg-dim-gray w-full h-0.5 top-5;
+        @apply absolute bg-bhr-dim-gray w-full h-0.5 top-5;
     }
 
     .bhr-steps__progress-bar {
-        @apply bg-ocean-boat-blue h-0.5 w-0;
+        @apply bg-bhr-ocean-boat-blue h-0.5 w-0;
     }
 }

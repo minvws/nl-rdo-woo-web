@@ -22,7 +22,7 @@ class AppExtension extends AbstractExtension
         $this->runtime = $runtime;
     }
 
-    public function getTests()
+    public function getTests(): array
     {
         return [
             new TwigTest('instanceof', [$this->runtime, 'isInstanceOf']),

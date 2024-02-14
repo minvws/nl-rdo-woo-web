@@ -1,16 +1,22 @@
 {% import "facet_macros.html.twig" as macro %}
 
-<h2 class="mb-6 leading-tight">Filters</h2>
+<h2 class="woo-h2 woo-h2-spacing">Filters</h2>
 
 <form class="form-filters" method="post" action="">
     <fieldset>
-        <legend>{{ "Date" | trans() }}</legend>
+        <legend class="woo-legend">{{ "Date" | trans }}</legend>
 
-        <label for="date-from">{{ "from" | trans() }}</label>
-        <input class="js-date-filter" id="date-from" name="dt[from]" type="date" value="{{ app.request.get('dt').from | default }}">
+        <div class="grid gap-4 xs:grid-cols-2 md:grid-cols-1">
+            <div>
+                <label class="block text-base mb-0.5" for="date-from">{{ "from" | trans }}</label>
+                <input class="woo-input-text js-date-filter" id="date-from" name="dt[from]" type="date" value="{{ app.request.get('dt').from | default }}">
+            </div>
 
-        <label for="date-to">{{ "to" | trans() }}</label>
-        <input class="js-date-filter" id="date-to" name="dt[to]" type="date" value="{{ app.request.get('dt').to | default }}">
+            <div>
+                <label class="block text-base mb-0.5" for="date-to">{{ "to" | trans }}</label>
+                <input class="woo-input-text js-date-filter" id="date-to" name="dt[to]" type="date" value="{{ app.request.get('dt').to | default }}">
+            </div>
+        </div>
     </fieldset>
 
 {#    {{ macro.facet_select('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}#}
@@ -21,5 +27,7 @@
 
     <input type="hidden" name="q" value="{{ app.request.get('q') }}"/>
 
-    <button class="js:hidden" type="submit">{{ "Filter results" | trans() }}</button>
+    <div class="pt-8 js:hidden">
+        <button class="woo-button woo-button--primary" type="submit">{{ "Filter results" | trans() }}</button>
+    </div>
 </form>

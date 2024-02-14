@@ -9,7 +9,7 @@
                 <div
                     {% if dataPath is not empty %}
                         id="js-inventory-status"
-                        data-endpoint="{{ path(dataPath, { dossierId: dossier.dossierNr }) }}"
+                        data-endpoint="{{ path(dataPath, { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
                         role="status"
                     {% endif %}>
                     {% include 'admin/dossier/form/processrun.html.twig' with { dossier: dossier, inventoryStatus: inventoryStatus } %}

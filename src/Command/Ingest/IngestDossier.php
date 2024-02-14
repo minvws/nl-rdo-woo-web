@@ -33,19 +33,21 @@ class IngestDossier extends Command
             ->setDescription('Ingests a complete dossier into elasticsearch')
             ->setHelp('Ingests a complete dossier')
             ->setDefinition([
-                new InputArgument('dossier', InputArgument::REQUIRED, 'The dossier to ingest'),
+                new InputArgument('prefix', InputArgument::REQUIRED, 'The prefix of the dossier to ingest'),
+                new InputArgument('dossierNr', InputArgument::REQUIRED, 'The dossiernr of the dossier to ingest'),
                 new InputOption('force-refresh', 'f', InputOption::VALUE_NONE, 'Skip any caching'),
             ]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $dossierNr = strval($input->getArgument('dossier'));
+        $prefix = strval($input->getArgument('prefix'));
+        $dossierNr = strval($input->getArgument('dossierNr'));
 
         $options = new Options();
         $options->setForceRefresh($input->getOption('force-refresh') == true);
 
-        $dossier = $this->doctrine->getRepository(Dossier::class)->findOneBy(['dossierNr' => $dossierNr]);
+        $dossier = $this->doctrine->getRepository(Dossier::class)->findOneBy(['documentPrefix' => $prefix, 'dossierNr' => $dossierNr]);
         if ($dossier) {
             foreach ($dossier->getDocuments() as $document) {
                 $this->ingester->ingest($document, $options);
@@ -55,7 +57,7 @@ class IngestDossier extends Command
             return 0;
         }
 
-        $output->writeln('<error>Dossier ' . $dossierNr . ' not found</error>');
+        $output->writeln('<error>Dossier with prefix ' . $prefix . ' and dossierNr ' . $dossierNr . ' not found</error>');
 
         return 1;
     }

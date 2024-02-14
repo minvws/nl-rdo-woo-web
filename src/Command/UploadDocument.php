@@ -31,6 +31,7 @@ class UploadDocument extends Command
             ->setDescription('Triggers the processing of an uploaded document')
             ->setHelp('Triggers the processing of an uploaded document')
             ->setDefinition([
+                new InputArgument('prefix', InputArgument::REQUIRED, 'The dossier document prefix'),
                 new InputArgument('dossierNr', InputArgument::REQUIRED, 'The dossier number'),
                 new InputArgument('path', InputArgument::REQUIRED, 'The path of the document'),
             ])
@@ -39,10 +40,11 @@ class UploadDocument extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $prefix = strval($input->getArgument('prefix'));
         $dossierNr = strval($input->getArgument('dossierNr'));
-        $dossier = $this->doctrine->getRepository(Dossier::class)->findOneBy(['dossierNr' => $dossierNr]);
+        $dossier = $this->doctrine->getRepository(Dossier::class)->findOneBy(['documentPrefix' => $prefix, 'dossierNr' => $dossierNr]);
         if (! $dossier) {
-            $output->writeln("<error>No dossier found for dossierNr $dossierNr</error>");
+            $output->writeln("<error>No dossier found for prefix '$prefix' and dossierNr '$dossierNr'</error>");
 
             return 1;
         }

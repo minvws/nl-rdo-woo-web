@@ -1,29 +1,22 @@
 {% import "document_macros.html.twig" as macro %}
 
 {% if documentCount.total > 0 %}
-<section>
-    <h2 id="documenten">{{ "Documents" | trans }}</h2>
+<div class="mt-16">
+    <h2 class="woo-h2 woo-h2-spacing" id="documenten">{{ "Documents" | trans }}</h2>
+
+    {% form_theme form 'forms/public_form_theme.html.twig' %}
     {{ form_start(form, { 'attr' : { 'class': 'js-auto-submit-form p-0' }}) }}
-        <h3 class="sr-only">{{ "Filter documents. By changing the value this page will refresh and show the data for the selected value." | trans() }}</h3>
+        <h3 class="sr-only">{{ "Filter documents. By changing the value this page will refresh and show the data for the selected value." | trans }}</h3>
     {{ form_end(form) }}
 
-    <div class="gap-0 items-center pb-8 pt-1">
-        <form class="p-0 flex flex-col sm:flex-row items-stretch sm:items-center" method="post" action="{{ downloadUrl }}">
-            <h3 class="sr-only">{{ "Download and browse selected documents" | trans() }}</h3>
-            {% if public_docs.count > 0 %}
-            <button type="submit" download class="button button--light flex items-center mb-2 sm:mr-4 sm:mb-0">
-                <twig:Icon name="download" />
-                <span class="px-4">{{ "Download" | trans() }}</span>
-            </button>
-            {% endif %}
-            <span class="inline-block">
-                <a href="{{ searchUrl }}">
-                    {{ "Search in these documents..." | trans() }}
-                </a>
-            </span>
-        </form>
+    <div class="pt-4">
+        <twig:Public:DownloadFilesForm
+            action="{{ downloadUrl }}"
+            canDownload="{{ public_docs.count > 0 }}"
+            searchUrl="{{ searchUrl }}"
+        />
     </div>
 
     {{ macro.document_tabs(public_docs, not_public_docs, not_online_docs, '#documenten') }}
-</section>
+</div>
 {% endif %}

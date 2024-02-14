@@ -10,19 +10,18 @@ use App\Service\Ingest\Handler;
 use App\Service\Ingest\IngestLogger;
 use App\Service\Ingest\IngestService;
 use App\Service\Ingest\Options;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 
 class IngestServiceTest extends MockeryTestCase
 {
-    private Handler|MockInterface $handlerA;
+    private Handler&MockInterface $handlerA;
 
-    private Handler|Mockery\LegacyMockInterface|MockInterface $handlerB;
+    private Handler&MockInterface $handlerB;
 
-    private Handler|Mockery\LegacyMockInterface|MockInterface $handlerC;
+    private Handler&MockInterface $handlerC;
 
-    private IngestLogger|MockInterface $ingestLogger;
+    private IngestLogger&MockInterface $ingestLogger;
 
     private IngestService $ingestService;
 
@@ -45,10 +44,10 @@ class IngestServiceTest extends MockeryTestCase
     public function testIngestUsesFirstMatchingHandler(): void
     {
         $fileInfo = \Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getName')->zeroOrMoreTimes()->andReturn('test.pdf');
+        $fileInfo->shouldReceive('getName')->andReturn('test.pdf');
 
         $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('getFileInfo')->zeroOrMoreTimes()->andReturn($fileInfo);
+        $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $options = new Options();
 
@@ -67,7 +66,7 @@ class IngestServiceTest extends MockeryTestCase
         $fileInfo = \Mockery::mock(FileInfo::class);
 
         $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('getFileInfo')->zeroOrMoreTimes()->andReturn($fileInfo);
+        $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $options = new Options();
 
@@ -75,7 +74,7 @@ class IngestServiceTest extends MockeryTestCase
         $this->handlerB->shouldReceive('canHandle')->with($fileInfo)->andReturnFalse();
         $this->handlerC->shouldReceive('canHandle')->with($fileInfo)->andReturnFalse();
 
-        $this->ingestLogger->shouldReceive('error')->with($document, \Mockery::any(), \Mockery::any());
+        $this->ingestLogger->expects('error')->with($document, \Mockery::any(), \Mockery::any());
 
         $this->ingestService->ingest($document, $options);
     }

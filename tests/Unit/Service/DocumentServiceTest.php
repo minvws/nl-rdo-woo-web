@@ -53,9 +53,9 @@ class DocumentServiceTest extends MockeryTestCase
         $this->fileProcessService = \Mockery::mock(FileProcessService::class);
         $this->historyService = \Mockery::mock(HistoryService::class);
 
-        $this->translator->shouldReceive('trans')->zeroOrMoreTimes();
+        $this->translator->shouldReceive('trans');
 
-        $this->historyService->shouldReceive('addDocumentEntry')->zeroOrMoreTimes();
+        $this->historyService->shouldReceive('addDocumentEntry');
 
         $this->documentService = new DocumentService(
             $this->entityManager,

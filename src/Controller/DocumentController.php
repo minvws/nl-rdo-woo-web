@@ -12,6 +12,9 @@ use App\Service\DownloadResponseHelper;
 use App\Service\Search\SearchService;
 use App\Service\Storage\DocumentStorageService;
 use App\Service\Storage\ThumbnailStorageService;
+use App\ViewModel\Factory\DocumentViewFactory;
+use App\ViewModel\Factory\DossierViewFactory;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,7 +24,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 /**
@@ -33,34 +35,35 @@ class DocumentController extends AbstractController
         private readonly DocumentStorageService $documentStorage,
         private readonly ThumbnailStorageService $thumbnailStorage,
         private readonly SearchService $searchService,
-        private readonly TranslatorInterface $translator,
         private readonly DocumentRepository $documentRepository,
         private readonly DossierService $dossierService,
         private readonly DownloadResponseHelper $downloadHelper,
         private readonly PaginatorInterface $paginator,
+        private readonly DossierViewFactory $dossierViewFactory,
+        private readonly DocumentViewFactory $documentViewFactory,
     ) {
     }
 
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
-    #[Route('/dossier/{dossierId}/document/{documentId}', name: 'app_document_detail', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierId}/document/{documentId}', name: 'app_document_detail', methods: ['GET'])]
     public function detail(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
-        #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
         Breadcrumbs $breadcrumbs,
         Request $request,
     ): Response {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Dossier', 'app_dossier_detail', ['dossierId' => $dossier->getDossierNr()]);
+        $breadcrumbs->addRouteItem('Dossier', 'app_dossier_detail', [
+            'prefix' => $dossier->getDocumentPrefix(),
+            'dossierId' => $dossier->getDossierNr(),
+        ]);
         $breadcrumbs->addItem('Document');
 
         if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
             throw $this->createNotFoundException('Document or dossier not found');
         }
 
-        if (! $dossier->getDocuments()->contains($document)) {
-            throw new NotFoundHttpException('Document not found in dossier');
-        }
-
+        /** @var PaginationInterface<array-key,Document> $threadDocPaginator */
         $threadDocPaginator = $this->paginator->paginate(
             $this->documentRepository->getRelatedDocumentsByThread($dossier, $document),
             $request->query->getInt('pp', 1),
@@ -72,6 +75,7 @@ class DocumentController extends AbstractController
             ],
         );
 
+        /** @var PaginationInterface<array-key,Document> $familyDocPaginator */
         $familyDocPaginator = $this->paginator->paginate(
             $this->documentRepository->getRelatedDocumentsByFamily($dossier, $document),
             $request->query->getInt('fp', 1),
@@ -84,53 +88,48 @@ class DocumentController extends AbstractController
         );
 
         return $this->render('document/details.html.twig', [
-            'ingested' => $this->searchService->isIngested($document),
-            'dossier' => $dossier,
-            'document' => $document,
+            'dossier' => $this->dossierViewFactory->getDossierViewModel($dossier),
+            'document' => $this->documentViewFactory->getDocumentViewModel($document),
             'thread' => $threadDocPaginator,
             'family' => $familyDocPaginator,
         ]);
     }
 
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
-    #[Route('/dossier/{dossierId}/download/{documentId}', name: 'app_document_download', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierId}/download/{documentId}', name: 'app_document_download', methods: ['GET'])]
     public function download(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
-        #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
     ): StreamedResponse {
         if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
             throw $this->createNotFoundException('Document or dossier not found');
         }
 
-        if (! $document->shouldBeUploaded() || ! $dossier->getDocuments()->contains($document)) {
-            throw new NotFoundHttpException('Document not found in dossier');
+        if (! $document->shouldBeUploaded()) {
+            throw new NotFoundHttpException('Document has no download');
         }
 
         return $this->downloadHelper->getResponseForEntityWithFileInfo($document, false);
     }
 
     #[Route(
-        '/dossier/{dossierId}/download/{documentId}/{pageNr}/_text',
+        '/dossier/{prefix}/{dossierId}/download/{documentId}/{pageNr}/_text',
         name: 'app_document_text',
         requirements: ['pageNr' => '\d+'],
         methods: ['GET']
     )]
     public function debugPage(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
-        #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
         string $pageNr
     ): Response {
         if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
             throw $this->createNotFoundException('Document or dossier not found');
         }
 
-        if (! $document->shouldBeUploaded() || ! $dossier->getDocuments()->contains($document)) {
-            throw new NotFoundHttpException('Document not found in dossier');
-        }
-
         $content = $this->searchService->getPageContent($document, intval($pageNr));
         if (! $content) {
-            return new Response($this->translator->trans('No content found for this page'));
+            throw $this->createNotFoundException('No content found for this page');
         }
 
         return new Response('<pre>' . trim($content) . '</pre>');
@@ -138,22 +137,22 @@ class DocumentController extends AbstractController
 
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     #[Route(
-        '/dossier/{dossierId}/download/{documentId}/{pageNr}',
+        '/dossier/{prefix}/{dossierId}/download/{documentId}/{pageNr}',
         name: 'app_document_download_page',
         requirements: ['pageNr' => '\d+'],
         methods: ['GET']
     )]
     public function downloadPage(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
-        #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
         string $pageNr
     ): StreamedResponse {
         if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
             throw $this->createNotFoundException('Document or dossier not found');
         }
 
-        if (! $document->shouldBeUploaded() || ! $dossier->getDocuments()->contains($document)) {
-            throw new NotFoundHttpException('Document not found in dossier');
+        if (! $document->shouldBeUploaded()) {
+            throw new NotFoundHttpException('Document has no download');
         }
 
         // No file found (yet), just the document record
@@ -180,22 +179,22 @@ class DocumentController extends AbstractController
 
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     #[Route(
-        '/dossier/{dossierId}/thumbnail/{documentId}/{pageNr}',
+        '/dossier/{prefix}/{dossierId}/thumbnail/{documentId}/{pageNr}',
         name: 'app_document_thumbnail',
         requirements: ['pageNr' => '\d+'],
         methods: ['GET']
     )]
     public function thumbnailPage(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
-        #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
         string $pageNr
     ): StreamedResponse {
         if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
             throw $this->createNotFoundException('Document or dossier not found');
         }
 
-        if (! $document->shouldBeUploaded() || ! $dossier->getDocuments()->contains($document)) {
-            throw new NotFoundHttpException('Document not found in dossier');
+        if (! $document->shouldBeUploaded()) {
+            throw new NotFoundHttpException('Document has no thumbnail');
         }
 
         $fileSize = $this->thumbnailStorage->fileSize($document, intval($pageNr));

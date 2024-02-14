@@ -17,7 +17,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AggregationMapperTest extends MockeryTestCase
 {
-    private TranslatorInterface|MockInterface $translator;
+    private TranslatorInterface&MockInterface $translator;
     private AggregationMapper $mapper;
 
     public function setUp(): void

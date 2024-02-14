@@ -19,4 +19,5 @@ enum MetadataField: string
     case LINK = 'link';
     case REMARK = 'remark';
     case MATTER = 'matter';
+    case REFERS_TO = 'refers_to';
 }

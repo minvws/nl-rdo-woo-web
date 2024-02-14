@@ -5,26 +5,23 @@ declare(strict_types=1);
 namespace App\Service\Search\Query\Condition;
 
 use App\Service\Search\Model\Config;
-use App\Service\Search\Query\Facet\FacetMappingService;
+use App\Service\Search\Model\FacetKey;
+use App\Service\Search\Query\Facet\FacetList;
+use App\Service\Search\Query\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 
 class FacetConditions implements QueryConditions
 {
-    public function __construct(
-        private readonly FacetMappingService $facetMapping,
-    ) {
-    }
-
-    public function applyToQuery(Config $config, BoolQuery $query, string $facetToSkip = null): void
+    public function applyToQuery(FacetList $facetList, Config $config, BoolQuery $query, ?FacetKey $facetToSkip = null): void
     {
-        foreach ($this->facetMapping->getActiveFacets($config) as $facet) {
+        foreach ($facetList->getActiveFacets() as $facet) {
             if ($facet->getFacetKey() === $facetToSkip) {
                 continue;
             }
 
-            $facetFilterQuery = new BoolQuery();
+            $facetFilterQuery = Query::bool();
 
-            $facet->getFilter()?->addToQuery($facet, $facetFilterQuery, $config);
+            $facet->optionallyAddQueryToFilter($facet, $facetFilterQuery, $config);
 
             if (! $facetFilterQuery->isEmpty()) {
                 $query->addFilter($facetFilterQuery);

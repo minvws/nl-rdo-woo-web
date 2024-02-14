@@ -19,7 +19,7 @@ class ElasticCollector extends AbstractDataCollector
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function collect(Request $request, Response $response, \Throwable $exception = null): void
+    public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
     {
     }
 

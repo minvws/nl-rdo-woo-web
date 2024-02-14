@@ -26,6 +26,7 @@
 
                         {% set dialogId="js-link-dossiers-dialog" %}
                         <button
+                            aria-haspopup="dialog"
                             class="bhr-button bhr-button--secondary js-dialog-toggle"
                             data-dialog-action="open"
                             data-dialog-for="{{ dialogId }}"
@@ -42,8 +43,7 @@
         </div>
     </div>
 
-    <twig:Admin:Dialog id="{{ dialogId }}">
-        <h2 class="bhr-title-sm">Kies een besluit</h2>
+    <twig:Admin:Dialog id="{{ dialogId }}" title="Kies een besluit">
         <div class="bhr-form-row">
             <twig:Admin:Search:SearchPreviewsForm id="js-link-dossiers-search-form" endpoint="{{ path('app_admin_dossiers_search_link') }}" >
                 <label class="bhr-label mt-4" for="link-dossiers-search-input">Te koppelen besluiten</label>
@@ -70,10 +70,8 @@
                 ></div>
             </twig:Admin:Search:SearchPreviewsForm>
         </div>
-        <div class="bhr-form-row">
-            <input type="hidden" id="js-hidden-dossiers-input" />
-            <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary" id="js-link-dossier">Koppelen</button>
-            <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary js-dialog-toggle" data-dialog-for="{{ dialogId }}" data-action="close">Annuleren</button>
-        </div>
+        <input type="hidden" id="js-hidden-dossiers-input" />
+        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary" id="js-link-dossier">Koppelen</button>
+        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary js-dialog-toggle" data-dialog-for="{{ dialogId }}" data-action="close">Annuleren</button>
     </twig:Admin:Dialog>
 {% endblock %}

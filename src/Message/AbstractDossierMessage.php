@@ -23,10 +23,6 @@ abstract class AbstractDossierMessage
 
     public static function forDossier(Dossier $dossier): static
     {
-        if ($dossier->getId() === null) {
-            throw new \RuntimeException('Dossier has no id');
-        }
-
         return new static($dossier->getId());
     }
 }

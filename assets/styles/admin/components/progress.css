@@ -4,10 +4,10 @@
     }
 
     .bhr-progress[value]::-webkit-progress-bar {
-        @apply bg-anti-flash-white;
+        @apply bg-bhr-anti-flash-white;
     }
 
     .bhr-progress[value]::-webkit-progress-value {
-        @apply bg-ocean-boat-blue;
+        @apply bg-bhr-ocean-boat-blue;
     }
 }

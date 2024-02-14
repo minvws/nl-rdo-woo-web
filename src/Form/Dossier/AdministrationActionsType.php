@@ -18,6 +18,7 @@ class AdministrationActionsType extends AbstractType
     public const ACTION_REGENERATE_ARCHIVES = 'regenerate_archives';
     public const ACTION_INGEST = 'ingest';
     public const ACTION_UPDATE = 'update';
+    public const ACTION_VALIDATE_COMPLETION = 'validate_completion';
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -32,6 +33,7 @@ class AdministrationActionsType extends AbstractType
                     'Regenerate archives' => self::ACTION_REGENERATE_ARCHIVES,
                     'Re-ingest into ElasticSearch (with docs)' => self::ACTION_INGEST,
                     'Re-index dossier into ElasticSearch (no document ingest)' => self::ACTION_UPDATE,
+                    'Validate completion' => self::ACTION_VALIDATE_COMPLETION,
                 ],
             ])
             ->add('submit', SubmitType::class, [

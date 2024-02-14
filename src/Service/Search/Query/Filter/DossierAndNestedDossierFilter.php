@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Service\Search\Query\Filter;
 
 use App\Service\Search\Model\Config;
-use App\Service\Search\Query\Facet\FacetDefinition;
+use App\Service\Search\Query\Facet\Facet;
+use App\Service\Search\Query\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
-use Erichard\ElasticQueryBuilder\Query\NestedQuery;
-use Erichard\ElasticQueryBuilder\Query\TermQuery;
 
 /**
  * This filter can decorate another filter to check those conditions in both 'root' dossiers and nested dossiers.
@@ -20,38 +19,36 @@ class DossierAndNestedDossierFilter implements FilterInterface
     ) {
     }
 
-    public function addToQuery(FacetDefinition $facet, BoolQuery $query, Config $config, string $prefix = ''): void
+    public function addToQuery(Facet $facet, BoolQuery $query, Config $config, string $prefix = ''): void
     {
-        /** @var string[] $values */
-        $values = $config->getFacetValues($facet);
-        if (count($values) === 0) {
+        if ($facet->isNotActive()) {
             return;
         }
 
-        $dossierQuery = new BoolQuery();
+        $dossierQuery = Query::bool();
         $this->subFilter->addToQuery($facet, $dossierQuery, $config);
 
-        $nestedDossierQuery = new BoolQuery();
+        $nestedDossierQuery = Query::bool();
         $this->subFilter->addToQuery($facet, $nestedDossierQuery, $config, 'dossiers.');
 
         $query->addFilter(
-            new BoolQuery(
+            Query::bool(
                 should: [
-                    new BoolQuery(
+                    Query::bool(
                         filter: [
-                            new TermQuery(
+                            Query::term(
                                 field: 'type',
                                 value: Config::TYPE_DOCUMENT,
                             ),
-                            new NestedQuery(
+                            Query::nested(
                                 path: 'dossiers',
                                 query: $nestedDossierQuery,
                             ),
                         ]
                     ),
-                    new BoolQuery(
+                    Query::bool(
                         filter: [
-                            new TermQuery(
+                            Query::term(
                                 field: 'type',
                                 value: Config::TYPE_DOSSIER,
                             ),
@@ -59,8 +56,7 @@ class DossierAndNestedDossierFilter implements FilterInterface
                         ]
                     ),
                 ],
-                params: ['minimum_should_match' => 1],
-            )
+            )->setParams(['minimum_should_match' => 1])
         );
     }
 }

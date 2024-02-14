@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Attribute\AuthMatrix;
 use App\Entity\Organisation;
 use App\Form\Organisation\OrganisationFormType;
 use App\Service\OrganisationService;
@@ -16,8 +15,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -45,12 +44,9 @@ class OrganisationController extends AbstractController
     }
 
     #[Route('/balie/organisatie', name: 'app_admin_user_organisation', methods: ['GET'])]
-    #[AuthMatrix('organisation.read')]
-    public function index(Breadcrumbs $breadcrumbs): Response
+    #[IsGranted('AuthMatrix.organisation.read')]
+    public function index(): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addItem('Organisation management');
-
         $organisations = $this->doctrine->getRepository(Organisation::class)->findAll();
 
         return $this->render('admin/organisation/index.html.twig', [
@@ -59,14 +55,9 @@ class OrganisationController extends AbstractController
     }
 
     #[Route('/balie/organisatie/new', name: 'app_admin_user_organisation_create', methods: ['GET', 'POST'])]
-    #[AuthMatrix('organisation.create')]
-    public function create(Breadcrumbs $breadcrumbs, Request $request): Response
+    #[IsGranted('AuthMatrix.organisation.create')]
+    public function create(Request $request): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('User management', 'app_admin_users');
-        $breadcrumbs->addRouteItem('Organisation management', 'app_admin_user_organisation');
-        $breadcrumbs->addItem('New organisation');
-
         $organisationForm = $this->createForm(OrganisationFormType::class);
         $organisationForm->handleRequest($request);
 
@@ -86,14 +77,9 @@ class OrganisationController extends AbstractController
     }
 
     #[Route('/balie/organisatie/{id}', name: 'app_admin_user_organisation_edit', methods: ['GET', 'POST'])]
-    #[AuthMatrix('organisation.update')]
-    public function modify(Breadcrumbs $breadcrumbs, Request $request, Organisation $organisation): Response
+    #[IsGranted('AuthMatrix.organisation.update')]
+    public function modify(Request $request, Organisation $organisation): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('User management', 'app_admin_users');
-        $breadcrumbs->addRouteItem('Organisation management', 'app_admin_user_organisation');
-        $breadcrumbs->addItem('Edit organisation');
-
         $organisationForm = $this->createForm(OrganisationFormType::class, $organisation);
         $organisationForm->handleRequest($request);
         if ($organisationForm->isSubmitted() && $organisationForm->isValid()) {

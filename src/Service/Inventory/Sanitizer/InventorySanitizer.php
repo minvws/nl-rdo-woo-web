@@ -79,7 +79,11 @@ class InventorySanitizer
             implode("\n", $document->getLinks()),
             $this->publicBaseUrl . $this->urlGenerator->generate(
                 'app_document_detail',
-                ['dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()],
+                [
+                    'prefix' => $dossier->getDocumentPrefix(),
+                    'dossierId' => $dossier->getDossierNr(),
+                    'documentId' => $document->getDocumentNr(),
+                ],
             ),
             $document->isSuspended() ? 'ja' : '',
             '',

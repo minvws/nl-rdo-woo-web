@@ -1,79 +1,75 @@
 {% set targetAnchor = fragment|default("#search-results") %}
 
-{% if pageCount > 1 %}
-<nav aria-label="{{ "Pagination" | trans() }}" class="pagination">
-    <ul>
-        {% if previous is defined %}
-            <li class="pagination__text !mr-auto">
-                <a rel="prev" href="?{{ query|merge({(pageParameterName): previous}) | url_encode }}{{ targetAnchor }}">
-                    <twig:Icon class="mr-2" name="chevron-left" size="30" color="fill-black" />
-                    {{ "Previous" | trans }}
-                </a>
-            </li>
+{% macro previous_or_next(direction, pageNumber, query, pageParameterName, targetAnchor) %}
+    {% set isPrevious = direction == 'prev' %}
+    {% set iconName = isPrevious ? 'chevron-left-thin' : 'chevron-right-thin' %}
+    {% set iconClass = isPrevious ? 'mr-2 -ml-1' : 'ml-2 -mr-1' %}
+    {% set hasPageNumber = pageNumber is not null %}
+    <li class="absolute {{ isPrevious ? 'left-0' : 'right-0' }} top-0" {% if not hasPageNumber %}aria-hidden="true"{% endif %}>
+        {% if hasPageNumber %}
+            <a
+                class="flex items-center text-woo-sea-blue py-2 group"
+                href="?{{ query|merge({(pageParameterName): pageNumber}) | url_encode }}{{ targetAnchor }}"
+                rel="{{ direction }}"
+            >
+                {% if not isPrevious %}<span class="group-hover:underline group-focus:underline">{{ "Next" | trans }}</span>{% endif %}
+                <twig:Icon class="{{ iconClass }}" name="{{ iconName }}" size="20" color="fill-current" />
+                {% if isPrevious %}<span class="group-hover:underline group-focus:underline">{{ "Previous" | trans }}</span>{% endif %}
+            </a>
         {% else %}
-            <li class="!mr-auto pagination__text">
-                <twig:Icon class="mr-2" name="chevron-left" size="30" color="fill-gray-300" />
-            </li>
+            <span class="block py-2">
+                <twig:Icon class="{{ iconClass }}" name="{{ iconName }}" size="20" color="fill-gray-300" />
+            </span>
         {% endif %}
+    </li>
+{% endmacro %}
+
+{% macro pagination_anchor(pageNumber, currentPageNumber, query, pageParameterName, targetAnchor) %}
+    {% set isActive = pageNumber == currentPageNumber %}
+    <a
+        {% if isActive %}aria-current="page"{% endif %}
+        class="inline-block px-1 py-3 min-w-11 text-center leading-none transition-colors hover-focus:bg-woo-sea-blue hover-focus:text-white {{ isActive ? 'bg-woo-sea-blue text-white cursor-default' : 'text-woo-sea-blue' }}"
+        data-e2e-name="page-number-{{ pageNumber }}"
+        href="?{{ query|merge({(pageParameterName): pageNumber}) | url_encode }}{{ targetAnchor }}"
+    >
+        {% if isActive %}<span class="sr-only">{{ "Page" | trans }}</span> {% endif %}{{ pageNumber }}
+    </a>
+{% endmacro %}
+
+{% macro empty_list_item() %}<li class="min-w-11 text-center">&hellip;</li>{% endmacro %}
+
+{% if pageCount > 1 %}
+<nav aria-label="{{ "Pagination" | trans }}" class="border-t-2 border-woo-sea-blue text-base" data-e2e-name="pagination">
+    <ul class="flex flex-wrap relative items-center pt-11 sm:pt-0 sm:justify-center">
+        {{ _self.previous_or_next('prev', previous|default(null), query, pageParameterName, targetAnchor) }}
 
         {% if current > 5 %}
-            <li>
-                <a href="?{{ query|merge({(pageParameterName): 1}) | url_encode }}{{ targetAnchor }}">1</a>
-            </li>
+            <li>{{ _self.pagination_anchor(1, current, query, pageParameterName, targetAnchor) }}</li>
             {% if startPage == 3 %}
-                <li {% if current != 2 %}class="pagination__not-active"{% endif %}>
-                    <a href="?{{ query|merge({(pageParameterName): 2}) | url_encode }}{{ targetAnchor }}">2</a>
-                </li>
+                <li>{{ _self.pagination_anchor(2, current, query, pageParameterName, targetAnchor) }}</li>
             {% elseif startPage != 2 %}
-                <li class="pagination__dots uk-disabled">
-                    <span>&hellip;</span>
-                </li>
+                {{ _self.empty_list_item() }}
             {% endif %}
         {% endif %}
 
-        {% for page in pagesInRange %}
-            {% if page != current %}
-                <li {% if pageCount > 5 %}class="pagination__not-active"{% endif %}>
-                    <a href="?{{ query|merge({(pageParameterName): page}) | url_encode }}{{ targetAnchor }}">{{ page }}</a>
-                </li>
-            {% else %}
-                <li>
-                    <a href="{{ targetAnchor }}" aria-current="page" class="active">
-                        <span class="visually-hidden">{{ "Page" | trans() }} </span>{{ page }}
-                    </a>
-                </li>
-            {% endif %}
+        {% for pageNumber in pagesInRange %}
+            <li>
+                {{ _self.pagination_anchor(pageNumber, current, query, pageParameterName, targetAnchor) }}
+            </li>
         {% endfor %}
 
         {% if pageCount > endPage %}
             {% if pageCount > (endPage + 1) %}
                 {% if pageCount > (endPage + 2) %}
-                    <li class="pagination__dots uk-disabled">
-                        <span>&hellip;</span>
-                    </li>
+                    {{ _self.empty_list_item() }}
                 {% else %}
-                    <li>
-                        <a href="?{{ query|merge({(pageParameterName): (pageCount -1)}) | url_encode }}{{ targetAnchor }}">{{ pageCount -1 }}</a>
-                    </li>
+                    <li>{{ _self.pagination_anchor(pageCount - 1, current, query, pageParameterName, targetAnchor) }}</li>
                 {% endif %}
             {% endif %}
-            <li>
-                <a href="?{{ query|merge({(pageParameterName): pageCount}) | url_encode }}{{ targetAnchor }}">{{ pageCount }}</a>
-            </li>
+            <li>{{ _self.pagination_anchor(pageCount, current, query, pageParameterName, targetAnchor) }}</li>
         {% endif %}
 
-        {% if next is defined %}
-            <li class="!ml-auto pagination__text">
-                <a class="page-link" rel="next" href="?{{ query|merge({(pageParameterName): next}) | url_encode }}{{ targetAnchor }}">
-                    {{ "Next" | trans() }}
-                    <twig:Icon class="ml-2" name="chevron-right" size="30" color="fill-black" />
-                </a>
-            </li>
-        {% else %}
-            <li class="!ml-auto pagination__text">
-                <twig:Icon name="chevron-right" size="30" color="fill-gray-300" />
-            </li>
-        {% endif %}
+        {{ _self.previous_or_next('next', next|default(null), query, pageParameterName, targetAnchor) }}
     </ul>
 </nav>
 {% endif %}

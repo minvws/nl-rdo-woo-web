@@ -17,7 +17,6 @@ class SourceType
     public const SOURCE_EMAIL = 'email';
     public const SOURCE_HTML = 'html';
     public const SOURCE_NOTE = 'note';
-    public const SOURCE_AUDIO = 'audio';
     public const SOURCE_DATABASE = 'database';
     public const SOURCE_XML = 'xml';
     public const SOURCE_VIDEO = 'video';
@@ -51,9 +50,6 @@ class SourceType
         ],
         self::SOURCE_NOTE => [
             'application/msonenote',
-        ],
-        self::SOURCE_AUDIO => [
-            'audio',
         ],
         self::SOURCE_DATABASE => [
             'database',

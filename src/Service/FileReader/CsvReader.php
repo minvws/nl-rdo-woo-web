@@ -29,6 +29,9 @@ class CsvReader implements FileReaderInterface
         // read/skip the header row
         fgetcsv($handle);
 
+        // Ensure a 1-indexed array
+        $this->rows[0] = [];
+
         while (($data = fgetcsv($handle)) !== false) {
             $tmp = array_filter($data);
             if (count($tmp) == 0) {
@@ -38,6 +41,9 @@ class CsvReader implements FileReaderInterface
             $this->rows[] = $data;
         }
         fclose($handle);
+
+        // Remove the dummy entry that was only there to create a 1-indexed array
+        unset($this->rows[0]);
     }
 
     public function getIterator(): \Generator
@@ -71,6 +77,20 @@ class CsvReader implements FileReaderInterface
     public function getDateTime(int $rowIndex, string $columnName): \DateTimeImmutable
     {
         $value = $this->getString($rowIndex, $columnName);
+
+        try {
+            return InventoryDataHelper::toDateTimeImmutable($value);
+        } catch (\Exception) {
+            throw FileReaderException::forCannotParseDate($value);
+        }
+    }
+
+    public function getOptionalDateTime(int $rowIndex, string $columnName): ?\DateTimeImmutable
+    {
+        $value = $this->getOptionalString($rowIndex, $columnName);
+        if (empty($value)) {
+            return null;
+        }
 
         try {
             return InventoryDataHelper::toDateTimeImmutable($value);

@@ -1,4 +1,4 @@
-import { areFilesEqual, filterDataTransferFiles } from '@utils';
+import { areFilesEqual, filterDataTransferFiles, validateFiles } from '@js/admin/utils';
 import { AutoUploadFilesArea, FilesArea } from './files-area';
 import { initializeInvalidFiles, InvalidFiles } from './invalid-files';
 import { initializeUploadVisual, UploadVisual } from './upload-visual';
@@ -29,7 +29,7 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
     inputElement.setAttribute('aria-hidden', 'true');
     inputElement.setAttribute('tabindex', '-1');
 
-    invalidFiles = initializeInvalidFiles(invalidFilesElement, getValidMimeTypes(), getMaxFileSize());
+    invalidFiles = initializeInvalidFiles(invalidFilesElement);
     uploadVisual = initializeUploadVisual(uploadVisualElement);
 
     if (isAutoUploadEnabled()) {
@@ -130,7 +130,7 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
   };
 
   const updateInputFiles = (files: FileList) => {
-    const { validFiles, invalidFiles: invalid } = invalidFiles.validate(files);
+    const { validFiles, invalidFiles: invalid } = validateFiles(files, getValidMimeTypes(), getMaxFileSize());
     invalidFiles.processInvalidFiles(invalid);
 
     if (validFiles.length === 0) {
@@ -192,25 +192,19 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
   };
 
   const getValidMimeTypes = () => {
-    const validMimeTypes = new Set<string>();
-
     const accept = inputElement?.accept;
     if (!accept) {
-      return validMimeTypes;
+      return [];
     }
 
-    const mimeTypes = accept.split(',');
-    mimeTypes.forEach((mimeType) => {
-      validMimeTypes.add(mimeType);
-    });
-
-    return validMimeTypes;
+    const mimeTypes = new Set(accept.split(',').filter(Boolean));
+    return [...mimeTypes.values()];
   };
 
   const getMaxFileSize = () => {
     const { maxFileSize = null } = inputElement?.dataset || {};
     if (!maxFileSize) {
-      return null;
+      return undefined;
     }
 
     return parseInt(maxFileSize, 10);

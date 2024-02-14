@@ -1,6 +1,6 @@
 {% if inventoryStatus.isQueued %}
     <div class="text-center">
-        <span class="inline-block animate-spin"><twig:Admin:Icon color="fill-ocean-boat-blue" size="48" name="loader" /></span>
+        <span class="inline-block animate-spin"><twig:Admin:Icon color="fill-bhr-ocean-boat-blue" size="48" name="loader" /></span>
         <p class="text-lg pt-4">Verwerking gaat beginnen</p>
     </div>
 {% elseif inventoryStatus.isRunning %}
@@ -60,10 +60,10 @@
         </div>
     </div>
 {% elseif inventoryStatus.isUploaded %}
-    {% if dossier.status == constant('\\App\\Entity\\Dossier::STATUS_CONCEPT') %}
+    {% if dossier.status.isConcept %}
         <twig:Admin:UploadedFile
-            deleteUrl="{{ path('app_admin_dossier_concept_delete_inventory', { dossierId: dossier.dossierNr }) }}"
-            downloadUrl="{{ path('app_admin_dossier_raw_inventory_download', { dossierId: dossier.dossierNr }) }}"
+            deleteUrl="{{ path('app_admin_dossier_concept_delete_inventory', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
+            downloadUrl="{{ path('app_admin_dossier_raw_inventory_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
             fileName="{{ dossier.rawInventory.fileInfo.name }}"
             fileSize="{{ dossier.rawInventory.fileInfo.size }}"
             mimeType="{{ dossier.rawInventory.fileInfo.mimetype }}"
@@ -71,6 +71,6 @@
     {% else %}
         <p>De inventaris is succesvol vervangen.</p>
 
-        <p class="mt-6"><a class="bhr-button bhr-button--primary" href="{{ path('app_admin_documents', { dossierId: dossier.dossierNr }) }}">Naar documenten</a></p>
+        <p class="mt-6"><a class="bhr-button bhr-button--primary" href="{{ path('app_admin_documents', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">Naar documenten</a></p>
     {% endif %}
 {% endif %}

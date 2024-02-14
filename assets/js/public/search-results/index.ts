@@ -1,3 +1,4 @@
+import { detailsComponents } from '@js/shared';
 import { activeFilterPills } from './active-filter-pills';
 import { checkboxFilters } from './checkbox-filters';
 import { collapsibleFilters } from './collapsible-filters';
@@ -13,6 +14,7 @@ export const searchResults = () => {
   const { initialize: initializeCheckboxFilters, cleanup: cleanupCheckboxFilters } = checkboxFilters();
   const { initialize: initializeCollapsibleFilters, cleanup: cleanupCollapsibleFilters } = collapsibleFilters();
   const { initialize: initializeDateFilters, cleanup: cleanupDateFilters } = dateFilters();
+  const { initialize: initializeDetailsComponents, cleanup: cleanupDetailsComponents } = detailsComponents();
   const { initialize: initializeResetFocus, cleanup: cleanupResetFocus } = resetFocus();
 
   const executeFetchAndUpdateResults = (params: URLSearchParams) => {
@@ -28,6 +30,7 @@ export const searchResults = () => {
     initializeActiveFilterPills(executeFetchAndUpdateResults);
     initializeCheckboxFilters(executeFetchAndUpdateResults);
     initializeDateFilters(executeFetchAndUpdateResults);
+    initializeDetailsComponents();
 
     listenToUrlChanges();
   };
@@ -49,6 +52,7 @@ export const searchResults = () => {
     cleanupCheckboxFilters();
     cleanupCollapsibleFilters();
     cleanupDateFilters();
+    cleanupDetailsComponents();
     cleanupResetFocus();
   };
 

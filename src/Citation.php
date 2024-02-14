@@ -29,21 +29,23 @@ class Citation
         '5.1.2i' => 'Het goed functioneren van de staat, andere publiekrechtelijke lichamen of bestuursorganen',
         '5.1.5' => 'Het voorkomen van onevenredige benadeling',
         '5.2' => 'Persoonlijke beleidsopvattingen',
+        '5.4' => 'Informatie die berust bij de formateur',
+
         self::DUBBEL => 'Dubbel: inhoud is in een ander document al beoordeeld',
     ];
 
     /** @var array|string[] */
     public static array $wobCitations = [
-        '10.1.a' => 'Eenheid van de Kroon',
-        '10.1.b' => 'Veiligheid van de Staat',
-        '10.1.c' => 'Vertrouwelijk verstrekte bedrijfs- en fabricagegegevens',
-        '10.1.d' => 'Bijzondere persoonsgegevens',
-        '10.2.a' => 'Internationale betrekkingen',
-        '10.2.b' => 'Economische of financiële belangen van de Staat',
-        '10.2.c' => 'Opsporing en vervolging van strafbare feiten',
-        '10.2.d' => 'Inspectie, controle en toezicht door bestuursorganen',
-        '10.2.e' => 'Eerbiediging van de persoonlijke levenssfeer',
-        '10.2.g' => 'Het voorkomen van onevenredige bevoordeling of benadeling',
+        '10.1a' => 'Eenheid van de Kroon',
+        '10.1b' => 'Veiligheid van de Staat',
+        '10.1c' => 'Vertrouwelijk verstrekte bedrijfs- en fabricagegegevens',
+        '10.1d' => 'Bijzondere persoonsgegevens',
+        '10.2a' => 'Internationale betrekkingen',
+        '10.2b' => 'Economische of financiële belangen van de Staat',
+        '10.2c' => 'Opsporing en vervolging van strafbare feiten',
+        '10.2d' => 'Inspectie, controle en toezicht door bestuursorganen',
+        '10.2e' => 'Eerbiediging van de persoonlijke levenssfeer',
+        '10.2g' => 'Het voorkomen van onevenredige bevoordeling of benadeling',
         '11.1' => 'Persoonlijke beleidsopvattingen',
         self::DUBBEL => 'Dubbel: inhoud is in een ander document al beoordeeld',
     ];

@@ -18,7 +18,7 @@ class LocalizedTemplateController extends AbstractController
 {
     protected ?Environment $twig;
 
-    public function __construct(Environment $twig = null)
+    public function __construct(?Environment $twig = null)
     {
         $this->twig = $twig;
     }
@@ -29,9 +29,9 @@ class LocalizedTemplateController extends AbstractController
     public function __invoke(
         Request $request,
         string $template,
-        int $maxAge = null,
-        int $sharedAge = null,
-        bool $private = null,
+        ?int $maxAge = null,
+        ?int $sharedAge = null,
+        ?bool $private = null,
         array $context = [],
         int $statusCode = 200
     ): Response {

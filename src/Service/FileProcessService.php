@@ -40,8 +40,6 @@ class FileProcessService
         $ext = $parts['extension'] ?? '';
 
         switch ($ext) {
-            case 'mp3':
-                return $this->processSingleFile($file, $dossier, $originalFile, 'audio');
             case 'zip':
                 return $this->processZip($file, $dossier);
             case '7z':
@@ -70,7 +68,7 @@ class FileProcessService
         if ($document->getDocumentId() !== $documentId) {
             $this->logger->warning("Filename does not match the document with id $documentId", [
                 'documentId' => $documentId,
-                'dossierId' => $dossier->getId()?->toRfc4122(),
+                'dossierId' => $dossier->getId()->toRfc4122(),
                 'filename' => $originalFile,
             ]);
 

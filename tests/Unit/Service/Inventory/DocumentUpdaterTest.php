@@ -9,13 +9,15 @@ use App\Entity\Dossier;
 use App\Entity\FileInfo;
 use App\Entity\Judgement;
 use App\Entity\Organisation;
+use App\Enum\PublicationStatus;
 use App\Message\IngestMetadataOnlyMessage;
 use App\Message\RemoveDocumentMessage;
 use App\Repository\DocumentRepository;
-use App\Service\Inquiry\InquiryService;
 use App\Service\Inventory\DocumentMetadata;
+use App\Service\Inventory\DocumentNumber;
 use App\Service\Inventory\DocumentUpdater;
 use App\Service\Storage\DocumentStorageService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\Messenger\Envelope;
@@ -24,28 +26,24 @@ use Symfony\Component\Uid\Uuid;
 
 class DocumentUpdaterTest extends MockeryTestCase
 {
-    private InquiryService|MockInterface $inquiryService;
-    private MockInterface|DocumentStorageService $documentStorage;
-    private MessageBusInterface|MockInterface $messageBus;
+    private MockInterface&DocumentStorageService $documentStorage;
+    private MessageBusInterface&MockInterface $messageBus;
     private DocumentUpdater $documentUpdater;
-    private Dossier|MockInterface $dossier;
-    private DocumentRepository|MockInterface $repository;
-    private Organisation|MockInterface $organisation;
+    private Dossier&MockInterface $dossier;
+    private DocumentRepository&MockInterface $repository;
 
     public function setUp(): void
     {
         $this->repository = \Mockery::mock(DocumentRepository::class);
-
-        $this->inquiryService = \Mockery::mock(InquiryService::class);
         $this->documentStorage = \Mockery::mock(DocumentStorageService::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
 
         $this->dossier = \Mockery::mock(Dossier::class);
         $this->dossier->shouldReceive('getDocumentPrefix')->andReturn('PREFIX');
-        $this->dossier->shouldReceive('getStatus')->andReturn(Dossier::STATUS_CONCEPT);
+        $this->dossier->shouldReceive('getStatus')->andReturn(PublicationStatus::CONCEPT);
 
-        $this->organisation = \Mockery::mock(Organisation::class);
-        $this->dossier->shouldReceive('getOrganisation')->andReturn($this->organisation);
+        $organisation = \Mockery::mock(Organisation::class);
+        $this->dossier->shouldReceive('getOrganisation')->andReturn($organisation);
 
         $this->documentUpdater = new DocumentUpdater(
             $this->messageBus,
@@ -65,7 +63,7 @@ class DocumentUpdaterTest extends MockeryTestCase
         $existingDocument = \Mockery::mock(Document::class);
         $existingDocument->expects('getDocumentNr')->andReturn('tst-123');
         $existingDocument->expects('setJudgement')->with($documentMetadata->getJudgement());
-        $existingDocument->expects('getDocumentId')->andReturn('456')->zeroOrMoreTimes();
+        $existingDocument->shouldReceive('getDocumentId')->andReturn('456');
         $existingDocument->expects('setDocumentDate')->with($documentMetadata->getDate());
         $existingDocument->expects('setFamilyId')->with($documentMetadata->getFamilyId());
         $existingDocument->expects('setDocumentId')->with($documentMetadata->getId());
@@ -76,8 +74,8 @@ class DocumentUpdaterTest extends MockeryTestCase
         $existingDocument->expects('setSuspended')->with($documentMetadata->isSuspended());
         $existingDocument->expects('setLinks')->with($documentMetadata->getLinks());
         $existingDocument->expects('setRemark')->with($documentMetadata->getRemark());
-        $existingDocument->expects('getFileInfo')->andReturn($fileInfo)->zeroOrMoreTimes();
-        $existingDocument->expects('shouldBeUploaded')->andReturnFalse()->zeroOrMoreTimes();
+        $existingDocument->shouldReceive('getFileInfo')->andReturn($fileInfo);
+        $existingDocument->shouldReceive('shouldBeUploaded')->andReturnFalse();
         $existingDocument->expects('addDossier')->with($this->dossier);
 
         $fileInfo->expects('setSourceType')->with($documentMetadata->getSourceType());
@@ -99,7 +97,7 @@ class DocumentUpdaterTest extends MockeryTestCase
         $existingDocument = \Mockery::mock(Document::class);
         $existingDocument->expects('getDocumentNr')->andReturn('tst-123');
         $existingDocument->expects('setJudgement')->with($documentMetadata->getJudgement());
-        $existingDocument->expects('getDocumentId')->andReturn('456')->zeroOrMoreTimes();
+        $existingDocument->shouldReceive('getDocumentId')->andReturn('456');
         $existingDocument->expects('setDocumentDate')->with($documentMetadata->getDate());
         $existingDocument->expects('setFamilyId')->with($documentMetadata->getFamilyId());
         $existingDocument->expects('setDocumentId')->with($documentMetadata->getId());
@@ -111,7 +109,7 @@ class DocumentUpdaterTest extends MockeryTestCase
         $existingDocument->expects('setLinks')->with($documentMetadata->getLinks());
         $existingDocument->expects('setRemark')->with($documentMetadata->getRemark());
         $existingDocument->expects('getFileInfo')->andReturn(new FileInfo());
-        $existingDocument->expects('shouldBeUploaded')->andReturnTrue()->zeroOrMoreTimes();
+        $existingDocument->shouldReceive('shouldBeUploaded')->andReturnTrue();
         $existingDocument->expects('addDossier')->with($this->dossier);
 
         $this->repository->expects('save')->with($existingDocument);
@@ -119,11 +117,51 @@ class DocumentUpdaterTest extends MockeryTestCase
         $this->documentUpdater->databaseUpdate($documentMetadata, $this->dossier, $existingDocument);
     }
 
+    public function testUpdateDocumentReferrals(): void
+    {
+        $newReferredDoc = \Mockery::mock(Document::class);
+
+        $oldReferredDoc = \Mockery::mock(Document::class);
+        $oldReferredDoc->shouldReceive('getDocumentNr')->andReturn('PREFIX-matter-456');
+        $oldReferredDoc->shouldReceive('getDocumentId')->andReturn('456');
+
+        $existingDocument = \Mockery::mock(Document::class);
+        $existingDocument->expects('getRefersTo')->andReturn(new ArrayCollection([$oldReferredDoc]));
+        $existingDocument->shouldReceive('getDocumentNr')->andReturn('PREFIX-matter-1');
+        $existingDocument->shouldReceive('getDocumentId')->andReturn('1');
+
+        // Old referred document is no longer in metadata so should be removed
+        $existingDocument->expects('removeReferralTo')->with($oldReferredDoc);
+
+        // And a new referral should be added
+        $existingDocument->expects('addReferralTo')->with($newReferredDoc);
+
+        $this->repository
+            ->expects('findByDocumentNumber')
+            ->with(\Mockery::on(
+                static function (DocumentNumber $documentNumber): bool {
+                    return $documentNumber->getValue() === 'PREFIX-matter-123';
+                }
+            ))
+            ->andReturn($newReferredDoc);
+
+        $this->repository
+            ->expects('findByDocumentNumber')
+            ->with(\Mockery::on(
+                static function (DocumentNumber $documentNumber): bool {
+                    return $documentNumber->getValue() === 'PREFIX-matter-456';
+                }
+            ))
+            ->andReturn($oldReferredDoc);
+
+        $this->documentUpdater->updateDocumentReferrals($this->dossier, $existingDocument, ['PREFIX-matter-123']);
+    }
+
     public function testAsyncUpdate(): void
     {
         $docId = Uuid::v6();
         $document = \Mockery::mock(Document::class);
-        $document->expects('getId')->zeroOrMoreTimes()->andReturn($docId);
+        $document->shouldReceive('getId')->andReturn($docId);
         $document->expects('shouldBeUploaded')->andReturnTrue();
 
         $this->messageBus->expects('dispatch')->once()
@@ -141,10 +179,10 @@ class DocumentUpdaterTest extends MockeryTestCase
     {
         $docId = Uuid::v6();
         $document = \Mockery::mock(Document::class);
-        $document->expects('getId')->zeroOrMoreTimes()->andReturn($docId);
+        $document->shouldReceive('getId')->andReturn($docId);
 
         $dossierId = Uuid::v6();
-        $this->dossier->expects('getId')->zeroOrMoreTimes()->andReturn($dossierId);
+        $this->dossier->shouldReceive('getId')->andReturn($dossierId);
 
         $this->messageBus->expects('dispatch')->once()
             ->with(\Mockery::on(
@@ -174,7 +212,8 @@ class DocumentUpdaterTest extends MockeryTestCase
             suspended: true,
             links: ['https://a.dummy.link/here'],
             remark: 'remark',
-            matter: '987'
+            matter: '987',
+            refersTo: ['matter-123'],
         );
     }
 }

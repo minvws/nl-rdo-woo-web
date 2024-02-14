@@ -17,12 +17,12 @@ use Symfony\Component\Uid\Uuid;
 
 class FileProcessServiceTest extends MockeryTestCase
 {
-    private EntityManagerInterface|MockInterface $entityManager;
-    private MockInterface|DocumentStorageService $documentStorage;
-    private LoggerInterface|MockInterface $logger;
-    private IngestService|MockInterface $ingestService;
+    private EntityManagerInterface&MockInterface $entityManager;
+    private MockInterface&DocumentStorageService $documentStorage;
+    private LoggerInterface&MockInterface $logger;
+    private IngestService&MockInterface $ingestService;
     private FileProcessService $service;
-    private HistoryService|MockInterface $historyService;
+    private HistoryService&MockInterface $historyService;
 
     public function setUp(): void
     {

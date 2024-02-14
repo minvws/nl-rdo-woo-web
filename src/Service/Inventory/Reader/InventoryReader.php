@@ -75,6 +75,14 @@ class InventoryReader implements InventoryReaderInterface
         if (empty($documentId)) {
             throw InventoryReaderException::forMissingDocumentIdInRow($rowIdx);
         }
+        if (preg_match('/[^a-z0-9.]/i', $documentId)) {
+            throw InventoryReaderException::forInvalidDocumentId($rowIdx);
+        }
+
+        $matter = $this->reader->getString($rowIdx, MetadataField::MATTER->value);
+        if (empty($matter)) {
+            throw InventoryReaderException::forMissingMatterInRow($rowIdx);
+        }
 
         // Use default subjects from the dossier for now, to be improved in #1737
         $subjects = $dossier->getDefaultSubjects() ?? [];
@@ -94,11 +102,11 @@ class InventoryReader implements InventoryReaderInterface
         }
 
         return new DocumentMetadata(
-            date: $this->reader->getDateTime($rowIdx, MetadataField::DATE->value),
+            date: $this->reader->getOptionalDateTime($rowIdx, MetadataField::DATE->value),
             filename: $filename,
             familyId: $this->reader->getOptionalInt($rowIdx, MetadataField::FAMILY->value),
             sourceType: SourceType::getType($this->reader->getOptionalString($rowIdx, MetadataField::SOURCETYPE->value)),
-            grounds: InventoryDataHelper::separateValues($this->reader->getString($rowIdx, MetadataField::GROUND->value)),
+            grounds: InventoryDataHelper::getGrounds($this->reader->getString($rowIdx, MetadataField::GROUND->value)),
             id: $documentId,
             judgement: InventoryDataHelper::judgement($this->reader->getString($rowIdx, MetadataField::JUDGEMENT->value)),
             period: null,
@@ -108,7 +116,8 @@ class InventoryReader implements InventoryReaderInterface
             suspended: InventoryDataHelper::isTrue($this->reader->getOptionalString($rowIdx, MetadataField::SUSPENDED->value)),
             links: $links,
             remark: $remark,
-            matter: $this->reader->getString($rowIdx, MetadataField::MATTER->value),
+            matter: $matter,
+            refersTo: InventoryDataHelper::separateValues($this->reader->getOptionalString($rowIdx, MetadataField::REFERS_TO->value)),
         );
     }
 

@@ -4,18 +4,18 @@
     }
 
     .bhr-badge--blue {
-        @apply border-ocean-boat-blue text-ocean-boat-blue;
+        @apply border-bhr-ocean-boat-blue text-bhr-ocean-boat-blue;
     }
 
     .bhr-badge--green {
-        @apply border-philippine-green text-philippine-green;
+        @apply border-bhr-philippine-green text-bhr-philippine-green;
     }
 
     .bhr-badge--purple {
-        @apply border-plum text-plum;
+        @apply border-bhr-plum text-bhr-plum;
     }
 
     .bhr-badge--red {
-        @apply border-maximum-red text-maximum-red;
+        @apply border-bhr-maximum-red text-bhr-maximum-red;
     }
 }

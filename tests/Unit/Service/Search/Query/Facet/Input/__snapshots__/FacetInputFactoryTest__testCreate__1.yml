@@ -1,0 +1,45 @@
+SUBJECT:
+    active: false
+    stringValues: {  }
+    notActive: true
+SOURCE:
+    active: false
+    stringValues: {  }
+    notActive: true
+GROUNDS:
+    active: false
+    stringValues: {  }
+    notActive: true
+JUDGEMENT:
+    active: false
+    stringValues: {  }
+    notActive: true
+DEPARTMENT:
+    active: false
+    stringValues: {  }
+    notActive: true
+PERIOD:
+    active: false
+    stringValues: {  }
+    notActive: true
+DATE:
+    active: false
+    notActive: true
+    withoutDate: false
+    anyPeriodFilterDates: false
+    periodFilterFrom: null
+    periodFilterTo: null
+    from: null
+    to: null
+DOSSIER_NR:
+    active: false
+    stringValues: {  }
+    notActive: true
+INQUIRY_DOSSIERS:
+    active: false
+    stringValues: {  }
+    notActive: true
+INQUIRY_DOCUMENTS:
+    active: false
+    stringValues: {  }
+    notActive: true
