@@ -12,7 +12,7 @@
         <h1 class="bhr-title-sm mb-8">{{ page_title }}</h1>
 
         <form method="POST" action="{{ path('app_login') }}" novalidate>
-            {% if app.user and is_granted('ROLE_USER')%}
+            {% if app.user and is_granted('ROLE_BALIE')%}
                 <twig:Admin:Alert type="info">
                     {{ "You are logged in as {name}" | trans({'name': app.user.name|default("unknown user")}) }}.
                     <a class="bhr-a bhr-a--inherit-color" href="{{ path('app_logout') }}">{{ "Logout" | trans() }}</a>
@@ -22,32 +22,17 @@
                 {% if error %}
                 <div class="mb-6">
                     <twig:Admin:FormError>
-                        Er zijn 2 fouten. Het gaat om de volgende velden:
-
-                        <twig:block name="extra">
-                            <ul class="leading-tight list-square ml-5">
-                                <li><a class="underline hover-focus:no-underline" href="#inputEmail">{{ "E-mail address" | trans() }}</a>: 1 fout</li>
-                                <li><a class="underline hover-focus:no-underline" href="#inputPassword">{{ "Password" | trans() }}</a>: 1 fout</li>
-                            </ul>
-                        </twig:block>
+                        Ongeldige inloggegevens. Vul een geldige combinatie van e-mailadres en wachtwoord in om in te loggen.
                     </twig:Admin:FormError>
                 </div>
                 {% endif %}
 
-                <div class="bhr-form-row {{ error ? 'bhr-form-row--invalid' : '' }}">
+                <div class="bhr-form-row">
                     <label class="bhr-label" for="inputEmail">{{ "E-mail address" | trans() }}</label>
 
-                    {% if error %}
-                        <twig:Admin:InputErrors id="input-email-error" error="Ongeldige inloggegevens. Vul een geldige combinatie van e-mailadres en wachtwoord in." />
-                    {% endif %}
-
                     <input
-                        {% if error %}
-                        aria-invalid="true"
-                        aria-describedby="input-email-error"
-                        {% endif %}
                         autocomplete="email"
-                        class="bhr-input-text {{ error ? 'bhr-input-text--invalid' : '' }}"
+                        class="bhr-input-text"
                         id="inputEmail"
                         name="_username"
                         required
@@ -56,21 +41,12 @@
                     >
                 </div>
 
-
-                <div class="bhr-form-row {{ error ? 'bhr-form-row--invalid' : '' }}">
+                <div class="bhr-form-row">
                     <label class="bhr-label" for="inputPassword">{{ "Password" | trans() }}</label>
 
-                    {% if error %}
-                        <twig:Admin:InputErrors id="input-password-error" error="Ongeldige inloggegevens. Vul een geldige combinatie van e-mailadres en wachtwoord in." />
-                    {% endif %}
-
                     <input
-                        {% if error %}
-                        aria-invalid="true"
-                        aria-describedby="input-password-error"
-                        {% endif %}
                         autocomplete="current-password"
-                        class="bhr-input-text {{ error ? 'bhr-input-text--invalid' : '' }}"
+                        class="bhr-input-text"
                         id="inputPassword"
                         name="_password"
                         required

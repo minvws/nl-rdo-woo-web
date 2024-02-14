@@ -72,9 +72,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->orderBy('u.id', 'ASC');
 
         if ($includeSuperAdmins) {
-            $qb->orWhere("JSONB_CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = true");
+            $qb->orWhere("CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = true");
         } else {
-            $qb->andWhere("JSONB_CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = false");
+            $qb->andWhere("CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = false");
         }
 
         return $qb->getQuery()->getResult();

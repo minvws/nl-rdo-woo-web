@@ -1,101 +1,63 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
+
+{% macro table_row(hasAccess, route, linkText, description) %}
+    {% if hasAccess %}
+    <tr>
+        <td><a class="bhr-a" href="{{ route }}">{{ linkText }}</a></td>
+        <td>{{ description }}
+    </tr>
+    {% endif %}
+{% endmacro %}
 
 {% block body %}
+<div class="bhr-container">
+    <div class="px-11">
+        <h1 class="bhr-title mb-6">{{ "Admin" | trans() }}</h1>
 
-    <section>
-        <div>
-
-            <h1 class="mb-4">{{ "Admin" | trans() }}</h1>
-
-            <div class="column-3">
-
-                <div>
-
-                    {% if matrix_has_permission('dossier.administration') %}
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h2 class="card-title text-center" aria-labelledby="dossierMgmtButton"><i class="fa fa-folder-open fa-5x"></i></h2>
-                                <p class="card-text">
-                                    {{ "This link provides access to dossier admin actions." | trans() }}
-                                </p>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <a href="{{ path('app_admin_dossier_administration') }}" class="button" id="dossierMgmtButton">{{ "Dossier management" | trans() }}</a>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                </div>
-
-                <div>
-
-                    {% if matrix_has_permission('inquiry.administration') %}
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h2 class="card-title text-center" aria-labelledby="inquiryMgmtButton"><i class="fa fa-folder-open fa-5x"></i></h2>
-                                <p class="card-text">
-                                    {{ "This link provides access to inquiry admin actions." | trans() }}
-                                </p>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <a href="{{ path('app_admin_inquiry_administration') }}" class="button" id="inquiryMgmtButton">{{ "Inquiry management" | trans() }}</a>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                </div>
-
-                {# currently not in use
-                <div>
-
-                    {% if matrix_has_permission('token.read') %}
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h2 class="card-title text-center" aria-labelledby="tokenMgmtButton"><i class="fa-solid fa-key fa-5x"></i></h2>
-                                <p class="card-text">{{ "This link provides access to the management of tokens for dossier previews." | trans() }}</p>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <a href="{{ path('app_admin_tokens') }}" class="button" id="tokenMgmtButton">{{ "Token management" | trans() }}</a>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                </div>
-                #}
-
-                <div>
-
-                    {% if matrix_has_permission('stat.read') %}
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h2 class="card-title text-center" aria-labelledby="statisticsButton"><i class="fa-solid fa-clipboard-check fa-5x"></i></h2>
-                                <p class="card-text">{{ "This link provides access to system statistics and monitoring." | trans() }}</p>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <a href="{{ path('app_admin_stats') }}" class="button" id="statisticsButton">{{ "Statistics & Monitoring" | trans() }}</a>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                </div>
-                <div>
-
-                    {% if matrix_has_permission('elastic.read') %}
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h2 class="card-title text-center" aria-labelledby="elasticsearchMgmtButton"><i class="fa-solid fa-gears fa-5x"></i></h2>
-                                <p class="card-text">{{ "This link provides access to Elasticsearch index management." | trans() }}</p>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <a href="{{ path('app_admin_elastic') }}" class="button" id="elasticsearchMgmtButton">{{ "Elasticsearch management" | trans() }}</a>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                </div>
-            </div>
-
+        <div class="bhr-card">
+            <table class="bhr-table table-fixed">
+                <thead>
+                    <tr>
+                        <th class="w-56 text-left" scope="col">Link</th>
+                        <th class="text-left" scope="col">Omschrijving</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{
+                        _self.table_row(
+                            matrix_has_permission('dossier.administration'),
+                            path('app_admin_dossier_administration'),
+                            "Dossier management" | trans,
+                            "This link provides access to dossier admin actions." | trans()
+                        )
+                    }}
+                    {{
+                        _self.table_row(
+                            matrix_has_permission('inquiry.administration'),
+                            path('app_admin_inquiry_administration'),
+                            "Inquiry management" | trans,
+                            "This link provides access to inquiry admin actions." | trans
+                        )
+                    }}
+                    {{
+                        _self.table_row(
+                            matrix_has_permission('stat.read'),
+                            path('app_admin_stats'),
+                            "Statistics & Monitoring" | trans,
+                            "This link provides access to system statistics and monitoring." | trans
+                        )
+                    }}
+                    {{
+                        _self.table_row(
+                            matrix_has_permission('elastic.read'),
+                            path('app_admin_elastic'),
+                            "Elasticsearch management" | trans,
+                            "This link provides access to Elasticsearch index management." | trans
+                        )
+                    }}
+                </tbody>
+            </table>
         </div>
-    </section>
-
+    </div>
+</div>
 {% endblock %}

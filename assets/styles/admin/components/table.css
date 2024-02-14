@@ -9,11 +9,11 @@
     }
 
     .bhr-table tr {
-        @apply border-b border-platinum;
+        @apply border-b border-bhr-platinum;
     }
 
     .bhr-row-head {
-        @apply font-normal text-left text-dim-gray;
+        @apply font-normal text-left text-bhr-dim-gray;
     }
 
     .bhr-column-head {
@@ -21,6 +21,6 @@
     }
 
     .bhr-column-head--gray {
-        @apply bg-anti-flash-white border-r border-platinum text-independence last:border-r-0;
+        @apply bg-bhr-anti-flash-white border-r border-bhr-platinum text-bhr-independence last:border-r-0;
     }
 }

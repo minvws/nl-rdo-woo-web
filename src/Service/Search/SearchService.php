@@ -21,7 +21,8 @@ class SearchService
         protected LoggerInterface $logger,
         protected QueryGenerator $queryGenerator,
         protected ObjectHandler $objectHandler,
-        protected ResultTransformer $resultTransformer
+        protected ResultTransformer $resultTransformer,
+        protected ConfigFactory $configFactory,
     ) {
     }
 
@@ -51,7 +52,7 @@ class SearchService
 
     public function retrieveExtendedFacets(): Result
     {
-        $config = new Config(limit: 0);
+        $config = $this->configFactory->create(limit: 0);
         $query = $this->queryGenerator->createExtendedFacetsQuery($config);
 
         return $this->doSearch($query->build(), $config);

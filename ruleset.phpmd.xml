@@ -3,12 +3,9 @@
     <rule ref="rulesets/unusedcode.xml" />
 
     <rule ref="rulesets/codesize.xml">
-<!--        <exclude name="CyclomaticComplexity"/>-->
-<!--        <exclude name="TooManyPublicMethods" />-->
     </rule>
 
     <rule ref="rulesets/design.xml">
-<!--        <exclude name="CouplingBetweenObjects"/>-->
         <exclude name="CountInLoopExpression"/>
     </rule>
 
@@ -23,12 +20,19 @@
 
     <rule ref="rulesets/naming.xml">
         <exclude name="ShortVariable"/>
+        <exclude name="LongVariable"/>
         <exclude name="ShortClassName"/>
     </rule>
 
     <rule ref="rulesets/naming.xml/ShortVariable">
         <properties>
             <property name="exceptions" description="Comma-separated list of exceptions" value="f,q,dt,qb,e,em,id,io,to,it,i,a,b,fn,fp"/>
+        </properties>
+    </rule>
+
+    <rule ref="rulesets/naming.xml/LongVariable">
+        <properties>
+            <property name="maximum" value="30"/>
         </properties>
     </rule>
 </ruleset>

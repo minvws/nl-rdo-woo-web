@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Service\Search\Query\Filter;
 
 use App\Service\Search\Model\Config;
-use App\Service\Search\Query\Facet\FacetDefinition;
+use App\Service\Search\Query\Facet\Facet;
+use App\Service\Search\Query\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
-use Erichard\ElasticQueryBuilder\Query\TermQuery;
 
 /**
  * This filter will match only in root ES documents of the type 'document', excluding for instance 'dossier' ES docs.
@@ -19,16 +19,14 @@ class DocumentOnlyFilter implements FilterInterface
     ) {
     }
 
-    public function addToQuery(FacetDefinition $facet, BoolQuery $query, Config $config, string $prefix = ''): void
+    public function addToQuery(Facet $facet, BoolQuery $query, Config $config, string $prefix = ''): void
     {
-        /** @var string[] $values */
-        $values = $config->getFacetValues($facet);
-        if (count($values) === 0) {
+        if ($facet->isNotActive()) {
             return;
         }
 
         $query->addFilter(
-            new TermQuery(
+            Query::term(
                 field: 'type',
                 value: Config::TYPE_DOCUMENT,
             ),

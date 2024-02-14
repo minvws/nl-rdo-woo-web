@@ -15,14 +15,18 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityController extends AbstractController
 {
     protected EntityManagerInterface $doctrine;
     protected UserPasswordHasherInterface $passwordEncoder;
 
-    public function __construct(EntityManagerInterface $doctrine, UserPasswordHasherInterface $passwordEncoder)
-    {
+    public function __construct(
+        EntityManagerInterface $doctrine,
+        UserPasswordHasherInterface $passwordEncoder,
+        private readonly TranslatorInterface $translator
+    ) {
         $this->doctrine = $doctrine;
         $this->passwordEncoder = $passwordEncoder;
     }
@@ -62,6 +66,8 @@ class SecurityController extends AbstractController
 
             $this->doctrine->flush();
 
+            $this->addFlash('backend', ['success' => $this->translator->trans('Password changed')]);
+
             // Redirect to target path if exists
             if ($request->getSession()->has('target_path')) {
                 $targetPath = strval($request->getSession()->get('target_path'));
@@ -74,7 +80,6 @@ class SecurityController extends AbstractController
         }
 
         /** @var LoggableUser $loggedInUser */
-        /** @phpstan-ignore-next-line */
         $loggedInUser = $this->getUser();
 
         $roles = Roles::roleDetails();

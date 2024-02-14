@@ -1,46 +1,62 @@
 {% extends 'base.html.twig' %}
 {% import "document_macros.html.twig" as macro %}
 
-{% set page_title = document.fileInfo.name %}
+{% set page_title = document.entity.fileInfo.name %}
 
 {% block body %}
-    <section class="content-detail-container">
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-h1 sm:flex">
+        <span class="block">
+            <twig:Public:Icon name="{{ document.entity.fileInfo.sourceType }}" color="fill-woo-dim-gray" class="mr-4 -mt-0.5" size="32" />
+            <span class="sr-only">{{ document.entity.fileInfo.sourceType | trans }}</span>
+        </span>
+        <span>{{ document.entity.fileInfo.name }}</span>
+    </h1>
+
+    <dl class="woo-muted">
         <div>
-            <h1 class="leading-tight flex items-center">
-                <twig:Icon name="{{ document.fileInfo.sourceType }}" size="32" class="mr-4 shrink-0 self-baseline mt-3" />
-                <span class="visually-hidden">{{ document.fileInfo.sourceType | trans() }}</span>
-                <span class="min-w-0">{{ document.fileInfo.name }}</span>
-            </h1>
-
-            <dl class="nota-bene text-lg">
-                <div>
-                    <dt class="visually-hidden">{{ "Published on" | trans() }}: </dt>
-                    <dd><time datetime="{{ document.documentDate | date("Y-m-d") }}">{{ document.documentDate | format_date('long') }} {{ "at" | trans() }} {{ document.documentDate | format_time('short') }}</time></dd>
-                </div>
-                <div>
-                    <dt>{{ "Document Number" | trans() }}:</dt>
-                    <dd>{{ document.documentNr }}</dd>
-                </div>
-            </dl>
-
-            {% include "document/snippets/notifications.html.twig" %}
-
-            {% include "document/snippets/viewer.html.twig" %}
-
-            {% include "document/snippets/download.html.twig" %}
-
-            {% include "document/snippets/about.html.twig" %}
-
-            {% if document.fileInfo.sourceType == constant('App\\SourceType::SOURCE_EMAIL') %}
-                {{ macro.documents_section(thread, "Messages from the same e-mail conversation") }}
-                {{ macro.documents_section(family, "Attachments to this e-mail message") }}
+            <dt class="sr-only">{{ "Published on" | trans() }}: </dt>
+            <dd>
+            {% if document.entity.documentDate is not null %}
+                <time datetime="{{ document.entity.documentDate | date("Y-m-d") }}">{{ document.entity.documentDate | format_date('long') }}</time>
             {% else %}
-                {{ macro.documents_section(family, "Related documents") }}
+                {{ 'document.date.date_not_available' | trans }}
             {% endif %}
-
-            {% include "document/snippets/background.html.twig" %}
-
-            {{ macro.history_section(get_frontend_history('document', document.id), "History of this document") }}
+            </dd>
         </div>
-    </section>
+        <div>
+            <dt class="inline">{{ "Document Number" | trans() }}:</dt>
+            <dd class="inline">{{ document.entity.documentNr }}</dd>
+        </div>
+    </dl>
+
+    {% if not dossier.isVwsResponsible %}
+    <div class="pt-10">
+        <twig:Public:Notification>
+            <p>{{ 'public.other_ministry_responsible' | trans({ '{source}': 'public.document.this_document' | trans | capitalize, '{ministry}': dossier.entity.departments[0].name }) | raw }}</p>
+        </twig:Public:Notification>
+    </div>
+    {% endif %}
+
+    {% include "document/snippets/notifications.html.twig" %}
+
+    {% include "document/snippets/viewer.html.twig" %}
+
+    {% include "document/snippets/download.html.twig" %}
+
+    {% include "document/snippets/about.html.twig" %}
+
+    {% if document.entity.fileInfo.sourceType == constant('App\\SourceType::SOURCE_EMAIL') %}
+        {{ macro.documents_section(thread, "Messages from the same e-mail conversation") }}
+        {{ macro.documents_section(family, "Attachments to this e-mail message") }}
+    {% else %}
+        {{ macro.documents_section(document.entity.referredBy, "public.documents.referred_by", false) }}
+        {{ macro.documents_section(family, "Related documents") }}
+    {% endif %}
+
+    {% include "document/snippets/background.html.twig" %}
+
+    {{ macro.history_section(get_frontend_history('document', document.entity.id), "History of this document") }}
+    </div>
+</section>
 {% endblock %}

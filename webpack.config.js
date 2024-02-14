@@ -39,6 +39,11 @@ Encore
   // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
   .splitEntryChunks()
 
+  .enableVueLoader(() => { }, { runtimeCompilerBuild: true })
+
+  // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
+  .enableStimulusBridge('./assets/js/admin/controllers.json')
+
   // will require an extra script tag for runtime.js
   // but, you probably want this, unless you're building a single-page app
   .enableSingleRuntimeChunk()
@@ -68,9 +73,6 @@ Encore
 
   .enablePostCssLoader()
 
-  // enables Sass/SCSS support
-  .enableSassLoader()
-
   .addAliases({
     /**
      * The import aliases below are defined in multiple files. So remember to update them all if you change one.
@@ -80,10 +82,12 @@ Encore
      */
 
     '@js': path.resolve(__dirname, 'assets/js/'),
+    '@fonts': path.resolve(__dirname, 'assets/fonts/'),
     '@img': path.resolve(__dirname, 'assets/img/'),
     '@styles': path.resolve(__dirname, 'assets/styles/'),
     '@test': path.resolve(__dirname, 'assets/js/test/'),
     '@utils': path.resolve(__dirname, 'assets/js/utils/'),
+    '@admin-fe': path.resolve(__dirname, 'assets/js/admin/vue/'),
   });
 
 // uncomment to get integrity="..." attributes on your script & link tags

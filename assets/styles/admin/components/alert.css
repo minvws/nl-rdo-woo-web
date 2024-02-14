@@ -4,14 +4,14 @@
     }
 
     .bhr-alert--danger {
-        @apply bg-cornsilk;
+        @apply bg-bhr-cornsilk;
     }
 
     .bhr-alert--info {
-        @apply bg-azureish-white;
+        @apply bg-bhr-azureish-white;
     }
 
     .bhr-alert--success {
-        @apply bg-chinese-white;
+        @apply bg-bhr-chinese-white;
     }
 }

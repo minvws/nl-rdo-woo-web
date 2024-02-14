@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Service\Search\Query\Aggregation;
 
 use App\Service\Search\Model\Config;
-use App\Service\Search\Query\Dsl\TermsAggregationWithMinDocCount;
-use App\Service\Search\Query\Facet\FacetDefinition;
+use App\Service\Search\Query\Aggregation;
+use App\Service\Search\Query\Facet\Facet;
 use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
-use Erichard\ElasticQueryBuilder\Aggregation\NestedAggregation;
 use Erichard\ElasticQueryBuilder\Constants\SortDirections;
 
 class NestedTermsAggregationStrategy implements AggregationStrategyInterface
@@ -19,33 +18,30 @@ class NestedTermsAggregationStrategy implements AggregationStrategyInterface
     ) {
     }
 
-    public function getAggregation(FacetDefinition $facet, Config $config, int $maxCount): AbstractAggregation
+    public function getAggregation(Facet $facet, Config $config, int $maxCount): AbstractAggregation
     {
         if ($config->searchType === Config::TYPE_DOSSIER) {
-            return new TermsAggregationWithMinDocCount(
-                name: $facet->getFacetKey(),
+            return Aggregation::termsWithMinDocCount(
+                name: $facet->getFacetKey()->value,
                 fieldOrSource: $facet->getPath(),
                 minDocCount: 1,
-                orderField: '_count',
-                orderValue: SortDirections::DESC,
-                size: $maxCount,
-            );
+            )
+                ->setOrder('_count', SortDirections::DESC)
+                ->setSize($maxCount);
         }
 
-        return new NestedAggregation(
-            name: sprintf('%s-%s', $this->path, $facet->getFacetKey()),
+        return Aggregation::nested(
+            name: sprintf('%s-%s', $this->path, $facet->getFacetKey()->value),
             path: $this->path,
-            aggregations: [
-                new TermsAggregationWithMinDocCount(
-                    name: $facet->getFacetKey(),
-                    fieldOrSource: sprintf('%s.%s', $this->path, $facet->getPath()),
-                    minDocCount: 1,
-                    orderField: '_count',
-                    orderValue: SortDirections::DESC,
-                    size: $maxCount,
-                ),
-            ]
-        );
+        )->setAggregations([
+            Aggregation::termsWithMinDocCount(
+                name: $facet->getFacetKey()->value,
+                fieldOrSource: sprintf('%s.%s', $this->path, $facet->getPath()),
+                minDocCount: 1,
+            )
+                ->setOrder('_count', SortDirections::DESC)
+                ->setSize($maxCount),
+        ]);
     }
 
     public function excludeOwnFilters(): bool

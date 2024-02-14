@@ -52,7 +52,11 @@ class SitemapSubscriber implements EventSubscriberInterface
         foreach ($dossierQuery->toIterable() as $dossier) {
             $urls->addUrl(
                 new UrlConcrete(
-                    $generator->generate('app_dossier_detail', ['dossierId' => $dossier->getDossierNr()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    $generator->generate(
+                        'app_dossier_detail',
+                        ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    ),
                     $dossier->getUpdatedAt(),
                     UrlConcrete::CHANGEFREQ_MONTHLY,
                     0.8
@@ -77,6 +81,7 @@ class SitemapSubscriber implements EventSubscriberInterface
                 $urls->addUrl(
                     new UrlConcrete(
                         $generator->generate('app_document_detail', [
+                            'prefix' => $dossier->getDocumentPrefix(),
                             'dossierId' => $dossier->getDossierNr(),
                             'documentId' => $document->getDocumentNr(),
                         ], UrlGeneratorInterface::ABSOLUTE_URL),

@@ -12,6 +12,10 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: DepartmentRepository::class)]
+#[ORM\UniqueConstraint(
+    name: 'department_pk',
+    columns: ['name']
+)]
 class Department
 {
     #[ORM\Id]
@@ -70,7 +74,7 @@ class Department
     }
 
     /**
-     * @return Collection|Organisation[]
+     * @return Collection<array-key,Organisation>
      */
     public function getOrganisations(): Collection
     {

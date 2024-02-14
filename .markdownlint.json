@@ -6,7 +6,7 @@
   },
   "no-inline-html": {
 	  "allowed_elements": [
-      "dl", "dt", "dd"
+      "dl", "dt", "dd", "details", "summary", "code"
     ]
   }
 }

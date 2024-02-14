@@ -15,6 +15,8 @@ class UpdateInquiryLinksMessage
         private readonly array $docIdsToAdd,
         /** @var Uuid[] */
         private readonly array $docIdsToDelete,
+        /** @var Uuid[] */
+        private readonly array $dossierIdsToAdd,
     ) {
     }
 
@@ -42,5 +44,13 @@ class UpdateInquiryLinksMessage
     public function getDocIdsToDelete(): array
     {
         return $this->docIdsToDelete;
+    }
+
+    /**
+     * @return Uuid[]
+     */
+    public function getDossierIdsToAdd(): array
+    {
+        return $this->dossierIdsToAdd;
     }
 }

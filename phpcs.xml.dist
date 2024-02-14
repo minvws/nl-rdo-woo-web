@@ -3,6 +3,7 @@
 <ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
 
+    <arg value="ps"/>
     <arg name="cache" value=".phpcs-cache"/>
     <arg name="colors"/>
     <arg name="extensions" value="php"/>
@@ -14,14 +15,13 @@
     <rule ref="vendor/slevomat/coding-standard/SlevomatCodingStandard/Sniffs/TypeHints/DeclareStrictTypesSniff.php" />
     <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
         <properties>
-            <property name="searchAnnotations" type="boolean" value="true"/>
+            <property name="searchAnnotations" value="true"/>
         </properties>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
         <properties>
-          <property name="newlinesCountBetweenOpenTagAndDeclare" type="int" value="2" />
-          <property name="spacesCountAroundEqualsSign" type="int" value="0" />
+          <property name="spacesCountAroundEqualsSign" value="0" />
         </properties>
       </rule>
 

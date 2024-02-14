@@ -10,7 +10,7 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 class MimeTypeIcon
 {
     public ?string $class = '';
-    public ?string $color = 'fill-dim-gray';
+    public ?string $color = 'fill-bhr-dim-gray';
     public ?string $mimeType = null;
     public ?int $size = 24;
 

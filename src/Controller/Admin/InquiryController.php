@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Attribute\AuthMatrix;
 use App\Controller\Admin\Dossier\DossierAuthorizationTrait;
 use App\Entity\DocumentPrefix;
 use App\Entity\Dossier;
@@ -16,6 +15,8 @@ use App\Form\Inquiry\InquiryLinkDossierFormType;
 use App\Repository\InquiryRepository;
 use App\Service\Inquiry\InquiryLinkImporter;
 use App\Service\Inquiry\InquiryService;
+use App\Service\Inventory\InquiryChangeset;
+use App\Service\Inventory\InventoryDataHelper;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -26,7 +27,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -46,16 +48,14 @@ class InquiryController extends AbstractController
         private readonly InquiryService $inquiryService,
         private readonly InquiryLinkImporter $inquiryImporter,
         private readonly TranslatableFormErrorMapper $formErrorMapper,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
     #[Route('/balie/verzoeken', name: 'app_admin_inquiries', methods: ['GET'])]
-    #[AuthMatrix('inquiry.read')]
-    public function index(Breadcrumbs $breadcrumbs, Request $request): Response
+    #[IsGranted('AuthMatrix.inquiry.read')]
+    public function index(Request $request): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addItem('Inquiry management');
-
         $pagination = $this->paginator->paginate(
             $this->repository->getQueryWithDocCountAndDossierCount($this->authorizationMatrix->getActiveOrganisation()),
             $request->query->getInt('page', 1),
@@ -68,24 +68,18 @@ class InquiryController extends AbstractController
     }
 
     #[Route('/balie/verzoeken/link', name: 'app_admin_inquiries_link', methods: ['GET'])]
-    #[AuthMatrix('inquiry.create')]
-    public function link(Breadcrumbs $breadcrumbs): Response
+    #[IsGranted('AuthMatrix.inquiry.create')]
+    public function link(): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addItem('Inquiry link');
-
         return $this->render('admin/inquiry/link.html.twig', [
             'placeholder' => '',
         ]);
     }
 
     #[Route('/balie/verzoeken/link/documenten', name: 'app_admin_inquiries_link_documents', methods: ['GET', 'POST'])]
-    #[AuthMatrix('inquiry.create')]
-    public function linkDocuments(Breadcrumbs $breadcrumbs, Request $request): Response
+    #[IsGranted('AuthMatrix.inquiry.create')]
+    public function linkDocuments(Request $request): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addItem('Inquiry link');
-
         $choiceLoader = new DocumentPrefixChoiceLoader($this->doctrine, $this->authorizationMatrix, $this->security);
         $form = $this->createForm(InquiryLinkDocumentsFormType::class, null, ['choice_loader' => $choiceLoader]);
 
@@ -108,14 +102,14 @@ class InquiryController extends AbstractController
                     $prefix
                 );
 
-                if (count($errors) === 0) {
+                if (count($errors['generic']) === 0 && count($errors['row']) === 0) {
+                    $this->addFlash('backend', ['success' => $this->translator->trans('Case numbers are being been linked')]);
+
                     return $this->redirectToRoute('app_admin_inquiries');
                 }
 
-                /* @phpstan-ignore-next-line */
                 $this->formErrorMapper->mapGenericErrorsToForm($errors['generic'], $form);
 
-                /* @phpstan-ignore-next-line */
                 $this->formErrorMapper->mapRowErrorsToForm($errors['row'], $form);
             }
         }
@@ -127,12 +121,9 @@ class InquiryController extends AbstractController
     }
 
     #[Route('/balie/verzoeken/link/besluiten', name: 'app_admin_inquiries_link_dossiers', methods: ['GET', 'POST'])]
-    #[AuthMatrix('inquiry.create')]
-    public function linkDossiers(Breadcrumbs $breadcrumbs, Request $request): Response
+    #[IsGranted('AuthMatrix.inquiry.create')]
+    public function linkDossiers(Request $request): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addItem('Inquiry link');
-
         $choiceLoader = new DossierChoiceLoader($this->doctrine, $this->authorizationMatrix, $this->security);
         $form = $this->createForm(InquiryLinkDossierFormType::class, null, ['choice_loader' => $choiceLoader]);
 
@@ -145,16 +136,17 @@ class InquiryController extends AbstractController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $inquiries = explode(',', strval($form->get('map')->getData()));
-            $inquiries = array_map('trim', $inquiries);
+            $inquiryChangeset = new InquiryChangeset($this->authorizationMatrix->getActiveOrganisation());
+            $caseNrs = InventoryDataHelper::separateValues(strval($form->get('map')->getData()), ',');
 
             /** @var Dossier[] $dossiers */
             $dossiers = $form->get('dossiers')->getData();
             foreach ($dossiers as $dossier) {
                 $this->testIfDossierIsAllowedByUser($dossier);
-                $this->inquiryService->addDossierToInquiries($dossier, $inquiries);
+                $inquiryChangeset->addCaseNrsForDossier($dossier, $caseNrs);
             }
-            $this->doctrine->flush();
+
+            $this->inquiryService->applyChangesetAsync($inquiryChangeset);
 
             return $this->redirectToRoute('app_admin_inquiries');
         }

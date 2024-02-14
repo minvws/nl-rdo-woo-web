@@ -11,6 +11,19 @@
 
         <div class="px-11">
             <div class="bhr-card">
+                {% set alerts = app.flashes('backend') %}
+                {% if alerts | length > 0 %}
+                    <div class="mb-8">
+                        {% for messages in alerts %}
+                            {% for label, message in messages %}
+                                <twig:Admin:Alert type="{{ label }}">
+                                    <strong>{{ message }}</strong>
+                                </twig:Admin:Alert>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
                 <h2 class="bhr-title mb-8">{{ "Update your password" | trans }}</h1>
 
                 <div class="bhr-content text-lg mb-8" id="password-instructions">

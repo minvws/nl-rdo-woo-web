@@ -12,8 +12,10 @@ use App\Entity\InquiryInventory;
 use App\Entity\Organisation;
 use App\Message\GenerateInquiryArchivesMessage;
 use App\Message\GenerateInquiryInventoryMessage;
+use App\Message\UpdateInquiryLinksMessage;
 use App\Service\BatchDownloadService;
 use App\Service\HistoryService;
+use App\Service\Inventory\InquiryChangeset;
 use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -22,19 +24,11 @@ use Symfony\Component\Uid\Uuid;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 class InquiryService
 {
-    /**
-     * This local lookup exists for two reasons:
-     * - Performance vs database lookup. For big inventories this service is called thousands of times in a row, with many reuse of inquiries.
-     * - The findOrCreateInquiryForCaseNumber doesn't flush (for performance) so a newly created inquiry would not be found in next iteration.
-     *
-     * @var array<string, array<string, Inquiry>>
-     */
-    private array $inquiries = [];
-
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
         private readonly MessageBusInterface $messageBus,
@@ -44,73 +38,8 @@ class InquiryService
     ) {
     }
 
-    public function clearLookupCache(): void
-    {
-        $this->inquiries = [];
-    }
-
-    /**
-     * If the document has case numbers, add it to those inquiries. If those inquiries do not exist
-     * yet, create them as well.
-     *
-     * @param array<string, string> $caseNrs
-     */
-    public function updateDocumentInquiries(Organisation $organisation, Document $document, array $caseNrs): void
-    {
-        $added = [];
-        foreach ($caseNrs as $caseNr) {
-            $inquiry = $this->findOrCreateInquiryForCaseNumber($organisation, $caseNr);
-
-            // Add this document, and the dossiers it belongs to, to the inquiry
-            $inquiry->addDocument($document);
-            foreach ($document->getDossiers() as $dossier) {
-                if ($inquiry->getDossiers()->contains($dossier)) {
-                    continue;
-                }
-                $added[] = $caseNr;
-                $inquiry->addDossier($dossier);
-            }
-
-            $this->doctrine->persist($inquiry);
-
-            $this->generateInventory($inquiry);
-            $this->generateArchives($inquiry);
-        }
-
-        if (count($added) > 0 && isset($dossier)) {
-            $this->historyService->addDossierEntry($dossier, 'dossier_inquiry_added', ['count' => count($added), 'casenrs' => $added]);
-        }
-    }
-
-    /**
-     * @param string[] $caseNrs
-     */
-    public function addDossierToInquiries(Dossier $dossier, array $caseNrs): void
-    {
-        foreach ($caseNrs as $caseNr) {
-            $inquiry = $this->findOrCreateInquiryForCaseNumber($dossier->getOrganisation(), $caseNr);
-
-            $inquiry->addDossier($dossier);
-            $this->doctrine->persist($inquiry);
-
-            if ($dossier->getStatus() === Dossier::STATUS_PUBLISHED || $dossier->getStatus() === Dossier::STATUS_PREVIEW) {
-                $this->generateInventory($inquiry);
-                $this->generateArchives($inquiry);
-            }
-        }
-    }
-
     public function findOrCreateInquiryForCaseNumber(Organisation $organisation, string $caseNumber): Inquiry
     {
-        $orgId = $organisation->getId()->toRfc4122();
-        if (! array_key_exists($orgId, $this->inquiries)) {
-            $this->inquiries[$orgId] = [];
-        }
-
-        if (array_key_exists($caseNumber, $this->inquiries[$orgId])) {
-            return $this->inquiries[$orgId][$caseNumber];
-        }
-
         $inquiry = $this->doctrine->getRepository(Inquiry::class)->findOneBy(['organisation' => $organisation, 'casenr' => $caseNumber]);
 
         if (! $inquiry) {
@@ -119,16 +48,10 @@ class InquiryService
             $inquiry->setOrganisation($organisation);
 
             $this->doctrine->persist($inquiry);
+            $this->doctrine->flush();
         }
 
-        $this->inquiries[$orgId][$inquiry->getCasenr()] = $inquiry;
-
         return $inquiry;
-    }
-
-    public function flush(): void
-    {
-        $this->doctrine->flush();
     }
 
     /**
@@ -140,8 +63,6 @@ class InquiryService
         foreach ($this->doctrine->getRepository(Inquiry::class)->findByDossier($dossier) as $inquiry) {
             /** @var Inquiry $inquiry */
             $inquiry->removeDossier($dossier);
-
-            $this->historyService->addDossierEntry($dossier, 'dossier_inquiry_removed', ['casenr' => $inquiry->getCasenr()]);
 
             if ($inquiry->getDossiers()->isEmpty()) {
                 $inventory = $inquiry->getInventory();
@@ -198,28 +119,27 @@ class InquiryService
     /**
      * @param Uuid[] $docIdsToAdd
      * @param Uuid[] $docIdsToDelete
+     * @param Uuid[] $dossierIdsToAdd
      */
-    public function updateDocumentsForCase(
+    public function updateInquiryLinks(
         Organisation $organisation,
         string $caseNr,
         array $docIdsToAdd,
-        array $docIdsToDelete
+        array $docIdsToDelete,
+        array $dossierIdsToAdd,
     ): void {
         $generateFiles = false;
         $inquiry = $this->findOrCreateInquiryForCaseNumber($organisation, $caseNr);
+
+        $dossiersAdded = 0;
 
         foreach ($docIdsToAdd as $docIdToAdd) {
             $document = $this->doctrine->getRepository(Document::class)->find($docIdToAdd);
             if ($document) {
                 $inquiry->addDocument($document);
                 foreach ($document->getDossiers() as $dossier) {
-                    if ($inquiry->getDossiers()->contains($dossier)) {
-                        continue;
-                    }
-                    $inquiry->addDossier($dossier);
-                    $this->historyService->addDossierEntry($dossier, 'inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
-
-                    if ($dossier->isPubliclyAvailable()) {
+                    if ($this->addDossierToInquiry($inquiry, $dossier, $caseNr)) {
+                        $dossiersAdded++;
                         $generateFiles = true;
                     }
                 }
@@ -235,6 +155,21 @@ class InquiryService
             $generateFiles = true;
         }
 
+        foreach ($dossierIdsToAdd as $dossierId) {
+            $dossier = $this->doctrine->getRepository(Dossier::class)->find($dossierId);
+            if ($this->addDossierToInquiry($inquiry, $dossier, $caseNr)) {
+                $dossiersAdded++;
+                $generateFiles = true;
+            }
+        }
+
+        if ($dossiersAdded > 0) {
+            $this->historyService->addInquiryEntry($inquiry, 'dossiers_added', ['count' => $dossiersAdded]);
+        }
+        if (count($docIdsToAdd) > 0) {
+            $this->historyService->addInquiryEntry($inquiry, 'documents_added', ['count' => count($docIdsToAdd)]);
+        }
+
         $this->doctrine->persist($inquiry);
         $this->doctrine->flush();
 
@@ -242,5 +177,33 @@ class InquiryService
             $this->generateInventory($inquiry);
             $this->generateArchives($inquiry);
         }
+    }
+
+    public function applyChangesetAsync(InquiryChangeset $changeset): void
+    {
+        foreach ($changeset->getChanges() as $caseNr => $actions) {
+            $this->messageBus->dispatch(
+                new UpdateInquiryLinksMessage(
+                    $changeset->getOrganisation()->getId(),
+                    strval($caseNr),
+                    $actions[InquiryChangeset::ADD_DOCUMENTS],
+                    $actions[InquiryChangeset::DEL_DOCUMENTS],
+                    $actions[InquiryChangeset::ADD_DOSSIERS],
+                )
+            );
+        }
+    }
+
+    private function addDossierToInquiry(Inquiry $inquiry, ?Dossier $dossier, string $caseNr): bool
+    {
+        if (! $dossier || $inquiry->getDossiers()->contains($dossier)) {
+            return false;
+        }
+
+        $inquiry->addDossier($dossier);
+
+        $this->historyService->addDossierEntry($dossier, 'inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
+
+        return $dossier->getStatus()->isPubliclyAvailable();
     }
 }

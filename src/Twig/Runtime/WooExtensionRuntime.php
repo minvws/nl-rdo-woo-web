@@ -8,11 +8,12 @@ use App\Citation;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\History;
+use App\Enum\PublicationStatus;
 use App\Repository\DocumentRepository;
 use App\Service\DateRangeConverter;
 use App\Service\DocumentUploadQueue;
 use App\Service\HistoryService;
-use App\Service\Search\Query\Facet\FacetMappingService;
+use App\Service\Search\Query\Facet\FacetTwigService;
 use App\Service\Search\Query\QueryGenerator;
 use App\Service\Security\OrganisationSwitcher;
 use App\Service\Storage\ThumbnailStorageService;
@@ -35,7 +36,7 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
         private readonly Translator $translator,
         private readonly DocumentRepository $documentRepository,
         private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly FacetMappingService $facetMapping,
+        private readonly FacetTwigService $facetService,
         private readonly DocumentUploadQueue $uploadQueue,
         private readonly OrganisationSwitcher $organisationSwitcher,
         private readonly HistoryService $historyService,
@@ -76,15 +77,15 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
      *
      * @TODO: Remove as this uses bootstrap
      */
-    public function statusBadge(string $status): string
+    public function statusBadge(PublicationStatus $status): string
     {
         $color = match ($status) {
-            Dossier::STATUS_SCHEDULED, Dossier::STATUS_PREVIEW, Dossier::STATUS_PUBLISHED => 'bhr-badge--green',
-            Dossier::STATUS_RETRACTED => 'bhr-badge--red',
+            PublicationStatus::SCHEDULED, PublicationStatus::PREVIEW, PublicationStatus::PUBLISHED => 'bhr-badge--green',
+            PublicationStatus::RETRACTED => 'bhr-badge--red',
             default => 'bhr-badge--purple',
         };
 
-        return "<span class=\"bhr-badge {$color}\">" . $this->translator->trans($status) . '</span>';
+        return "<span class=\"bhr-badge {$color}\">" . $this->translator->trans($status->value) . '</span>';
     }
 
     /**
@@ -131,17 +132,11 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
      */
     public function hasFacets(Request $request): bool
     {
-        foreach ($this->facetMapping->getAll() as $defition) {
-            if ($request->query->has($defition->getQueryParam())) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->facetService->containsFacets($request->query);
     }
 
     /**
-     * Returns true if the given document and pagenr has a thumbnail. For non-paged documents (like audio), pageNr 0 can be used.
+     * Returns true if the given document and pagenr has a thumbnail. For non-paged documents pageNr 0 can be used.
      */
     public function hasThumbnail(Document $document, int $pageNr): bool
     {
@@ -153,7 +148,7 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
      */
     public function facet2query(string $facet): string
     {
-        return $this->facetMapping->getFacetByKey($facet)->getQueryParam();
+        return $this->facetService->getParamKeyByFacetName($facet);
     }
 
     /**
@@ -169,7 +164,7 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
 
         // If we find a dossier with status published, we can return true
         foreach ($document->getDossiers() as $dossier) {
-            if ($dossier->getStatus() == Dossier::STATUS_PUBLISHED) {
+            if ($dossier->getStatus()->isPublished()) {
                 return true;
             }
         }
@@ -190,8 +185,9 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
 
         // If we find a dossier with status published, we can return true
         foreach ($document->getDossiers() as $dossier) {
-            if ($dossier->getStatus() == Dossier::STATUS_PUBLISHED) {
+            if ($dossier->getStatus()->isPublished()) {
                 return $this->urlGenerator->generate('app_document_detail', [
+                    'prefix' => $dossier->getDocumentPrefix(),
                     'dossierId' => $dossier->getDossierNr(),
                     'documentId' => $document->getDocumentNr(),
                 ]);

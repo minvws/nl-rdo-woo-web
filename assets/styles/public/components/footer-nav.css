@@ -1,0 +1,14 @@
+@layer components {
+    .woo-footer-nav {
+        @apply md:ml-20 not-first:pt-8 md:not-first:pt-0;
+    }
+
+    .woo-footer-nav__title {
+        @apply text-3xl font-bold mb-4 leading-none whitespace-nowrap;
+    }
+
+    .woo-footer-nav__a {
+        @apply block py-2 leading-none;
+        @apply focus:outline-white;
+    }
+}

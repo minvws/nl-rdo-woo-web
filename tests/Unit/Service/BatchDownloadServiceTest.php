@@ -22,11 +22,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BatchDownloadServiceTest extends MockeryTestCase
 {
-    private BatchDownloadRepository|MockInterface $batchRepository;
-    private MessageBusInterface|MockInterface $messageBus;
-    private ArchiveService|MockInterface $archiveService;
+    private BatchDownloadRepository&MockInterface $batchRepository;
+    private MessageBusInterface&MockInterface $messageBus;
+    private ArchiveService&MockInterface $archiveService;
     private BatchDownloadService $service;
-    private TranslatorInterface|MockInterface $translator;
+    private TranslatorInterface&MockInterface $translator;
 
     public function setUp(): void
     {

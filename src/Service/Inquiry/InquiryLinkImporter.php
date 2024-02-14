@@ -14,6 +14,8 @@ use App\Repository\DocumentRepository;
 use App\Service\FileReader\ColumnMapping;
 use App\Service\FileReader\ExcelReaderFactory;
 use App\Service\FileReader\FileReaderInterface;
+use App\Service\Inventory\InquiryChangeset;
+use App\Service\Inventory\InventoryDataHelper;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -33,7 +35,7 @@ class InquiryLinkImporter
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, array<int, mixed>>
      */
     public function processSpreadsheet(Organisation $activeOrganisation, UploadedFile $uploadedFile, DocumentPrefix $prefix): array
     {
@@ -41,6 +43,8 @@ class InquiryLinkImporter
             'generic' => [],
             'row' => [],
         ];
+
+        $inquiryChangeset = new InquiryChangeset($activeOrganisation);
 
         try {
             if ($activeOrganisation !== $prefix->getOrganisation()) {
@@ -53,12 +57,19 @@ class InquiryLinkImporter
                 $rowIdx = intval($rowIdx);
                 $documentId = $reader->getString($rowIdx, self::COLUMN_DOCUMENT_ID);
                 $matter = $reader->getString($rowIdx, self::COLUMN_MATTER);
-                $caseNrs = $reader->getString($rowIdx, self::COLUMN_CASE_NR);
-                $caseNrs = explode(',', $caseNrs);
+                $caseNrs = InventoryDataHelper::separateValues(
+                    $reader->getString($rowIdx, self::COLUMN_CASE_NR),
+                    ','
+                );
 
                 $documentNr = sprintf('%s-%s-%s', $prefix->getPrefix(), $matter, $documentId);
                 try {
-                    $this->handleDocumentLink($prefix->getOrganisation(), $documentNr, $caseNrs);
+                    $document = $this->documentRepository->findOneBy(['documentNr' => $documentNr]);
+                    if (! $document) {
+                        throw InquiryLinkImportException::forMissingDocument($documentNr);
+                    }
+
+                    $inquiryChangeset->updateCaseNrsForDocument($document, $caseNrs);
                 } catch (TranslatableException $exception) {
                     $errors['row'][$rowIdx] = [[
                         'message' => $exception->getMessage(),
@@ -67,6 +78,8 @@ class InquiryLinkImporter
                     ]];
                 }
             }
+
+            $this->inquiryService->applyChangesetAsync($inquiryChangeset);
         } catch (\Exception $exception) {
             if (! $exception instanceof TranslatableException) {
                 $exception = InventoryReaderException::forOpenSpreadsheetException($exception);
@@ -80,8 +93,6 @@ class InquiryLinkImporter
 
             return $errors;
         }
-
-        $this->inquiryService->flush();
 
         return $errors;
     }
@@ -110,18 +121,5 @@ class InquiryLinkImporter
         } catch (\Exception $exception) {
             throw FileReaderException::forOpenSpreadsheetException($exception);
         }
-    }
-
-    /**
-     * @param string[] $caseNrs
-     */
-    private function handleDocumentLink(Organisation $organisation, string $documentNr, array $caseNrs): void
-    {
-        $document = $this->documentRepository->findOneBy(['documentNr' => $documentNr]);
-        if (! $document) {
-            throw InquiryLinkImportException::forMissingDocument($documentNr);
-        }
-
-        $this->inquiryService->updateDocumentInquiries($organisation, $document, $caseNrs);
     }
 }

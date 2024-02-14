@@ -6,15 +6,13 @@ namespace App\Service\Inventory;
 
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Message\GenerateSanitizedInventoryMessage;
-use App\Message\UpdateDossierArchivesMessage;
-use App\Message\UpdateDossierMessage;
 use App\Repository\DocumentRepository;
+use App\Service\DossierService;
 use App\Service\HistoryService;
+use App\Service\Inquiry\InquiryService;
 use App\Service\Inventory\Progress\RunProgress;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -27,9 +25,11 @@ class InventoryUpdater
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
         private readonly DocumentUpdater $documentUpdater,
+        private readonly DocumentComparator $documentComparator,
         private readonly DocumentRepository $documentRepository,
-        private readonly MessageBusInterface $messageBus,
+        private readonly DossierService $dossierService,
         private readonly HistoryService $historyService,
+        private readonly InquiryService $inquiryService,
     ) {
     }
 
@@ -44,9 +44,10 @@ class InventoryUpdater
     ): void {
         $documentGenerator = $reader->getDocumentMetadataGenerator($dossier);
 
-        $inquiryUpdater = new InquiryUpdater($dossier->getOrganisation(), $this->messageBus);
+        $inquiryChangeset = new InquiryChangeset($dossier->getOrganisation());
 
         $documentsToUpdate = [];
+        $docReferralUpdates = [];
         $currentProgress = $runProgress->getCurrentCount();
         foreach ($documentGenerator as $inventoryItem) {
             if (count($documentsToUpdate) > 1000) {
@@ -66,24 +67,27 @@ class InventoryUpdater
             }
 
             $documentNr = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
-            $document = $this->getDocument($documentNr->getValue());
+            $document = $this->documentRepository->findByDocumentNumber($documentNr);
 
-            $action = $changeset->getAction($documentNr);
-
-            if ($action === null) {
+            $documentChangeStatus = $changeset->getStatus($documentNr);
+            if ($documentChangeStatus === InventoryChangeset::UNCHANGED) {
                 continue;
             }
 
-            if ($action === InventoryChangeset::ACTION_CREATE && $document === null) {
+            if ($documentChangeStatus === InventoryChangeset::ADDED && $document === null) {
                 $document = new Document();
 
                 $document->setDocumentNr($documentNr->getValue());
                 $this->doctrine->persist($document); // For getting ID
 
                 $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
-                $inquiryUpdater->addToChangeset($documentMetadata, $document);
+                $inquiryChangeset->updateCaseNrsForDocument($document, $documentMetadata->getCaseNumbers());
 
                 $documentsToUpdate[] = $document;
+
+                if (count($documentMetadata->getRefersTo()) !== 0) {
+                    $docReferralUpdates[$documentNr->getValue()] = $documentMetadata->getRefersTo();
+                }
 
                 continue;
             }
@@ -100,7 +104,7 @@ class InventoryUpdater
                 }
             }
 
-            if ($action === InventoryChangeset::ACTION_UPDATE && $document instanceof Document) {
+            if ($documentChangeStatus === InventoryChangeset::UPDATED && $document instanceof Document) {
                 if ($documentMetadata->getJudgement() != $document->getJudgement()) {
                     $this->historyService->addDocumentEntry($document, 'document_judgement_' . $documentMetadata->getJudgement()->value, [
                         'old' => '%' . ($document->getJudgement()->value ?? '') . '%',
@@ -111,7 +115,7 @@ class InventoryUpdater
                 if ($changes) {
                     // All changes are translated
                     foreach ($changes as $key => $value) {
-                        $changes['%' . $key . '%'] = $value;
+                        $changes[$key] = '%' . $value . '%';
                     }
 
                     $this->historyService->addDocumentEntry($document, 'document_inventory_updated', [
@@ -120,9 +124,13 @@ class InventoryUpdater
                 }
 
                 $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
-                $inquiryUpdater->addToChangeset($documentMetadata, $document);
+                $inquiryChangeset->updateCaseNrsForDocument($document, $documentMetadata->getCaseNumbers());
 
                 $documentsToUpdate[] = $document;
+
+                if ($this->documentComparator->hasRefersToUpdate($dossier, $document, $documentMetadata)) {
+                    $docReferralUpdates[$document->getDocumentNr()] = $documentMetadata->getRefersTo();
+                }
 
                 continue;
             }
@@ -136,16 +144,19 @@ class InventoryUpdater
         }
         unset($documentsToUpdate);
 
-        $inquiryUpdater->flushChangeset();
+        // These updates must be applied outside the main document process loop, as referred docs might not exist yet.
+        $this->applyDocumentReferralUpdates($dossier, $docReferralUpdates);
+
+        $this->inquiryService->applyChangesetAsync($inquiryChangeset);
 
         $this->applyDeletes($changeset, $dossier);
     }
 
     private function applyDeletes(InventoryChangeset $changeset, Dossier $dossier): void
     {
-        foreach ($changeset->getDeletes() as $documentNr) {
+        foreach ($changeset->getDeleted() as $documentNr) {
             $document = $this->getDocument($documentNr);
-            if (! $document instanceof Document || $dossier->getStatus() !== Dossier::STATUS_CONCEPT) {
+            if (! $document instanceof Document || ! $dossier->getStatus()->isConcept()) {
                 throw new \RuntimeException('State mismatch between database and changeset');
             }
 
@@ -159,30 +170,35 @@ class InventoryUpdater
 
     public function sendMessagesForChangeset(InventoryChangeset $changeset, Dossier $dossier, RunProgress $runProgress): void
     {
-        $this->messageBus->dispatch(GenerateSanitizedInventoryMessage::forDossier($dossier));
-
-        if (! $dossier->isConcept()) {
-            $this->messageBus->dispatch(UpdateDossierArchivesMessage::forDossier($dossier));
-            $this->messageBus->dispatch(UpdateDossierMessage::forDossier($dossier));
-        }
+        $this->dossierService->generateSanitizedInventory($dossier);
+        $this->dossierService->generateArchives($dossier);
+        $this->dossierService->update($dossier);
 
         foreach ($changeset->getAll() as $documentNr => $action) {
             $runProgress->tick();
-            $document = $this->getDocument($documentNr);
 
+            if ($action === InventoryChangeset::UNCHANGED) {
+                continue;
+            }
+
+            $document = $this->getDocument($documentNr);
             if (! $document instanceof Document) {
                 throw new \RuntimeException('State mismatch between database and changeset');
             }
 
-            if ($action === InventoryChangeset::ACTION_DELETE) {
+            if ($action === InventoryChangeset::DELETED) {
                 $this->documentUpdater->asyncRemove($document, $dossier);
+                $this->doctrine->detach($document);
                 continue;
             }
 
-            if (! $dossier->isConcept()) {
-                $this->documentUpdater->asyncUpdate($document);
+            if ($dossier->getStatus()->isConcept() && $document->shouldBeUploaded()) {
+                // As an optimization skip indexing for concept docs, as these will be indexed during the ingest process
+                $this->doctrine->detach($document);
+                continue;
             }
 
+            $this->documentUpdater->asyncUpdate($document);
             $this->doctrine->detach($document);
         }
     }
@@ -190,5 +206,35 @@ class InventoryUpdater
     private function getDocument(int|string $documentNr): ?Document
     {
         return $this->documentRepository->findOneBy(['documentNr' => $documentNr]);
+    }
+
+    /**
+     * @param array<string, string[]> $docReferralUpdates
+     */
+    private function applyDocumentReferralUpdates(Dossier $dossier, array $docReferralUpdates): void
+    {
+        $documentsToUpdate = [];
+        foreach ($docReferralUpdates as $documentNr => $refersTo) {
+            $document = $this->getDocument($documentNr);
+            if (! $document instanceof Document) {
+                throw new \RuntimeException('State mismatch between database and document referral updates');
+            }
+
+            $this->documentUpdater->updateDocumentReferrals($dossier, $document, $refersTo);
+
+            $documentsToUpdate[] = $document;
+            if (count($documentsToUpdate) > 1000) {
+                $this->doctrine->flush();
+                foreach ($documentsToUpdate as $doc) {
+                    $this->doctrine->detach($doc);
+                }
+                $documentsToUpdate = [];
+            }
+        }
+
+        $this->doctrine->flush();
+        foreach ($documentsToUpdate as $doc) {
+            $this->doctrine->detach($doc);
+        }
     }
 }

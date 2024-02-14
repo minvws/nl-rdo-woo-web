@@ -12,6 +12,8 @@ use App\Service\BatchDownloadService;
 use App\Service\DossierService;
 use App\Service\DownloadResponseHelper;
 use App\Service\Search\Model\Config;
+use App\ViewModel\Factory\DossierViewFactory;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,6 +37,7 @@ class DossierController extends AbstractController
         private readonly DownloadResponseHelper $downloadHelper,
         private readonly BatchDownloadService $batchDownloadService,
         private readonly DocumentRepository $documentRepository,
+        private readonly DossierViewFactory $dossierViewFactory,
     ) {
     }
 
@@ -46,9 +49,9 @@ class DossierController extends AbstractController
     }
 
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
-    #[Route('/dossier/{dossierId}', name: 'app_dossier_detail', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierId}', name: 'app_dossier_detail', methods: ['GET'])]
     public function detail(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Breadcrumbs $breadcrumbs,
         Request $request,
     ): Response {
@@ -61,6 +64,7 @@ class DossierController extends AbstractController
 
         $docQuery = $this->documentRepository->getDossierDocumentsQueryBuilder($dossier);
 
+        /** @var PaginationInterface<array-key,Dossier> $publicPagination */
         $publicPagination = $this->paginator->paginate(
             DocumentConditions::onlyPubliclyAvailable($docQuery),
             $request->query->getInt('pu', 1),
@@ -68,6 +72,7 @@ class DossierController extends AbstractController
             ['pageParameterName' => 'pu'],
         );
 
+        /** @var PaginationInterface<array-key,Dossier> $notPublicPagination */
         $notPublicPagination = $this->paginator->paginate(
             DocumentConditions::notPubliclyAvailable($docQuery),
             $request->query->getInt('pn', 1),
@@ -75,6 +80,7 @@ class DossierController extends AbstractController
             ['pageParameterName' => 'pn'],
         );
 
+        /** @var PaginationInterface<array-key,Dossier> $notOnlinePagination */
         $notOnlinePagination = $this->paginator->paginate(
             DocumentConditions::notOnline($docQuery),
             $request->query->getInt('po', 1),
@@ -83,17 +89,17 @@ class DossierController extends AbstractController
         );
 
         return $this->render('dossier/details.html.twig', [
-            'dossier' => $dossier,
-            'public_docs' => $publicPagination,
-            'not_public_docs' => $notPublicPagination,
-            'not_online_docs' => $notOnlinePagination,
+            'publicDocs' => $publicPagination,
+            'notPublicDocs' => $notPublicPagination,
+            'notOnlineDocs' => $notOnlinePagination,
+            'dossier' => $this->dossierViewFactory->getDossierViewModel($dossier),
         ]);
     }
 
-    #[Route('/dossier/{dossierId}/batch', name: 'app_dossier_batch', methods: ['POST'])]
+    #[Route('/dossier/{prefix}/{dossierId}/batch', name: 'app_dossier_batch', methods: ['POST'])]
     public function createBatch(
         Request $request,
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
     ): Response {
         if (! $this->dossierService->isViewingAllowed($dossier)) {
             throw $this->createNotFoundException('Dossier not found');
@@ -117,19 +123,23 @@ class DossierController extends AbstractController
         $batch = $this->batchDownloadService->findOrCreate($dossier, $documents, count($documents) > 0);
 
         return $this->redirectToRoute('app_dossier_batch_detail', [
+            'prefix' => $dossier->getDocumentPrefix(),
             'dossierId' => $dossier->getDossierNr(),
             'batchId' => $batch->getId(),
         ]);
     }
 
-    #[Route('/dossier/{dossierId}/batch/{batchId}', name: 'app_dossier_batch_detail', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierId}/batch/{batchId}', name: 'app_dossier_batch_detail', methods: ['GET'])]
     public function batch(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
         Breadcrumbs $breadcrumbs
     ): Response {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Dossier', 'app_dossier_detail', ['dossierId' => $dossier->getDossierNr()]);
+        $breadcrumbs->addRouteItem('Dossier', 'app_dossier_detail', [
+            'prefix' => $dossier->getDocumentPrefix(),
+            'dossierId' => $dossier->getDossierNr(),
+        ]);
         $breadcrumbs->addItem('Download');
 
         if (! $this->dossierService->isViewingAllowed($dossier) || $batch->getEntity() !== $dossier) {
@@ -142,15 +152,19 @@ class DossierController extends AbstractController
             'page_title' => 'Download document archive',
             'download_path' => $this->generateUrl(
                 'app_dossier_batch_download',
-                ['dossierId' => $dossier->getDossierNr(), 'batchId' => $batch->getId()]
+                [
+                    'prefix' => $dossier->getDocumentPrefix(),
+                    'dossierId' => $dossier->getDossierNr(),
+                    'batchId' => $batch->getId(),
+                ]
             ),
         ]);
     }
 
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
-    #[Route('/dossier/{dossierId}/batch/{batchId}/download', name: 'app_dossier_batch_download', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierId}/batch/{batchId}/download', name: 'app_dossier_batch_download', methods: ['GET'])]
     public function batchDownload(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
     ): Response {
         if (! $this->dossierService->isViewingAllowed($dossier) || $batch->getEntity() !== $dossier) {
@@ -159,6 +173,7 @@ class DossierController extends AbstractController
 
         if ($batch->getStatus() !== BatchDownload::STATUS_COMPLETED) {
             return $this->redirectToRoute('app_dossier_batch_detail', [
+                'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),
                 'batchId' => $batch->getId(),
             ]);
@@ -168,9 +183,9 @@ class DossierController extends AbstractController
     }
 
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
-    #[Route('/dossier/{dossierId}/inventory/download', name: 'app_dossier_inventory_download', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierId}/inventory/download', name: 'app_dossier_inventory_download', methods: ['GET'])]
     public function downloadInventory(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
     ): StreamedResponse {
         if (! $this->dossierService->isViewingAllowed($dossier)) {
             throw $this->createNotFoundException('Dossier not found');
@@ -180,9 +195,9 @@ class DossierController extends AbstractController
     }
 
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
-    #[Route('/dossier/{dossierId}/decision/download', name: 'app_dossier_decision_download', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierId}/decision/download', name: 'app_dossier_decision_download', methods: ['GET'])]
     public function downloadDecision(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
     ): StreamedResponse {
         if (! $this->dossierService->isViewingAllowed($dossier)) {
             throw $this->createNotFoundException('Dossier not found');

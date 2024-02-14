@@ -180,7 +180,7 @@ class DetailsType extends AbstractDossierStepType
         /** @var Dossier $dossier */
         $dossier = $builder->getData();
 
-        if ($dossier->getId() === null) {
+        if ($dossier->getStatus()->isNew()) {
             $builder
                 ->add('dossierNr', TextType::class, [
                     'label' => 'Referentienummer besluit',
@@ -208,7 +208,7 @@ class DetailsType extends AbstractDossierStepType
         /** @var Dossier $dossier */
         $dossier = $builder->getData();
 
-        if ($dossier->getId() === null || $dossier->getStatus() === Dossier::STATUS_CONCEPT) {
+        if ($dossier->getStatus()->isNewOrConcept()) {
             $builder
                 ->add('next', SubmitType::class, [
                     'label' => 'Opslaan en verder',

@@ -13,13 +13,13 @@
         </thead>
         <tbody>
             {% for dossier in dossiers %}
-            <tr>
+            <tr data-e2e-name="search-previews-result">
                 <td class="w-48">{{ dossier.dossierNr }}</td>
                 <td>{{ dossier.title }}</td>
                 <td class="text-right">
                     <a
                         class="js-clickable-row__focusable"
-                        href="{{ path('app_admin_dossier', {'dossierId': dossier.dossierNr}) }}"
+                        href="{{ path('app_admin_dossier', {'prefix': dossier.documentPrefix, 'dossierId': dossier.dossierNr}) }}"
                     >
                         <span class="sr-only">Details {{ dossier.dossierNr }}</span>
                         <twig:Admin:Icon name="chevron-right" />
@@ -44,13 +44,13 @@
         </thead>
         <tbody>
             {% for document in documents %}
-            <tr>
+            <tr data-e2e-name="search-previews-result">
                 <td class="w-48">{{ document.documentNr }}</td>
                 <td>{{ document.fileInfo.name }}</td>
                 <td class="text-right">
                     <a
                         class="js-clickable-row__focusable"
-                        href="{{ path('app_admin_document', {dossierId: document.dossiers.first.dossierNr, documentId: document.documentNr}) }}"
+                        href="{{ path('app_admin_document', {prefix: document.dossiers.first.documentPrefix, dossierId: document.dossiers.first.dossierNr, documentId: document.documentNr}) }}"
                     >
                         <span class="sr-only">Details {{ document.documentNr }}</span>
                         <twig:Admin:Icon name="chevron-right" />

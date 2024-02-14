@@ -10,7 +10,7 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class ConfigFactoryTest extends MockeryTestCase
 {
-    public function testEmptyConfigFactory()
+    public function testEmptyConfigFactory(): void
     {
         $factory = new ConfigFactory([]);
         $entries = $factory->create();
@@ -18,7 +18,7 @@ class ConfigFactoryTest extends MockeryTestCase
         $this->assertEmpty($entries);
     }
 
-    public function testCorrectEntry()
+    public function testCorrectEntry(): void
     {
         $config = [
             'entries' => [

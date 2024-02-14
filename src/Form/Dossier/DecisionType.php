@@ -30,7 +30,7 @@ class DecisionType extends AbstractDossierStepType
         /** @var Dossier $dossier */
         $dossier = $builder->getData();
 
-        if ($dossier->getStatus() === Dossier::STATUS_CONCEPT) {
+        if ($dossier->getStatus()->isConcept()) {
             $builder->add('decision', ChoiceType::class, [
                 'label' => 'Besluit',
                 'required' => true,
@@ -106,7 +106,7 @@ class DecisionType extends AbstractDossierStepType
 
     public function addSubmits(Dossier $dossier, FormBuilderInterface $builder): void
     {
-        if ($dossier->getStatus() === Dossier::STATUS_CONCEPT) {
+        if ($dossier->getStatus()->isConcept()) {
             $builder
                 ->add('next', SubmitType::class, [
                     'label' => 'Opslaan en verder',

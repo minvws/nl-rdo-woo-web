@@ -149,7 +149,7 @@ class IndexService
     /**
      * @return Index[]
      */
-    public function find(string $name = null): array
+    public function find(?string $name = null): array
     {
         $aliases = $this->listAlias();
 

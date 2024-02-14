@@ -4,51 +4,69 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
+use App\Exception\ProcessInventoryException;
+
 class InventoryChangeset
 {
-    public const ACTION_CREATE = 'create';
-    public const ACTION_UPDATE = 'update';
-    public const ACTION_DELETE = 'delete';
+    public const ADDED = 'create';
+    public const UPDATED = 'update';
+    public const DELETED = 'delete';
+    public const UNCHANGED = 'unchanged';
 
     public function __construct(
         /** @var array<string, string> */
-        private array $changes = [],
+        private array $documentStatus = [],
     ) {
     }
 
-    public function addCreate(DocumentNumber $documentNumber): void
+    public function markAsAdded(DocumentNumber $documentNumber): void
     {
-        $this->changes[$documentNumber->getValue()] = self::ACTION_CREATE;
+        $this->setDocumentStatus($documentNumber->getValue(), self::ADDED);
     }
 
-    public function addUpdate(DocumentNumber $documentNumber): void
+    public function markAsUpdated(DocumentNumber $documentNumber): void
     {
-        $this->changes[$documentNumber->getValue()] = self::ACTION_UPDATE;
+        $this->setDocumentStatus($documentNumber->getValue(), self::UPDATED);
     }
 
-    public function addDelete(string $documentNumber): void
+    public function markAsDeleted(string $documentNumber): void
     {
-        $this->changes[$documentNumber] = self::ACTION_DELETE;
+        $this->setDocumentStatus($documentNumber, self::DELETED);
     }
 
-    public function isEmpty(): bool
+    public function markAsUnchanged(DocumentNumber $documentNumber): void
     {
-        return count($this->changes) === 0;
+        $this->setDocumentStatus($documentNumber->getValue(), self::UNCHANGED);
     }
 
-    public function getAction(DocumentNumber $documentNr): ?string
+    public function hasChanges(): bool
     {
-        return $this->changes[$documentNr->getValue()] ?? null;
+        $changes = array_filter(
+            $this->documentStatus,
+            static fn (string $status) => $status !== self::UNCHANGED,
+        );
+
+        return count($changes) === 0;
+    }
+
+    public function getStatus(DocumentNumber $documentNr): string
+    {
+        $key = $documentNr->getValue();
+        if (! key_exists($key, $this->documentStatus)) {
+            throw new \OutOfBoundsException("DocumentNr $key not found in InventoryChangeset");
+        }
+
+        return $this->documentStatus[$key];
     }
 
     /**
      * @return string[]
      */
-    public function getDeletes(): array
+    public function getDeleted(): array
     {
         return array_keys(array_filter(
-            $this->changes,
-            static fn (string $action) => $action === self::ACTION_DELETE
+            $this->documentStatus,
+            static fn (string $status) => $status === self::DELETED
         ));
     }
 
@@ -58,17 +76,18 @@ class InventoryChangeset
     public function getCounts(): array
     {
         return array_reduce(
-            array_keys($this->changes),
+            array_keys($this->documentStatus),
             function ($totals, $changeKey) {
-                $action = $this->changes[$changeKey];
-                $totals[$action]++;
+                $status = $this->documentStatus[$changeKey];
+                $totals[$status]++;
 
                 return $totals;
             },
             [
-                self::ACTION_CREATE => 0,
-                self::ACTION_UPDATE => 0,
-                self::ACTION_DELETE => 0,
+                self::ADDED => 0,
+                self::UPDATED => 0,
+                self::DELETED => 0,
+                self::UNCHANGED => 0,
             ]
         );
     }
@@ -78,6 +97,15 @@ class InventoryChangeset
      */
     public function getAll(): array
     {
-        return $this->changes;
+        return $this->documentStatus;
+    }
+
+    private function setDocumentStatus(string $documentNumber, string $status): void
+    {
+        if (key_exists($documentNumber, $this->documentStatus)) {
+            throw ProcessInventoryException::forDuplicateDocumentNr($documentNumber);
+        }
+
+        $this->documentStatus[$documentNumber] = $status;
     }
 }

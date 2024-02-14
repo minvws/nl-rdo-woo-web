@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Attribute\AuthMatrix;
 use App\Controller\Admin\Dossier\DossierAuthorizationTrait;
 use App\Entity\Inquiry;
 use App\Form\Inquiry\AdministrationActionsType;
@@ -15,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class InquiryAdmininistrationController extends AbstractController
@@ -29,7 +29,7 @@ class InquiryAdmininistrationController extends AbstractController
     }
 
     #[Route('/balie/admin/inquiry', name: 'app_admin_inquiry_administration', methods: ['GET'])]
-    #[AuthMatrix('inquiry.administration')]
+    #[IsGranted('AuthMatrix.inquiry.administration')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('Administration', 'app_admin');
@@ -42,7 +42,7 @@ class InquiryAdmininistrationController extends AbstractController
     }
 
     #[Route('/balie/admin/inquiry/{casenr}', name: 'app_admin_inquiry_administration_details', methods: ['GET', 'POST'])]
-    #[AuthMatrix('inquiry.administration')]
+    #[IsGranted('AuthMatrix.inquiry.administration')]
     public function inquiry(
         Inquiry $inquiry,
         Request $request,

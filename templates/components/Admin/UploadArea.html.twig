@@ -1,16 +1,18 @@
 <div class="{{ css|default('') }} js-upload-section">
-    <div class="mb-4 hidden js-invalid-files">
-        <twig:Admin:Alert type="danger">
-            <p>
-                De volgende bestanden werden genegeerd.
-                {% if hasAllowedMimeTypes %}Alleen bestanden van het type {{ validExtensionsAnd }} zijn toegestaan.{% endif %}
-                {% if hasMaxFileSize %}De maximale bestandsgrootte per bestand is {{ maxFileSize | size }}.{% endif %}
-            </p>
+    <div role="status">
+        <div class="mb-4 hidden js-invalid-files">
+            <twig:Admin:Alert type="danger">
+                <p>
+                    De volgende bestanden werden genegeerd.
+                    {% if hasAllowedMimeTypes %}Alleen bestanden van het type {{ validExtensionsAnd }} zijn toegestaan.{% endif %}
+                    {% if hasMaxFileSize %}De maximale bestandsgrootte per bestand is {{ maxFileSize | size }}.{% endif %}
+                </p>
 
-            <twig:block name="extra">
-                <ul class="bhr-ul grid grid-cols-2 gap-x-8 gap-y-1 js-invalid-files-list"></ul>
-            </twig:block>
-        </twig:Admin:Alert>
+                <twig:block name="extra">
+                    <ul class="bhr-ul grid grid-cols-2 gap-x-8 gap-y-1 js-invalid-files-list"></ul>
+                </twig:block>
+            </twig:Admin:Alert>
+        </div>
     </div>
 
     {% set shouldDisplayFileLimitations = hasAllowedMimeTypes or hasMaxFileSize %}
@@ -18,21 +20,21 @@
     <div class="bhr-upload-area js-upload-area">
         <button
             {% apply spaceless %}aria-labelledby="{{ this.selectFilesElementId }} {{ shouldDisplayFileLimitations ? this.filesLimitationsElementId : '' }} {{ shouldDisplayTip ? this.tipElementId : '' }}"{% endapply %}
-            class="px-4 -mx-4 py-8 w-full js-select-files"
+            class="bhr-upload-area__button js-select-files"
             tabindex="-1"
             type="button"
         >
             {% if shouldDisplayTip %}
-            <span class="block text-left text-lg leading-tight pb-8 -mt-3" id="{{ this.tipElementId }}">
+            <span class="bhr-upload-area__tip" id="{{ this.tipElementId }}">
                 {{ tip }}
             </span>
             {% endif %}
 
             <twig:Admin:Icon name="to-top" />
 
-            <span class="block pt-4" id="{{ this.selectFilesElementId }}">
+            <span class="bhr-upload-area__select-files" id="{{ this.selectFilesElementId }}">
                 <span
-                    class="font-bold text-sea-blue js-select-files-main"
+                    class="font-bold text-bhr-sea-blue js-select-files-main"
                     data-upload-more-text="Nog meer bestanden selecteren"
                 >
                     {{ multiple ? 'Bestanden' : 'Bestand' }} selecteren
@@ -40,7 +42,7 @@
             </span>
 
             {% if shouldDisplayFileLimitations %}
-            <span class="block pt-2 text-sm" id="{{ this.filesLimitationsElementId }}">
+            <span class="bhr-upload-area__file-limits" id="{{ this.filesLimitationsElementId }}">
                 {% if hasAllowedMimeTypes %}{{ multiple ? 'Bestanden' : 'Bestand' }} van het type {{ validExtensionsOr }}{% endif %}{%if hasMaxFileSize %} (max {{maxFileSize | size}} per bestand){% endif %}
             </span>
             {% endif %}

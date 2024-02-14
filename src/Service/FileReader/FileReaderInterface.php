@@ -25,6 +25,9 @@ interface FileReaderInterface extends \IteratorAggregate
     // Retrieves a datetime from the given cell coordinate, throws a FileReaderException when date is invalid.
     public function getDateTime(int $rowIndex, string $columnName): \DateTimeImmutable;
 
+    // Retrieves a datetime from a cell, throws a FileReaderException when date is invalid, null when the cell is empty or missing.
+    public function getOptionalDateTime(int $rowIndex, string $columnName): ?\DateTimeImmutable;
+
     // Retrieves the number of rows in the file.
     public function getCount(): int;
 

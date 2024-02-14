@@ -1,55 +1,58 @@
-<h3 class="text-xl flex flex-col-reverse">
-    <a class="reverse-underline" href="{{ path('app_document_detail', { dossierId: entry.document.dossiers[0].dossierNr, documentId: entry.document.documentNr }) }}">{{ entry.document.fileInfo.name }}</a>
+<header class="woo-search-result__header">
+    <h3 class="woo-search-result__title">
+        <a
+            class="woo-search-result__main-link"
+            data-e2e-name="main-link"
+            href="{{ path('app_document_detail', { prefix: entry.dossiers[0].documentPrefix, dossierId: entry.dossiers[0].dossierNr, documentId: entry.document.documentNr }) }}"
+        >{{ entry.document.fileInfo.name }}</a>
+    </h3>
 
-     <ul class="list-unstyled de-emphasized mb-0 items-center pipe-after">
-        <li>
-            <twig:Icon name="{{ entry.document.fileInfo.sourceType }}" class="mr-2" />
-            <span class="de-emphasized">{{ entry.document.fileInfo.sourceType | trans() }}</span>
+     <ul class="woo-search-result__spec-list">
+        <li class="woo-search-result__spec">
+            <twig:Public:Icon name="{{ entry.document.fileInfo.sourceType }}" class="mr-1" size="20" />
+            {{ entry.document.fileInfo.sourceType | trans }}
         </li>
-
         {% if entry.document.fileInfo.isUploaded %}
-        <li>
-            <span class="de-emphasized">{{ "# pages" | trans({"count": entry.document.pagecount})}}</span>
-        </li>
+        <li class="woo-search-result__spec">{{ "# pages" | trans({"count": entry.document.pagecount})}}</li>
         {% endif %}
-        <li>
-            <span class="de-emphasized">{{ entry.document.judgement.value | decision }}</span>
-        </li>
+        <li class="woo-search-result__spec">{{ entry.document.judgement.value | decision }}</li>
     </ul>
-</h3>
+</header>
 
 {% if entry.highlights | length > 0 %}
-<p class="ro-text-small leading-5 mt-1 mb-2 line-clamp-3">
+<p class="mt-1">
     {% for hl in entry.highlights %}
         ... {{ hl | highlights }} {% if loop.last %}...{% endif %}
     {% endfor %}
 </p>
 {% endif %}
 
-<ul class="list-unstyled de-emphasized mb-0 flex items-center pipe-after">
-    <li>
-        <time class="de-emphasized" datetime="{{ entry.document.documentDate | date("Y-m-d") }}">
-            {{ entry.document.documentDate | format_date('long') }}
-        </time>
+<ul class="woo-search-result__spec-list">
+    <li class="woo-search-result__spec">
+        {% if entry.document.documentDate is not empty %}
+            <time datetime="{{ entry.document.documentDate | date("Y-m-d") }}">
+                {{ entry.document.documentDate | format_date('long') }}
+            </time>
+        {% else %}
+            {{ 'document.date.date_not_available' | trans }}
+        {% endif %}
     </li>
     {% if entry.document.fileInfo.isUploaded %}
-    <li>
-        <span class="de-emphasized">{{ entry.document.fileInfo.size | size}}</span>
+    <li class="woo-search-result__spec">
+        {{ entry.document.fileInfo.size | size}}
     </li>
     {% endif %}
-    <li>
-        <span class="de-emphasized">{{ "Document number" | trans() }} {{ entry.document.documentId }}</span>
+    <li class="woo-search-result__spec">
+        {{ "Document number" | trans() }} {{ entry.document.documentId }}
     </li>
 </ul>
 
-{% if entry.document.dossiers | length > 0 %}
-<ul class="list-unstyled de-emphasized mb-0 flex items-center pipe-after">
-    {% for dossier in entry.document.dossiers %}
-    <li class="py-0 ro-text-small">
-        <span>
-            <a href="{{ path('app_dossier_detail', { dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
-            <span class="de-emphasized">{{dossier.dossierNr}}</span>
-        </span>
+{% if entry.dossiers | length > 0 %}
+<ul class="mt-1 woo-muted">
+    {% for dossier in entry.dossiers %}
+    <li>
+        <a class="woo-a" href="{{ path('app_dossier_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
+        {{dossier.dossierNr}}
     </li>
     {% endfor %}
 </ul>

@@ -10,8 +10,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\InMemory\InMemoryFilesystemAdapter;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamWrapper;
@@ -20,19 +20,25 @@ use Symfony\Component\Uid\Uuid;
 
 class DocumentStorageTest extends MockeryTestCase
 {
-    protected vfsStreamDirectory $vfs;
-    protected Mockery\LegacyMockInterface|EntityManagerInterface|Mockery\MockInterface $doctrineMock;
-    protected Mockery\LegacyMockInterface|FilesystemOperator|Mockery\MockInterface $storageMock;
-    protected LoggerInterface|Mockery\LegacyMockInterface|Mockery\MockInterface $loggerMock;
+    private vfsStreamDirectory $vfs;
+    private EntityManagerInterface&MockInterface $doctrineMock;
+    private FilesystemOperator&MockInterface $storageMock;
+    private LoggerInterface&MockInterface $loggerMock;
+    private Filesystem $storage;
 
     public function setUp(): void
     {
         ini_set('allow_url_fopen', true);
         vfsStreamWrapper::register();
-        $this->vfs = vfsStream::setup('root');
+        $this->vfs = vfsStream::setup();
+
+        $this->doctrineMock = \Mockery::mock(EntityManagerInterface::class);
+        $this->storageMock = \Mockery::mock(FilesystemOperator::class);
+        $this->storage = new Filesystem(new InMemoryFilesystemAdapter());
+        $this->loggerMock = \Mockery::mock(LoggerInterface::class);
     }
 
-    public function testStoreRetrieveExistsFile()
+    public function testStoreRetrieveExistsFile(): void
     {
         $service = $this->getStorageService(true, 'phpunit/test/');
 
@@ -45,50 +51,48 @@ class DocumentStorageTest extends MockeryTestCase
         $this->assertFalse($service->exists('/test.txt'));
 
         $service->retrieve('/dir/to/store/file.txt', $this->vfs->url() . '/newfile.txt');
-        $this->assertTrue(file_exists($this->vfs->url() . '/newfile.txt'));
+        $this->assertFileExists($this->vfs->url() . '/newfile.txt');
         $this->assertEquals('testcontent', file_get_contents($this->vfs->url() . '/newfile.txt'));
-
-        //        print_r(vfsStream::inspect(new vfsStreamStructureVisitor(), $this->root)->getStructure());
     }
 
-    public function testErrorsWhileOpening()
+    public function testErrorsWhileOpening(): void
     {
         $service = $this->getStorageService(true, 'phpunit/test/');
 
-        $this->loggerMock->expects('error')->once()->withSomeOfArgs('Could not open local file stream');
+        $this->loggerMock->expects('error')->withSomeOfArgs('Could not open local file stream');
         $this->assertFalse($service->store(new \SplFileInfo('/doesnotexist'), '/dir/to/store/file.txt'));
     }
 
-    public function testRetrieve()
+    public function testRetrieve(): void
     {
         $service = $this->getStorageService(true, 'phpunit/test/');
 
-        $this->loggerMock->expects('error')->once()->withSomeOfArgs('Could not read file stream from storage adapter');
+        $this->loggerMock->expects('error')->withSomeOfArgs('Could not read file stream from storage adapter');
         $this->assertFalse($service->retrieve('blaat:///remote/not/existing/path', 'test.txt'));
     }
 
-    public function testFlysystemException()
+    public function testFlysystemException(): void
     {
-        $service = $this->getStorageService(mock: true);
+        $service = $this->getStorageService(useStorageMock: true);
 
-        $this->storageMock->expects('readStream')->once()->andThrow(new \Exception());
-        $this->loggerMock->expects('error')->once()->withSomeOfArgs('Could not read file stream from storage adapter');
+        $this->storageMock->expects('readStream')->andThrow(new \Exception());
+        $this->loggerMock->expects('error')->withSomeOfArgs('Could not read file stream from storage adapter');
 
         $this->assertFalse($service->retrieve('/doesnotexist', 'notexisting.txt'));
     }
 
-    public function testFailToRetrieveToIncorrectLocalPath()
+    public function testFailToRetrieveToIncorrectLocalPath(): void
     {
         $service = $this->getStorageService();
 
         $localFile = $this->createFile('/test.txt', 'testcontent');
         $service->store($localFile, '/dir/to/store/file.txt');
 
-        $this->loggerMock->expects('error')->once()->withSomeOfArgs('Could not open local path for writing');
+        $this->loggerMock->expects('error')->withSomeOfArgs('Could not open local path for writing');
         $this->assertFalse($service->retrieve('/dir/to/store/file.txt', 'xxx://2&&&&>>>)()()!!!>>??wrongfilename.txt'));
     }
 
-    public function testExistsWorks()
+    public function testExistsWorks(): void
     {
         $service = $this->getStorageService();
 
@@ -99,61 +103,62 @@ class DocumentStorageTest extends MockeryTestCase
         $this->assertTrue($service->exists('/dir/to/store/file.txt'));
     }
 
-    public function testExistsFailsInFlysystem()
+    public function testExistsFailsInFlysystem(): void
     {
-        $service = $this->getStorageService(mock: true);
-        $this->storageMock->expects('fileExists')->once()->andThrows(new \Exception());
-        $this->loggerMock->expects('error')->once()->withSomeOfArgs('Could not check if file exists in storage adapter');
+        $service = $this->getStorageService(useStorageMock: true);
+        $this->storageMock->expects('fileExists')->andThrows(new \Exception());
+        $this->loggerMock->expects('error')->withSomeOfArgs('Could not check if file exists in storage adapter');
 
         $this->assertFalse($service->exists('/dir/to/store/file.txt'));
     }
 
-    public function testStoreInvalidLocalFile()
+    public function testStoreInvalidLocalFile(): void
     {
-        $service = $this->getStorageService(mock: true);
+        $service = $this->getStorageService(useStorageMock: true);
 
         $file = new \SplFileInfo('xxx://invalidfile.txt');
 
-        $this->loggerMock->expects('error')->once()->withSomeOfArgs('Could not open local file stream');
+        $this->loggerMock->expects('error')->withSomeOfArgs('Could not open local file stream');
         $this->assertFalse($service->store($file, '/store/in/here.txt'));
     }
 
-    public function testStoreWithFlySystemFailure()
+    public function testStoreWithFlySystemFailure(): void
     {
-        $service = $this->getStorageService(mock: true);
-        $this->storageMock->expects('writeStream')->once()->andThrows(new \Exception());
+        $service = $this->getStorageService(useStorageMock: true);
+        $this->storageMock->expects('writeStream')->andThrows(new \Exception());
 
         $localFile = $this->createFile('/test.txt', 'testcontent');
 
-        $this->loggerMock->expects('error')->once()->withSomeOfArgs('Could not write file to storage adapter');
+        $this->loggerMock->expects('error')->withSomeOfArgs('Could not write file to storage adapter');
         $this->assertFalse($service->store($localFile, '/store/in/here.txt'));
     }
 
-    public function testRetrievePage()
+    public function testRetrievePage(): void
     {
-        $service = $this->getStorageService(mock: true);
+        $service = $this->getStorageService(useStorageMock: true);
 
-        $this->storageMock->expects('readStream')->once()->with('/62/7fe00a061dbf9d522961aa569b1061f905801b8b060ca261ab5aba40cd212c/pages/page-1.pdf');
+        $this->storageMock->expects('readStream')->with('/62/7fe00a061dbf9d522961aa569b1061f905801b8b060ca261ab5aba40cd212c/pages/page-1.pdf');
 
-        $document = new Document();
-        $document->setId(new Uuid('04d3fb60-95cf-4a56-9e3e-bad0f62c7cce'));
+        $document = \Mockery::mock(Document::class);
+        $document->expects('getId')->andReturns(new Uuid('04d3fb60-95cf-4a56-9e3e-bad0f62c7cce'));
 
         $this->assertFalse($service->retrievePage($document, 1, 'localpath.txt'));
     }
 
-    public function testRetrieveDocument()
+    public function testRetrieveDocument(): void
     {
-        $service = $this->getStorageService(mock: true);
+        $service = $this->getStorageService(useStorageMock: true);
 
-        $this->storageMock->expects('readStream')->once()->with('/62/7fe00a061dbf9d522961aa569b1061f905801b8b060ca261ab5aba40cd212c/filepath.txt');
+        $this->storageMock->expects('readStream')->with('/62/7fe00a061dbf9d522961aa569b1061f905801b8b060ca261ab5aba40cd212c/filepath.txt');
 
-        $document = new Document();
-        $document->setId(new Uuid('04d3fb60-95cf-4a56-9e3e-bad0f62c7cce'));
-        $document->getFileInfo()->setPath('filepath.txt');
+        $document = \Mockery::mock(Document::class);
+        $document->expects('getId')->andReturns(new Uuid('04d3fb60-95cf-4a56-9e3e-bad0f62c7cce'));
+        $document->expects('getFileInfo->getPath')->andReturn('filepath.txt');
+
         $this->assertFalse($service->retrieveDocument($document, 'localpath.txt'));
     }
 
-    public function testDownloadOnLocalFilesystem()
+    public function testDownloadOnLocalFilesystem(): void
     {
         $service = $this->getStorageService(true, 'phpunit/test');
 
@@ -167,7 +172,7 @@ class DocumentStorageTest extends MockeryTestCase
         $this->assertTrue($service->exists('dir/to/store/file.txt'));
     }
 
-    public function testDownloadOnRemoteFilesystem()
+    public function testDownloadOnRemoteFilesystem(): void
     {
         $service = $this->getStorageService(false, 'phpunit/test/');
 
@@ -183,19 +188,11 @@ class DocumentStorageTest extends MockeryTestCase
         $this->assertFileDoesNotExist($tempFile);
     }
 
-    protected function getStorageService($isLocal = false, $documentRoot = '', bool $mock = false): DocumentStorageService
+    protected function getStorageService($isLocal = false, $documentRoot = '', bool $useStorageMock = false): DocumentStorageService
     {
-        $this->doctrineMock = \Mockery::mock(EntityManagerInterface::class);
-        if ($mock) {
-            $this->storageMock = \Mockery::mock(FilesystemOperator::class);
-        } else {
-            $this->storageMock = new Filesystem(new InMemoryFilesystemAdapter());
-        }
-        $this->loggerMock = \Mockery::mock(LoggerInterface::class);
-
         return new DocumentStorageService(
             $this->doctrineMock,
-            $this->storageMock,
+            $useStorageMock ? $this->storageMock : $this->storage,
             $this->loggerMock,
             $isLocal,
             $documentRoot
@@ -211,12 +208,5 @@ class DocumentStorageTest extends MockeryTestCase
         }
 
         return new \SplFileInfo($path);
-    }
-
-    protected function list()
-    {
-        foreach ($this->storageMock->listContents('/', true) as $file) {
-            print $file->path() . "\n";
-        }
     }
 }

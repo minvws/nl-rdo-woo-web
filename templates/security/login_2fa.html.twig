@@ -30,14 +30,6 @@
         <p class="mb-6" id="instructions-for-2fa">{{ "Open the authenticator app, and enter the one-time verification code to login." | trans() }}</p>
 
         <form action="{{ checkPathUrl ? checkPathUrl: path(checkPathRoute) }}" method="post" novalidate>
-            {% if authenticationError %}
-                <div class="mb-6">
-                    <twig:Admin:FormError>
-                        Het veld "<a class="underline hover-focus:no-underline" href="#auth-code">{{ "Code" | trans }}</a>" bevat 1 fout.
-                    </twig:Admin:FormError>
-                </div>
-            {% endif %}
-
             <div class="bhr-form-row {{ authenticationError ? 'bhr-form-row--invalid' : '' }}">
                 <label class="bhr-label" for="auth-code">{{ "Code" | trans() }}</label>
 

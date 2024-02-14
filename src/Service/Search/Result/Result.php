@@ -12,36 +12,105 @@ use Knp\Component\Pager\Pagination\PaginationInterface;
 
 /**
  * This class is the result that is returned after a search has been performed.
+ *
+ * @SuppressWarnings(PHPMD.TooManyFields)
  */
-class Result
+final class Result
 {
-    // Seems like these should not be in here
-    protected int $offset = 0;                  // Offset used for the search
-    protected int $limit = 10;                  // Limit used for the search
+    /**
+     * Offset used for the search.
+     */
+    protected int $offset = 0;
 
-    /** @var PaginationInterface<string, AbstractPagination>|null */
-    protected ?PaginationInterface $paginator = null;   // not null when pagination is enabled
+    /**
+     * Limit used for the search.
+     */
+    protected int $limit = 10;
 
-    protected int $documentCount = 0;           // Total number of documents found
-    protected int $dossierCount = 0;            // Total of unique dossiers found
-    protected int $timeTaken = 0;               // Time it has taken to search (in ms)
-    /** @var array|ResultEntry[] */
-    protected array $entries = [];              // Actual search results (limited per page, so max 10)
-    protected bool $failed = false;             // True when the search has failed
-    protected string $message = '';             // Error message when the search has failed
-    protected string $type;                     // Type of documents that have been found (all, dossier, document, Config::TYPE_*)
+    /**
+     * Not null when pagination is enabled.
+     *
+     * @var PaginationInterface<string,AbstractPagination>|null
+     */
+    protected ?PaginationInterface $paginator = null;
 
-    /** @var array|Aggregation[] */
-    protected array $aggregations = [];         // Aggregations found
-    /** @var array|Suggestion[] */
-    protected array $suggestions = [];          // Suggestions found
+    /**
+     * Total number of documents found.
+     */
+    protected int $documentCount = 0;
 
-    /** @var array|mixed[] */
-    protected array $query;                     // Actual query used to search
+    /**
+     * Total of unique dossiers found.
+     */
+    protected int $dossierCount = 0;
 
-    protected FilterDetails $filterDetails;     // Details about additional filters (non-facet)
+    /**
+     * Total number of documents found without a date (will be null if already filtered on documents without date).
+     */
+    protected ?int $documentCountWithoutDate = null;
 
-    private int $resultCount;                   // Total number of result items
+    /**
+     * True when the document count without date message should be displayed.
+     */
+    protected bool $displayWithoutDateMessage = false;
+
+    /**
+     * Time it has taken to search (in ms).
+     */
+    protected int $timeTaken = 0;
+
+    /**
+     * Actual search results (limited per page, so max 10).
+     *
+     * @var ResultEntry[]
+     */
+    protected array $entries = [];
+
+    /**
+     * True when the search has failed.
+     */
+    protected bool $failed = false;
+
+    /**
+     * Error message when the search has failed.
+     */
+    protected string $message = '';
+
+    /**
+     * Type of documents that have been found (all, dossier, document, Config::TYPE_*).
+     */
+    protected string $type;
+
+    /**
+     * Aggregations found.
+     *
+     * @var Aggregation[]
+     */
+    protected array $aggregations = [];
+
+    /**
+     * Suggestions found.
+     *
+     * @var Suggestion[]
+     */
+    protected array $suggestions = [];
+
+    /**
+     * Actual query used to search.
+     *
+     * @var mixed[]
+     */
+    protected array $query;
+
+    /**
+     * Details about additional filters (non-facet).
+     */
+    protected FilterDetails $filterDetails;
+
+    /**
+     * Total number of result items.
+     */
+    private int $resultCount;
 
     public static function create(): self
     {
@@ -53,7 +122,7 @@ class Result
         return $this->resultCount;
     }
 
-    public function setResultCount(int $resultCount): Result
+    public function setResultCount(int $resultCount): self
     {
         $this->resultCount = $resultCount;
 
@@ -65,7 +134,7 @@ class Result
         return $this->documentCount;
     }
 
-    public function setDocumentCount(int $documentCount): Result
+    public function setDocumentCount(int $documentCount): self
     {
         $this->documentCount = $documentCount;
 
@@ -77,9 +146,33 @@ class Result
         return $this->dossierCount;
     }
 
-    public function setDossierCount(int $dossierCount): Result
+    public function setDossierCount(int $dossierCount): self
     {
         $this->dossierCount = $dossierCount;
+
+        return $this;
+    }
+
+    public function getDocumentCountWithoutDate(): ?int
+    {
+        return $this->documentCountWithoutDate;
+    }
+
+    public function setDocumentCountWithoutDate(?int $documentCountWithoutDate): self
+    {
+        $this->documentCountWithoutDate = $documentCountWithoutDate;
+
+        return $this;
+    }
+
+    public function getDisplayWithoutDateMessage(): bool
+    {
+        return $this->displayWithoutDateMessage;
+    }
+
+    public function setDisplayWithoutDateMessage(bool $displayWithoutDateMessage): self
+    {
+        $this->displayWithoutDateMessage = $displayWithoutDateMessage;
 
         return $this;
     }
@@ -89,7 +182,7 @@ class Result
         return $this->timeTaken;
     }
 
-    public function setTimeTaken(int $timeTaken): Result
+    public function setTimeTaken(int $timeTaken): self
     {
         $this->timeTaken = $timeTaken;
 
@@ -97,7 +190,7 @@ class Result
     }
 
     /**
-     * @return array|ResultEntry[]
+     * @return ResultEntry[]
      */
     public function getEntries(): array
     {
@@ -105,9 +198,9 @@ class Result
     }
 
     /**
-     * @param array|ResultEntry[] $entries
+     * @param ResultEntry[] $entries
      */
-    public function setEntries(array $entries): Result
+    public function setEntries(array $entries): self
     {
         $this->entries = $entries;
 
@@ -119,7 +212,7 @@ class Result
         return $this->failed;
     }
 
-    public function setFailed(bool $failed): Result
+    public function setFailed(bool $failed): self
     {
         $this->failed = $failed;
 
@@ -131,7 +224,7 @@ class Result
         return $this->message;
     }
 
-    public function setMessage(string $message): Result
+    public function setMessage(string $message): self
     {
         $this->message = $message;
 
@@ -160,7 +253,7 @@ class Result
     /**
      * @param Aggregation[] $aggregations
      */
-    public function setAggregations(array $aggregations): Result
+    public function setAggregations(array $aggregations): self
     {
         $this->aggregations = $aggregations;
 
@@ -168,7 +261,7 @@ class Result
     }
 
     /**
-     * @return array|Suggestion[]
+     * @return Suggestion[]
      */
     public function getSuggestions(): array
     {
@@ -176,9 +269,9 @@ class Result
     }
 
     /**
-     * @param array|Suggestion[] $suggestions
+     * @param Suggestion[] $suggestions
      */
-    public function setSuggestions(array $suggestions): Result
+    public function setSuggestions(array $suggestions): self
     {
         $this->suggestions = $suggestions;
 
@@ -224,7 +317,7 @@ class Result
         return $this->offset;
     }
 
-    public function setOffset(int $offset): Result
+    public function setOffset(int $offset): self
     {
         $this->offset = $offset;
 
@@ -236,7 +329,7 @@ class Result
         return $this->limit;
     }
 
-    public function setLimit(int $limit): Result
+    public function setLimit(int $limit): self
     {
         $this->limit = $limit;
 
@@ -249,7 +342,7 @@ class Result
     }
 
     /**
-     * @param PaginationInterface<string, AbstractPagination> $paginator
+     * @param PaginationInterface<string,AbstractPagination> $paginator
      */
     public function setPagination(PaginationInterface $paginator): void
     {
@@ -257,7 +350,7 @@ class Result
     }
 
     /**
-     * @return PaginationInterface<string, AbstractPagination>|null
+     * @return PaginationInterface<string,AbstractPagination>|null
      */
     public function pagination(): ?PaginationInterface
     {
@@ -269,7 +362,7 @@ class Result
         return $this->type;
     }
 
-    public function setType(string $type): Result
+    public function setType(string $type): self
     {
         $this->type = $type;
 

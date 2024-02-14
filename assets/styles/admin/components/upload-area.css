@@ -1,18 +1,34 @@
 @layer components {
     .bhr-upload-area {
-        @apply border border-platinum text-dim-gray rounded-xl text-center relative px-4;
+        @apply border border-bhr-platinum text-bhr-dim-gray rounded-xl text-center relative px-4;
+    }
+
+    .bhr-upload-area__button {
+        @apply px-4 -mx-4 py-8 w-full;
     }
 
     .bhr-upload-area__input {
-        @apply block border-t border-platinum cursor-pointer py-4 text-dim-gray w-full;
+        @apply block border-t border-bhr-platinum cursor-pointer py-4 text-bhr-dim-gray w-full;
     }
 
     .bhr-upload-area__input::file-selector-button {
         @apply sr-only;
     }
 
+    .bhr-upload-area__tip {
+        @apply block text-left text-lg leading-tight pb-8 -mt-3;
+    }
+
+    .bhr-upload-area__select-files {
+        @apply block pt-4;
+    }
+
+    .bhr-upload-area__file-limits {
+        @apply block pt-2 text-sm;
+    }
+
     .bhr-upload-area__files-area {
-        @apply border-t border-platinum text-left;
+        @apply border-t border-bhr-platinum text-left;
     }
 
     .bhr-upload-area__no-files {
@@ -29,11 +45,11 @@
     }
 
     .bhr-upload-area__progress[value]::-webkit-progress-bar {
-        @apply bg-anti-flash-white;
+        @apply bg-bhr-anti-flash-white;
     }
 
     .bhr-upload-area__progress[value]::-webkit-progress-value,
     .bhr-upload-area__progress[value]::-moz-progress-bar{
-        @apply bg-philippine-green;
+        @apply bg-bhr-philippine-green;
     }
 }

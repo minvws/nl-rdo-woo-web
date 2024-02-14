@@ -15,7 +15,7 @@ A list of common used terms in the Woo platform.
   <dd>a collection of documents concerning one topic. A dossier is created based on an inquiry.</dd>
   
   <dt>document</dt>
-  <dd>a file that contains information. A document can be a PDF, an audio file, a video file, a word document, an image, etc.</dd>
+  <dd>a file that contains information. A document can be a PDF, a word document, an image, etc.</dd>
 
   <dt>inventory</dt>
   <dd>a spreadsheet which contains a list of documents and meta-data. Each dossier has 1 inventory file.</dd>

@@ -12,8 +12,8 @@
     <div
         {% if dataPath is not empty %}
             id="js-inventory-status"
-            data-done-url="{{ path('app_admin_dossier_concept_documents', { dossierId: dossier.dossierNr }) }}"
-            data-endpoint="{{ path(dataPath, { dossierId: dossier.dossierNr }) }}"
+            data-done-url="{{ path('app_admin_dossier_concept_documents', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
+            data-endpoint="{{ path(dataPath, { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
             role="status"
         {% endif %}
     >
@@ -30,7 +30,7 @@
 {% if inventoryStatus.isUploaded %}
 <div class="bhr-card mt-10">
     <div class="text-lg pb-2">
-        <p class="bhr-form-help">Stap 2</p>
+        <h2 class="bhr-form-help">Stap 2</h2>
         <p><strong>Upload documenten</strong></p>
         <p class="bhr-form-help mt-2 mb-3">Upload alle documenten die met beoordeling ‘openbaar’ of ‘deels openbaar’ in het productierapport staan. Zorg dat de bestandsnamen overeenkomen met de documentnummers in het productierapport (bijvoorbeeld: 123.pdf)</p>
     </div>
@@ -41,18 +41,21 @@
     />
 
     <div class="mt-4">
-        <div class="hidden" id="js-dossier-documents-can-not-continue">
-            <twig:Admin:InputErrors error="Nog niet alle documenten zijn geüpload of verwerkt. Voeg ze toe of wacht tot ze verwerkt zijn om verder te gaan." />
+        <div role="status">
+            <div class="hidden" id="js-dossier-documents-can-not-continue">
+                <twig:Admin:InputErrors error="Nog niet alle documenten zijn geüpload of verwerkt. Voeg ze toe of wacht tot ze verwerkt zijn om verder te gaan." />
+            </div>
         </div>
 
         <a
-            href="{{ path(workflowStatus.nextStep.routeName, { dossierId: dossier.dossierNr }) }}"
+            href="{{ path(workflowStatus.nextStep.routeName, { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
             class="bhr-button bhr-button--primary bhr-button--fixed-width mr-4"
             id="js-dossier-documents-next-step"
-        >{{ "On to conclusion"|trans }}</a>
+            data-e2e-name="to-next-step-link"
+        >{{ "On to publication"|trans }}</a>
 
         <a
-            href="{{ path('app_admin_dossier', { dossierId: dossier.dossierNr }) }}"
+            href="{{ path('app_admin_dossier', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
             class="bhr-button bhr-button--secondary bhr-button--fixed-width mr-4"
         >{{ "Later verdergaan"|trans }}</a>
     </div>

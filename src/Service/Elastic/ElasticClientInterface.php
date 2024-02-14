@@ -6,6 +6,8 @@ namespace App\Service\Elastic;
 
 use Elastic\Elasticsearch\Endpoints\Cat;
 use Elastic\Elasticsearch\Endpoints\Indices;
+use Elastic\Elasticsearch\Response\Elasticsearch;
+use Http\Promise\Promise;
 
 /**
  * This interface is needed since we do not use the ElasticSearch\Client directly, but decorated this in a wrapper to enable
@@ -15,10 +17,8 @@ interface ElasticClientInterface
 {
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function search(array $params = []);
+    public function search(array $params = []): Elasticsearch|Promise;
 
     public function cat(): Cat;
 
@@ -26,99 +26,71 @@ interface ElasticClientInterface
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function count(array $params = []);
+    public function count(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function update(array $params = []);
+    public function update(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function exists(array $params = []);
+    public function exists(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function updateByQuery(array $params = []);
+    public function updateByQuery(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function get(array $params = []);
+    public function get(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function create(array $params = []);
+    public function create(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function close(array $params = []);
+    public function close(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function putSettings(array $params = []);
+    public function putSettings(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function putMapping(array $params = []);
+    public function putMapping(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function open(array $params = []);
+    public function open(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function delete(array $params = []);
+    public function delete(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function deleteAlias(array $params = []);
+    public function deleteAlias(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function putAlias(array $params = []);
+    public function putAlias(array $params = []): Elasticsearch|Promise;
 
     /**
      * @param mixed[] $params
-     *
-     * @return \Elastic\Elasticsearch\Response\Elasticsearch|\Http\Promise\Promise
      */
-    public function updateAliases(array $params = []);
+    public function updateAliases(array $params = []): Elasticsearch|Promise;
 }

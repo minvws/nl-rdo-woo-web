@@ -1,0 +1,5 @@
+@layer utilities {
+    .woo-muted {
+        @apply text-woo-dim-gray;
+    }
+}

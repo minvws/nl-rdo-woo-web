@@ -114,10 +114,6 @@ services:
         arguments:
             $redis: '@snc_redis.ingest'
 
-    App\Service\Worker\Audio\Extractor\AudioExtractor:
-        arguments:
-            $redis: '@snc_redis.ingest'
-
     App\Service\Worker\Pdf\Extractor\DecisionContentExtractor:
       arguments:
         $redis: '@snc_redis.ingest'

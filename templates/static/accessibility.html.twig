@@ -3,35 +3,32 @@
 {% set page_title = "Accessibility" | trans() %}
 
 {% block body %}
-    <section>
-        <div>
+<div class="woo-container woo-container--sm">
+    <div class="woo-rich-text woo-readable-width">
+        <h1>{{ "Accessibility" | trans() }}</h1>
 
-            <h1>{{ "Accessibility" | trans() }}</h1>
+        <p>
+            {{ "public.accessibility.introduction" | trans() | raw }}
+        </p>
 
-            <p>
-                {{ "We would like everyone to be able to use this website. Do you come across a page that is not accessible? Or do you have another question? <a href='#'>Please contact us</a>." | trans() | raw }}
-            </p>
+        <p class="flex flex-col">
+            <span>{{ "public.accessibility.statement" | trans() | raw }}</span>
+            <span>{{ "public.accessibility.downloadreport" | trans() | raw }}</span>
+        </p>
 
-            <p class="flex flex-col">
-                <span>{{ "Accessibility statement {site}" | trans({'site': SITE_NAME }) | raw }}</span>
-                <span>{{ "Download accessibility report" | trans() | raw }}</span>
-            </p>
+        <h2>{{ "accessibility.title.whatisaccessibility" | trans() }}</h2>
 
-            <h2>{{ "What is an accessible website?" | trans() }}</h2>
+        <p>{{ "public.accessibility.text.whatisaccessibility" | trans() | raw  }}</p>
 
-            <p>{{ "An accessible website is easier to use for all visitors. That is why functional-technical and editorial <a href='https://www.digiaccessible.nl/'>accessibility requirements</a> or (formerly: web guidelines) apply to government websites. These are described in the <a href='https://www.forumstandaardisatie.nl/standaard/digiaccessible-en-301-549-met-wcag-21'>accessibility standard Digiaccessible EN 301 549</a>." | trans() | raw  }}</p>
+        <h2>{{ "accessibility.title.howtokeepaccessibility" | trans() }}</h2>
 
-            <h2>{{ "How do we ensure this website is accessible?" | trans() }}</h2>
+        <p>{{ "accessibility.text.guarantees" | trans() }}</p>
 
-            <p>{{ "We guarantee good accessibility in various ways within our (daily) processes:" | trans() }}</p>
-            <ul>
-                <li>{{ "Accessibility by design: Accessibility is part of all steps in the design, construction and editorial process of this website from the start." | trans() }}
-                </li>
-                <li>{{ "Research: we regularly check (parts of) our website for accessibility. Both for the functional-technical parts and the editorial aspects. We solve any bottlenecks found in a sustainable manner." | trans() }}
-                </li>
-                <li>{{ "Employee knowledge: our employees keep their knowledge about accessibility up to date and apply it where necessary." | trans() }}</li>
-            </ul>
-
-        </div>
-    </section>
+        <ul>
+            <li>{{ "accessibility.list.guarantees.bullet.01" | trans() }}</li>
+            <li>{{ "accessibility.list.guarantees.bullet.02" | trans() }}</li>
+            <li>{{ "accessibility.list.guarantees.bullet.03" | trans() }}</li>
+        </ul>
+    </div>
+</div>
 {% endblock %}

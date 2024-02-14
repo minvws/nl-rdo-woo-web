@@ -28,11 +28,11 @@ class Inquiry implements EntityWithBatchDownload
     #[ORM\Column(length: 255)]
     private string $casenr;
 
-    /** @var Collection|Document[] */
+    /** @var Collection<array-key,Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'inquiries', cascade: ['persist'])]
     private Collection $documents;
 
-    /** @var Collection|Dossier[] */
+    /** @var Collection<array-key,Dossier> */
     #[ORM\ManyToMany(targetEntity: Dossier::class, inversedBy: 'inquiries', cascade: ['persist'])]
     private Collection $dossiers;
 
@@ -72,7 +72,7 @@ class Inquiry implements EntityWithBatchDownload
     }
 
     /**
-     * @return Collection|Document[]
+     * @return Collection<array-key,Document>
      */
     public function getDocuments(): Collection
     {
@@ -98,7 +98,7 @@ class Inquiry implements EntityWithBatchDownload
     }
 
     /**
-     * @return Collection|Dossier[]
+     * @return Collection<array-key,Dossier>
      */
     public function getDossiers(): Collection
     {
@@ -127,31 +127,23 @@ class Inquiry implements EntityWithBatchDownload
     }
 
     /**
-     * @return Collection|Dossier[]
+     * @return Collection<array-key,Dossier>
      */
     public function getPubliclyAvailableDossiers(): Collection
     {
-        /** @var Collection|Dossier[] $dossiers */
-        $dossiers = $this->dossiers->filter(
-            /* @phpstan-ignore-next-line */
-            static fn (Dossier $dossier) => $dossier->getStatus() === Dossier::STATUS_PUBLISHED || $dossier->getStatus() === Dossier::STATUS_PREVIEW
+        return $this->dossiers->filter(
+            static fn (Dossier $dossier) => $dossier->getStatus()->isPubliclyAvailable()
         );
-
-        return $dossiers;
     }
 
     /**
-     * @return Collection|Dossier[]
+     * @return Collection<array-key,Dossier>
      */
     public function getScheduledDossiers(): Collection
     {
-        /** @var Collection|Dossier[] $dossiers */
-        $dossiers = $this->dossiers->filter(
-            /* @phpstan-ignore-next-line */
-            static fn (Dossier $dossier) => $dossier->getStatus() === Dossier::STATUS_SCHEDULED
+        return $this->dossiers->filter(
+            static fn (Dossier $dossier) => $dossier->getStatus()->isScheduled()
         );
-
-        return $dossiers;
     }
 
     public function getInventory(): ?InquiryInventory

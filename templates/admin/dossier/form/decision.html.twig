@@ -18,7 +18,7 @@
 {% if dossier.decisionDocument.fileInfo.isUploaded|default(false) %}
     <div class="bhr-form-row -mt-6">
         <twig:Admin:UploadedFile
-            downloadUrl="{{ path('app_admin_dossier_decision_download', { dossierId: dossier.dossierNr }) }}"
+            downloadUrl="{{ path('app_admin_dossier_decision_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
             fileName="{{ dossier.decisionDocument.fileInfo.name }}"
             fileSize="{{ dossier.decisionDocument.fileInfo.size }}"
             mimeType="{{ dossier.decisionDocument.fileInfo.mimetype }}"
@@ -26,5 +26,19 @@
     </div>
 {% endif %}
 
-{{ form_end(form) }}
+{# {{ form_row(form.decision_date) }}
 
+<div class="bhr-form-row">
+    <h2 class="bhr-label">Andere officiële bijlagen</h2>
+    <p class="bhr-form-help text-lg pb-2">De documenten die met dit besluit openbaar worden gemaakt upload je in de volgende stap. Voeg hier alleen bijlagen toe die te maken hebben met de totstandkoming van het besluit.</p>
+
+    <div {{ vue_component('DecisionAttachments', { dossierId: dossier.id  }) }}>
+        <div class="min-h-14"></div>
+    </div>
+
+    <div {{ vue_component('Uploads', { endpoint: path('app_admin_dossier_documents_upload', { 'prefix': dossier.documentPrefix, 'dossierId': dossier.dossierNr }) }) }}>
+
+    </div>
+</div> #}
+
+{{ form_end(form) }}

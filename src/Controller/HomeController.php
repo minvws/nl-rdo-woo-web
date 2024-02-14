@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Dossier;
+use App\Repository\DossierRepository;
 use App\Service\Search\ConfigFactory;
 use App\Service\Search\Model\Config;
 use App\Service\Search\SearchService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,18 +18,11 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class HomeController extends AbstractController
 {
-    protected EntityManagerInterface $doctrine;
-    protected SearchService $searchService;
-    protected ConfigFactory $configFactory;
-
     public function __construct(
-        SearchService $searchService,
-        EntityManagerInterface $doctrine,
-        ConfigFactory $configFactory,
+        private readonly SearchService $searchService,
+        private readonly DossierRepository $dossierRepository,
+        private readonly ConfigFactory $configFactory,
     ) {
-        $this->doctrine = $doctrine;
-        $this->searchService = $searchService;
-        $this->configFactory = $configFactory;
     }
 
     #[Cache(public: true, maxage: 600, mustRevalidate: true)]
@@ -55,16 +47,11 @@ class HomeController extends AbstractController
             return new RedirectResponse($this->generateUrl('app_search', ['q' => $q]));
         }
 
-        $config = new Config(searchType: Config::TYPE_DOCUMENT);
+        $config = $this->configFactory->create(searchType: Config::TYPE_DOCUMENT);
         $facetResult = $this->searchService->searchFacets($config);
 
         return $this->render('home/index.html.twig', [
-            'doccount' => $this->doctrine->getRepository(Dossier::class)->count([]),
-            'recents' => $this->doctrine->getRepository(Dossier::class)->findBy(
-                ['status' => Dossier::STATUS_PUBLISHED],
-                ['decisionDate' => 'DESC'],
-                5
-            ),
+            'recents' => $this->dossierRepository->getRecentDossiers(5),
             'facets' => $facetResult,
         ]);
     }

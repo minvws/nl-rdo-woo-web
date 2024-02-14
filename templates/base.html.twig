@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="{{ "lang" | trans() }}" class="no-js">
+<html lang="{{ "lang" | trans }}" class="no-js">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +9,7 @@
 
         <title>
             {% if page_title is defined %} {{ page_title }} | {% endif %}
-            {{ "Woo Platform" | trans() }}
+            {{ "Woo Platform" | trans }}
         </title>
 
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -23,103 +23,134 @@
 
     <!-- App versie: {{ app_version().version }} (Git referentie: {{ app_version().git_ref }}) -->
 
-    <body>
-         {% if form is defined %}
-            {% form_theme form 'forms/public_form_theme.html.twig' %}
-        {% endif %}
+    <body class="antialiased flex min-h-screen flex-col text-lg">
         <header>
-            <a href="#main-content" class="button focus-only skip-to-content">{{ "Go directly to content" | trans() }}</a>
+            <a href="#main-content" class="woo-skip-link woo-skip-link--to-main-content">{{ "Go directly to content" | trans }}</a>
 
-            <a href="{{ path('app_home') }}" class="ro-logo">
-                <img src="{{ asset('/img/ro-logo.svg') }}" alt="Logo Rijksoverheid">
-                <span class="logo__text">{{ "Ministry of Health, Welfare and Sport" | trans }}</span>
-                <span class="visually-hidden">, {{ "Go to homepage" | trans() }}</span>
-            </a>
+            <p>
+                <a class="woo-logo" href="{{ path('app_home') }}">
+                    <twig:Icon
+                        class="woo-icon woo-logo__img"
+                        name="ro-logo"
+                        path="build/img/public/non-free/icons.svg"
+                        height="100"
+                        width="50"
+                    />
+                    {% apply spaceless %}
+                    <span class="woo-logo__text">{{ "Ministry of Health, Welfare and Sport" | trans }}</span>
+                    <span class="sr-only">, {{ "Go to homepage" | trans }}</span>
+                    {% endapply %}
+                </a>
+            </p>
 
-            <nav
-                aria-label="{{ "Main Navigation" | trans() }}"
-                class="collapsible"
-                data-close-label="{{ "Menu" | trans() }}"
-                data-media="(min-width: 50rem)"
-                data-open-label="{{ "Menu" | trans() }}"
-            >
-                <div class="collapsing-element" id="main-nav-div">
-                    {% set isHomePage = app.request.get('_route') == 'app_home' %}
-                    {% set isSearchPage = app.request.get('_route') == 'app_browse' or (app.request.get('_route') == 'app_search' and app.request.get('type') != 'dossier') %}
-                    {% set isPublishedDecisionsPage = app.request.get('_route') == 'app_search' and app.request.get('type') == 'dossier' %}
-                    <ul>
-                        <li>
-                            <a href="{{ path('app_home') }}" {% if isHomePage %}aria-current="page"{% endif %}>
-                                <twig:Icon name="house" color="fill-white" class="me-2" />
-                                {{ "Home" | trans() }}
-                            </a>
-                        </li>
-                        <li><a href="{{ path('app_browse') }}" {% if isSearchPage %}aria-current="page"{% endif %}>{{ "Search for documents and decisions" | trans() }}</a></li>
-                        <li><a href="{{ path('app_search', {'type': 'dossier', 'sort': 'decision_date', 'sortorder': 'desc'})}}" {% if isPublishedDecisionsPage  %}aria-current="page"{% endif %}>{{ "All published decisions" | trans() }}</a></li>
-                    </ul>
+            <nav class="woo-main-nav" aria-label="{{ "Main Navigation" | trans }}">
+                <div class="woo-container">
+                    <div class="-mx-4 relative z-10">
+                        <div class="md:hidden no-js:hidden">
+                            <button class="px-4 py-4 sm:py-6 focus:outline-white focus:-outline-offset-2 w-full text-right" id="js-main-nav-toggle" aria-controls="main-nav-list" aria-expanded="false">
+                                <twig:Public:Icon class="js-icon-collapsed" color="fill-white" name="hamburger" />
+                                <twig:Public:Icon class="hidden js-icon-expanded" color="fill-white" name="cross" />
+                                <span class="js-text sr-only">
+                                    {{ "public.navigation.label" | trans }}
+                                </span>
+                            </button>
+                        </div>
+
+                        <ul class="woo-main-nav__list" id="main-nav-list">
+                            {% macro main_nav_item(route, isCurrentPage, title, iconName) %}
+                                <li>
+                                    <a class="woo-main-nav__link group" href="{{ route }}" {% if isCurrentPage %}aria-current="page"{% endif %}>
+                                        {%if iconName %}<twig:Public:Icon color="fill-white" class="woo-main-nav__icon" name="{{ iconName }}" size="22" />{% endif %}
+                                        <span class="group-hover:underline group-focus:underline group-aria-current-page:group-hover:no-underline group-aria-current-page:group-focus:no-underline">{{ title }}</span>
+                                    </a>
+                                </li>
+                            {% endmacro %}
+
+                            {{ _self.main_nav_item(
+                                    path('app_home'),
+                                    app.request.get('_route') == 'app_home',
+                                    "Home" | trans,
+                                    "house"
+                                )
+                            }}
+                            {{ _self.main_nav_item(
+                                    path('app_browse'),
+                                    app.request.get('_route') == 'app_browse' or (app.request.get('_route') == 'app_search' and app.request.get('type') != 'dossier'),
+                                    "Search for documents and decisions" | trans
+                                )
+                            }}
+                            {{ _self.main_nav_item(
+                                    path('app_search', {'type': 'dossier', 'sort': 'decision_date', 'sortorder': 'desc'}),
+                                    app.request.get('_route') == 'app_search' and app.request.get('type') == 'dossier',
+                                    "All published decisions" | trans
+                                )
+                            }}
+                        </ul>
+                    </div>
                 </div>
             </nav>
 
             {% if wo_breadcrumbs_exists() and app.request.get('_route') != 'app_home' %}
-            <div class="main-header-bottom">
-                <div class="main-header-bottom__content">
-                    <div class="one-third-two-thirds">
-                        <div>
-                            {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.html.twig' }) }}
-                        </div>
-
-                        <div>{% block search_form_top %}{% endblock %}</div>
+            <div class="bg-woo-anti-flash-white">
+                <div class="woo-container">
+                    {% set hasSearchForm = block('search_form_top') is not empty %}
+                    <div class="lg:grid grid-cols-5 gap-x-8">
+                        <div class="py-1 sm:py-0 {{ hasSearchForm ? 'col-span-2' : 'col-span-5' }}">{{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.html.twig' }) }}</div>
+                        {% if hasSearchForm %}
+                            <div class="col-span-3">
+                                <div class="pb-4 lg:pb-0 pt-3 sm:pt-0 lg:pt-3">
+                                    {% block search_form_top %}{% endblock %}
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
             {% endif %}
         </header>
 
-
-        <main id="main-content">
-            {% for messages in app.flashes(is_backend() ? 'backend' : 'frontend') %}
-                {% for label, message in messages %}
-                    <div class="alert alert-{{ label }} alert-dismissible fade show">
-                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#{{ label }}-fill"/></svg>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endfor %}
-
+        <main class="grow py-8 lg:pt-16 lg:pb-24" id="main-content">
             {% block body %}{% endblock %}
         </main>
 
-        <footer>
-            <h2 class="visually-hidden">Footer</h2>
-            <div class="grid md:grid-cols-2">
-                <div class="py-8 md:pt-0 md:justify-self-end md:col-start-2">
-                    <div class="grid sm:grid-cols-2 gap-x-12 gap-y-6">
-						<nav aria-labelledby="page-footer-nav-1-heading">
-							<h3 id="page-footer-nav-1-heading">Service</h3>
-							<ul>
-								<li><a href="{{ path('app_contact') }}">Contact</a></li>
-								{# <li><a href="">{{ "RSS recent publications" | trans }}</a></li> #}
-								{# <li><a href="https://wobcovid19.rijksoverheid.nl/archief/">{{ "Archive" | trans }}</a></li>#}
-								{% if not app.user %}
-								{#<li><a href="{{ path('app_login') }}">{{ "Login" | trans }}</a></li>#}
-								{% else %}
-									<li><a href="{{ path('app_admin') }}">{{ "Counter" | trans() }}</a></li>
-									<li><a href="{{ path('app_logout') }}">{{ "Logout" | trans }}</a></li>
-								{% endif %}
-							</ul>
-						</nav>
+        <footer class="bg-woo-sea-blue py-8 lg:py-16 text-white">
+            <h2 class="sr-only">Footer</h2>
+            <div class="woo-container">
+                <div class="md:flex justify-end">
+                    {% macro footer_nav_item(route, title) %}
+                        <li>
+                            <a class="woo-footer-nav__a group" href="{{ route }}">
+                                <twig:Public:Icon name="chevron-right" color="fill-white" size="12" class="mr-1 align-baseline" />
+                                <span class="group-hover:underline group-focus:underline">{{ title }}</span>
+                            </a>
+                        </li>
+                    {% endmacro %}
 
-                        <nav aria-labelledby="page-footer-nav-2-heading">
-                            <h3 id="page-footer-nav-2-heading">{{ "About this site" | trans() }}</h3>
-                            <ul>
-                                <li><a href="{{ path('app_about') }}">{{ "About Woo" | trans() }}</a></li>
-                                <li><a href="{{ path('app_copyright') }}">{{ "Copyright" | trans() }}</a></li>
-                                <li><a href="{{ path('app_privacy') }}">{{ "Privacy" | trans() }}</a></li>
-                                <li><a href="{{ path('app_cookies') }}">{{ "Cookies" | trans() }}</a></li>
-                                <li><a href="{{ path('app_accessibility') }}">{{ "Accessibility" | trans() }}</a></li>
-                            </ul>
-                        </nav>
-                    </div>
+                    <nav class="woo-footer-nav" aria-labelledby="page-footer-nav-1-heading">
+                        <h3 class="woo-footer-nav__title" id="page-footer-nav-1-heading">Service</h3>
+                        <ul>
+                            {{ _self.footer_nav_item(path('app_contact'), "Contact") }}
+                            {# {{ _self.footer_nav_item("", "RSS recent publications" | trans) }} #}
+                            {# {{ _self.footer_nav_item("https://wobcovid19.rijksoverheid.nl/archief/", "Archive" | trans) }} #}
+                            {% if not app.user %}
+                                {# {{ _self.footer_nav_item(path('app_login'), "Login" | trans) }} #}
+                            {% else %}
+                                {{ _self.footer_nav_item(path('app_admin'), "Counter" | trans) }}
+                                {{ _self.footer_nav_item(path('app_logout'), "Logout" | trans) }}
+                            {% endif %}
+                        </ul>
+                    </nav>
+
+                    <nav class="woo-footer-nav" aria-labelledby="page-footer-nav-2-heading">
+                        <h3 class="woo-footer-nav__title" id="page-footer-nav-2-heading">{{ "About this site" | trans }}</h3>
+                        <ul>
+                            {{ _self.footer_nav_item(path('app_about'), "About Woo" | trans) }}
+                            {{ _self.footer_nav_item(path('app_copyright'), "Copyright" | trans) }}
+                            {{ _self.footer_nav_item(path('app_privacy'), "Privacy" | trans) }}
+                            {{ _self.footer_nav_item(path('app_cookies'), "Cookies" | trans) }}
+                            {{ _self.footer_nav_item(path('app_accessibility'), "Accessibility" | trans) }}
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </footer>

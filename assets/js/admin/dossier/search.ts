@@ -1,5 +1,5 @@
 import { clickableRows } from '../clickable-row';
-import { searchPreviews } from '../utils';
+import { searchPreviews } from './search-previews';
 
 export const dossierSearch = () => {
   const { initialize: initializeClickableRows, cleanup: cleanupClickableRows } = clickableRows();

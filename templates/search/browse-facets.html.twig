@@ -4,25 +4,21 @@
 
 {% import "facet_macros.html.twig" as macro %}
 
-{% block search_form_top %}
-    {% include "search/searchbar.html.twig" %}
-{% endblock %}
+{% block search_form_top %}<twig:Public:SearchForm />{% endblock %}
 
 {% block body %}
+<div class="woo-container">
+    <div class="woo-rich-text woo-readable-width">
+        <h1>{{ "Browse decisions and published documents through the categories" | trans }}</h1>
+        <p>{{ "All COVID-19 related Wob and Woo documents and decisions will be published on this website from September 2023. Decisions from the previous period can be found on wobcovid19.rijksoverheid.nl and will soon also be available here." | trans }}</p>
+    </div>
 
-    <section>
-        <div class="block pb-4">
-            <h1 class="mb-3 leading-none">{{ "Browse decisions and published documents through the categories" | trans() }}</h1>
-            <p class="mb-0">{{ "All COVID-19 related Wob and Woo documents and decisions will be published on this website from September 2023. Decisions from the previous period can be found on wobcovid19.rijksoverheid.nl and will soon also be available here." | trans() }}</p>
-        </div>
-
-        <div class="block">
-            {# {{ macro.facet_links('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }} #}
-            {{ macro.facet_links('Subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
-            {{ macro.facet_links('Source document type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
-            {{ macro.facet_links('Judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
-            {{ macro.facet_links('Grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
-        </div>
-    </section>
-
+    <div class="pt-8">
+        {# {{ macro.facet_links('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }} #}
+        {{ macro.facet_links('Subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
+        {{ macro.facet_links('Source document type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
+        {{ macro.facet_links('Judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
+        {{ macro.facet_links('Grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
+    </div>
+</div>
 {% endblock %}

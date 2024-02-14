@@ -8,7 +8,6 @@ use App\Entity\Organisation;
 use App\Entity\User;
 use App\Service\Security\OrganisationSwitcher;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class AuthorizationMatrix
@@ -23,9 +22,9 @@ class AuthorizationMatrix
      */
     public function __construct(
         private readonly Security $security,
-        private readonly RequestStack $requestStack,
         private readonly AuthorizationCheckerInterface $authorizationChecker,
         private readonly OrganisationSwitcher $organisationSwitcher,
+        private readonly AuthorizationEntryRequestStore $entryStore,
         private readonly array $entries
     ) {
     }
@@ -40,14 +39,7 @@ class AuthorizationMatrix
 
     public function isAuthorized(string $prefix, string $permission): bool
     {
-        /** @var User|null $user */
-        $user = $this->security->getUser();
-        if ($user === null) {
-            // No user, no permission
-            return false;
-        }
-
-        return count($this->findMatches($prefix, $permission)) > 0;
+        return $this->security->getUser() instanceof User && count($this->findMatches($prefix, $permission)) > 0;
     }
 
     /**
@@ -59,7 +51,7 @@ class AuthorizationMatrix
 
         foreach ($this->entries as $entry) {
             // Skip if we don't match the route
-            if ($entry->getPrefix() != $prefix) {
+            if ($entry->getPrefix() !== $prefix) {
                 continue;
             }
 
@@ -84,14 +76,7 @@ class AuthorizationMatrix
 
     public function getFilter(string $filter): bool
     {
-        $request = $this->requestStack->getCurrentRequest();
-        if ($request === null) {
-            throw new \RuntimeException('No request available.');
-        }
-
-        /** @var Entry[] $entries */
-        $entries = $request->attributes->get(AuthorizationMatrix::AUTH_MATRIX_ATTRIB);
-        foreach ($entries as $entry) {
+        foreach ($this->entryStore->getEntries() as $entry) {
             switch ($filter) {
                 case self::FILTER_ORGANISATION_ONLY:
                     if ($entry->getFilters()['organisation_only'] ?? false) {

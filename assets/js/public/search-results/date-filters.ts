@@ -1,3 +1,4 @@
+import { isDateInvalid } from '@js/utils';
 import { getSearchParams, getSearchParamsAndDelete, getSearchParamsAndSet, updateUrl } from './helpers';
 
 export const dateFilters = () => {
@@ -23,8 +24,7 @@ export const dateFilters = () => {
           return;
         }
 
-        const isDateInvalid = new Date(date).toString() === 'Invalid Date';
-        const params = isDateInvalid ? getSearchParamsAndDelete(name) : getSearchParamsAndSet(name, date);
+        const params = isDateInvalid(date) ? getSearchParamsAndDelete(name) : getSearchParamsAndSet(name, date);
 
         updateUrl(params, fetchAndUpdateResultsFunction);
       }, { signal: abortController.signal });

@@ -34,20 +34,20 @@ class Organisation
     #[ORM\JoinColumn(nullable: false)]
     private Department $department;
 
-    /** @var Collection|User[] */
+    /** @var Collection<array-key,User> */
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: User::class)]
     private Collection $users;
 
-    /** @var Collection|DocumentPrefix[] */
+    /** @var Collection<array-key,DocumentPrefix> */
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: DocumentPrefix::class, cascade: ['persist'])]
     #[Assert\Valid]
     private Collection $documentPrefixes;
 
-    /** @var Collection|Inquiry[] */
+    /** @var Collection<array-key,Inquiry> */
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Inquiry::class)]
     private Collection $inquiries;
 
-    /** @var Collection|Dossier[] */
+    /** @var Collection<array-key,Dossier> */
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Dossier::class)]
     private Collection $dossiers;
 
@@ -86,7 +86,7 @@ class Organisation
         return $this;
     }
 
-    /** @return Collection|User[] */
+    /** @return Collection<array-key,User> */
     public function getUsers(): Collection
     {
         return $this->users;
@@ -110,30 +110,28 @@ class Organisation
     }
 
     /**
-     * @return ArrayCollection|DocumentPrefix[]
+     * @return ArrayCollection<array-key,DocumentPrefix>
      */
     public function getDocumentPrefixes(): ArrayCollection
     {
-        $values = $this->documentPrefixes->filter(
-            /** @phpstan-ignore-next-line */
-            fn (DocumentPrefix $prefix) => ! $prefix->isArchived()
-        )->getValues();
+        $values = $this->documentPrefixes
+            ->filter(fn (DocumentPrefix $prefix): bool => ! $prefix->isArchived())
+            ->getValues();
 
         // Create a new instance to reset keys, this is important for use in the CollectionType form field
-        /** @var ArrayCollection|DocumentPrefix[] $collection */
+        /** @var ArrayCollection<DocumentPrefix> $collection */
         $collection = new ArrayCollection($values);
 
         return $collection;
     }
 
     /**
-     * @return string[]
+     * @return array<string>
      */
     public function getPrefixesAsArray(): array
     {
         return array_map(
-            // @phpstan-ignore-next-line
-            fn ($prefix) => $prefix->getPrefix(),
+            fn (DocumentPrefix $prefix): string => $prefix->getPrefix(),
             $this->getDocumentPrefixes()->toArray()
         );
     }
@@ -157,7 +155,7 @@ class Organisation
     }
 
     /**
-     * @param Collection|Inquiry[] $inquiries
+     * @param Collection<Inquiry> $inquiries
      */
     public function setInquiries(Collection $inquiries): void
     {
@@ -165,7 +163,7 @@ class Organisation
     }
 
     /**
-     * @param Collection|Dossier[] $dossiers
+     * @param Collection<Dossier> $dossiers
      */
     public function setDossiers(Collection $dossiers): void
     {
@@ -173,7 +171,7 @@ class Organisation
     }
 
     /**
-     * @return Collection|Inquiry[]
+     * @return Collection<Inquiry>
      */
     public function getInquiries(): Collection
     {
@@ -181,7 +179,7 @@ class Organisation
     }
 
     /**
-     * @return Collection|Dossier[]
+     * @return Collection<Dossier>
      */
     public function getDossiers(): Collection
     {

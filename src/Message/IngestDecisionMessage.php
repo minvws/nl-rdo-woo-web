@@ -27,10 +27,6 @@ class IngestDecisionMessage
 
     public static function forDossier(Dossier $dossier): self
     {
-        if ($dossier->getId() === null) {
-            throw new \RuntimeException('Dossier has no id');
-        }
-
         return new self($dossier->getId());
     }
 }

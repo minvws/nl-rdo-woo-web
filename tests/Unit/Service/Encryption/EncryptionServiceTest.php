@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
 class EncryptionServiceTest extends MockeryTestCase
 {
     private string $encryptionKey;
-    private LoggerInterface|MockInterface $logger;
+    private LoggerInterface&MockInterface $logger;
 
     public function setUp(): void
     {

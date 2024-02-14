@@ -11,7 +11,7 @@ class PublicationStep implements StepInterface
 {
     public function isCompleted(Dossier $dossier): bool
     {
-        return $dossier->getStatus() === Dossier::STATUS_PUBLISHED
+        return $dossier->getStatus()->isPublished()
             || $dossier->hasFuturePublicationDate();
     }
 

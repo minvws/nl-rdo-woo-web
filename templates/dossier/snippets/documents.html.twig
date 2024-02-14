@@ -1,25 +1,15 @@
 {% import "document_macros.html.twig" as macro %}
 
-{% if dossier.needsInventoryAndDocuments and (public_docs.count > 0 or not_public_docs.count > 0) %}
-<section>
-        <h2 id="documenten">{{ "Documents" | trans() }}</h2>
+{% if dossier.entity.needsInventoryAndDocuments and (publicDocs.count > 0 or notPublicDocs.count > 0) %}
+<div class="mt-16">
+    <h2 class="woo-h2 woo-h2-spacing" id="documenten">{{ "Documents" | trans() }}</h2>
 
-        <div class="gap-0 items-center pb-8 pt-4">
-            <form class="p-0 flex flex-col sm:flex-row items-stretch sm:items-center" method="post" action="{{ path('app_dossier_batch', { dossierId: dossier.dossierNr }) }}">
-                {% if dossier.uploadStatus.getActualUploadCount > 0 and public_docs.count > 0 %}
-                <button type="submit" download class="button button--light flex items-center mb-2 sm:mr-4 sm:mb-0">
-                    <twig:Icon name="download" />
-                    <span class="px-4">{{ "Download" | trans() }}</span>
-                </button>
-                {% endif %}
-                <span class="inline-block">
-                    <a href="{{ path('app_search') }}?dnr[]={{ dossier.dossierNr }}">
-                        {{ "Search in these documents..." | trans() }}
-                    </a>
-                </span>
-            </form>
-        </div>
+    <twig:Public:DownloadFilesForm
+        action="{{ path('app_dossier_batch', { prefix: dossier.entity.documentPrefix, dossierId: dossier.entity.dossierNr }) }}"
+        canDownload="{{ dossier.counts.hasUploads and publicDocs.count > 0 }}"
+        searchUrl="{{ path('app_search') }}?dnr[]={{ dossier.entity.dossierNr }}"
+    />
 
-        {{ macro.document_tabs(public_docs, not_public_docs, not_online_docs, '#documenten', dossier) }}
-</section>
+    {{ macro.document_tabs(publicDocs, notPublicDocs, notOnlineDocs, '#documenten', dossier.entity) }}
+</div>
 {% endif %}

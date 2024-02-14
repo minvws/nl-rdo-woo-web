@@ -6,6 +6,7 @@ namespace App\Service\DossierWorkflow;
 
 use App\Entity\Dossier;
 use App\Entity\WithdrawReason;
+use App\Enum\PublicationStatus;
 use App\Service\DossierService;
 use App\Service\HistoryService;
 use App\Service\Inventory\InventoryService;
@@ -33,10 +34,7 @@ class DossierWorkflow
 
     public function create(Dossier $dossier): void
     {
-        $dossier->setStatus(Dossier::STATUS_CONCEPT); // TODO set default state in dossier constructor
-        $dossier->setDecision(''); // TODO make nullable, this will not be set before step 2
-        $dossier->setSummary(''); // TODO make nullable, this will not be set before step 2
-
+        $dossier->setStatus(PublicationStatus::CONCEPT);
         $this->dossierService->updateDetails($dossier);
         $this->historyService->addDossierEntry($dossier, 'dossier_created', []);
     }
@@ -95,7 +93,7 @@ class DossierWorkflow
 
     public function publish(Dossier $dossier): void
     {
-        if ($dossier->getId() === null || ! $this->getStatus($dossier)->isReadyForPublication()) {
+        if (! $this->getStatus($dossier)->isReadyForPublication()) {
             throw new \RuntimeException('Cannot publish this dossier');
         }
 

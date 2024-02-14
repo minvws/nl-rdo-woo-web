@@ -24,17 +24,13 @@ class OrganisationSwitcher
 
     public function getActiveOrganisation(User $user): Organisation
     {
-        if (! $user->hasRole(Roles::ROLE_SUPER_ADMIN)) {
+        if (! $this->isSwitchAllowed($user)) {
             return $user->getOrganisation();
         }
 
         $session = $this->requestStack->getSession();
         if (! $session->has(self::SESSION_KEY)) {
-            $organisations = $this->getOrganisations($user);
-            $defaultOrganisation = reset($organisations);
-            if (! $defaultOrganisation instanceof Organisation) {
-                throw new \RuntimeException('Could not select a default organisation');
-            }
+            $defaultOrganisation = $this->getDefaultOrganisation($user);
 
             $session->set(self::SESSION_KEY, $defaultOrganisation->getId()->toRfc4122());
 
@@ -44,7 +40,7 @@ class OrganisationSwitcher
         $id = Uuid::fromRfc4122(strval($session->get(self::SESSION_KEY)));
         $organisation = $this->repository->find($id);
         if (! $organisation) {
-            throw new \OutOfBoundsException('Cannot find active organisation');
+            return $this->getDefaultOrganisation($user);
         }
 
         return $organisation;
@@ -55,7 +51,7 @@ class OrganisationSwitcher
      */
     public function getOrganisations(User $user): array
     {
-        if (! $user->hasRole(Roles::ROLE_SUPER_ADMIN)) {
+        if (! $this->isSwitchAllowed($user)) {
             return [$user->getOrganisation()];
         }
 
@@ -74,6 +70,17 @@ class OrganisationSwitcher
 
     public function isSwitchAllowed(User $user): bool
     {
-        return $user->hasRole(Roles::ROLE_SUPER_ADMIN);
+        return $user->hasRole(Roles::ROLE_SUPER_ADMIN) || $user->hasRole(Roles::ROLE_GLOBAL_ADMIN);
+    }
+
+    public function getDefaultOrganisation(User $user): Organisation
+    {
+        $organisations = $this->getOrganisations($user);
+        $defaultOrganisation = reset($organisations);
+        if (! $defaultOrganisation instanceof Organisation) {
+            throw new \RuntimeException('Could not select a default organisation');
+        }
+
+        return $defaultOrganisation;
     }
 }

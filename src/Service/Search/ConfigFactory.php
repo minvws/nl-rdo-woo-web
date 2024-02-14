@@ -6,7 +6,7 @@ namespace App\Service\Search;
 
 use App\Service\Inquiry\InquirySessionService;
 use App\Service\Search\Model\Config;
-use App\Service\Search\Query\Facet\FacetMappingService;
+use App\Service\Search\Query\Facet\Input\FacetInputFactory;
 use App\Service\Search\Query\SortField;
 use App\Service\Search\Query\SortOrder;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,16 +14,53 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
-class ConfigFactory
+final readonly class ConfigFactory
 {
     public const DEFAULT_PAGE_SIZE = 10;
     public const MIN_PAGE_SIZE = 1;
     public const MAX_PAGE_SIZE = 100;
 
     public function __construct(
-        private readonly InquirySessionService $inquirySession,
-        private readonly FacetMappingService $facetMapping,
+        private InquirySessionService $inquirySession,
+        private FacetInputFactory $facetInputFactory,
     ) {
+    }
+
+    /**
+     * @param list<string> $documentInquiries
+     * @param list<string> $dossierInquiries
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     */
+    public function create(
+        string $operator = Config::OPERATOR_AND,
+        int $limit = 0,
+        int $offset = 0,
+        bool $pagination = true,
+        bool $aggregations = true,
+        string $query = '',
+        string $searchType = Config::TYPE_ALL,
+        array $documentInquiries = [],
+        array $dossierInquiries = [],
+        SortField $sortField = SortField::SCORE,
+        SortOrder $sortOrder = SortOrder::DESC,
+    ): Config {
+        $facetInputs = $this->facetInputFactory->create();
+
+        return new Config(
+            facetInputs: $facetInputs,
+            operator: $operator,
+            limit: $limit,
+            offset: $offset,
+            pagination: $pagination,
+            aggregations: $aggregations,
+            query: $query,
+            searchType: $searchType,
+            documentInquiries: $documentInquiries,
+            dossierInquiries: $dossierInquiries,
+            sortField: $sortField,
+            sortOrder: $sortOrder
+        );
     }
 
     /**
@@ -37,28 +74,6 @@ class ConfigFactory
     ): Config {
         $pageSize = $this->getPageSize($request);
         $pageNum = max($request->query->getInt('page', 1) - 1, 0);
-
-        $facets = [];
-        foreach ($this->facetMapping->getAll() as $facet) {
-            if (! $request->query->has($facet->getQueryParam())) {
-                continue;
-            }
-
-            // Make sure that $items is always an array
-            $items = $request->query->all()[$facet->getQueryParam()];
-            if (! is_array($items)) {
-                $items = [$items];
-            }
-
-            // Url decode the strings but not numbers etc
-            foreach ($items as $index => $item) {
-                if (is_string($item)) {
-                    $items[$index] = urldecode($item);
-                }
-            }
-
-            $facets[$facet->getFacetKey()] = $items;
-        }
 
         // Type is not a facet but must be set directly in the config
         $searchType = match ($request->query->get('type', '')) {
@@ -75,8 +90,8 @@ class ConfigFactory
         $query = $request->query->getString('q', '');
 
         $config = new Config(
+            facetInputs: $this->facetInputFactory->fromParameterBag($request->query),
             operator: Config::OPERATOR_AND,
-            facets: $facets,
             limit: $pageSize,
             offset: $pageNum * $pageSize,
             pagination: $pagination,
@@ -100,7 +115,7 @@ class ConfigFactory
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     protected function getInquiries(string $paramKey, Request $request): array
     {
@@ -123,7 +138,9 @@ class ConfigFactory
         return $validatedInquiries;
     }
 
-    // Converts negative words into AND values by adding a + in front of them.
+    /**
+     * Converts negative words into AND values by adding a + in front of them.
+     */
     public function convertQueryStringToNegativeAndValues(string $queryString): string
     {
         $queryString = trim($queryString);

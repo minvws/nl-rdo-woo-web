@@ -2,7 +2,7 @@
     {% set isActive = pageNumber == currentPageNumber %}
     <a
         {% if isActive %}aria-current="page"{% endif %}
-        class="inline-block px-4 py-2.5 rounded-lg hover:bg-anti-flash-white transition-colors {{ isActive ? 'bg-light-silver cursor-default font-bold' : '' }}"
+        class="inline-block px-4 py-2.5 rounded-lg hover:bg-woo-anti-flash-white transition-colors {{ isActive ? 'bg-bhr-light-silver cursor-default font-bold' : '' }}"
         href="?{{ query|merge({(pageParameterName): pageNumber}) | url_encode }}{{ fragment }}"
     >
         <span class="sr-only">{{ "Page" | trans() }}</span> {{ pageNumber }}

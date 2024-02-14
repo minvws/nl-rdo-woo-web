@@ -23,7 +23,7 @@ class NodeVisitor extends NodeVisitorAbstract
         $this->output = $output;
     }
 
-    public function enterNode(Node $node)
+    public function enterNode(Node $node): int|Node|null
     {
         // Check if we're in the up method, and process it
         if ($node instanceof ClassMethod && $node->name == 'up') {

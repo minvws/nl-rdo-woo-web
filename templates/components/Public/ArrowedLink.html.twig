@@ -1,0 +1,9 @@
+<a class="flex leading-tight py-1 sm:py-0.5 group" href="{{ to }}">
+    <span>
+        <span class="flex text-woo-sea-blue">
+            <span class="mr-1"><twig:Public:Icon class="-ml-0.5 mr-1 align-baseline" color="fill-current" name="chevron-right" size="12" /></span>
+            <span class="group-hover:underline group-focus:underline">{% block content %}{% endblock %}</span>
+        </span>
+    </span>
+    <span class="pt-0.5 ml-2 woo-muted text-sm">({{ suffix }})</span>
+</a>

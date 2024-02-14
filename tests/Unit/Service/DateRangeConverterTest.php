@@ -75,8 +75,6 @@ class DateRangeConverterTest extends TestCase
      */
     public function testConverter(?\DateTimeImmutable $from, ?\DateTimeImmutable $to, string $result): void
     {
-        $converter = new DateRangeConverter();
-
-        $this->assertEquals($result, $converter->convertToString($from, $to));
+        $this->assertEquals($result, DateRangeConverter::convertToString($from, $to));
     }
 }

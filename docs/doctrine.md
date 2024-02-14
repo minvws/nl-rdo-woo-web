@@ -28,7 +28,6 @@ or more documents attached to it. All documents are binary stored in the `docume
 | filepath            | string   | Path (relative from document-root) of the file on disk                                                                                |
 | filesize            | int      | File size in bytes                                                                                                                    |
 | page_count          | int      | In case of a paged document: the number of pages in the document                                                                      |
-| duration            | int      | In case of audio/video: the number of seconds the stream takes.                                                                       |
 | summary             | string   | Summary of the document (not used)                                                                                                    |
 | title               | string   | Title of the document (email subject, or filename)                                                                                    |
 | class               | string   | Class of the document (inventory, decision or document)                                                                               |

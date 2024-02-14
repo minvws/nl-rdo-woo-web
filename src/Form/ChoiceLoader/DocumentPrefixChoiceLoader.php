@@ -33,7 +33,7 @@ class DocumentPrefixChoiceLoader implements ChoiceLoaderInterface
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function loadChoiceList(callable $value = null): ChoiceListInterface
+    public function loadChoiceList(?callable $value = null): ChoiceListInterface
     {
         /** @var User|null $user */
         $user = $this->security->getUser();
@@ -54,7 +54,7 @@ class DocumentPrefixChoiceLoader implements ChoiceLoaderInterface
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function loadChoicesForValues(array $values, callable $value = null): array
+    public function loadChoicesForValues(array $values, ?callable $value = null): array
     {
         $choices = [];
         foreach ($values as $choice) {
@@ -70,7 +70,7 @@ class DocumentPrefixChoiceLoader implements ChoiceLoaderInterface
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function loadValuesForChoices(array $choices, callable $value = null): array
+    public function loadValuesForChoices(array $choices, ?callable $value = null): array
     {
         $values = [];
         foreach ($choices as $choice) {

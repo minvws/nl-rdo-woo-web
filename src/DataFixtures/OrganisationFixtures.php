@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Department;
+use App\Entity\DocumentPrefix;
 use App\Entity\Organisation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -19,9 +20,13 @@ class OrganisationFixtures extends Fixture
         /** @var Department $department */
         $department = $manager->getRepository(Department::class)->findOneBy(['shortTag' => 'VWS']);
 
+        $documentPrefix = new DocumentPrefix();
+        $documentPrefix->setPrefix('MINVWS');
+
         $entity = new Organisation();
         $entity->setName('Programmadirectie Openbaarheid');
         $entity->setDepartment($department);
+        $entity->addDocumentPrefix($documentPrefix);
         $manager->persist($entity);
         $manager->flush();
     }

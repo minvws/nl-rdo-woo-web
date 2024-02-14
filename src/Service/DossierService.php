@@ -9,6 +9,7 @@ use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\InventoryProcessRun;
 use App\Entity\WithdrawReason;
+use App\Enum\PublicationStatus;
 use App\Exception\ProcessInventoryException;
 use App\Message\GenerateSanitizedInventoryMessage;
 use App\Message\IngestDecisionMessage;
@@ -63,26 +64,43 @@ class DossierService
         }
 
         $changes = [];
-        if ($oldDossier['publicationDate'] != $dossier->getPublicationDate()) {
-            $changes[] = 'publication_date';
-        }
         if ($oldDossier['decisionDate'] != $dossier->getDecisionDate()) {
             $changes[] = 'decision_date';
         }
-        if ($oldDossier['title'] != $dossier->getTitle()) {
+        if ($oldDossier['title'] !== $dossier->getTitle()) {
             $changes[] = 'title';
         }
-        if ($oldDossier['summary'] != $dossier->getSummary()) {
+        if ($oldDossier['summary'] !== $dossier->getSummary()) {
             $changes[] = 'summary';
         }
 
         if ($changes) {
             // All changes are translated
             foreach ($changes as $key => $value) {
-                $changes['%' . $key . '%'] = $value;
+                $changes[$key] = '%history.value.' . $value . '%';
             }
 
             $this->historyService->addDossierEntry($dossier, 'dossier_updated', ['changes' => $changes]);
+        }
+
+        if ($oldDossier['publicationDate'] != $dossier->getPublicationDate()) {
+            $this->historyService->addDossierEntry(
+                $dossier,
+                'dossier_update_publication_date',
+                [
+                    'date' => $dossier->getPublicationDate()?->format('d-m-Y'),
+                ],
+            );
+        }
+
+        if ($oldDossier['previewDate'] != $dossier->getPreviewDate()) {
+            $this->historyService->addDossierEntry(
+                $dossier,
+                'dossier_update_preview_date',
+                [
+                    'date' => $dossier->getPreviewDate()?->format('d-m-Y'),
+                ],
+            );
         }
     }
 
@@ -101,25 +119,17 @@ class DossierService
 
     public function remove(Dossier $dossier): void
     {
-        if ($dossier->getId() === null) {
-            return;
-        }
-
         $this->messageBus->dispatch(RemoveDossierMessage::forDossier($dossier));
     }
 
     public function ingest(Dossier $dossier): void
     {
-        if ($dossier->getId() === null) {
-            return;
-        }
-
         $this->messageBus->dispatch(new IngestDossierMessage($dossier->getId()));
     }
 
     public function update(Dossier $dossier): void
     {
-        if ($dossier->getId() === null) {
+        if ($dossier->getStatus()->isNewOrConcept()) {
             return;
         }
 
@@ -128,39 +138,37 @@ class DossierService
 
     public function generateSanitizedInventory(Dossier $dossier): void
     {
-        if ($dossier->getId() === null) {
-            return;
-        }
-
         $this->messageBus->dispatch(GenerateSanitizedInventoryMessage::forDossier($dossier));
     }
 
     public function generateArchives(Dossier $dossier): void
     {
-        if ($dossier->getId() === null) {
+        if ($dossier->getStatus()->isNewOrConcept()) {
             return;
         }
 
         $this->messageBus->dispatch(UpdateDossierArchivesMessage::forDossier($dossier));
     }
 
-    public function changeState(Dossier $dossier, string $newState): void
+    public function changeState(Dossier $dossier, PublicationStatus $newState): void
     {
-        if ($dossier->getId() === null) {
-            return;
-        }
-
         $oldState = $dossier->getStatus();
 
         if (! $dossier->isAllowedState($newState)) {
             $this->logger->error('Invalid state change', [
                 'dossier' => $dossier->getId(),
                 'oldState' => $dossier->getStatus(),
-                'newState' => $newState,
+                'newState' => $newState->value,
                 'reason' => 'Invalid state',
             ]);
 
             throw new \InvalidArgumentException('Invalid state change');
+        }
+
+        // This is a temporary fix for filtering the history by publicationDate (time component is important for this)
+        // To be improved in #1863
+        if ($newState->isPublished()) {
+            $dossier->setPublicationDate(new \DateTimeImmutable());
         }
 
         // Set new status
@@ -169,9 +177,9 @@ class DossierService
 
         $this->messageBus->dispatch(UpdateDossierArchivesMessage::forDossier($dossier));
 
-        $this->historyService->addDossierEntry($dossier, 'dossier_state_' . $newState, [
-            'old' => '%' . $oldState . '%',
-            'new' => '%' . $newState . '%',
+        $this->historyService->addDossierEntry($dossier, 'dossier_state_' . $newState->value, [
+            'old' => '%' . $oldState->value . '%',
+            'new' => '%' . $newState->value . '%',
         ]);
 
         $this->logger->info('Dossier state changed', [
@@ -186,10 +194,6 @@ class DossierService
      */
     public function updateDecisionDocument(UploadedFile $upload, Dossier $dossier): void
     {
-        if ($dossier->getId() === null) {
-            return;
-        }
-
         $this->logger->info('uploaded decision file', [
             'path' => $upload->getRealPath(),
             'original_file' => $upload->getClientOriginalName(),
@@ -237,15 +241,15 @@ class DossierService
 
     // Returns true when the dossier (and/or document) is allowed to be viewed. This will also
     // consider documents and dossiers which are marked as preview and that are allowed by the session.
-    public function isViewingAllowed(Dossier $dossier, Document $document = null): bool
+    public function isViewingAllowed(Dossier $dossier, ?Document $document = null): bool
     {
         // If dossier is published, allow viewing
-        if ($dossier->getStatus() == Dossier::STATUS_PUBLISHED) {
+        if ($dossier->getStatus()->isPublished()) {
             return true;
         }
 
         // If dossier is not preview, deny access
-        if ($dossier->getStatus() != Dossier::STATUS_PREVIEW) {
+        if (! $dossier->getStatus()->isPreview()) {
             return false;
         }
 
@@ -302,7 +306,7 @@ class DossierService
 
         if (! $this->documentStorage->storeDocument($upload, $run)) {
             $this->logger->error('Could not store the inventory spreadsheet.', [
-                'dossier' => $dossier->getId()?->toRfc4122() ?? 'unknown',
+                'dossier' => $dossier->getId()->toRfc4122(),
                 'filename' => $upload->getClientOriginalName(),
             ]);
 
@@ -378,27 +382,26 @@ class DossierService
 
     public function updatePublication(Dossier $dossier): void
     {
+        $this->updateHistory($dossier);
+
         $now = new \DateTimeImmutable();
 
-        if (
-            $dossier->getPublicationDate() <= $now
-            && in_array($dossier->getStatus(), [Dossier::STATUS_CONCEPT, Dossier::STATUS_SCHEDULED, Dossier::STATUS_PREVIEW], true)
-        ) {
-            $this->changeState($dossier, Dossier::STATUS_PUBLISHED);
+        if ($dossier->getPublicationDate() <= $now && ! $dossier->getStatus()->isPublishedOrRetracted()) {
+            $this->changeState($dossier, PublicationStatus::PUBLISHED);
             $this->handlePublication($dossier);
 
             return;
         }
 
-        if ($dossier->getPreviewDate() <= $now && in_array($dossier->getStatus(), [Dossier::STATUS_SCHEDULED, Dossier::STATUS_CONCEPT], true)) {
-            $this->changeState($dossier, Dossier::STATUS_PREVIEW);
+        if ($dossier->getPreviewDate() <= $now && $dossier->getStatus()->isConceptOrScheduled()) {
+            $this->changeState($dossier, PublicationStatus::PREVIEW);
             $this->handlePublication($dossier);
 
             return;
         }
 
-        if ($dossier->getStatus() === Dossier::STATUS_CONCEPT) {
-            $this->changeState($dossier, Dossier::STATUS_SCHEDULED);
+        if ($dossier->getStatus()->isConcept()) {
+            $this->changeState($dossier, PublicationStatus::SCHEDULED);
 
             return;
         }

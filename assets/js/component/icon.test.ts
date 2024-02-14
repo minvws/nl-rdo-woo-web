@@ -42,13 +42,13 @@ describe('The "icon" component', () => {
   describe('the color', () => {
     test('should equal the provided color', () => {
       const iconElement = getIconElement({ color: 'fill-red' });
-      expect(iconElement.classList.contains('fill-dim-gray')).toBe(false);
+      expect(iconElement.classList.contains('fill-woo-dim-gray')).toBe(false);
       expect(iconElement.classList.contains('fill-red')).toBe(true);
     });
 
     test('should be gray by default', () => {
       const iconElement = getIconElement();
-      expect(iconElement.classList.contains('fill-dim-gray')).toBe(true);
+      expect(iconElement.classList.contains('fill-woo-dim-gray')).toBe(true);
     });
   });
 });

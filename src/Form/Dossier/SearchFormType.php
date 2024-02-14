@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Form\Dossier;
 
 use App\Entity\Department;
-use App\Entity\Dossier;
+use App\Enum\PublicationStatus;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -29,15 +29,10 @@ class SearchFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('status', ChoiceType::class, [
+            ->add('status', EnumType::class, [
+                'class' => PublicationStatus::class,
                 'required' => false,
-                'choices' => [
-                    Dossier::STATUS_CONCEPT => Dossier::STATUS_CONCEPT,
-                    Dossier::STATUS_SCHEDULED => Dossier::STATUS_SCHEDULED,
-                    Dossier::STATUS_PREVIEW => Dossier::STATUS_PREVIEW,
-                    Dossier::STATUS_PUBLISHED => Dossier::STATUS_PUBLISHED,
-                    Dossier::STATUS_RETRACTED => Dossier::STATUS_RETRACTED,
-                ],
+                'choices' => PublicationStatus::filterCases(),
                 'expanded' => true,
                 'multiple' => true,
             ])

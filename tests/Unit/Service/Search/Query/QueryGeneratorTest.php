@@ -10,7 +10,8 @@ use App\Service\Search\Query\AggregationGenerator;
 use App\Service\Search\Query\Condition\ContentAccessConditions;
 use App\Service\Search\Query\Condition\FacetConditions;
 use App\Service\Search\Query\Condition\SearchTermConditions;
-use App\Service\Search\Query\Facet\FacetMappingService;
+use App\Service\Search\Query\Facet\FacetListFactory;
+use App\Service\Search\Query\Facet\Input\FacetInputFactory;
 use App\Service\Search\Query\QueryGenerator;
 use App\Service\Search\Query\SortField;
 use App\Service\Search\Query\SortOrder;
@@ -20,17 +21,20 @@ class QueryGeneratorTest extends MockeryTestCase
 {
     private string $index = ElasticConfig::READ_INDEX;
     private QueryGenerator $queryGenerator;
+    private FacetInputFactory $facetInputFactory;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
-        $facetMapping = new FacetMappingService();
+        parent::setUp();
+
+        $this->facetInputFactory = new FacetInputFactory();
         $contentAccessConditions = new ContentAccessConditions();
-        $facetConditions = new FacetConditions($facetMapping);
+        $facetConditions = new FacetConditions();
         $searchTermConditions = new SearchTermConditions();
+        $facetListFactory = new FacetListFactory();
 
         $this->queryGenerator = new QueryGenerator(
             new AggregationGenerator(
-                $facetMapping,
                 $contentAccessConditions,
                 $facetConditions,
                 $searchTermConditions
@@ -38,6 +42,7 @@ class QueryGeneratorTest extends MockeryTestCase
             $contentAccessConditions,
             $facetConditions,
             $searchTermConditions,
+            $facetListFactory,
         );
     }
 
@@ -45,6 +50,7 @@ class QueryGeneratorTest extends MockeryTestCase
     {
         $result = $this->queryGenerator->createQuery(
             new Config(
+                facetInputs: $this->facetInputFactory->create(),
                 pagination: false,
                 aggregations: false,
             )
@@ -54,14 +60,13 @@ class QueryGeneratorTest extends MockeryTestCase
             <<<END
 {
     "body": {
-        "_source": {
-            "excludes": [
-                "content",
-                "pages",
-                "inquiry_ids",
-                "dossiers.inquiry_ids"
-            ]
-        },
+        "docvalue_fields": [
+            "type",
+            "document_nr",
+            "document_prefix",
+            "dossier_nr"
+        ],
+        "_source": false,
         "query": {
             "bool": {
                 "should": [
@@ -156,9 +161,10 @@ END,
     {
         $result = $this->queryGenerator->createQuery(
             new Config(
-                searchType: Config::TYPE_DOSSIER,
+                facetInputs: $this->facetInputFactory->create(),
                 pagination: false,
                 aggregations: false,
+                searchType: Config::TYPE_DOSSIER,
             )
         );
 
@@ -166,14 +172,13 @@ END,
             <<<END
 {
     "body": {
-        "_source": {
-            "excludes": [
-                "content",
-                "pages",
-                "inquiry_ids",
-                "dossiers.inquiry_ids"
-            ]
-        },
+        "docvalue_fields": [
+            "type",
+            "document_nr",
+            "document_prefix",
+            "dossier_nr"
+        ],
+        "_source": false,
         "query": {
             "bool": {
                 "should": [
@@ -236,6 +241,7 @@ END,
     {
         $result = $this->queryGenerator->createQuery(
             new Config(
+                facetInputs: $this->facetInputFactory->create(),
                 limit: 15,
                 offset: 6,
                 query: 'search terms',
@@ -250,14 +256,13 @@ END,
             <<<END
 {
     "body": {
-        "_source": {
-            "excludes": [
-                "content",
-                "pages",
-                "inquiry_ids",
-                "dossiers.inquiry_ids"
-            ]
-        },
+        "docvalue_fields": [
+            "type",
+            "document_nr",
+            "document_prefix",
+            "dossier_nr"
+        ],
+        "_source": false,
         "suggest": {
             "search-input": {
                 "text": "search terms",
@@ -549,7 +554,7 @@ END,
                     "field": "grounds",
                     "size": 25,
                     "order": {
-                        "_count": "desc"
+                        "_key": "asc"
                     },
                     "min_doc_count": 1
                 }

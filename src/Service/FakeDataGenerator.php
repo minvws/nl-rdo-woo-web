@@ -9,6 +9,7 @@ use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Judgement;
 use App\Entity\Organisation;
+use App\Enum\PublicationStatus;
 use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
 use Faker\Factory;
@@ -67,7 +68,7 @@ class FakeDataGenerator
         $dossier->setDocumentPrefix('PREF');
         $dossier->setPublicationReason($reason);
         $dossier->setDecision($decision);
-        $dossier->setStatus(Dossier::STATUS_PUBLISHED);
+        $dossier->setStatus(PublicationStatus::PUBLISHED);
         $dossier->setOrganisation($organisation);
         foreach ($deps as $dep) {
             $dossier->addDepartment($dep);
@@ -80,6 +81,8 @@ class FakeDataGenerator
         }
         $dossier->setDateFrom($a);
         $dossier->setDateTo($b);
+        $dossier->setDecisionDate($a);
+        $dossier->setPublicationDate($b);
 
         return $dossier;
     }
@@ -88,13 +91,11 @@ class FakeDataGenerator
     {
         /** @var string $sourceType */
         $sourceType = $this->faker->randomElement(SourceType::getAllSourceTypes());
-
-        $documentId = random_int(100000, 999999);
-        $documentNr = 'PREF-' . $documentId;
+        $documentId = $this->faker->unique()->randomNumber(nbDigits: 6, strict: true);
+        $documentNr = sprintf('PREF-%s', $documentId);
         $document = new Document();
         $document->setDocumentDate(new \DateTimeImmutable());
         $document->setDocumentNr($documentNr);
-        $document->setDuration(0);
         $document->setFamilyId($documentId);
         $document->setDocumentid(strval($documentId));
         $document->setThreadId(0);

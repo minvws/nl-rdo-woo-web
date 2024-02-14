@@ -1,0 +1,15 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Files: *
+Copyright: iRealisatie - Ministerie van Volksgezondheid, Welzijn en Sport
+License: EUPL-1.2
+
+Files: docs/*
+Copyright: iRealisatie - Ministerie van Volksgezondheid, Welzijn en Sport
+License: CC0-1.0
+Comment: Bij het citeren van de inhoud mag niet de indruk gewekt worden dat de Rijksoverheid zonder meer de strekking van het afgeleide werk onderschrijft.
+
+Files: */non-free/*
+Copyright: Its copyright holder
+License: LicenseRef-Proprietary
+Comment: For any file with a full path containing "non-free", please refer to it's related license file(s).

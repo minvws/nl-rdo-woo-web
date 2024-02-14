@@ -4,19 +4,19 @@
 {% set page_title = "Dossiers and documents for case number {case_number}" | trans({'{case_number}': inquiry.casenr}) %}
 
 {% block body %}
-<section class="content-detail-container">
-    <div>
-        <h1 class="mb-0 leading-tight">{{ page_title }}</h1>
-
-        {% include "inquiry/snippets/notifications.html.twig" %}
-
-        {% include "inquiry/snippets/info.html.twig" %}
-
-        {% include "inquiry/snippets/dossiers.html.twig" %}
-
-        {% include "inquiry/snippets/documents.html.twig" %}
-
-        {{ macro.history_section(get_frontend_history('inquiry', inquiry.id), "History") }}
+<div class="woo-container woo-container--sm">
+    <div class="pb-2">
+        <h1 class="woo-h1 woo-h1-spacing">{{ page_title }}</h1>
     </div>
-</section>
+
+    {% include "inquiry/snippets/notifications.html.twig" %}
+
+    {% include "inquiry/snippets/info.html.twig" %}
+
+    {% include "inquiry/snippets/dossiers.html.twig" %}
+
+    {% include "inquiry/snippets/documents.html.twig" %}
+
+    {{ macro.history_section(get_frontend_history('inquiry', inquiry.id), "History") }}
+</div>
 {% endblock %}

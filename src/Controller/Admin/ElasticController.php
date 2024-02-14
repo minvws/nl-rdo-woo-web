@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Attribute\AuthMatrix;
 use App\Form\Elastic\ActivateIndexType;
 use App\Form\Elastic\DeleteIndexType;
 use App\Form\Elastic\RolloverParametersType;
@@ -15,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
@@ -28,7 +28,7 @@ class ElasticController extends AbstractController
     }
 
     #[Route('/balie/elastic', name: 'app_admin_elastic', methods: ['GET'])]
-    #[AuthMatrix('elastic.read')]
+    #[IsGranted('AuthMatrix.elastic.read')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
@@ -45,7 +45,7 @@ class ElasticController extends AbstractController
     }
 
     #[Route('/balie/elastic/create', name: 'app_admin_elastic_create', methods: ['GET', 'POST'])]
-    #[AuthMatrix('elastic.create')]
+    #[IsGranted('AuthMatrix.elastic.create')]
     public function create(Breadcrumbs $breadcrumbs, Request $request): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
@@ -76,7 +76,7 @@ class ElasticController extends AbstractController
     }
 
     #[Route('/balie/elastic/{indexName}/details', name: 'app_admin_elastic_details', methods: ['GET'])]
-    #[AuthMatrix('elastic.read')]
+    #[IsGranted('AuthMatrix.elastic.read')]
     public function details(Breadcrumbs $breadcrumbs, string $indexName): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');
@@ -110,7 +110,7 @@ class ElasticController extends AbstractController
     }
 
     #[Route('/balie/elastic/{indexName}/delete', name: 'app_admin_elastic_delete', methods: ['POST'])]
-    #[AuthMatrix('elastic.update')]
+    #[IsGranted('AuthMatrix.elastic.update')]
     public function delete(string $indexName, Request $request): Response
     {
         $indices = $this->indexService->find($indexName);
@@ -139,7 +139,7 @@ class ElasticController extends AbstractController
     }
 
     #[Route('/balie/elastic/{indexName}/live', name: 'app_admin_elastic_live', methods: ['GET', 'POST'])]
-    #[AuthMatrix('elastic.update')]
+    #[IsGranted('AuthMatrix.elastic.update')]
     public function makeLive(Breadcrumbs $breadcrumbs, Request $request, string $indexName): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');

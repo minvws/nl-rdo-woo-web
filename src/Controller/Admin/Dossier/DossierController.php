@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier;
 
-use App\Attribute\AuthMatrix;
 use App\Entity\Dossier;
+use App\Enum\PublicationStatus;
 use App\Form\Dossier\SearchFormType;
 use App\Repository\DocumentRepository;
 use App\Repository\DossierRepository;
@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -42,28 +42,18 @@ class DossierController extends AbstractController
     }
 
     #[Route('/balie/dossiers', name: 'app_admin_dossiers', methods: ['GET'])]
-    #[AuthMatrix('dossier.read')]
-    public function index(Breadcrumbs $breadcrumbs, Request $request): Response
+    #[IsGranted('AuthMatrix.dossier.read')]
+    public function index(Request $request): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addItem('Dossier management');
-
         $form = $this->createForm(SearchFormType::class);
         $form->handleRequest($request);
 
         $statuses = [];
         if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_PUBLISHED_DOSSIERS)) {
-            $statuses = array_merge($statuses, [
-                Dossier::STATUS_PUBLISHED,
-                Dossier::STATUS_PREVIEW,
-                Dossier::STATUS_RETRACTED,
-                Dossier::STATUS_SCHEDULED,
-            ]);
+            $statuses = array_merge($statuses, PublicationStatus::nonConceptCases());
         }
         if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_UNPUBLISHED_DOSSIERS)) {
-            $statuses = array_merge($statuses, [
-                Dossier::STATUS_CONCEPT,
-            ]);
+            $statuses = array_merge($statuses, PublicationStatus::conceptCases());
         }
 
         $query = $this->dossierRepository->getDossiersForOrganisationQueryBuilder(
@@ -87,7 +77,7 @@ class DossierController extends AbstractController
     }
 
     #[Route('/balie/dossiers/search', name: 'app_admin_dossiers_search', methods: ['POST'])]
-    #[AuthMatrix('dossier.read')]
+    #[IsGranted('AuthMatrix.dossier.read')]
     public function search(Request $request): Response
     {
         $searchTerm = urldecode(strval($request->getPayload()->get('q', '')));
@@ -115,7 +105,7 @@ class DossierController extends AbstractController
     }
 
     #[Route('/balie/dossiers/search/link', name: 'app_admin_dossiers_search_link', methods: ['POST'])]
-    #[AuthMatrix('dossier.read')]
+    #[IsGranted('AuthMatrix.dossier.read')]
     public function searchLink(Request $request): Response
     {
         $searchTerm = urldecode(strval($request->getPayload()->get('q', '')));
@@ -140,16 +130,11 @@ class DossierController extends AbstractController
         return new JsonResponse($ret);
     }
 
-    #[Route('/balie/dossier/{dossierId}', name: 'app_admin_dossier', methods: ['GET'])]
-    #[AuthMatrix('dossier.read')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}', name: 'app_admin_dossier', methods: ['GET'])]
+    #[IsGranted('AuthMatrix.dossier.read')]
     public function dossier(
-        Breadcrumbs $breadcrumbs,
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
     ): Response {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Dossier management', 'app_admin_dossiers');
-        $breadcrumbs->addItem('View dossier');
-
         $this->testIfDossierIsAllowedByUser($dossier);
 
         return $this->render('admin/dossier/view.html.twig', [

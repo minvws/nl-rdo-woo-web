@@ -37,4 +37,10 @@ class IndexController extends AbstractController
     {
         return $this->render('admin/static/privacy.html.twig', []);
     }
+
+    #[Route('/balie/toegankelijkheid', name: 'app_admin_accessibility', methods: ['GET'])]
+    public function accessibility(): Response
+    {
+        return $this->render('admin/static/accessibility.html.twig', []);
+    }
 }

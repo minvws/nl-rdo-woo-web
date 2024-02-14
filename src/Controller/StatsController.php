@@ -6,7 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Service\Search\Model\Config;
+use App\Service\Search\ConfigFactory;
 use App\Service\Search\SearchService;
 use App\Service\Storage\DocumentStorageService;
 use App\Service\Storage\ThumbnailStorageService;
@@ -30,6 +30,7 @@ class StatsController extends AbstractController
         private readonly string $rabbitMqStatUrl,
         private readonly DocumentStorageService $documentStorageService,
         private readonly ThumbnailStorageService $thumbnailStorageService,
+        private readonly ConfigFactory $configFactory
     ) {
     }
 
@@ -120,7 +121,7 @@ class StatsController extends AbstractController
     protected function isElasticAlive(): bool
     {
         try {
-            $result = $this->searchService->search(new Config());
+            $result = $this->searchService->search($this->configFactory->create());
 
             return $result->hasFailed() === false;
         } catch (\Throwable) {

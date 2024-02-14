@@ -1,5 +1,6 @@
 import { icon, skipLink } from '@js/admin/component';
-import { areFilesEqual, getIconNameByMimeType, hideElement, isFocusWithinElement, showElement, uniqueId } from '@utils';
+import { areFilesEqual, getIconNameByMimeType } from '@js/admin/utils';
+import { hideElement, isFocusWithinElement, showElement, uniqueId } from '@utils';
 
 interface FilesAreaOptions {
   areaElement: HTMLElement | null;
@@ -16,6 +17,7 @@ export class FilesArea {
   areaElement: HTMLElement | null;
   canUploadMultipleFiles = false;
   listElement: HTMLElement;
+  listTitleElement: HTMLHeadingElement;
   returnFocusToElement: HTMLElement | null;
   skipLinkClassName = 'js-files-area-skip-link';
 
@@ -40,10 +42,13 @@ export class FilesArea {
     this.onFileRemovedFunction = onFileRemovedFunction;
     this.returnFocusToElement = returnFocusToElement;
 
+    this.listTitleElement = this.#createListTitleElement();
+
     this.listElement = this.#createListElement();
     this.listElement.classList.add('bhr-upload-area__files-list');
 
     this.areaElement?.appendChild(this.#createAboveListSkipLink());
+    this.areaElement?.appendChild(this.listTitleElement);
     this.areaElement?.appendChild(this.listElement);
     this.areaElement?.appendChild(this.#createBelowListSkipLink());
   }
@@ -135,32 +140,32 @@ export class FilesArea {
   getElementHtml(fileId: string, file: File) {
     const progressId = `progress-${fileId}`;
     return `
-        <div class="flex">
-            <div class="flex grow pl-4 py-1 truncate">
-                <span class="mr-2">${icon({ name: getIconNameByMimeType(file.type), size: 20 })}</span>
-                <div class="leading-none pt-1.5 truncate">${file.name}</div>
-            </div>
-            <div>
-                <button class="cursor-pointer py-1 px-2 mr-2 hover-focus:text-maximum-red ${this.removeButtonClass}" type="button">
-                    ${icon({ color: 'fill-current', name: 'trash-bin', size: 16 })} <span class="sr-only">Verwijder ${file.name}</span>
-                </button>
-                <div class="py-1 px-2 mr-2 hidden ${this.spinnerClass}" tabindex="-1">
-                    ${icon({ name: 'loader', css: 'animate-spin', size: 16 })}
-                </div>
-                <div class="py-1 px-2 mr-2 hidden ${this.uploadFailedClass}" tabindex="-1">
-                    ${icon({ name: 'cross-rounded-filled', color: 'fill-maximum-red', size: 16 })}
-                </div>
-                <div class="py-1 px-2 mr-2 hidden ${this.uploadSuccessClass}" tabindex="-1">
-                    ${icon({ name: 'check-rounded-filled', color: 'fill-philippine-green', size: 16 })}
-                </div>
-            </div>
+      <div class="flex">
+        <div class="flex grow pl-4 py-1 truncate">
+          <span class="mr-2">${icon({ name: getIconNameByMimeType(file.type), size: 20 })}</span>
+          <div class="leading-none pt-1.5 truncate">${file.name}</div>
         </div>
-        <div class="${this.progressWrapperClass} hidden">
-            <label class="sr-only" for="${progressId}">Voortgang van ${file.name}</label>
-            <div class="relative mx-4">
-                <progress class="bhr-upload-area__progress ${this.progressClass}" id="${progressId}" max="100" value="0" />
-            </div>
-        </div>`;
+        <div>
+          <button class="cursor-pointer py-1 px-2 mr-2 hover-focus:text-bhr-maximum-red ${this.removeButtonClass}" type="button">
+            ${icon({ color: 'fill-current', name: 'trash-bin', size: 16 })} <span class="sr-only">Verwijder ${file.name}</span>
+          </button>
+          <div class="py-1 px-2 mr-2 hidden ${this.spinnerClass}" tabindex="-1">
+            ${icon({ name: 'loader', css: 'animate-spin', size: 16 })}
+          </div>
+          <div class="py-1 px-2 mr-2 hidden ${this.uploadFailedClass}" tabindex="-1">
+            ${icon({ name: 'cross-rounded-filled', color: 'fill-bhr-maximum-red', size: 16 })}
+          </div>
+          <div class="py-1 px-2 mr-2 hidden ${this.uploadSuccessClass}" tabindex="-1">
+            ${icon({ name: 'check-rounded-filled', color: 'fill-bhr-philippine-green', size: 16 })}
+          </div>
+        </div>
+      </div>
+      <div class="${this.progressWrapperClass} hidden">
+        <label class="sr-only" for="${progressId}">Voortgang van ${file.name}</label>
+        <div class="relative mx-4">
+          <progress class="bhr-upload-area__progress ${this.progressClass}" id="${progressId}" max="100" value="0" />
+        </div>
+      </div>`;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -208,6 +213,15 @@ export class FilesArea {
     this.#store.set(fileId, { file, cleanup: cleanupFunction, remove: removeFunction });
   }
 
+  #createListTitleElement = () => {
+    const listTitleElement = document.createElement('h3');
+    listTitleElement.classList.add('sr-only');
+    listTitleElement.textContent = 'Te uploaden bestanden';
+    hideElement(listTitleElement);
+
+    return listTitleElement;
+  };
+
   #createListElement = () => {
     const listElement = document.createElement('ul');
     hideElement(listElement);
@@ -237,6 +251,7 @@ export class FilesArea {
     const doesOneOfSkipLinksHaveFocus = this.isFocusOnOneOfSkipLinks();
 
     if (this.getNumberOfFiles() === 0) {
+      this.hideListTitle();
       this.hideList();
       this.hideSkipLinks();
       this.showNoMessagesElement();
@@ -249,6 +264,7 @@ export class FilesArea {
       return;
     }
 
+    this.showListTitle();
     this.showList();
     this.showSkipLinks();
     this.hideNoMessagesElement();
@@ -292,6 +308,14 @@ export class FilesArea {
 
   showList() {
     showElement(this.listElement);
+  }
+
+  hideListTitle() {
+    hideElement(this.listTitleElement);
+  }
+
+  showListTitle() {
+    showElement(this.listTitleElement);
   }
 
   hideNoMessagesElement() {

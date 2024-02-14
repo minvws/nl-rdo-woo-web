@@ -1,0 +1,23 @@
+# https://taskfile.dev
+version: "3"
+
+env:
+  MARKDOWNLINT_VERSION: latest
+
+tasks:
+  lint:
+    desc: Lint documentation
+    cmds:
+      - docker run -it --rm
+        --volume $(pwd):/workdir/docs
+        --volume $(pwd)/../.markdownlint.json:/workdir/.markdownlint.json:ro
+        davidanson/markdownlint-cli2:{{.MARKDOWNLINT_VERSION}}
+        "**/*.md"
+        {{.CLI_ARGS}}
+
+  lint:fix:
+    desc: Auto fix lint errors in documentation
+    cmds:
+      - task: lint
+        vars: { CLI_ARGS: --fix }
+

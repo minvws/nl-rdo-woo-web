@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Service\Search;
 
 use App\Service\Inquiry\InquirySessionService;
 use App\Service\Search\ConfigFactory;
-use App\Service\Search\Query\Facet\FacetMappingService;
+use App\Service\Search\Query\Facet\Input\FacetInputFactory;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class ConfigFactoryTest extends MockeryTestCase
@@ -33,7 +33,7 @@ class ConfigFactoryTest extends MockeryTestCase
     public function testQueryString(string $old, string $new): void
     {
         $mock1 = \Mockery::mock(InquirySessionService::class);
-        $mock2 = \Mockery::mock(FacetMappingService::class);
+        $mock2 = \Mockery::mock(FacetInputFactory::class);
         $factory = new ConfigFactory($mock1, $mock2);
 
         $this->assertEquals($new, $factory->convertQueryStringToNegativeAndValues($old));

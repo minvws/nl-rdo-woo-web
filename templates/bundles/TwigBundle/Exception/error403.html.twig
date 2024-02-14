@@ -1,19 +1,12 @@
-{% extends 'base.html.twig' %}
+{% extends is_backend() ? 'admin.html.twig' : 'base.html.twig' %}
 
 {% set page_title = "Access denied" | trans() %}
 
 {% block body %}
-    <section>
-        <div>
-            <h1>{{ "Access denied" | trans() }}</h1>
-
-            <!-- {{ status_code }}, {{ status_text }} -->
-
-            <p>
-                {{ "You do not have the required access rights to view this page or document." | trans() }}
-            </p>
-
-            <a href="/">{{ "Go back to the homepage" | trans() }}</a>
-        </div>
-    </section>
+    {%
+        include "bundles/TwigBundle/Exception/error-content.html.twig" with {
+            title: page_title,
+            content: "You do not have the required access rights to view this page or document." | trans(),
+        }
+    %}
 {% endblock %}

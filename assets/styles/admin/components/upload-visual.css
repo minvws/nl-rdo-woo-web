@@ -4,7 +4,7 @@
     }
 
     .bhr-upload-visual__dot {
-        @apply bg-ocean-boat-blue text-white rounded-full w-24 h-24 flex flex-col justify-center items-center outline outline-8 outline-sky-300/10 pointer-events-none;
+        @apply bg-bhr-ocean-boat-blue text-white rounded-full w-24 h-24 flex flex-col justify-center items-center outline outline-8 outline-sky-300/10 pointer-events-none;
     }
 
     .bhr-upload-visual__dot--slide-in-up {

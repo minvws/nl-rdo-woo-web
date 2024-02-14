@@ -64,10 +64,7 @@ Note that we currently use a single index as defined in `\App\ElasticConfig::IND
                 "document.pages": {         // Number of pages within the document (if a pageable document)
                     "type": "integer"
                 },
-                "audio.duration": {         // Duration in seconds of audio/video
-                    "type": "integer"
-                },
-                "source_type": {            // Type of document (document, audio, video, spreadsheet, email etc)
+                "source_type": {            // Type of document (document, spreadsheet, email etc)
                     "type": "keyword"
                 },
                 "class": {                  // Document class (inventory, document or decision)

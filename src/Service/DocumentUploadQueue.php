@@ -55,10 +55,6 @@ class DocumentUploadQueue
 
     private function getListName(Dossier $dossier): string
     {
-        if (! $dossier->getId()) {
-            throw new \RuntimeException('Dossier has no ID');
-        }
-
         return 'uploads:dossier:' . $dossier->getId()->toRfc4122();
     }
 }

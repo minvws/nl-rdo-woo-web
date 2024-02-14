@@ -5,30 +5,43 @@ declare(strict_types=1);
 namespace App\Service\Search\Query\Filter;
 
 use App\Service\Search\Model\Config;
-use App\Service\Search\Query\Facet\FacetDefinition;
+use App\Service\Search\Query\Facet\Facet;
+use App\Service\Search\Query\Facet\Input\StringValuesFacetInputInterface;
+use App\Service\Search\Query\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
-use Erichard\ElasticQueryBuilder\Query\TermQuery;
 
 /**
  * Meaning that all values must match.
  */
 class AndTermFilter implements FilterInterface
 {
-    public function addToQuery(FacetDefinition $facet, BoolQuery $query, Config $config, string $prefix = ''): void
+    public function addToQuery(Facet $facet, BoolQuery $query, Config $config, string $prefix = ''): void
     {
-        $values = $config->getFacetValues($facet);
-        if (count($values) === 0) {
+        if ($facet->isNotActive()) {
             return;
         }
 
-        foreach ($values as $value) {
-            /** @var string $value */
+        $input = $this->getInput($facet);
+        if (is_null($input)) {
+            return;
+        }
+
+        foreach ($input->getStringValues() as $value) {
             $query->addFilter(
-                new TermQuery(
+                Query::term(
                     field: $prefix . $facet->getPath(),
                     value: $value
                 )
             );
         }
+    }
+
+    public function getInput(Facet $facet): ?StringValuesFacetInputInterface
+    {
+        if ($facet->input instanceof StringValuesFacetInputInterface) {
+            return $facet->input;
+        }
+
+        return null;
     }
 }

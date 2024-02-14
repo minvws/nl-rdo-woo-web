@@ -17,6 +17,28 @@ class InventoryReaderException extends FileReaderException
         );
     }
 
+    public static function forInvalidDocumentId(int $rowIndex): self
+    {
+        return new self(
+            "Invalid document ID in inventory row #$rowIndex",
+            'Invalid document number in row {rownumber}',
+            [
+                '{rownumber}' => strval($rowIndex),
+            ]
+        );
+    }
+
+    public static function forMissingMatterInRow(int $rowIndex): self
+    {
+        return new self(
+            "Missing matter in inventory row #$rowIndex",
+            'Missing matter in row {rownumber}',
+            [
+                '{rownumber}' => strval($rowIndex),
+            ]
+        );
+    }
+
     public static function forLinkTooLong(string $link, int $rowIdx): self
     {
         return new self(

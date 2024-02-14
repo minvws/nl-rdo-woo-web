@@ -21,7 +21,7 @@
                     {% if tr is not empty %}
                         <tr>
                             <td>
-                                <time datetime="{{ entry.createdDt | date("Y-m-d G:i") }}">{{ entry.createdDt | format_datetime(pattern="d LLLL y H:m") }}</time>
+                                <time datetime="{{ entry.createdDt | date("Y-m-d G:i") }}">{{ entry.createdDt | format_datetime(pattern="d LLLL y H:mm") }}</time>
                             </td>
                             <td>
                                 {{ tr }}

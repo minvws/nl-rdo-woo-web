@@ -48,12 +48,12 @@ To execute the E2E tests headless use the following command:
 
 ## E2E Coverage
 
-TST & ACC runs every night. CI is executed after a PR.
+TST & ACC runs every night. CI is executed with each PR.
 |        |                                                   | CI                 | TST                | ACC                           |
 |--------|---------------------------------------------------|--------------------|--------------------|-------------------------------|
 | Portal |                                                   |                    |                    |                               |
 |        | Zoeken                                            | :white_check_mark: | :white_check_mark: | :white_check_mark:            |
-|        | Zoekresultaten filteren                           | :construction:     |                    | :construction:                |
+|        | Zoekresultaten filteren                           | :white_check_mark: |                    | :white_check_mark:            |
 |        | Document overzichtpagina                          | :white_check_mark: |                    |                               |
 |        | Document downloaden                               | :white_check_mark: |                    | :white_check_mark:            |
 |        | Besluitdossier overzichtpagina                    | :white_check_mark: |                    |                               |
@@ -63,12 +63,16 @@ TST & ACC runs every night. CI is executed after a PR.
 |        | Inventarislijst downloaden                        | :white_check_mark: |                    | :white_check_mark:            |
 | Balie  |                                                   |                    |                    |                               |
 |        | Inlogmodule                                       | :white_check_mark: | :white_check_mark: | :white_check_mark:            |
-|        | Besluitdossier filteren                           | :construction:     |                    | :construction:                |
+|        | Besluitdossier filteren                           | :white_check_mark: | :white_check_mark: |                               |
 |        | Besluitdossier zoeken                             | :white_check_mark: | :white_check_mark: |                               |
 |        | Besluitdossier aanmaken                           | :white_check_mark: | :white_check_mark: |                               |
 |        | Besluitdossier documenten intrekken               | :white_check_mark: |                    |                               |
 |        | Besluitdossier documenten vervangen               | :white_check_mark: |                    |                               |
-|        | Gebruikers aanmaken, bijwerken, ww reset, 2fa     | :construction:     | :construction:     |                               |
-|        | Authorisatie (rollen toekennen, (de)activeren)    | :construction:     | :construction:     |                               |
-|        | Bestuursorganen beheren                           | :construction:     | :construction:     |                               |
-|        | Zakenpagina (documenten/besluiten (ont)koppelen)  | :construction:     | :construction:     |                               |
+|        | Gebruiker aanmaken (& inloggen)                   | :white_check_mark: |                    |                               |
+|        | Gebruiker bijwerken                               | :white_check_mark: |                    |                               |
+|        | Gebruiker wachtwoord reset                        | :white_check_mark: |                    |                               |
+|        | Gebruiker 2FA reset                               | :white_check_mark: |                    |                               |
+|        | Gebruiker (de)activeren                           | :white_check_mark: |                    |                               |
+|        | Gebruikerrol wijzigen                             | :white_check_mark: |                    |                               |
+|        | Bestuursorganen beheren                           | :construction:     |                    |                               |
+|        | Zakenpagina documenten/besluiten koppelen         | :white_check_mark: |                    |                               |

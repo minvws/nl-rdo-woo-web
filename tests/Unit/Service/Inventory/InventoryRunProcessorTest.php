@@ -7,7 +7,6 @@ namespace App\Tests\Unit\Service\Inventory;
 use App\Entity\Dossier;
 use App\Entity\InventoryProcessRun;
 use App\Service\DossierService;
-use App\Service\Inquiry\InquiryService;
 use App\Service\Inventory\InventoryChangeset;
 use App\Service\Inventory\InventoryComparator;
 use App\Service\Inventory\InventoryRunProcessor;
@@ -23,23 +22,21 @@ use Mockery\MockInterface;
 
 class InventoryRunProcessorTest extends MockeryTestCase
 {
-    private EntityManagerInterface|MockInterface $entityManager;
-    private InquiryService|MockInterface $inquiryService;
-    private LoggingHelper|MockInterface $loggingHelper;
-    private InventoryComparator|MockInterface $inventoryComparator;
-    private InventoryUpdater|MockInterface $inventoryUpdater;
+    private EntityManagerInterface&MockInterface $entityManager;
+    private LoggingHelper&MockInterface $loggingHelper;
+    private InventoryComparator&MockInterface $inventoryComparator;
+    private InventoryUpdater&MockInterface $inventoryUpdater;
     private InventoryService $inventoryService;
-    private DossierService|MockInterface $dossierService;
+    private DossierService&MockInterface $dossierService;
     private InventoryRunProcessor $runProcessor;
-    private InventoryProcessRun|MockInterface $run;
-    private InventoryReaderInterface|MockInterface $reader;
-    private Dossier|MockInterface $dossier;
-    private ProgressUpdater|MockInterface $progressUpdater;
+    private InventoryProcessRun&MockInterface $run;
+    private InventoryReaderInterface&MockInterface $reader;
+    private Dossier&MockInterface $dossier;
+    private ProgressUpdater&MockInterface $progressUpdater;
 
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->inquiryService = \Mockery::mock(InquiryService::class);
         $this->loggingHelper = \Mockery::mock(LoggingHelper::class);
         $this->inventoryComparator = \Mockery::mock(InventoryComparator::class);
         $this->inventoryUpdater = \Mockery::mock(InventoryUpdater::class);
@@ -49,7 +46,6 @@ class InventoryRunProcessorTest extends MockeryTestCase
 
         $this->runProcessor = new InventoryRunProcessor(
             $this->entityManager,
-            $this->inquiryService,
             $this->loggingHelper,
             $this->inventoryComparator,
             $this->inventoryUpdater,
@@ -65,11 +61,10 @@ class InventoryRunProcessorTest extends MockeryTestCase
         $this->run->shouldReceive('getDossier')->andReturn($this->dossier);
 
         $this->loggingHelper->expects('disableAll');
-        $this->inquiryService->expects('clearLookupCache');
 
         $this->reader = \Mockery::mock(InventoryReaderInterface::class);
 
-        $this->reader->expects('getCount')->andReturn(50)->zeroOrMoreTimes();
+        $this->reader->shouldReceive('getCount')->andReturn(50);
 
         $this->inventoryService->expects('getReader')->with($this->run)->andReturn($this->reader);
         $this->inventoryService->expects('cleanupTmpFile')->with($this->run);
@@ -84,7 +79,7 @@ class InventoryRunProcessorTest extends MockeryTestCase
     public function testProcessReturnsEarlyWithErrorIfThereAreNoChanges(): void
     {
         $changeset = \Mockery::mock(InventoryChangeset::class);
-        $changeset->shouldReceive('isEmpty')->andReturnTrue();
+        $changeset->shouldReceive('hasChanges')->andReturnTrue();
 
         $this->run->expects('addGenericException');
         $this->run->shouldReceive('hasErrors')->andReturnTrue();
@@ -115,7 +110,7 @@ class InventoryRunProcessorTest extends MockeryTestCase
     public function testProcessFinishesSuccessfully(): void
     {
         $changeset = \Mockery::mock(InventoryChangeset::class);
-        $changeset->shouldReceive('isEmpty')->andReturnFalse();
+        $changeset->shouldReceive('hasChanges')->andReturnFalse();
 
         $this->run->shouldReceive('hasErrors')->andReturnFalse();
         $this->run->shouldReceive('isFinal')->andReturnTrue();

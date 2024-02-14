@@ -3,38 +3,36 @@
 {% set page_title = "Cookies" | trans() %}
 
 {% block body %}
-    <section>
-        <div>
+<div class="woo-container woo-container--sm">
+    <div class="woo-rich-text woo-readable-width">
+        <h1>{{ "Cookies" | trans() }}</h1>
+        <p>
+            {{ "We use the Piwik statistics program to analyze which pages are most visited, how visitors came to this website and which search terms they use in our search engine." | trans() }}
+        </p>
+        <p>
+            {{ "Like any website, we collect IP addresses from our visitors. These are stored in so-called log files. The log files are kept on the web server for 5 days, so that they are available to Piwik. After that, the log files are kept for 90 days for security reasons only and are only viewed for that purpose." | trans() }}
+        </p>
+        <p>
+            {{ "The Dutch Data Protection Authority has taken measures to limit the traceability of visitors to our website as much as possible. We do this by discarding the last 2 octets (digit groups) of each IP address immediately after importing the log files into Piwik. This is done in a temporary memory, before the IP addresses are stored in Piwik." | trans() }}
+        </p>
 
-            <h1>{{ "Cookies" | trans() }}</h1>
-            <p>
-                {{ "We use the Piwik statistics program to analyze which pages are most visited, how visitors came to this website and which search terms they use in our search engine." | trans() }}
-            </p>
-            <p>
-                {{ "Like any website, we collect IP addresses from our visitors. These are stored in so-called log files. The log files are kept on the web server for 5 days, so that they are available to Piwik. After that, the log files are kept for 90 days for security reasons only and are only viewed for that purpose." | trans() }}
-            </p>
-            <p>
-                {{ "The Dutch Data Protection Authority has taken measures to limit the traceability of visitors to our website as much as possible. We do this by discarding the last 2 octets (digit groups) of each IP address immediately after importing the log files into Piwik. This is done in a temporary memory, before the IP addresses are stored in Piwik." | trans() }}
-            </p>
+        <p>{{ "We collect the following data with the log files:" | trans() }}
 
-            <p>{{ "We collect the following data with the log files:" | trans() }}
+        <ul>
+            <li>{{ "Cookies" | trans() }}</li>
+            <li>{{ "IP address" | trans() }}</li>
+            <li>{{ "user agents (browsers, operating system)" | trans() }}</li>
+            <li>{{ "search terms used to reach our website via external search engines, search terms used in the search engine on the website itself" | trans() }}</li>
+            <li>{{ "used links within the website" | trans() }}</li>
+            <li>{{ "used links to get to our website." | trans() }}</li>
+        </ul>
 
-            <ul>
-                <li>{{ "Cookies" | trans() }}</li>
-                <li>{{ "IP address" | trans() }}</li>
-                <li>{{ "user agents (browsers, operating system)" | trans() }}</li>
-                <li>{{ "search terms used to reach our website via external search engines, search terms used in the search engine on the website itself" | trans() }}</li>
-                <li>{{ "used links within the website" | trans() }}</li>
-                <li>{{ "used links to get to our website." | trans() }}</li>
-            </ul>
-
-            <p>
-                {{ "Piwik retrieves this information from the web server's log files. These log files remain in the Piwik database for 31 days. Then they are deleted. Only a merged log file remains. It provides us with an annual report on website visits." | trans() }}
-            </p>
-            <p>
-                {{ "We do not share personal data with third parties, unless this is necessary to report criminal offences. Read more about <a href='https://www.rijksoverheid.nl/cookies'>the use of cookies by Rijksoverheid.nl</a>." | trans() | raw }}
-            </p>
-
-        </div>
-    </section>
+        <p>
+            {{ "Piwik retrieves this information from the web server's log files. These log files remain in the Piwik database for 31 days. Then they are deleted. Only a merged log file remains. It provides us with an annual report on website visits." | trans() }}
+        </p>
+        <p>
+            {{ "We do not share personal data with third parties, unless this is necessary to report criminal offences. Read more about <a href='https://www.rijksoverheid.nl/cookies'>the use of cookies by Rijksoverheid.nl</a>." | trans() | raw }}
+        </p>
+    </div>
+</div>
 {% endblock %}

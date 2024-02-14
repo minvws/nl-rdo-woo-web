@@ -17,6 +17,7 @@ const windowMock = {
   addEventListener: jest.fn(),
   crypto: cryptoMock,
   location: locationMock,
+  matchMedia: jest.fn().mockReturnValue({ matches: false }),
   print: jest.fn(),
 };
 

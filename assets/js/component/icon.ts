@@ -9,7 +9,7 @@ export interface IconProperties {
 export const icon = (properties: IconProperties) => {
   const {
     css = '',
-    color = 'fill-dim-gray',
+    color = 'fill-woo-dim-gray',
     filePath = '',
     name,
     size = 24,

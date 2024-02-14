@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Service\Search\Query\Filter;
 
 use App\Service\Search\Model\Config;
-use App\Service\Search\Query\Facet\FacetDefinition;
+use App\Service\Search\Query\Facet\Facet;
+use App\Service\Search\Query\Facet\Input\DateRangeInputInterface;
+use App\Service\Search\Query\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
-use Erichard\ElasticQueryBuilder\Query\RangeQuery;
 
 class DateRangeFilter implements FilterInterface
 {
@@ -16,25 +17,29 @@ class DateRangeFilter implements FilterInterface
     ) {
     }
 
-    public function addToQuery(FacetDefinition $facet, BoolQuery $query, Config $config, string $prefix = ''): void
+    public function addToQuery(Facet $facet, BoolQuery $query, Config $config, string $prefix = ''): void
     {
-        $values = $config->getFacetValues($facet);
-        if (count($values) !== 1) {
+        if ($facet->isNotActive()) {
             return;
         }
 
-        $date = $this->asDate(array_shift($values));
-        if ($date === null) {
+        $input = $this->getInput($facet);
+        if (is_null($input)) {
             return;
         }
 
-        $rangeQuery = new RangeQuery($prefix . $facet->getPath());
+        $rangeDate = $input->getDateRangeDate();
+        if (is_null($rangeDate)) {
+            return;
+        }
+
+        $rangeQuery = Query::range($prefix . $facet->getPath());
         switch ($this->comparisonOperator) {
             case 'lte':
-                $rangeQuery->lte($date->format('Y-m-d'));
+                $rangeQuery->lte($rangeDate);
                 break;
             case 'gte':
-                $rangeQuery->gte($date->format('Y-m-d'));
+                $rangeQuery->gte($rangeDate);
                 break;
             default:
                 throw new \RuntimeException('Unknown DateRangeFilter comparison operator: ' . $this->comparisonOperator);
@@ -43,16 +48,12 @@ class DateRangeFilter implements FilterInterface
         $query->addFilter($rangeQuery);
     }
 
-    protected function asDate(mixed $value): ?\DateTimeImmutable
+    public function getInput(Facet $facet): ?DateRangeInputInterface
     {
-        if (! is_string($value)) {
-            return null;
+        if ($facet->input instanceof DateRangeInputInterface) {
+            return $facet->input;
         }
 
-        try {
-            return new \DateTimeImmutable($value);
-        } catch (\Exception) {
-            return null;
-        }
+        return null;
     }
 }

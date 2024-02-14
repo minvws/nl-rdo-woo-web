@@ -27,6 +27,9 @@ class InventoryReaderFactory
         $this->factories = $factories instanceof \Traversable ? iterator_to_array($factories) : $factories;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     */
     public function create(string $mimetype): InventoryReaderInterface
     {
         $readerFactory = $this->findFactoryForFile($mimetype);
@@ -39,18 +42,31 @@ class InventoryReaderFactory
             ...[
                 new ColumnMapping(
                     name: MetadataField::DATE->value,
-                    required: true,
+                    required: false,
                     columnNames: ['date', 'datum'],
                 ),
                 new ColumnMapping(
                     name: MetadataField::DOCUMENT->value,
                     required: true,
-                    columnNames: ['document', 'document id', 'documentnr', 'document nr', 'documentnr.', 'document nr.', 'nr.', 'omschrijving'],
+                    columnNames: [
+                        'document',
+                        'document id',
+                        'documentnr',
+                        'document nr',
+                        'documentnr.',
+                        'document nr.',
+                        'nr.',
+                        'omschrijving',
+                    ],
                 ),
                 new ColumnMapping(
                     name: MetadataField::FAMILY->value,
                     required: false,
-                    columnNames: ['family', 'familie', 'family id'],
+                    columnNames: [
+                        'family',
+                        'familie',
+                        'family id',
+                    ],
                 ),
                 new ColumnMapping(
                     name: MetadataField::SOURCETYPE->value,
@@ -60,7 +76,12 @@ class InventoryReaderFactory
                 new ColumnMapping(
                     name: MetadataField::GROUND->value,
                     required: true,
-                    columnNames: ['beoordelingsgrond', 'grond', 'tagmulti006'],
+                    columnNames: [
+                        'beoordelingsgrond',
+                        'grond',
+                        'tagmulti006',
+                        'beoordelingsgrond (; gescheiden)',
+                    ],
                 ),
                 new ColumnMapping(
                     name: MetadataField::ID->value,
@@ -70,22 +91,27 @@ class InventoryReaderFactory
                 new ColumnMapping(
                     name: MetadataField::JUDGEMENT->value,
                     required: true,
-                    columnNames: ['beoordeling'],
+                    columnNames: ['beoordeling', 'openbaarmaking'],
                 ),
                 new ColumnMapping(
                     name: MetadataField::THREADID->value,
                     required: false,
-                    columnNames: ['thread id', 'email thread id', 'email thread'],
+                    columnNames: [
+                        'thread id',
+                        'email thread id',
+                        'email thread',
+                    ],
                 ),
                 new ColumnMapping(
                     name: MetadataField::CASENR->value,
                     required: false,
-                    columnNames: ['zaaknr', 'casenr', 'zaak', 'case', 'zaaknummer'],
-                ),
-                new ColumnMapping(
-                    name: MetadataField::SUSPENDED->value,
-                    required: false,
-                    columnNames: ['opgeschort', 'suspended', 'tag015'],
+                    columnNames: [
+                        'zaaknr',
+                        'casenr',
+                        'zaak',
+                        'case',
+                        'zaaknummer',
+                    ],
                 ),
                 new ColumnMapping(
                     name: MetadataField::SUSPENDED->value,
@@ -95,7 +121,14 @@ class InventoryReaderFactory
                 new ColumnMapping(
                     name: MetadataField::LINK->value,
                     required: false,
-                    columnNames: ['publiekelinktag', 'publieke link', 'publiekelink', 'publicatielink', 'publicatie link'],
+                    columnNames: [
+                        'publiekelinktag',
+                        'publieke link',
+                        'publiekelink',
+                        'publicatielink',
+                        'publicatie link',
+                        'publiekelink ( | gescheiden)',
+                    ],
                 ),
                 new ColumnMapping(
                     name: MetadataField::REMARK->value,
@@ -105,7 +138,15 @@ class InventoryReaderFactory
                 new ColumnMapping(
                     name: MetadataField::MATTER->value,
                     required: true,
-                    columnNames: ['matter'],
+                    columnNames: [
+                        'matter',
+                        'matter / marjoleinnummer',
+                    ],
+                ),
+                new ColumnMapping(
+                    name: MetadataField::REFERS_TO->value,
+                    required: false,
+                    columnNames: ['gerelateerd id'],
                 ),
             ]
         );

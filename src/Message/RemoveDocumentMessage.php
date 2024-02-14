@@ -28,10 +28,6 @@ class RemoveDocumentMessage
 
     public static function forDossierAndDocument(Dossier $dossier, Document $document): self
     {
-        if ($dossier->getId() === null) {
-            throw new \RuntimeException('Dossier has no id');
-        }
-
         return new self($dossier->getId(), $document->getId());
     }
 }

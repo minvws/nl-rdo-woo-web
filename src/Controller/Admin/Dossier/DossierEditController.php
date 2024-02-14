@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier;
 
-use App\Attribute\AuthMatrix;
 use App\Entity\Dossier;
 use App\Entity\WithdrawReason;
 use App\Form\Document\WithdrawFormType;
@@ -24,9 +23,11 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 /**
@@ -45,10 +46,10 @@ class DossierEditController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/dossier/{dossierId}/edit/details', name: 'app_admin_dossier_edit_details', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.update')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/edit/details', name: 'app_admin_dossier_edit_details', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.update')]
     public function details(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
@@ -68,16 +69,16 @@ class DossierEditController extends AbstractController
         /** @var SubmitButton $cancelButton */
         $cancelButton = $form->get('cancel');
         if ($cancelButton->isClicked()) {
-            return $this->redirectToRoute('app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+            return $this->getRedirectToDossier($dossier);
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->workflow->updateDetails($dossier);
 
-            return $this->redirectToRoute('app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+            return $this->getRedirectToDossier($dossier);
         }
 
-        $breadcrumbs->addRouteItem($dossier->getTitle() ?? '', 'app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+        $this->addDossierToBreadcrumbs($breadcrumbs, $dossier);
         $breadcrumbs->addItem('workflow_step_details');
 
         return $this->render('admin/dossier/edit/details.html.twig', [
@@ -88,10 +89,10 @@ class DossierEditController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/edit/decision', name: 'app_admin_dossier_edit_decision', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.update')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/edit/decision', name: 'app_admin_dossier_edit_decision', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.update')]
     public function decision(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
@@ -113,10 +114,10 @@ class DossierEditController extends AbstractController
                 $this->workflow->updateDecision($dossier, $form);
             }
 
-            return $this->redirectToRoute('app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+            return $this->getRedirectToDossier($dossier);
         }
 
-        $breadcrumbs->addRouteItem($dossier->getTitle() ?? '', 'app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+        $this->addDossierToBreadcrumbs($breadcrumbs, $dossier);
         $breadcrumbs->addItem('workflow_step_decision');
 
         return $this->render('admin/dossier/edit/decision.html.twig', [
@@ -127,10 +128,10 @@ class DossierEditController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/edit/documents', name: 'app_admin_documents', methods: ['GET', 'POST'])]
-    #[AuthMatrix('document.update')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/edit/documents', name: 'app_admin_documents', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.document.update')]
     public function documents(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
@@ -151,7 +152,7 @@ class DossierEditController extends AbstractController
             20,
         );
 
-        $breadcrumbs->addRouteItem($dossier->getTitle() ?? '', 'app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+        $this->addDossierToBreadcrumbs($breadcrumbs, $dossier);
         $breadcrumbs->addItem('workflow_step_documents');
 
         $dataPath = null;
@@ -168,10 +169,10 @@ class DossierEditController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/inventory-status', name: 'app_admin_dossier_inventory_status', methods: ['GET'])]
-    #[AuthMatrix('dossier.update')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/inventory-status', name: 'app_admin_dossier_inventory_status', methods: ['GET'])]
+    #[IsGranted('AuthMatrix.dossier.update')]
     public function inventoryProcess(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
     ): Response {
         $this->testIfDossierIsAllowedByUser($dossier);
 
@@ -202,10 +203,10 @@ class DossierEditController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/replace-inventory', name: 'app_admin_dossier_replace_inventory', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.update')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/replace-inventory', name: 'app_admin_dossier_replace_inventory', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.update')]
     public function replaceInventory(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
@@ -231,7 +232,10 @@ class DossierEditController extends AbstractController
         if (intval($request->get('reject')) === 1) {
             $this->workflow->rejectInventoryUpdate($dossier);
 
-            return $this->redirectToRoute('app_admin_documents', ['dossierId' => $dossier->getDossierNr()]);
+            return $this->redirectToRoute(
+                'app_admin_documents',
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            );
         }
 
         $processRun = $dossier->getProcessRun();
@@ -244,8 +248,12 @@ class DossierEditController extends AbstractController
             $dataPath = 'app_admin_dossier_inventory_status';
         }
 
-        $breadcrumbs->addRouteItem($dossier->getTitle() ?? '', 'app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
-        $breadcrumbs->addRouteItem('workflow_step_documents', 'app_admin_documents', ['dossierId' => $dossier->getDossierNr()]);
+        $this->addDossierToBreadcrumbs($breadcrumbs, $dossier);
+        $breadcrumbs->addRouteItem(
+            'workflow_step_documents',
+            'app_admin_documents',
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+        );
         $breadcrumbs->addItem('Replace inventory');
 
         return $this->render('admin/dossier/edit/inventory.html.twig', [
@@ -259,10 +267,10 @@ class DossierEditController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/edit/publication', name: 'app_admin_dossier_edit_publication', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.update')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/edit/publication', name: 'app_admin_dossier_edit_publication', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.update')]
     public function publication(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
@@ -280,10 +288,10 @@ class DossierEditController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->workflow->publish($dossier);
 
-            return $this->redirectToRoute('app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+            return $this->getRedirectToDossier($dossier);
         }
 
-        $breadcrumbs->addRouteItem($dossier->getTitle() ?? '', 'app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+        $this->addDossierToBreadcrumbs($breadcrumbs, $dossier);
         $breadcrumbs->addItem('workflow_step_publication');
 
         return $this->render('admin/dossier/edit/publication.html.twig', [
@@ -294,10 +302,10 @@ class DossierEditController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/search', name: 'app_admin_dossier_documents_search', methods: ['POST'])]
-    #[AuthMatrix('dossier.read')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/search', name: 'app_admin_dossier_documents_search', methods: ['POST'])]
+    #[IsGranted('AuthMatrix.dossier.read')]
     public function search(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request
     ): Response {
         $this->testIfDossierIsAllowedByUser($dossier);
@@ -322,10 +330,10 @@ class DossierEditController extends AbstractController
         return new JsonResponse($ret);
     }
 
-    #[Route('/balie/dossier/{dossierId}/documenten-intrekken', name: 'app_admin_dossier_withdraw_all_documents', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.update')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/documenten-intrekken', name: 'app_admin_dossier_withdraw_all_documents', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.update')]
     public function withdrawAllDocuments(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -338,7 +346,7 @@ class DossierEditController extends AbstractController
         /** @var SubmitButton $cancelButton */
         $cancelButton = $form->get('cancel');
         if ($cancelButton->isClicked()) {
-            return $this->redirectToRoute('app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+            return $this->getRedirectToDossier($dossier);
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -350,10 +358,13 @@ class DossierEditController extends AbstractController
 
             $this->workflow->withdrawAllDocuments($dossier, $reason, $explanation);
 
-            return $this->redirectToRoute('app_admin_documents', ['dossierId' => $dossier->getDossierNr()]);
+            return $this->redirectToRoute(
+                'app_admin_documents',
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            );
         }
 
-        $breadcrumbs->addRouteItem($dossier->getTitle() ?? '', 'app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+        $this->addDossierToBreadcrumbs($breadcrumbs, $dossier);
         $breadcrumbs->addItem('Withdraw all documents');
 
         return $this->render('admin/dossier/edit/withdraw-all-documents.html.twig', [
@@ -363,10 +374,10 @@ class DossierEditController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/delete', name: 'app_admin_dossier_delete', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.delete')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/delete', name: 'app_admin_dossier_delete', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.delete')]
     public function delete(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -380,7 +391,7 @@ class DossierEditController extends AbstractController
         /** @var SubmitButton $cancelButton */
         $cancelButton = $form->get('cancel');
         if ($cancelButton->isClicked()) {
-            return $this->redirectToRoute('app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+            return $this->getRedirectToDossier($dossier);
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -389,7 +400,7 @@ class DossierEditController extends AbstractController
             $success = true;
         }
 
-        $breadcrumbs->addRouteItem($dossier->getTitle() ?? '', 'app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
+        $this->addDossierToBreadcrumbs($breadcrumbs, $dossier);
         $breadcrumbs->addItem('Delete dossier');
 
         return $this->render('admin/dossier/edit/delete.html.twig', [
@@ -398,5 +409,22 @@ class DossierEditController extends AbstractController
             'form' => $form->createView(),
             'success' => $success,
         ]);
+    }
+
+    private function addDossierToBreadcrumbs(Breadcrumbs $breadcrumbs, Dossier $dossier): void
+    {
+        $breadcrumbs->addRouteItem(
+            $dossier->getTitle() ?? '',
+            'app_admin_dossier',
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+        );
+    }
+
+    private function getRedirectToDossier(Dossier $dossier): RedirectResponse
+    {
+        return $this->redirectToRoute(
+            'app_admin_dossier',
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+        );
     }
 }

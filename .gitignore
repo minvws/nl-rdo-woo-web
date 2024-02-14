@@ -30,9 +30,10 @@ yarn-error.log
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 
-### Robot Framework testresultaten ###
+### Robot Framework ###
 /tests/robot_framework/results
-### Robot Framework testresultaten ###
+/tests/robot_framework/libraries/__pycache__
+### Robot Framework ###
 
 ### Virtu ###
 /env
@@ -46,3 +47,13 @@ yarn-error.log
 /coverage
 /database
 /public/sitemap*
+
+Taskfile.yml
+.task
+auth.json
+.npmrc.auth
+.phpstan.cache
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

@@ -47,7 +47,7 @@ class AppExtensionRuntime implements RuntimeExtensionInterface
     /**
      * @return array<string, string>|mixed[]
      */
-    public function appVersion()
+    public function appVersion(): array
     {
         $json = file_get_contents($this->projectPath . '/public/version.json');
         if ($json === false) {

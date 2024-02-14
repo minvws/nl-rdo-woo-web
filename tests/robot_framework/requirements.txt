@@ -1,5 +1,7 @@
+robotframework
 pyotp
-robotframework-browser 
-robotframework-debugLibrary 
+robotframework-browser
+robotframework-debugLibrary
 robotframework-otp
 rpaframework-pdf
+opencv-python

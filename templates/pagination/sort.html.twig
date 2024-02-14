@@ -2,17 +2,11 @@
 {% set iconName = sorted ? ( direction == 'desc' ? 'sort-down' : 'sort-up' ) : null %}
 {% set ariaSortValue = sorted ? ( direction == 'desc' ? 'descending' : 'ascending' ) : 'none' %}
 
-
-<th aria-sort="{{ ariaSortValue }}" class="th-sort {{ options.thClassName|default('') }} {{ sorted ? 'th-sort--active' : '' }}" scope="col">
-    <a class="" href="{{ options.href }}{{ targetAnchor }}">
-        {% if options.mobileTitle is defined %}
-            <span class="table-copy--desktop">{{ title }}</span>
-            <span class="table-copy--mobile" aria-label="{{ title }}">{{ options.mobileTitle }}</span>
-        {% else %}
-            {{ title }}
-        {% endif %}
+<th aria-sort="{{ ariaSortValue }}" class="{{ options.thClassName|default('') }}" scope="col">
+    <a href="{{ options.href }}{{ targetAnchor }}">
+        {{ title }}
         {% if iconName %}
-            <twig:Icon name="{{ iconName }}" />
+            <twig:Public:Icon class="-mt-0.5" name="{{ iconName }}" />
         {% endif %}
     </a>
 </th>

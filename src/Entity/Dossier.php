@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Doctrine\TimestampableTrait;
+use App\Enum\PublicationStatus;
 use App\Repository\DossierRepository;
 use App\ValueObject\DossierUploadStatus;
 use App\ValueObject\TranslatableMessage;
@@ -13,7 +14,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 
@@ -25,17 +25,12 @@ use Symfony\Component\Uid\Uuid;
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
-#[UniqueEntity('dossierNr')]
+#[ORM\UniqueConstraint(name: 'dossier_unique_index', columns: ['dossier_nr', 'document_prefix'])]
 #[ORM\HasLifecycleCallbacks]
+#[UniqueEntity(['dossierNr', 'documentPrefix'])]
 class Dossier implements EntityWithId, EntityWithBatchDownload
 {
     use TimestampableTrait;
-
-    public const STATUS_CONCEPT = 'concept';                // Dossier is just uploaded and does not have (all) the documents present yet
-    public const STATUS_SCHEDULED = 'scheduled';            // Dossier is no longer a concept, but preview and publish is planned at a future date
-    public const STATUS_PREVIEW = 'preview';                // Dossier is in preview mode and can only be viewed with specific tokens
-    public const STATUS_PUBLISHED = 'published';            // Dossier is published and available for everybody
-    public const STATUS_RETRACTED = 'retracted';            // Dossier is retracted (but not deleted) and not available for anybody
 
     public const DECISION_ALREADY_PUBLIC = 'already_public';
     public const DECISION_PUBLIC = 'public';
@@ -47,38 +42,40 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
     public const REASON_WOO_REQUEST = 'woo_request';
     public const REASON_WOO_ACTIVE = 'woo_active';
 
-    // This is a list of all allowed state changes. Note that state changes still can have additional
-    // criteria that must be met (ie: concept -> ready needs all documents to be present etc)
-    /** @var array<string, array<string>> */
+    /**
+     * This is a list of all allowed state changes. Note that state changes still can have additional
+     * criteria that must be met (ie: concept -> ready needs all documents to be present etc).
+     *
+     * @var array<string,array<PublicationStatus>>
+     */
     public array $allowedStates = [
-        Dossier::STATUS_CONCEPT => [Dossier::STATUS_SCHEDULED, Dossier::STATUS_PREVIEW, Dossier::STATUS_PUBLISHED],
-        Dossier::STATUS_SCHEDULED => [Dossier::STATUS_PREVIEW, Dossier::STATUS_PUBLISHED],
-        Dossier::STATUS_PREVIEW => [Dossier::STATUS_RETRACTED, Dossier::STATUS_PUBLISHED],
-        Dossier::STATUS_PUBLISHED => [Dossier::STATUS_RETRACTED],
-        Dossier::STATUS_RETRACTED => [Dossier::STATUS_CONCEPT],
+        PublicationStatus::NEW->value => [PublicationStatus::CONCEPT],
+        PublicationStatus::CONCEPT->value => [PublicationStatus::SCHEDULED, PublicationStatus::PREVIEW, PublicationStatus::PUBLISHED],
+        PublicationStatus::SCHEDULED->value => [PublicationStatus::PREVIEW, PublicationStatus::PUBLISHED],
+        PublicationStatus::PREVIEW->value => [PublicationStatus::RETRACTED, PublicationStatus::PUBLISHED],
+        PublicationStatus::PUBLISHED->value => [PublicationStatus::RETRACTED],
+        PublicationStatus::RETRACTED->value => [PublicationStatus::CONCEPT],
     ];
 
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private ?Uuid $id = null;
+    private Uuid $id;
 
-    /** @var Collection|Document[] */
-    #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'dossiers')]
+    /** @var Collection<array-key, Document> */
+    #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'dossiers', fetch: 'EXTRA_LAZY')]
     #[ORM\OrderBy(['documentNr' => 'ASC'])]
     private Collection $documents;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 255)]
     private string $dossierNr = '';
 
     #[ORM\Column(length: 500)]
     private string $title;
 
-    #[ORM\Column(length: 255)]
-    private string $status;
+    #[ORM\Column(length: 255, enumType: PublicationStatus::class)]
+    private PublicationStatus $status;
 
-    /** @var Collection|Department[] */
+    /** @var Collection<array-key,Department> */
     #[ORM\ManyToMany(targetEntity: Department::class)]
     private Collection $departments;
 
@@ -100,12 +97,12 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
     #[ORM\Column(length: 255, nullable: false)]
     private string $decision;
 
-    /** @var Collection|Inquiry[] */
+    /** @var Collection<array-key,Inquiry> */
     #[ORM\ManyToMany(targetEntity: Inquiry::class, mappedBy: 'dossiers')]
     #[JoinTable(name: 'inquiry_dossier')]
     private Collection $inquiries;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $publicationDate = null;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: Inventory::class)]
@@ -139,14 +136,24 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
     #[ORM\JoinColumn(nullable: false)]
     private Organisation $organisation;
 
+    /** @var Collection<array-key, DecisionAttachment> */
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DecisionAttachment::class, orphanRemoval: true)]
+    private Collection $decisionAttachments;
+
     public function __construct()
     {
+        $this->id = Uuid::v6();
+        $this->status = PublicationStatus::NEW;
+        $this->decision = '';
+        $this->summary = '';
+
         $this->documents = new ArrayCollection();
         $this->departments = new ArrayCollection();
         $this->inquiries = new ArrayCollection();
+        $this->decisionAttachments = new ArrayCollection();
     }
 
-    public function getId(): ?Uuid
+    public function getId(): Uuid
     {
         return $this->id;
     }
@@ -175,14 +182,14 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): PublicationStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(PublicationStatus $status): self
     {
-        if ($status === self::STATUS_RETRACTED) {
+        if ($status === PublicationStatus::RETRACTED) {
             $this->publicationDate = null;
             $this->previewDate = null;
         }
@@ -198,7 +205,7 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
     }
 
     /**
-     * @return Collection|Department[]
+     * @return Collection<array-key,Department>
      */
     public function getDepartments(): Collection
     {
@@ -226,7 +233,7 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
      *
      * @return $this
      */
-    public function setDepartments(array $departments): self
+    public function setDepartments(array $departments): static
     {
         $this->departments->clear();
         $this->departments->add(...$departments);
@@ -259,7 +266,7 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
     }
 
     /**
-     * @return Collection|Document[]
+     * @return Collection<array-key,Document>
      */
     public function getDocuments(): Collection
     {
@@ -296,10 +303,10 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
         return $this;
     }
 
-    public function isAllowedState(string $newState): bool
+    public function isAllowedState(PublicationStatus $newState): bool
     {
         $currentState = $this->getStatus();
-        if (! isset($this->allowedStates[$currentState]) || ! in_array($newState, $this->allowedStates[$currentState])) {
+        if (! isset($this->allowedStates[$currentState->value]) || ! in_array($newState, $this->allowedStates[$currentState->value])) {
             return false;
         }
 
@@ -342,16 +349,6 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
         return $this;
     }
 
-    public function pagecount(): int
-    {
-        $count = 0;
-        foreach ($this->documents as $document) {
-            $count += $document->getPagecount();
-        }
-
-        return $count;
-    }
-
     public function getDecision(): string
     {
         return $this->decision;
@@ -365,7 +362,7 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
     }
 
     /**
-     * @return Collection|Inquiry[]
+     * @return Collection<array-key,Inquiry>
      */
     public function getInquiries(): Collection
     {
@@ -520,7 +517,7 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
 
     public function isAvailableForBatchDownload(): bool
     {
-        if (! $this->isPubliclyAvailable()) {
+        if (! $this->status->isPubliclyAvailable()) {
             return false;
         }
 
@@ -529,11 +526,6 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
         }
 
         return true;
-    }
-
-    public function isConcept(): bool
-    {
-        return $this->status === self::STATUS_CONCEPT;
     }
 
     public function getDownloadFilePrefix(): TranslatableMessage
@@ -558,8 +550,27 @@ class Dossier implements EntityWithId, EntityWithBatchDownload
         return $this;
     }
 
-    public function isPubliclyAvailable(): bool
+    /**
+     * @return Collection<array-key, DecisionAttachment>
+     */
+    public function getDecisionAttachments(): Collection
     {
-        return $this->getStatus() === self::STATUS_PUBLISHED || $this->getStatus() === self::STATUS_PREVIEW;
+        return $this->decisionAttachments;
+    }
+
+    public function addDecisionAttachment(DecisionAttachment $decisionAttachment): self
+    {
+        if (! $this->decisionAttachments->contains($decisionAttachment)) {
+            $this->decisionAttachments->add($decisionAttachment);
+        }
+
+        return $this;
+    }
+
+    public function removeDecisionAttachment(DecisionAttachment $decisionAttachment): self
+    {
+        $this->decisionAttachments->removeElement($decisionAttachment);
+
+        return $this;
     }
 }

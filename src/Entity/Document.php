@@ -4,41 +4,26 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Doctrine\TimestampableTrait;
 use App\Repository\DocumentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Embedded;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
-use Symfony\Component\Uid\Uuid;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Document implements EntityWithFileInfo
+class Document extends PublicationItem
 {
-    use TimestampableTrait;
-
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private Uuid $id;
-
     // Number of pages for word based documents
     #[ORM\Column(nullable: false)]
     private int $pageCount = 0;
-
-    // Time in seconds of audio or video documents
-    #[ORM\Column(nullable: false)]
-    private int $duration = 0;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $summary = null;
@@ -46,15 +31,15 @@ class Document implements EntityWithFileInfo
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $title = null;
 
-    /** @var Collection|Dossier[] */
+    /** @var Collection<array-key,Dossier> */
     #[ORM\ManyToMany(targetEntity: Dossier::class, inversedBy: 'documents')]
     private Collection $dossiers;
 
-    #[ORM\Column(length: 255, nullable: false)]
+    #[ORM\Column(length: 255, unique: true, nullable: false)]
     private string $documentNr;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
-    private \DateTimeInterface $documentDate;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $documentDate = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $familyId = null;
@@ -79,7 +64,7 @@ class Document implements EntityWithFileInfo
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $period = null;
 
-    /** @var Collection|IngestLog[] */
+    /** @var Collection<array-key,IngestLog> */
     #[ORM\OneToMany(mappedBy: 'document', targetEntity: IngestLog::class, orphanRemoval: true)]
     private Collection $ingestLogs;
 
@@ -98,12 +83,9 @@ class Document implements EntityWithFileInfo
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $withdrawDate = null;
 
-    /** @var Collection|Inquiry[] */
+    /** @var Collection<array-key,Inquiry> */
     #[ORM\ManyToMany(targetEntity: Inquiry::class, mappedBy: 'documents')]
     private Collection $inquiries;
-
-    #[Embedded(class: FileInfo::class, columnPrefix: 'file_')]
-    private FileInfo $fileInfo;
 
     /** @var array<string> */
     #[ORM\Column(type: Types::JSON, nullable: true)]
@@ -112,22 +94,26 @@ class Document implements EntityWithFileInfo
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $remark = null;
 
+    /** @var Collection<int, self> */
+    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'refersTo')]
+    private Collection $referredBy;
+
+    /** @var Collection<int, self> */
+    #[ORM\JoinTable(name: 'document_referrals')]
+    #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', onDelete: 'cascade')]
+    #[ORM\InverseJoinColumn(name: 'referred_document_id', referencedColumnName: 'id', onDelete: 'cascade')]
+    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'referredBy', cascade: ['persist'])]
+    private Collection $refersTo;
+
     public function __construct()
     {
+        parent::__construct();
+
         $this->dossiers = new ArrayCollection();
         $this->ingestLogs = new ArrayCollection();
         $this->inquiries = new ArrayCollection();
-        $this->fileInfo = new FileInfo();
-    }
-
-    public function getId(): Uuid
-    {
-        return $this->id;
-    }
-
-    public function setId(UUid $uuid): void
-    {
-        $this->id = $uuid;
+        $this->refersTo = new ArrayCollection();
+        $this->referredBy = new ArrayCollection();
     }
 
     public function getPageCount(): int
@@ -138,18 +124,6 @@ class Document implements EntityWithFileInfo
     public function setPageCount(int $pageCount): self
     {
         $this->pageCount = $pageCount;
-
-        return $this;
-    }
-
-    public function getDuration(): int
-    {
-        return $this->duration;
-    }
-
-    public function setDuration(int $duration): self
-    {
-        $this->duration = $duration;
 
         return $this;
     }
@@ -190,12 +164,12 @@ class Document implements EntityWithFileInfo
         return $this;
     }
 
-    public function getDocumentDate(): \DateTimeInterface
+    public function getDocumentDate(): ?\DateTimeImmutable
     {
         return $this->documentDate;
     }
 
-    public function setDocumentDate(\DateTimeInterface $documentDate): self
+    public function setDocumentDate(?\DateTimeImmutable $documentDate): self
     {
         $this->documentDate = $documentDate;
 
@@ -263,7 +237,7 @@ class Document implements EntityWithFileInfo
      *
      * @return $this
      */
-    public function setGrounds(array $grounds): self
+    public function setGrounds(array $grounds): static
     {
         $this->grounds = $grounds;
 
@@ -283,7 +257,7 @@ class Document implements EntityWithFileInfo
      *
      * @return $this
      */
-    public function setSubjects(array $subjects): self
+    public function setSubjects(array $subjects): static
     {
         $this->subjects = $subjects;
 
@@ -303,7 +277,7 @@ class Document implements EntityWithFileInfo
     }
 
     /**
-     * @return Collection|Dossier[]
+     * @return Collection<array-key,Dossier>
      */
     public function getDossiers(): Collection
     {
@@ -329,7 +303,7 @@ class Document implements EntityWithFileInfo
     public function hasPubliclyAvailableDossier(): bool
     {
         foreach ($this->dossiers as $dossier) {
-            if ($dossier->getStatus() === Dossier::STATUS_PREVIEW || $dossier->getStatus() === Dossier::STATUS_PUBLISHED) {
+            if ($dossier->getStatus()->isPubliclyAvailable()) {
                 return true;
             }
         }
@@ -338,7 +312,7 @@ class Document implements EntityWithFileInfo
     }
 
     /**
-     * @return Collection|IngestLog[]
+     * @return Collection<array-key,IngestLog>
      */
     public function getIngestLogs(): Collection
     {
@@ -416,7 +390,7 @@ class Document implements EntityWithFileInfo
     }
 
     /**
-     * @return Collection|Inquiry[]
+     * @return Collection<array-key,Inquiry>
      */
     public function getInquiries(): Collection
     {
@@ -437,18 +411,6 @@ class Document implements EntityWithFileInfo
         if ($this->inquiries->removeElement($inquiry)) {
             $inquiry->removeDocument($this);
         }
-
-        return $this;
-    }
-
-    public function getFileInfo(): FileInfo
-    {
-        return $this->fileInfo;
-    }
-
-    public function setFileInfo(FileInfo $fileInfo): self
-    {
-        $this->fileInfo = $fileInfo;
 
         return $this;
     }
@@ -541,5 +503,37 @@ class Document implements EntityWithFileInfo
         $this->withdrawReason = null;
         $this->withdrawExplanation = '';
         $this->withdrawDate = null;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getRefersTo(): Collection
+    {
+        return $this->refersTo;
+    }
+
+    public function addReferralTo(Document $document): self
+    {
+        if (! $this->refersTo->contains($document)) {
+            $this->refersTo->add($document);
+        }
+
+        return $this;
+    }
+
+    public function removeReferralTo(Document $document): self
+    {
+        $this->refersTo->removeElement($document);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getReferredBy(): Collection
+    {
+        return $this->referredBy;
     }
 }

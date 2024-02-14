@@ -1,0 +1,122 @@
+volumes:
+  es_data:
+    driver: local
+  postgres_data:
+    driver: local
+
+networks:
+  woopie:
+    driver: bridge
+
+services:
+  app:
+    build: ./docker
+    user: woopie
+    labels:
+      com.symfony.server.service-ignore: true
+    ports:
+      - target: 80
+        published: 8000
+    volumes:
+      - ./:/var/www/html
+      - ./docker/php.ini:/usr/local/etc/php/custom.d/php.ini
+      - ./auth.json:/home/woopie/.composer/auth.json:ro
+      - ./.npmrc.auth:/home/woopie/.npmrc:ro
+    networks:
+      woopie:
+        aliases:
+          - app.local
+          - open.local
+          - balie.local
+    environment:
+      PHP_INI_SCAN_DIR: "/usr/local/etc/php/custom.d:/usr/local/etc/php/conf.d"
+
+  worker:
+    depends_on:
+      - rabbitmq
+    build: ./docker
+    user: woopie
+    labels:
+      com.symfony.server.service-ignore: true
+    volumes:
+      - ./:/var/www/html
+      - ./docker/php.ini:/usr/local/etc/php/custom.d/php.ini
+    networks:
+      - woopie
+    environment:
+      PHP_INI_SCAN_DIR: "/usr/local/etc/php/custom.d:/usr/local/etc/php/conf.d"
+    stop_signal: SIGINT
+    command:
+      [
+        "bash",
+        "-c",
+        "wait-for-it rabbitmq:5672 --timeout=0 --strict -- symfony run --watch=config,src,templates,vendor symfony console messenger:consume -vv high esupdater ingestor global",
+      ]
+
+  tika:
+    image: apache/tika:latest
+    platform: linux/amd64
+    labels:
+      com.symfony.server.service-ignore: true
+    ports:
+      - target: 9998
+        published: 9998
+    networks:
+      - woopie
+
+  elasticsearch:
+    image: elasticsearch:8.2.2
+    labels:
+      com.symfony.server.service-ignore: true
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - xpack.security.enabled=false
+      - http.cors.enabled=true
+      - http.cors.allow-origin=/https:\/\/app.elasticvue.com/
+      # - http.cors.allow-headers: X-Requested-With,Content-Type,Content-Length,Authorization
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    ports:
+      - target: 9200
+        published: 9200
+    networks:
+      - woopie
+
+  redis:
+    image: redis:5
+    labels:
+      com.symfony.server.service-ignore: true
+    ports:
+      - target: 6379
+        published: 6379
+    networks:
+      - woopie
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    labels:
+      com.symfony.server.service-ignore: true
+    ports:
+      - target: 5672
+        published: 5672
+      - target: 15672
+        published: 15672
+    networks:
+      - woopie
+
+  postgres:
+    image: postgres:14.10-bookworm
+    labels:
+      com.symfony.server.service-ignore: true
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - target: 5432
+        published: 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - woopie

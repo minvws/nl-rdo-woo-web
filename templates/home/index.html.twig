@@ -3,24 +3,19 @@
 {% set page_title = "Home" | trans() %}
 
 {% block body %}
+    <div class="-mt-8 lg:-mt-16 h-24 md:h-32 lg:h-40 bg-cover bg-center bg-woo-hero"></div>
 
-    <section class="hero">
-        <img src="{{ asset('/img/hero/documenten.jpeg') }}" alt="">
-    </section>
+    <div class="bg-woo-anti-flash-white mx-auto p-4 md:p-6 md:bg-white md:max-w-2xl md:shadow-[0_0_7px_0_rgba(0,0,0,0.25)] md:-mt-12 mb-8 lg:mb-12">
+        <twig:Public:SearchForm  />
+    </div>
 
-    {% include "search/searchbar.html.twig" with { isHeroSearchForm: true } %}
-
-    <section class="content-container mx-auto">
-        <div>
-            <h1 class="leading-tight reduce-width site-title">
-                <span class="block mb-2">{{ "OGA platform" | trans() }}</span>
-                <span>{{ "OGA decisions of the Dutch Ministry of Health, Welfare and Sport" | trans() | raw }}</span>
-            </h1>
-            {% include "home/snippets/about.html.twig" %}
+    <div class="woo-container woo-container--sm">
+        <div class="pb-8 lg:pb-16">
+            {% include "home/snippets/intro.html.twig" %}
 
             {% include "home/snippets/recent-documents.html.twig" %}
         </div>
-    </section>
+    </div>
 
     {% include "home/snippets/browse.html.twig" %}
 

@@ -41,7 +41,7 @@
 'The image width is too small ({{ width }}px). Minimum width expected is {{ min_width }}px.': 'De afbeelding is niet breed genoeg ({{ width }}px). De minimaal verwachte breedte is {{ min_width }}px.'
 'The image height is too big ({{ height }}px). Allowed maximum height is {{ max_height }}px.': 'De afbeelding is te hoog ({{ height }}px). De maximaal toegestane hoogte is {{ max_height }}px.'
 'The image height is too small ({{ height }}px). Minimum height expected is {{ min_height }}px.': 'De afbeelding is niet hoog genoeg ({{ height }}px). De minimaal verwachte hoogte is {{ min_height }}px.'
-"This value should be the user's current password.": 'Deze waarde moet het huidige wachtwoord van de gebruiker zijn.'
+"This value should be the user's current password.": 'Het ingevulde wachtwoord is niet herkend. Vul hier je oude wachtwoord in.'
 'This value should have exactly {{ limit }} character.|This value should have exactly {{ limit }} characters.': 'Deze waarde moet exact {{ limit }} teken lang zijn.|Deze waarde moet exact {{ limit }} tekens lang zijn.'
 'The file was only partially uploaded.': 'Het bestand is slechts gedeeltelijk geüpload.'
 'No file was uploaded.': 'Er is geen bestand geüpload.'
@@ -139,3 +139,4 @@ Error: Fout
 'Choose from the selection of published decisions': 'Kies uit de selectie gepubliceerde besluiten'
 'The password fields must match': 'De nieuwe wachtwoorden moeten gelijk zijn'
 'The password is a common password or similar': 'Het gekozen wachtwoord is niet veilig'
+'Your new password cannot be the same as your current password': 'Je nieuwe wachtwoord mag niet hetzelfde zijn als je huidige wachtwoord'

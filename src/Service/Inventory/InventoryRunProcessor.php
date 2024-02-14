@@ -8,7 +8,6 @@ use App\Entity\InventoryProcessRun;
 use App\Exception\ProcessInventoryException;
 use App\Exception\TranslatableException;
 use App\Service\DossierService;
-use App\Service\Inquiry\InquiryService;
 use App\Service\Inventory\Progress\ProgressUpdater;
 use App\Service\Inventory\Progress\RunProgress;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
@@ -25,7 +24,6 @@ class InventoryRunProcessor
 {
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
-        private readonly InquiryService $inquiryService,
         private readonly LoggingHelper $loggingHelper,
         private readonly InventoryComparator $inventoryComparator,
         private readonly InventoryUpdater $inventoryUpdater,
@@ -44,7 +42,6 @@ class InventoryRunProcessor
     {
         try {
             $this->loggingHelper->disableAll();
-            $this->inquiryService->clearLookupCache();
 
             $inventoryReader = $this->inventoryService->getReader($run);
 
@@ -82,7 +79,7 @@ class InventoryRunProcessor
 
         $changeset = $this->inventoryComparator->determineChangeset($run, $inventoryReader, $runProgress);
 
-        if ($changeset->isEmpty()) {
+        if ($changeset->hasChanges()) {
             $run->addGenericException(ProcessInventoryException::forNoChanges());
         }
 

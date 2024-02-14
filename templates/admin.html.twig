@@ -22,24 +22,25 @@
         {% include "piwik-script.html.twig" %}
     </head>
 
-    <body class="antialiased bg-anti-flash-white text-black flex min-h-screen flex-col">
+    <body class="antialiased bg-bhr-anti-flash-white text-black flex min-h-screen flex-col text-base">
         {% set isAuthenticated = app.user and is_granted('ROLE_BALIE') %}
 
-        {% macro nav_item(routeName, titleTranslationKey, activeRouteNames) %}
+        {% macro nav_item(routeName, titleTranslationKey, activeRouteNames, e2eName) %}
             {% set isCurrentPage = app.request.get('_route') is same as (routeName) %}
             {% set isActivePage = isCurrentPage or app.request.get('_route') in activeRouteNames %}
             <li>
                 <a
-                    class="bhr-site-header-nav-item bhr-site-header-nav-item--anchor{% if isActivePage %} bhr-site-header-nav-item--active{% endif %}"
-                    href="{{ path(routeName) }}"
                     {% if isCurrentPage %}aria-current="page"{% endif %}
+                    class="bhr-site-header-nav-item bhr-site-header-nav-item--anchor{% if isActivePage %} bhr-site-header-nav-item--active{% endif %}"
+                    {% if e2eName %}data-e2e-name="{{ e2eName }}"{% endif %}
+                    href="{{ path(routeName) }}"
                 >
                     {{ titleTranslationKey | trans() }}
                 </a>
             </li>
         {% endmacro %}
 
-        <header class="bg-eerie-black print:hidden">
+        <header class="bg-bhr-eerie-black print:hidden">
             <div class="mx-auto max-w-[1152px] lg:px-4">
                 {% if isAuthenticated %}
                 <button class="p-4 lg:hidden js-visibility-toggler" aria-controls="main-nav" aria-expanded="false">
@@ -71,7 +72,7 @@
                                     </summary>
                                     <div class="bhr-overlay-card max-w-sm mt-2 text-black flex flex-col px-0 pt-0 pb-2">
                                         <a
-                                            class="font-bold text-davys-grey text-right border-b border-platinum px-4 py-3"
+                                            class="font-bold text-bhr-davys-grey text-right border-b border-bhr-platinum px-4 py-3"
                                             href="{{ path('app_admin_user_organisation') }}"
                                         >
                                             {{ 'Manage organisations' | trans }}
@@ -105,6 +106,7 @@
                                 'app_admin_dossier_delete',
                                 'app_admin_dossier_edit_details',
                                 'app_admin_dossier_edit_decision',
+                                'app_admin_document',
                                 'app_admin_documents',
                                 'app_admin_dossier_replace_inventory',
                             ] %}
@@ -142,7 +144,7 @@
 
                     <ul class="lg:flex items-center">
                         {{ _self.nav_item('app_admin_user_profile', app.user.name|default("unknown user")) }}
-                        {{ _self.nav_item('app_logout', 'Logout') }}
+                        {{ _self.nav_item('app_logout', 'Logout', [], 'logout-link') }}
                     </ul>
                 </nav>
                 {% else %}
@@ -160,7 +162,7 @@
 
         <footer class="pb-8 pt-16 px-4 two-thirds-one-third print:hidden">
             {% if isAuthenticated %}
-                <div class="leading-tight pb-4 screen:pt-24 screen:text-center text-dim-gray print:border-b print:border-gray-900">
+                <div class="leading-tight pb-4 screen:pt-24 screen:text-center text-bhr-dim-gray print:border-b print:border-gray-900">
                     <h2 class="font-bold text-2xl">{{ SITE_NAME }}</h2>
                     <em>Publicatie/document management</em>
                 </div>
@@ -169,6 +171,7 @@
             <ul class="flex justify-center print:hidden">
                 <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_privacy') }}">Privacy</a></li>
                 <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_contact') }}">Contact</a></li>
+                <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_accessibility') }}">Toegankelijkheid</a></li>
                 <li><a class="bhr-site-footer-nav-item" href="https://open.minvws.nl/">Publieke website</a></li>
             </ul>
         </footer>

@@ -23,10 +23,10 @@ class TermsAggregationWithMinDocCount extends TermsAggregation
         string|Field|InlineScript $fieldOrSource,
         private int $minDocCount,
         array $aggregations = [],
-        string $orderField = null,
+        ?string $orderField = null,
         string $orderValue = SortDirections::ASC,
-        array|string $include = null,
-        array|string $exclude = null,
+        array|string|null $include = null,
+        array|string|null $exclude = null,
         int $size = 10,
     ) {
         parent::__construct(

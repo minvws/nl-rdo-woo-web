@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier;
 
-use App\Attribute\AuthMatrix;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\WithdrawReason;
@@ -20,6 +19,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
@@ -34,22 +34,30 @@ class DocumentActionController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/dossier/{dossierId}/edit/document/{documentId}/withdraw', name: 'app_admin_document_withdraw', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.update')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/edit/document/{documentId}/withdraw', name: 'app_admin_document_withdraw', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.update')]
     public function withdraw(
         Breadcrumbs $breadcrumbs,
         Request $request,
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
-        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(dossierId,documentId)')] Document $document,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId,documentId)')] Document $document,
     ): Response {
         $this->testIfDossierIsAllowedByUser($dossier);
 
-        $breadcrumbs->addRouteItem($dossier->getDossierNr(), 'app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
-        $breadcrumbs->addRouteItem('Documenten', 'app_admin_documents', ['dossierId' => $dossier->getDossierNr()]);
+        $breadcrumbs->addRouteItem(
+            $dossier->getDossierNr(),
+            'app_admin_dossier',
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+        );
+        $breadcrumbs->addRouteItem(
+            'Documenten',
+            'app_admin_documents',
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+        );
         $breadcrumbs->addRouteItem(
             $document->getDocumentNr(),
             'app_admin_document',
-            ['dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()]
         );
         $breadcrumbs->addItem('Document intrekken');
 
@@ -61,6 +69,7 @@ class DocumentActionController extends AbstractController
         $cancelButton = $form->get('cancel');
         if ($cancelButton->isClicked()) {
             return $this->redirectToRoute('app_admin_document', [
+                'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),
                 'documentId' => $document->getDocumentNr(),
             ]);
@@ -85,30 +94,39 @@ class DocumentActionController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/edit/document/{documentId}/replace', name: 'app_admin_document_replace', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.update')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/edit/document/{documentId}/replace', name: 'app_admin_document_replace', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.update')]
     public function replace(
         Breadcrumbs $breadcrumbs,
         Request $request,
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
-        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(dossierId,documentId)')] Document $document,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId,documentId)')] Document $document,
     ): Response {
         $this->testIfDossierIsAllowedByUser($dossier);
 
         $status = $this->workflow->getStatus($document);
         if (! $status->canReplace()) {
             return $this->redirectToRoute('app_admin_document', [
+                'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),
                 'documentId' => $document->getDocumentNr(),
             ]);
         }
 
-        $breadcrumbs->addRouteItem($dossier->getDossierNr(), 'app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
-        $breadcrumbs->addRouteItem('Documenten', 'app_admin_documents', ['dossierId' => $dossier->getDossierNr()]);
+        $breadcrumbs->addRouteItem(
+            $dossier->getDossierNr(),
+            'app_admin_dossier',
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+        );
+        $breadcrumbs->addRouteItem(
+            'Documenten',
+            'app_admin_documents',
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+        );
         $breadcrumbs->addRouteItem(
             $document->getDocumentNr(),
             'app_admin_document',
-            ['dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()]
         );
         $breadcrumbs->addItem('Document vervangen');
 

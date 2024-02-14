@@ -16,7 +16,7 @@ abstract class TranslatableException extends \RuntimeException
     /**
      * @param array<string, string> $placeholders
      */
-    public function __construct(string $message, string $translationKey = null, array $placeholders = [])
+    public function __construct(string $message, ?string $translationKey = null, array $placeholders = [])
     {
         if (! $translationKey) {
             $translationKey = $message;

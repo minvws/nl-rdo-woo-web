@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier;
 
-use App\Attribute\AuthMatrix;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Service\DocumentWorkflow\DocumentWorkflow;
@@ -17,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class DocumentController extends AbstractController
@@ -31,17 +31,25 @@ class DocumentController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/dossier/{dossierId}/edit/document/{documentId}', name: 'app_admin_document', methods: ['GET', 'POST'])]
-    #[AuthMatrix('dossier.update')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/edit/document/{documentId}', name: 'app_admin_document', methods: ['GET', 'POST'])]
+    #[IsGranted('AuthMatrix.dossier.update')]
     public function document(
         Breadcrumbs $breadcrumbs,
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
-        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(dossierId,documentId)')] Document $document,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId,documentId)')] Document $document,
     ): Response {
         $this->testIfDossierIsAllowedByUser($dossier);
 
-        $breadcrumbs->addRouteItem($dossier->getTitle() ?? '', 'app_admin_dossier', ['dossierId' => $dossier->getDossierNr()]);
-        $breadcrumbs->addRouteItem('workflow_step_documents', 'app_admin_documents', ['dossierId' => $dossier->getDossierNr()]);
+        $breadcrumbs->addRouteItem(
+            $dossier->getTitle() ?? '',
+            'app_admin_dossier',
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+        );
+        $breadcrumbs->addRouteItem(
+            'workflow_step_documents',
+            'app_admin_documents',
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+        );
         $breadcrumbs->addItem($document->getFileInfo()->getName() ?? '');
 
         return $this->render('admin/dossier/document/details.html.twig', [
@@ -52,10 +60,10 @@ class DocumentController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/upload-status', name: 'app_admin_document_upload_status', methods: ['GET'])]
-    #[AuthMatrix('dossier.update')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/upload-status', name: 'app_admin_document_upload_status', methods: ['GET'])]
+    #[IsGranted('AuthMatrix.dossier.update')]
     public function uploadStatus(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
     ): Response {
         $uploadStatus = $dossier->getUploadStatus();
 
@@ -72,11 +80,11 @@ class DocumentController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/{dossierId}/documents', name: 'app_admin_dossier_documents_upload', methods: ['POST'])]
-    #[AuthMatrix('document.update')]
+    #[Route('/balie/dossier/{prefix}/{dossierId}/documents', name: 'app_admin_dossier_documents_upload', methods: ['POST'])]
+    #[IsGranted('AuthMatrix.document.update')]
     public function upload(
         Request $request,
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
     ): Response {
         $this->testIfDossierIsAllowedByUser($dossier);
 

@@ -61,7 +61,7 @@ class DocumentStorageService implements StorageAliveInterface
         FilesystemOperator $storage,
         LoggerInterface $logger,
         bool $isLocal = false,
-        string $documentRoot = null
+        ?string $documentRoot = null
     ) {
         $this->storage = $storage;
         $this->doctrine = $doctrine;
@@ -158,7 +158,6 @@ class DocumentStorageService implements StorageAliveInterface
             return false;
         } finally {
             // Close the stream if not already closed
-            // @phpstan-ignore-next-line
             if (is_resource($stream)) {
                 @fclose($stream);
             }

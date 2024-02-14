@@ -1,0 +1,16 @@
+<div class="mb-6">
+    <form class="sm:flex gap-x-4 items-center" method="post" action="{{ action }}">
+        {% if canDownload %}
+        <button class="woo-bordered-button woo-bordered-button--primary" data-e2e-name="download-documents-button" type="submit">
+            <twig:Public:Icon class="woo-button-icon-left" name="download" />
+            {{ "Download" | trans }}
+        </button>
+        {% endif %}
+
+        <div class="leading-none pt-6 sm:pt-0">
+            <a class="woo-a inline-block py-1" href="{{ searchUrl }}">
+                {{ "Search in these documents..." | trans }}
+            </a>
+        </div>
+    </form>
+</div>

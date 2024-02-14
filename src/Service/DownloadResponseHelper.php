@@ -21,7 +21,7 @@ class DownloadResponseHelper
     public function getResponseForEntityWithFileInfo(
         ?EntityWithFileInfo $entity,
         bool $asAttachment = true,
-        string $filename = null,
+        ?string $filename = null,
     ): StreamedResponse {
         if (! $entity || ! $entity->getFileInfo()->isUploaded()) {
             throw new NotFoundHttpException('File is not available for download');

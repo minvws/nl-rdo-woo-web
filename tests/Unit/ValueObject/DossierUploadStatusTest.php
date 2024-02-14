@@ -14,10 +14,10 @@ use Mockery\MockInterface;
 class DossierUploadStatusTest extends MockeryTestCase
 {
     private DossierUploadStatus $dossierUploadStatus;
-    private Document|MockInterface $missingUpload;
-    private Document|MockInterface $completedUpload;
-    private Document|MockInterface $unwantedUpload;
-    private Dossier|MockInterface $dossier;
+    private Document&MockInterface $missingUpload;
+    private Document&MockInterface $completedUpload;
+    private Document&MockInterface $unwantedUpload;
+    private Dossier&MockInterface $dossier;
 
     public function setUp(): void
     {

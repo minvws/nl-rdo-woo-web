@@ -74,7 +74,7 @@ EOF,
      * @param string[]               $metadata
      * @param array<int, mixed>|null $pages
      */
-    public function updateDocument(Document $document, array $metadata = null, array $pages = null): void
+    public function updateDocument(Document $document, ?array $metadata = null, ?array $pages = null): void
     {
         // Update main document
         $this->elastic->update([

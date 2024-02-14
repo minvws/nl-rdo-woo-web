@@ -1,0 +1,25 @@
+@layer components {
+    .woo-h1 {
+        @apply text-[2rem] font-bold leading-tight;
+    }
+
+    .woo-h1-spacing {
+        @apply mb-8;
+    }
+
+    .woo-h2 {
+        @apply text-3xl font-bold leading-tight;
+    }
+
+    .woo-h2-spacing {
+        @apply mb-6;
+    }
+
+    .woo-h3 {
+        @apply text-2xl font-bold leading-tight;
+    }
+
+    .woo-h3-spacing {
+        @apply mb-2;
+    }
+}

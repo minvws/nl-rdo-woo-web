@@ -1,0 +1,9 @@
+@layer components {
+    .woo-container {
+        @apply max-w-6xl mx-auto px-4;
+    }
+
+    .woo-container--sm {
+        @apply max-w-4xl;
+    }
+}

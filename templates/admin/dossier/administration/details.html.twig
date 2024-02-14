@@ -24,5 +24,41 @@
 
         {{ form(form) }}
     </div>
+    <div class="bhr-card">
+        <table class="bhr-table">
+            <tbody>
+                <tr>
+                    <th class="bhr-row-head" scope="row">Status</th>
+                    <td>{{ dossier.status.value }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">Organisation</th>
+                    <td>{{ dossier.organisation.name }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">Completed</th>
+                    <td>{{ dossier.completed ? 'true' : 'false' }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">Expected upload count</th>
+                    <td>{{ dossier.uploadStatus.expectedUploadCount }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">Actual upload count</th>
+                    <td>{{ dossier.uploadStatus.actualUploadCount }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">Uploads completed</th>
+                    <td>{{ dossier.uploadStatus.complete  ? 'true' : 'false' }}</td>
+                </tr>
+                {% for step in workflowStatus.steps %}
+                    <tr>
+                        <th class="bhr-row-head" scope="row">Step {{ step.stepName.value }} completed</th>
+                        <td>{{ step.completed ? 'true' : 'false' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

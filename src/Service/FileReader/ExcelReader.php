@@ -70,6 +70,20 @@ class ExcelReader implements \IteratorAggregate, FileReaderInterface
         }
     }
 
+    public function getOptionalDateTime(int $rowIndex, string $columnName): ?\DateTimeImmutable
+    {
+        $value = $this->getOptionalString($rowIndex, $columnName);
+        if (empty($value)) {
+            return null;
+        }
+
+        try {
+            return InventoryDataHelper::toDateTimeImmutable($value);
+        } catch (\Exception) {
+            throw FileReaderException::forCannotParseDate($value);
+        }
+    }
+
     private function hasColumn(string $headerName): bool
     {
         return $this->headerMapping->has($headerName);

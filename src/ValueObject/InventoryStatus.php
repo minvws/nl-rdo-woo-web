@@ -76,7 +76,7 @@ class InventoryStatus
     {
         $run = $this->dossier->getProcessRun();
 
-        if ($this->dossier->getStatus() !== Dossier::STATUS_CONCEPT) {
+        if (! $this->dossier->getStatus()->isConcept()) {
             return true;
         }
 

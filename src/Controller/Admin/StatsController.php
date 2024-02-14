@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Attribute\AuthMatrix;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,6 +11,7 @@ use GuzzleHttp\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class StatsController extends AbstractController
@@ -24,7 +24,7 @@ class StatsController extends AbstractController
     }
 
     #[Route('/balie/stats', name: 'app_admin_stats', methods: ['GET'])]
-    #[AuthMatrix('stat.read')]
+    #[IsGranted('AuthMatrix.stat.read')]
     public function stats(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('Home', 'app_home');

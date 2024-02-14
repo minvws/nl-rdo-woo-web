@@ -1,116 +1,133 @@
 {% import "facet_macros.html.twig" as macro %}
 
-<div>
-    <div class="block">
-        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-            <h2 class="ro-text-base roe-font-normal" aria-live="polite" id="js-number-of-search-results">
-                {% if result.type == constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
-                    <span class="ro-font-bold">{{ "# dossiers" | trans({'count': result.dossierCount}) }}</span>
-                {% else %}
-                   <span>
-                        <span class="ro-font-bold">
-                            {{ "# documents" | trans({'count': result.documentCount}) }}
-                        </span>
-                        <span>
-                            {{ "in # dossiers" | trans({'count': result.dossierCount}) }}
-                        </span>
-                   </span>
-                {% endif %}
-            </h2>
+{% set numberOfResults = result.entries | length %}
+{% set numberOfPages = result.pagination.pageCount %}
 
-            <section class="accordion m-0 p-0">
-                <div class="accordion__container">
-                    <button class="button button--light button--secondary flex items-center" aria-expanded="false" id="sort">
-                        <span>{{ "Sort" | trans() }}</span>
-                        <twig:Icon name="sort" />
-                    </button>
-                    <div aria-labelledby="sort" class="accordion-content">
-                        <ul class="list-unstyled w-full">
-                            <li>
-                                <a href="?{{ query_string_with_params({'sort': 'decision_date', 'sortorder': 'desc'}) }}">{{ "Date of decision" | trans() }} ({{ "newest first" | trans() }})</a>
-                            </li>
-                            <li>
-                                <a href="?{{ query_string_with_params({'sort': 'decision_date', 'sortorder': 'asc'}) }}">{{ "Date of decision" | trans() }} ({{ "oldest first" | trans() }})</a>
-                            </li>
-                            <li>
-                                <a href="?{{ query_string_with_params({'sort': 'publication_date', 'sortorder': 'desc'}) }}">{{ "Date of publication" | trans() }} ({{ "newest first" | trans() }})</a>
-                            </li>
-                            <li>
-                                <a href="?{{ query_string_with_params({'sort': 'publication_date', 'sortorder': 'asc'}) }}">{{ "Date of publication" | trans() }} ({{ "oldest first" | trans() }})</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-        </div>
+<div class="md:flex pb-3">
+    <div class="grow">
+        <h2 class="font-bold mt-2" aria-live="polite" id="js-number-of-search-results">
+            {% if result.type == constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
+                {{ "# dossiers" | trans({'count': result.dossierCount}) }}
+            {% else %}
+                {{ "# documents" | trans({'count': result.documentCount}) }}
+                <span class="font-normal">{{ "in # dossiers" | trans({'count': result.dossierCount}) }}</span>
+            {% endif %}
+        </h2>
 
         {# Suggestions #}
         {% set suggestionsId = constant('App\\ElasticConfig::SUGGESTIONS_SEARCH_INPUT') %}
         {% if result.suggestion(suggestionsId) is not null and result.suggestion(suggestionsId).entries|length %}
-        <p>
-            <i>
-                {% if result.suggestion(suggestionsId).entries | length == 1 %}
-                    {{ "Did you mean:" | trans() }}
-                {% else %}
-                    {{ "Did you mean any of the following search terms:" | trans() }}
-                {% endif %}
-                {% for entry in result.suggestion(suggestionsId).entries %}
-                    [ <strong><a href="{{ path('app_home', { q: entry.name|url_encode }) }}">{{ entry.name }}</a></strong> ]
-                {% endfor %}
-            </i>
+        <p class="italic pt-1">
+            {% if result.suggestion(suggestionsId).entries | length == 1 %}
+                {{ "Did you mean:" | trans }}
+            {% else %}
+                {{ "Did you mean any of the following search terms:" | trans }}
+            {% endif %}
+            {% for entry in result.suggestion(suggestionsId).entries %}
+                {% if loop.last and loop.index > 1 %}{{ "generic.or" | trans }}{% elseif not loop.first %}, {% endif %}
+                <a class="woo-a" href="{{ path('app_home', { q: entry.name|url_encode }) }}">{{ entry.name }}</a>{{loop.last ? '?' : '' }}
+            {% endfor %}
+        </p>
+        {% endif %}
+
+        {% if result.displayWithoutDateMessage %}
+        <p class="text-sm woo-muted leading-none py-1">
+            {{ 'search.results_without_date' | trans({'count': result.documentCountWithoutDate, '%pre_document%': '<a class="woo-a" href="?' ~ query_string_with_params({'dt[without_date]': 1}) ~ '">', '%post_document%': '</a>'}) | raw }}
         </p>
         {% endif %}
     </div>
 
-    <div class="block pb-6">
-    {% if has_facets(app.request) %}
-        {# Facet pills #}
-        <ul class="list-unstyled list-pills">
-            {{  macro.inquiry_facets(result) }}
+    {# Only allow sorting if there is more than 1 result or when there's pagination (there can be 1 result on this page) #}
+    {% if numberOfResults > 1 or numberOfPages > 1 %}
+    <div class="shrink-0 md:ml-4 pt-3 md:pt-0">
+        <details class="relative js-details">
+            <summary class="woo-bordered-button woo-bordered-button--secondary" id="sort-results">
+                {{ "Sort" | trans }}
+                <twig:Public:Icon class="woo-button-icon-right" name="sort" />
+            </summary>
 
-            {% if is_valid_date(app.request.get('dt').from | default) %}
-                {{ macro.facet_pill('Datum vanaf: ' ~ app.request.get('dt').from | default | format_date('long'), 'dt[from]', '') }}
-            {% endif %}
-            {% if is_valid_date(app.request.get('dt').to | default) %}
-                {{ macro.facet_pill('Datum tot: ' ~ app.request.get('dt').to | default | format_date('long'), 'dt[to]', '') }}
-            {% endif %}
+            <div aria-labelledby="sort-results" class="woo-overlay-card md:right-0 w-72 sm:w-96">
+                {% macro sort_items(sortOnProperty, sortOnText) %}
+                    {{ _self.sort_item(sortOnProperty, 'desc', sortOnText, 'newest first' | trans) }}
+                    {{ _self.sort_item(sortOnProperty, 'asc', sortOnText, 'oldest first' | trans) }}
+                {% endmacro %}
 
-            {{ macro.facet_pills('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}
-            {{ macro.facet_pills('Subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
-            {{ macro.facet_pills('Source document type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
-            {{ macro.facet_pills('Judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
-            {{ macro.facet_pills('Grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
-        </ul>
-    {% endif %}
+                {% macro sort_item(sortOnProperty, sortOrder, sortOnText, sortOrderText) %}
+                    <li class="group/li leading-none">
+                        <a
+                            class="block px-4 group/a"
+                            href="?{{ query_string_with_params({'sort': sortOnProperty, 'sortorder': sortOrder}) }}"
+                        >
+                            <span
+                                class="block border-b border-woo-chinese-silver group-last/li:border-b-0 py-4 group-hover/a:underline group-focus/a:underline"
+                            >{{ sortOnText }} ({{ sortOrderText }})</span>
+                        </a>
+                    </li>
+                {% endmacro %}
+
+                <ul class="-mx-4 -my-2">
+                    {{ _self.sort_items('decision_date', 'Date of decision' | trans) }}
+                    {{ _self.sort_items('publication_date', 'Date of publication' | trans) }}
+                </ul>
+            </div>
+        </details>
     </div>
+    {% endif %}
 </div>
 
+{% if has_facets(app.request) %}
+    {# Facet pills #}
+    <ul class="flex flex-wrap pb-1 gap-x-2">
+        {{  macro.inquiry_facets(result) }}
+
+        {% if is_valid_date(app.request.get('dt').from | default) %}
+            {{ macro.facet_pill('Datum vanaf: ' ~ app.request.get('dt').from | default | format_date('long'), 'dt[from]', '') }}
+        {% endif %}
+        {% if is_valid_date(app.request.get('dt').to | default) %}
+            {{ macro.facet_pill('Datum tot: ' ~ app.request.get('dt').to | default | format_date('long'), 'dt[to]', '') }}
+        {% endif %}
+        {% if app.request.get('dt').without_date | default is not empty %}
+            {{ macro.facet_pill('Datum: niet beschikbaar', 'dt[without_date]', '') }}
+        {% endif %}
+
+        {{ macro.facet_pills('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}
+        {{ macro.facet_pills('Subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
+        {{ macro.facet_pills('Source document type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
+        {{ macro.facet_pills('Judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
+        {{ macro.facet_pills('Grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
+    </ul>
+{% endif %}
+
 {# Results #}
-{% if result.entries | length > 0 %}
-<ul class="list-unstyled list-results">
-    {% for entry in result.entries %}
-    <li>
-        {% include "search/entries/" ~ entry.type ~ ".html.twig" %}
-    </li>
-    {% endfor %}
-</ul>
+{% if numberOfResults > 0 %}
+    <ul>
+        {% for entry in result.entries %}
+        <li class="woo-search-result" data-e2e-name="search-result">
+            {% include "search/entries/" ~ entry.type ~ ".html.twig" %}
+        </li>
+        {% endfor %}
+    </ul>
 {% elseif app.request.query.get('q') %}
-<h2>
-    <span aria-hidden="true" class="icon icon-search text-dim-gray relative -top-0.5 mr-2"></span>
-    <span class="text-2xl font-normal">{{ "No search results" | trans }}</span>
-</h2>
+    <div class="pt-2 woo-rich-text">
+        <h3 class="!font-normal">
+            <twig:Public:Icon name="magnifier" color="fill-dim-gray" />
+            {{ "No search results" | trans }}
+        </h3>
 
-<p>{{ "No documents found related to {query}" | trans({ 'query': app.request.query.get('q') }) }}.</p>
+        <p>{{ "No documents found related to {query}" | trans({ 'query': app.request.query.get('q') }) }}.</p>
 
-<h3 class="mt-4 text-lg">{{ "Suggestions" | trans }}:</h3>
-<ul class="ml-4">
-    <li class="p-0">{{ "Check query spelling" | trans }}</li>
-    <li class="p-0">{{ "Try a different search term" | trans }}</li>
-    <li class="p-0">{{ "Use less keywords" | trans }}</li>
-</ul>
+        <h4>{{ "Suggestions" | trans }}:</h4>
+        <ul>
+            <li>{{ "Check query spelling" | trans }}</li>
+            <li>{{ "Try a different search term" | trans }}</li>
+            <li>{{ "Use less keywords" | trans }}</li>
+        </ul>
+    </div>
 {% endif %}
 
 {# Pagination #}
-{% if result.paginationEnabled %}
+{% if numberOfPages > 1 %}
+<div class="pt-8">
     {{ knp_pagination_render(result.pagination) }}
+</div>
 {% endif %}

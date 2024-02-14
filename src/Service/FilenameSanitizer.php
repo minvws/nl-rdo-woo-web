@@ -13,14 +13,14 @@ class FilenameSanitizer extends \IndieHD\FilenameSanitizer\FilenameSanitizer
         return $this;
     }
 
-    public function stripPhp()
+    public function stripPhp(): static
     {
         $this->setFilename(htmlspecialchars($this->getFilename()));
 
         return $this;
     }
 
-    public function stripRiskyCharacters()
+    public function stripRiskyCharacters(): static
     {
         $filename = $this->getFilename();
 

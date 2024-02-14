@@ -25,7 +25,7 @@ class PublishType extends AbstractType
         /** @var Dossier $dossier */
         $dossier = $builder->getData();
 
-        if ($dossier->getStatus() === Dossier::STATUS_CONCEPT || $dossier->getStatus() === Dossier::STATUS_SCHEDULED) {
+        if ($dossier->getStatus()->isConceptOrScheduled()) {
             $builder->add('preview_date', DateType::class, [
                 'label' => 'Datum feitelijke verstrekking',
                 'help' => 'Kies de datum waarop het besluit aan de verzoeker is/wordt verstrekt. '
