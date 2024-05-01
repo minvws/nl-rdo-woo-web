@@ -31,7 +31,7 @@ Display facet with hyperlinks
             <li>
                 {# parenthesis around searchkey are important, otherwise it will be used as a literal 'searchkey' value #}
                 <twig:Public:ArrowedLink
-                    to="{{ path('app_search', { q: '', (facet2query(facetKey) ~ '[]'):  entry.key|url_encode }) }}"
+                    to="{{ path('app_search', { q: '', (facet2query(facetKey) ~ '[]'):  entry.key }) }}"
                     suffix="{{ entry.count }}"
                 >{{ entry.displayValue }}</twig:Public:ArrowedLink>
             </li>
@@ -53,7 +53,7 @@ Display facet with hyperlinks
             <li>
                 {# parenthesis around searchkey are important, otherwise it will be used as a literal 'searchkey' value #}
                 <twig:Public:ArrowedLink
-                    to="{{ path('app_search', { q: '', (facet2query(facetKey) ~ '[]'):  entry.key|url_encode }) }}"
+                    to="{{ path('app_search', { q: '', (facet2query(facetKey) ~ '[]'):  entry.key }) }}"
                     suffix="{{ entry.count }}"
                 >{{ entry.displayValue }}</twig:Public:ArrowedLink>
             </li>
@@ -139,14 +139,14 @@ Display facet with hyperlinks
                     aria-expanded="true"
                     aria-controls="filter-items-{{ facetKey }}"
                     class="text-woo-sea-blue text-sm w-full text-left py-2 js-toggle-filter-items-button no-js:hidden"
-                    data-text-collapsed="{{ "Show more" | trans }}"
-                    data-text-expanded="{{ "Show less" | trans }}"
+                    data-text-collapsed="{{ 'public.global.show_more' | trans }}"
+                    data-text-expanded="{{ 'public.global.show_less' | trans }}"
                     type="button"
-                >{{ "Show more" | trans }}</button>
+                >{{ 'public.global.show_more' | trans }}</button>
             {% endif %}
 
             <a href="#search-results" class="woo-skip-link text-sm text-left">
-                {{ "Go to search results" | trans }}
+                {{ 'public.search.label.results' | trans }}
             </a>
         </div>
     </fieldset>

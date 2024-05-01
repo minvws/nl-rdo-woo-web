@@ -41,7 +41,7 @@ class DocumentComparatorTest extends MockeryTestCase
         $metadata = \Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn([]);
 
-        $this->assertFalse(
+        self::assertFalse(
             $this->documentComparator->hasRefersToUpdate($this->dossier, $document, $metadata)
         );
     }
@@ -62,7 +62,7 @@ class DocumentComparatorTest extends MockeryTestCase
 
         $this->repository->expects('findByDocumentNumber')->andReturn($referredDocument);
 
-        $this->assertTrue(
+        self::assertTrue(
             $this->documentComparator->hasRefersToUpdate($this->dossier, $document, $metadata)
         );
     }
@@ -84,7 +84,7 @@ class DocumentComparatorTest extends MockeryTestCase
         $this->repository->expects('findByDocumentNumber')->andReturn($referredDocument);
         $this->repository->expects('findByDocumentNumber')->andReturnNull();
 
-        $this->assertTrue(
+        self::assertTrue(
             $this->documentComparator->hasRefersToUpdate($this->dossier, $document, $metadata)
         );
     }

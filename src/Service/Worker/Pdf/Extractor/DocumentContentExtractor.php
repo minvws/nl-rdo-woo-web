@@ -46,14 +46,19 @@ class DocumentContentExtractor implements DocumentExtractorInterface
 
     public function extract(Document $document, bool $forceRefresh): void
     {
-        if ($forceRefresh || ! $this->isCached($document)) {
-            $contentAndMetadata = $this->extractContentFromPdf($document);
+        // TODO: Cache is temporarily disabled for #2142, to be improved and restored in #2144
+        //
+        // if ($forceRefresh || ! $this->isCached($document)) {
+        //     $contentAndMetadata = $this->extractContentFromPdf($document);
+        //
+        //     $this->setCachedTikaData($document, $contentAndMetadata);
+        // }
+        //
+        // /** @var array{string, string[]} $contentAndMetadata */
+        // $contentAndMetadata = $this->getCachedTikaData($document);
+        unset($forceRefresh);
+        $contentAndMetadata = $this->extractContentFromPdf($document);
 
-            $this->setCachedTikaData($document, $contentAndMetadata);
-        }
-
-        /** @var array{string, string[]} $contentAndMetadata */
-        $contentAndMetadata = $this->getCachedTikaData($document);
         $metaData = $contentAndMetadata[1] ?? [];
 
         $this->statsService->measure('index.document', function ($document, $metaData) {

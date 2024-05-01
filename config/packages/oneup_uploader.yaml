@@ -1,0 +1,28 @@
+# Read the documentation: https://github.com/1up-lab/OneupUploaderBundle/blob/master/Resources/doc/index.md
+parameters:
+    oneup_uploader.path.prefix: ''
+    oneup_uploader.chunks.storage.directory: '%oneup_uploader.path.prefix%%kernel.cache_dir%/uploads/chunks'
+
+oneup_uploader:
+    chunks:
+        maxage: 86400 # = 1 day
+        storage:
+            directory: '%oneup_uploader.chunks.storage.directory%'
+    orphanage:
+        maxage: 604800 # = 1 week
+        directory: '%oneup_uploader.path.prefix%%kernel.cache_dir%/uploads/orphans'
+
+    mappings:
+        general:
+            frontend: custom
+            custom_frontend:
+                class: App\Controller\Admin\CustomDropzoneController
+                name: general
+            storage:
+                directory: '%oneup_uploader.path.prefix%%kernel.project_dir%/var/uploads'
+            use_orphanage: true
+            namer: App\Service\Uploader\UploaderNamer
+
+when@test:
+    parameters:
+        oneup_uploader.path.prefix: 'vfs://root/'

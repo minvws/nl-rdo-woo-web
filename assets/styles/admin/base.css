@@ -49,6 +49,10 @@
         @apply print:leading-5;
     }
 
+    body:has(.bhr-dialog[open]) {
+        @apply overflow-hidden;
+    }
+
     /* Overwrite the Tailwind defaults */
     b,
     strong {
@@ -69,4 +73,5 @@
     button[tabindex="-1"] {
         @apply cursor-auto;
     }
+
 }

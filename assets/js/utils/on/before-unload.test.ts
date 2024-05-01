@@ -1,8 +1,8 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test, vi } from 'vitest';
 import { getWindow } from '../browser';
 import { onBeforeUnload } from './before-unload';
 
-jest.mock('../browser');
+vi.mock('../browser');
 
 describe('the "onBeforeUnload" function', () => {
   test('should execute the provided function when unloading the page', () => {

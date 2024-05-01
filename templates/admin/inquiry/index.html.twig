@@ -1,6 +1,6 @@
 {% extends 'admin.html.twig' %}
 
-{% set page_title = "Famous case numbers" | trans() %}
+{% set page_title = 'admin.inquiries.case_numbers' | trans() %}
 
 {% block body %}
 <div class="bhr-container">
@@ -9,7 +9,7 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('inquiry.update') %}
-            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_inquiries_link') }}">{{ "Link case numbers to decisions or documents" | trans }}</a>
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_inquiries_link') }}">{{ 'admin.inquiries.link_case' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>
@@ -31,12 +31,12 @@
         <table class="bhr-table">
             <thead>
                 <tr>
-                    {{ knp_pagination_sortable(pagination, 'Case number' | trans, 'inq.casenr', {}, {}, 'pagination/sort.admin.html.twig') }}
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Dossiers" | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Documents" | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ "Last update" | trans() }}</th>
+                    {{ knp_pagination_sortable(pagination, 'admin.inquiries.case_number' | trans, 'inq.casenr', {}, {}, 'pagination/sort.admin.html.twig') }}
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'public.global.decisions' | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.documents' | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ 'global.last_update' | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                        <span class="sr-only">{{ "Link to case" | trans }}</span>
+                        <span class="sr-only">{{ 'admin.inquiries.link_to_case' | trans }}</span>
                     </th>
                 </tr>
             </thead>
@@ -49,7 +49,7 @@
                         <td>{{ row.inquiry.updatedAt | format_datetime('medium') }}</td>
                         <td class="text-right">
                             <a class="js-clickable-row__focusable" href="{{ PUBLIC_BASE_URL }}{{ path('app_inquiry_detail', { token: row.inquiry.token }) }}">
-                                <span class="sr-only">Details {{ row.inquiry.casenr }}</span>
+                                <span class="sr-only">{{ 'global.details' | trans() }} {{ row.inquiry.casenr }}</span>
                                 <twig:Admin:Icon name="chevron-right"/>
                             </a>
                         </td>

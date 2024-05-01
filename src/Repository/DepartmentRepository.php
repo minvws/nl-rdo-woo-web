@@ -40,4 +40,18 @@ class DepartmentRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    /**
+     * @return string[]
+     */
+    public function getNames(): array
+    {
+        /** @var string[] $names */
+        $names = $this->createQueryBuilder('d')
+            ->select('d.name')
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return $names;
+    }
 }

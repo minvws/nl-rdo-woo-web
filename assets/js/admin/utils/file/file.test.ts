@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'vitest';
 import { areFilesEqual, formatFileSize, getIconNameByMimeType } from './file';
 
 describe('The file utility functions', () => {
@@ -19,11 +19,6 @@ describe('The file utility functions', () => {
   });
 
   describe('the "getIconNameByMimeType" function', () => {
-    test('should return "file-audio" for audio mimetypes', () => {
-      expect(getIconNameByMimeType('audio/mp4')).toBe('file-audio');
-      expect(getIconNameByMimeType('audio/mpeg')).toBe('file-audio');
-    });
-
     test('should return "file-csv" for csv mimetypes', () => {
       expect(getIconNameByMimeType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')).toBe('file-csv');
     });

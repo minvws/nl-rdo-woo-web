@@ -1,0 +1,73 @@
+advice: advies
+request_for_advice: adviesaanvraag
+advisort_proposal: adviesvoorstel
+
+budget: begroting
+policy_note: beleidsnota
+decision_note: beslisnota
+annual_plan: jaarplan
+annual_report: jaarverslag
+
+official_message: ambtsbericht
+evaluation_report: evaluatierapport
+inspection_report: inspectierapport
+research_report: onderzoeksrapport
+accountability_report: verantwoordingsrapport
+progress_report: voortgangsrapport
+
+term_agenda: termijnagenda
+
+decision_to_impose_a_fine: beschikking tot opleggen boete
+decision_to_impose_an_order_under_administrative_enforcement: beschikking tot opleggen last onder bestuursdwang
+decision_to_impose_an_order_subject_to_penalty: beschikking tot opleggen last onder dwangsom
+
+designation_decision: aanwijzingsbeschikking
+appointment_decision: benoemingsbeschikking
+decision_on_request_art3_wob: beslissing op verzoek art. 3 Wob
+decision_on_request_art4_1_woo: beslissing op verzoek art. 4.1 Woo
+concession: concessie
+recognition_decision: erkenningsbeschikking
+consent_decision: instemmingsbeschikking
+exemption_decision: ontheffingsbeschikking
+subsidy_decision: subsidiebeschikking
+permit: vergunning
+
+letter: brief
+brochure: brochure
+circular: circulaire
+news_item: nieuwsbericht
+organization_details: organisatiegegevens
+press_release: persbericht
+speech: toespraak
+
+covenant: convenant
+
+application_art_4_1_woo: aanvraag ex art. 4.1 Woo
+objection: bezwaarschrift
+complaint: klacht
+exemption_request: ontheffingsaanvraag
+subsidy_application: subsidieaanvraag
+permit_application: vergunningaanvraag
+wob_request: Wob-verzoek
+point_of_view: zienswijze
+
+actions: Handelingen
+parliamentary_document: Kamerstuk
+non_dossier_document: niet-dossierstuk
+
+parliamentary_qustion_with_answer: Kamervraag met antwoord
+parliamentary_qustion_without_answer: Kamervraag zonder antwoord
+
+government_gazette: Staatsblad
+staatscourant: Staatscourant
+
+policy: beleidsregel
+plan: plan
+
+agenda: agenda
+decision_list: besluitenlijst
+incoming_document: ingekomen stuk
+meeting_report: vergaderverslag
+
+dutch: Nederlands
+english: Engels

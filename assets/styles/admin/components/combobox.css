@@ -1,0 +1,41 @@
+@layer components {
+    .bhr-combobox__input {
+        @apply
+            cursor-pointer
+            flex
+            gap-2
+            items-center
+            relative;
+    }
+
+    .bhr-combobox__options {
+        @apply
+            absolute
+            bg-white
+            border
+            border-current
+            inset-x-0
+            max-h-64
+            mt-2
+            overflow-y-auto
+            overscroll-contain
+            rounded-lg
+            z-2;
+    }
+
+    .bhr-combobox__option {
+        @apply
+            border-y
+            border-transparent
+            cursor-pointer
+            hover:bhr-combobox__option--active
+            -mt-px
+            p-3;
+    }
+
+    .bhr-combobox__option--active {
+        @apply
+            bg-gray-100
+            border-gray-300;
+    }
+}

@@ -42,12 +42,16 @@ class PagecountExtractor implements DocumentExtractorInterface, OutputExtractorI
 
     public function extract(Document $document, bool $forceRefresh): void
     {
-        if ($forceRefresh || ! $this->isCached($document)) {
-            $this->output['count'] = $this->extractPageCountFromPdf($document);
-            $this->setCachedPageCount($document, $this->output['count']);
-        }
-
-        $this->output['count'] = $this->getCachedPageCount($document);
+        // TODO: Cache is temporarily disabled for #2142, to be improved and restored in #2144
+        //
+        // if ($forceRefresh || ! $this->isCached($document)) {
+        //     $this->output['count'] = $this->extractPageCountFromPdf($document);
+        //     $this->setCachedPageCount($document, $this->output['count']);
+        // }
+        //
+        // $this->output['count'] = $this->getCachedPageCount($document);
+        unset($forceRefresh);
+        $this->output['count'] = $this->extractPageCountFromPdf($document);
     }
 
     protected function getCachedPageCount(Document $document): int

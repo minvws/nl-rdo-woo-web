@@ -46,7 +46,7 @@ class WithdrawFormType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Withdraw',
+                'label' => 'Intrekken',
                 'attr' => [
                     'class' => 'bhr-button--primary',
                 ],

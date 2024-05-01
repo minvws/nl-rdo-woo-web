@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { isElementHidden } from '@utils';
 import { visibilityToggler } from './visibility-toggler';
 

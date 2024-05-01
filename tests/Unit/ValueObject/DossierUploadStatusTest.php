@@ -48,7 +48,7 @@ class DossierUploadStatusTest extends MockeryTestCase
             $this->unwantedUpload,
         ]));
 
-        $this->assertEquals(
+        self::assertEquals(
             new ArrayCollection([
                 $this->missingUpload,
                 $this->completedUpload,
@@ -65,7 +65,7 @@ class DossierUploadStatusTest extends MockeryTestCase
             $this->unwantedUpload,
         ]));
 
-        $this->assertEqualsCanonicalizing(
+        self::assertEqualsCanonicalizing(
             [
                 $this->completedUpload,
             ],
@@ -81,7 +81,7 @@ class DossierUploadStatusTest extends MockeryTestCase
             $this->unwantedUpload,
         ]));
 
-        $this->assertEquals(
+        self::assertEquals(
             2,
             $this->dossierUploadStatus->getExpectedUploadCount()
         );
@@ -95,7 +95,7 @@ class DossierUploadStatusTest extends MockeryTestCase
             $this->unwantedUpload,
         ]));
 
-        $this->assertEquals(
+        self::assertEquals(
             1,
             $this->dossierUploadStatus->getActualUploadCount()
         );
@@ -109,7 +109,7 @@ class DossierUploadStatusTest extends MockeryTestCase
             $this->unwantedUpload,
         ]));
 
-        $this->assertFalse(
+        self::assertFalse(
             $this->dossierUploadStatus->isComplete()
         );
     }
@@ -121,7 +121,7 @@ class DossierUploadStatusTest extends MockeryTestCase
             $this->unwantedUpload,
         ]));
 
-        $this->assertTrue(
+        self::assertTrue(
             $this->dossierUploadStatus->isComplete()
         );
     }

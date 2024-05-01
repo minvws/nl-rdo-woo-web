@@ -1,27 +1,35 @@
 <section class="pt-8 lg:pt-16">
     <div class="woo-container woo-container--sm">
+        {% if HAS_FEATURE_VERWERKINGSREGISTER_LINK %}
+            <div class="pb-16 woo-readable-width">
+                <h2 class="woo-h2 woo-h2-spacing">{{ 'public.other-publications.title' | trans }}</h2>
+
+                <ul>
+                    <li><a class="woo-a" href="https://open.minvws.nl/verwerkingsregister">{{ 'public.other-publications.processing_register' | trans }}</a></li>
+                </ul>
+            </div>
+        {% endif %}
+
         <div class="woo-rich-text woo-readable-width">
-            <h2>{{ "Submit a freedom of information request" | trans }}</h2>
-            <p>
-                {{ "You may request information about what the government does. This is stated in the <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Open Government Act (Woo)</a>. You do this via a Woo request. Good to know in advance:" | trans() | raw }}
-            </p>
+            <h2>{{ 'public.woo-process.title' | trans }}</h2>
+            <p>{{ 'public.woo-process.description' | trans() | raw }}</p>
 
             <ul>
                 <li>
-                    {{ "Before making a request, check if the information you are looking for is already public. Check, for example, <a href='https://www.rijksoverheid.nl/documenten'>rijksoverheid.nl</a>, <a href='https://wobcovid19.rijksoverheid.nl/'>wobcovid19.rijksoverheid.nl</a>, <a href='https://zoek.officielebekendmakingen.nl/uitbeddenzoeken/parlementair'>the archive of the Senate and the House of Representatives</a> or <a href='https://open.overheid.nl/'>open.overheid.nl</a>." | trans() | raw }}
+                    {{ 'public.woo-process.step-1' | trans() | raw }}
                 </li>
                 <li>
-                    {{ "Check which department you should submit the request to. Do you have a request for the Ministry of Health, Welfare and Sport (VWS):" | trans() | raw }}
+                    {{ 'public.woo-process.step-2' | trans() | raw }}
                     <ul>
-                        <li>{{ "and is it about the COVID-19 period? See the page <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/aanpak-vws-woo-verzoeken-corona'>Approach VWS Woo requests corona;</a>" | trans() | raw }}</li>
-                        <li>{{ "for other requests, see the page Submitting a <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-verzoek-indienen'>Woo request to the Ministry of Health, Welfare and Sport.</a>" | trans() | raw }}</li>
+                        <li>{{ 'public.woo-process.step-2a' | trans() | raw }}</li>
+                        <li>{{ 'public.woo-process.step-2b' | trans() | raw }}</li>
                     </ul>
                     </li>
                 <li>
-                    {{ "Please indicate as precisely as possible what information you are looking for. About what subject, with what people involved, from what period?" | trans() | raw }}
+                   {{ 'public.woo-process.step-3' | trans() | raw }}
                 </li>
                 <li>
-                    {{ "After submitting your request, the ministry may call you with some additional questions. It is therefore useful if you also provide your telephone number with the request." | trans() | raw }}
+                    {{ 'public.woo-process.step-4' | trans() | raw }}
                 </li>
             </ul>
         </div>

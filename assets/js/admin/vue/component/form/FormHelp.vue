@@ -1,14 +1,14 @@
 <script setup>
   import { getHelpId } from '@admin-fe/form';
+  import { uniqueId } from '@js/utils';
 
   const props = defineProps({
     inputId: {
       type: String,
-      required: true
     },
   });
 
-  const id = getHelpId(props.inputId);
+  const id = getHelpId(props.inputId || uniqueId('help'));
 </script>
 
 <template>

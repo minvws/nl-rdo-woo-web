@@ -26,7 +26,7 @@ class LegacyDossierController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
     ): RedirectResponse {
         return $this->redirectToRoute(
-            'app_dossier_detail',
+            'app_woodecision_detail',
             [
                 'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),
@@ -44,7 +44,7 @@ class LegacyDossierController extends AbstractController
         }
 
         return $this->redirectToRoute(
-            'app_dossier_batch',
+            'app_woodecision_batch',
             [
                 'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),
@@ -63,7 +63,7 @@ class LegacyDossierController extends AbstractController
         }
 
         return $this->redirectToRoute(
-            'app_dossier_batch_detail',
+            'app_woodecision_batch_detail',
             [
                 'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),
@@ -84,7 +84,7 @@ class LegacyDossierController extends AbstractController
         }
 
         return $this->redirectToRoute(
-            'app_dossier_batch_download',
+            'app_woodecision_batch_download',
             [
                 'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),
@@ -103,7 +103,7 @@ class LegacyDossierController extends AbstractController
         }
 
         return $this->redirectToRoute(
-            'app_dossier_inventory_download',
+            'app_woodecision_inventory_download',
             [
                 'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),
@@ -121,7 +121,7 @@ class LegacyDossierController extends AbstractController
         }
 
         return $this->redirectToRoute(
-            'app_dossier_decision_download',
+            'app_woodecision_decision_download',
             [
                 'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),

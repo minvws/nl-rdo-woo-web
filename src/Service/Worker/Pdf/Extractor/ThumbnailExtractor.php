@@ -33,10 +33,12 @@ class ThumbnailExtractor implements PageExtractorInterface
 
     public function extract(Document $document, int $pageNr, bool $forceRefresh): void
     {
-        if (! $forceRefresh && $this->thumbnailStorage->exists($document, $pageNr)) {
-            // Thumbnail already exists, and we are allowed to use it
-            return;
-        }
+        // TODO: Cache is temporarily disabled for #2142, to be improved and restored in #2144
+        // if (! $forceRefresh && $this->thumbnailStorage->exists($document, $pageNr)) {
+        //     // Thumbnail already exists, and we are allowed to use it
+        //     return;
+        // }
+        unset($forceRefresh);
 
         $tempDir = $this->fileUtils->createTempDir();
 

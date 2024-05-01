@@ -28,12 +28,16 @@ class DecisionContentExtractor
 
     public function extract(Dossier $dossier, DecisionDocument $decision, bool $forceRefresh): void
     {
-        if ($forceRefresh || ! $this->isCached($decision)) {
-            $content = $this->extractContent($decision);
-            $this->setCachedContent($decision, $content);
-        }
-
-        $content = $this->getCachedContent($decision);
+        // TODO: Cache is temporarily disabled for #2142, to be improved and restored in #2144
+        //
+        // if ($forceRefresh || ! $this->isCached($decision)) {
+        //     $content = $this->extractContent($decision);
+        //     $this->setCachedContent($decision, $content);
+        // }
+        //
+        // $content = $this->getCachedContent($decision);
+        unset($forceRefresh);
+        $content = $this->extractContent($decision);
 
         $this->elasticService->updateDossierDecisionContent($dossier, $content);
     }

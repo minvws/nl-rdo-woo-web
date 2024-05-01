@@ -141,26 +141,6 @@
       "publication_reason": "",
       "inventory_path": "001-inventory-007.xlsx",
       "status": "published"
-    },
-    {
-      "id": "VWS-111-0008",
-      "document_prefix": "MINVWS-COVID19",
-      "title": "Retracted dossier",
-      "summary": "Over de periode van 1 september 2021 tot en met 31 december 2021.",
-      "department": "Ministerie van Volksgezondheid, Welzijn en Sport",
-      "period_from": "2022-02-01",
-      "period_to": "2022-02-15",
-      "decision": "partial_public",
-      "publication_reason": "",
-      "inventory_path": "001-inventory-008.xlsx",
-      "status": "retracted",
-      "fake_documents": [
-        {
-          "pages": [
-            "lorum ipsum"
-          ]
-        }
-      ]
     }
   ]
 }

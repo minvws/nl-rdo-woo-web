@@ -1,7 +1,7 @@
 <details class="js-details">
     <summary class="bhr-button bhr-button--secondary bhr-button--with-icon-left">
         <span class="bhr-button__icon bhr-button__icon--left"><twig:Admin:Icon name="filter" size="20" /></span>
-        Filters
+        {{ 'admin.publications.filters' | trans }}
     </summary>
 
     <div class="bhr-overlay-card max-w-xs mt-20">
@@ -9,19 +9,28 @@
 
         <div class="bhr-form-row">
             <fieldset>
-                <legend class="bhr-legend">{{ 'Department' | trans() }}</legend>
-                {{ form_widget(form.department) }}
+                <legend class="bhr-legend">{{ 'admin.publications.department' | trans() }}</legend>
+                {{ form_widget(form.departments) }}
             </fieldset>
         </div>
+
+        {% if form.types is defined %}
+            <div class="bhr-form-row">
+                <fieldset>
+                    <legend class="bhr-legend">{{ 'admin.publications.type' | trans() }}</legend>
+                    {{ form_widget(form.types) }}
+                </fieldset>
+            </div>
+        {% endif %}
 
         <div class="bhr-form-row">
             <fieldset>
-                <legend class="bhr-legend">{{ 'Status' | trans() }}</legend>
-                {{ form_widget(form.status) }}
+                <legend class="bhr-legend">{{ 'admin.publications.status' | trans() }}</legend>
+                {{ form_widget(form.statuses) }}
             </fieldset>
         </div>
 
-        {{ form_widget(form.submit, { 'label': 'Submit filter'|trans }) }}
+        {{ form_widget(form.submit, { 'label': 'admin.publications.submit.filters'|trans }) }}
         {{ form_end(form) }}
     </div>
 </details>

@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Dossier;
 use App\Entity\Organisation;
-use App\Enum\PublicationStatus;
-use App\ViewModel\DossierCounts;
 use App\ViewModel\DossierReference;
 use App\ViewModel\DossierSearchEntry;
 use App\ViewModel\RecentDossier;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
+ * @deprecated use AbstractDossierRepository or dossier type specific repositories instead
+ *
  * @extends ServiceEntityRepository<Dossier>
  *
  * @method Dossier|null find($id, $lockMode = null, $lockVersion = null)
@@ -51,59 +53,6 @@ class DossierRepository extends ServiceEntityRepository
     /**
      * @return Dossier[]
      */
-    public function findBySearchTerm(string $searchTerm, int $limit, Organisation $organisation): array
-    {
-        $qb = $this->createQueryBuilder('d')
-            ->leftJoin('d.inquiries', 'i')
-            ->where('ILIKE(d.title, :searchTerm) = true')
-            ->orWhere('ILIKE(d.dossierNr, :searchTerm) = true')
-            ->orWhere('ILIKE(i.casenr, :searchTerm) = true')
-            ->andWhere('d.organisation = :organisation')
-            ->orderBy('d.updatedAt', 'DESC')
-            ->setMaxResults($limit)
-            ->setParameter('searchTerm', '%' . $searchTerm . '%')
-            ->setParameter('organisation', $organisation)
-        ;
-
-        return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * @return Dossier[]
-     */
-    public function findPendingPreviewDossiers(\DateTimeImmutable $date): array
-    {
-        $qb = $this->createQueryBuilder('d')
-            ->where('d.status = :status')
-            ->andWhere('d.completed = true')
-            ->andWhere('d.previewDate <= :date')
-            ->setParameter('status', PublicationStatus::SCHEDULED)
-            ->setParameter('date', $date);
-
-        return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * @return Dossier[]
-     */
-    public function findPendingPublishDossiers(\DateTimeImmutable $date): array
-    {
-        $qb = $this->createQueryBuilder('d')
-            ->where('d.status IN (:statuses)')
-            ->andWhere('d.completed = true')
-            ->andWhere('d.publicationDate <= :date')
-            ->setParameter('statuses', [
-                PublicationStatus::PREVIEW,
-                PublicationStatus::SCHEDULED,
-            ])
-            ->setParameter('date', $date);
-
-        return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * @return Dossier[]
-     */
     public function findAllForOrganisation(Organisation $organisation): array
     {
         $qb = $this->createQueryBuilder('d')
@@ -112,20 +61,6 @@ class DossierRepository extends ServiceEntityRepository
         ;
 
         return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * @param PublicationStatus[] $statuses
-     */
-    public function getDossiersForOrganisationQueryBuilder(Organisation $organisation, array $statuses): QueryBuilder
-    {
-        return $this->createQueryBuilder('dos')
-            ->leftJoin('dos.inquiries', 'inq')
-            ->addSelect('inq')
-            ->andWhere('dos.organisation = :organisation')
-            ->andWhere('dos.status IN (:statuses)')
-            ->setParameter('organisation', $organisation)
-            ->setParameter('statuses', $statuses);
     }
 
     /**
@@ -149,7 +84,7 @@ class DossierRepository extends ServiceEntityRepository
             ->where('dos.status = :status')
             ->leftJoin('dos.documents', 'doc')
             ->groupBy('dos.id')
-            ->setParameter('status', PublicationStatus::PUBLISHED)
+            ->setParameter('status', DossierStatus::PUBLISHED)
             ->orderBy('dos.decisionDate', 'DESC')
             ->setMaxResults($limit)
         ;
@@ -179,7 +114,7 @@ class DossierRepository extends ServiceEntityRepository
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', [PublicationStatus::PREVIEW, PublicationStatus::PUBLISHED])
+            ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
         ;
 
         /** @var ?DossierSearchEntry $result */
@@ -202,30 +137,19 @@ class DossierRepository extends ServiceEntityRepository
             ->andWhere('dos.status IN (:statuses)')
             ->innerJoin('dos.documents', 'doc')
             ->setParameter('documentNr', $documentNr)
-            ->setParameter('statuses', [PublicationStatus::PREVIEW, PublicationStatus::PUBLISHED])
+            ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
         ;
 
         return $qb->getQuery()->getResult();
     }
 
-    public function getDossierCounts(Dossier $dossier): DossierCounts
+    public function findOneByDossierId(Uuid $dossierId): WooDecision
     {
-        $qb = $this->createQueryBuilder('dos')
-            ->select(sprintf(
-                'new %s(
-                    COUNT(doc),
-                    COALESCE(SUM(doc.pageCount),0),
-                    SUM(CASE WHEN doc.fileInfo.uploaded = true THEN 1 ELSE 0 END)
-                )',
-                DossierCounts::class,
-            ))
-            ->where('dos = :dossier')
-            ->leftJoin('dos.documents', 'doc')
-            ->groupBy('dos.id')
-            ->setParameter('dossier', $dossier)
-        ;
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.id = :dossierId')
+            ->setParameter('dossierId', $dossierId);
 
-        /** @var DossierCounts */
+        /** @var WooDecision */
         return $qb->getQuery()->getSingleResult();
     }
 }

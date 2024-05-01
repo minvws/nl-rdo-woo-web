@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Repository\DocumentRepository;
@@ -13,7 +14,7 @@ use App\Service\Search\SearchService;
 use App\Service\Storage\DocumentStorageService;
 use App\Service\Storage\ThumbnailStorageService;
 use App\ViewModel\Factory\DocumentViewFactory;
-use App\ViewModel\Factory\DossierViewFactory;
+use App\ViewModel\Factory\WooDecisionViewFactory;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -39,7 +40,7 @@ class DocumentController extends AbstractController
         private readonly DossierService $dossierService,
         private readonly DownloadResponseHelper $downloadHelper,
         private readonly PaginatorInterface $paginator,
-        private readonly DossierViewFactory $dossierViewFactory,
+        private readonly WooDecisionViewFactory $wooDecisionViewFactory,
         private readonly DocumentViewFactory $documentViewFactory,
     ) {
     }
@@ -47,13 +48,13 @@ class DocumentController extends AbstractController
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     #[Route('/dossier/{prefix}/{dossierId}/document/{documentId}', name: 'app_document_detail', methods: ['GET'])]
     public function detail(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
         #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
         Breadcrumbs $breadcrumbs,
         Request $request,
     ): Response {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Dossier', 'app_dossier_detail', [
+        $breadcrumbs->addRouteItem('Dossier', 'app_woodecision_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
             'dossierId' => $dossier->getDossierNr(),
         ]);
@@ -88,8 +89,8 @@ class DocumentController extends AbstractController
         );
 
         return $this->render('document/details.html.twig', [
-            'dossier' => $this->dossierViewFactory->getDossierViewModel($dossier),
-            'document' => $this->documentViewFactory->getDocumentViewModel($document),
+            'dossier' => $this->wooDecisionViewFactory->make($dossier),
+            'document' => $this->documentViewFactory->make($document),
             'thread' => $threadDocPaginator,
             'family' => $familyDocPaginator,
         ]);

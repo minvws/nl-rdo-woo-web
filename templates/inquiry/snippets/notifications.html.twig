@@ -1,7 +1,7 @@
 {% if scheduledDossiers.count > 0 %}
     <div class="pb-8">
         <twig:Public:Alert>
-            <h2 class="sr-only">{{ "Warning" | trans() }}</h2>
+            <h2 class="sr-only">{{ 'public.global.warning' | trans() }}</h2>
             <p>
                 {% set dates = '' %}
                 {% for scheduledDossier in scheduledDossiers %}
@@ -10,7 +10,7 @@
                     {% endif %}
                     {% set dates = dates ~ scheduledDossier.previewDate | format_date('long')  %}
                 {% endfor %}
-                {{ "On {dates} new dossiers will be available on this page" | trans({'{dates}': dates}) }}
+                {{ 'public.messages.new_dossiers' | trans({'{dates}': dates}) }}
             </p>
         </twig:Public:Alert>
     </div>

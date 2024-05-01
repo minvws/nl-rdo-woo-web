@@ -21,7 +21,7 @@ class ActivateIndexType extends AbstractType
     {
         $builder
             ->add('submit', SubmitType::class, [
-                'label' => 'Activate index',
+                'label' => 'admin.elastic.activate_index',
             ]);
     }
 

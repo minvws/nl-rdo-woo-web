@@ -43,11 +43,11 @@ class UserCreateFormType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Voor- en achternaam',
+                'label' => 'admin.user.name',
                 'label_attr' => [
                     'class' => 'bhr-label mb-0',
                 ],
-                'help' => 'Minimaal 1 en maximaal 255 karakters. Bijvoorbeeld John Doe.',
+                'help' => 'admin.user.name_help',
                 'empty_data' => '',
                 'constraints' => [
                     new Length(['min' => 1, 'max' => 255]),
@@ -55,8 +55,8 @@ class UserCreateFormType extends AbstractType
             ])
             ->add('roles', HiddenType::class)
             ->add('email', EmailType::class, [
-                'label' => 'E-mailadres', // @codingStandardsIgnoreStart
-                'help' => 'Minimaal 4 en maximaal 180 karakters. Gebruikers identificeren zich met hun e-mailadres. We gebruiken het e-mailadres niet voor het delen van wachtwoord of andere login-gegevens.', // @codingStandardsIgnoreEnd
+                'label' => 'global.email.capital',
+                'help' => 'admin.user.email_help',
                 'constraints' => [
                     new NotBlank(),
                     new Email(),
@@ -65,7 +65,7 @@ class UserCreateFormType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Create user',
+                'label' => 'admin.user.create.confirm',
             ])
         ;
 
@@ -88,11 +88,11 @@ class UserCreateFormType extends AbstractType
                 'choice_help_labels' => $this->createHelp(Roles::roleDetails()),
                 'multiple' => true,
                 'expanded' => true,
-                'label' => 'Access roles',
-                'help' => 'Indicate what this user is allowed to do, multiple options are possible',
+                'label' => 'admin.user.roles',
+                'help' => 'admin.user.roles_help',
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Please select at least one role.',
+                        'message' => 'admin.user.roles.validation',
                     ]),
                 ],
             ]);
@@ -102,7 +102,7 @@ class UserCreateFormType extends AbstractType
     public function validateEmail(string $input, ExecutionContextInterface $context): void
     {
         if ($this->repository->findOneBy(['email' => $input]) !== null) {
-            $context->buildViolation('This email address is already in use')
+            $context->buildViolation('admin.user.email.validation.in_use')
                 ->atPath('email')
                 ->addViolation();
         }

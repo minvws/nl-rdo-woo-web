@@ -22,7 +22,7 @@ auth_matrix:
                 # The matching user can only access entities that belong to the same organisation as the user.
                 organisation_only: true,
             }
-        }
+        },
         {
             prefix: "user",
             roles: [ "ROLE_GLOBAL_ADMIN" ],
@@ -35,7 +35,7 @@ auth_matrix:
             filters: {
                 organisation_only: false,
             }
-        }
+        },
         {
             prefix: "user",
             roles: [ "ROLE_SUPER_ADMIN" ],
@@ -59,7 +59,7 @@ auth_matrix:
                 read: true,
                 update: true,
             }
-        }
+        },
         {
             prefix: "department",
             roles: [ "ROLE_SUPER_ADMIN" ],
@@ -83,7 +83,7 @@ auth_matrix:
             filters: {
                 published_dossiers: true,
             }
-        }
+        },
         {
             prefix: "dossier",
             roles: [ "ROLE_DOSSIER_ADMIN" ],
@@ -97,7 +97,7 @@ auth_matrix:
                 published_dossiers: false,
                 unpublished_dossiers: true,
             }
-        }
+        },
         {
             prefix: "dossier",
             roles: [ "ROLE_VIEW_ACCESS" ],
@@ -111,7 +111,7 @@ auth_matrix:
                 published_dossiers: true,
                 unpublished_dossiers: true,
             }
-        }
+        },
         {
             prefix: "dossier",
             roles: [ "ROLE_SUPER_ADMIN" ],
@@ -127,7 +127,7 @@ auth_matrix:
                 published_dossiers: true,
                 unpublished_dossiers: true,
             }
-        }
+        },
         {
             prefix: "dossier",
             roles: [ "ROLE_GLOBAL_ADMIN" ],
@@ -141,7 +141,7 @@ auth_matrix:
             filters: {
                 published_dossiers: true,
             }
-        }
+        },
         {
             prefix: "dossier",
             roles: [ "ROLE_GLOBAL_ADMIN" ],
@@ -155,7 +155,7 @@ auth_matrix:
             filters: {
                 unpublished_dossiers: true,
             }
-        }
+        },
 
       # -- Document ----------------------------------------------------------------------------
         {
@@ -253,7 +253,7 @@ auth_matrix:
                 update: true,
                 delete: true,
             }
-        }
+        },
         {
             prefix: "prefix",
             roles: [ "ROLE_ORGANISATION_ADMIN" ],
@@ -263,7 +263,7 @@ auth_matrix:
                 update: false,
                 delete: false,
             }
-        }
+        },
         {
             prefix: "prefix",
             roles: [ "ROLE_SUPER_ADMIN" ],
@@ -285,7 +285,7 @@ auth_matrix:
                 update: true,
                 delete: true,
             }
-        }
+        },
         {
             prefix: "organisation",
             roles: [ "ROLE_SUPER_ADMIN" ],
@@ -327,7 +327,7 @@ auth_matrix:
                 published_dossiers: true,
                 unpublished_dossiers: true,
             }
-        }
+        },
         {
             prefix: "inquiry",
             roles: [ "ROLE_ORGANISATION_ADMIN" ],
@@ -341,7 +341,7 @@ auth_matrix:
                 published_dossiers: true,
                 unpublished_dossiers: true,
             }
-        }
+        },
         {
             prefix: "inquiry",
             roles: [ "ROLE_DOSSIER_ADMIN" ],
@@ -355,7 +355,7 @@ auth_matrix:
                 published_dossiers: true,
                 unpublished_dossiers: true,
             }
-        }
+        },
         {
             prefix: "inquiry",
             roles: [ "ROLE_VIEW_ACCESS" ],
@@ -365,7 +365,7 @@ auth_matrix:
                 update: false,
                 delete: false,
             }
-        }
+        },
 
       # -- Misc ----------------------------------------------------------------------------
         {
@@ -377,7 +377,7 @@ auth_matrix:
                 update: false,
                 delete: false,
             }
-        }
+        },
         {
             prefix: "stat",
             roles: [ "ROLE_ORGANISATION_ADMIN" ],
@@ -387,7 +387,7 @@ auth_matrix:
                 update: false,
                 delete: false,
             }
-        }
+        },
         {
             prefix: "stat",
             roles: [ "ROLE_SUPER_ADMIN" ],
@@ -418,5 +418,4 @@ auth_matrix:
                 delete: true,
             }
         },
-
     ]

@@ -1,0 +1,30 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+<div class="bhr-container bhr-container--sm">
+    <div class="px-11">
+        <h1 class="bhr-title text-center mb-10">{{'admin.publication.start_new_publication' | trans}}</h1>
+
+        <div class="bhr-card">
+            <h2 class="font-bold text-lg mb-4">{{ 'admin.publication.pick_a_type' | trans }}</h2>
+
+            {% set publicationTypes = [{'title': 'Woo-besluit', 'desc': 'Reactie op een woo-verzoek van een burger, organisatie of pers'}, {'title': 'Convenant', 'desc': 'Afspraken over de samenwerking met andere organisaties'}] %}
+
+            <ul class="bhr-link-list">
+                {% for typeConfig in typeConfigs %}
+                    {% set type = typeConfig.dossierType.value %}
+                    <li class="bhr-link-list__item">
+                        <a href="{{ path(typeConfig.createRouteName) }}" data-e2e-name="create-dossier-type-{{ type }}" class="bhr-link-list__link">
+                            <span>
+                                <span class="font-bold block">{{ ('dossier.type.' ~ type) | trans}}</span>
+                                {{ ('dossier.type.' ~ type ~ '.description') | trans}}
+                            </span>
+                            <twig:Admin:Icon name="chevron-right" />
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

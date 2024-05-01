@@ -4,14 +4,14 @@
   import { uniqueId } from '@js/utils';
   import { computed } from 'vue';
 
-  const emit = defineEmits(['delete', 'selectFiles', 'uploaded', 'uploadError']);
+  const emit = defineEmits(['delete', 'selectFiles', 'uploaded', 'uploadError', 'uploading']);
   const props = defineProps({
     allowMultiple: {
       type: Boolean,
     },
-    endpoint: {
-      type: String,
-      required: false,
+    enableAutoUpload: {
+      type: Boolean,
+      default: false,
     },
     files: {
       type: Map,
@@ -34,8 +34,12 @@
     emit('delete', fileId);
   };
 
-  const onUploaded = (fileId, file) => {
-    emit('uploaded', fileId, file);
+  const onUploaded = (fileId, file, uploadId, elementHasFocus) => {
+    emit('uploaded', fileId, file, uploadId, elementHasFocus);
+  };
+
+  const onUploading = (fileId, file) => {
+    emit('uploading', fileId, file);
   };
 
   const onUploadError = (fileId, file) => {
@@ -59,14 +63,14 @@
       <ul class="bhr-upload-area__files-list" :class="{ 'grid grid-cols-3': numberFiles >= 3, 'grid grid-cols-2': numberFiles === 2 }">
         <SelectedFile
           @delete="onDelete"
+          @uploading="onUploading"
           @uploaded="onUploaded"
           @upload-error="onUploadError"
           v-for="[fileId, file] in props.files"
-          :endpoint="props.endpoint"
+          :enable-auto-upload="props.enableAutoUpload"
           :file="file"
           :file-id="fileId"
           :key="fileId"
-          :name="props.name"
         />
       </ul>
 

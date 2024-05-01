@@ -1,3 +1,7 @@
+TYPE:
+    active: false
+    stringValues: {  }
+    notActive: true
 SUBJECT:
     active: false
     stringValues: {  }
@@ -23,7 +27,7 @@ PERIOD:
     stringValues: {  }
     notActive: true
 DATE:
-    active: false
+    isActive: false
     notActive: true
     withoutDate: false
     anyPeriodFilterDates: false

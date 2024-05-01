@@ -16,7 +16,7 @@ class InventoryDataHelperTest extends TestCase
     #[DataProvider('separateValuesProvider')]
     public function testSeparateValues(string $input, string $separator, array $expectedResult): void
     {
-        $this->assertEquals($expectedResult, array_values(InventoryDataHelper::separateValues($input, $separator)));
+        self::assertEquals($expectedResult, array_values(InventoryDataHelper::separateValues($input, $separator)));
     }
 
     /**
@@ -55,7 +55,7 @@ class InventoryDataHelperTest extends TestCase
             $this->expectException(\RuntimeException::class);
         }
 
-        $this->assertEquals($expectedResult, InventoryDataHelper::toDateTimeImmutable($input));
+        self::assertEquals($expectedResult, InventoryDataHelper::toDateTimeImmutable($input));
     }
 
     /**
@@ -111,7 +111,7 @@ class InventoryDataHelperTest extends TestCase
     #[DataProvider('getGroundsProvider')]
     public function testGetGrounds(string $input, array $expectedResult): void
     {
-        $this->assertEquals($expectedResult, InventoryDataHelper::getGrounds($input));
+        self::assertEquals($expectedResult, InventoryDataHelper::getGrounds($input));
     }
 
     /**

@@ -1,8 +1,6 @@
 <script setup>
+  import { useSlots } from 'vue';
   import Icon from './Icon.vue';
-  import { computed, useSlots } from 'vue';
-
-  const validTypes = ['danger', 'info', 'success'];
 
   const props = defineProps({
     type: {
@@ -53,12 +51,12 @@
 
 <template>
   <div
-    class="bhr-alert {{ alertTypeClass }}"
+    class="bhr-alert"
     :class="{ [alertTypeClass]: true }"
   >
     <div class="flex">
       <span class="mr-4">
-          <Icon :color="iconColor" :name="iconName" size="32" />
+        <Icon :color="iconColor" :name="iconName" :size="32" />
       </span>
 
       <div class="grow pt-1.5">

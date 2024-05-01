@@ -1,0 +1,43 @@
+-
+    branch: false
+    attachmentTypes: true
+    name: adviesdocument
+-
+    branch: false
+    attachmentTypes: true
+    name: beleidsdocument
+-
+    branch: true
+    attachmentTypes: true
+    name: beleidsdocument
+-
+    branch: true
+    attachmentTypes: true
+    name: beschikking
+-
+    branch: false
+    attachmentTypes: true
+    name: brief
+-
+    name: COVENANT
+    value: c_386e74cb
+-
+    branch: false
+    attachmentTypes: true
+    name: 'document van burger'
+-
+    branch: true
+    attachmentTypes: true
+    name: 'parlementair document'
+-
+    branch: false
+    attachmentTypes: true
+    name: publicatieblad
+-
+    branch: false
+    attachmentTypes: true
+    name: regelgeving
+-
+    branch: false
+    attachmentTypes: true
+    name: vergaderstuk

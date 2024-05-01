@@ -10,10 +10,10 @@
      <ul class="woo-search-result__spec-list">
         <li class="woo-search-result__spec">
             <twig:Public:Icon name="{{ entry.document.fileInfo.sourceType }}" class="mr-1" size="20" />
-            {{ entry.document.fileInfo.sourceType | trans }}
+            {{ ("public.documents.file_type." ~ entry.document.fileInfo.sourceType) | trans }}
         </li>
         {% if entry.document.fileInfo.isUploaded %}
-        <li class="woo-search-result__spec">{{ "# pages" | trans({"count": entry.document.pagecount})}}</li>
+        <li class="woo-search-result__spec">{{ "global.number_of_pages" | trans({"count": entry.document.pagecount})}}</li>
         {% endif %}
         <li class="woo-search-result__spec">{{ entry.document.judgement.value | decision }}</li>
     </ul>
@@ -34,7 +34,7 @@
                 {{ entry.document.documentDate | format_date('long') }}
             </time>
         {% else %}
-            {{ 'document.date.date_not_available' | trans }}
+            {{ 'global.date_not_available' | trans }}
         {% endif %}
     </li>
     {% if entry.document.fileInfo.isUploaded %}
@@ -43,7 +43,7 @@
     </li>
     {% endif %}
     <li class="woo-search-result__spec">
-        {{ "Document number" | trans() }} {{ entry.document.documentId }}
+        {{ 'global.document_number' | trans() }} {{ entry.document.documentId }}
     </li>
 </ul>
 
@@ -51,7 +51,7 @@
 <ul class="mt-1 woo-muted">
     {% for dossier in entry.dossiers %}
     <li>
-        <a class="woo-a" href="{{ path('app_dossier_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
+        <a class="woo-a" href="{{ path('app_woodecision_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
         {{dossier.dossierNr}}
     </li>
     {% endfor %}

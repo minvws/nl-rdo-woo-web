@@ -1,7 +1,9 @@
-robotframework
+robotframework >= 6.0
 pyotp
 robotframework-browser
 robotframework-debugLibrary
 robotframework-otp
 rpaframework-pdf
 opencv-python
+robotframework-robocop
+robotframework-tidy

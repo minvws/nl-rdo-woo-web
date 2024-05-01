@@ -49,7 +49,7 @@ class OrganisationSwitcherTest extends MockeryTestCase
         $this->user->expects('hasRole')->with(Roles::ROLE_GLOBAL_ADMIN)->andReturnFalse();
         $this->user->expects('getOrganisation')->andReturn($organisation);
 
-        $this->assertEquals(
+        self::assertEquals(
             $organisation,
             $this->organisationSwitcher->getActiveOrganisation($this->user),
         );
@@ -69,7 +69,7 @@ class OrganisationSwitcherTest extends MockeryTestCase
         $this->session->expects('has')->with('organisation')->andReturnFalse();
         $this->session->expects('set')->with('organisation', $uuid->toRfc4122());
 
-        $this->assertEquals(
+        self::assertEquals(
             $organisationA,
             $this->organisationSwitcher->getActiveOrganisation($this->user),
         );
@@ -90,7 +90,7 @@ class OrganisationSwitcherTest extends MockeryTestCase
             static fn (Uuid $queryUuid) => $queryUuid->toRfc4122() === $uuid->toRfc4122()
         ))->andReturn($organisation);
 
-        $this->assertEquals(
+        self::assertEquals(
             $organisation,
             $this->organisationSwitcher->getActiveOrganisation($this->user),
         );
@@ -113,7 +113,7 @@ class OrganisationSwitcherTest extends MockeryTestCase
             static fn (Uuid $queryUuid) => $queryUuid->toRfc4122() === $uuid->toRfc4122()
         ))->andReturnNull();
 
-        $this->assertEquals(
+        self::assertEquals(
             $organisationA,
             $this->organisationSwitcher->getActiveOrganisation($this->user),
         );
@@ -147,7 +147,7 @@ class OrganisationSwitcherTest extends MockeryTestCase
         $this->user->expects('hasRole')->with(Roles::ROLE_GLOBAL_ADMIN)->andReturnFalse();
         $this->user->expects('getOrganisation')->andReturn($organisation);
 
-        $this->assertEquals(
+        self::assertEquals(
             [$organisation],
             $this->organisationSwitcher->getOrganisations($this->user),
         );
@@ -161,7 +161,7 @@ class OrganisationSwitcherTest extends MockeryTestCase
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnTrue();
         $this->organisationRepository->expects('getAllSortedByName')->andReturn([$organisationA, $organisationB]);
 
-        $this->assertEquals(
+        self::assertEquals(
             [$organisationA, $organisationB],
             $this->organisationSwitcher->getOrganisations($this->user),
         );

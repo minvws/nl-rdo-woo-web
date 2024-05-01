@@ -4,20 +4,23 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Department;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Judgement;
 use App\Entity\Organisation;
-use App\Enum\PublicationStatus;
 use App\SourceType;
+use App\Tests\Faker\FakerFactory;
 use Doctrine\ORM\EntityManagerInterface;
-use Faker\Factory;
 use Faker\Generator;
 
 /**
  * Class that generates fake document/page/dossier data that can be used for debugging and development purposes.
  * This class is not used in production.
+ *
+ * @codeCoverageIgnore
  */
 class FakeDataGenerator
 {
@@ -27,7 +30,7 @@ class FakeDataGenerator
     public function __construct(EntityManagerInterface $doctrine)
     {
         $this->doctrine = $doctrine;
-        $this->faker = Factory::create('nl_NL');
+        $this->faker = FakerFactory::create();
     }
 
     public function generateDossier(Organisation $organisation, string $dossierNr): Dossier
@@ -61,14 +64,14 @@ class FakeDataGenerator
             Dossier::DECISION_PUBLIC,
         ]);
 
-        $dossier = new Dossier();
+        $dossier = new WooDecision();
         $dossier->setDossierNr($dossierNr);
         $dossier->setTitle($this->faker->sentence());
         $dossier->setSummary($sentences);
         $dossier->setDocumentPrefix('PREF');
         $dossier->setPublicationReason($reason);
         $dossier->setDecision($decision);
-        $dossier->setStatus(PublicationStatus::PUBLISHED);
+        $dossier->setStatus(DossierStatus::PUBLISHED);
         $dossier->setOrganisation($organisation);
         foreach ($deps as $dep) {
             $dossier->addDepartment($dep);
@@ -97,11 +100,12 @@ class FakeDataGenerator
         $document->setDocumentDate(new \DateTimeImmutable());
         $document->setDocumentNr($documentNr);
         $document->setFamilyId($documentId);
-        $document->setDocumentid(strval($documentId));
+        $document->setDocumentId(strval($documentId));
         $document->setThreadId(0);
         $document->setPageCount(random_int(1, 20));
         $document->setSummary('summary of the document');
         $document->setSubjects($this->generateSubjects());
+        $document->setGrounds($this->faker->groundsBetween());
 
         $file = $document->getFileInfo();
         $file->setSourceType($sourceType);

@@ -22,7 +22,7 @@ class SqlDump extends Command
             ->setDescription('Dumps SQL from migrations')
             ->setHelp('Dumps SQL from migrations')
             ->setDefinition([
-//                new InputOption('force-refresh', 'f', InputOption::VALUE_NONE, 'Skip any caching'),
+                // new InputOption('force-refresh', 'f', InputOption::VALUE_NONE, 'Skip any caching'),
             ])
         ;
     }

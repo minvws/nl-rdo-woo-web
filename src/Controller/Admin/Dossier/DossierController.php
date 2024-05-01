@@ -4,23 +4,26 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier;
 
-use App\Entity\Dossier;
-use App\Enum\PublicationStatus;
+use App\Domain\Publication\Attachment\EntityWithAttachments;
+use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\Admin\DossierFilterParameters;
+use App\Domain\Publication\Dossier\Admin\DossierListingService;
+use App\Domain\Publication\Dossier\Admin\DossierSearchService;
+use App\Domain\Publication\Dossier\Type\DossierType;
+use App\Domain\Publication\Dossier\Type\DossierTypeManager;
 use App\Form\Dossier\SearchFormType;
-use App\Repository\DocumentRepository;
-use App\Repository\DossierRepository;
-use App\Service\DossierWorkflow\DossierWorkflow;
-use App\Service\Security\Authorization\AuthorizationMatrix;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\QueryBuilder;
+use App\Service\DossierWizard\DossierWizardHelper;
+use App\ViewModel\Factory\ApplicationMode;
+use App\ViewModel\Factory\AttachmentViewFactory;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGenerator;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
@@ -28,16 +31,17 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 class DossierController extends AbstractController
 {
-    use DossierAuthorizationTrait;
-
     protected const MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
-        private readonly DossierRepository $dossierRepository,
-        private readonly DocumentRepository $documentRepository,
+        private readonly DossierListingService $listingService,
+        private readonly DossierSearchService $searchService,
         private readonly PaginatorInterface $paginator,
-        private readonly DossierWorkflow $workflow,
-        private readonly AuthorizationMatrix $authorizationMatrix,
+        private readonly DossierWizardHelper $wizardHelper,
+        private readonly DossierTypeManager $dossierTypeManager,
+        private readonly AttachmentViewFactory $attachmentViewFactory,
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly string $publicBaseUrl,
     ) {
     }
 
@@ -48,20 +52,10 @@ class DossierController extends AbstractController
         $form = $this->createForm(SearchFormType::class);
         $form->handleRequest($request);
 
-        $statuses = [];
-        if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_PUBLISHED_DOSSIERS)) {
-            $statuses = array_merge($statuses, PublicationStatus::nonConceptCases());
-        }
-        if ($this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_UNPUBLISHED_DOSSIERS)) {
-            $statuses = array_merge($statuses, PublicationStatus::conceptCases());
-        }
+        /** @var ?DossierFilterParameters $filterParameters */
+        $filterParameters = $form->getData();
 
-        $query = $this->dossierRepository->getDossiersForOrganisationQueryBuilder(
-            $this->authorizationMatrix->getActiveOrganisation(),
-            $statuses
-        );
-
-        $this->applyFilter($form, $query);
+        $query = $this->listingService->getFilteredListingQuery($filterParameters);
 
         $pagination = $this->paginator->paginate(
             $query,
@@ -82,20 +76,15 @@ class DossierController extends AbstractController
     {
         $searchTerm = urldecode(strval($request->getPayload()->get('q', '')));
 
-        $organisation = $this->authorizationMatrix->getActiveOrganisation();
-
-        $dossiers = $this->dossierRepository->findBySearchTerm($searchTerm, 4, $organisation);
-        $documents = $this->documentRepository->findBySearchTerm($searchTerm, 4, $organisation);
-
         $ret = [
             'results' => json_encode(
                 $this->renderView(
                     'admin/dossier/search.html.twig',
                     [
-                        'dossiers' => $dossiers,
-                        'documents' => $documents,
+                        'dossiers' => $this->searchService->searchDossiers($searchTerm),
+                        'documents' => $this->searchService->searchDocuments($searchTerm),
                         'searchTerm' => $searchTerm,
-                    ],
+                    ]
                 ),
                 JSON_THROW_ON_ERROR,
             ),
@@ -110,16 +99,12 @@ class DossierController extends AbstractController
     {
         $searchTerm = urldecode(strval($request->getPayload()->get('q', '')));
 
-        $organisation = $this->authorizationMatrix->getActiveOrganisation();
-
-        $dossiers = $this->dossierRepository->findBySearchTerm($searchTerm, 4, $organisation);
-
         $ret = [
             'results' => json_encode(
                 $this->renderView(
                     'admin/dossier/search_link.html.twig',
                     [
-                        'dossiers' => $dossiers,
+                        'dossiers' => $this->searchService->searchDossiers($searchTerm),
                         'searchTerm' => $searchTerm,
                     ],
                 ),
@@ -130,36 +115,78 @@ class DossierController extends AbstractController
         return new JsonResponse($ret);
     }
 
-    #[Route('/balie/dossier/{prefix}/{dossierId}', name: 'app_admin_dossier', methods: ['GET'])]
-    #[IsGranted('AuthMatrix.dossier.read')]
+    #[Route('/balie/dossier/overview/{prefix}/{dossierId}', name: 'app_admin_dossier', methods: ['GET'])]
+    #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function dossier(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(
+            mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'],
+            class: AbstractDossier::class,
+        )]
+        EntityWithAttachments&AbstractDossier $dossier,
     ): Response {
-        $this->testIfDossierIsAllowedByUser($dossier);
+        /** @TODO move to ViewModel */
+        $detailsEndpointName = match ($dossier->getType()) {
+            DossierType::WOO_DECISION => 'app_woodecision_detail',
+            DossierType::COVENANT => 'app_covenant_detail',
+        };
 
-        return $this->render('admin/dossier/view.html.twig', [
+        return $this->render(
+            'admin/dossier/' . $dossier->getType()->value . '/view.html.twig',
+            [
+                'attachments' => $this->attachmentViewFactory->makeCollection(
+                    $dossier,
+                    ApplicationMode::ADMIN,
+                ),
+                'dossier' => $dossier,
+                'workflowStatus' => $this->wizardHelper->getStatus($dossier),
+                'publicDossierUrl' => $this->urlGenerator->generate(
+                    $detailsEndpointName,
+                    ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+                    UrlGenerator::ABSOLUTE_URL,
+                ),
+            ]
+        );
+    }
+
+    #[Route(
+        path: '/balie/dossier/overview/{prefix}/{dossierId}/publication-confirmation',
+        name: 'app_admin_dossier_publication_confirmation',
+        methods: ['GET']
+    )]
+    #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
+    public function publicationConfirmation(
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] AbstractDossier $dossier,
+    ): Response {
+        /** @TODO move to ViewModel */
+        $detailsEndpointName = match ($dossier->getType()) {
+            DossierType::WOO_DECISION => 'app_woodecision_detail',
+            DossierType::COVENANT => 'app_covenant_detail',
+        };
+
+        $detailsEndpointPath = $this->urlGenerator->generate(
+            $detailsEndpointName,
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+        );
+
+        return $this->render('admin/dossier/' . $dossier->getType()->value . '/publication-confirmation.html.twig', [
             'dossier' => $dossier,
-            'workflowStatus' => $this->workflow->getStatus($dossier),
+            'publicDossierUrl' => sprintf('%s%s', $this->publicBaseUrl, $detailsEndpointPath),
         ]);
     }
 
-    protected function applyFilter(FormInterface $form, QueryBuilder $queryBuilder): void
+    #[Route('/balie/dossier/create', name: 'app_admin_dossier_create', methods: ['GET'])]
+    #[IsGranted('AuthMatrix.dossier.create')]
+    public function create(): Response
     {
-        /** @var string[] $statusFilters */
-        $statusFilters = $form->get('status')->getData();
-        if (is_array($statusFilters) && count($statusFilters) > 0) {
-            $queryBuilder
-                ->andWhere($queryBuilder->expr()->in('dos.status', ':statuses'))
-                ->setParameter('statuses', $statusFilters);
+        $typeConfigs = $this->dossierTypeManager->getAvailableConfigs();
+        if (count($typeConfigs) === 1) {
+            $typeConfig = reset($typeConfigs);
+
+            return $this->redirectToRoute($typeConfig->getCreateRouteName());
         }
 
-        /** @var ArrayCollection $departmentFilters */
-        $departmentFilters = $form->get('department')->getData();
-        if ($departmentFilters !== null && ! $departmentFilters->isEmpty()) {
-            $queryBuilder
-                ->innerJoin('dos.departments', 'dep')
-                ->andWhere($queryBuilder->expr()->in('dep.id', ':departments'))
-                ->setParameter('departments', $departmentFilters->toArray());
-        }
+        return $this->render('admin/dossier/create.html.twig', [
+            'typeConfigs' => $typeConfigs,
+        ]);
     }
 }

@@ -44,11 +44,11 @@ flysystem:
         #
         # Local storage definitions
         #
-        document.storage.local:
+        document.storage.local: &document.storage.local
             adapter: 'local'
             visibility: 'public'
             directory_visibility: 'public'
-            options:
+            options: &document.storage.local.options
                 directory: '%document_path%'
                 permissions:
                     file:
@@ -57,6 +57,12 @@ flysystem:
                     dir:
                         public: 0o775
                         private: 0o700
+
+        document.storage.phpunit:
+            <<: *document.storage.local
+            options:
+                <<: *document.storage.local.options
+                directory: 'vfs://root/%document_path%'
 
         thumbnail.storage.local:
             adapter: 'local'

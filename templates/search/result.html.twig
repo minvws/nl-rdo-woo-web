@@ -1,22 +1,22 @@
 {% extends 'base.html.twig' %}
 
 {% set page_title =
-    result.type == constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER')
-        ? "All published dossiers" | trans()
-        : "Search for documents and decisions" | trans()
+    result.type == constant('App\\Service\\Search\\Model\\Config::TYPE_DOSSIER')
+        ? 'public.global.label.overview_publications' | trans()
+        : 'public.global.label.search_publications' | trans()
 %}
 
 {% block search_form_top %}<twig:Public:SearchForm />{% endblock %}
 
 {% block body %}
 <div class="woo-container">
-    {% if result.type == constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
+    {% if result.type == constant('App\\Service\\Search\\Model\\Config::TYPE_DOSSIER') %}
         <section class="pb-16 woo-rich-text woo-readable-width">
-            <h1>{{ "All Wob and Woo decisions" | trans }}</h1>
-            <p>{{ "All COVID-19 related Wob and Woo documents and decisions will be published on this website from September 2023. Decisions from the previous period can be found on wobcovid19.rijksoverheid.nl and will soon also be available here." | trans }}</p>
+            <h1>{{ 'public.results.title' | trans }}</h1>
+            <p>{{ 'public.results.description' | trans }}</p>
         </section>
     {% else %}
-        <h1 class="sr-only">{{ "Search" | trans }}</h1>
+        <h1 class="sr-only">{{ 'public.search.label' | trans }}</h1>
     {% endif %}
 
     <div class="md:flex gap-8">

@@ -3,7 +3,7 @@ parameters:
     thumbnail_path: '%kernel.project_dir%/var/thumbnails'
     batch_path: '%kernel.project_dir%/var/batches'
     configPageLimit: '%env(int:DOCUMENT_PAGE_LIMIT)%'
-    env(DOCUMENT_PAGE_LIMIT): 0
+    env(DOCUMENT_PAGE_LIMIT): '0'
 
     rabbitmq_stats_url: '%env(RABBITMQ_STATS_URL)%'
 
@@ -19,6 +19,7 @@ services:
         bind:
             $configPageLimit: '%configPageLimit%'
             Psr\Log\LoggerInterface $logger: '@App\Service\Logging\EnrichedPsrLogger'
+            string $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
 
     App\:
         resource: '../src/'
@@ -74,6 +75,8 @@ services:
             tags: [ 'app.logging.type' ]
         App\Service\Stats\Handler\StatsHandlerInterface:
             tags: [ 'app.stats.handler' ]
+        App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface:
+            tags: ['domain.publication.dossier_type_config']
 
     # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
     App\Service\Encryption\EncryptionService:
@@ -186,14 +189,6 @@ services:
         arguments:
             $appMode: '%env(APP_MODE)%'
 
-    # Order of the arguments is important here, so manually inject instead of using _instanceOf
-    App\Service\DossierWorkflow\WorkflowStatusFactory:
-        arguments:
-          - '@App\Service\DossierWorkflow\Step\DetailsStep'
-          - '@App\Service\DossierWorkflow\Step\DecisionStep'
-          - '@App\Service\DossierWorkflow\Step\DocumentsStep'
-          - '@App\Service\DossierWorkflow\Step\PublicationStep'
-
     App\Service\Security\Authorization\AuthorizationMatrix:
         arguments:
             $entries: '@=service("App\\Service\\Security\\Authorization\\ConfigFactory").create()'
@@ -222,3 +217,39 @@ services:
     App\Service\FileUploader:
         arguments:
             $redis: '@snc_redis.admin'
+
+    App\Domain\Publication\Dossier\Type\DossierTypeManager:
+        arguments:
+            $configs: !tagged_iterator domain.publication.dossier_type_config
+
+    App\Service\Uploader\UploaderNamer:
+        public: true
+
+    App\Controller\Admin\UploaderController:
+        arguments:
+            App\Controller\Admin\CustomDropzoneController: '@oneup_uploader.controller.general'
+
+    oneup_uploader.chunks_storage:
+        class: \App\Service\Uploader\FilesystemStorage
+        arguments:
+            $directory: '%oneup_uploader.chunks.storage.directory%'
+
+    Oneup\UploaderBundle\Uploader\Storage\FilesystemOrphanageStorage:
+        factory:
+            - '@oneup_uploader.orphanage_manager'
+            - 'get'
+        arguments:
+            $key: 'general'
+
+when@dev:
+    services: &services_dev
+        App\Tests\Factory\:
+            autowire: true
+            autoconfigure: true
+            resource: '../tests/Factory'
+
+        Faker\Generator:
+            factory: ['App\Tests\Faker\FakerFactory', 'create']
+
+when@test:
+    services: *services_dev

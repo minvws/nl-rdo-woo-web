@@ -1,4 +1,6 @@
+import { Mock } from 'vitest';
+
 export interface DocumentMock {
-  addEventListener: jest.Mock;
+  addEventListener: Mock;
   readyState: Document['readyState'];
 }

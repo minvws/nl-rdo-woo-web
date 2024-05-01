@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, test } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { getLocation } from '../utils/browser';
 import { clickableRows } from './clickable-row';
 
-jest.mock('../utils/browser');
+vi.mock('../utils/browser');
 
 describe('the "clickableRows" function', () => {
   const getRows = () => Array.from(document.querySelectorAll('tr'));
@@ -43,6 +43,7 @@ describe('the "clickableRows" function', () => {
 
   afterEach(() => {
     cleanup();
+    vi.resetAllMocks();
   });
 
   describe('table rows containing an element with the "js-clickable-row__focusable" class name', () => {

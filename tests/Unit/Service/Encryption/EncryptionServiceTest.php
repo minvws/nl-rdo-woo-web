@@ -56,7 +56,7 @@ class EncryptionServiceTest extends MockeryTestCase
         $encryptedData = $encryptionService->encrypt($inputData);
         $decryptedData = $encryptionService->decrypt($encryptedData);
 
-        $this->assertEquals($decryptedData, $inputData);
-        $this->assertNotEquals($encryptedData, $inputData);
+        self::assertEquals($decryptedData, $inputData);
+        self::assertNotEquals($encryptedData, $inputData);
     }
 }

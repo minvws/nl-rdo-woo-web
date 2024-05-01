@@ -23,7 +23,7 @@ readonly class AuthMatrixEnsureSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::CONTROLLER_ARGUMENTS => ['onKernelControllerArguments', 10],
+            KernelEvents::CONTROLLER_ARGUMENTS => ['onKernelControllerArguments', -10],
         ];
     }
 
@@ -40,6 +40,11 @@ readonly class AuthMatrixEnsureSubscriber implements EventSubscriberInterface
             return;
         }
 
+        // Admin API routes cannot be checked here, as they execute is_granted only after this event
+        if (str_starts_with($uri, '/balie/api/')) {
+            return;
+        }
+
         // These admin routes are allowed to not have an AuthMatrix check
         $allowedRoutes = [
             '/balie',
@@ -53,6 +58,7 @@ readonly class AuthMatrixEnsureSubscriber implements EventSubscriberInterface
             '/balie/privacy',
             '/balie/profiel',
             '/balie/toegankelijkheid',
+            '/balie/api',
         ];
         if (in_array($uri, $allowedRoutes)) {
             return;

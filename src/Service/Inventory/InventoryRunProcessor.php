@@ -115,11 +115,13 @@ class InventoryRunProcessor
         $this->inventoryUpdater->applyChangesetToDatabase($dossier, $inventoryReader, $changeset, $runProgress);
 
         $this->inventoryService->storeRawInventory($run);
-
-        // The validateCompletion call will also flush all changes to the database
-        $this->dossierService->validateCompletion($dossier);
+        $this->doctrine->persist($dossier);
+        $this->doctrine->flush();
 
         $this->inventoryUpdater->sendMessagesForChangeset($changeset, $dossier, $runProgress);
+
+        $this->doctrine->refresh($dossier);
+        $this->dossierService->validateCompletion($dossier);
 
         $runProgress->finish();
         $run->finish();

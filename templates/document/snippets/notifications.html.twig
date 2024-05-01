@@ -1,4 +1,4 @@
-{% import "document_macros.html.twig" as macro %}
+{% import 'document_macros.html.twig' as macro %}
 
 {% set isDocumentAlreadyPublic = document.entity.judgement.value is defined and document.entity.judgement.value is same as ('already_public') %}
 {% set isDocumentNotPublic = document.entity.judgement.value is defined and document.entity.judgement.value is same as ('not_public') %}
@@ -15,22 +15,22 @@
 <div class="mt-10">
     {% if isStandAloneHasReferencesToMessage %}
         <twig:Public:Notification>
-            {% import "document_macros.html.twig" as macro %}
+            {% import 'document_macros.html.twig' as macro %}
 
-            <h2 class="sr-only">{{ "public.documents.strong_relationship" | trans }}</h2>
+            <h2 class="sr-only">{{ 'public.documents.strong_relationship' | trans }}</h2>
             <p>{{ macro.document_refers_to(document.entity.refersTo) }}</p>
         </twig:Public:Notification>
     {% elseif isDocumentAlreadyPublic %}
         <twig:Public:Notification>
-            {% import "document_macros.html.twig" as macro %}
+            {% import 'document_macros.html.twig' as macro %}
 
-            <h2 class="sr-only">{{ "Public" | trans }}</h2>
+            <h2 class="sr-only">{{ 'public.documents.public' | trans }}</h2>
 
             <div class="woo-rich-text">
                 <p>
-                    {{ "Document already public" | trans }}
+                    {{ 'public.documents.already_public' | trans }}
                     {% if document.entity.links | length > 0 %}
-                        {{ "You can find this content at" | trans }}
+                        {{ 'public.documents.find_content_at' | trans }}
                         {% for link in document.entity.links %}
                             {% if not loop.first %}, {% endif %}
                             <a href="{{ link }}">{{ link }}</a>
@@ -44,19 +44,19 @@
         </twig:Public:Notification>
     {% elseif isDocumentNotPublic %}
         <twig:Public:Notification>
-            {% import "document_macros.html.twig" as macro %}
-            <h2 class="sr-only">{{ "Not public" | trans }}</h2>
+            {% import 'document_macros.html.twig' as macro %}
+            <h2 class="sr-only">{{ 'public.documents.not_public' | trans }}</h2>
 
             <div class="woo-rich-text">
                 <p>{{
-                    "Document determined to be not public" | trans({
-                        '{dossier_type}': dossier.entity.publicationReason | trans(),
-                        '{department}': dossier.entity.departments.first.name,
+                    'public.documents.determined_not_public' | trans({
+                        '{dossier_type}': dossier.publicationReason | trans,
+                        '{department}': dossier.mainDepartment.name,
                     })
                 }}</p>
 
                 {% if document.entity.grounds | length > 0 %}
-                    <p class="!mb-2">{{ "Reasons are" | trans({'count': document.entity.grounds | length }) }}:</p>
+                    <p class="!mb-2">{{ 'public.documents.reasons_are' | trans({'count': document.entity.grounds | length }) }}:</p>
                     <ul>
                         {% for ground in document.entity.grounds %}
                             <li>
@@ -73,13 +73,13 @@
         </twig:Public:Notification>
     {% elseif isDocumentNotYetProcessed %}
         <twig:Public:Alert>
-            {% import "document_macros.html.twig" as macro %}
+            {% import 'document_macros.html.twig' as macro %}
 
-            <h2 class="sr-only">{{ "Not yet processed" | trans }}</h2>
+            <h2 class="sr-only">{{ 'global.not_yet_processed' | trans }}</h2>
 
             <div class="woo-rich-text">
                 <p>
-                    {{ "Warning" | trans }}:{{ "This document is not yet processed. It is not possible to view individual pages, but you can download the complete document.entity." | trans }}
+                    {{ 'public.global.warning' | trans }}: {{ 'public.documents.not_yet_processed' | trans }}
                 </p>
                 {% if hasReferencesTo %}
                     <p>{{ macro.document_refers_to(document.entity.refersTo) }}</p>
@@ -88,11 +88,11 @@
         </twig:Public:Alert>
     {% elseif isDocumentSuspended %}
         <twig:Public:Alert>
-            {% import "document_macros.html.twig" as macro %}
-            <h2 class="sr-only">{{ "Suspended" | trans }}</h2>
+            {% import 'document_macros.html.twig' as macro %}
+            <h2 class="sr-only">{{ 'public.documents.procedure_in_progress' | trans }}</h2>
 
             <div class="woo-rich-text">
-                <p>{{ "Document suspended" | trans }}</p>
+                <p>{{ 'public.documents.document_suspended' | trans }}</p>
 
                 {% if hasReferencesTo %}
                     <p>{{ macro.document_refers_to(document.entity.refersTo) }}</p>
@@ -101,15 +101,15 @@
         </twig:Public:Alert>
     {% elseif isDocumentWithdrawn %}
         <twig:Public:Alert>
-            {% import "document_macros.html.twig" as macro %}
-            <h2 class="sr-only">{{ "Withdrawn" | trans }}</h2>
+            {% import 'document_macros.html.twig' as macro %}
+            <h2 class="sr-only">{{ 'global.withdrawn' | trans }}</h2>
 
             <div class="woo-rich-text">
                 <p>
                     {{
-                        "Document withdrawn" | trans({
+                        'public.documents.document_withdrawn' | trans({
                             '{date}': document.entity.withdrawDate | format_date('long'),
-                            '{reason}': document.entity.withdrawReason.name | trans(),
+                            '{reason}': document.entity.withdrawReason.name | trans,
                         })
                     }}
                 </p>

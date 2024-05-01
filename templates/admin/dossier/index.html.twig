@@ -2,7 +2,7 @@
 
 {% import "admin/macros/facet.html.twig" as macro %}
 
-{% set page_title = "All dossiers" | trans %}
+{% set page_title = 'admin.dossier.list.title' | trans %}
 
 {% block body %}
 
@@ -12,7 +12,7 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('dossier.create') %}
-            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_dossier_concept_create') }}">{{ "Create new dossier" | trans() }}</a>
+            <a class="bhr-button bhr-button--secondary" data-e2e-name="create-dossier" href="{{ path('app_admin_dossier_create') }}">{{ 'admin.dossier.list.create' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>
@@ -31,7 +31,7 @@
             </div>
         {% endif %}
 
-        {% if pagination | length > 0 or (formData.status is defined) or (formData.department is defined) %}
+        {% if pagination | length > 0 or (formData is not null) %}
             <twig:Admin:LeftAndRight class="pt-1">
                 {% include 'admin/dossier/snippets/filter.html.twig' with { 'form': form } %}
 
@@ -44,13 +44,16 @@
             </twig:Admin:LeftAndRight>
         {% endif %}
 
-        {% if (formData.status is defined) or (formData.department is defined) %}
+        {% if formData is not null %}
             <ul class="px-4 pb-6">
-                {% for status in formData.status|default([]) %}
-                    {{ macro.active_facet('Status' | trans() ~ ': ' ~ status.value | trans, '?' ~ query_string_without_param('status', status.value)) }}
+                {% for status in formData.statuses|default([]) %}
+                    {{ macro.active_facet('admin.publications.status' | trans() ~ ': ' ~ status.value | trans, '?' ~ query_string_without_param('statuses', status.value)) }}
                 {% endfor%}
-                {% for department in formData.department|default([]) %}
-                    {{ macro.active_facet('Department' | trans() ~ ': ' ~ department.name, '?' ~ query_string_without_param('department', department.id)) }}
+                {% for dossierType in formData.types|default([]) %}
+                    {{ macro.active_facet('admin.publications.type' | trans() ~ ': ' ~ dossierType | trans, '?' ~ query_string_without_param('types', dossierType.value)) }}
+                {% endfor%}
+                {% for department in formData.departments|default([]) %}
+                    {{ macro.active_facet('admin.publications.department' | trans() ~ ': ' ~ department.name, '?' ~ query_string_without_param('departments', department.id)) }}
                 {% endfor%}
             </ul>
         {% endif %}
@@ -60,11 +63,11 @@
                 <caption class="sr-only">Alle dossiers. Kolomkoppen met links zijn sorteerbaar.</caption>
                 <thead>
                     <tr>
-                        {{ knp_pagination_sortable(pagination, 'Status' | trans, 'dos.status', {}, {}, 'pagination/sort.admin.html.twig') }}
-                        {{ knp_pagination_sortable(pagination, 'Published date' | trans, 'dos.publicationDate', {}, {}, 'pagination/sort.admin.html.twig') }}
                         {{ knp_pagination_sortable(pagination, 'Org & reference' | trans, ['dos.documentPrefix','dos.dossierNr'], {}, {}, 'pagination/sort.admin.html.twig') }}
-                        {{ knp_pagination_sortable(pagination, 'Decision about...' | trans, 'dos.title', {}, {}, 'pagination/sort.admin.html.twig') }}
-                        <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ "Case number" | trans() }}</th>
+                        {{ knp_pagination_sortable(pagination, 'admin.publications.status' | trans, 'dos.status', {}, {}, 'pagination/sort.admin.html.twig') }}
+                        <th class="bhr-column-head bhr-column-head--gray border-r-1 font-bold" scope="col">{{ "admin.dossier.list.category" | trans() }}</th>
+                        {{ knp_pagination_sortable(pagination, 'Published date' | trans, 'dos.publicationDate', {}, {}, 'pagination/sort.admin.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'admin.publications.summary' | trans, 'dos.summary', { thClassName: 'border-r-0' }, {}, 'pagination/sort.admin.html.twig') }}
                         <th class="bhr-column-head bhr-column-head--gray" scope="col">
                             <span class="sr-only">{{ 'Edit dossier'| trans() }}</span>
                         </th>
@@ -73,23 +76,14 @@
                 <tbody>
                     {% for dossier in pagination %}
                     <tr>
-                        <td>{{ status_badge(dossier.status) }}</td>
-                        <td nowrap>{{ dossier.publicationDate  is empty ? "-" : dossier.publicationDate|format_date('medium') }}</td>
                         <td>{{ dossier.documentPrefix }} / {{ dossier.dossierNr }}</td>
-                        <td>{{ dossier.title }}</td>
-                        <td>
-                            {% set case_numbers = [] %}
-                            {%- for inquiry in dossier.inquiries | slice(0, 6) -%}
-                                {% set case_numbers = case_numbers|merge([inquiry.casenr]) %}
-                            {%- endfor -%}
-                            {{ case_numbers|join(', ') }}
-                            {%- if dossier.inquiries|length > 6 -%}
-                            <span>, (…)</span>
-                            {%- endif -%}
-                        </td>
-                        <td>
+                        <td>{{ status_badge(dossier.status) }}</td>
+                        <td>{{ dossier.type | trans }}</td>
+                        <td nowrap>{{ dossier.publicationDate  is empty ? "-" : dossier.publicationDate|format_date('medium') }}</td>
+                        <td><span class="bhr-clamp">{{ dossier.summary }}</span></td>
+                        <td class="text-right">
                             <a class="js-clickable-row__focusable" href="{{ path('app_admin_dossier', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">
-                                <span class="sr-only">Details {{ dossier.title }}</span>
+                                <span class="sr-only">{{ 'global.details' | trans() }} {{ dossier.title }}</span>
                                 <twig:Admin:Icon name="chevron-right" />
                             </a>
                         </td>
@@ -99,13 +93,13 @@
             </table>
 
             {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
-        {% elseif (formData.status is defined) or (formData.department is defined) %}
+        {% elseif formData is not null %}
             <p class="text-center">
-                {{ "No dossiers match the filters" | trans }}
+                {{ 'admin.dossier.list.no_matches_found' | trans }}
             </p>
         {% else %}
             <p class="text-center">
-                {{ "No dossiers have been created yet" | trans }}
+                {{ 'admin.dossier.list.no_dossiers_exist' | trans }}
 
             </p>
         {% endif %}

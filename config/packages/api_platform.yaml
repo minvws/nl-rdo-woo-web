@@ -1,0 +1,26 @@
+api_platform:
+    title: Woo balie API
+    version: 0.1.0
+    show_webby: false
+    formats:
+        json: ['application/json']
+        jsonapi:  ['application/vnd.api+json']
+    docs_formats:
+        json: ['application/json']
+        jsonapi:  ['application/vnd.api+json']
+        jsonopenapi: ['application/vnd.openapi+json']
+        html: ['text/html']
+    defaults:
+        stateless: false
+        cache_headers:
+            vary: ['Content-Type', 'Authorization', 'Origin']
+        extra_properties:
+            standard_put: true
+            rfc_7807_compliant_errors: true
+        collectDenormalizationErrors: true
+    event_listeners_backward_compatibility_layer: false
+    keep_legacy_inflector: false
+    exception_to_status:
+        Doctrine\ORM\NoResultException: 404
+    resource_class_directories:
+      - '%kernel.project_dir%/src/Api'

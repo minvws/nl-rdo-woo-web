@@ -21,7 +21,7 @@ class DeleteIndexType extends AbstractType
     {
         $builder
             ->add('submit', SubmitType::class, [
-                'label' => 'Delete index',
+                'label' => 'admin.elastic.delete_index',
             ]);
     }
 

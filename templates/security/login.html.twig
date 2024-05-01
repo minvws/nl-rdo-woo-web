@@ -1,9 +1,9 @@
 {% extends 'admin.html.twig' %}
 
 {% if error %}
-    {% set page_title = "Ongeldige inloggegevens" %}
+    {% set page_title = 'global.sign_in.invalid' | trans() %}
 {% else %}
-    {% set page_title = "Please sign in" | trans() %}
+    {% set page_title = 'global.sign_in' | trans() %}
 {% endif %}
 
 {% block body %}
@@ -14,8 +14,8 @@
         <form method="POST" action="{{ path('app_login') }}" novalidate>
             {% if app.user and is_granted('ROLE_BALIE')%}
                 <twig:Admin:Alert type="info">
-                    {{ "You are logged in as {name}" | trans({'name': app.user.name|default("unknown user")}) }}.
-                    <a class="bhr-a bhr-a--inherit-color" href="{{ path('app_logout') }}">{{ "Logout" | trans() }}</a>
+                    {{ 'global.signed_in_as' | trans({'name': app.user.name|default('unknown user')}) }}.
+                    <a class="bhr-a bhr-a--inherit-color" href="{{ path('app_logout') }}">{{ 'global.logout' | trans() }}</a>
                 </twig:Admin:Alert>
             {% else %}
 
@@ -28,7 +28,7 @@
                 {% endif %}
 
                 <div class="bhr-form-row">
-                    <label class="bhr-label" for="inputEmail">{{ "E-mail address" | trans() }}</label>
+                    <label class="bhr-label" for="inputEmail">{{ "global.email.capital" | trans() }}</label>
 
                     <input
                         autocomplete="email"
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="bhr-form-row">
-                    <label class="bhr-label" for="inputPassword">{{ "Password" | trans() }}</label>
+                    <label class="bhr-label" for="inputPassword">{{ 'global.password' | trans() }}</label>
 
                     <input
                         autocomplete="current-password"
@@ -57,10 +57,10 @@
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
                 <div>
-                    <button class="bhr-button bhr-button--primary bhr-button--full-width" type="submit">{{ "Sign in" | trans() }}</button>
+                    <button class="bhr-button bhr-button--primary bhr-button--full-width" type="submit">{{ 'global.login' | trans() }}</button>
                 </div>
 
-                <p class="mt-6 bhr-text-muted">{{ "Lost your login details? Please contact the person who gave you access to the platform." | trans() }}</p>
+                <p class="mt-6 bhr-text-muted">{{ 'admin.account.forgot_login.instructions' | trans() }}</p>
             {% endif %}
       </form>
     </div>

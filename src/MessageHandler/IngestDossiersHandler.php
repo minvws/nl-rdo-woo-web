@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\MessageHandler;
 
 use App\Message\IngestDossiersMessage;
-use App\Repository\DossierRepository;
+use App\Repository\AbstractDossierRepository;
 use App\Service\DossierService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -14,7 +14,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 class IngestDossiersHandler
 {
     public function __construct(
-        readonly private DossierRepository $dossierRepository,
+        readonly private AbstractDossierRepository $dossierRepository,
         readonly private LoggerInterface $logger,
         readonly private DossierService $dossierService,
     ) {

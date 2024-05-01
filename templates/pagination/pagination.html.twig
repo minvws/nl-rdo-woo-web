@@ -12,9 +12,9 @@
                 href="?{{ query|merge({(pageParameterName): pageNumber}) | url_encode }}{{ targetAnchor }}"
                 rel="{{ direction }}"
             >
-                {% if not isPrevious %}<span class="group-hover:underline group-focus:underline">{{ "Next" | trans }}</span>{% endif %}
+                {% if not isPrevious %}<span class="group-hover:underline group-focus:underline">{{ 'global.next' | trans }}</span>{% endif %}
                 <twig:Icon class="{{ iconClass }}" name="{{ iconName }}" size="20" color="fill-current" />
-                {% if isPrevious %}<span class="group-hover:underline group-focus:underline">{{ "Previous" | trans }}</span>{% endif %}
+                {% if isPrevious %}<span class="group-hover:underline group-focus:underline">{{ 'global.previous' | trans }}</span>{% endif %}
             </a>
         {% else %}
             <span class="block py-2">
@@ -32,7 +32,7 @@
         data-e2e-name="page-number-{{ pageNumber }}"
         href="?{{ query|merge({(pageParameterName): pageNumber}) | url_encode }}{{ targetAnchor }}"
     >
-        {% if isActive %}<span class="sr-only">{{ "Page" | trans }}</span> {% endif %}{{ pageNumber }}
+        {% if isActive %}<span class="sr-only">{{ 'global.page' | trans }}</span> {% endif %}{{ pageNumber }}
     </a>
 {% endmacro %}
 

@@ -1,0 +1,36 @@
+<div class="mt-16">
+    <h2 class="woo-h2 woo-h2-spacing">
+        {{ 'public.dossiers.attachments' | trans() }} {{ dossier.entity.type | trans | lower }}
+    </h2>
+    <div class="overflow-x-auto">
+        <table class="woo-table">
+            <caption class="sr-only">
+                {{ 'public.dossiers.covenant.attachments' | trans() }}
+            </caption>
+            <tbody>
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">
+                        {{ dossier.entity.type | trans | capitalize }}
+                    </th>
+                    <td>
+                        <a class="woo-a" href="{{ covenantDocument.detailsUrl }}">{{ covenantDocument.name }}</a> <span>({{ covenantDocument.sourceType | upper }}, {{ covenantDocument.size | size }})</span>
+                    </td>
+                </tr>
+                {% if attachments | length > 0 %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ "public.publications.additional_attachments" | trans }}</th>
+                    <td>
+                        <ul>
+                            {% for attachment in attachments %}
+                            <li>
+                                <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a> ({{ attachment.sourceType | upper }}, {{ attachment.size | size }})
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>

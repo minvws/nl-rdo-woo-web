@@ -4,26 +4,27 @@
 
 <form class="form-filters" method="post" action="">
     <fieldset>
-        <legend class="woo-legend">{{ "Date" | trans }}</legend>
+        <legend class="woo-legend">{{ 'public.global.date' | trans }}</legend>
 
         <div class="grid gap-4 xs:grid-cols-2 md:grid-cols-1">
             <div>
-                <label class="block text-base mb-0.5" for="date-from">{{ "from" | trans }}</label>
+                <label class="block text-base mb-0.5" for="date-from">{{ 'public.global.from' | trans }}</label>
                 <input class="woo-input-text js-date-filter" id="date-from" name="dt[from]" type="date" value="{{ app.request.get('dt').from | default }}">
             </div>
 
             <div>
-                <label class="block text-base mb-0.5" for="date-to">{{ "to" | trans }}</label>
+                <label class="block text-base mb-0.5" for="date-to">{{ 'public.global.to' | trans }}</label>
                 <input class="woo-input-text js-date-filter" id="date-to" name="dt[to]" type="date" value="{{ app.request.get('dt').to | default }}">
             </div>
         </div>
     </fieldset>
 
 {#    {{ macro.facet_select('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}#}
-    {{ macro.facet_select('Subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
-    {{ macro.facet_select('Source document type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
-    {{ macro.facet_select('Judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
-    {{ macro.facet_select('Grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
+    {{ macro.facet_select('categories.category.type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::TYPE').value, result) }}
+    {{ macro.facet_select('categories.category.subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
+    {{ macro.facet_select('categories.category.source_file' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
+    {{ macro.facet_select('categories.category.judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
+    {{ macro.facet_select('categories.category.grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
 
     <input type="hidden" name="q" value="{{ app.request.get('q') }}"/>
 

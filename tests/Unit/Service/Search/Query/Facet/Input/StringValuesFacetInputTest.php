@@ -33,9 +33,9 @@ final class StringValuesFacetInputTest extends UnitTestCase
     {
         $input = StringValuesFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertInstanceOf(StringValuesFacetInput::class, $input);
-        $this->assertInstanceOf(ParameterBagFactoryInterface::class, $input);
-        $this->assertInstanceOf(StringValuesFacetInputInterface::class, $input);
+        self::assertInstanceOf(StringValuesFacetInput::class, $input);
+        self::assertInstanceOf(ParameterBagFactoryInterface::class, $input);
+        self::assertInstanceOf(StringValuesFacetInputInterface::class, $input);
     }
 
     public function testIsActiveReturnsTrueWhenItHasValues(): void
@@ -44,14 +44,14 @@ final class StringValuesFacetInputTest extends UnitTestCase
 
         $input = StringValuesFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertTrue($input->isActive());
+        self::assertTrue($input->isActive());
     }
 
     public function testIsActiveReturnsFalseWhenItHasNoValues(): void
     {
         $input = StringValuesFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertFalse($input->isActive());
+        self::assertFalse($input->isActive());
     }
 
     public function testIsNotActiveReturnsFalseWhenItHasValues(): void
@@ -60,14 +60,14 @@ final class StringValuesFacetInputTest extends UnitTestCase
 
         $input = StringValuesFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertFalse($input->isNotActive());
+        self::assertFalse($input->isNotActive());
     }
 
     public function testIsNotActiveReturnsTrueWhenItHasNoValues(): void
     {
         $input = StringValuesFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertTrue($input->isNotActive());
+        self::assertTrue($input->isNotActive());
     }
 
     public function testGetStringValues(): void
@@ -76,7 +76,7 @@ final class StringValuesFacetInputTest extends UnitTestCase
 
         $input = StringValuesFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertSame(['foo', 'bar'], $input->getStringValues());
+        self::assertSame(['foo', 'bar'], $input->getStringValues());
     }
 
     public function testItThrowsAnExceptionIfNotAllValuesAreAString(): void

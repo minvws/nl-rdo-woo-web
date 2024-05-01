@@ -54,7 +54,7 @@ class InquiryChangesetTest extends MockeryTestCase
         $dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection());
         $this->changeset->addCaseNrsForDossier($dossier, ['case-3', 'case-4']);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'case-1' => [
                     'add_documents' => [$docId123, $docId456],

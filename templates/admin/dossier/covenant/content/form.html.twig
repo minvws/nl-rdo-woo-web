@@ -1,0 +1,55 @@
+{{ form_start(form) }}
+    <div {{ vue_component('MultiComboboxController', {
+        buttonText: 'Voeg partij toe',
+        buttonTextMultiple: 'Voeg nog een partij toe',
+        helpText: 'Geef de namen van de juridische entiteiten waartussen de overeenkomst is gesloten. Voer geen namen van personen in.',
+        label: 'Partij',
+        legend: 'Partijen in het convenant',
+        minLength: 2,
+        name: 'content_form[parties]',
+        options: departments,
+        submitErrors: partiesErrors,
+        values: dossier.parties,
+    }) }}>
+        <div class="min-h-14"></div>
+    </div>
+
+    {{ form_row(form.summary) }}
+
+    <div class="bhr-form-row">
+        <h2 class="bhr-label">Convenant</h2>
+        {{ form_errors(form.document) }}
+        {% do form.document.setRendered %}
+        <p class="bhr-form-help text-lg pb-2">Upload minimaal het convenant.</p>
+
+        <div {{ vue_component('ConvenantUpload', {
+            canDelete: canDeleteCovenantDocument,
+            endpoint: '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-document',
+            documentLanguageOptions: attachmentLanguages,
+            groundOptions: grounds,
+        }) }}>
+            <div class="min-h-14"></div>
+        </div>
+    </div>
+
+    {{ form_row(form.previous_version_link) }}
+
+    <div class="bhr-form-row">
+        <h2 class="bhr-label">Bijlagen <span class="font-normal">(optioneel)</span></h2>
+        <p class="bhr-form-help text-lg pb-2">Voeg hier alleen bijlagen toe die te maken hebben met de totstandkoming van het convenant.</p>
+
+        <div {{ vue_component('PublicationAttachments', {
+            canDelete: canDeleteAttachments,
+            endpoint: '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-attachments',
+            documentTypeOptions: attachmentTypes,
+            documentLanguageOptions: attachmentLanguages,
+            groundOptions: grounds,
+            groupId: 'covenant-attachments',
+        }) }}>
+            <div class="min-h-14"></div>
+        </div>
+    </div>
+
+    {% do form.parties.setRendered %}
+
+{{ form_end(form) }}

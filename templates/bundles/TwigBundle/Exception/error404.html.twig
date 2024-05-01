@@ -1,12 +1,12 @@
 {% extends is_backend() ? 'admin.html.twig' : 'base.html.twig' %}
 
-{% set page_title = "Page not found" | trans() %}
+{% set page_title = 'global.page_not-found' | trans() %}
 
 {% block body %}
     {%
         include "bundles/TwigBundle/Exception/error-content.html.twig" with {
             title: page_title,
-            content: "The page/document you are looking for does not exist or is not available." | trans(),
+            content: 'global.page_not-found.message' | trans(),
         }
     %}
 {% endblock %}

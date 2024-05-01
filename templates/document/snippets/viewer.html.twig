@@ -4,13 +4,12 @@
         class="focus:mb-4 woo-skip-link"
         href="#below-carousel"
         id="above-carousel"
-    >{{ "Skip documents preview" | trans }}</a>
+    >{{ 'public.documents.viewer.skip_document_preview' | trans }}</a>
 
     {% if document.entity.fileInfo.type == "pdf" and document.entity.pageCount > 0 %}
         <p class="pb-1 woo-muted text-sm">
             {{
-                "Click on a page to open the {fileInfo} ({fileSize}) in your browser" |
-                trans({ fileInfo: document.entity.fileInfo.type|upper, fileSize: document.entity.fileInfo.size != "0" ? document.entity.fileInfo.size | size : ""  })
+                "public.documents.viewer.click_on_page" | trans({ fileInfo: document.entity.fileInfo.type|upper, fileSize: document.entity.fileInfo.size != "0" ? document.entity.fileInfo.size | size : ""  })
             }}
         </p>
         {% include "document/snippets/carousel.html.twig" %}
@@ -20,6 +19,6 @@
         class="focus:mt-4 woo-skip-link"
         href="#above-carousel"
         id="below-carousel"
-    >{{ "Go back to documents preview" | trans() }}</a>
+    >{{ 'public.documents.viewer.back_to_document_preview' | trans }}</a>
 </div>
 {% endif %}

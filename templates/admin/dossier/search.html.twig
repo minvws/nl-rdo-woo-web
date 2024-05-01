@@ -1,13 +1,13 @@
 {% set hasDossiers = dossiers | default | length > 0 %}
 
 {% if hasDossiers %}
-    <h2 class="bhr-title mb-2" id="search-results-dossiers">{{ "Dossiers" | trans }}</h2>
+    <h2 class="bhr-title mb-2" id="search-results-dossiers">{{ 'global.decision' | trans }}</h2>
 
     <table class="bhr-table" aria-labelledby="search-results-dossiers">
         <thead class="sr-only">
             <tr>
-                <th scope="col">{{ "Dossier number" | trans() }}</th>
-                <th scope="col">{{ "Title" | trans() }}</th>
+                <th scope="col">{{ 'dossiers.dossier_number' | trans() }}</th>
+                <th scope="col">{{ 'global.title' | trans() }}</th>
                 <th scope="col">{{ "More..." | trans() }}</th>
             </tr>
         </thead>
@@ -21,7 +21,7 @@
                         class="js-clickable-row__focusable"
                         href="{{ path('app_admin_dossier', {'prefix': dossier.documentPrefix, 'dossierId': dossier.dossierNr}) }}"
                     >
-                        <span class="sr-only">Details {{ dossier.dossierNr }}</span>
+                        <span class="sr-only">{{ 'global.details' | trans() }} {{ dossier.dossierNr }}</span>
                         <twig:Admin:Icon name="chevron-right" />
                     </a>
                 </td>
@@ -32,13 +32,13 @@
 {% endif %}
 
 {% if documents | length > 0 %}
-    <h2 class="bhr-title mb-2{% if hasDossiers %} mt-6{% endif %}" id="search-results-documents">{{ "Documents" | trans }}</h2>
+    <h2 class="bhr-title mb-2{% if hasDossiers %} mt-6{% endif %}" id="search-results-documents">{{ 'global.documents' | trans }}</h2>
 
     <table class="bhr-table" aria-labelledby="search-results-documents">
         <thead class="sr-only">
             <tr>
-                <th scope="col">{{ "Document number" | trans() }}</th>
-                <th scope="col">{{ "Title" | trans() }}</th>
+                <th scope="col">{{ 'global.document_number' | trans() }}</th>
+                <th scope="col">{{ 'global.title' | trans() }}</th>
                 <th scope="col">{{ "More..." | trans() }}</th>
             </tr>
         </thead>
@@ -50,9 +50,9 @@
                 <td class="text-right">
                     <a
                         class="js-clickable-row__focusable"
-                        href="{{ path('app_admin_document', {prefix: document.dossiers.first.documentPrefix, dossierId: document.dossiers.first.dossierNr, documentId: document.documentNr}) }}"
+                        href="{{ path('app_admin_dossier_woodecision_document', {prefix: document.dossiers.first.documentPrefix, dossierId: document.dossiers.first.dossierNr, documentId: document.documentNr}) }}"
                     >
-                        <span class="sr-only">Details {{ document.documentNr }}</span>
+                        <span class="sr-only">{{ 'global.details' | trans() }} {{ document.documentNr }}</span>
                         <twig:Admin:Icon name="chevron-right" />
                     </a>
                 </td>

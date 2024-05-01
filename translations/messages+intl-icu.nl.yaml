@@ -1,278 +1,618 @@
-"lang": "nl"
-"Search or browse decisions and published documents through the categories": "Zoek of blader via de categorieën door besluiten en openbaar gemaakte documenten"
-"Browse decisions and published documents through the categories": "Blader via de categorieën door besluiten en openbaar gemaakte documenten"
-Department: Bestuursorgaan
-"Filters": "Filters"
-"Close Filters": "Sluit Filters"
-Decision files: Besluitdossiers
-Departments: Bestuursorganen
-Access control: Toegangsbeheer
-Subject: Onderwerp
-Period: Periode
-"Decision made": "Soort besluit"
-"To all categories": "Naar alle categorieën"
-"Recent decisions": "Recente besluiten"
-"No title available": "Geen titel beschikbaar"
-"# decisions": >-
-  { count, plural,
-    =1{# (deel)besluit}
-    other{# (deel)besluiten}
-  }
-"# documents": >-
+lang: "nl"
+
+global.acronym: "Afkorting"
+global.and: "en"
+global.at: "om"
+global.action: "Actie"
+global.attachment_of: "Bijlage van"
+global.cancel: "Annuleren"
+global.covenant: "Convenant"
+global.download_document: "Download document"
+global.download_attachment: "Download bijlage"
+global.check: "Controleren"
+global.code: "Code"
+global.confirm_title: 'Weet je het zeker?'
+global.contact: "Contact"
+global.contact_us: "Neem contact met ons op"
+global.details: "Details"
+global.date: "Datum"
+global.date_from: "Van"
+global.date_from.placeholder: "kies beginmaand"
+global.date_to: "tot en met"
+global.date_start: "Ingangsdatum"
+global.from_till.abbreviation: "t/m"
+global.date_to.placeholder: "kies eindmaand"
+global.date_not_available: 'Datum niet beschikbaar'
+global.decision: "Besluit"
+global.documents: "Documenten"
+global.document_number: "Documentnummer"
+global.document_name: "Documentnaam"
+global.document_date: "Datum document"
+global.document_type: "Type"
+global.domain_title: "OpenVWS"
+global.expires: "Verloopt"
+global.error_occured: "Er is een fout opgetreden"
+global.error_message: "Er is iets mis gegaan tijdens het zoeken. Probeer het later nog eens."
+global.error_label: "Foutmelding"
+global.query: Query
+global.invalid_input: "Ongeldige invoer"
+global.file: "Bestand"
+global.link: "Link"
+global.logout: "Uitloggen"
+global.login: "Inloggen"
+global.name: "Naam"
+global.optional: "optioneel"
+global.period: "Periode"
+global.prefixes: "Prefixes"
+global.not_available: "niet beschikbaar"
+global.not_yet_processed: "Nog niet verwerkt"
+global.history: "Geschiedenis"
+global.grounds: "Gelakte gegevens"
+global.grounds.explanation: "Komt u in dit document gegevens tegen die volgens u gelakte hadden moeten worden? Of is het document slecht leesbaar? Laat het ons weten"
+global.or: "of"
+global.last_update: "Laatste update"
+global.save: "Opslaan"
+global.save_and_continue: "Opslaan en verder"
+global.save_and_publish: "Opslaan en klaarzetten"
+global.save_draft: "Concept opslaan"
+global.save_edit: "Bewerken en opslaan"
+global.skip_link: "Ga direct naar de inhoud"
+global.time: "Tijdstip"
+global.title: "Titel"
+global.menu_toggle.label: "Hoofdmenu in- of uitklappen"
+global.organisation: "Organisatie"
+global.page: "Pagina"
+global.page_not-found: "Pagina niet gevonden"
+global.page_not-found.message: "De pagina of het document dat je zoekt, bestaat niet of is niet beschikbaar."
+global.page_not-available: "Pagina of document niet beschikbaar"
+global.page_not-available.message: "De pagina of het document dat je zoekt, is momenteel niet beschikbaar."
+global.next: "Volgende"
+global.previous: "Vorige"
+global.withdrawn: "Ingetrokken"
+global.password: "Wachtwoord"
+global.password_temporary: "Tijdelijk wachtwoord"
+global.password_temporary.explanation: "Dit wachtwoord is voor éénmalig gebruik. Je kiest zelf een wachtwoord na de eerste keer inloggen."
+global.published_on: "Gepubliceerd op"
+global.publication_date: "Datum publicatie"
+global.sign_in: "Log in alstublieft"
+global.sign_in.page: "Loginpagina"
+global.sign_in.invalid: "Ongeldige inloggegevens"
+global.sign_in.instructions: "Login instructies voor"
+global.signed_in_as: "Je bent ingelogd als {name}"
+global.email: "e-mailadres"
+global.email.capital: "E-mailadres"
+global.print_page: "Print deze pagina"
+global.dutch: "Nederlands"
+global.english: "Engels"
+global.number_of_documents: >-
   { count, plural,
     =0{# documenten}
     =1{# document}
     other{# documenten}
   }
-"# Documents": >-
-  { count, plural,
-    =1{# Document}
-    other{# Documenten}
-  }
-"# pages": >-
+global.number_of_pages: >-
   { count, plural,
     =0{# pagina's}
     =1{# pagina}
     other{# pagina's}
   }
-"are_or_is": >-
-  { count, plural,
-    =1{is}
-    other{zijn}
-  }
-"has_or_have": >-
-  { count, plural,
-    =1{heeft}
-    other{hebben}
-  }
-"will": >-
-  { count, plural,
-    =1{zal}
-    other{zullen}
-  }
-"View all decisions": "Bekijk alle besluiten"
-"OGA platform": "OpenVWS"
-"OGA decisions of the Dutch Ministry of Health, Welfare and Sport": "Woo-besluiten gerelateerd aan COVID-19, van het <span class='md:whitespace-nowrap'>Ministerie van Volksgezondheid, Welzijn en Sport</span>"
-"OGA dossier": "Woo-besluit over:"
-"public.intro.maintext": "Op deze website worden alle COVID-19 gerelateerde Woo-documenten en besluiten gepubliceerd. Besluiten die zijn genomen voor september 2023 zijn eerder gepubliceerd op wobcovid19.rijksoverheid.nl en worden de komende tijd allemaal overgezet naar deze website."
-"About the VWS Woo publication platform": "Meer over deze website"
-"On this website you will find documents that the Ministry of Health, Welfare and Sport has made public on the basis of the Open Government Act (Woo). These documents have been made public for requests submitted under the Woo and are about the corona period.": "Op deze website vindt u documenten die openbaar zijn gemaakt naar aanleiding van verzoeken die betrekking hebben op COVID-19. Deze verzoeken zijn ingediend op grond van de Wet openbaarheid van bestuur (Wob) en de Wet open overheid (Woo)."
-"From these documents it can be concluded how VWS has tackled the corona fight in collaboration with other ministries, institutions and organisations. Anyone can submit a request to make documents public under the Woo. Documents are still being added.": "Uit deze documenten kan worden opgemaakt hoe VWS de coronabestrijding in samenwerking met andere ministeries, instellingen en organisaties heeft aangepakt. Iedereen kan op grond van de Woo een verzoek indienen om documenten openbaar te maken."
-"The published documents of the Ministry of Health, Welfare and Sport can currently still be found on various websites:": "De openbaargemaakte documenten van het ministerie van VWS zijn momenteel nog op verschillende websites te vinden:"
-"General decisions (not related to COVID-19) of the Ministry of Health, Welfare and Sport can be found on <a href='https://www.rijksoverheid.nl'>rijksoverheid.nl</a>": "Algemene besluiten (niet COVID-19 gerelateerd) van het ministerie van Volksgezondheid, Welzijn en Sport kunt u vinden op <a href='https://www.rijksoverheid.nl'>rijksoverheid.nl</a>"
-"COVID-19 related decisions from before September 1, 2023 can be found on <a href='https://wobcovid19.rijksoverheid.nl'>wobcovid19.rijksoverheid.nl</a>": "COVID-19 gerelateerde besluiten van voor 1 sept 2023 kunt u vinden op <a href='https://wobcovid19.rijksoverheid.nl'>wobcovid19.rijksoverheid.nl</a>"
-"COVID-19 related decisions after September 1, 2023 can be found on this website": "COVID-19 gerelateerde besluiten van na 1 sept 2023 kunt u vinden op deze website"
-"On OpenVWS, the documents are more accessible and searchable. We are working hard to make the documents from <a href='https://wobcovid19.rijksoverheid.nl'>wobcovid19.rijksoverheid.nl</a> available on this platform as well.": "Op OpenVWS zijn de documenten toegankelijker en beter doorzoekbaar. Wij werken hard om de documenten van <a href='https://wobcovid19.rijksoverheid.nl'>wobcovid19.rijksoverheid.nl</a> ook op dit platform beschikbaar te maken."
-"Submit a freedom of information request": "Een Woo-verzoek indienen"
-"You may request information about what the government does. This is stated in the <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Open Government Act (Woo)</a>. You do this via a Woo request. Good to know in advance:": "U mag informatie opvragen over wat de overheid doet. Dat staat in de <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Wet open overheid (Woo)</a>. U doet dit via een Woo-verzoek. Goed om hierbij alvast te weten:"
-"Before making a request, check if the information you are looking for is already public. Check, for example, <a href='https://www.rijksoverheid.nl/documenten'>rijksoverheid.nl</a>, <a href='https://wobcovid19.rijksoverheid.nl/'>wobcovid19.rijksoverheid.nl</a>, <a href='https://zoek.officielebekendmakingen.nl/uitbeddenzoeken/parlementair'>the archive of the Senate and the House of Representatives</a> or <a href='https://open.overheid.nl/'>open.overheid.nl</a>.": "Controleer voordat u een verzoek doet of de informatie die u zoekt al openbaar is. Check bijvoorbeeld <a href='https://www.rijksoverheid.nl/documenten'>rijksoverheid.nl</a>, <a href='https://wobcovid19.rijksoverheid.nl/'>wobcovid19.rijksoverheid.nl</a>, <a href='https://zoek.officielebekendmakingen.nl/uitgebreidzoeken/parlementair'>het archief van de Eerste Kamer en de Tweede Kamer</a> of <a href='https://open.overheid.nl/'>open.overheid.nl</a>."
-"Check which department you should submit the request to. Do you have a request for the Ministry of Health, Welfare and Sport (VWS):": "Ga na bij welke overheidsorganisatie u het verzoek moet indienen. Heeft u een verzoek voor het ministerie van Volksgezondheid, Welzijn en Sport (VWS):"
-"and is it about the COVID-19 period? See the page <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/aanpak-vws-woo-verzoeken-corona'>Approach VWS Woo requests corona;</a>": "en gaat het over de COVID-19 periode? Kijk op de pagina <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/aanpak-vws-woo-verzoeken-corona'>Aanpak VWS Woo-verzoeken corona;</a>"
-"for other requests, see the page Submitting a <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-verzoek-indienen'>Woo request to the Ministry of Health, Welfare and Sport.</a>": "voor overige verzoeken, kijk op de pagina <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-verzoek-indienen'>Woo-verzoek indienen bij het ministerie van VWS.</a>"
-"Please indicate as precisely as possible what information you are looking for. About what subject, with what people involved, from what period?": "Geef zo precies mogelijk aan welke informatie u zoekt. Over welk onderwerp, met welke betrokken personen, uit welke periode?"
-"After submitting your request, the ministry may call you with some additional questions. It is therefore useful if you also provide your telephone number with the request.": "Na het indienen van uw verzoek belt het ministerie u mogelijk met wat extra vragen. Het is dus handig als u bij het verzoek ook uw telefoonnummer doorgeeft."
-Warning: Waarschuwing
-NB: Let op
-"This document has not yet been converted in our system. It is not possible to view individual pages, but you can download the entire document.": "Dit document is nog niet geconverteerd in ons systeem. Het is niet mogelijk om individuele pagina's in te zien, maar het is mogelijk om het hele document te downloaden."
-"Attachment of": "Bijlage van"
-Download: Downloaden
-"View online (beta)": "Bekijk online (beta)"
-"Related documents": "Gerelateerde documenten"
-"Other documents in this decision": "Andere documenten in dit besluit"
-"File name": Bestandsnaam
-Size: Grootte
-Section: Sectie
-"Page count": "Aantal pagina's"
-"Messages from the same e-mail conversation": "Berichten uit dezelfde e-mailconversatie"
-"About this document": "Over dit document"
-"Document Date": "Datum document"
-"Source document type": "Type bronbestand"
-"Type": "Type"
-"Download Type": "Download als"
-"Document Number": Documentnummer
-"Number": "Nummer"
-"A columnhead with a link is sortable": "Kolomkoppen met links zijn sorteerbaar"
-Labels: Onderwerpen
-"Download ({fileInfo} {fileSize}) or open page": "Download ({fileInfo} {fileSize}) of open pagina"
-"Click on a page to open the {fileInfo} ({fileSize}) in your browser": "Klik op een pagina om de {fileInfo} ({fileSize}) te openen in je browser"
-Status: Status
-"Document judgement": Beoordeling
-"What is redacted": "Uitzonderingsgrond(en)"
-"Do you encounter data in this document that you think should have been redacted? Or is the document difficult to read?": "Kom je in dit document gegevens tegen waarvan je denkt dat deze gelakt hadden moeten worden? Of is het document slecht leesbaar?"
-"Let us know": "Laat het ons weten"
-"Attachments to this e-mail message": "Bijlagen bij dit e-mailbericht"
-"There are no attachments to this e-mail message.": "Er zijn geen bijlagen bij dit e-mailbericht."
-"Background": "Achtergrond"
-"Part of": "Onderdeel van"
-Responsible: Verantwoordelijk bestuursorgaan
-Summary: Samenvatting
-"Summary of request": "Samenvatting verzoek"
-"Time period": Periode
-"Date of disclosure": "Datum besluit"
-"Type of decision": "Type besluit"
-"Scope of disclosure": "Omvang openbaarmaking"
-"Inventory list": Inventarislijst
-"Production report": "Productierapport"
-"Other decisions in which this document appears": "Andere besluiten waar dit document in voorkomt"
-Title: Titel
-Description: Omschrijving
-"Document count": "Aantal documenten"
-"Woo Platform": "OpenVWS"
-"Go directly to content": "Ga direct naar de inhoud"
-"Ministry of Health, Welfare and Sport": "Ministerie van Volksgezondheid, Welzijn en Sport"
-"Main Navigation": Hoofdnavigatie
-"Close menu": "Sluit menu"
-Menu: Menu
-"Homepage": "Homepage"
-"Search for documents and decisions": "Zoeken naar documenten en besluiten"
-"All published decisions": "Alle gepubliceerde besluiten"
-"The central government. For the Netherlands": "De centrale overheid. Voor Nederland"
-Service: Service
-Contact: Contact
-"We make every effort to supplement this website with relevant information.": "Wij zetten ons dagelijks in om deze website aan te vullen met relevante informatie."
-"Would you like to contact us? Send an e-mail to <a href='mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl'>_dienstpostbusWoo-corona-ondersteuning@minvws.nl</a>. We can help you with the following:": "Wilt u contact met ons opnemen? Stuur dan een e-mail naar <a href='mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl'>_dienstpostbusWoo-corona-ondersteuning@minvws.nl</a>. U kunt hier terecht voor de volgende zaken: "
-"submit a Woo request": "een Woo-verzoek indienen"
-"questions or comments about the website": "vragen of opmerkingen over de website"
-"report a document on this website where additional information needs to be obscured (e.g. a person's name or contact details).": "melding maken van een document op deze website waar nog extra informatie onleesbaar gemaakt moet worden (bijv. een naam of contactgegevens van een persoon). "
-"For feedback, tips and suggestions on how we can improve this website, please email us at <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl</a>": "Voor feedback, tips en suggesties over hoe we deze website kunnen verbeteren, kunt u ons mailen via <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl</a>"
-"RSS recent publications": "RSS recente publicaties"
-Archive: Archief
-Login: Inloggen
-Counter: Counter
-Logout: Uitloggen
-"About this site": "Over deze site"
-"About Woo": "Over OpenVWS"
-Copyright: Copyright
-"Anyone may reuse the information on this website under the Reuse of Government Information Act, unless otherwise indicated.": "Iedereen mag op grond van de Wet Hergebruik van Overheidsinformatie de informatie op deze website hergebruiken, tenzij anders is aangegeven."
-"The right to reuse applies to all types of information. For example, texts, reports, photos, graphs and images. The reuse applies to both commercial and non-commercial purposes.": "Het recht op hergebruik geldt voor alle soorten informatie. Bijvoorbeeld teksten, rapporten, foto’s, grafieken en afbeeldingen. Het hergebruik geldt zowel voor commerciële als niet-commerciële doelen."
-"Reuse is allowed unless:": "Hergebruik is toegestaan tenzij:"
-"the copyright sign (©) indicates that a photo is copyrighted;": "via het copyrightteken (©) is aangegeven dat er op een foto wél copyright zit;"
-"it concerns third-party content. Therefore, always check the sender of documents.": "het gaat om content van derden. Controleer daarom altijd de afzender van documenten."
-Privacy: Privacy
-"Privacy Statement Open Government Act (Woo)": "Privacyverklaring Wet open overheid (Woo)"
-"Which personal data do we process?": "Welke persoonsgegevens verwerken wij?"
-"The Ministry of Health, Welfare and Sport (VWS) processes personal data that you share with us via your Woo request. These are, for example, your name and address details (name, address, place of residence).": "Het ministerie van Volksgezondheid, Welzijn en Sport (VWS) verwerkt persoonsgegevens die u met ons deelt via uw Woo-verzoek. Dit zijn bijvoorbeeld uw NAW-gegevens (naam, adres, woonplaats)."
-"Who is responsible for the processing of your personal data?": "Wie is verantwoordelijk voor de verwerking van uw persoonsgegevens?"
-"The Minister of Health, Welfare and Sport is the so-called controller within the meaning of the General Data Protection Regulation (GDPR). The <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-algemene-zaken/privacy/privacyverklaring-inkoop-en-aanbesteding'>Privacy Statement of the Ministry of General Affairs</a> (AZ) can be found elsewhere on Rijksoverheid.nl. VWS has a data protection officer (FG) as internal supervisor, who supervises the careful handling of personal data by VWS. The DPO can be reached by e-mail: <a href='mailto:FG-VWS@minvws.nl'>FG-VWS@minvws.nl</a>.": "De minister van VWS is de zogenaamde verwerkingsverantwoordelijke in de zin van de Algemene verordening gegevensbescherming (AVG). De <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-algemene-zaken/privacy/privacyverklaring-inkoop-en-aanbesteding'>Privacyverklaring van AZ</a> (AZ) vindt u elders op Rijksoverheid.nl. VWS heeft een functionaris voor gegevensbescherming (FG) als interne toezichthouder, die toezicht houdt op het zorgvuldig omgaan met persoonsgegevens door VWS. De FG is bereikbaar per e-mail: <a href='mailto:FG-VWS@minvws.nl'>FG-VWS@minvws.nl</a>."
-"For what purpose and on what basis do we process personal data?": "Met welk doel en op basis van welke grondslag verwerken wij persoonsgegevens?"
-"Your data will only be used to handle your request. The legal basis for processing in the context of Woo requests is to comply with a legal obligation (the Woo).": "Uw gegevens worden alleen gebruikt om uw verzoek te kunnen behandelen. De rechtsgrondslag voor verwerkingen in het kader van Woo-verzoeken is om te voldoen aan een wettelijke verplichting (de Woo)."
-"How long do we store personal data?": "Hoe lang bewaren wij persoonsgegevens?"
-"VWS stores your personal data for 5 years in the context of the Archives Act.": "VWS bewaart uw persoonsgegevens 5 jaar in het kader van de Archiefwet."
-"With whom do we share personal data?": "Met wie delen wij persoonsgegevens?"
-"VWS does not share or sell your data.": "VWS deelt of verkoopt uw gegevens niet."
-"Can personal data be kept longer?": "Kunnen persoonsgegevens langer bewaard worden?"
-"Personal data is not automatically deleted in all situations. In a limited number of cases we may keep this data longer. For example, if someone commits criminal offenses and the stored data is necessary for investigation. Such a case may lead to an extension of the retention period.": "Persoonsgegevens worden niet in alle situaties automatisch verwijderd. In een beperkt aantal gevallen mogen we deze gegevens langer bewaren . Bijvoorbeeld als iemand strafbare feiten pleegt en de bewaarde gegevens noodzakelijk zijn voor opsporing. Zo’n geval kan leiden tot een verlenging van de bewaartermijn."
-"How do we secure personal data?": "Hoe beveiligen wij persoonsgegevens?"
-"VWS takes the protection of your data seriously and takes appropriate measures to prevent misuse, loss, unauthorized access, unwanted disclosure and unauthorized changes.": "VWS neemt de bescherming van uw gegevens serieus en neemt passende maatregelen om misbruik, verlies, onbevoegde toegang, ongewenste openbaarmaking en ongeoorloofde wijziging tegen te gaan."
-"Can you view, change or delete data?": "Kunt u gegevens inzien, wijzigen of verwijderen?"
-"You have the right to view, change or delete your personal data. You also have the right to withdraw your consent to the data processing, or to object to the processing of your personal data by VWS.": "U heeft het recht om uw persoonsgegevens in te zien, te wijzigen of te verwijderen. Daarnaast heeft u het recht om uw eventuele toestemming voor de gegevensverwerking in te trekken, of bezwaar te maken tegen de verwerking van uw persoonsgegevens door VWS."
-"You can also <a href='https://autoriteitpersoonsgegevens.nl/nl/zelf-doen/privacyrechten/klacht-indienen-bij-de-ap'>report this to the Dutch Data Protection Authority.</a>": "U kunt ook <a href='https://autoriteitpersoonsgegevens.nl/nl/zelf-doen/privacyrechten/klacht-indienen-bij-de-ap'>een melding doen bij de Autoriteit Persoonsgegevens.</a>"
-Cookies: Cookies
-"We use the Piwik statistics program to analyze which pages are most visited, how visitors came to this website and which search terms they use in our search engine.": "Wij gebruiken het statistiekenprogramma Piwik om te analyseren welke pagina's het meest bezocht worden, hoe bezoekers op deze website zijn gekomen en welke zoektermen ze gebruiken in onze zoekmachine."
-"Like any website, we collect IP addresses from our visitors. These are stored in so-called log files. The log files are kept on the web server for 5 days, so that they are available to Piwik. After that, the log files are kept for 90 days for security reasons only and are only viewed for that purpose.": "Wij verzamelen, net als elke website, IP-adressen van onze bezoekers. Deze worden opgeslagen in zogeheten logfiles. De logfiles worden 5 dagen op de webserver bewaard, zodat ze beschikbaar zijn voor Piwik. Daarna blijven de logfiles 90 dagen bewaard voor uitsluitend beveiligingsredenen en worden ze ook alleen daarvoor bekeken."
-"The Dutch Data Protection Authority has taken measures to limit the traceability of visitors to our website as much as possible. We do this by discarding the last 2 octets (digit groups) of each IP address immediately after importing the log files into Piwik. This is done in a temporary memory, before the IP addresses are stored in Piwik.": "De Autoriteit Persoonsgegevens heeft maatregelen genomen om de herleidbaarheid van bezoekers naar onze website zo veel mogelijk te beperken. Dit doen we door onmiddellijk na het importeren van de logfiles in Piwik de laatste 2 octetten (cijfergroepen) van elk IP-adres weg te gooien. Dit gebeurt in een tijdelijk geheugen, voordat de IP-adressen in Piwik worden opgeslagen."
-"We collect the following data with the log files:": "Wij verzamelen de volgende gegevens met de logfiles:"
-"IP address": "IP-adres"
-"user agents (browsers, operating system)": "user agents (browsers, operating system)"
-"search terms used to reach our website via external search engines, search terms used in the search engine on the website itself": "gebruikte zoektermen om via externe zoekmachines op onze website te komen, gebruikte zoektermen in de zoekmachine op de website zelf"
-"used links within the website": "gebruikte links binnen de website"
-"used links to get to our website.": "gebruikte links om op onze website te komen."
-"Piwik retrieves this information from the web server's log files. These log files remain in the Piwik database for 31 days. Then they are deleted. Only a merged log file remains. It provides us with an annual report on website visits.": "Deze gegevens haalt Piwik uit de logfiles van de webserver. Deze logfiles blijven 31 dagen in de database van Piwik staan. Daarna worden ze verwijderd. Er blijft dan alleen een samengevoegde logfile over. Die geeft ons een jaarrapportage over het websitebezoek."
-"We do not share personal data with third parties, unless this is necessary to report criminal offences. Read more about <a href='https://www.rijksoverheid.nl/cookies'>the use of cookies by Rijksoverheid.nl</a>.": "Wij delen geen persoonsgegevens met derden, tenzij dat noodzakelijk is om aangifte te doen van strafbare feiten. Lees meer over het <a href='https://www.rijksoverheid.nl/cookies'>cookiegebruik door Rijksoverheid.nl</a>."
-Accessibility: Toegankelijkheid
-"accessibility.title.whatisaccessibility": "Wat is een toegankelijke website?"
-"accessibility.title.howtokeepaccessibility": "Borging van toegankelijkheid"
-"accessibility.text.guarantees": "Wij waarborgen goede toegankelijkheid op verschillende manieren binnen onze (dagelijkse) processen:"
-"accessibility.list.guarantees.bullet.01": "Toegankelijkheid ‘by design’: toegankelijkheid is vanaf de start onderdeel van alle stappen in het ontwerp-, bouw en redactionele proces van deze website."
-"accessibility.list.guarantees.bullet.02": "Onderzoek: wij controleren regelmatig (onderdelen van) onze website op toegankelijkheid. Zowel voor de functioneel-technische onderdelen als de redactionele aspecten. Gevonden knelpunten lossen wij duurzaam op."
-"accessibility.list.guarantees.bullet.03": "Kennis medewerkers: onze medewerkers houden hun kennis over toegankelijkheid op peil en passen dit waar nodig toe."
-"admin.accessibility.introduction": "Wij willen graag dat iedereen deze website kan gebruiken. Komt u toch een pagina tegen die niet toegankelijk is? Of heeft u een andere vraag? <a href='https://www.toegankelijkheidsverklaring.nl/register/12522#verklaring-feedback-en-contactgegevens'>Neem dan contact op</a>."
-"admin.accessibility.statement": "<a href='https://www.toegankelijkheidsverklaring.nl/register/12522'>Toegankelijkheidsverklaring Beheer OpenVWS</a>."
-"admin.accessibility.downloadreport": "<a href='/documenten/2023-12-14.Toegankelijkheidsonderzoek.Beheer.OpenVWS.open.minvws.nl.versie.1.0.pdf'>Download het toegankelijkheidsonderzoek (PDF 267 KB)</a>."
-"admin.accessibility.text.whatisaccessibility": "Een toegankelijke website is voor alle bezoekers beter te gebruiken. Daarom gelden er functioneel-technische en redactionele <a href='https://www.digitoegankelijk.nl/'>toegankelijkheidseisen</a> of (voorheen: webrichtlijnen) voor websites van de overheid. Deze zijn beschreven in de <a href='https://www.forumstandaardisatie.nl/standaard/digitoegankelijk-en-301-549-met-wcag-21'>toegankelijkheidsstandaard Digitoegankelijk EN 301 549</a>. "
-"public.accessibility.introduction": "Wij willen graag dat iedereen deze website kan gebruiken. Komt u toch een pagina tegen die niet toegankelijk is? Of heeft u een andere vraag? <a href='https://www.toegankelijkheidsverklaring.nl/register/10602/'>Neem dan contact met ons op</a>."
-"public.accessibility.statement": "<a href='https://www.toegankelijkheidsverklaring.nl/register/10602'>Toegankelijkheidsverklaring open.minvws.nl</a>."
-"public.accessibility.downloadreport": "<a href='/documenten/2024-02-13.Toegankelijkheidsonderzoek.OpenVWS.open.minvws.nl.versie.2.1.pdf'>Download het toegankelijkheidsonderzoek (PDF 304 KB)</a>."
-"public.accessibility.text.whatisaccessibility": "Een toegankelijke website is voor alle bezoekers beter te gebruiken. Daarom gelden er functioneel-technische en redactionele <a href='https://www.digitoegankelijk.nl/'>toegankelijkheidseisen</a> of (voorheen: webrichtlijnen) voor websites van de overheid. Deze zijn beschreven in de <a href='https://www.forumstandaardisatie.nl/standaard/digitoegankelijk-en-301-549-met-wcag-21'>toegankelijkheidsstandaard Digitoegankelijk EN 301 549</a>. "
-"Log in": Inloggen
-"You are logged in as {name}": "Je bent ingelogd als {name}"
-"Please sign in": "Log in alstublieft"
-"e-mail address": e-mailadres
-"E-mail address": E-mailadres
-Password: Wachtwoord
-"Remember me": "Onthoud mij"
-"Sign in": Inloggen
-"Update your password": "Werk je wachtwoord bij"
-"Please update your password": "Werk je wachtwoord bij"
-"A password should follow the following rules:": "Een wachtwoord moet aan de volgende regels voldoen:"
-"At least 14 characters": "Minstens 14 tekens"
-"Should not be a common word": "Mag geen veelvoorkomend woord zijn"
-"Does not contain only digits": "Mag niet alleen cijfers bevatten"
-"May not be similar to your e-mail address": "Mag niet vergelijkbaar zijn met je e-mailadres"
-"We advise using a password manager to generate and store your password.": "We raden aan een wachtwoordmanager te gebruiken om je wachtwoord te genereren en op te slaan."
-"Public decisions": "Openbare besluiten"
-"As a dedicated platform for transparency and openness of government, we have made efforts to make these Woo files accessible to the general public. We believe in the power of openness and the sharing of information, and we are convinced that making these documents available will contribute to a better understanding of the complex issues our society is facing.": "Als een toegewijd platform voor transparantie en openbaarheid van bestuur, hebben we ons ingespannen om deze Woo-besluiten toegankelijk te maken voor het grote publiek. We geloven in de kracht van openheid en het delen van informatie, en we zijn ervan overtuigd dat het beschikbaar stellen van deze documenten zal bijdragen aan een beter begrip van de complexe kwesties waarmee onze samenleving wordt geconfronteerd."
-"The released Woo files cover a wide range of topics, from environmental and energy policies to infrastructure projects and legislative initiatives. We encourage you to study these documents thoroughly and use the information to make informed decisions and participate in public debate.": "De vrijgegeven Woo-besluiten beslaan een breed scala aan onderwerpen, variërend van milieu- en energiebeleid tot infrastructuurprojecten en wetgevingsinitiatieven. We moedigen u aan om deze documenten grondig te bestuderen en de informatie te gebruiken om geïnformeerde beslissingen te nemen en deel te nemen aan het maatschappelijke debat."
-"Releasing these Woo files is a step towards a more transparent and participatory society. We believe that by sharing information and involving the public in decision-making processes, we can strive for a more inclusive and democratic society.": "Het vrijgeven van deze Woo-besluiten is een stap in de richting van een transparantere en participatievere samenleving. We geloven dat door het delen van informatie en het betrekken van het publiek bij besluitvormingsprocessen, we kunnen streven naar een meer inclusieve en democratische samenleving."
-"We appreciate your continuous support and encouragement in our efforts to promote transparency and openness of government. We will continue to release more Woo files and strive for a society where information is freely shared and accessible to everyone.": "Wij waarderen uw voortdurende steun en aanmoediging in onze inspanningen om transparantie en openbaarheid van bestuur te bevorderen. We blijven ons inzetten om meer Woo-besluiten vrij te geven en zullen blijven streven naar een samenleving waarin informatie vrijelijk wordt gedeeld en toegankelijk is voor iedereen."
-"No decisions found at the moment.": "Er zijn op dit moment geen besluiten gevonden."
-"Decision number": Besluitnummer
-"Number of documents": "Aantal documenten"
-"Download document archive": "Download document archief"
-"Download inquiry archive": "Download zaak archief"
-"The archive is not ready for download yet. Please try again in a few minutes.": "Het archief is nog niet gereed voor download. Probeer het over een paar minuten opnieuw."
-"Something went wrong during the generation of the archive. Please try again.": "Er is iets fout gegaan tijdens het genereren van het archief. Probeer het opnieuw."
-"The archive is ready for download. You can download the archive until {date}. After that, the archive needs to be generated again.": "Het archief is gereed voor download. Je kunt het archief downloaden tot {date}. Daarna moet het archief weer opnieuw worden gegenereerd."
-File: Bestand
-Documents: Documenten
-No documents: Geen documenten
-Expires: Verloopt
-Link: Link
-First: Eerste
-Previous: Vorige
-Next: Volgende
-Last: Laatste
-"An error occurred": "Er is een fout opgetreden"
-"Something went wrong during the search. Please try again later.": "Er is iets misgegaan tijdens het zoeken. Probeer het later opnieuw."
-"Error message": Foutmelding
-Time: Tijdstip
-Query: Query
-Decision: Besluit
-Decision about: "Besluit over"
-Page: Pagina
-"Document number": Documentnummer
-Date: Datum
-Action: Actie
-from: vanaf
-to: tot en met
-Organisation: Organisatie
-"Type of disclosure": "Soort openbaarmaking"
-"Part of publication": "Onderdeel van publicatie"
-"Filter results": "Filter resultaten"
-none: geen
-More...: Meer...
-"# dossiers": >-
+global.number_of_dossiers: >-
   { count, plural,
     =0{# besluiten}
     =1{# besluit}
     other{# besluiten}
   }
-"in # dossiers": >-
+global.accessibility.page_title: "Toegankelijkheid"
+global.accessibility.sub_title-1: "Wat is een toegankelijke website?"
+global.accessibility.sub_title-2: "Borging van toegankelijkheid"
+global.accessibility.paragraph-3: "Wij waarborgen goede toegankelijkheid op verschillende manieren binnen onze (dagelijkse) processen:"
+global.accessibility.bullet-1: "Toegankelijkheid ‘by design’: toegankelijkheid is vanaf de start onderdeel van alle stappen in het ontwerp-, bouw en redactionele proces van deze website."
+global.accessibility.bullet-2: "Onderzoek: wij controleren regelmatig (onderdelen van) onze website op toegankelijkheid. Zowel voor de functioneel-technische onderdelen als de redactionele aspecten. Gevonden knelpunten lossen wij duurzaam op."
+global.accessibility.bullet-3: "Kennis medewerkers: onze medewerkers houden hun kennis over toegankelijkheid op peil en passen dit waar nodig toe."
+
+auth.set_up.title: "Authenticator app instellen"
+auth.set_up.bullet-1: "Download en installeer de Google Authenticator of Authy app op je telefoon. Je vindt deze in de App Store of Play Store."
+auth.set_up.bullet-2: "Open de app en tik op '+'."
+auth.set_up.bullet-3: "Scan de QR-code hiernaast."
+auth.set_up.bullet-4: "Volg de instructies op het scherm."
+auth.set_up.bullet-5: "Je hebt de app nodig als je gaat inloggen."
+auth.set_up.recovery.title: "Herstelcodes"
+auth.set_up.recovery.description: "Bewaar onderstaande codes goed. Je kunt ze gebruiken als de authenticatie app op je telefoon niet meer werkt (bijvoorbeeld als je een nieuw toestel hebt). Deze herstelcodes zijn eenmalig te gebruiken."
+
+categories.category.type: "Zoeken in..."
+categories.category.subject: "Onderwerp"
+categories.category.source_file: "Type bronbestand"
+categories.category.judgement: "Soort besluit"
+categories.category.grounds: "Uitzonderingsgrond"
+categories.label.all-categories: "Naar alle categorieën"
+
+dossiers.dossier_number: "Besluitnummer"
+No dossiers match the filters: 'Er zijn geen besluiten gevonden die aan de filters voldoen.'
+No dossiers have been created yet: 'Er zijn nog geen besluiten aangemaakt.'
+
+elastic.label.management: "Elasticsearch beheer"
+elastic.index: "Index"
+elastic.rollover: "Rollover naar"
+elastic.contains: "In Elasticsearch"
+elastic.percentage: "Percentage"
+elastic.rollover.new: "Rollover van de elasticsearch index"
+elastic.index.promote_to_live: "Promoveer index naar de live index"
+elastic.index.promote_confirmation: "Weet je zeker dat je dit de live index wilt maken?"
+
+admin.global.platform_title: "Beheer platform woo-publicaties Ministerie van VWS"
+admin.global.platform_explanation: "Deze instructies heb je nodig om jouw account voor het beheerplatform te activeren."
+admin.global.label.inquiries: "Zaken"
+admin.global.dossier: "Publicatie"
+admin.global.label.dossiers: "Publicaties"
+admin.global.label.departments: "Bestuursorganen"
+admin.global.label.access_control: "Toegangsbeheer"
+admin.global.page_count: "Aantal pagina's"
+admin.global.document_count: "Aantal documenten"
+admin.global.dossier_count: "Besluiten"
+admin.global.questions: "Vraag over hoe iets werkt?"
+admin.global.contact_coordinator: "Neem dan even contact op met je coördinator."
+admin.global.contact_developer: "Vraag of opmerking voor de ontwikkelaars?"
+admin.global.suggestions: "Loop je tijdens het gebruiken van deze website tegen technische problemen aan? Of heb je ideeën die het systeem makkelijker in gebruik zouden maken? Laat het ons dan weten via <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl.</a>"
+admin.global.responsible_department: Verantwoordelijk bestuursorgaan
+admin.global.decision_on: "Besluit over:"
+admin.global.convenant_on: "Convenant met omschrijving:"
+admin.global.danger_zone: "Gevarenzone"
+admin.global.edit: "Bewerken"
+admin.global.subject: "Onderwerp"
+admin.global.decision_number: "Besluitnummer"
+admin.global.login_help: "Hulp bij inlogproblemen?"
+admin.global.no_record: "Niet opgegeven"
+admin.global.file: "Dossier"
+admin.global.last_login: "Laatst ingelogd"
+admin.global.user: "Gebruiker"
+admin.global.roles: "Rollen"
+admin.global.input_delete: "Invoer verwijderen"
+
+admin.account.profile: "Profiel"
+admin.account.details: "Accountgegevens"
+admin.account.created: "Het account is aangemaakt"
+admin.account.updated: "Dit account is bijgewerkt"
+admin.account.instructions: "Download deze instructies en stuur ze op een veilige manier naar de gebruiker."
+admin.account.instructions_download: "Download instructies"
+admin.account.instructions.shared: "Heb je de inlog-instructies gedeeld?"
+admin.account.instructions.caution: "Let op: dit is het enige moment dat je deze instructies kunt downloaden"
+admin.account.instructions.confirmation: "Ja, ik heb ze gedeeld"
+admin.account.activate: "Account activeren"
+admin.account.deactivate: "Account deactiveren"
+admin.account.update_password: "Werk je wachtwoord bij"
+admin.account.password_requirements.explanation: "Een wachtwoord moet aan de volgende regels voldoen:"
+admin.account.password_requirements.req1: "Minstens 14 tekens"
+admin.account.password_requirements.req2: "Mag geen veelvoorkomend woord zijn"
+admin.account.password_requirements.req3: "Mag niet alleen cijfers bevatten"
+admin.account.password_requirements.req4: "Mag niet vergelijkbaar zijn met je e-mailadres"
+admin.account.forgot_password.label: "Wachtwoord vergeten?"
+admin.account.forgot_password.instructions: "Reset het wachtwoord. Je krijgt nieuwe inloginstructies waarmee de gebruiker zelf een nieuw wachtwoord kan kiezen."
+admin.account.forgot_login.instructions: "Inloggegevens kwijt? Neem even contact op met de persoon die jou toegang heeft gegeven tot het platform."
+admin.account.reset_password: "Wachtwoord resetten"
+admin.account.reset_password.caution: 'Als je doorgaat kan de gebruiker niet meer inloggen met het oude wachtwoord. Je kan op de volgende pagina de nieuwe, tijdelijke inloginstructies downloaden voor de gebruiker. Zorg dat de gebruiker deze veilig bewaart.'
+admin.account.reset_password.confirm: 'Ja, reset het wachtwoord'
+admin.account.reset_2fa: "2FA resetten"
+admin.account.reset_2fa.label: "Nieuwe telefoon of authenticator app?"
+admin.account.reset_2fa.instructions: "Reset de twee factor code. Je krijgt nieuwe inloginstructies waarmee de gebruiker de twee factor authenticator opnieuw kan instellen."
+admin.account.reset_2fa_caution: "Resetten van de twee factor code betekent dat we de oude twee factor code voor altijd verwijderen uit ons systeem. Als je een nieuwe twee factor code aanvraagt zorg dan dat je deze op een veilige manier voor jezelf bewaart. Als je op 'Ja' klikt zal je de nieuwe twee factor code ontvangen."
+admin.account.reset_2fa.confirm: "Ja, reset de twee factor code"
+admin.account.user.modify: "Wijzig gebruiker {name}"
+admin.account.user.info: "Gebruikersinformatie"
+admin.account.user.is_deactivated: "Deze gebruiker is momenteel gedeactiveerd."
+admin.account.user.roles: "Toegangsrollen"
+
+admin.user.edit: "Gebruiker bewerken"
+admin.user.managment: "Alle gebruikers"
+admin.user.create: "Nieuwe gebruiker aanmaken"
+admin.user.create.confirm: "Account aanmaken"
+admin.user.deactivated: "Gedeactiveerd"
+admin.user.name: "Voor- en achternaam"
+admin.user.name_help: "Minimaal 1 en maximaal 255 karakters. Bijvoorbeeld Jan de Vries."
+admin.user.roles: "Toegangsrollen"
+admin.user.roles_help: "Geef aan wat deze gebruiker mag doen, meerdere opties zijn mogelijk"
+admin.user.email_help: "Minimaal 4 en maximaal 180 karakters. Gebruikers identificeren zich met hun e-mailadres. We gebruiken het e-mailadres niet voor het delen van wachtwoord of andere login-gegevens."
+admin.user.password_current: "Huidig wachtwoord"
+admin.user.password_new: "Nieuw wachtwoord"
+admin.user.password_repeat: "Herhaal nieuw wachtwoord"
+admin.user.password.edit_confirm: "Wachtwoord aanpassen"
+admin.user.department_help: "Naam van het bestuursorgaan (minimaal 2 karakters)"
+admin.department.abbreviation_help: "Afkorting van het bestuursorgaan (minimaal 2 en maximaal 10 karakters)"
+admin.organisation.create: "Organisatie toevoegen"
+admin.organisation.manage: 'Organisaties beheren'
+admin.organisation.add_prefix: "Nog een prefix toevoegen"
+admin.organisation.department_new: "Nieuw bestuursorgaan aanmaken"
+admin.organisation.department_edit: "Wijzig bestuursorgaan {name}"
+
+admin.user.role.super_admin: "Super beheerder"
+admin.user.role.super_admin.desc: "Alle rechten (inclusief beheer van de Beheerder rol)."
+admin.user.role.global_admin: Beheerder
+admin.user.role.global_admin.desc: "Alle rechten op alle organisaties."
+admin.user.role.organisation_admin: "Organisatie-beheerder"
+admin.user.role.organisation_admin.desc: "Beheren van gebruikers en metadata binnen eigen organisatie."
+admin.user.role.decision_admin: "Besluiten-beheer"
+admin.user.role.decision_admin.desc: "Beheren van besluiten en documenten."
+admin.user.role.read_only: "Alleen lezen"
+admin.user.role.read_only.desc: "Bekijken van (concept) besluiten en documenten."
+
+admin.login.2fa.invalid_code: "Ongeldige authenticatiecode"
+admin.login.2fa.enter_code: "Voer authenticatiecode in"
+admin.login.2fa.instructions: "Open de authenticator app en voer de éénmalige code in om in te loggen."
+admin.login.2fa.error.invalid_code: "Ongeldige authenticatiecode. Vul een geldige authenticatiecode in."
+admin.login.2fa.reset_instructions: "Problemen met de authenticator app? Gebruik een herstelcode uit de inloginstructies."
+
+admin.publications.summary: "Samenvatting"
+admin.publications.department: "Bestuursorgaan"
+admin.publications.responsible_department: "Verantwoordelijk bestuursorgaan"
+admin.publications.responsible_department_placeholder: "Kies een bestuursorgaan"
+admin.publications.filters: "Filters"
+admin.publications.status: "Status"
+admin.publications.type: "Categorie"
+admin.publications.submit.filters: "Filteren"
+admin.dossiers.public_date: "Documenten voor iedereen online op"
+admin.dossiers.public_link: "Publieke link"
+admin.dossiers.public_link_available: "De link is actief vanaf"
+
+admin.dossiers.convenant.create_new: "Nieuw convenant publiceren"
+admin.dossiers.convenant.form.details.title: "Omschrijving van het convenant"
+admin.dossiers.convenant.form.details.description: 'Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals convenant, aangaande, etc. <ul class="my-4"><li class="bhr-form-help__dont text-sm">Niet: Convenant tussen het ministerie en een aantal ziekenhuizen aangaande het aantal beschikbare IC-bedden.</li><li class="bhr-form-help__do text-sm">Wel: Overeenkomst tussen ministerie en ziekenhuizen over aantal IC-bedden.</li></ul>'
+admin.dossiers.convenant.form.details.date_legend: "Periode waarover het convenant gaat"
+admin.dossiers.convenant.form.details.ref_nr: "Referentienummer convenant"
+admin.dossiers.convenant.form.details.ref_int: "Interne referentie"
+admin.dossiers.convenant.form.details.ref_nr_help: "Minimaal 3 en maximaal 50 karakters. Gebruik alleen letters, cijfers en verbindingstekens.<br><strong>Let op</strong>: dit nummer is na het opslaan van de basisgegevens niet meer aan te passen."
+admin.dossiers.convenant.form.details.internal_reference_label: "Interne referentie"
+admin.dossiers.convenant.form.details.internal_reference_help: "Verwijzing naar de interne vindplaats of verantwoordelijke van de brondocumentatie van deze publicatie. Wordt niet gepubliceerd."
+admin.dossiers.convenant.form.details.prefix: "Prefix voor publicatie"
+admin.dossiers.convenant.form.details.prefix_help: "<strong>Let op</strong>: je kan deze na het opslaan van de basisgegevens niet meer aanpassen."
+admin.dossiers.convenant.form.details.prefix_placeholder: "Kies een prefix"
+admin.dossiers.convenant.form.content.summary_label: 'Samenvatting van het convenant'
+admin.dossiers.convenant.form.content.previous_version_link_label: 'Opvolger van vorig convenant'
+admin.dossiers.convenant.form.content.previous_version_link_description: 'Voeg de link van de publicatie toe waar dit convenant een relatie mee heeft.'
+admin.dossiers.convenant.form.publication.publication_date_label: 'Datum openbare publicatie'
+admin.dossiers.convenant.form.publication.publication_date_help: 'Kies de datum waarop het convenant voor iedereen publiek toegankelijk wordt.'
+admin.dossiers.convenant.create.success: "<strong>Convenant klaarzetten gelukt:</strong> De publicatie wordt voorbereid."
+admin.dossiers.convenant.edit_link: "Hele convenant bekijken"
+admin.dossiers.convenant.description: "Omschrijving van het convenant"
+admin.dossiers.convenant.delete: "Convenant verwijderen"
+admin.dossiers.convenant.delete_disabled: "Dit convenant is gepubliceerd en kan daarom niet meer verwijderd worden."
+admin.dossiers.convenant.delete_bullet-1: "Het convenant en alle bijlagen en documenten worden verwijderd."
+admin.dossiers.convenant.delete_bullet-2: "Een convenant kan niet meer verwijderd worden nadat het is gepubliceerd."
+admin.dossiers.convenant.delete_bullet-3: "Je kan deze actie niet ongedaan maken."
+admin.dossiers.convenant.parties: "Partijen in het convenant"
+admin.dossiers.convenant.summary: "Samenvatting van het convenant"
+admin.dossiers.convenant.period: "Periode waarover de overeenkomst gaat"
+admin.dossiers.convenant.document: "Convenant"
+admin.dossiers.convenant.previous_version_link: "Opvolger van vorig convenant"
+
+admin.dossiers.decision.create.success: "<strong>Besluit klaarzetten gelukt:</strong> De publicatie wordt voorbereid."
+admin.dossiers.decision.edit_link: "Hele besluit bekijken"
+admin.dossiers.decision.preview_date: "Feitelijke verstrekking op"
+
+admin.dossiers.workflow.details: "Basisgegevens"
+admin.dossier.delete.started: "Het dossier wordt verwijderd, het kan even duren voor dit verwerkt is."
+admin.dossier.delete.back_to_overview: "Naar overzicht publicaties"
+admin.dossier.delete.confirm: "Bevestig de verwijdering van dit dossier. Kan niet ongedaan gemaakt worden!"
+admin.dossier.delete.submit: "Verwijderen"
+admin.dossier.delete.title: "Dossier verwijderen"
+
+admin.inquiries.case_number: "Zaaknummer"
+admin.inquiries.case_numbers: "Alle zaaknummers"
+admin.inquiries.link_case: "Zaaknummer aan besluiten of documenten koppelen"
+admin.inquiries.link_to_case: "Link naar zaak"
+
+admin.documents.withdraw_all: "Alle documenten intrekken"
+
+public.global.date: "Datum"
+public.global.from: vanaf
+public.global.to: tot en met
+public.global.show_less: "Toon minder"
+public.global.show_more: "Toon meer"
+public.global.warning: "Waarschuwing"
+public.global.download: "Downloaden"
+public.global.label: "Label"
+public.global.expected: "Verwacht"
+public.global.current_location: "Je bent hier"
+public.global.woo_dossier: "Woo-besluit"
+public.global.covenant: "Convenant"
+public.global.decisions: "Besluiten"
+public.global.decision_date: "Datum besluit"
+public.global.size: "Grootte"
+public.global.subjects: Onderwerpen
+public.global.summary: "Samenvatting"
+public.global.sortable: "Kolomkoppen met links zijn sorteerbaar"
+public.global.decision_type: "Type besluit"
+public.global.request_summary: "Samenvatting verzoek"
+public.global.logo.text: "Ministerie van Volksgezondheid, Welzijn en Sport"
+public.global.logo.label: "ga naar de homepage"
+public.global.navigation.accessible.label: "Hoofdnavigatie"
+public.global.label.home: "Home"
+public.global.label.search_publications: "Zoeken naar documenten en besluiten"
+public.global.label.overview_publications: "Alle gepubliceerde besluiten"
+public.global.label.all_categories: "Alle categorieen"
+public.global.are_or_is: >-
+  { count, plural,
+    =1{is}
+    other{zijn}
+  }
+public.global.has_or_have: >-
+  { count, plural,
+    =1{heeft}
+    other{hebben}
+  }
+
+public.documents.match_request: "(Deels) openbaar gemaakt"
+public.documents.not_made_public: "Niet openbaar gemaakt"
+public.documents.not_public: "Niet openbaar"
+public.documents.not_yet_online: "(Nog) niet online"
+public.documents.public: "Openbaar"
+public.documents.related_documents: "Gerelateerde documenten"
+public.documents.strong_relationship: "Sterke relatie"
+public.documents.refers_to: "{has_or_have} een sterke relatie met dit document."
+public.documents.referred_by: "Documenten die naar dit document verwijzen"
+public.documents.email_thread: "Berichten uit dezelfde e-mailconversatie"
+public.documents.attachments: "Bijlagen bij dit e-mailbericht"
+public.documents.document: "Type document"
+public.documents.document.background: "Achtergrond openbaarmaking"
+public.documents.document.about: "Over dit document"
+public.documents.document.date: "Datum document"
+public.documents.document.language: "Taal van het document"
+public.documents.document.type: "Soort document"
+public.documents.document.download_type: "Download als"
+public.documents.document.related_attachments: "Andere bijlagen"
+public.documents.file_type.database: "Database"
+public.documents.file_type.doc: "Word-document"
+public.documents.file_type.email: "E-mailbericht"
+public.documents.file_type.html: "Webpagina"
+public.documents.file_type.image: "Afbeelding"
+public.documents.file_type.note: "Notitie"
+public.documents.file_type.pdf: "PDF"
+public.documents.file_type.presentation: "Presentatie"
+public.documents.file_type.spreadsheet: "Spreadsheet"
+public.documents.file_type.unknown: "Onbekend"
+public.documents.file_type.vcard: "Visitekaartje"
+public.documents.file_type.video: "Video"
+public.documents.file_type.xml: "XML"
+public.documents.file_type.zip: "Zip-bestand"
+public.documents.type.dossier: "Woo-besluiten"
+public.documents.type.covenant: "Convenanten"
+
+global.footer.label.accessibility: "Toegankelijkheid"
+global.footer.label.privacy: "Privacy"
+global.footer.label.contact: "Contact"
+
+public.footer.title.service: "Service"
+public.footer.title.about: "Over deze site"
+public.footer.label.woo: "Over OpenVWS"
+public.footer.label.copyright: "Copyright"
+public.footer.label.cookies: "Cookies"
+public.footer.label.counter: "Counter"
+public.footer.label.logout: "Uitloggen"
+
+public.search.hint: "Typ een zoekterm in"
+public.search.label: "Zoeken"
+public.search.label.results: "Ga naar de zoekresultaten"
+
+public.intro.label.oga: "OpenVWS"
+public.intro.description.oga: "Woo-besluiten gerelateerd aan COVID-19, van het Ministerie van Volksgezondheid, Welzijn en Sport"
+public.intro.maintext.oga: "Op deze website worden alle COVID-19 gerelateerde Woo-documenten en -besluiten gepubliceerd."
+public.about.oga: "Meer over deze website"
+public.about.oga.paragraph-1: "Op deze website vindt u documenten die openbaar zijn gemaakt naar aanleiding van verzoeken die betrekking hebben op COVID-19. Deze verzoeken zijn ingediend op grond van de Wet openbaarheid van bestuur (Wob) en de Wet open overheid (Woo)."
+public.about.oga.paragraph-2: "Uit deze documenten kan worden opgemaakt hoe VWS de coronabestrijding in samenwerking met andere ministeries, instellingen en organisaties heeft aangepakt. Iedereen kan op grond van de Woo een verzoek indienen om documenten openbaar te maken."
+public.about.oga.paragraph-3: "De openbaargemaakte documenten van het ministerie van VWS zijn momenteel nog op verschillende websites te vinden:"
+public.about.oga.bullet-1: "Algemene besluiten (niet COVID-19 gerelateerd) van het ministerie van Volksgezondheid, Welzijn en Sport kunt u vinden op <a href='https://www.rijksoverheid.nl'>rijksoverheid.nl</a>"
+public.about.oga.bullet-2: "COVID-19 gerelateerde besluiten kunt u vinden op deze website."
+
+public.other-publications.title: "Andere publicaties van VWS"
+public.other-publications.processing_register: "Verwerkingsregister"
+
+public.woo-process.title: "Een Woo-verzoek indienen"
+public.woo-process.description: "U mag informatie opvragen over wat de overheid doet. Dat staat in de <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Wet open overheid (Woo)</a>. U doet dit via een Woo-verzoek. Goed om hierbij alvast te weten:"
+public.woo-process.step-1: "Controleer voordat u een verzoek doet of de informatie die u zoekt al openbaar is. Check bijvoorbeeld <a href='https://www.rijksoverheid.nl/documenten'>rijksoverheid.nl</a>, <a href='https://zoek.officielebekendmakingen.nl/uitgebreidzoeken/parlementair'>het archief van de Eerste Kamer en de Tweede Kamer</a> of <a href='https://open.overheid.nl/'>open.overheid.nl</a>."
+public.woo-process.step-2: "Ga na bij welke overheidsorganisatie u het verzoek moet indienen. Heeft u een verzoek voor het ministerie van Volksgezondheid, Welzijn en Sport (VWS):"
+public.woo-process.step-2a: "en gaat het over de COVID-19 periode? Kijk op de pagina <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/aanpak-vws-woo-verzoeken-corona'>Aanpak VWS Woo-verzoeken corona;</a>"
+public.woo-process.step-2b: "voor overige verzoeken, kijk op de pagina <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-verzoek-indienen'>Woo-verzoek indienen bij het ministerie van VWS.</a>"
+public.woo-process.step-3: "Geef zo precies mogelijk aan welke informatie u zoekt. Over welk onderwerp, met welke betrokken personen, uit welke periode?"
+public.woo-process.step-4: "Na het indienen van uw verzoek belt het ministerie u mogelijk met wat extra vragen. Het is dus handig als u bij het verzoek ook uw telefoonnummer doorgeeft."
+
+public.decisions.recent.title: "Recente besluiten"
+public.decisions.decision.no_title: "Geen titel beschikbaar"
+public.decisions.label.all_decisions: "Bekijk alle besluiten"
+public.decision.decision_made: "Soort besluit"
+
+public.publications.additional_attachments: "Aanvullende bijlagen"
+
+public.browse.title: "Blader via de categorieën door besluiten en openbaar gemaakte documenten"
+public.browse.facets.title: "Zoek of blader via de categorieën door besluiten en openbaar gemaakte documenten"
+public.browse.facets.description: "Op deze website worden alle COVID-19 gerelateerde Woo-documenten en -besluiten gepubliceerd."
+
+public.results.title: "Alle Wob- en Woo-besluiten"
+public.results.description: "Op deze website worden alle COVID-19 gerelateerde Woo-documenten en -besluiten gepubliceerd."
+public.results.in_dossiers: >-
   { count, plural,
     =0{in # besluiten}
     =1{in # besluit}
     other{in # besluiten}
   }
+
+public.messages.new_dossiers: "Op {dates} komt op deze pagina een nieuw (deel)besluit beschikbaar."
+
+public.contact.paragraph-1: "Wij zetten ons dagelijks in om deze website aan te vullen met relevante informatie."
+public.contact.paragraph-2: "Wilt u contact met ons opnemen? Stuur dan een e-mail naar <a href='mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl'>_dienstpostbusWoo-corona-ondersteuning@minvws.nl</a>. U kunt hier terecht voor de volgende zaken:"
+public.contact.paragraph-3: "Voor feedback, tips en suggesties over hoe we deze website kunnen verbeteren, kunt u ons mailen via <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl</a>"
+public.contact.paragraph-4: "De broncode is open source beschikbaar op Github: <a href='https://github.com/minvws/nl-rdo-woo-web'>https://github.com/minvws/nl-rdo-woo-web</a>."
+
+public.contact.bullet-1: "een Woo-verzoek indienen"
+public.contact.bullet-2: "vragen of opmerkingen over de website"
+public.contact.bullet-3: "melding maken van een document op deze website waar nog extra informatie onleesbaar gemaakt moet worden (bijv. een naam of contactgegevens van een persoon)."
+
+public.privacy.page_title: "Privacyverklaring"
+public.privacy.main_title: "Privacyverklaring Wet open overheid (Woo)"
+public.privacy.sub_title-1: "Welke persoonsgegevens verwerken wij?"
+public.privacy.sub_title-2: "Wie is verantwoordelijk voor de verwerking van uw persoonsgegevens?"
+public.privacy.sub_title-3: "Met welk doel en op basis van welke grondslag verwerken wij persoonsgegevens?"
+public.privacy.sub_title-4: "Hoe lang bewaren wij persoonsgegevens?"
+public.privacy.sub_title-5: "Met wie delen wij persoonsgegevens?"
+public.privacy.sub_title-6: "Kunnen persoonsgegevens langer bewaard worden?"
+public.privacy.sub_title-7: "Hoe beveiligen wij persoonsgegevens?"
+public.privacy.sub_title-8: "Kunt u gegevens inzien, wijzigen of verwijderen?"
+public.privacy.paragraph-1: "Het ministerie van Volksgezondheid, Welzijn en Sport (VWS) verwerkt persoonsgegevens die u met ons deelt via uw Woo-verzoek. Dit zijn bijvoorbeeld uw NAW-gegevens (naam, adres, woonplaats)."
+public.privacy.paragraph-2: "De minister van VWS is de zogenaamde verwerkingsverantwoordelijke in de zin van de Algemene verordening gegevensbescherming (AVG). De <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-algemene-zaken/privacy/privacyverklaring-inkoop-en-aanbesteding'>Privacyverklaring van AZ</a> (AZ) vindt u elders op Rijksoverheid.nl. VWS heeft een functionaris voor gegevensbescherming (FG) als interne toezichthouder, die toezicht houdt op het zorgvuldig omgaan met persoonsgegevens door VWS. De FG is bereikbaar per e-mail: <a href='mailto:FG-VWS@minvws.nl'>FG-VWS@minvws.nl</a>."
+public.privacy.paragraph-3: "Uw gegevens worden alleen gebruikt om uw verzoek te kunnen behandelen. De rechtsgrondslag voor verwerkingen in het kader van Woo-verzoeken is om te voldoen aan een wettelijke verplichting (de Woo)."
+public.privacy.paragraph-4: "VWS bewaart uw persoonsgegevens 5 jaar in het kader van de Archiefwet."
+public.privacy.paragraph-5: "VWS deelt of verkoopt uw gegevens niet."
+public.privacy.paragraph-6: "Persoonsgegevens worden niet in alle situaties automatisch verwijderd. In een beperkt aantal gevallen mogen we deze gegevens langer bewaren . Bijvoorbeeld als iemand strafbare feiten pleegt en de bewaarde gegevens noodzakelijk zijn voor opsporing. Zo’n geval kan leiden tot een verlenging van de bewaartermijn."
+public.privacy.paragraph-7: "VWS neemt de bescherming van uw gegevens serieus en neemt passende maatregelen om misbruik, verlies, onbevoegde toegang, ongewenste openbaarmaking en ongeoorloofde wijziging tegen te gaan."
+public.privacy.paragraph-8: "U heeft het recht om uw persoonsgegevens in te zien, te wijzigen of te verwijderen. Daarnaast heeft u het recht om uw eventuele toestemming voor de gegevensverwerking in te trekken, of bezwaar te maken tegen de verwerking van uw persoonsgegevens door VWS."
+public.privacy.paragraph-9: "U kunt ook <a href='https://autoriteitpersoonsgegevens.nl/nl/zelf-doen/privacyrechten/klacht-indienen-bij-de-ap'>een melding doen bij de Autoriteit Persoonsgegevens.</a>"
+
+public.cookies.paragraph-1: "Wij gebruiken het statistiekenprogramma Piwik om te analyseren welke pagina's het meest bezocht worden, hoe bezoekers op deze website zijn gekomen en welke zoektermen ze gebruiken in onze zoekmachine."
+public.cookies.paragraph-2: "Wij verzamelen, net als elke website, IP-adressen van onze bezoekers. Deze worden opgeslagen in zogeheten logfiles. De logfiles worden 5 dagen op de webserver bewaard, zodat ze beschikbaar zijn voor Piwik. Daarna blijven de logfiles 90 dagen bewaard voor uitsluitend beveiligingsredenen en worden ze ook alleen daarvoor bekeken."
+public.cookies.paragraph-3: "De Autoriteit Persoonsgegevens heeft maatregelen genomen om de herleidbaarheid van bezoekers naar onze website zo veel mogelijk te beperken. Dit doen we door onmiddellijk na het importeren van de logfiles in Piwik de laatste 2 octetten (cijfergroepen) van elk IP-adres weg te gooien. Dit gebeurt in een tijdelijk geheugen, voordat de IP-adressen in Piwik worden opgeslagen."
+public.cookies.paragraph-4: "Wij verzamelen de volgende gegevens met de logfiles:"
+public.cookies.paragraph-5: "Deze gegevens haalt Piwik uit de logfiles van de webserver. Deze logfiles blijven 31 dagen in de database van Piwik staan. Daarna worden ze verwijderd. Er blijft dan alleen een samengevoegde logfile over. Die geeft ons een jaarrapportage over het websitebezoek."
+public.cookies.paragraph-6: "Wij delen geen persoonsgegevens met derden, tenzij dat noodzakelijk is om aangifte te doen van strafbare feiten. Lees meer over het <a href='https://www.rijksoverheid.nl/cookies'>cookiegebruik door Rijksoverheid.nl</a>."
+public.cookies.bullet-1: "Cookies"
+public.cookies.bullet-2: "IP-adres"
+public.cookies.bullet-3: "user agents (browsers, operating system)"
+public.cookies.bullet-4: "gebruikte zoektermen om via externe zoekmachines op onze website te komen, gebruikte zoektermen in de zoekmachine op de website zelf"
+public.cookies.bullet-5: "gebruikte links binnen de website"
+public.cookies.bullet-6: "gebruikte links om op onze website te komen."
+
+public.copyright.paragraph-1: "Iedereen mag op grond van de Wet Hergebruik van Overheidsinformatie de informatie op deze website hergebruiken, tenzij anders is aangegeven."
+public.copyright.paragraph-2: "Het recht op hergebruik geldt voor alle soorten informatie. Bijvoorbeeld teksten, rapporten, foto’s, grafieken en afbeeldingen. Het hergebruik geldt zowel voor commerciële als niet-commerciële doelen."
+public.copyright.paragraph-3: "Hergebruik is toegestaan tenzij:"
+public.copyright.bullet-1: "via het copyrightteken (©) is aangegeven dat er op een foto wél copyright zit;"
+public.copyright.bullet-2: "het gaat om content van derden. Controleer daarom altijd de afzender van documenten."
+
+public.accessibility.paragraph-1: "Wij willen graag dat iedereen deze website kan gebruiken. Komt u toch een pagina tegen die niet toegankelijk is? Of heeft u een andere vraag? <a href='https://www.toegankelijkheidsverklaring.nl/register/10602/'>Neem dan contact met ons op</a>."
+public.accessibility.paragraph-2: "Een toegankelijke website is voor alle bezoekers beter te gebruiken. Daarom gelden er functioneel-technische en redactionele <a href='https://www.digitoegankelijk.nl/'>toegankelijkheidseisen</a> of (voorheen: webrichtlijnen) voor websites van de overheid. Deze zijn beschreven in de <a href='https://www.forumstandaardisatie.nl/standaard/digitoegankelijk-en-301-549-met-wcag-21'>toegankelijkheidsstandaard Digitoegankelijk EN 301 549</a>."
+public.accessibility.statement: "<a href='https://www.toegankelijkheidsverklaring.nl/register/10602'>Toegankelijkheidsverklaring open.minvws.nl</a>."
+public.accessibility.downloadreport: "<a href='/documenten/2024-02-13.Toegankelijkheidsonderzoek.OpenVWS.open.minvws.nl.versie.2.1.pdf'>Download het toegankelijkheidsonderzoek (PDF 304 KB)</a>."
+
+admin.accessibility.paragraph-1: "Wij willen graag dat iedereen deze website kan gebruiken. Komt u toch een pagina tegen die niet toegankelijk is? Of heeft u een andere vraag? <a href='https://www.toegankelijkheidsverklaring.nl/register/12522#verklaring-feedback-en-contactgegevens'>Neem dan contact op</a>."
+admin.accessibility.statement: "<a href='https://www.toegankelijkheidsverklaring.nl/register/12522'>Toegankelijkheidsverklaring Beheer OpenVWS</a>."
+admin.accessibility.downloadreport: "<a href='/documenten/2023-12-14.Toegankelijkheidsonderzoek.Beheer.OpenVWS.open.minvws.nl.versie.1.0.pdf'>Download het toegankelijkheidsonderzoek (PDF 267 KB)</a>."
+admin.accessibility.paragraph-2: "Een toegankelijke website is voor alle bezoekers beter te gebruiken. Daarom gelden er functioneel-technische en redactionele <a href='https://www.digitoegankelijk.nl/'>toegankelijkheidseisen</a> of (voorheen: webrichtlijnen) voor websites van de overheid. Deze zijn beschreven in de <a href='https://www.forumstandaardisatie.nl/standaard/digitoegankelijk-en-301-549-met-wcag-21'>toegankelijkheidsstandaard Digitoegankelijk EN 301 549</a>. "
+
+admin.dossiers.documents_added: >-
+  { count, plural,
+    =1{# nieuw document wordt toegevoegd aan het besluit.}
+    other{# nieuwe documenten worden toegevoegd aan het besluit.}
+  }
+admin.dossiers.documents_updated: >-
+  { count, plural,
+    =1{# bestaand document wordt aangepast.}
+    other{# bestaande documenten worden aangepast.}
+  }
+
+public.inquiries.number_of_decisions: >-
+  { count, plural,
+    =1{# (deel)besluit}
+    other{# (deel)besluiten}
+  }
+public.inquiries.dossiers_these: >-
+  { count, plural,
+    =1{dit besluit}
+    other{deze # besluiten}
+  }
+public.inquiries.documents_with_case_number_in_dossiers: >-
+  { count, plural,
+    =1{# document met zaaknummer {casenumber} in {dossiers}}
+    other{# documenten met zaaknummer {casenumber} in {dossiers}}
+  }
+public.inquiries.documents_with_case_number_in_dossier: >-
+  { count, plural,
+    =1{# document met zaaknummer {casenumber} in <em>{dossierTitle}</em>}
+    other{# documenten met zaaknummer {casenumber} in <em>{dossierTitle}</em>}
+  }
+public.inquiries.documents_made_public: >-
+  { count, plural,
+    =1{# document is hierna openbaar gemaakt.}
+    other{# documenten zijn hierna openbaar gemaakt.}
+  }
+public.inquiries.documents_made_partially_public: >-
+  { count, plural,
+    =1{# document is hierna gedeeltelijk openbaar gemaakt.}
+    other{# documenten zijn hierna gedeeltelijk openbaar gemaakt.}
+  }
+public.inquiries.documents_were_already_public: >-
+  { count, plural,
+    =1{# document was reeds openbaar.}
+    other{# documenten waren reeds openbaar.}
+  }
+public.inquiries.documents_wont_be_published: >-
+  { count, plural,
+    =1{# document wordt niet openbaar gemaakt.}
+    other{# documenten worden niet openbaar gemaakt.}
+  }
+
+public.inquiries.document.open_or_download: "Download ({fileInfo} {fileSize}) of open pagina"
+
+public.documents.viewer.click_on_page: "Klik op een pagina om de {fileInfo} ({fileSize}) te openen in je browser"
+public.documents.viewer.document_preview: "Pagina-voorvertoning"
+public.documents.viewer.skip_document_preview: "Sla pagina-voorvertoning over"
+public.documents.viewer.back_to_document_preview: "Ga terug naar pagina-voorvertoning"
+public.documents.viewer.page_not_yet_processed: "Deze pagina is nog niet verwerkt door ons systeem"
+
+public.documents.judgement: "Beoordeling"
+public.documents.explanation: "Toelichting"
+public.documents.redacted: "Uitzonderingsgrond(en)"
+public.documents.redacted_comments: "Kom je in dit document gegevens tegen waarvan je denkt dat deze gelakt hadden moeten worden? Of is het document slecht leesbaar?"
+public.documents.let_us_know: "Laat het ons weten"
+public.documents.background: "Achtergrond"
+public.documents.determined_not_public: "Tijdens de beoordeling van het {dossier_type} heeft {department} besloten dit document niet openbaar te maken."
+public.documents.already_public: "Tijdens het beoordelen van dit document bleek dat de inhoud ervan al openbaar is."
+public.documents.find_content_at: "U kunt deze inhoud vinden op:"
+public.documents.reasons_are: >-
+  { count, plural,
+    =1{De reden hiervoor is}
+    other{De redenen hiervoor zijn}
+  }
+public.documents.not_yet_processed: "Dit document is nog niet geconverteerd in ons systeem. Het is niet mogelijk om individuele pagina's in te zien, maar het is mogelijk om het hele document te downloaden."
+public.documents.document_withdrawn: "Dit document is op dit moment niet beschikbaar. Het is op {date} ingetrokken. De reden dat het document is ingetrokken: {reason}."
+public.documents.document_suspended: "Er loopt nog een procedure over dit document met een betrokkene. We kunnen dit document daarom nog niet tonen."
+public.documents.procedure_in_progress: "Er loopt een procedure"
+public.documents.why_judgement_was_made: "Die beoordeling is gedaan omdat iemand het ministerie van Volksgezondheid, Welzijn en Sport gevraagd heeft interne informatie te openbaren."
+public.documents.part_of: "Onderdeel van"
+public.documents.attachment_of: "Bijlage van"
+
+public.publications.scope: "Omvang openbaarmaking"
+public.publications.inventory_list: Inventarislijst
+public.publications.production_report: "Productierapport"
+
+public.documents.judgement.public: "Dit document is door juristen beoordeeld en vervolgens openbaar gemaakt."
+public.documents.judgement.partial_public: "Dit document is door juristen beoordeeld en vervolgens deels openbaar gemaakt."
+public.documents.judgement.not_public: "Dit document is door juristen beoordeeld en vervolgens niet openbaar gemaakt."
+public.documents.judgement.already_public: "Dit document is door juristen beoordeeld en bleek reeds openbaar beschikbaar."
+public.documents.archive.download: "Download document archief"
+public.documents.inquiry.download: "Download zaak archief"
+public.documents.archive.download_suspended: "Het archief is nog niet gereed voor download. Probeer het over een paar minuten opnieuw."
+public.documents.archive.download_error: "Er is iets fout gegaan tijdens het genereren van het archief. Probeer het opnieuw."
+public.documents.archive.download_period: "Het archief is gereed voor download. Je kunt het archief downloaden tot {date}. Daarna moet het archief weer opnieuw worden gegenereerd."
+
+public.dossiers.type: "Informatiecategorie"
+public.dossiers.attachments: "Bijlagen bij dit"
+public.dossiers.covenant.tagline: "Convenant met omschrijving:"
+public.dossiers.covenant.description: "Een convenant is een schriftelijke set van afspraken tussen een overheidsorganisatie en één of meer andere partijen."
+public.dossiers.covenant.about: "Over dit convenant"
+public.dossiers.covenant.parties: "Partijen in het convenant"
+public.dossiers.covenant.previous_version: "Opvolger van vorig convenant"
+public.dossiers.covenant.document.reference_number: "Documentnummer"
+
+public.covenant.period: "Periode overeenkomst"
+
+
+"Type of disclosure": "Soort openbaarmaking"
+"Part of publication": "Onderdeel van publicatie"
+"Filter results": "Filter resultaten"
+none: geen
+More...: Meer...
 "Meanwhile, did you mean:": "Ondertussen, bedoelde u:"
 "Did you mean one of the following search terms:": "Bedoelde u een van de volgende zoektermen:"
 "Applied filters": "Ingestelde filters"
 "Remove filter": "Filter verwijderen"
-"All Wob and Woo decisions": "Alle Wob- en Woo-besluiten"
 "On this site, all COVID-19 related WOB and Woo decisions are published. These decisions cover the period xx to yy.": "Op deze site worden alle COVID-19 gerelateerde WOB- en Woo-besluiten gepubliceerd. Deze besluiten beslaan de periode xx tot yy."
 "Subscribe to new decisions (RSS feed)": "Abonneer op nieuwe besluiten (RSS-feed)"
 "Search through all Wob and Woo decisions": "Doorzoek Alle Wob- en Woo-besluiten"
-"Enter a search term": "Typ een zoekterm in"
-Search: Zoeken
 "Sort": "Sorteren op"
 "Date of decision": "Datum besluit"
 "newest first": "nieuwste bovenaan"
@@ -285,18 +625,14 @@ login: Inloggen
 "This document has not yet been converted in our system. It is not possible to view individual pages, but it is possible to download the entire document.": "Dit document is nog niet geconverteerd in ons systeem. Het is niet mogelijk om individuele pagina's in te zien, maar het is mogelijk om het hele document te downloaden."
 "The archive is not yet ready for download. Try again in a few minutes.": "Het archief is nog niet klaar voor downloaden. Probeer het over een paar minuten nog eens."
 "Something went wrong while generating the archive. Please try again.": "Er is iets fout gegaan tijdens het genereren van het archief. Probeer het nog eens."
-"An error has occurred": "Er is een fout opgetreden"
-"Something went wrong during the search. Try again later.": "Er is iets mis gegaan tijdens het zoeken. Probeer het later nog eens."
 "document number": documentnummer
-t/m: t/m
 "Did you mean:": "Bedoelde u misschien:"
 "Did you mean any of the following search terms:": "Bedoelde u misschien een van de volgende zoektermen:"
 "Set filters": "Ingestelde filters"
-"All COVID-19 related Wob and Woo documents and decisions will be published on this website from September 2023. Decisions from the previous period can be found on wobcovid19.rijksoverheid.nl and will soon also be available here.": "Op deze website worden alle COVID-19 gerelateerde Woo-documenten en besluiten vanaf september 2023 gepubliceerd. Besluiten uit de periode daarvoor zijn te vinden op wobcovid19.rijksoverheid.nl en komen binnenkort ook hier beschikbaar."
 "Type in a search term": "Typ een zoekterm in"
 "Published on": "Gepubliceerd op"
-"published on": "gepubliceerd op"
-"Date of publication": "Datum publicatie"
+
+
 "Decided on": "Besluit genomen op"
 Request: Verzoek
 Responsible(s): Verantwoordelijk(en)
@@ -304,7 +640,6 @@ Responsible(s): Verantwoordelijk(en)
 "Reasoning for decision": "Besluitbrief"
 "Download decision": "Download besluit"
 "Search in these documents...": "Zoeken in deze documenten..."
-"This page is not yet processed by our system": "Deze pagina is nog niet verwerkt door ons systeem"
 "No content found for this page": "Geen inhoud gevonden voor deze pagina"
 "Modifying your own account is not allowed": "Het wijzigen van je eigen account is niet toegestaan"
 "The user has been modified": "De gebruiker is gewijzigd"
@@ -320,27 +655,6 @@ Responsible(s): Verantwoordelijk(en)
 "Organisation created": "Organisatie aangemaakt"
 "Organisation modified": "Organisatie gewijzigd"
 "No documents selected": "Geen documenten geselecteerd"
-"This document is not yet processed. It is not possible to view individual pages, but you can download the complete document.": "Dit document is nog niet geconverteerd in ons systeem. Het is niet mogelijk om individuele pagina's in te zien, maar het is mogelijk om het hele document te downloaden."
-"Not yet processed": "Nog niet verwerkt"
-"Document preview": "Pagina-voorvertoning"
-"Skip documents preview": "Sla pagina-voorvertoning over"
-"Go back to documents preview": "Ga terug naar pagina-voorvertoning"
-Home: Home
-Go to homepage: ga naar de homepage
-You are here: Je bent hier
-Woo-dossier: Woo-besluit
-Dossier: Besluit
-Document: Document
-Dossier documents: Besluit documenten
-Documents that match the request: (Deels) openbaar gemaakt
-Public: Openbaar
-Not made public: Niet openbaar gemaakt
-Not public: Niet openbaar
-Not online: Niet online
-Not (yet) online: (Nog) niet online
-Search results: Zoekresultaten
-All published dossiers: Alle gepubliceerde besluiten
-Browse: Alle categorieen
 Admin: Beheer
 Department management: Alle bestuursorganen
 New department: Nieuw bestuursorgaan aanmaken
@@ -355,10 +669,7 @@ Inquiry management: Verzoeken beheer
 Token management: Token beheer
 New token: Nieuwe token
 Edit token: Token wijzigen
-User management: Alle gebruikers
 New user: Nieuwe gebruiker
-Edit user: Gebruiker bewerken
-"This link provides access to user management, where you have the opportunity to create, modify and delete user accounts, and manage their access rights.": "Deze link biedt toegang tot het gebruikersbeheer, waar u de mogelijkheid heeft om gebruikersaccounts aan te maken, te wijzigen en te verwijderen, en hun toegangsrechten te beheren."
 "Dossier management": "Besluit beheer"
 "This link provides access to the management of Woo requests, where you can view, manage and process new requests. Here you can also keep track of the status of existing requests and perform relevant actions.": "Deze link biedt toegang tot het beheer van Woo aanvragen, waar u nieuwe aanvragen kunt bekijken, beheren en verwerken. Hier kunt u ook de status van bestaande aanvragen bijhouden en relevante acties uitvoeren."
 "This link provides access to the management of tokens for dossier previews.": "Deze link biedt toegang tot het beheer van tokens voor besluit previews."
@@ -372,44 +683,17 @@ Token: Token
 Remark: Opmerking
 Expired: Verlopen
 Valid: Geldig
-Edit: Wijzigen
 "Modify token {token}": "Wijzig token {token}"
 Expiry: Verloopdatum
-"There are in total # requests found.": >-
-  { count, plural,
-    =0{Er zijn geen verzoeken gevonden.}
-    =1{Er is 1 verzoek gevonden.}
-    other{Er zijn in totaal # verzoeken gevonden.}
-  }
-Case number: Zaaknummer
-"Last update": "Laatste update"
 "Request new request": "Vraag nieuw verzoek aan"
 "Modify request": "Wijzig verzoek"
-"Create new user": "Nieuwe gebruiker aanmaken"
-User: Gebruiker
 Username: Gebruikersnaam
 e-mail: e-mail
 "Created at": "Aangemaakt op"
 Role: Rol
-Deactivated: Gedeactiveerd
 "This is you": "Dit ben jij"
 Modify: Wijzigen
 "User credentials": "Gebruikersgegevens"
-Name: Naam
-"Temporary password": "Tijdelijk wachtwoord"
-"This password is for one-time use. After logging in, you need to change the password.": "Dit wachtwoord is voor éénmalig gebruik. Je kiest zelf een wachtwoord na de eerste keer inloggen."
-"2fa code": "2fa code"
-"Scan this code with an authenticator app like Google Authenticator or Authy. During login you will be asked for an authentication code that can be requested via this authenticator app.": "Scan deze code in met een authenticator app zoals Google Authenticator of Authy. Er zal tijdens het inloggen gevraagd worden om een authenticatie code die via deze authenticator app is op te vragen."
-"Open the authenticator app, and enter the one-time verification code to login.": "Open de authenticator app en voer de éénmalige code in om in te loggen."
-"2fa recovery codes": "Herstelcodes"
-"If you can't log in with your authenticator app, you can use one of the following codes to log in. These codes can be used once.": "Bewaar onderstaande codes goed. Je kunt ze gebruiken als de authenticatie app op je telefoon niet meer werkt (bijvoorbeeld als je een nieuw toestel hebt). Deze herstelcodes zijn eenmalig te gebruiken."
-"Print this page": "Print deze pagina"
-"This user is currently disabled.": "Deze gebruiker is momenteel gedeactiveerd."
-"Modify user {name}": "Wijzig gebruiker {name}"
-"User information": "Gebruikersinformatie"
-"Access roles": "Toegangsrollen"
-"Disable user": "Gebruiker deactiveren"
-"Enable user": "Gebruiker activeren"
 "The user is currently deactivated. To activate the user, click the button below.": "De gebruiker is momenteel gedeactiveerd. Om de gebruiker te activeren, klik op de onderstaande knop."
 "Reset credentials": "Gebruikersgegevens opnieuw instellen"
 "A total of # besluiten are found.": >-
@@ -421,7 +705,6 @@ Name: Naam
 Search word...: Zoekwoord...
 Filter: Filter
 "The results are filtered.": "De resultaten zijn gefilterd."
-Dossier number: Besluitnummer
 disabled: gedeactiveerd
 "New dossier": "Nieuw besluit"
 "Document title": "Documentnaam"
@@ -429,16 +712,9 @@ disabled: gedeactiveerd
 "Create new dossier": "Nieuw besluit (dossier) aanmaken"
 "Dossier settings": "Besluit instellingen"
 "Dossier Status": "Besluit status"
-"Remove dossier": "Besluit verwijderen"
 "Warning: this will remove the dossier AND all documents that are only linked to this dossier!": "Waarschuwing: dit zal het besluit EN alle documenten die alleen aan dit besluit zijn gekoppeld verwijderen!"
 "Ingest dossier": "Ingest besluit"
 "This will ingest the current dossier's documents into the search engine.": "Dit zal de documenten van het huidige besluit in de zoekmachine opnemen."
-"Create new prefix": "Nieuwe prefix aanmaken"
-Prefix: Prefix
-"Modify prefix {prefix}": "Wijzig prefix {prefix}"
-"Create new organisation": "Organisatie toevoegen"
-"Create new department": "Nieuw bestuursorgaan aanmaken"
-"Modify department {name}": "Wijzig bestuursorgaan {name}"
 Last updated: "Laatst bijgewerkt"
 Msg Delivered Rate: "Msg Delivered Rate"
 Msg Delivered: "Msg Delivered"
@@ -452,61 +728,37 @@ RabbitMQ stats: "RabbitMQ stats"
 Total pages: "Totaal aantal pagina's"
 Documents available: "Documenten beschikbaar"
 Dossiers available: "Besluiten beschikbaar"
-Judgement: "Soort besluit"
-Grounds: "Uitzonderingsgrond"
-Lost your login details? Please contact the person who gave you access to the platform.: "Inloggegevens kwijt? Neem even contact op met de persoon die jou toegang heeft gegeven tot het platform."
 "Open the authenticator app, and enter the one-time verification code for the woo-platform.": "Open de authenticator app, en voer de eenmalige verificatiecode voor het woo-platform in."
-"Having problems with the authenticator app? Use a recovery code from the login instructions.": "Problemen met de authenticator app? Gebruik een herstelcode uit de inloginstructies."
 Welcome: "Welkom"
-doc: "Word-document"
-pdf: "PDF"
-presentation: "Presentatie"
-spreadsheet: "Spreadsheet"
-email: "E-mailbericht"
-image: "Afbeelding"
-html: "Webpagina"
-note: "Notitie"
-unknown: "Onbekend"
-database: "Database"
-xml: "XML"
-video: "Video"
-vcard: "Visitekaartje"
-Create new elasticsearch rollover: Rollover de elasticsearch index
-Elasticsearch management: Elasticsearch beheer
-Rollover into: Rollover naar
-Label: Label
-Expected: Verwacht
-In Elasticsearch: In Elasticsearch
-Percentage: Percentage
-Dossier count: Besluiten
-Promote to Live: Promoveren naar Live
-No rollover at the moment: Geen rollover op het moment
-Elasticsearch indices: Elasticsearch indices
+admin.elastic.rollover_initiated: Rollover wordt nu opgestart.
+admin.elastic.invalid_index: Deze index bestaat niet (meer).
+admin.elastic.cannot_delete_active_index: Kan geen index verwijderen die nog in gebruik is.
+admin.elastic.switch_initiated: De index wordt nu actief gemaakt.
+admin.elastic.activate_index: Index activeren
+admin.elastic.delete_index: Index verwijderen
+admin.elastic.mapping_version: Mapping versie
+admin.elastic.index_deleted: Index {index} is verwijderd
+admin.elastic.promote_to_live: Promoveren naar Live
+admin.elastic.no_rollover: Geen rollover op het moment
+admin.elastic.indexes: Elasticsearch indices
+admin.elastic.new_rollover: Nieuwe rollover
 Health: Health
 Object Count: Objecten
 Aliases: Aliassen
-Details: Details
-New rollover: Nieuwe rollover
-Index: Index
-Promote index to the live index: Promoveer index naar de live index
-"Are you sure you want to make this the live index?": "Weet je zeker dat je dit de live index wilt maken?"
 new: Nieuw
 concept: Concept
 completed: "Klaar voor publicatie"
 preview: "Online voor verzoekers"
 published: Openbaar
-retracted: Teruggetrokken
 scheduled: Publicatie gepland
 Pagination: Paginering
 Dossier with number {dossier_nr}: "Besluit {dossier_nr}"
 Documents with casenumber {case_nr}: "Documenten met zaaknummer {case_nr} "
 Dossiers with casenumber {case_nr}: "Besluiten voor zaaknummer {case_nr}"
-"Decision about...": "Besluit over..."
 "Published date": "Publicatiedatum"
 "Org & reference": "Org & referentie"
 "Search with case, file or document number": "Zoeken op zaaknummer, besluit, documentnummer"
 "All dossiers": "Alle besluiten"
-"Dossiers": "Besluiten"
 No dossiers: "Geen besluiten"
 wob_request: "Wob-verzoek"
 woo_request: "Woo-verzoek"
@@ -515,88 +767,51 @@ public: Openbaar
 already_public: Reeds openbaar
 partial_public: Deels openbaar
 not_public: Niet openbaar
-"Page not found": "Pagina niet gevonden"
-"The page/document you are looking for does not exist or is not available.": "De pagina of het document dat je zoekt, bestaat niet of is niet beschikbaar."
 "Access denied": "Toegang geweigerd"
 "You do not have the required access rights to view this page or document.": "Je hebt niet de toegangsrechten die nodig zijn om deze pagina of dit document te mogen bekijken."
-"Page or document not available": "Pagina of document niet beschikbaar"
-"The requested page or document is not available.": "De pagina of het document dat je zoekt, is momenteel niet beschikbaar."
 "Status code ": "Status code "
 "Go back to the homepage": "Ga terug naar de homepage"
 "About this decision": "Over dit besluit"
-Show less: "Toon minder"
-Show more: "Toon meer"
 Collapse group: "Groep inklappen"
 Expand group: "Groep uitklappen"
 Results: Resultaten
 "/about": "/over-deze-website"
 "/accessibility": "/toegankelijkheid"
-Roles: Rollen
-Super administrator: Super beheerder
-Global administrator: Beheerder
-User administrator: Gebruikers-beheer
-Dossier administrator: Besluiten-beheer
-Request administrator: Aanvraag beheerder
-Reset password: Wachtwoord resetten
 Password changed: Wachtwoord succesvol gewijzigd
 Reset two factor authentication: Twee factor authenticatie resetten
 Woo Wob request info: "Een Woo-verzoek is een verzoek om toegang tot overheidsinformatie in Nederland volgens de Wet Open Overheid. Een Wob-verzoek is een officieel verzoek aan een overheidsinstantie om specifieke informatie of documenten openbaar te maken volgens de Wet openbaarheid van bestuur."
 More about Woo Wob requests: "Meer weten over Woo/Wob-verzoeken"
-"Go to search results": "Ga naar de zoekresultaten"
 No search results: "Geen zoekresultaten"
 No documents found related to {query}: 'We konden geen documenten vinden die passen bij uw zoekopdracht "{query}"'
 Suggestions: "Suggesties"
 Check query spelling: "Controleer de spelling van uw zoekopdracht"
 Try a different search term: "Probeer een andere zoekterm"
 Use less keywords: "Gebruik minder zoekwoorden"
-"at": "om"
 Dossiers and documents for case number {case_number}: "Besluiten en documenten voor zaaknummer {case_number}"
 "{number_of_decisions} made for case": "Er {are_or_is} {number_of_decisions} genomen voor het verzoek om informatie te openbaren met zaaknummer {case_number}"
-Document withdrawn: "Dit document is op dit moment niet beschikbaar. Het is op {date} ingetrokken. De reden dat het document is ingetrokken: {reason}."
-Document suspended: "Er loopt nog een procedure over dit document met een betrokkene. We kunnen dit document daarom nog niet tonen."
-Suspended: "Er loopt een procedure"
 publication.status.suspended: "Opgeschort"
 publication.status.withdrawn: "Ingetrokken"
-Document determined to be not public: "Tijdens de beoordeling van het {dossier_type} heeft {department} besloten dit document niet openbaar te maken."
-Document already public: "Tijdens het beoordelen van dit document bleek dat de inhoud ervan al openbaar is."
-You can find this content at: "U kunt deze inhoud vinden op:"
-"Reasons are": >-
-  { count, plural,
-    =1{De reden hiervoor is}
-    other{De redenen hiervoor zijn}
-  }
-Explanation: "Toelichting"
 DATA_IN_DOCUMENT: 'Ongelakte gegevens in het document'
 DATA_IN_FILE: 'Ongelakte gegevens in de bestandsnaam'
 SUSPENDED_DOCUMENT: 'Document is nog opgeschort'
 UNREADABLE_DOCUMENT: 'Document is onleesbaar'
 INCORRECT_ATTACHMENT: 'De bijlage hoort niet bij het document'
-
 data_in_document: 'Ongelakte gegevens in het document'
 data_in_file: 'Ongelakte gegevens in de bestandsnaam'
 suspended_document: 'Document is nog opgeschort'
 unreadable_document: 'Document is onleesbaar'
 incorrect_attachment: 'De bijlage hoort niet bij het document'
-
-Withdraw document: 'Document intrekken'
-Withdraw: 'Intrekken'
-Document has been withdrawn: 'Het document is ingetrokken'
-Withdrawn: 'Ingetrokken'
-Withdraw all documents: 'Alle documenten intrekken'
-Document judged as public: "Dit document is door juristen beoordeeld en vervolgens openbaar gemaakt."
-Document judged as partial_public: "Dit document is door juristen beoordeeld en vervolgens deels openbaar gemaakt."
-Document judged as not_public: "Dit document is door juristen beoordeeld en vervolgens niet openbaar gemaakt."
-Document judged as already_public: "Dit document is door juristen beoordeeld en bleek reeds openbaar beschikbaar."
-Why judgement was made: "Die beoordeling is gedaan omdat iemand het ministerie van Volksgezondheid, Welzijn en Sport gevraagd heeft interne informatie te openbaren."
 More info about request below: "Hieronder meer informatie over dat verzoek en het besluit"
 complete_step_details: "Maak eerst details compleet"
 complete_step_decision: "Maak eerst besluit compleet"
 complete_step_documents: "Maak eerst documenten compleet"
 complete_step_publication: "Het besluit is compleet maar nog niet gepubliceerd"
+complete_step_content: "Maak eerst convenant compleet"
 workflow_step_details: "Basisgegevens"
 workflow_step_decision: "Besluit"
 workflow_step_documents: "Documenten"
 workflow_step_publication: "Publicatie"
+workflow_step_content: "Convenant"
 "Not applicable to decision": 'Niet van toepassing op besluit "{decision}"'
 "Filename doesn't match document number": "De bestandsnaam {filename} komt niet overeen met documentnummer {documentnr}"
 New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
@@ -616,7 +831,6 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Reference number": "Referentienummer"
 "Give a name to the decision": "Geef een naam aan het besluit"
 "Replace inventory": "Productierapport vervangen"
-"Delete dossier": "Besluit verwijderen"
 "Line {line_number} error: {error}": "Regel {line_number}: {error}"
 "Document {document_id} already exists in another dossier": "documentnummer {document_id} bestaat al in een ander dossier"
 "Inventory file is not provided": "De upload van de inventaris is mislukt"
@@ -642,58 +856,11 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Inventory processing exceeded maximum runtime": "De verwerking van het productierapport heeft de maximale duur overschreden"
 "Save": "Opslaan"
 "Users identify themselves with their email address. We do not use the email address to share password or other login information.": "Gebruikers identificeren zich met hun e-mailadres. We gebruiken het e-mailadres niet voor het delen van wachtwoord of andere login-gegevens."
-"Management platform woo publications Ministry of Health, Welfare and Sport": "Beheer platform woo-publicaties Ministerie van VWS"
-"You need these instructions to activate your account for the management platform.": "Deze instructies heb je nodig om jouw account voor het beheerplatform te activeren."
-"Set up authenticator app": "authenticator app instellen"
-"Danger zone": "Gevarenzone"
-"Organisation administrator": "Organisatie-beheer"
-"View access": "Alleen lezen"
-"This user is allowed system wide operations.": "Alle rechten (inclusief beheer van de Beheerder rol)."
-"This user is allowed every operation in the administration system.": "Alle rechten op alle organisaties."
-"This user has administrative permissions in the attached organisation(s).": "Beheren van gebruikers en metadata binnen eigen organisatie."
-"This user can create and manage dossiers including the documents in the attached organisation(s).": "Beheren van besluiten en documenten."
-"This user has view access to the attached organisation(s).": "Bekijken van (concept) besluiten en documenten."
-"Last log in": "Laatst ingelogd"
-"First and last name": "Voor- en achternaam"
-"For example John Doe": "Bijvoorbeeld Jan de Vries"
-"Create user": "Account aanmaken"
-"Indicate what this user is allowed to do.": "Geef aan wat deze gebruiker mag doen."
-"Login page": "Loginpagina"
-"Recovery codes": "Herstelcodes"
-"Current password": "Huidig wachtwoord"
-"New password": "Nieuw wachtwoord"
-"Repeat new password": "Herhaal nieuw wachtwoord"
-"The password fields must match": "Vul voor het nieuwe wachtwoord twee keer hetzelfde wachtwoord in"
-"The password is a common password or similar": "Het wachtwoord is een veelvoorkomend wachtwoord of vergelijkbaar"
-"Login instructions for": "Login instructies voor"
-"Download these instructions and send them to the user in a secure manner.": "Download deze instructies en stuur ze op een veilige manier naar de gebruiker."
-"Have you shared the login instructions?": "Heb je de inlog-instructies gedeeld?"
-"Please note: this is the only time you can download these instructions": "Let op: dit is het enige moment dat je deze instructies kunt downloaden"
-"Download inlog instructions": "Download instructies"
-"Yes, I have shared them": "Ja, ik heb ze gedeeld"
-"This account is created": "Het account is aangemaakt"
-"This account is updated": "Dit account is bijgewerkt"
-"Help with login problems?": "Hulp bij inlogproblemen?"
-"Reset 2FA": "2FA resetten"
-"Forgot your password?": "Wachtwoord vergeten?"
-"Reset the password. You will receive new login instructions that allow the user to choose a new password themselves.": "Reset het wachtwoord. Je krijgt nieuwe inloginstructies waarmee de gebruiker zelf een nieuw wachtwoord kan kiezen."
-"New phone or authenticator app?": "Nieuwe telefoon of authenticator app?"
-"Reset the two factor code. You will receive new login instructions that allow the user to reset the two-factor authenticator.": "Reset de twee factor code. Je krijgt nieuwe inloginstructies waarmee de gebruiker de twee factor authenticator opnieuw kan instellen."
-"Short name": "Afkorting"
-"Name of the department": "Naam van het bestuursorgaan (minimaal 2 karakters)"
-"Short name of the department": "Afkorting van het bestuursorgaan (minimaal 2 en maximaal 10 karakters)"
-"Users identify themselves with their email address. We do not use the email address to provide passwords or other login information.": "Gebruikers identificeren zich met hun e-mailadres. We gebruiken het e-mailadres niet voor het verstrekken van wachtwoorden of andere login-gegevens."
-"Deactivate account": "Account deactiveren"
-"Activate account": "Account activeren"
 "Full name": "Volledige naam"
 "Choose an organisation": "Kies een organisatie"
 "Account of {name} has been enabled.": "Account van {name} is geactiveerd."
 "Account of {name} has been disabled.": "Account van {name} is gedeactiveerd."
 "Privacy statement for platform employees Open Government Act (Woo)": "Privacyverklaring voor medewerkers platform Wet open overheid (Woo)"
-"Cases": "Zaken"
-"Famous case numbers": "Alle zaaknummers"
-"Link to case": "Link naar zaak"
-"Link case numbers to decisions or documents": "Zaaknummer aan besluiten of documenten koppelen"
 "Case numbers are being been linked": "De zaaknummers worden gekoppeld"
 "Link case number": "Zaaknummer koppelen"
 "Link case numbers to previously published documents on the platform or to previously published decisions.": "Koppel zaaknummers aan eerder gepubliceerde documenten op het platform of aan eerder gepubliceerde besluiten"
@@ -701,41 +868,16 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Link to documents": "Koppel aan documenten"
 "Link to dossiers": "Koppel aan besluiten"
 "Attach": "Koppelen"
-"Cancel": "Annuleren"
+
 "Link case numbers to previously published documents on the platform": "Koppel zaaknummers aan eerder gepubliceerde documenten op het platform"
 "Upload an Excel document containing the document numbers, matters and case numbers to be linked (View example).": "Upload een Excel document met daarin de documentnummers, matters en te koppelen zaaknummers (<a href=\"/documenten/voorbeeld_excel_extra_zaaknummers.xlsx\" class=\"bhr-a\">Bekijk voorbeeld</a>)."
 "Select decision prefix": "Selecteer de prefix van het besluit"
-"# documents added": >-
-  { count, plural,
-    =1{# nieuw document wordt toegevoegd aan het besluit.}
-    other{# nieuwe documenten worden toegevoegd aan het besluit.}
-  }
-"# documents updated": >-
-  { count, plural,
-    =1{# bestaand document wordt aangepast.}
-    other{# bestaande documenten worden aangepast.}
-  }
 "if you continue the inventory will be replaced": "Als je verdergaat, wordt het oude productierapport in dit besluit vervangen."
 "This has the following consequences": "Dit heeft de volgende gevolgen"
 "Inventory uploaded and checked": "Productierapport geüpload en gecontroleerd"
 "Confirm inventory replacement": "Ok, vervang productierapport"
 "Reject inventory replacement": "Annuleren"
-"Indicate what this user is allowed to do, multiple options are possible": "Geef aan wat deze gebruiker mag doen, meerdere opties zijn mogelijk"
-"these # dossiers": >-
-  { count, plural,
-    =1{dit besluit}
-    other{deze # besluiten}
-  }
-"# documents with casenumber {casenumber} in {dossiers}": >-
-  { count, plural,
-    =1{# document met zaaknummer {casenumber} in {dossiers}}
-    other{# documenten met zaaknummer {casenumber} in {dossiers}}
-  }
-"# documents with casenumber {casenumber} in dossier {dossierTitle}": >-
-  { count, plural,
-    =1{# document met zaaknummer {casenumber} in <em>{dossierTitle}</em>}
-    other{# documenten met zaaknummer {casenumber} in <em>{dossierTitle}</em>}
-  }
+
 "Download and browse selected documents": "Download en doorzoek geselecteerde documenten"
 "Filter documents. By changing the value this page will refresh and show the data for the selected value.": "Filter de documenten. Bij het veranderen van de selectie wordt deze pagina herladen en worden de gegevens voor de geselecteerde waarde getoond."
 "Download the inventory for casenumber {casenumber}": "Download de inventarislijst zaaknummer {casenumber}"
@@ -745,49 +887,13 @@ New decision file - basic data: "Nieuw besluitdossier - basisgegevens"
 "Nothing chosen yet": "Nog niets gekozen"
 "Published decisions": "Gepubliceerde besluiten"
 "Document {documentNr} does not exist": "Documentnummer {documentNr} bestaat niet"
-"Submit filter": "Filteren"
-"# documents made public": >-
-  { count, plural,
-    =1{# document is hierna openbaar gemaakt.}
-    other{# documenten zijn hierna openbaar gemaakt.}
-  }
-"# documents made partial public": >-
-  { count, plural,
-    =1{# document is hierna gedeeltelijk openbaar gemaakt.}
-    other{# documenten zijn hierna gedeeltelijk openbaar gemaakt.}
-  }
-"# documents were already public": >-
-  { count, plural,
-    =1{# document was reeds openbaar.}
-    other{# documenten waren reeds openbaar.}
-  }
-"# documents will not be published": >-
-  { count, plural,
-    =1{# document wordt niet openbaar gemaakt.}
-    other{# documenten worden niet openbaar gemaakt.}
-  }
-'Contact us': 'Neem contact met ons op'
-'Question about how something works?': 'Vraag over hoe iets werkt?'
-'Please contact your coordinator.': 'Neem dan even contact op met je coördinator.'
-'Question or comment for the developers?': 'Vraag of opmerking voor de ontwikkelaars?'
-"Are you encountering technical problems while using this website? Or do you have ideas that would make the system easier to use? Please let us know via woo-platform@irealisatie.nl.": "Loop je tijdens het gebruiken van deze website tegen technische problemen aan? Of heb je ideeën die het systeem makkelijker in gebruik zouden maken? Laat het ons dan weten via <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl.</a>"
-'Are you sure?': 'Weet je het zeker?'
-'If you continue, you will no longer be able to log in with your old password. You can download your new temporary login instructions on the next page. Make sure you keep this safe.': 'Als je doorgaat kan de gebruiker niet meer inloggen met het oude wachtwoord. Je kan op de volgende pagina de nieuwe, tijdelijke inloginstructies downloaden voor de gebruiker. Zorg dat de gebruiker deze veilig bewaart.'
-"Resetting the two factor code means that we remove the old two factor code from our system forever. If you request a new two-factor code, make sure you keep it for yourself in a safe manner. If you click 'Yes' you will receive the new two factor code.": "Resetten van de twee factor code betekent dat we de oude twee factor code voor altijd verwijderen uit ons systeem. Als je een nieuwe twee factor code aanvraagt zorg dan dat je deze op een veilige manier voor jezelf bewaart. Als je op 'Ja' klikt zal je de nieuwe twee factor code ontvangen."
-'Yes, reset the password': 'Ja, reset het wachtwoord'
-'Yes, reset the two factor code': 'Ja, reset de twee factor code'
 'At this moment no documents are available for the inquiry with casenumber {casenumber}': 'Er zijn op dit moment geen documenten beschikbaar voor het verzoek met zaaknummer {casenumber}'
-'On {dates} new dossiers will be available on this page': 'Op {dates} komt op deze pagina een nieuw (deel)besluit beschikbaar.'
 'and on': 'en op'
-'Organisation management': 'Organisaties beheren'
-'History': 'Geschiedenis'
 'History of this document': 'Geschiedenis van dit document'
 'history': 'geschiedenis'
 Manage organisations: 'Organisaties beheren'
 Modify organisation {name}: 'Wijzig organisatie {name}'
 Create organisation: 'Organisatie aanmaken'
-No dossiers match the filters: 'Er zijn geen besluiten gevonden die aan de filters voldoen.'
-No dossiers have been created yet: 'Er zijn nog geen besluiten aangemaakt.'
 
 history.dossier_created.private: 'Besluitdossier aangemaakt'
 history.dossier_created.public: null
@@ -801,8 +907,6 @@ history.dossier_state_preview.private: 'Online voor verzoekers'
 history.dossier_state_preview.public: null
 history.dossier_state_published.private: 'Openbaar voor iedereen'
 history.dossier_state_published.public: 'Gepubliceerd'
-history.dossier_state_retracted.private: 'Teruggetrokken'
-history.dossier_state_retracted.public: 'Teruggetrokken'
 history.dossier_update_decision.private: 'Nieuwe besluitbrief toegevoegd ({filename}, {filesize})'
 history.dossier_update_decision.public: 'Besluitbrief vervangen ({filetype}, {filesize})'
 history.dossier_update_inventory.private: 'Nieuwe inventarislijst toegevoegd ({filename}, {filesize})'
@@ -812,7 +916,7 @@ history.dossier_update_preview_date.public: null
 history.dossier_update_publication_date.private: 'Datum publicatie aangepast naar {date}'
 history.dossier_update_publication_date.public: null
 history.dossier_inquiry_added.public: null
-"history.dossier_inquiry_added.private": >-
+history.dossier_inquiry_added.private: >-
   { count, plural,
     =1{Toegevoegd aan zaak {casenrs}}
     other{Toegevoegd aan zaken {casennrs}}
@@ -837,34 +941,41 @@ history.document_withdraw.private: 'Ingetrokken: {explanation} ({explanation_det
 history.document_withdraw.public: 'Ingetrokken met reden: {explanation}'
 history.document_removed.private: 'Verwijderd'
 history.document_removed.public: 'Verwijderd'
-'date {date} cannot be parsed': 'de datum "{date}" heeft niet het juiste formaat'
-'history.value.decision_date': 'Besluit datum'
-'history.value.summary': 'Samenvatting'
-'history.value.title': 'Titel'
+date {date} cannot be parsed: 'de datum "{date}" heeft niet het juiste formaat'
+history.value.decision_date: 'Besluit datum'
+history.value.summary: 'Samenvatting'
+history.value.title: 'Titel'
 history.dossiers_added.private: '{count} besluitdossier(s) toegevoegd'
 history.dossiers_added.public: '{count} besluitdossier(s) toegevoegd'
 history.documents_added.private: '{count} document(en) toegevoegd'
 history.documents_added.public: '{count} document(en) toegevoegd'
+history.decision_attachment_created.public: 'Bijlage toegevoegd ({filename}, {filesize})'
+history.decision_attachment_created.private: 'Nieuwe bijlage geüpload ({filename}, {filesize})'
+history.decision_attachment_deleted.private: 'Bijlage verwijderd ({filename}, {filesize})'
+history.decision_attachment_updated.public: 'Bijlage vervangen ({filename}, {filesize})'
+history.decision_attachment_updated.private: 'Bijlage gewijzigd ({filename}, {filesize})'
 
-document.date.date_not_available: 'Datum niet beschikbaar'
-document.date.not_available: 'niet beschikbaar'
-"public.documents.strong_relationship": "Sterke relatie"
-"public.documents.refers_to": "{has_or_have} een sterke relatie met dit document."
-"public.documents.referred_by": "Documenten die naar dit document verwijzen"
-
-"generic.and": "en"
-"generic.or": "of"
-
-"public.navigation.label": "Menu"
-
-"public.then_contact_ministry": 'Neem dan contact op met het <span class="font-bold">{ministry}</span>'
-
-"public.other_ministry_responsible": '{source} valt niet onder de verantwoordelijkheid van het Ministerie van Volksgezondheid, Welzijn en Sport. Voor vragen of toelichting verwijzen we naar het <span class="font-bold">{ministry}</span>.'
-"public.dossier.this_dossier": "dit besluit"
-"public.document.this_document": "dit document"
+public.then_contact_ministry: 'Neem dan contact op met het <span class="font-bold">{ministry}</span>'
+public.other_ministry_responsible: '{source} valt niet onder de verantwoordelijkheid van het Ministerie van Volksgezondheid, Welzijn en Sport. Voor vragen of toelichting verwijzen we naar het <span class="font-bold">{ministry}</span>.'
+public.dossier.this_dossier: "dit besluit"
+public.document.this_document: "dit document"
 
 search.results_without_date: >-
   { count, plural,
     =1 {Er is {pre_document}1 document of dossier{post_document} waarvan we de datum niet weten, die verder wel aan je zoekopdracht voldoet.}
     other {Er zijn {pre_document}# documenten en/of dossiers{post_document} waarvan we de datum niet weten, die verder wel aan je zoekopdracht voldoen.}
   }
+admin.menu.dossiers: 'Publicaties'
+admin.dossier.list.title: 'Alle publicaties'
+admin.dossier.list.category: 'Categorie'
+admin.dossier.list.create: 'Nieuwe publicatie'
+admin.dossier.list.no_dossiers_exist: 'Er zijn nog geen publicaties aangemaakt'
+admin.dossier.list.no_matches_found: 'Er zijn geen publicaties gevonden die aan de filters voldoen.'
+dossier.type.covenant.description: 'Afspraken over de samenwerking met andere organisaties'
+dossier.type.woo-decision: 'Woo-besluit'
+dossier.type.covenant: 'Convenant'
+dossier.type.woo-decision.description: 'Reactie op een woo-verzoek van een burger, organisatie of pers'
+admin.publication.start_new_publication: 'Nieuwe publicatie voorbereiden'
+admin.publication.pick_a_type: 'Kies de informatiecategorie'
+admin.users.error.edit_own_account_not_allowed: 'Het is niet mogelijk je eigen account aan te passen.'
+admin.users.error.edit_other_organisation_account_not_allowed: 'Je hebt niet de rechten om deze gebruiker aan te passen.'

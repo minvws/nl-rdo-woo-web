@@ -1,0 +1,19 @@
+{% extends 'admin.html.twig' %}
+
+{% block inline_style %}
+    {% include 'admin/dossier/workflow-styles.html.twig' %}
+{% endblock %}
+
+{% block body %}
+    <div class="bhr-container bhr-container--sm">
+        <h1 class="bhr-title text-center mb-10">{{ dossier.title }}</h1>
+
+        {% include 'admin/dossier/workflow.html.twig' %}
+
+        {% if dossier.needsInventoryAndDocuments %}
+            {% include 'admin/dossier/woo-decision/documents/form.html.twig' %}
+        {% else %}
+            Op basis van het besluit '{{ dossier.decision | decision }}' heeft dit dossier geen productierapport en/of documenten.
+        {% endif %}
+    </div>
+{% endblock %}

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Result;
 
-use App\Entity\Document;
-use App\Entity\Dossier;
+use App\Domain\Search\Result\ResultEntryInterface;
+use App\Domain\Search\Result\ResultFactory;
 use App\Entity\Inquiry;
 use App\Service\Search\Model\Aggregation;
 use App\Service\Search\Model\Config;
@@ -33,6 +33,7 @@ class ResultTransformer
         protected LoggerInterface $logger,
         protected PaginatorInterface $paginator,
         private readonly AggregationMapper $aggregationMapper,
+        private readonly ResultFactory $resultFactory,
     ) {
     }
 
@@ -115,10 +116,10 @@ class ResultTransformer
         // Add all found hits and their documents
         $entries = [];
         foreach ($typedResponse->getIterable('[hits][hits]') as $hit) {
-            $entries[] = $this->extractDocument($hit);
+            $entries[] = $this->resultFactory->map($hit);
         }
 
-        /** @var ResultEntry[] $entries */
+        /** @var ResultEntryInterface[] $entries */
         $result->setEntries(array_filter($entries));
 
         return $result;
@@ -185,87 +186,6 @@ class ResultTransformer
         }
 
         return $ret;
-    }
-
-    protected function extractDocument(TypeArray $hit): ?ResultEntry
-    {
-        return match ($hit->getString('[fields][type][0]')) {
-            'document' => $this->extractDocumentEntry($hit),
-            'dossier' => $this->extractDossierEntry($hit),
-            default => null,
-        };
-    }
-
-    protected function extractDocumentEntry(TypeArray $hit): ?ResultEntry
-    {
-        $documentNr = $hit->getStringOrNull('[fields][document_nr][0]');
-        if (is_null($documentNr)) {
-            return null;
-        }
-
-        $document = $this->doctrine->getRepository(Document::class)->getDocumentSearchEntry($documentNr);
-        if (! $document) {
-            return null;
-        }
-
-        $dossiers = $this->doctrine->getRepository(Dossier::class)->getDossierReferencesForDocument($documentNr);
-
-        $highlightPaths = [
-            '[highlight][pages.content]',
-            '[highlight][dossiers.title]',
-            '[highlight][dossiers.summary]',
-        ];
-        $highlightData = $this->getHighlightData($hit, $highlightPaths);
-
-        return new \App\Service\Search\Result\Document(
-            $document,
-            $dossiers,
-            $highlightData,
-        );
-    }
-
-    protected function extractDossierEntry(TypeArray $hit): ?ResultEntry
-    {
-        $prefix = $hit->getStringOrNull('[fields][document_prefix][0]');
-        $dossierNr = $hit->getStringOrNull('[fields][dossier_nr][0]');
-        if (is_null($prefix) || is_null($dossierNr)) {
-            return null;
-        }
-
-        $dossier = $this->doctrine->getRepository(Dossier::class)->getDossierSearchEntry($prefix, $dossierNr);
-        if (! $dossier) {
-            return null;
-        }
-
-        $highlightPaths = [
-            '[highlight][title]',
-            '[highlight][summary]',
-            '[highlight][decision_content]',
-        ];
-        $highlightData = $this->getHighlightData($hit, $highlightPaths);
-
-        return new \App\Service\Search\Result\Dossier(
-            $dossier,
-            $highlightData,
-        );
-    }
-
-    /**
-     * @param string[] $paths
-     *
-     * @return string[]
-     */
-    protected function getHighlightData(TypeArray $hit, array $paths): array
-    {
-        $highlightData = [];
-        foreach ($paths as $path) {
-            if ($hit->exists($path)) {
-                $highlightData = array_merge($highlightData, $hit->getTypeArray($path)->toArray());
-            }
-        }
-
-        /** @var string[] $highlightData */
-        return $highlightData;
     }
 
     /**

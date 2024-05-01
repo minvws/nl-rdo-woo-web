@@ -1,0 +1,370 @@
+{
+    "0": {
+        "type": "AttachmentTypeBranch",
+        "label": "adviesdocument",
+        "subbranch": null,
+        "attachmentTypes": [
+            {
+                "type": "AttachmentType",
+                "value": "c_d506b718",
+                "label": "advice"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_a40458df",
+                "label": "request_for_advice"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_0e425c23",
+                "label": "advisort_proposal"
+            }
+        ]
+    },
+    "1": {
+        "type": "AttachmentTypeBranch",
+        "label": "beleidsdocument",
+        "subbranch": null,
+        "attachmentTypes": [
+            {
+                "type": "AttachmentType",
+                "value": "c_dfa0ff1f",
+                "label": "budget"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_9376c730",
+                "label": "policy_note"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_2977c34f",
+                "label": "decision_note"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_a6f44748",
+                "label": "annual_plan"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_3d782f30",
+                "label": "annual_report"
+            }
+        ]
+    },
+    "2": {
+        "type": "AttachmentTypeBranch",
+        "label": "beleidsdocument",
+        "subbranch": {
+            "type": "AttachmentTypeBranch",
+            "label": "rapport",
+            "subbranch": null,
+            "attachmentTypes": [
+                {
+                    "type": "AttachmentType",
+                    "value": "c_8b92eab4",
+                    "label": "official_message"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_38ba44de",
+                    "label": "evaluation_report"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_4efe1293",
+                    "label": "inspection_report"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_6f49bf34",
+                    "label": "research_report"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_99d3e284",
+                    "label": "accountability_report"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_cccba364",
+                    "label": "progress_report"
+                }
+            ]
+        },
+        "attachmentTypes": [
+            {
+                "type": "AttachmentType",
+                "value": "c_a1dae55d",
+                "label": "term_agenda"
+            }
+        ]
+    },
+    "3": {
+        "type": "AttachmentTypeBranch",
+        "label": "beschikking",
+        "subbranch": {
+            "type": "AttachmentTypeBranch",
+            "label": "beschikking tot handhaving",
+            "subbranch": null,
+            "attachmentTypes": [
+                {
+                    "type": "AttachmentType",
+                    "value": "c_45be34e9",
+                    "label": "decision_to_impose_a_fine"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_a55b7649",
+                    "label": "decision_to_impose_an_order_under_administrative_enforcement"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_566a4430",
+                    "label": "decision_to_impose_an_order_subject_to_penalty"
+                }
+            ]
+        },
+        "attachmentTypes": [
+            {
+                "type": "AttachmentType",
+                "value": "c_c1956ef0",
+                "label": "designation_decision"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_acb44d77",
+                "label": "appointment_decision"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_e0865e4d",
+                "label": "decision_on_request_art3_wob"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_bcaddc61",
+                "label": "decision_on_request_art4_1_woo"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_30e8b503",
+                "label": "concession"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_2ab17960",
+                "label": "recognition_decision"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_2c0438f4",
+                "label": "consent_decision"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_f7dc55d9",
+                "label": "exemption_decision"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_aebfec50",
+                "label": "subsidy_decision"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_002fc258",
+                "label": "permit"
+            }
+        ]
+    },
+    "4": {
+        "type": "AttachmentTypeBranch",
+        "label": "brief",
+        "subbranch": null,
+        "attachmentTypes": [
+            {
+                "type": "AttachmentType",
+                "value": "c_7652d853",
+                "label": "letter"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_97f44ea5",
+                "label": "brochure"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_3eb5572a",
+                "label": "circular"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_c2f56984",
+                "label": "news_item"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_9ecc0007",
+                "label": "organization_details"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_7eba29ad",
+                "label": "press_release"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_2aedadff",
+                "label": "speech"
+            }
+        ]
+    },
+    "6": {
+        "type": "AttachmentTypeBranch",
+        "label": "document van burger",
+        "subbranch": null,
+        "attachmentTypes": [
+            {
+                "type": "AttachmentType",
+                "value": "c_8ec8e5e7",
+                "label": "application_art_4_1_woo"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_06a67c95",
+                "label": "objection"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_ef935990",
+                "label": "complaint"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_d943ca24",
+                "label": "exemption_request"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_5824891d",
+                "label": "subsidy_application"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_dad2a6ed",
+                "label": "permit_application"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_dd451365",
+                "label": "wob_request"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_df2cb56e",
+                "label": "point_of_view"
+            }
+        ]
+    },
+    "7": {
+        "type": "AttachmentTypeBranch",
+        "label": "parlementair document",
+        "subbranch": {
+            "type": "AttachmentTypeBranch",
+            "label": "Kamervraag",
+            "subbranch": null,
+            "attachmentTypes": [
+                {
+                    "type": "AttachmentType",
+                    "value": "c_6d494ab6",
+                    "label": "parliamentary_qustion_with_answer"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_03c52ba0",
+                    "label": "parliamentary_qustion_without_answer"
+                }
+            ]
+        },
+        "attachmentTypes": [
+            {
+                "type": "AttachmentType",
+                "value": "c_a17ef403",
+                "label": "actions"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_056a75e1",
+                "label": "parliamentary_document"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_f1652921",
+                "label": "non_dossier_document"
+            }
+        ]
+    },
+    "8": {
+        "type": "AttachmentTypeBranch",
+        "label": "publicatieblad",
+        "subbranch": null,
+        "attachmentTypes": [
+            {
+                "type": "AttachmentType",
+                "value": "c_61e3099a",
+                "label": "government_gazette"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_0670bae1",
+                "label": "staatscourant"
+            }
+        ]
+    },
+    "9": {
+        "type": "AttachmentTypeBranch",
+        "label": "regelgeving",
+        "subbranch": null,
+        "attachmentTypes": [
+            {
+                "type": "AttachmentType",
+                "value": "c_fbaa7e4b",
+                "label": "policy"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_5b1055aa",
+                "label": "plan"
+            }
+        ]
+    },
+    "10": {
+        "type": "AttachmentTypeBranch",
+        "label": "vergaderstuk",
+        "subbranch": null,
+        "attachmentTypes": [
+            {
+                "type": "AttachmentType",
+                "value": "c_f90465b3",
+                "label": "agenda"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_d4a4792f",
+                "label": "decision_list"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_de27ae7a",
+                "label": "incoming_document"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_42e406dd",
+                "label": "meeting_report"
+            }
+        ]
+    }
+}

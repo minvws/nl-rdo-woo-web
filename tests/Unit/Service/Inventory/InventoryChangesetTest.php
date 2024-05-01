@@ -19,12 +19,12 @@ class InventoryChangesetTest extends MockeryTestCase
     public function testIsEmpty(): void
     {
         $changeset = new InventoryChangeset();
-        $this->assertTrue($changeset->hasChanges());
+        self::assertTrue($changeset->hasChanges());
 
         $documentNumber = DocumentNumber::fromString('test', 'x', '123a');
         $changeset->markAsAdded($documentNumber);
 
-        $this->assertFalse($changeset->hasChanges());
+        self::assertFalse($changeset->hasChanges());
     }
 
     public function testHandlingOfAdded(): void
@@ -34,8 +34,8 @@ class InventoryChangesetTest extends MockeryTestCase
         $changeset = new InventoryChangeset();
         $changeset->markAsAdded($documentNumber);
 
-        $this->assertEquals(InventoryChangeset::ADDED, $changeset->getStatus($documentNumber));
-        $this->assertEquals(
+        self::assertEquals(InventoryChangeset::ADDED, $changeset->getStatus($documentNumber));
+        self::assertEquals(
             [
                 InventoryChangeset::ADDED => 1,
                 InventoryChangeset::UPDATED => 0,
@@ -44,7 +44,7 @@ class InventoryChangesetTest extends MockeryTestCase
             ],
             $changeset->getCounts()
         );
-        $this->assertEquals(
+        self::assertEquals(
             [$documentNumber->getValue() => InventoryChangeset::ADDED],
             $changeset->getAll(),
         );
@@ -57,8 +57,8 @@ class InventoryChangesetTest extends MockeryTestCase
         $changeset = new InventoryChangeset();
         $changeset->markAsUpdated($documentNumber);
 
-        $this->assertEquals(InventoryChangeset::UPDATED, $changeset->getStatus($documentNumber));
-        $this->assertEquals(
+        self::assertEquals(InventoryChangeset::UPDATED, $changeset->getStatus($documentNumber));
+        self::assertEquals(
             [
                 InventoryChangeset::ADDED => 0,
                 InventoryChangeset::UPDATED => 1,
@@ -67,7 +67,7 @@ class InventoryChangesetTest extends MockeryTestCase
             ],
             $changeset->getCounts()
         );
-        $this->assertEquals(
+        self::assertEquals(
             [$documentNumber->getValue() => InventoryChangeset::UPDATED],
             $changeset->getAll(),
         );
@@ -80,9 +80,9 @@ class InventoryChangesetTest extends MockeryTestCase
         $changeset = new InventoryChangeset();
         $changeset->markAsDeleted($documentNumber->getValue());
 
-        $this->assertEquals(InventoryChangeset::DELETED, $changeset->getStatus($documentNumber));
-        $this->assertEquals([$documentNumber->getValue()], $changeset->getDeleted());
-        $this->assertEquals(
+        self::assertEquals(InventoryChangeset::DELETED, $changeset->getStatus($documentNumber));
+        self::assertEquals([$documentNumber->getValue()], $changeset->getDeleted());
+        self::assertEquals(
             [
                 InventoryChangeset::ADDED => 0,
                 InventoryChangeset::UPDATED => 0,
@@ -91,7 +91,7 @@ class InventoryChangesetTest extends MockeryTestCase
             ],
             $changeset->getCounts(),
         );
-        $this->assertEquals(
+        self::assertEquals(
             [$documentNumber->getValue() => InventoryChangeset::DELETED],
             $changeset->getAll(),
         );
@@ -104,8 +104,8 @@ class InventoryChangesetTest extends MockeryTestCase
         $changeset = new InventoryChangeset();
         $changeset->markAsUnchanged($documentNumber);
 
-        $this->assertEquals(InventoryChangeset::UNCHANGED, $changeset->getStatus($documentNumber));
-        $this->assertEquals(
+        self::assertEquals(InventoryChangeset::UNCHANGED, $changeset->getStatus($documentNumber));
+        self::assertEquals(
             [
                 InventoryChangeset::ADDED => 0,
                 InventoryChangeset::UPDATED => 0,
@@ -114,11 +114,11 @@ class InventoryChangesetTest extends MockeryTestCase
             ],
             $changeset->getCounts(),
         );
-        $this->assertEquals(
+        self::assertEquals(
             [$documentNumber->getValue() => InventoryChangeset::UNCHANGED],
             $changeset->getAll(),
         );
-        $this->assertTrue($changeset->hasChanges());
+        self::assertTrue($changeset->hasChanges());
     }
 
     public function testDuplicateDocumentNumbersThrowAnException(): void
@@ -144,6 +144,6 @@ class InventoryChangesetTest extends MockeryTestCase
         $this->expectExceptionObject($expectedException);
         $changeset->markAsUnchanged($duplicateDocumentNr);
 
-        $this->assertEquals([], $changeset->getAll());
+        self::assertEquals([], $changeset->getAll());
     }
 }

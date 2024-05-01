@@ -30,8 +30,8 @@
         <table class="bhr-table">
             <thead>
                 <tr>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Department" | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ "Short name" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.publications.department' | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ 'global.acronym' | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">
                         <span class="sr-only">{{ "Edit department" | trans() }}</span>
                     </th>
@@ -44,7 +44,7 @@
                         <td>{{ department.shortTag | default('-') }}</td>
                         <td class="text-right">
                             <a class="js-clickable-row__focusable" href="{{ path('app_admin_department_edit', { id: department.id.toBase58 }) }}">
-                                <span class="sr-only">Details {{ department.name }}</span>
+                                <span class="sr-only">{{ 'global.details' | trans() }} {{ department.name }}</span>
                                 <twig:Admin:Icon name="chevron-right" />
                             </a>
                         </td>

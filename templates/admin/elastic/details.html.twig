@@ -2,31 +2,31 @@
 
 {% block body %}
 <div class="bhr-container">
-    <h1 class="bhr-title mb-6">{{ "Index" | trans() }} {{ details.index.name }}</h1>
+    <h1 class="bhr-title mb-6">{{ 'elastic.index' | trans() }} {{ details.index.name }}</h1>
 
     <div class="bhr-card">
         <table class="bhr-table">
             <tbody>
                 <tr>
-                    <th class="text-left" scope="col">{{ "Label" | trans() }}</th>
-                    <th class="text-right" scope="col">{{ "Expected" | trans() }}</th>
-                    <th class="text-right" scope="col">{{ "In Elasticsearch" | trans() }}</th>
-                    <th class="text-right" scope="col">{{ "Percentage" | trans() }}</th>
+                    <th class="text-left" scope="col">{{ 'public.global.label' | trans() }}</th>
+                    <th class="text-right" scope="col">{{ 'public.global.expected' | trans() }}</th>
+                    <th class="text-right" scope="col">{{ 'elastic.contains' | trans() }}</th>
+                    <th class="text-right" scope="col">{{ 'elastic.percentage' | trans() }}</th>
                 </tr>
                 <tr>
-                    <td>{{ "Dossier count" | trans() }}</td>
+                    <td>{{ 'admin.global.dossier_count' | trans() }}</td>
                     <td class="text-right">{{ details.expectedDossierCount }}</td>
                     <td class="text-right">{{ details.actualDossierCount }}</td>
                     <td class="text-right">{{ details.getDossierPercentage() }}%</td>
                 </tr>
                 <tr>
-                    <td>{{ "Document count" | trans() }}</td>
+                    <td>{{ 'admin.global.document_count' | trans() }}</td>
                     <td class="text-right">{{ details.expectedDocCount }}</td>
                     <td class="text-right">{{ details.actualDocCount }}</td>
                     <td class="text-right">{{ details.getDocumentPercentage() }}%</td>
                 </tr>
                 <tr>
-                    <td>{{ "Page count" | trans() }}</td>
+                    <td>{{ 'admin.global.page_count' | trans() }}</td>
                     <td class="text-right">{{ details.expectedPageCount }}</td>
                     <td class="text-right">{{ details.actualPageCount }}</td>
                     <td class="text-right">{{ details.getPagePercentage() }}%</td>
@@ -34,15 +34,19 @@
             </tbody>
         </table>
 
-        <p class="mt-6">
-            <a
-                class="bhr-button bhr-button--primary"
-                href="{{ path('app_admin_elastic_live', {indexName: index.name}) }}"
-            >{{ "Promote to Live" | trans() }}</a>
-        </p>
+        {% if index.aliases | length == 0 %}
+            <p class="mt-6">
+                <a
+                    class="bhr-button bhr-button--primary"
+                    href="{{ path('app_admin_elastic_live', {indexName: index.name}) }}"
+                >{{ "admin.elastic.promote_to_live" | trans() }}</a>
+            </p>
+        {% endif %}
 
         {% if matrix_has_permission('elastic.update') and index.aliases | length == 0 %}
-            {{ form(deleteForm) }}
+            <div class="mt-6">
+                {{ form(deleteForm) }}
+            </div>
         {% endif %}
     </div>
 </div>

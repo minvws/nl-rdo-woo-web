@@ -8,5 +8,8 @@
 	  "allowed_elements": [
       "dl", "dt", "dd", "details", "summary", "code"
     ]
+  },
+  "ul-style"  : {
+    "style": "dash"
   }
 }

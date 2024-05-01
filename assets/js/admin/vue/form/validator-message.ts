@@ -5,6 +5,10 @@ export const required: ValidatorMessage = () => 'Deze waarde mag niet leeg zijn.
 
 export const email: ValidatorMessage = () => 'Vul een geldig e-mailadres in (zoals voor@beeld.com)';
 
+export const forbidden: ValidatorMessage = () => 'Deze waarde is niet toegestaan';
+
+export const dateMaxUntilToday: ValidatorMessage = () => 'Deze datum mag niet in de toekomst liggen';
+
 export const minLength: ValidatorMessage = (error) => {
   const { minLength: minLengthValue, tooLittleLength } = error as InputValidationError & {
     actualLength: number;

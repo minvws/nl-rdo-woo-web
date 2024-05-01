@@ -1,0 +1,37 @@
+{% extends 'admin.html.twig' %}
+{% import "admin/document_macros.html.twig" as macro %}
+
+{% set page_title = "Dossier " | trans() ~ dossier.dossierNr %}
+{% set adminDossierUrl = path('app_admin_dossier', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) %}
+
+{% block body %}
+<div class="bhr-container bhr-container--sm">
+    <div class="mb-8">
+        <h1 class="mb-2">
+            <span class="block text-lg font-normal mb-2 text-bhr-black-olive">{{ 'admin.global.decision_on' | trans() }}</span>
+            <span class="bhr-title-lg">{{ dossier.title }}</span>
+        </h1>
+        <div class="mt-4 mb-9">
+            {{ status_badge(dossier.status) }}
+        </div>
+        <div class="bhr-card text-lg">
+            <twig:Admin:Alert type="success">
+                {{ 'admin.dossiers.decision.create.success' | trans() | raw }}
+            </twig:Admin:Alert>
+            <h2 class="mt-8 font-bold">{{ 'admin.dossiers.decision.preview_date' | trans() }}</h2>
+            <p>{{ dossier.previewDate | format_date('long') }}</p>
+            <h2 class="mt-8 font-bold">{{ 'admin.dossiers.public_date' | trans() }}</h2>
+            <p>{{ dossier.publicationDate | format_date('long') }}</p>
+            <h2 class="mt-8 font-bold">{{ 'admin.dossiers.public_link' | trans() }}</h2>
+            <p>{{ 'admin.dossiers.public_link_available' | trans() }} <strong>{{ dossier.previewDate | format_date('long') }}</strong></p>
+
+            <a class="bhr-a" href="{{ publicDossierUrl }}">
+                {{ publicDossierUrl }}
+            </a>
+        </div>
+        <a class="bhr-button bhr-button--secondary mt-8" href="{{ adminDossierUrl }}">
+            {{'admin.dossiers.decision.edit_link' | trans() }}
+        </a>
+    </div>
+</div>
+{% endblock %}

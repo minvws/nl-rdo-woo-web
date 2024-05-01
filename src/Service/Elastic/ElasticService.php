@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service\Elastic;
 
+use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Search\Index\ElasticDocument;
+use App\Domain\Search\Index\WooDecision\DocumentMapper;
+use App\Domain\Search\Index\WooDecision\WooDecisionMapper;
 use App\ElasticConfig;
 use App\Entity\Department;
 use App\Entity\Document;
@@ -16,6 +20,9 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Service for interacting with Elasticsearch. Together with the SearchService, this should be the only entrypoint to elasticsearch.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class ElasticService
 {
@@ -24,7 +31,8 @@ class ElasticService
     public function __construct(
         private readonly ElasticClientInterface $elastic,
         private LoggerInterface $logger,
-        private readonly ElasticDocumentMapper $mapper,
+        private readonly WooDecisionMapper $wooDecisionMapper,
+        private readonly DocumentMapper $documentMapper,
     ) {
     }
 
@@ -81,7 +89,7 @@ EOF,
             'index' => ElasticConfig::WRITE_INDEX,
             'id' => $document->getDocumentNr(),
             'body' => [
-                'doc' => $this->mapper->mapDocumentToElasticDocument($document, $metadata, $pages),
+                'doc' => $this->documentMapper->map($document, $metadata, $pages)->getFieldValues(),
                 'doc_as_upsert' => true,
             ],
         ]);
@@ -114,9 +122,12 @@ EOF,
         ]);
     }
 
+    /**
+     * @deprecated use DossierIndexer::index()
+     */
     public function updateDossier(Dossier $dossier, bool $updateDocuments = true): void
     {
-        $dossierDoc = $this->mapper->mapDossierToElasticDocument($dossier);
+        $dossierDoc = $this->wooDecisionMapper->map($dossier)->getFieldValues();
 
         // Update main dossier document
         $this->logger->debug('[Elasticsearch][Update Dossier] Updating dossier');
@@ -132,6 +143,18 @@ EOF,
         if ($updateDocuments === true) {
             $this->updateAllDocumentsForDossier($dossier, $dossierDoc);
         }
+    }
+
+    public function updateDoc(string $id, ElasticDocument $doc): void
+    {
+        $this->elastic->update([
+            'index' => ElasticConfig::WRITE_INDEX,
+            'id' => $id,
+            'body' => [
+                'doc' => $doc->getFieldValues(),
+                'doc_as_upsert' => true,
+            ],
+        ]);
     }
 
     public function updateDossierDecisionContent(Dossier $dossier, string $content): void
@@ -240,7 +263,7 @@ EOF,
      *
      * @throws ClientResponseException
      */
-    private function updateAllDocumentsForDossier(Dossier $dossier, array $dossierDoc): void
+    public function updateAllDocumentsForDossier(AbstractDossier $dossier, array $dossierDoc): void
     {
         $this->logger->debug('[Elasticsearch][Update Dossier] Updating dossier in document');
         $this->retry(function () use ($dossier, $dossierDoc) {
@@ -290,7 +313,7 @@ EOF,
     }
 
     // Removes a dossier and all references inside documents that have this dossier as nested object.
-    public function removeDossier(Dossier $dossier): void
+    public function removeDossier(AbstractDossier $dossier): void
     {
         try {
             // Delete dossier document

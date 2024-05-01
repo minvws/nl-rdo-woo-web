@@ -69,8 +69,8 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install --assume-yes --no-install-recommends \
         nodejs \
-        npm \
-    && npm --global install npm@latest \
+    && npm uninstall --global npm \
+    && corepack enable npm \
     # Cleanup
     && apt-get autoremove --assume-yes \
     && apt-get clean --assume-yes \
@@ -81,18 +81,14 @@ ARG USERNAME=woopie
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-ENV NPM_CONFIG_PREFIX=/home/$USERNAME/.npm-global
-ENV PATH=$PATH:/home/$USERNAME/.npm-global/bin
-
 RUN groupadd --gid "$USER_GID" "$USERNAME" \
     && useradd --uid "$USER_UID" --gid "$USER_GID" --create-home "$USERNAME" --shell /bin/bash \
     && mkdir -p \
         "/home/$USERNAME/.composer" \
-        "/home/$USERNAME/.npm-global/lib" \
-        "/home/$USERNAME/.npm-global/bin" \
+        "/home/$USERNAME/.npm" \
     && chown -R "$USER_UID":"$USER_GID" \
         "/home/$USERNAME/.composer" \
-        "/home/$USERNAME/.npm-global" \
+        "/home/$USERNAME/.npm" \
     && echo "$USERNAME" ALL=\(root\) NOPASSWD:ALL > "/etc/sudoers.d/$USERNAME" \
     && chmod 0440 "/etc/sudoers.d/$USERNAME"
 

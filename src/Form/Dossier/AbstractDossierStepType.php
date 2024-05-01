@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier;
 
-use App\Entity\Dossier;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\SubmitButton;
@@ -12,15 +11,15 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @template-extends AbstractType<AbstractDossierStepType>
- *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 abstract class AbstractDossierStepType extends AbstractType
 {
+    abstract public function getDataClass(): string;
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Dossier::class,
+            'data_class' => $this->getDataClass(),
         ]);
 
         $resolver->setDefaults([

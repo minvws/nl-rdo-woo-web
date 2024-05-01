@@ -20,4 +20,8 @@
     .woo-table-cell-light {
         @apply text-woo-dim-gray font-normal;
     }
+
+    .woo-table-cell--wrap {
+        @apply flex flex-wrap gap-4;
+    }
 }

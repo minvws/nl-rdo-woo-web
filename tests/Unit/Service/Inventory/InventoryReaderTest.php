@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Exception\InventoryReaderException;
 use App\Service\FileReader\ExcelReaderFactory;
 use App\Service\Inventory\Reader\InventoryReaderFactory;
@@ -29,106 +29,106 @@ class InventoryReaderTest extends MockeryTestCase
 
     public function testAreLinkAndRemarkParsedCorrectly(): void
     {
-        $dossier = new Dossier();
+        $dossier = new WooDecision();
 
         $this->reader->open(__DIR__ . '/inventory-link-remark-1.xlsx');
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
-        $this->assertEquals(['https://www.example.org'], $item->getDocumentMetaData()->getLinks());
-        $this->assertNull($item->getDocumentMetaData()->getRemark());
+        self::assertEquals(['https://www.example.org'], $item->getDocumentMetaData()->getLinks());
+        self::assertNull($item->getDocumentMetaData()->getRemark());
 
         $this->reader->open(__DIR__ . '/inventory-link-remark-2.xlsx');
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
-        $this->assertEquals(['https://www.example.org'], $item->getDocumentMetaData()->getLinks());
-        $this->assertNull($item->getDocumentMetaData()->getRemark());
+        self::assertEquals(['https://www.example.org'], $item->getDocumentMetaData()->getLinks());
+        self::assertNull($item->getDocumentMetaData()->getRemark());
 
         $this->reader->open(__DIR__ . '/inventory-link-remark-3.xlsx');
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
-        $this->assertEquals([], $item->getDocumentMetaData()->getLinks());
-        $this->assertEquals('foo bar', $item->getDocumentMetaData()->getRemark());
+        self::assertEquals([], $item->getDocumentMetaData()->getLinks());
+        self::assertEquals('foo bar', $item->getDocumentMetaData()->getRemark());
 
         $this->reader->open(__DIR__ . '/inventory-link-remark-4.xlsx');
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
-        $this->assertEquals(['https://www.example.org'], $item->getDocumentMetaData()->getLinks());
-        $this->assertEquals('https://notok.example.org', $item->getDocumentMetaData()->getRemark());
+        self::assertEquals(['https://www.example.org'], $item->getDocumentMetaData()->getLinks());
+        self::assertEquals('https://notok.example.org', $item->getDocumentMetaData()->getRemark());
 
         $this->reader->open(__DIR__ . '/inventory-link-remark-5.xlsx');
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
-        $this->assertEquals(['https://example.org'], $item->getDocumentMetaData()->getLinks());
-        $this->assertEquals('foo bar', $item->getDocumentMetaData()->getRemark());
+        self::assertEquals(['https://example.org'], $item->getDocumentMetaData()->getLinks());
+        self::assertEquals('foo bar', $item->getDocumentMetaData()->getRemark());
     }
 
     public function testAreDefaultSubjectsUsedForAllDocuments(): void
     {
-        $dossier = new Dossier();
+        $dossier = new WooDecision();
         $dossier->setDefaultSubjects(['foo', 'bar']);
 
         $this->reader->open(__DIR__ . '/inventory-subjects-1.xlsx');
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
-        $this->assertEquals(['foo', 'bar'], $result[0]->getDocumentMetadata()->getSubjects());
-        $this->assertEquals(['foo', 'bar'], $result[1]->getDocumentMetadata()->getSubjects());
+        self::assertEquals(['foo', 'bar'], $result[0]->getDocumentMetadata()->getSubjects());
+        self::assertEquals(['foo', 'bar'], $result[1]->getDocumentMetadata()->getSubjects());
     }
 
     public function testInventoryWithNewFormatDescribedInWoo1645(): void
     {
-        $dossier = new Dossier();
+        $dossier = new WooDecision();
         $dossier->setDefaultSubjects(['foo', 'bar']);
 
         $this->reader->open(__DIR__ . '/inventory-1645.xlsx');
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
 
-        $this->assertEquals(['foo', 'bar'], $result[0]->getDocumentMetadata()->getSubjects());
-        $this->assertEquals(['foo', 'bar'], $result[1]->getDocumentMetadata()->getSubjects());
+        self::assertEquals(['foo', 'bar'], $result[0]->getDocumentMetadata()->getSubjects());
+        self::assertEquals(['foo', 'bar'], $result[1]->getDocumentMetadata()->getSubjects());
 
-        $this->assertEquals(new \DateTimeImmutable('2023-11-04'), $result[0]->getDocumentMetadata()->getDate());
-        $this->assertEquals(new \DateTimeImmutable('2023-05-06'), $result[1]->getDocumentMetadata()->getDate());
+        self::assertEquals(new \DateTimeImmutable('2023-11-04'), $result[0]->getDocumentMetadata()->getDate());
+        self::assertEquals(new \DateTimeImmutable('2023-05-06'), $result[1]->getDocumentMetadata()->getDate());
 
-        $this->assertEquals(['http://foo.bar'], $result[0]->getDocumentMetaData()->getLinks());
-        $this->assertEquals(['http://foo.bar/baz'], $result[1]->getDocumentMetaData()->getLinks());
+        self::assertEquals(['http://foo.bar'], $result[0]->getDocumentMetaData()->getLinks());
+        self::assertEquals(['http://foo.bar/baz'], $result[1]->getDocumentMetaData()->getLinks());
 
-        $this->assertEquals('test remark', $result[0]->getDocumentMetaData()->getRemark());
-        $this->assertEquals(null, $result[1]->getDocumentMetaData()->getRemark());
+        self::assertEquals('test remark', $result[0]->getDocumentMetaData()->getRemark());
+        self::assertEquals(null, $result[1]->getDocumentMetaData()->getRemark());
 
-        $this->assertEquals(SourceType::SOURCE_UNKNOWN, $result[0]->getDocumentMetaData()->getSourceType());
-        $this->assertEquals(SourceType::SOURCE_UNKNOWN, $result[1]->getDocumentMetaData()->getSourceType());
+        self::assertEquals(SourceType::SOURCE_UNKNOWN, $result[0]->getDocumentMetaData()->getSourceType());
+        self::assertEquals(SourceType::SOURCE_UNKNOWN, $result[1]->getDocumentMetaData()->getSourceType());
     }
 
     public function testInventoryReaderAddsExceptionsForEmptyMatterCells(): void
     {
-        $dossier = new Dossier();
+        $dossier = new WooDecision();
         $dossier->setDefaultSubjects(['foo', 'bar']);
 
         $this->reader->open(__DIR__ . '/inventory-empty-matter.xlsx');
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
 
-        $this->assertEquals(InventoryReaderException::forMissingMatterInRow(2), $result[0]->getException());
-        $this->assertEquals(InventoryReaderException::forMissingMatterInRow(3), $result[1]->getException());
+        self::assertEquals(InventoryReaderException::forMissingMatterInRow(2), $result[0]->getException());
+        self::assertEquals(InventoryReaderException::forMissingMatterInRow(3), $result[1]->getException());
     }
 
     public function testInventoryWithEmptyDates(): void
     {
-        $dossier = new Dossier();
+        $dossier = new WooDecision();
 
         $this->reader->open(__DIR__ . '/inventory-empty-date.xlsx');
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
 
-        $this->assertEquals(new \DateTimeImmutable('2023-11-04'), $result[0]->getDocumentMetadata()->getDate());
-        $this->assertEquals(null, $result[1]->getDocumentMetadata()->getDate());
+        self::assertEquals(new \DateTimeImmutable('2023-11-04'), $result[0]->getDocumentMetadata()->getDate());
+        self::assertEquals(null, $result[1]->getDocumentMetadata()->getDate());
     }
 
     public function testInventoryReaderAddsExceptionForInvalidDocumentId(): void
     {
-        $dossier = new Dossier();
+        $dossier = new WooDecision();
         $dossier->setDefaultSubjects(['foo', 'bar']);
 
         $this->reader->open(__DIR__ . '/inventory-invalid-document-id.xlsx');
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
 
-        $this->assertNull($result[0]->getException());
-        $this->assertEquals(InventoryReaderException::forInvalidDocumentId(3), $result[1]->getException());
+        self::assertNull($result[0]->getException());
+        self::assertEquals(InventoryReaderException::forInvalidDocumentId(3), $result[1]->getException());
     }
 }

@@ -15,21 +15,21 @@ The JSON file contains the following properties:
 
 Each entry within `dossiers` has the following properties:
 
-| Property           | Description                                                                                  | Mandatory | Type / format              |
-|--------------------|----------------------------------------------------------------------------------------------|-----------|----------------------------|
-| id                 | Used by the system as a identifier.                                                          | Yes       | string                     |
-| document_prefix    | Should be unique to prevent docNr conflicts for documents across multiple dossiers.          | Yes       | string                     |
-| title              | The title of the dossier                                                                     | Yes       | string                     |
-| summary            | The summary of the dossier                                                                   | Yes       | string                     |
-| department         | Use the `name` of one of the existing values in the admin (Balie).                           | Yes       | string or array of strings |
-| period_from        | The start date of the dossier                                                                | Yes       | string YYYY-MM-DD          |
-| period_to          | The end date of the dossier                                                                  | Yes       | string YYYY-MM-DD          |
-| decision           | One of `already_public`, `public`, `partial_public`, `not_public` or `nothing_found`         | Yes       | string                     |
-| publication_reason | The publication reason of the dossier: `wob_request`, `woo_request` or `woo_active`          | Yes       | string                     |
-| inventory_path     | Relative path to the inventory file (XLSX). See detailed explanation below.                  | Yes       | string                     |
-| document_path      | Relative path to the document package (ZIP). See detailed explanation below.                 | No        | string                     |
-| status             | Status of the dossier. One of: `concept`, `completed`, `preview`, `published` or `retracted` | Yes       | string                     |
-| fake_documents     | See detailed explanation below.                                                              | No        | array of objects           |
+| Property           | Description                                                                          | Mandatory | Type / format              |
+|--------------------|--------------------------------------------------------------------------------------|-----------|----------------------------|
+| id                 | Used by the system as a identifier.                                                  | Yes       | string                     |
+| document_prefix    | Should be unique to prevent docNr conflicts for documents across multiple dossiers.  | Yes       | string                     |
+| title              | The title of the dossier                                                             | Yes       | string                     |
+| summary            | The summary of the dossier                                                           | Yes       | string                     |
+| department         | Use the `name` of one of the existing values in the admin (Balie).                   | Yes       | string or array of strings |
+| period_from        | The start date of the dossier                                                        | Yes       | string YYYY-MM-DD          |
+| period_to          | The end date of the dossier                                                          | Yes       | string YYYY-MM-DD          |
+| decision           | One of `already_public`, `public`, `partial_public`, `not_public` or `nothing_found` | Yes       | string                     |
+| publication_reason | The publication reason of the dossier: `wob_request`, `woo_request` or `woo_active`  | Yes       | string                     |
+| inventory_path     | Relative path to the inventory file (XLSX). See detailed explanation below.          | Yes       | string                     |
+| document_path      | Relative path to the document package (ZIP). See detailed explanation below.         | No        | string                     |
+| status             | Status of the dossier. One of: `concept`, `completed`, `preview` or `published`      | Yes       | string                     |
+| fake_documents     | See detailed explanation below.                                                      | No        | array of objects           |
 
 **Important note:**  
 Fixtures currently don't support dossier updates! So loading the same dossier fixture twice without resetting the data will result in two similar dossiers existing within the system.

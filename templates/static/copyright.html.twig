@@ -1,21 +1,23 @@
 {% extends 'base.html.twig' %}
 
-{% set page_title = "Copyright" | trans %}
+{% set page_title = 'Copyright' | trans %}
 
 {% block body %}
 <div class="woo-container woo-container--sm">
     <div class="woo-rich-text woo-readable-width">
-        <h1>{{ "Copyright" | trans }}</h1>
+        <h1>{{ 'Copyright' | trans }}</h1>
         <p>
-            {{ "Anyone may reuse the information on this website under the Reuse of Government Information Act, unless otherwise indicated." | trans }}
+            {{ 'public.copyright.paragraph-1' | trans }}
         </p>
         <p>
-            {{ "The right to reuse applies to all types of information. For example, texts, reports, photos, graphs and images. The reuse applies to both commercial and non-commercial purposes." | trans }}
+            {{ 'public.copyright.paragraph-2' | trans }}
         </p>
-        <p>{{ "Reuse is allowed unless:" | trans }}</p>
+        <p>
+            {{ 'public.copyright.paragraph-3' | trans }}
+        </p>
         <ul>
-            <li>{{ "the copyright sign (©) indicates that a photo is copyrighted;" | trans }}</li>
-            <li>{{ "it concerns third-party content. Therefore, always check the sender of documents." | trans }}</li>
+            <li>{{ 'public.copyright.bullet-1' | trans }}</li>
+            <li>{{ 'public.copyright.bullet-2' | trans }}</li>
         </ul>
     </div>
 </div>

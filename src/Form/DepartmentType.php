@@ -23,9 +23,9 @@ class DepartmentType extends AbstractType
     {
         $builder
             ->add('short_tag', TextType::class, [
-                'label' => 'Short name',
+                'label' => 'admin.department.abbreviation',
                 'required' => true,
-                'help' => 'Short name of the department',
+                'help' => 'admin.department.abbreviation_help',
                 'constraints' => [
                     new NotBlank(),
                     new Length(['min' => 2, 'max' => 10]),

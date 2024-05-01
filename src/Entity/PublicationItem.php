@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Doctrine\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 abstract class PublicationItem implements EntityWithFileInfo
 {
@@ -17,6 +18,7 @@ abstract class PublicationItem implements EntityWithFileInfo
     protected Uuid $id;
 
     #[ORM\Embedded(class: FileInfo::class, columnPrefix: 'file_')]
+    #[Assert\Valid()]
     protected FileInfo $fileInfo;
 
     public function getId(): Uuid

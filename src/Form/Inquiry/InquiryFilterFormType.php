@@ -35,12 +35,12 @@ class InquiryFilterFormType extends AbstractType
         $inquiry = $builder->getData();
 
         $dossierCount = $inquiry->getDossiers()->count();
-        $dossiersName = $this->translator->trans('these # dossiers', ['count' => $dossierCount]);
+        $dossiersName = $this->translator->trans('public.inquiries.dossiers_these', ['count' => $dossierCount]);
         $submitLabel = $this->translator->trans('Filter');
 
         $choices = [
             $this->translator->trans(
-                '# documents with casenumber {casenumber} in {dossiers}',
+                'public.inquiries.documents_with_case_number_in_dossiers',
                 [
                     'count' => $this->repository->countDocumentsForPubliclyAvailableDossiers($inquiry),
                     '{dossiers}' => $dossiersName,
@@ -51,7 +51,7 @@ class InquiryFilterFormType extends AbstractType
 
         foreach ($this->repository->getDocCountsByDossier($inquiry) as $row) {
             $label = $this->translator->trans(
-                '# documents with casenumber {casenumber} in dossier {dossierTitle}',
+                'public.inquiries.documents_with_case_number_in_dossier',
                 [
                     'count' => $row['doccount'],
                     '{casenumber}' => $inquiry->getCasenr(),

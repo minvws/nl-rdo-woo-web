@@ -18,6 +18,8 @@ class RawInventory extends PublicationItem
     {
         $this->dossier = $dossier;
 
+        $dossier->setRawInventory($this);
+
         return $this;
     }
 

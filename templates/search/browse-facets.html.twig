@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% set page_title = "Search for documents and decisions" | trans() %}
+{% set page_title = 'public.global.label.search_publications' | trans() %}
 
 {% import "facet_macros.html.twig" as macro %}
 
@@ -9,16 +9,16 @@
 {% block body %}
 <div class="woo-container">
     <div class="woo-rich-text woo-readable-width">
-        <h1>{{ "Browse decisions and published documents through the categories" | trans }}</h1>
-        <p>{{ "All COVID-19 related Wob and Woo documents and decisions will be published on this website from September 2023. Decisions from the previous period can be found on wobcovid19.rijksoverheid.nl and will soon also be available here." | trans }}</p>
+        <h1>{{ 'public.browse.facets.title' | trans }}</h1>
+        <p>{{ 'public.browse.facets.description' | trans }}</p>
     </div>
 
     <div class="pt-8">
         {# {{ macro.facet_links('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }} #}
-        {{ macro.facet_links('Subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
-        {{ macro.facet_links('Source document type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
-        {{ macro.facet_links('Judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
-        {{ macro.facet_links('Grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
+        {{ macro.facet_links('categories.category.subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
+        {{ macro.facet_links('categories.category.source_file' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
+        {{ macro.facet_links('categories.category.judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
+        {{ macro.facet_links('categories.category.grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
     </div>
 </div>
 {% endblock %}

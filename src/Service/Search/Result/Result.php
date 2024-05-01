@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Result;
 
+use App\Domain\Search\Result\ResultEntryInterface;
 use App\Service\Search\Model\Aggregation;
 use App\Service\Search\Model\Suggestion;
 use App\ValueObject\FilterDetails;
@@ -62,7 +63,7 @@ final class Result
     /**
      * Actual search results (limited per page, so max 10).
      *
-     * @var ResultEntry[]
+     * @var ResultEntryInterface[]
      */
     protected array $entries = [];
 
@@ -190,7 +191,7 @@ final class Result
     }
 
     /**
-     * @return ResultEntry[]
+     * @return ResultEntryInterface[]
      */
     public function getEntries(): array
     {
@@ -198,7 +199,7 @@ final class Result
     }
 
     /**
-     * @param ResultEntry[] $entries
+     * @param ResultEntryInterface[] $entries
      */
     public function setEntries(array $entries): self
     {

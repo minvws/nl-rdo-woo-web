@@ -10,6 +10,7 @@ use App\Service\Search\Query\Facet\Input\StringValuesFacetInput;
 
 enum FacetKey: string
 {
+    case TYPE = 'type';
     case SUBJECT = 'subject';
     case SOURCE = 'source';
     case GROUNDS = 'grounds';
@@ -27,6 +28,7 @@ enum FacetKey: string
     public function getInputClass(): string
     {
         return match ($this) {
+            self::TYPE => StringValuesFacetInput::class,
             self::SUBJECT => StringValuesFacetInput::class,
             self::SOURCE => StringValuesFacetInput::class,
             self::GROUNDS => StringValuesFacetInput::class,
@@ -43,6 +45,7 @@ enum FacetKey: string
     public function getPath(): string
     {
         return match ($this) {
+            self::TYPE => 'type',
             self::SUBJECT => 'subjects',
             self::SOURCE => 'source_type',
             self::GROUNDS => 'grounds',
@@ -59,6 +62,7 @@ enum FacetKey: string
     public function getParamName(): string
     {
         return match ($this) {
+            self::TYPE => 'doctype',
             self::SUBJECT => 'sub',
             self::SOURCE => 'src',
             self::GROUNDS => 'gnd',

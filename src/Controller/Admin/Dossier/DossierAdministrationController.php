@@ -8,8 +8,7 @@ use App\Entity\Dossier;
 use App\Form\Dossier\AdministrationActionsType;
 use App\Repository\DossierRepository;
 use App\Service\DossierService;
-use App\Service\DossierWorkflow\DossierWorkflow;
-use App\Service\Security\Authorization\AuthorizationMatrix;
+use App\Service\DossierWizard\DossierWizardHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,13 +19,10 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class DossierAdministrationController extends AbstractController
 {
-    use DossierAuthorizationTrait;
-
     public function __construct(
         private readonly DossierRepository $repository,
-        private readonly AuthorizationMatrix $authorizationMatrix,
         private readonly DossierService $dossierService,
-        private readonly DossierWorkflow $workflow,
+        private readonly DossierWizardHelper $wizardHelper,
     ) {
     }
 
@@ -84,7 +80,7 @@ class DossierAdministrationController extends AbstractController
             'dossier' => $dossier,
             'form' => $form,
             'breadcrumbs' => $breadcrumbs,
-            'workflowStatus' => $this->workflow->getStatus($dossier),
+            'workflowStatus' => $this->wizardHelper->getStatus($dossier),
         ]);
     }
 }

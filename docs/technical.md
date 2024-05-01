@@ -1,5 +1,35 @@
 # Woo Platform
 
+<!-- TOC -->
+- [Woo Platform](#woo-platform)
+  - [Technical details](#technical-details)
+    - [Paths & Classes](#paths--classes)
+      - [Path: /src/Command](#path-srccommand)
+      - [Path: /src/Controller](#path-srccontroller)
+      - [Path: /src/Entity](#path-srcentity)
+      - [Path: /src/Form](#path-srcform)
+      - [Path: /src/Respository](#path-srcrespository)
+      - [Path: /src/Message](#path-srcmessage)
+      - [Path: /src/MessageHandler](#path-srcmessagehandler)
+      - [Path: /src/Service](#path-srcservice)
+      - [Class: /src/Service/Ingest/IngestService](#class-srcserviceingestingestservice)
+      - [Path: /src/Service/Ingest/Handler](#path-srcserviceingesthandler)
+      - [Path: /src/Service/Ingest/Processor](#path-srcserviceingestprocessor)
+      - [Path: /src/Service/Worker](#path-srcserviceworker)
+      - [Class: /src/Service/Elastic/IndexService](#class-srcserviceelasticindexservice)
+      - [Class: /src/Service/Elastic/ElasticClientFactory](#class-srcserviceelasticelasticclientfactory)
+      - [Class: /src/Service/Elastic/ElasticService](#class-srcserviceelasticelasticservice)
+      - [Class: /src/Service/TikaServiceFactory](#class-srcservicetikaservicefactory)
+    - [Class: /src/Service/Encryption/EncryptionService](#class-srcserviceencryptionencryptionservice)
+    - [Path: /src/Service/Storage](#path-srcservicestorage)
+    - [Class: /src/Service/InventoryService](#class-srcserviceinventoryservice)
+    - [Class: /src/Service/UserService](#class-srcserviceuserservice)
+    - [Class: /src/Service/DocumentService](#class-srcservicedocumentservice)
+    - [Class: /src/Service/DossierService](#class-srcservicedossierservice)
+  - [Adding more ingesters / file formats](#adding-more-ingesters--file-formats)
+  - [Prometheus exporters](#prometheus-exporters)
+<!-- TOC -->
+
 ## Technical details
 
 ### Paths & Classes

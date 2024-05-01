@@ -1,66 +1,65 @@
-{% import "document_macros.html.twig" as macro %}
+{% import 'document_macros.html.twig' as macro %}
 
 <div class="mt-16">
-    <h2 class="woo-h2 woo-h2-spacing">{{ "About this document" | trans }}</h2>
+    <h2 class="woo-h2 woo-h2-spacing">{{ 'public.documents.document.about' | trans }}</h2>
 
     <div class="overflow-x-auto">
         <table class="woo-table">
             <caption class="sr-only">
-                {{ "About this document" | trans }}
+                {{ 'public.documents.document.about' | trans }}
             </caption>
             <tbody>
                 <tr>
-                    <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ "Document Date" | trans }}</th>
+                    <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'public.documents.document.date' | trans }}</th>
                     <td class="min-w-64">
                         {% if document.entity.documentDate is not empty %}
-                            <time datetime="{{ document.entity.documentDate | date("Y-m-d") }}">{{ document.entity.documentDate | format_date('long') }}</time>
+                            <time datetime="{{ document.entity.documentDate | date('Y-m-d') }}">{{ document.entity.documentDate | format_date('long') }}</time>
                         {% else %}
-                            {{ 'document.date.not_available' | trans }}
+                            {{ 'global.not_available' | trans }}
                         {% endif %}
                     </td>
                 </tr>
                 {% if document.entity.fileInfo.sourceType is defined %}
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ "Source document type" | trans() }}</th>
+                    <th class="woo-table-cell-light" scope="row">{{ 'categories.category.source_file' | trans }}</th>
                     <td>
                         <twig:Public:Icon name="{{ document.entity.fileInfo.sourceType }}" color="fill-woo-dim-gray" class="mr-1 -mt-0.5" />
-                        <span class="sr-only">{{ document.entity.fileInfo.sourceType | trans() }}</span>
-                        {{ document.entity.fileInfo.sourceType | trans() }}{% if document.entity.isUploaded %}, {{ document.entity.pageCount }} pagina's{% endif %}
+                        {{ ('public.documents.file_type.' ~ document.entity.fileInfo.sourceType) | trans }}{% if document.entity.isUploaded %}, {{ document.entity.pageCount }} pagina's{% endif %}
                     </td>
                 </tr>
                 {% endif %}
                 {% if document.entity.fileInfo.type is defined and document.entity.fileInfo.isUploaded %}
                     <tr>
-                        <th class="woo-table-cell-light" scope="row">{{ "Download Type" | trans() }}</th>
+                        <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.download_type' | trans }}</th>
                         <td>{{ document.entity.fileInfo.type|upper}} ({{ document.entity.fileInfo.size | size }})</td>
                     </tr>
                 {% endif %}
                 {% if document.entity.documentId is defined %}
                     <tr>
-                        <th class="woo-table-cell-light" scope="row">{{ "Document Number" | trans() }}</th>
+                        <th class="woo-table-cell-light" scope="row">{{ 'global.document_number' | trans }}</th>
                         <td>{{ document.entity.documentId }}</td>
                     </tr>
                 {% endif %}
                 {% if document.entity.subjects | length > 0 %}
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ "Labels" | trans() }}</th>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.global.subjects' | trans }}</th>
                     <td>
                         {% for subject in document.entity.subjects %}
-                            <a class="woo-a" href="{{ path('app_search', { q: '', (facet2query(constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value) ~ '[]'):  subject|url_encode }) }}">{{ subject }}</a>
+                            <a class="woo-a" href="{{ path('app_search', { q: '', (facet2query(constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value) ~ '[]'): subject }) }}">{{ subject }}</a>
                         {% endfor %}
                     </td>
                 </tr>
                 {% endif %}
                 {% if document.entity.judgement.value is defined %}
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ "Document judgement" | trans() }}</th>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.documents.judgement' | trans }}</th>
                     <td>{{ document.entity.judgement.value | trans }}</td>
                 </tr>
                 {% endif %}
                 {% set documentIsAlreadyPublic = document.entity.judgement.value is defined and document.entity.judgement.value is same as ('already_public') %}
                 {% if document.entity.remark or (document.entity.links | length > 0 and not documentIsAlreadyPublic) %}
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ "Explanation" | trans() }}</th>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.documents.explanation' | trans }}</th>
                     <td>
                         {% if document.entity.remark and document.entity.remark != document.entity.links|first  %}{{ document.entity.remark }}{% endif %}
                         {% if document.entity.links | length > 0 and not documentIsAlreadyPublic %}
@@ -74,7 +73,7 @@
                 {% endif %}
                 {% if (document.entity.grounds | length > 0) or (document.entity.isUploaded and document.entity.fileInfo.size != "0") %}
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ "What is redacted" | trans() }}</th>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.documents.redacted' | trans }}</th>
                     <td>
                         {% set hasGrounds = document.entity.grounds | length > 0 %}
                         {% if hasGrounds %}
@@ -89,14 +88,14 @@
 
                         {% if document.entity.isUploaded and document.entity.fileInfo.size != "0" %}
                             <p class="woo-readable-width {{ hasGrounds ? 'mt-4' : '' }}">
-                                {{ "Do you encounter data in this document that you think should have been redacted? Or is the document difficult to read?" | trans }}
+                                {{ 'public.documents.redacted_comments' | trans }}
                                 {% if not dossier.isVwsResponsible %}
-                                    {{ 'public.then_contact_ministry' | trans({ '{ministry}': dossier.entity.departments[0].name }) | raw }}.
+                                    {{ 'public.then_contact_ministry' | trans({ '{ministry}': dossier.mainDepartment.name }) | raw }}.
                                 {% else %}
                                     <a
                                         class="woo-a-email"
                                         href="mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl?subject=Opmerking over {{ document.entity.fileInfo.name }} (documentnummer {{ document.entity.documentId }})"
-                                    >{{ "Let us know" | trans }}</a>.
+                                    >{{ 'public.documents.let_us_know' | trans }}</a>.
                                 {% endif %}
                             </p>
                         {% endif %}

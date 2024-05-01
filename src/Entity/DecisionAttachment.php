@@ -4,33 +4,33 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
+use App\Domain\Publication\Attachment\AbstractAttachment;
+use App\Domain\Publication\Attachment\AttachmentLanguage;
+use App\Domain\Publication\Attachment\AttachmentType;
+use App\Repository\DecisionAttachmentRepository;
+use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DecisionAttachmentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class DecisionAttachment extends PublicationItem
+class DecisionAttachment extends AbstractAttachment
 {
-    #[ORM\ManyToOne(targetEntity: Dossier::class, inversedBy: 'decisionAttachments')]
+    #[ORM\ManyToOne(targetEntity: Dossier::class, inversedBy: 'attachments')]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
     private Dossier $dossier;
-
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private \DateTimeImmutable $formalDate;
-
-    #[ORM\Column(length: 255, enumType: DecisionAttachmentType::class)]
-    private DecisionAttachmentType $type;
 
     public function __construct(
         Dossier $dossier,
         \DateTimeImmutable $formalDate,
-        DecisionAttachmentType $type,
+        AttachmentType $type,
+        AttachmentLanguage $language,
     ) {
         parent::__construct();
 
         $this->dossier = $dossier;
         $this->formalDate = $formalDate;
         $this->type = $type;
+        $this->language = $language;
     }
 
     public function getDossier(): Dossier
@@ -38,23 +38,8 @@ class DecisionAttachment extends PublicationItem
         return $this->dossier;
     }
 
-    public function getFormalDate(): \DateTimeImmutable
+    public function getUploadGroupId(): UploadGroupId
     {
-        return $this->formalDate;
-    }
-
-    public function setFormalDate(\DateTimeImmutable $formalDate): void
-    {
-        $this->formalDate = $formalDate;
-    }
-
-    public function getType(): DecisionAttachmentType
-    {
-        return $this->type;
-    }
-
-    public function setType(DecisionAttachmentType $type): void
-    {
-        $this->type = $type;
+        return UploadGroupId::WOO_DECISION_ATTACHMENTS;
     }
 }

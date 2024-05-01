@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Department;
 use App\Entity\Document;
 use App\Entity\DocumentPrefix;
@@ -11,7 +13,6 @@ use App\Entity\Dossier;
 use App\Entity\InventoryProcessRun;
 use App\Entity\Judgement;
 use App\Entity\Organisation;
-use App\Enum\PublicationStatus;
 use App\Exception\FixtureInventoryException;
 use App\Message\ProcessDocumentMessage;
 use App\Service\Elastic\ElasticService;
@@ -82,13 +83,13 @@ class FixtureService
 
         $this->ensurePrefixExists($data['document_prefix']);
 
-        $dossier = new Dossier();
+        $dossier = new WooDecision();
         $dossier->setDateFrom(new \DateTimeImmutable($data['period_from']));
         $dossier->setDateTo(new \DateTimeImmutable($data['period_to']));
         $dossier->setDecision($data['decision']);
         $dossier->setDocumentPrefix($data['document_prefix']);
         $dossier->setDossierNr($data['id']);
-        $dossier->setStatus(PublicationStatus::tryFrom($data['status']) ?? PublicationStatus::PUBLISHED);
+        $dossier->setStatus(DossierStatus::tryFrom($data['status']) ?? DossierStatus::PUBLISHED);
         $dossier->setSummary($data['summary']);
         $dossier->setTitle($data['title']);
         $dossier->setPublicationReason($data['publication_reason']);

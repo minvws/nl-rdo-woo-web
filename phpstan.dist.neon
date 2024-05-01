@@ -6,6 +6,7 @@ includes:
     - vendor/phpstan/phpstan-doctrine/rules.neon
     - vendor/phpstan/phpstan-mockery/extension.neon
     - vendor/phpstan/phpstan-webmozart-assert/extension.neon
+    - vendor/swisnl/phpstan-faker/extension.neon
 
 parameters:
     tmpDir: ./.phpstan.cache
@@ -25,6 +26,9 @@ parameters:
     symfony:
         container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml
     checkGenericClassInNonGenericObjectType: false
+    faker:
+        providerClasses:
+            - App\Tests\Faker\GroundsFakerProvider
     ignoreErrors:
         - '/Parameter #\d \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given./'
         - '/Parameter #\d \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given./'

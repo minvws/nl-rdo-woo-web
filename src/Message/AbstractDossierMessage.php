@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\Uid\Uuid;
 
 abstract class AbstractDossierMessage
@@ -21,7 +21,7 @@ abstract class AbstractDossierMessage
         return $this->uuid;
     }
 
-    public static function forDossier(Dossier $dossier): static
+    public static function forDossier(AbstractDossier $dossier): static
     {
         return new static($dossier->getId());
     }

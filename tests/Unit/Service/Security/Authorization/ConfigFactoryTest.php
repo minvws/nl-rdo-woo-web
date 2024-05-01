@@ -15,7 +15,7 @@ class ConfigFactoryTest extends MockeryTestCase
         $factory = new ConfigFactory([]);
         $entries = $factory->create();
 
-        $this->assertEmpty($entries);
+        self::assertEmpty($entries);
     }
 
     public function testCorrectEntry(): void
@@ -40,11 +40,11 @@ class ConfigFactoryTest extends MockeryTestCase
         $factory = new ConfigFactory($config);
         $entries = $factory->create();
 
-        $this->assertCount(2, $entries);
-        $this->assertInstanceOf(Entry::class, $entries[0]);
-        $this->assertInstanceOf(Entry::class, $entries[1]);
+        self::assertCount(2, $entries);
+        self::assertInstanceOf(Entry::class, $entries[0]);
+        self::assertInstanceOf(Entry::class, $entries[1]);
 
-        $this->assertEquals('prefix1', $entries[0]->getPrefix());
-        $this->assertEquals('prefix2', $entries[1]->getPrefix());
+        self::assertEquals('prefix1', $entries[0]->getPrefix());
+        self::assertEquals('prefix2', $entries[1]->getPrefix());
     }
 }

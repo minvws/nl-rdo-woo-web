@@ -17,6 +17,6 @@
 
     {% include "inquiry/snippets/documents.html.twig" %}
 
-    {{ macro.history_section(get_frontend_history('inquiry', inquiry.id), "History") }}
+    {{ macro.history_section(get_frontend_history('inquiry', inquiry.id), 'global.history') }}
 </div>
 {% endblock %}

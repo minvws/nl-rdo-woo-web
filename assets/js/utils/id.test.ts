@@ -1,7 +1,7 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test, vi } from 'vitest';
 import { uniqueId } from './id';
 
-jest.mock('./browser');
+vi.mock('./browser');
 
 describe('The "uniqueId" function', () => {
   test('should return a unique id using the "randomUUID" function of the crypto implementation', () => {

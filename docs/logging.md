@@ -1,5 +1,19 @@
 # Logging
 
+<!-- TOC -->
+- [Logging](#logging)
+  - [Event details](#event-details)
+    - [Sign in (091111)](#sign-in-091111)
+    - [Failed sign in (091111)](#failed-sign-in-091111)
+    - [Sign out (092222)](#sign-out-092222)
+    - [Two-factor authentication failed (093333)](#two-factor-authentication-failed-093333)
+    - [Create user event (090002)](#create-user-event-090002)
+    - [Reset credentials (090003)](#reset-credentials-090003)
+    - [Change account data (900101)](#change-account-data-900101)
+    - [Change roles (900102)](#change-roles-900102)
+    - [(De)activate user (900104)](#deactivate-user-900104)
+<!-- TOC -->
+
 We use the following events in Woopie:
 
 | Event                             | `event_code` (string)   | Routing key (prefixed with `[app].[env].`[^1])   |
@@ -116,9 +130,9 @@ Triggered when a user signs out.
 }
 ```
 
-### Two factor authentication failed (093333)
+### Two-factor authentication failed (093333)
 
-Triggered when the two factor authentication code is incorrect. Note that when this event is triggered, the user has supplied correct
+Triggered when the two-factor authentication code is incorrect. Note that when this event is triggered, the user has supplied correct
 email/password combination, but the sign-in (091111) event is ONLY triggered when the OTP code is also correct.
 
 ```json
@@ -164,7 +178,7 @@ Triggered when a new user has been created.
 }
 ```
 
-### Reset credentials  (090003)
+### Reset credentials (090003)
 
 Triggered when a user has requested a password or 2fa token reset.
 
@@ -258,7 +272,7 @@ Triggered when account roles have changed for a user.
 }
 ```
 
-### (De)activate user  (900104)
+### (De)activate user (900104)
 
 Triggered when a user is either activated or deactivated.
 

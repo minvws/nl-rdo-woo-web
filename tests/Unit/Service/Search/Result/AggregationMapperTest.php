@@ -52,7 +52,7 @@ class AggregationMapperTest extends MockeryTestCase
             ),
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             new Aggregation(FacetKey::GROUNDS->value, $expectedEntries),
             $result
         );
@@ -60,7 +60,8 @@ class AggregationMapperTest extends MockeryTestCase
 
     public function testMapSource(): void
     {
-        $this->translator->expects('trans')->with(SourceType::SOURCE_EMAIL)->andReturn('foo-bar');
+        $prefix = 'public.documents.file_type.';
+        $this->translator->expects('trans')->with($prefix . SourceType::SOURCE_EMAIL)->andReturn('foo-bar');
 
         $result = $this->mapper->map(
             FacetKey::SOURCE->value,
@@ -77,7 +78,7 @@ class AggregationMapperTest extends MockeryTestCase
             ),
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             new Aggregation(FacetKey::SOURCE->value, $expectedEntries),
             $result
         );
@@ -106,7 +107,7 @@ class AggregationMapperTest extends MockeryTestCase
             ),
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             new Aggregation('dummy', $expectedEntries),
             $result
         );

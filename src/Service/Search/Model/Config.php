@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Model;
 
+use App\Domain\Search\Index\ElasticDocumentType;
 use App\Service\Search\Query\Facet\Input\FacetInput;
 use App\Service\Search\Query\SortField;
 use App\Service\Search\Query\SortOrder;
@@ -14,8 +15,8 @@ final readonly class Config
     public const OPERATOR_AND = 'and';
     public const OPERATOR_OR = 'or';
 
-    public const TYPE_DOSSIER = 'dossier';
-    public const TYPE_DOCUMENT = 'document';
+    public const TYPE_DOSSIER = ElasticDocumentType::WOO_DECISION->value;
+    public const TYPE_DOCUMENT = ElasticDocumentType::WOO_DECISION_DOCUMENT->value;
     public const TYPE_ALL = 'all';
 
     /**

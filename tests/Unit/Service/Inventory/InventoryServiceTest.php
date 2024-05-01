@@ -78,7 +78,7 @@ class InventoryServiceTest extends MockeryTestCase
 
         $result = $this->inventoryService->getReader($this->run);
 
-        $this->assertSame($reader, $result);
+        self::assertSame($reader, $result);
     }
 
     public function testCleanupTmpFileSkipsWhenThereIsNoTmpFile(): void
@@ -105,7 +105,7 @@ class InventoryServiceTest extends MockeryTestCase
         $dossier->expects('getInventory')->andReturnNull();
         $dossier->expects('getRawInventory')->andReturnNull();
 
-        $this->assertFalse(
+        self::assertFalse(
             $this->inventoryService->removeInventories($dossier)
         );
     }
@@ -128,7 +128,7 @@ class InventoryServiceTest extends MockeryTestCase
         $this->entityManager->expects('remove')->with($rawInventory);
         $this->entityManager->expects('persist')->with($dossier);
 
-        $this->assertTrue(
+        self::assertTrue(
             $this->inventoryService->removeInventories($dossier)
         );
     }

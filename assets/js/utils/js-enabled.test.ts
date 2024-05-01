@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { jsEnabled } from './js-enabled';
 
 describe('The "jsEnabled" function', () => {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Dossier;
-use App\Form\Dossier\DocumentUploadType;
+use App\Form\Dossier\WooDecision\DocumentUploadType;
 use App\Message\ProcessDocumentMessage;
 use App\Service\Storage\DocumentStorageService;
 use Predis\Client;

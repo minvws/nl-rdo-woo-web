@@ -1,24 +1,25 @@
+import { vi } from 'vitest';
 import { DocumentMock } from '../mocks';
 
 const cryptoMock = {
-  randomUUID: jest.fn().mockReturnValue('some-mocked-random-uuid'),
+  randomUUID: vi.fn().mockReturnValue('some-mocked-random-uuid'),
 };
 
 const documentMock: DocumentMock = {
-  addEventListener: jest.fn(),
+  addEventListener: vi.fn(),
   readyState: 'loading',
 };
 
 const locationMock = {
-  assign: jest.fn(),
+  assign: vi.fn(),
 };
 
 const windowMock = {
-  addEventListener: jest.fn(),
+  addEventListener: vi.fn(),
   crypto: cryptoMock,
   location: locationMock,
-  matchMedia: jest.fn().mockReturnValue({ matches: false }),
-  print: jest.fn(),
+  matchMedia: vi.fn().mockReturnValue({ matches: false }),
+  print: vi.fn(),
 };
 
 export const getCrypto = () => cryptoMock;

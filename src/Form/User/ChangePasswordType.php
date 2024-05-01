@@ -33,20 +33,20 @@ class ChangePasswordType extends AbstractType
                 'constraints' => [
                     new UserPassword(),
                 ],
-                'label' => 'Current password',
+                'label' => 'admin.user.password_current',
                 'mapped' => false,
             ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'invalid_message' => 'The password fields must match',
+                'invalid_message' => 'admin.user.password.validation.must_match',
                 'required' => true,
                 'first_options' => [
-                    'label' => 'New password',
+                    'label' => 'admin.user.password_new',
                     'attr' => [
                         'aria-describedby' => 'password-instructions',
                     ],
                 ],
-                'second_options' => ['label' => 'Repeat new password'],
+                'second_options' => ['label' => 'admin.user.password_repeat'],
                 'attr' => [
                     'autocomplete' => 'off',
                 ],
@@ -54,13 +54,13 @@ class ChangePasswordType extends AbstractType
                     new NotBlank(),
                     new Length([
                         'min' => 14,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
+                        'minMessage' => 'admin.user.password.validation.minimal_chars',
                         // max length allowed by Symfony for security reasons
                         'max' => 4096,
                     ]),
                     new Regex([
                         'pattern' => '/(?!^\d+$)^.+$/',
-                        'message' => 'Your password must not contain only digits.',
+                        'message' => 'admin.user.password.validation.digits_only',
                     ]),
                     new NotTheSamePassword(),   // Not the same as the current password
                     new CommonList(),           // Not a common password
@@ -68,7 +68,7 @@ class ChangePasswordType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Wachtwoord aanpassen',
+                'label' => 'admin.user.password.edit_confirm',
             ])
         ;
     }

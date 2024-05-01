@@ -40,7 +40,7 @@ class ExcelReaderTest extends MockeryTestCase
             $ids[] = $this->excelReader->getInt($row->getRowIndex(), 'id');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [5033, 5034],
             $ids,
         );
@@ -53,7 +53,7 @@ class ExcelReaderTest extends MockeryTestCase
             $subjects[] = $this->excelReader->getOptionalString($row->getRowIndex(), 'subject');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             ['Dummy onderwerp 1', null],
             $subjects,
         );
@@ -66,7 +66,7 @@ class ExcelReaderTest extends MockeryTestCase
             $values[] = $this->excelReader->getOptionalString($row->getRowIndex(), 'foobar');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [null, null],
             $values,
         );
@@ -79,7 +79,7 @@ class ExcelReaderTest extends MockeryTestCase
             $familyIds[] = $this->excelReader->getOptionalInt($row->getRowIndex(), 'family');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [5033, null],
             $familyIds,
         );
@@ -92,7 +92,7 @@ class ExcelReaderTest extends MockeryTestCase
             $values[] = $this->excelReader->getOptionalInt($row->getRowIndex(), 'foobar');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [null, null],
             $values,
         );
@@ -103,7 +103,7 @@ class ExcelReaderTest extends MockeryTestCase
         $rows = iterator_to_array($this->excelReader);
 
         // First row has a valid date
-        $this->assertEquals(
+        self::assertEquals(
             new \DateTimeImmutable('2022-10-09 13:34'),
             $this->excelReader->getDateTime(reset($rows)->getRowIndex(), 'date'),
         );
@@ -129,7 +129,7 @@ class ExcelReaderTest extends MockeryTestCase
             $dates[] = $this->excelReader->getOptionalDateTime($row->getRowIndex(), 'date');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [new \DateTimeImmutable('2022-10-09 13:34'), null],
             $dates,
         );
@@ -142,7 +142,7 @@ class ExcelReaderTest extends MockeryTestCase
             $dates[] = $this->excelReader->getOptionalDateTime($row->getRowIndex(), 'non-existent-column');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [null, null],
             $dates,
         );

@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { onFocusIn } from './focus-in';
 
 describe('the "onFocusIn" function', () => {
@@ -17,7 +17,7 @@ describe('the "onFocusIn" function', () => {
 
   test('should invoke the prodived function when (a child element of) the provided element receives focus', () => {
     const buttonElement = getButtonElement();
-    const callbackFunction = jest.fn();
+    const callbackFunction = vi.fn();
 
     onFocusIn(buttonElement, callbackFunction);
 

@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test, vi } from 'vitest';
 import { onKeyDown } from './key-down';
 
 describe('the "onKeyDown" function', () => {
@@ -7,7 +7,7 @@ describe('the "onKeyDown" function', () => {
   };
 
   test('should only invoke the provided function when the provided key is pressed', () => {
-    const someFunction = jest.fn();
+    const someFunction = vi.fn();
 
     onKeyDown('Escape', someFunction);
     expect(someFunction).not.toHaveBeenCalled();

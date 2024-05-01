@@ -1,7 +1,8 @@
-{% if document.entity.shouldBeUploaded and document.entity.isUploaded and (document.entity.fileInfo.size != "0") %}
+{% if document.entity.shouldBeUploaded and document.entity.isUploaded and (document.entity.fileInfo.size != '0') %}
 <div class="mt-10">
     <twig:Public:DownloadFileButton
-        href="{{ path('app_document_download', { prefix: dossier.entity.documentPrefix, dossierId: dossier.entity.dossierNr, documentId: document.entity.documentNr}) }}"
+        href="{{ path('app_document_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.entity.documentNr}) }}"
+        e2eName="download-file-link"
     >({{ document.entity.fileInfo.type|upper }} {{ document.entity.fileInfo.size | size }})</twig:Public:DownloadFileButton>
 </div>
 {% endif %}

@@ -20,7 +20,6 @@ class IngestService
      */
     public function __construct(
         iterable $handlers,
-        private readonly IngestLogger $ingestLogger,
     ) {
         $this->handlers = $handlers instanceof \Traversable ? iterator_to_array($handlers) : $handlers;
     }
@@ -29,14 +28,12 @@ class IngestService
     {
         foreach ($this->handlers as $handler) {
             if ($handler->canHandle($document->getFileInfo())) {
-                $this->ingestLogger->success($document, 'ingest', 'Starting ingest on ' . $document->getFileInfo()->getName());
-
                 $handler->handle($document, $options);
 
                 return;
             }
         }
 
-        $this->ingestLogger->error($document, 'ingest', 'No handler found for this document type');
+        throw new \RuntimeException('no matching ingest handler found for document ' . $document->getId()->toRfc4122());
     }
 }
