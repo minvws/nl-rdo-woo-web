@@ -25,10 +25,10 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install --assume-yes --no-install-recommends \
         nodejs \
-        npm \
         docker-ce-cli \
+    && npm uninstall --global npm \
+    && corepack enable npm \
     && npm install --global \
-        npm@latest \
         @go-task/cli \
     && pip install --no-cache-dir --progress-bar off --requirement requirements.txt \
     && rfbrowser init --with-deps chromium \

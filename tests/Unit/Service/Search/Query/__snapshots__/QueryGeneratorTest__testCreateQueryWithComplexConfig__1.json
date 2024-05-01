@@ -1,0 +1,843 @@
+{
+    "body": {
+        "docvalue_fields": [
+            "type",
+            "document_nr",
+            "document_prefix",
+            "dossier_nr"
+        ],
+        "_source": false,
+        "suggest": {
+            "search-input": {
+                "text": "search terms",
+                "term": {
+                    "field": "content_for_suggestions",
+                    "size": 3,
+                    "sort": "frequency",
+                    "suggest_mode": "popular",
+                    "string_distance": "jaro_winkler"
+                }
+            }
+        },
+        "sort": [
+            {
+                "decision_date": {
+                    "missing": "_last",
+                    "order": "asc"
+                }
+            }
+        ],
+        "query": {
+            "bool": {
+                "minimum_should_match": 1,
+                "should": [
+                    {
+                        "bool": {
+                            "minimum_should_match": 1,
+                            "should": [
+                                {
+                                    "nested": {
+                                        "path": "dossiers",
+                                        "query": {
+                                            "bool": {
+                                                "minimum_should_match": 1,
+                                                "should": [
+                                                    {
+                                                        "simple_query_string": {
+                                                            "query": "search terms",
+                                                            "fields": [
+                                                                "dossiers.title"
+                                                            ],
+                                                            "default_operator": "and",
+                                                            "boost": 3
+                                                        }
+                                                    },
+                                                    {
+                                                        "simple_query_string": {
+                                                            "query": "search terms",
+                                                            "fields": [
+                                                                "dossiers.summary"
+                                                            ],
+                                                            "default_operator": "and",
+                                                            "boost": 2
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "nested": {
+                                        "path": "pages",
+                                        "query": {
+                                            "simple_query_string": {
+                                                "query": "search terms",
+                                                "fields": [
+                                                    "pages.content"
+                                                ],
+                                                "default_operator": "and",
+                                                "boost": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "simple_query_string": {
+                                        "query": "search terms",
+                                        "fields": [
+                                            "filename"
+                                        ],
+                                        "default_operator": "and",
+                                        "boost": 4
+                                    }
+                                }
+                            ],
+                            "filter": [
+                                {
+                                    "term": {
+                                        "type": {
+                                            "value": "document"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "bool": {
+                            "minimum_should_match": 1,
+                            "should": [
+                                {
+                                    "simple_query_string": {
+                                        "query": "search terms",
+                                        "fields": [
+                                            "title"
+                                        ],
+                                        "default_operator": "and",
+                                        "boost": 5
+                                    }
+                                },
+                                {
+                                    "simple_query_string": {
+                                        "query": "search terms",
+                                        "fields": [
+                                            "summary"
+                                        ],
+                                        "default_operator": "and",
+                                        "boost": 4
+                                    }
+                                },
+                                {
+                                    "simple_query_string": {
+                                        "query": "search terms",
+                                        "fields": [
+                                            "decision_content"
+                                        ],
+                                        "default_operator": "and",
+                                        "boost": 3
+                                    }
+                                }
+                            ],
+                            "filter": [
+                                {
+                                    "terms": {
+                                        "type": [
+                                            "dossier",
+                                            "covenant"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "filter": [
+                    {
+                        "bool": {
+                            "minimum_should_match": 1,
+                            "should": [
+                                {
+                                    "bool": {
+                                        "filter": [
+                                            {
+                                                "terms": {
+                                                    "type": [
+                                                        "dossier",
+                                                        "covenant"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "terms": {
+                                                    "inquiry_ids": [
+                                                        "dos-inq-1",
+                                                        "dos-inq-2"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "terms": {
+                                                    "status": [
+                                                        "published",
+                                                        "preview"
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "bool": {
+                                        "filter": [
+                                            {
+                                                "terms": {
+                                                    "type": [
+                                                        "document"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "terms": {
+                                                    "inquiry_ids": [
+                                                        "doc-inq-1"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "nested": {
+                                                    "path": "dossiers",
+                                                    "query": {
+                                                        "terms": {
+                                                            "dossiers.inquiry_ids": [
+                                                                "dos-inq-1",
+                                                                "dos-inq-2"
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "nested": {
+                                                    "path": "dossiers",
+                                                    "query": {
+                                                        "terms": {
+                                                            "dossiers.status": [
+                                                                "published",
+                                                                "preview"
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "bool": {
+                            "filter": [
+                                {
+                                    "bool": {
+                                        "minimum_should_match": 1,
+                                        "should": [
+                                            {
+                                                "bool": {
+                                                    "filter": [
+                                                        {
+                                                            "terms": {
+                                                                "type": [
+                                                                    "document"
+                                                                ]
+                                                            }
+                                                        },
+                                                        {
+                                                            "nested": {
+                                                                "path": "dossiers",
+                                                                "query": {
+                                                                    "bool": {
+                                                                        "filter": [
+                                                                            {
+                                                                                "terms": {
+                                                                                    "dossiers.type": [
+                                                                                        "dossier"
+                                                                                    ]
+                                                                                }
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "bool": {
+                                                    "filter": [
+                                                        {
+                                                            "terms": {
+                                                                "type": [
+                                                                    "dossier",
+                                                                    "covenant"
+                                                                ]
+                                                            }
+                                                        },
+                                                        {
+                                                            "bool": {
+                                                                "filter": [
+                                                                    {
+                                                                        "terms": {
+                                                                            "type": [
+                                                                                "dossier"
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "bool": {
+                            "filter": [
+                                {
+                                    "terms": {
+                                        "type": [
+                                            "document"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "terms": {
+                                        "judgement": [
+                                            "public",
+                                            "partial_public"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "highlight": {
+            "max_analyzed_offset": 1000000,
+            "pre_tags": [
+                "[[hl_start]]"
+            ],
+            "post_tags": [
+                "[[hl_end]]"
+            ],
+            "fields": {
+                "pages.content": {
+                    "fragment_size": 50,
+                    "number_of_fragments": 5,
+                    "type": "unified"
+                },
+                "dossiers.title": {
+                    "fragment_size": 50,
+                    "number_of_fragments": 5,
+                    "type": "unified"
+                },
+                "dossiers.summary": {
+                    "fragment_size": 50,
+                    "number_of_fragments": 5,
+                    "type": "unified"
+                },
+                "title": {
+                    "fragment_size": 50,
+                    "number_of_fragments": 5,
+                    "type": "unified"
+                },
+                "summary": {
+                    "fragment_size": 50,
+                    "number_of_fragments": 5,
+                    "type": "unified"
+                },
+                "decision_content": {
+                    "fragment_size": 50,
+                    "number_of_fragments": 5,
+                    "type": "unified"
+                }
+            },
+            "require_field_match": true,
+            "highlight_query": {
+                "simple_query_string": {
+                    "query": "search terms",
+                    "fields": [
+                        "title",
+                        "summary",
+                        "decision_content",
+                        "dossiers.summary",
+                        "dossiers.title",
+                        "pages.content"
+                    ],
+                    "default_operator": "and"
+                }
+            }
+        },
+        "aggs": {
+            "subject": {
+                "terms": {
+                    "field": "subjects",
+                    "size": 25,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
+                }
+            },
+            "source": {
+                "terms": {
+                    "field": "source_type",
+                    "size": 25,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
+                }
+            },
+            "grounds": {
+                "terms": {
+                    "field": "grounds",
+                    "size": 25,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
+                }
+            },
+            "dossiers-department": {
+                "nested": {
+                    "path": "dossiers"
+                },
+                "aggs": {
+                    "department": {
+                        "terms": {
+                            "field": "dossiers.departments.name",
+                            "size": 25,
+                            "order": {
+                                "_count": "desc"
+                            },
+                            "min_doc_count": 1
+                        }
+                    }
+                }
+            },
+            "dossiers-period": {
+                "nested": {
+                    "path": "dossiers"
+                },
+                "aggs": {
+                    "period": {
+                        "terms": {
+                            "field": "dossiers.date_period",
+                            "size": 25,
+                            "order": {
+                                "_count": "desc"
+                            },
+                            "min_doc_count": 1
+                        }
+                    }
+                }
+            },
+            "all": {
+                "global": {},
+                "aggs": {
+                    "facet-base-filter": {
+                        "filter": {
+                            "bool": {
+                                "minimum_should_match": 1,
+                                "should": [
+                                    {
+                                        "bool": {
+                                            "minimum_should_match": 1,
+                                            "should": [
+                                                {
+                                                    "nested": {
+                                                        "path": "dossiers",
+                                                        "query": {
+                                                            "bool": {
+                                                                "minimum_should_match": 1,
+                                                                "should": [
+                                                                    {
+                                                                        "simple_query_string": {
+                                                                            "query": "search terms",
+                                                                            "fields": [
+                                                                                "dossiers.title"
+                                                                            ],
+                                                                            "default_operator": "and",
+                                                                            "boost": 3
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "simple_query_string": {
+                                                                            "query": "search terms",
+                                                                            "fields": [
+                                                                                "dossiers.summary"
+                                                                            ],
+                                                                            "default_operator": "and",
+                                                                            "boost": 2
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "nested": {
+                                                        "path": "pages",
+                                                        "query": {
+                                                            "simple_query_string": {
+                                                                "query": "search terms",
+                                                                "fields": [
+                                                                    "pages.content"
+                                                                ],
+                                                                "default_operator": "and",
+                                                                "boost": 1
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "simple_query_string": {
+                                                        "query": "search terms",
+                                                        "fields": [
+                                                            "filename"
+                                                        ],
+                                                        "default_operator": "and",
+                                                        "boost": 4
+                                                    }
+                                                }
+                                            ],
+                                            "filter": [
+                                                {
+                                                    "term": {
+                                                        "type": {
+                                                            "value": "document"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "bool": {
+                                            "minimum_should_match": 1,
+                                            "should": [
+                                                {
+                                                    "simple_query_string": {
+                                                        "query": "search terms",
+                                                        "fields": [
+                                                            "title"
+                                                        ],
+                                                        "default_operator": "and",
+                                                        "boost": 5
+                                                    }
+                                                },
+                                                {
+                                                    "simple_query_string": {
+                                                        "query": "search terms",
+                                                        "fields": [
+                                                            "summary"
+                                                        ],
+                                                        "default_operator": "and",
+                                                        "boost": 4
+                                                    }
+                                                },
+                                                {
+                                                    "simple_query_string": {
+                                                        "query": "search terms",
+                                                        "fields": [
+                                                            "decision_content"
+                                                        ],
+                                                        "default_operator": "and",
+                                                        "boost": 3
+                                                    }
+                                                }
+                                            ],
+                                            "filter": [
+                                                {
+                                                    "terms": {
+                                                        "type": [
+                                                            "dossier",
+                                                            "covenant"
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "filter": [
+                                    {
+                                        "bool": {
+                                            "minimum_should_match": 1,
+                                            "should": [
+                                                {
+                                                    "bool": {
+                                                        "filter": [
+                                                            {
+                                                                "terms": {
+                                                                    "type": [
+                                                                        "dossier",
+                                                                        "covenant"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            {
+                                                                "terms": {
+                                                                    "inquiry_ids": [
+                                                                        "dos-inq-1",
+                                                                        "dos-inq-2"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            {
+                                                                "terms": {
+                                                                    "status": [
+                                                                        "published",
+                                                                        "preview"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "bool": {
+                                                        "filter": [
+                                                            {
+                                                                "terms": {
+                                                                    "type": [
+                                                                        "document"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            {
+                                                                "terms": {
+                                                                    "inquiry_ids": [
+                                                                        "doc-inq-1"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            {
+                                                                "nested": {
+                                                                    "path": "dossiers",
+                                                                    "query": {
+                                                                        "terms": {
+                                                                            "dossiers.inquiry_ids": [
+                                                                                "dos-inq-1",
+                                                                                "dos-inq-2"
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "nested": {
+                                                                    "path": "dossiers",
+                                                                    "query": {
+                                                                        "terms": {
+                                                                            "dossiers.status": [
+                                                                                "published",
+                                                                                "preview"
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "aggs": {
+                            "facet-filter-type": {
+                                "filter": {
+                                    "bool": {
+                                        "filter": [
+                                            {
+                                                "bool": {
+                                                    "filter": [
+                                                        {
+                                                            "terms": {
+                                                                "type": [
+                                                                    "document"
+                                                                ]
+                                                            }
+                                                        },
+                                                        {
+                                                            "terms": {
+                                                                "judgement": [
+                                                                    "public",
+                                                                    "partial_public"
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "aggs": {
+                                    "type_name": {
+                                        "filter": {
+                                            "bool": {
+                                                "filter": [
+                                                    {
+                                                        "terms": {
+                                                            "type": [
+                                                                "dossier",
+                                                                "covenant"
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "aggs": {
+                                            "type": {
+                                                "terms": {
+                                                    "field": "type",
+                                                    "size": 25,
+                                                    "order": {
+                                                        "_count": "desc"
+                                                    },
+                                                    "min_doc_count": 1
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "facet-filter-judgement": {
+                                "filter": {
+                                    "bool": {
+                                        "filter": [
+                                            {
+                                                "bool": {
+                                                    "filter": [
+                                                        {
+                                                            "bool": {
+                                                                "minimum_should_match": 1,
+                                                                "should": [
+                                                                    {
+                                                                        "bool": {
+                                                                            "filter": [
+                                                                                {
+                                                                                    "terms": {
+                                                                                        "type": [
+                                                                                            "document"
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "nested": {
+                                                                                        "path": "dossiers",
+                                                                                        "query": {
+                                                                                            "bool": {
+                                                                                                "filter": [
+                                                                                                    {
+                                                                                                        "terms": {
+                                                                                                            "dossiers.type": [
+                                                                                                                "dossier"
+                                                                                                            ]
+                                                                                                        }
+                                                                                                    }
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "bool": {
+                                                                            "filter": [
+                                                                                {
+                                                                                    "terms": {
+                                                                                        "type": [
+                                                                                            "dossier",
+                                                                                            "covenant"
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "bool": {
+                                                                                        "filter": [
+                                                                                            {
+                                                                                                "terms": {
+                                                                                                    "type": [
+                                                                                                        "dossier"
+                                                                                                    ]
+                                                                                                }
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "aggs": {
+                                    "judgement": {
+                                        "terms": {
+                                            "field": "judgement",
+                                            "size": 25,
+                                            "order": {
+                                                "_count": "desc"
+                                            },
+                                            "min_doc_count": 1
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "unique_dossiers": {
+                "cardinality": {
+                    "field": "dossier_nr",
+                    "precision_threshold": 40000
+                }
+            },
+            "unique_documents": {
+                "cardinality": {
+                    "field": "document_nr",
+                    "precision_threshold": 40000
+                }
+            }
+        }
+    },
+    "index": "woopie-read",
+    "from": 6,
+    "size": 15
+}

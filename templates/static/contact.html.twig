@@ -1,24 +1,24 @@
 {% extends 'base.html.twig' %}
 
-{% set page_title = "Contact" | trans() %}
+{% set page_title = 'global.contact' | trans() %}
 
 {% block body %}
 <div class="woo-container woo-container--sm">
     <div class="woo-rich-text woo-readable-width">
-        <h1>{{ "Contact" | trans() }}</h1>
+        <h1>{{ page_title }}</h1>
 
-        <p>{{ "We make every effort to supplement this website with relevant information." | trans() }}</p>
+        <p>{{ 'public.contact.paragraph-1' | trans() }}</p>
 
-        <p>{{ "Would you like to contact us? Send an e-mail to <a href='mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl'>_dienstpostbusWoo-corona-ondersteuning@minvws.nl</a>. We can help you with the following:" | trans() | raw }}</p>
+        <p>{{ 'public.contact.paragraph-2' | trans() | raw }}</p>
 
         <ul>
-            <li>{{ "submit a Woo request" | trans() }}</li>
-            <li>{{ "questions or comments about the website" | trans() }}</li>
-            <li>{{ "report a document on this website where additional information needs to be obscured (e.g. a person's name or contact details)." | trans() }}</li>
+            <li>{{ 'public.contact.bullet-1' | trans() }}</li>
+            <li>{{ 'public.contact.bullet-2' | trans() }}</li>
+            <li>{{ 'public.contact.bullet-3' | trans() }}</li>
         </ul>
 
-        <p>{{ "For feedback, tips and suggestions on how we can improve this website, please email us at <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl</a>" | trans() | raw }}</p>
-        <p>De broncode is open source beschikbaar op Github: <a href="https://github.com/minvws/nl-rdo-woo-web">https://github.com/minvws/nl-rdo-woo-web</a>.</p>
+        <p>{{ 'public.contact.paragraph-3' | trans() | raw }}</p>
+        <p>{{ 'public.contact.paragraph-4' | trans() | raw }}</p>
     </div>
 </div>
 {% endblock %}

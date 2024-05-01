@@ -15,15 +15,15 @@
             <tbody>
                 <tr>
                     <th class="text-left w-56" scope="row">{{ "Dossiers available" | trans }}</th>
-                    <td>{{ "# dossiers" | trans({'count': dossier_count}) }}</td>
+                    <td>{{ "global.number_of_dossiers" | trans({'count': dossier_count}) }}</td>
                 </tr>
                 <tr>
                     <th class="text-left" scope="row">{{ "Documents available" | trans }}</th>
-                    <td>{{ "# documents" | trans({'count': document_count}) }}</td>
+                    <td>{{ "global.number_of_documents" | trans({'count': document_count}) }}</td>
                 </tr>
                 <tr>
                     <th class="text-left" scope="row">{{ "Total pages" | trans }}</th>
-                    <td>{{ "# pages" | trans({'count': page_count}) }}</td>
+                    <td>{{ "global.number_of_pages" | trans({'count': page_count}) }}</td>
                 </tr>
             </tbody>
         </table>
@@ -35,7 +35,7 @@
                     <thead>
                         <tr>
                             <th class="text-left" scope="col">{{ "Node" | trans() }}</th>
-                            <th class="text-left" scope="col">{{ "Name" | trans() }}</th>
+                            <th class="text-left" scope="col">{{ 'global.name' | trans() }}</th>
                             <th class="text-right" scope="col">{{ "Messages" | trans() }}</th>
                             <th class="text-right" scope="col">{{ "Msg ready" | trans() }}</th>
                             <th class="text-right" scope="col">{{ "Msg unacknowledged" | trans() }}</th>

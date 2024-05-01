@@ -32,10 +32,11 @@ class RolloverParametersType extends AbstractType
     {
         $builder
             ->add('mappingVersion', IntegerType::class, [
+                'label' => 'admin.elastic.mapping_version',
                 'required' => true,
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Opslaan',
+                'label' => 'global.save',
             ])
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
                 /** @var RolloverParameters $data */

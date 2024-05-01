@@ -1,0 +1,104 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+    {% set hasDocuments = pagination | length > 0 %}
+    <div class="bhr-container bhr-container--sm">
+        {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.admin.html.twig' }) }}
+    </div>
+
+    <div class="bhr-container">
+        <div class="bhr-card">
+            {% set uploadStatus = dossier.uploadStatus %}
+            <h2 class="font-bold mb-6">{{ uploadStatus.actualUploadCount }}/{{ uploadStatus.expectedUploadCount }} toegevoegd</h2>
+
+            <twig:Admin:LeftAndRight class="pt-1">
+                {% if dossier.rawInventory is not null  %}
+                <a
+                    class="bhr-button bhr-button--primary bhr-button--with-icon-right mr-2"
+                    href="{{ path('app_admin_dossier_inventory_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
+                >
+                    Download productierapport
+
+                    <twig:Admin:Icon class="bhr-button__icon bhr-button__icon--right right-4 -mt-0.5" color="fill-white" size="16" name="download" />
+                </a>
+                {% endif %}
+
+                <a class="bhr-button bhr-button--secondary mr-2" href="{{ path('app_admin_dossier_woodecision_documents_edit_replace_inventory', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">
+                    Vervang productierapport
+                </a>
+
+                {% if dossier.needsInventoryAndDocuments and not dossier.uploadStatus.isComplete %}
+                <button type="button" class="bhr-button bhr-button--secondary js-visibility-toggler" aria-controls="edit-documents" aria-expanded="true">
+                    Vervang bestanden...
+                </button>
+                {% endif %}
+
+                <twig:block name="right">
+                    <twig:Admin:Search:SearchPreviewsForm
+                        endpoint="{{ path('app_admin_dossier_woodecision_documents_edit_search', { prefix: dossier.documentPrefix, 'dossierId': dossier.dossierNr }) }}"
+                        label="{{ 'Zoek op documentnummer of -naam' }}"
+                    />
+                </twig:block>
+            </twig:Admin:LeftAndRight>
+
+            {% if dossier.needsInventoryAndDocuments %}
+                {% set uploadStatus = dossier.uploadStatus %}
+                {% if not uploadStatus.isComplete %}
+                    <div id="edit-documents">
+                        <twig:Admin:DossierDocuments
+                            dossier="{{ dossier }}"
+                            uploadStatus="{{ uploadStatus }}"
+                        />
+                    </div>
+                {% endif %}
+
+                {% if hasDocuments %}
+                    <table class="bhr-table" id="resultaten">
+                        <caption class="sr-only">Documenten bij dit besluit. Kolomkoppen met links zijn sorteerbaar.</caption>
+                        <thead>
+                            <tr>
+                                {{ knp_pagination_sortable(pagination, 'Document number' | trans, 'doc.documentNr', { thClassName: 'w-40' }, {}, 'pagination/sort.admin.html.twig') }}
+                                {{ knp_pagination_sortable(pagination, 'Document title' | trans, 'doc.fileInfo.name', { thClassName: 'w-2/5' }, {}, 'pagination/sort.admin.html.twig') }}
+                                {{ knp_pagination_sortable(pagination, 'Document judgement' | trans, 'doc.judgement', {}, {}, 'pagination/sort.admin.html.twig') }}
+                                <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">
+                                    {{ 'Particulars' | trans }}
+                                </th>
+                                <th class="bhr-column-head bhr-column-head--gray" scope="col">
+                                    <span class="sr-only">{{ 'Edit document'| trans() }}</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for document in pagination %}
+                            <tr>
+                                <td>{{ document.documentId }}</td>
+                                <td>{{ document.fileInfo.name }}</td>
+                                <td>
+                                    {% if document.judgement.value is defined %}
+                                        {{ document.judgement.value | trans }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if document.withdrawn %}{{ "global.withdrawn" | trans }} {% endif %}
+                                </td>
+                                <td class="text-right">
+                                    <a class="js-clickable-row__focusable" href="{{ path('app_admin_dossier_woodecision_document', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">
+                                        <span class="sr-only">{{ 'global.details' | trans() }} {{ document.documentNr }}</span>
+                                        <twig:Admin:Icon name="chevron-right" />
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
+                {% else %}
+                    <p class="text-center">Er zijn nog geen documenten aan dit besluit gekoppeld.</p>
+                {% endif %}
+            {% else %}
+                Op basis van het besluit '{{ dossier.decision | decision }}' heeft dit dossier geen inventarislijst en/of documenten.
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

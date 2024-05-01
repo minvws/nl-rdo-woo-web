@@ -1,33 +1,28 @@
 {% extends 'base.html.twig' %}
 
-{% set page_title = "Accessibility" | trans() %}
+{% set page_title = 'global.accessibility.page_title' | trans() %}
 
 {% block body %}
 <div class="woo-container woo-container--sm">
     <div class="woo-rich-text woo-readable-width">
-        <h1>{{ "Accessibility" | trans() }}</h1>
+        <h1>{{ page_title }}</h1>
 
-        <p>
-            {{ "public.accessibility.introduction" | trans() | raw }}
-        </p>
-
+        <p>{{ 'public.accessibility.paragraph-1' | trans() | raw }}</p>
         <p class="flex flex-col">
-            <span>{{ "public.accessibility.statement" | trans() | raw }}</span>
-            <span>{{ "public.accessibility.downloadreport" | trans() | raw }}</span>
+            <span>{{ 'public.accessibility.statement' | trans() | raw }}</span>
+            <span>{{ 'public.accessibility.downloadreport' | trans() | raw }}</span>
         </p>
 
-        <h2>{{ "accessibility.title.whatisaccessibility" | trans() }}</h2>
+        <h2>{{ 'global.accessibility.sub_title-1' | trans() }}</h2>
+        <p>{{ 'public.accessibility.paragraph-2' | trans() | raw  }}</p>
 
-        <p>{{ "public.accessibility.text.whatisaccessibility" | trans() | raw  }}</p>
-
-        <h2>{{ "accessibility.title.howtokeepaccessibility" | trans() }}</h2>
-
-        <p>{{ "accessibility.text.guarantees" | trans() }}</p>
+        <h2>{{ 'global.accessibility.sub_title-2' | trans() }}</h2>
+        <p>{{ 'global.accessibility.paragraph-3' | trans() }}</p>
 
         <ul>
-            <li>{{ "accessibility.list.guarantees.bullet.01" | trans() }}</li>
-            <li>{{ "accessibility.list.guarantees.bullet.02" | trans() }}</li>
-            <li>{{ "accessibility.list.guarantees.bullet.03" | trans() }}</li>
+            <li>{{ 'global.accessibility.bullet-1' | trans() }}</li>
+            <li>{{ 'global.accessibility.bullet-2' | trans() }}</li>
+            <li>{{ 'global.accessibility.bullet-3' | trans() }}</li>
         </ul>
     </div>
 </div>

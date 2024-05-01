@@ -13,30 +13,41 @@ export interface Chunk {
   numberOfChunks: number;
   size: number;
   uploadFinished: boolean;
+  uploadUuid: string | undefined;
+}
+
+interface Response {
+  groupId: string | null;
+  mimeType: string;
+  originalName: string;
+  size: number;
+  uploadUuid: string;
 }
 
 interface Options {
-  chunkSize?: number;
-  endpoint: string;
+  endpoint?: string;
   file: File;
-  inputName: string;
+  groupId?: string;
   onError?: () => void;
   onProgress?: (progress: number) => void;
-  onSuccess?: () => void;
+  onSuccess?: (uploadUuid: string | undefined) => void;
+  uploadName?: string;
 }
 
 export const uploadFile = (options: Options) => {
   const {
-    endpoint,
+    endpoint = '/balie/uploader',
     file,
-    inputName,
+    groupId,
     onError = () => {},
     onProgress = () => {},
     onSuccess = () => {},
+    uploadName = 'file',
   } = options;
 
-  const CHUNK_SIZE = 16 * 1024 * 1024;
-  const cleanupFunctions: (() => void)[] = [];
+  let cleanupUpload: () => void = () => {};
+
+  const CHUNK_SIZE = 16 * 1024 * 1024; // 16 Mb
   const fileId = uniqueId('file', 32);
   const store = new Map<number, Chunk>();
   const totalFileSize = file.size;
@@ -63,26 +74,42 @@ export const uploadFile = (options: Options) => {
         numberOfChunks,
         size: content.size,
         uploadFinished: false,
+        uploadUuid: undefined,
       };
 
       store.set(id, chunk);
-
-      cleanupFunctions.push(uploadChunk(chunk, id));
     }
+
+    uploadNextChunk();
   };
 
-  const uploadChunk = (chunk: Chunk, chunkId: number) => {
+  const uploadNextChunk = async () => {
+    const chunks = getChunks();
+    const nextChunkToUpload = chunks.find((chunk) => !chunk.isUploaded);
+
+    if (!nextChunkToUpload) {
+      onSuccess(chunks.find((chunk) => chunk.uploadUuid)?.uploadUuid);
+      return;
+    }
+
+    cleanupUpload = uploadChunk(nextChunkToUpload);
+  };
+
+  const uploadChunk = (chunk: Chunk) => {
     const { request, sendRequest } = createChunkRequest(chunk);
 
     const abortController = new AbortController();
 
     request.upload.addEventListener('progress', (event) => {
       const { loaded, total } = event;
-      updateChunkProgress(chunkId, loaded, total);
+      updateChunkProgress(chunk.id, loaded, total);
     }, { signal: abortController.signal });
 
     request.addEventListener('load', () => {
-      updateChunkUploadResult(chunkId, isSuccessStatusCode(request.status));
+      updateChunkUploadResult(chunk.id, isSuccessStatusCode(request.status), request.response?.data);
+    }, { signal: abortController.signal });
+
+    request.addEventListener('readystatechange', () => {
     }, { signal: abortController.signal });
 
     sendRequest();
@@ -93,25 +120,22 @@ export const uploadFile = (options: Options) => {
     };
   };
 
-  const updateChunkUploadResult = (chunkId: number, isUploadSuccess: boolean) => {
+  const updateChunkUploadResult = (chunkId: number, isUploadSuccess: boolean, response?: Response) => {
     const chunk = getChunk(chunkId);
     chunk.isUploaded = true;
     chunk.isUploadSuccess = isUploadSuccess;
+    chunk.uploadUuid = response?.uploadUuid;
     store.set(chunkId, chunk);
 
-    const areAllChunksUploaded = getChunks().every((chunkItem) => chunkItem.isUploaded);
-    if (!areAllChunksUploaded) {
-      return;
-    }
+    cleanupUpload();
 
     const haveChunksFailed = getChunks().some((chunkItem) => chunkItem.isUploadSuccess === false);
     if (haveChunksFailed) {
-      cleanup();
       onError();
       return;
     }
 
-    onSuccess();
+    uploadNextChunk();
   };
 
   const updateChunkProgress = (chunkId: number, bytesSent: number, bytesToSend: number) => {
@@ -138,14 +162,18 @@ export const uploadFile = (options: Options) => {
 
   const createChunkRequest = (chunk: Chunk): { request: XMLHttpRequest, sendRequest: () => void } => {
     const formData = new FormData();
-    formData.append(inputName, chunk.content, file.name);
-    formData.append('chunkbyteoffset', chunk.byteOffset.toString());
+    formData.append(uploadName, chunk.content, file.name);
     formData.append('chunkindex', chunk.index.toString());
     formData.append('totalchunkcount', chunk.numberOfChunks.toString());
     formData.append('uuid', fileId); // each chunk of a file should have the same uuid
+    if (groupId) {
+      formData.append('groupId', groupId);
+    }
 
     const request = new XMLHttpRequest();
     request.open('POST', endpoint, true);
+    request.responseType = 'json';
+    request.setRequestHeader('Accept', 'application/json');
 
     return {
       request,
@@ -156,11 +184,7 @@ export const uploadFile = (options: Options) => {
   const getChunk = (id: number) => store.get(id) as Chunk;
   const getChunks = () => Array.from(store.values());
 
-  const cleanup = () => {
-    cleanupFunctions.forEach((cleanupFunction) => cleanupFunction());
-  };
-
   intialize();
 
-  return cleanup;
+  return cleanupUpload;
 };

@@ -40,21 +40,21 @@ class UserInfoFormType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Voor- en achternaam',
+                'label' => 'admin.user.name',
                 'empty_data' => '',
-                'help' => 'Minimaal 1 en maximaal 255 karakters. Bijvoorbeeld John Doe.',
+                'help' => 'admin.user.name_help',
                 'constraints' => [
                     new Length(['min' => 1, 'max' => 255]),
                 ],
             ])
             ->add('email', EmailType::class, [
                 'disabled' => true,
-                'label' => 'E-mailadres', // @codingStandardsIgnoreStart
-                'help' => 'Users identify themselves with their email address. We do not use the email address to provide passwords or other login information.', // @codingStandardsIgnoreEnd
+                'label' => 'global.email.capital',
+                'help' => 'admin.user.email_help',
             ])
             ->add('roles', HiddenType::class)
             ->add('submit', SubmitType::class, [
-                'label' => 'Opslaan',
+                'label' => 'global.save',
             ]);
 
         $builder->addeventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
@@ -79,7 +79,7 @@ class UserInfoFormType extends AbstractType
                 'label' => false,
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Please select at least one role.',
+                        'message' => 'admin.user.roles.validation',
                     ]),
                 ],
             ]);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query\Condition;
 
+use App\Domain\Search\Index\ElasticDocumentType;
 use App\Service\Search\Model\Config;
 use App\Service\Search\Query\Facet\FacetList;
 use App\Service\Search\Query\Query;
@@ -24,7 +25,7 @@ class SearchTermConditions implements QueryConditions
         );
 
         $query->addShould(
-            $this->createDossierQuery($config)
+            $this->createMainTypesQuery($config)
         );
 
         $query->setParams(['minimum_should_match' => 1]);
@@ -78,7 +79,7 @@ class SearchTermConditions implements QueryConditions
         )->setParams(['minimum_should_match' => 1]);
     }
 
-    public function createDossierQuery(Config $config): BoolQuery
+    public function createMainTypesQuery(Config $config): BoolQuery
     {
         return Query::bool(
             should: [
@@ -102,9 +103,12 @@ class SearchTermConditions implements QueryConditions
                     ->setBoost(3),
             ],
             filter: [
-                Query::term(
+                Query::terms(
                     field: 'type',
-                    value: Config::TYPE_DOSSIER,
+                    values: array_map(
+                        static fn (ElasticDocumentType $type) => $type->value,
+                        ElasticDocumentType::getMainTypes(),
+                    ),
                 ),
             ],
         )->setParams(['minimum_should_match' => 1]);

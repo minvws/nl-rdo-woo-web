@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inquiry;
 
+use App\Domain\Publication\Dossier\DossierStatus;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Organisation;
-use App\Enum\PublicationStatus;
 use App\Message\GenerateInquiryArchivesMessage;
 use App\Message\GenerateInquiryInventoryMessage;
 use App\Message\UpdateInquiryLinksMessage;
@@ -68,7 +68,7 @@ class InquiryServiceTest extends MockeryTestCase
         $this->entityManager->shouldReceive('getRepository')->with(Document::class)->andReturn($this->documentRepo);
 
         $this->dossier = \Mockery::mock(Dossier::class);
-        $this->dossier->shouldReceive('getStatus')->andReturn(PublicationStatus::PUBLISHED);
+        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         parent::setUp();
     }
@@ -102,8 +102,8 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->entityManager->expects('persist')->with(\Mockery::on(
             function (Inquiry $inquiry) use ($caseNr, $inquiryId): bool {
-                $this->assertEquals($this->organisation, $inquiry->getOrganisation());
-                $this->assertEquals($caseNr, $inquiry->getCasenr());
+                self::assertEquals($this->organisation, $inquiry->getOrganisation());
+                self::assertEquals($caseNr, $inquiry->getCasenr());
 
                 // Set fake ID on doctrine entity
                 $reflectionClass = new \ReflectionClass(get_class($inquiry));
@@ -119,7 +119,7 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (GenerateInquiryInventoryMessage $message) use ($inquiryId) {
-                $this->assertEquals($inquiryId, $message->getUuid());
+                self::assertEquals($inquiryId, $message->getUuid());
 
                 return true;
             }
@@ -127,7 +127,7 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (GenerateInquiryArchivesMessage $message) use ($inquiryId) {
-                $this->assertEquals($inquiryId, $message->getUuid());
+                self::assertEquals($inquiryId, $message->getUuid());
 
                 return true;
             }
@@ -171,7 +171,7 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (GenerateInquiryInventoryMessage $message) use ($inquiryId) {
-                $this->assertEquals($inquiryId, $message->getUuid());
+                self::assertEquals($inquiryId, $message->getUuid());
 
                 return true;
             }
@@ -179,7 +179,7 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (GenerateInquiryArchivesMessage $message) use ($inquiryId) {
-                $this->assertEquals($inquiryId, $message->getUuid());
+                self::assertEquals($inquiryId, $message->getUuid());
 
                 return true;
             }
@@ -212,10 +212,10 @@ class InquiryServiceTest extends MockeryTestCase
         // Docs 123 and 456 should be added to case-1
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (UpdateInquiryLinksMessage $message) use ($docId123, $docId456, $organisationId) {
-                $this->assertEquals($organisationId, $message->getOrganisationId());
-                $this->assertEquals('case-1', $message->getCaseNr());
-                $this->assertEquals([$docId123, $docId456], $message->getDocIdsToAdd());
-                $this->assertEquals([], $message->getDocIdsToDelete());
+                self::assertEquals($organisationId, $message->getOrganisationId());
+                self::assertEquals('case-1', $message->getCaseNr());
+                self::assertEquals([$docId123, $docId456], $message->getDocIdsToAdd());
+                self::assertEquals([], $message->getDocIdsToDelete());
 
                 return true;
             }
@@ -224,10 +224,10 @@ class InquiryServiceTest extends MockeryTestCase
         // Doc 123 should be added to case-2
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (UpdateInquiryLinksMessage $message) use ($docId123, $organisationId) {
-                $this->assertEquals($organisationId, $message->getOrganisationId());
-                $this->assertEquals('case-2', $message->getCaseNr());
-                $this->assertEquals([$docId123], $message->getDocIdsToAdd());
-                $this->assertEquals([], $message->getDocIdsToDelete());
+                self::assertEquals($organisationId, $message->getOrganisationId());
+                self::assertEquals('case-2', $message->getCaseNr());
+                self::assertEquals([$docId123], $message->getDocIdsToAdd());
+                self::assertEquals([], $message->getDocIdsToDelete());
 
                 return true;
             }
@@ -236,10 +236,10 @@ class InquiryServiceTest extends MockeryTestCase
         // Doc 456 should be removed from case-4
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (UpdateInquiryLinksMessage $message) use ($docId456, $organisationId) {
-                $this->assertEquals($organisationId, $message->getOrganisationId());
-                $this->assertEquals('case-4', $message->getCaseNr());
-                $this->assertEquals([], $message->getDocIdsToAdd());
-                $this->assertEquals([$docId456], $message->getDocIdsToDelete());
+                self::assertEquals($organisationId, $message->getOrganisationId());
+                self::assertEquals('case-4', $message->getCaseNr());
+                self::assertEquals([], $message->getDocIdsToAdd());
+                self::assertEquals([$docId456], $message->getDocIdsToDelete());
 
                 return true;
             }
@@ -248,10 +248,10 @@ class InquiryServiceTest extends MockeryTestCase
         // Doc 456 should be added to case-3
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (UpdateInquiryLinksMessage $message) use ($docId456, $organisationId) {
-                $this->assertEquals($organisationId, $message->getOrganisationId());
-                $this->assertEquals('case-3', $message->getCaseNr());
-                $this->assertEquals([$docId456], $message->getDocIdsToAdd());
-                $this->assertEquals([], $message->getDocIdsToDelete());
+                self::assertEquals($organisationId, $message->getOrganisationId());
+                self::assertEquals('case-3', $message->getCaseNr());
+                self::assertEquals([$docId456], $message->getDocIdsToAdd());
+                self::assertEquals([], $message->getDocIdsToDelete());
 
                 return true;
             }

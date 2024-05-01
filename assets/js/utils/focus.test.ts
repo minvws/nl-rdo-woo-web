@@ -1,7 +1,7 @@
-import { describe, expect, test } from '@jest/globals';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { isFocusWithinElement } from './focus';
 
-jest.mock('./browser');
+vi.mock('./browser');
 
 describe('The "isFocusWithinElement" function', () => {
   const getContainer = () => document.getElementById('container') as HTMLElement;

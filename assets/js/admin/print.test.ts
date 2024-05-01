@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, test } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { getWindow } from '../utils';
 import { printPage } from './print';
 
-jest.mock('../utils');
+vi.mock('../utils');
 
 describe('the "printPage" function', () => {
   const getPrintPageButton = () => document.querySelector('.js-print-page') as HTMLElement;
@@ -21,6 +21,7 @@ describe('the "printPage" function', () => {
 
   afterEach(() => {
     cleanup();
+    vi.resetAllMocks();
   });
 
   test('should print the page when clicking a button with the "js-print-page" class name', () => {

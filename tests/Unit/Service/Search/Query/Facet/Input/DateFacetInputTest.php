@@ -33,9 +33,9 @@ final class DateFacetInputTest extends UnitTestCase
     {
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertInstanceOf(DateFacetInput::class, $input);
-        $this->assertInstanceOf(ParameterBagFactoryInterface::class, $input);
-        $this->assertInstanceOf(DateFacetInputInterface::class, $input);
+        self::assertInstanceOf(DateFacetInput::class, $input);
+        self::assertInstanceOf(ParameterBagFactoryInterface::class, $input);
+        self::assertInstanceOf(DateFacetInputInterface::class, $input);
     }
 
     public function testIsActiveReturnsTrueWhenItHasValues(): void
@@ -44,14 +44,14 @@ final class DateFacetInputTest extends UnitTestCase
 
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertTrue($input->isActive());
+        self::assertTrue($input->isActive());
     }
 
     public function testIsActiveReturnsFalseWhenItHasNoValues(): void
     {
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertFalse($input->isActive());
+        self::assertFalse($input->isActive());
     }
 
     public function testIsNotActiveReturnsFalseWhenItHasValues(): void
@@ -60,21 +60,21 @@ final class DateFacetInputTest extends UnitTestCase
 
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertFalse($input->isNotActive());
+        self::assertFalse($input->isNotActive());
     }
 
     public function testIsNotActiveReturnsTrueWhenItHasNoValues(): void
     {
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertTrue($input->isNotActive());
+        self::assertTrue($input->isNotActive());
     }
 
     public function testGetWithoutDateWithEmptyBagReturnsFalse(): void
     {
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertFalse($input->isWithoutDate());
+        self::assertFalse($input->isWithoutDate());
     }
 
     #[DataProvider('getWithoutDateData')]
@@ -87,7 +87,7 @@ final class DateFacetInputTest extends UnitTestCase
 
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertSame($expected, $input->isWithoutDate());
+        self::assertSame($expected, $input->isWithoutDate());
     }
 
     /**
@@ -131,7 +131,7 @@ final class DateFacetInputTest extends UnitTestCase
     {
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertNull($input->getPeriodFilterFrom());
+        self::assertNull($input->getPeriodFilterFrom());
     }
 
     #[DataProvider('datesData')]
@@ -144,8 +144,8 @@ final class DateFacetInputTest extends UnitTestCase
 
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertSame($expected, $input->getPeriodFilterFrom());
-        $this->assertNull($input->getPeriodFilterTo());
+        self::assertSame($expected, $input->getPeriodFilterFrom());
+        self::assertNull($input->getPeriodFilterTo());
     }
 
     #[DataProvider('datesData')]
@@ -158,8 +158,8 @@ final class DateFacetInputTest extends UnitTestCase
 
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertSame($expected, $input->getPeriodFilterTo());
-        $this->assertNull($input->getPeriodFilterFrom());
+        self::assertSame($expected, $input->getPeriodFilterTo());
+        self::assertNull($input->getPeriodFilterFrom());
     }
 
     /**
@@ -208,7 +208,7 @@ final class DateFacetInputTest extends UnitTestCase
 
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
 
-        $this->assertSame($expected, $input->hasAnyPeriodFilterDates());
+        self::assertSame($expected, $input->hasAnyPeriodFilterDates());
     }
 
     /**

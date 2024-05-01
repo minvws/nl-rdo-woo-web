@@ -15,7 +15,7 @@ export const getSearchParamsAndDelete = (key: string) => {
 
 export const getSearchParamsAndSet = (key: string, value: string) => {
   const params = getSearchParams();
-  params.set(key, encodeURIComponent(value));
+  params.set(key, value);
 
   return params;
 };
@@ -80,7 +80,7 @@ const deleteFromParams = (params: URLSearchParams, key: string, value: string) =
 
   params.delete(key);
   paramValues.forEach((paramValue) => {
-    if (paramValue !== encodeURIComponent(value)) {
+    if (paramValue !== value) {
       params.append(key, paramValue);
     }
   });
@@ -89,6 +89,6 @@ const deleteFromParams = (params: URLSearchParams, key: string, value: string) =
 };
 
 const appendToParams = (params: URLSearchParams, key: string, value: string) => {
-  params.append(key, encodeURIComponent(value));
+  params.append(key, value);
   return params;
 };

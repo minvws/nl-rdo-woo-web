@@ -20,8 +20,8 @@ class ColumnMappingTest extends MockeryTestCase
             $aliases,
         );
 
-        $this->assertEquals($name, $columnMapping->getName());
-        $this->assertTrue($columnMapping->isRequired());
-        $this->assertEquals($aliases, $columnMapping->getColumnNames());
+        self::assertEquals($name, $columnMapping->getName());
+        self::assertTrue($columnMapping->isRequired());
+        self::assertEquals($aliases, $columnMapping->getColumnNames());
     }
 }

@@ -46,8 +46,10 @@ class AggregationMapper
         $value = trim($value);
 
         return match ($facetKey) {
+            FacetKey::TYPE->value => $this->translator->trans('public.documents.type.' . $value),
             FacetKey::GROUNDS->value => trim($value . ' ' . Citation::toClassification($value)),
-            FacetKey::SOURCE->value, FacetKey::JUDGEMENT->value => $this->translator->trans($value),
+            FacetKey::SOURCE->value => $this->translator->trans('public.documents.file_type.' . $value),
+            FacetKey::JUDGEMENT->value => $this->translator->trans($value),
             default => $value === '' ? 'none' : $value,
         };
     }

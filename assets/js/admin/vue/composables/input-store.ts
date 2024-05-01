@@ -2,10 +2,12 @@ import { ref, Ref, watch } from 'vue';
 import type { InputValueType, InputValidationErrors, Validator } from '../form/interface';
 
 export interface InputStore {
+  addSubmitValidationError: (error: string) => void;
   errors: InputValidationErrors;
   hasVisibleErrors: boolean;
   isDirty: boolean;
   isInvalid: boolean;
+  isPristine: boolean;
   isTouched: boolean;
   isValid: boolean;
   label: string;
@@ -13,10 +15,14 @@ export interface InputStore {
   markAsTouched: () => void;
   name: string;
   reset: () => void;
+  resetSubmitValidationErrors: () => void;
+  setValidators: (newValidators: Validator[]) => void;
+  setValue: (value: InputValueType) => void;
+  submitValidationErrors: string[];
   value: InputValueType;
 }
 
-const getErrors = (inputValue: InputValueType, validators: Validator[] = []): InputValidationErrors => {
+const getStaticErrors = (inputValue: InputValueType, validators: Validator[] = []): InputValidationErrors => {
   const errorCollection = validators.reduce((accumulated, validator) => {
     const error = validator(inputValue);
     if (error) {
@@ -28,22 +34,42 @@ const getErrors = (inputValue: InputValueType, validators: Validator[] = []): In
   return Array.from(errorCollection.values());
 };
 
-export const useInputStore = (name: string, label: string, value: Ref<InputValueType>, validators: Validator[] = []): InputStore => {
-  const errors = ref<InputValidationErrors>(getErrors(value.value, validators));
+export const useInputStore = (name: string, label: string, value: Ref<InputValueType>, initialValidators: Validator[] = []): InputStore => {
+  const validators = ref(initialValidators);
+  const staticErrors = ref<InputValidationErrors>(getStaticErrors(value.value, validators.value));
+  const submitValidationErrors = ref<string[]>([]);
   const isDirty = ref(false);
   const isTouched = ref(false);
   const shouldDisplayErrors = ref(false);
 
+  const updateStaticErrors = () => {
+    staticErrors.value = getStaticErrors(value.value, validators.value);
+  };
+
+  const setValidators = (newValidators: Validator[]) => {
+    validators.value = newValidators;
+    updateStaticErrors();
+  };
+
+  const setValue = (newValue: InputValueType) => {
+    // eslint-disable-next-line no-param-reassign
+    value.value = newValue;
+  };
+
   watch(value, () => {
     isDirty.value = true;
-    errors.value = getErrors(value.value, validators);
+    updateStaticErrors();
   });
 
   return {
     get errors() {
-      return errors.value;
+      return staticErrors.value;
     },
     get hasVisibleErrors() {
+      if (submitValidationErrors.value.length > 0) {
+        return true;
+      }
+
       if (this.isValid) {
         return false;
       }
@@ -58,7 +84,10 @@ export const useInputStore = (name: string, label: string, value: Ref<InputValue
       return isDirty.value;
     },
     get isInvalid() {
-      return errors.value.length > 0;
+      return staticErrors.value.length > 0;
+    },
+    get isPristine() {
+      return !this.isDirty;
     },
     get isTouched() {
       return isTouched.value;
@@ -72,8 +101,17 @@ export const useInputStore = (name: string, label: string, value: Ref<InputValue
     get name() {
       return name;
     },
+    get submitValidationErrors() {
+      return submitValidationErrors.value;
+    },
     get value() {
       return value.value;
+    },
+    addSubmitValidationError(error: string) {
+      submitValidationErrors.value.push(error);
+    },
+    resetSubmitValidationErrors() {
+      submitValidationErrors.value = [];
     },
     markAsShouldDisplayErrors() {
       shouldDisplayErrors.value = true;
@@ -86,5 +124,7 @@ export const useInputStore = (name: string, label: string, value: Ref<InputValue
       isTouched.value = false;
       shouldDisplayErrors.value = false;
     },
+    setValidators,
+    setValue,
   };
 };

@@ -3,15 +3,15 @@
 {% set page_title = "" | trans %}
 
 {% if authenticationError %}
-    {% set page_title = "Ongeldige authenticatiecode" %}
+    {% set page_title = 'admin.login.2fa.invalid_code' %}
 {% else %}
-    {% set page_title = "Voer authenticatiecode in" %}
+    {% set page_title = 'admin.login.2fa.enter_code' %}
 {% endif %}
 
 {% block body %}
 <div class="bhr-container bhr-container--xs">
     <div class="bhr-card">
-        <h1 class="bhr-title-sm mb-8">Voer authenticatiecode in</h1>
+        <h1 class="bhr-title-sm mb-8">{{ 'admin.login.2fa.enter_code' | trans() }}</h1>
 
         {# Let the user select the authentication method #}
         {% if availableTwoFactorProviders|length > 1 %}
@@ -27,14 +27,14 @@
             <p class="mb-6"><strong>{{ email }}</strong></p>
         {% endif %}
 
-        <p class="mb-6" id="instructions-for-2fa">{{ "Open the authenticator app, and enter the one-time verification code to login." | trans() }}</p>
+        <p class="mb-6" id="instructions-for-2fa">{{ 'admin.login.2fa.instructions' | trans() }}</p>
 
         <form action="{{ checkPathUrl ? checkPathUrl: path(checkPathRoute) }}" method="post" novalidate>
             <div class="bhr-form-row {{ authenticationError ? 'bhr-form-row--invalid' : '' }}">
-                <label class="bhr-label" for="auth-code">{{ "Code" | trans() }}</label>
+                <label class="bhr-label" for="auth-code">{{ 'global.code' | trans() }}</label>
 
                 {% if authenticationError %}
-                    <twig:Admin:InputErrors id="auth-code-error" error="Ongeldige authenticatiecode. Vul een geldige authenticatiecode in." />
+                    <twig:Admin:InputErrors id="auth-code-error" error="{{ 'admin.login.2fa.error.invalid_code' | trans() }}" />
                 {% endif %}
 
                 <input
@@ -49,12 +49,12 @@
             </div>
 
             <div>
-                <button class="bhr-button bhr-button--primary bhr-button--full-width" type="submit">{{ "Controleren" | trans() }}</button>
+                <button class="bhr-button bhr-button--primary bhr-button--full-width" type="submit">{{ 'global.check' | trans() }}</button>
 
-                <a class="bhr-button bhr-button--secondary bhr-button--full-width mt-4" href="{{ logoutPath }}">{{ "Logout" | trans() }}</a>
+                <a class="bhr-button bhr-button--secondary bhr-button--full-width mt-4" href="{{ logoutPath }}">{{ 'global.logout' | trans() }}</a>
             </div>
 
-            <p class="mt-6 bhr-text-muted">{{ "Having problems with the authenticator app? Use a recovery code from the login instructions." | trans() }}</p>
+            <p class="mt-6 bhr-text-muted">{{ 'admin.login.2fa.reset_instructions' | trans() }}</p>
 
         </form>
     </div>

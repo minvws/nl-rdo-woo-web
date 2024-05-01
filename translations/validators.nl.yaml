@@ -132,11 +132,19 @@ Error: Fout
 'Please select a valid range.': 'Kies een geldig bereik.'
 'Please enter a valid week.': 'Vul een geldige week in.'
 'Please upload a valid spreadsheet': 'Upload een geldige spreadsheet.'
-'Your password should be at least {{ limit }} characters': 'Je wachtwoord moet tenminste {{ limit }} karakters bevatten.'
-'Your password must not contain only digits.': 'Je wachtwoord mag niet alleen uit cijfers bestaan.'
-'This email address is already in use': 'Dit e-mailadres is al in gebruik'
 'Enter a case number or multiple case numbers, separate multiple case numbers with commas': 'Vul een zaaknummer of meerdere zaaknummers in, scheid meerdere zaaknummers met komma’s'
 'Choose from the selection of published decisions': 'Kies uit de selectie gepubliceerde besluiten'
-'The password fields must match': 'De nieuwe wachtwoorden moeten gelijk zijn'
-'The password is a common password or similar': 'Het gekozen wachtwoord is niet veilig'
-'Your new password cannot be the same as your current password': 'Je nieuwe wachtwoord mag niet hetzelfde zijn als je huidige wachtwoord'
+date_to_before_date_from: 'Einddatum dient na begindatum te liggen'
+date_max_10_year_old: "Datum mag niet meer dan 10 jaar in het verleden liggen"
+date_max_5_year_in_future: "Datum mag niet meer dan 5 jaar in de toekomst liggen"
+use_only_letters_numbers_and_dashes: 'Gebruik alleen letters, cijfers en verbindingstekens'
+date_must_not_be_in_future: 'Deze datum mag niet in de toekomst liggen'
+at_least_two_parties_required: 'Vul minimaal 2 partijen in'
+publication_date_must_be_today_or_future: 'De datum van feitelijke verstrekking moet gelijk of later zijn dan vandaag'
+admin.user.roles.validation: "Selecteer minimaal één toegangsrol"
+admin.user.email.validation.in_use: "Dit e-mailadres is al in gebruik"
+admin.user.password.validation.must_match: "De nieuwe wachtwoorden moeten gelijk zijn"
+admin.user.password.validation.minimal_chars: "Je wachtwoord moet tenminste {{ limit }} karakters bevatten."
+admin.user.password.validation.digits_only: "Je wachtwoord mag niet alleen uit cijfers bestaan."
+admin.user.password.validation.same_current: "Je nieuwe wachtwoord mag niet hetzelfde zijn als je huidige wachtwoord"
+admin.user.password.validation.common: "Het gekozen wachtwoord is niet veilig"

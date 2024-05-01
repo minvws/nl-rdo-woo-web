@@ -1,32 +1,29 @@
 {% extends 'admin.html.twig' %}
 
-{% set page_title = "Accessibility" | trans() %}
+{% set page_title = 'global.accessibility.page_title' | trans() %}
 
 {% block body %}
 <div class="bhr-container bhr-container--sm">
-    <h1 class="bhr-title mb-4">{{ "Accessibility" | trans() }}</h1>
+    <h1 class="bhr-title mb-4">{{ page_title }}</h1>
     <div class="px-11">
         <div class="bhr-card">
             <div class="bhr-content text-lg">
-                <p>
-                    {{ "admin.accessibility.introduction" | trans() | raw }}
+                <p>{{ 'admin.accessibility.paragraph-1' | trans() | raw }}</p>
+                <p class="flex flex-col">
+                    <span>{{ 'admin.accessibility.statement' | trans() | raw }}</span>
+                    <span>{{ 'admin.accessibility.downloadreport' | trans() | raw }}</span>
                 </p>
 
-                <p>
-                    {{ "admin.accessibility.statement" | trans() | raw }}
-                    <br />{{ "admin.accessibility.downloadreport" | trans() | raw }}
-                </p>
+                <h2 class="font-bold">{{ 'global.accessibility.sub_title-1' | trans() }}</h2>
+                <p>{{ 'admin.accessibility.paragraph-2' | trans() | raw  }}</p>
 
-                <h2 class="font-bold">{{ "accessibility.title.whatisaccessibility" | trans() }}</h2>
-                <p>{{ "admin.accessibility.text.whatisaccessibility" | trans() | raw  }}</p>
-
-                <h2 class="font-bold">{{ "accessibility.title.howtokeepaccessibility" | trans() }}</h2>
-                <p>{{ "accessibility.text.guarantees" | trans() }}</p>
+                <h2 class="font-bold">{{ 'global.accessibility.sub_title-2' | trans() }}</h2>
+                <p>{{ 'global.accessibility.paragraph-3' | trans() }}</p>
 
                 <ul>
-                    <li>{{ "accessibility.list.guarantees.bullet.01" | trans() }}</li>
-                    <li>{{ "accessibility.list.guarantees.bullet.02" | trans() }}</li>
-                    <li>{{ "accessibility.list.guarantees.bullet.03" | trans() }}</li>
+                    <li>{{ 'global.accessibility.bullet-1' | trans() }}</li>
+                    <li>{{ 'global.accessibility.bullet-2' | trans() }}</li>
+                    <li>{{ 'global.accessibility.bullet-3' | trans() }}</li>
                 </ul>
             </div>
         </div>

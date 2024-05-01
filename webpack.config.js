@@ -76,8 +76,8 @@ Encore
   .addAliases({
     /**
      * The import aliases below are defined in multiple files. So remember to update them all if you change one.
-     * - jest.config.js
      * - tsconfig.json
+     * - vitest.config.ts
      * - webpack.config.js
      */
 

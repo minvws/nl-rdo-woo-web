@@ -15,7 +15,7 @@ final readonly class DocumentViewFactory
     ) {
     }
 
-    public function getDocumentViewModel(DocumentEntity $documentEntity): Document
+    public function make(DocumentEntity $documentEntity): Document
     {
         return new Document(
             ingested: $this->searchService->isIngested($documentEntity),

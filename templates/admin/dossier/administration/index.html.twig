@@ -43,7 +43,7 @@
                         <td>{{ dossier.title }}</td>
                         <td>
                             <a class="js-clickable-row__focusable" href="{{ path('app_admin_dossier_administration_details', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">
-                                <span class="sr-only">Details {{ dossier.dossierNr }}</span>
+                                <span class="sr-only">{{ 'global.details' | trans() }} {{ dossier.dossierNr }}</span>
                                 <twig:Admin:Icon name="chevron-right" />
                             </a>
                         </td>

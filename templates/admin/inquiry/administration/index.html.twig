@@ -37,7 +37,7 @@
                         <td>{{ inquiry.id }}</td>
                         <td>
                             <a class="js-clickable-row__focusable" href="{{ path('app_admin_inquiry_administration_details', {casenr: inquiry.casenr}) }}">
-                                <span class="sr-only">Details {{ inquiry.casenr }}</span>
+                                <span class="sr-only">{{ 'global.details' | trans() }} {{ inquiry.casenr }}</span>
                                 <twig:Admin:Icon name="chevron-right" />
                             </a>
                         </td>

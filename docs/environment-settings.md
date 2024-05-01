@@ -1,5 +1,18 @@
 # Environment settings
 
+<!-- TOC -->
+- [Environment settings](#environment-settings)
+  - [Environment variables](#environment-variables)
+    - [Global settings](#global-settings)
+    - [Database settings](#database-settings)
+    - [Messenger settings](#messenger-settings)
+    - [Elastic settings](#elastic-settings)
+    - [Redis settings](#redis-settings)
+    - [Storage settings](#storage-settings)
+    - [Audit logger settings settings](#audit-logger-settings-settings)
+    - [Miscellaneous settings](#miscellaneous-settings)
+<!-- TOC -->
+
 This document describes the environment settings that are used by the application.
 
 ## Environment variables

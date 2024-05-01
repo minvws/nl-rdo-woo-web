@@ -55,7 +55,7 @@ class AuthorizationRequestStoreTest extends MockeryTestCase
         $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($this->request);
         $this->request->attributes->set('auth_matrix', $entries);
 
-        $this->assertEquals($entries, $this->store->getEntries());
+        self::assertEquals($entries, $this->store->getEntries());
     }
 
     public function testStoreEntriesReturnsFalseWhenThereIsNoRequest(): void
@@ -66,7 +66,7 @@ class AuthorizationRequestStoreTest extends MockeryTestCase
 
         $this->requestStack->shouldReceive('getCurrentRequest')->andReturnNull();
 
-        $this->assertFalse($this->store->storeEntries(...$entries));
+        self::assertFalse($this->store->storeEntries(...$entries));
     }
 
     public function testStoreEntriesSetsRequestAttributeAndReturnsTrue(): void
@@ -77,8 +77,8 @@ class AuthorizationRequestStoreTest extends MockeryTestCase
 
         $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($this->request);
 
-        $this->assertTrue($this->store->storeEntries(...$entries));
-        $this->assertEquals(
+        self::assertTrue($this->store->storeEntries(...$entries));
+        self::assertEquals(
             $entries,
             $this->request->attributes->get('auth_matrix'),
         );

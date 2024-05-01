@@ -6,7 +6,6 @@ namespace App\Service\DocumentWorkflow;
 
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Entity\WithdrawReason;
 use App\Service\DocumentService;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -23,16 +22,6 @@ class DocumentWorkflow
     public function getStatus(Document $document): DocumentWorkflowStatus
     {
         return new DocumentWorkflowStatus($document);
-    }
-
-    public function withdraw(Document $document, WithdrawReason $reason, string $explanation): void
-    {
-        $status = $this->getStatus($document);
-        if (! $status->canWithdraw()) {
-            throw new \RuntimeException('Withdraw document action not allowed');
-        }
-
-        $this->documentService->withdraw($document, $reason, $explanation);
     }
 
     public function replace(Dossier $dossier, Document $document, UploadedFile $file): void

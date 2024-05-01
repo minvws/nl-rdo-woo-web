@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Controller\Admin\Dossier\DossierAuthorizationTrait;
 use App\Entity\DocumentPrefix;
 use App\Entity\Dossier;
 use App\Form\ChoiceLoader\DocumentPrefixChoiceLoader;
 use App\Form\ChoiceLoader\DossierChoiceLoader;
-use App\Form\Dossier\TranslatableFormErrorMapper;
+use App\Form\Dossier\WooDecision\TranslatableFormErrorMapper;
 use App\Form\Inquiry\InquiryLinkDocumentsFormType;
 use App\Form\Inquiry\InquiryLinkDossierFormType;
 use App\Repository\InquiryRepository;
@@ -35,8 +34,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class InquiryController extends AbstractController
 {
-    use DossierAuthorizationTrait;
-
     protected const MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
@@ -142,7 +139,7 @@ class InquiryController extends AbstractController
             /** @var Dossier[] $dossiers */
             $dossiers = $form->get('dossiers')->getData();
             foreach ($dossiers as $dossier) {
-                $this->testIfDossierIsAllowedByUser($dossier);
+                $this->denyAccessUnlessGranted('AuthMatrix.dossier.read', subject: $dossier);
                 $inquiryChangeset->addCaseNrsForDossier($dossier, $caseNrs);
             }
 

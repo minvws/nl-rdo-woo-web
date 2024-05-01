@@ -67,18 +67,15 @@ class InventoryUpdater
             }
 
             $documentNr = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
-            $document = $this->documentRepository->findByDocumentNumber($documentNr);
-
             $documentChangeStatus = $changeset->getStatus($documentNr);
             if ($documentChangeStatus === InventoryChangeset::UNCHANGED) {
                 continue;
             }
 
+            $document = $this->documentRepository->findByDocumentNumber($documentNr);
             if ($documentChangeStatus === InventoryChangeset::ADDED && $document === null) {
                 $document = new Document();
-
                 $document->setDocumentNr($documentNr->getValue());
-                $this->doctrine->persist($document); // For getting ID
 
                 $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
                 $inquiryChangeset->updateCaseNrsForDocument($document, $documentMetadata->getCaseNumbers());

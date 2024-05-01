@@ -119,12 +119,12 @@ class FileProcessService
         if (! $replaced) {
             $this->historyService->addDocumentEntry($document, 'document_uploaded', [
                 'filetype' => $document->getFileInfo()->getType(),
-                'filesize' => Utils::size(strval($document->getFileInfo()->getSize())),
+                'filesize' => Utils::getFileSize($document),
             ]);
         } else {
             $this->historyService->addDocumentEntry($document, 'document_replaced', [
                 'filetype' => $document->getFileInfo()->getType(),
-                'filesize' => Utils::size(strval($document->getFileInfo()->getSize())),
+                'filesize' => Utils::getFileSize($document),
             ]);
         }
 

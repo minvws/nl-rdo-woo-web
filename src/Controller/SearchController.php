@@ -103,9 +103,9 @@ class SearchController extends AbstractController
 
         $breadcrumbs->addRouteItem('Home', 'app_home');
         if ($config->searchType === Config::TYPE_DOSSIER) {
-            $breadcrumbs->addItem('All published dossiers');
+            $breadcrumbs->addItem('public.global.label.overview_publications');
         } else {
-            $breadcrumbs->addItem('Search');
+            $breadcrumbs->addItem('public.search.label');
         }
 
         $result = $this->searchService->search($config);
@@ -141,7 +141,7 @@ class SearchController extends AbstractController
         }
 
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addItem('Browse');
+        $breadcrumbs->addItem('public.global.label.all_categories');
 
         $result = $this->searchService->retrieveExtendedFacets();
         if ($result->hasFailed()) {

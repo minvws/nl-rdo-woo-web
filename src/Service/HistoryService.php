@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\History;
 use App\Entity\Inquiry;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,7 +31,7 @@ class HistoryService
     /**
      * @param mixed[] $context
      */
-    public function addDossierEntry(Dossier $dossier, string $key, array $context, string $mode = self::MODE_BOTH): void
+    public function addDossierEntry(AbstractDossier $dossier, string $key, array $context, string $mode = self::MODE_BOTH): void
     {
         $this->addEntry(self::TYPE_DOSSIER, $dossier->getId(), $key, $context, $mode, flush: true);
     }

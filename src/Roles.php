@@ -39,28 +39,28 @@ class Roles
     protected static array $roleInfo = [
         [
             'role' => self::ROLE_SUPER_ADMIN,
-            'description' => 'Super administrator',
-            'help' => 'This user is allowed system wide operations.',
+            'description' => 'admin.user.role.super_admin',
+            'help' => 'admin.user.role.super_admin.desc',
         ],
         [
             'role' => self::ROLE_GLOBAL_ADMIN,
-            'description' => 'Global administrator',
-            'help' => 'This user is allowed every operation in the administration system.',
+            'description' => 'admin.user.role.global_admin',
+            'help' => 'admin.user.role.global_admin.desc',
         ],
         [
             'role' => self::ROLE_ORGANISATION_ADMIN,
-            'description' => 'Organisation administrator',
-            'help' => 'This user has administrative permissions in the attached organisation(s).',
+            'description' => 'admin.user.role.organisation_admin',
+            'help' => 'admin.user.role.organisation_admin.desc',
         ],
         [
             'role' => self::ROLE_DOSSIER_ADMIN,
-            'description' => 'Dossier administrator',
-            'help' => 'This user can create and manage dossiers including the documents in the attached organisation(s).',
+            'description' => 'admin.user.role.decision_admin',
+            'help' => 'admin.user.role.decision_admin.desc',
         ],
         [
             'role' => self::ROLE_VIEW_ACCESS,
-            'description' => 'View access',
-            'help' => 'This user has view access to the attached organisation(s).',
+            'description' => 'admin.user.role.read_only',
+            'help' => 'admin.user.role.read_only.desc',
         ],
     ];
 

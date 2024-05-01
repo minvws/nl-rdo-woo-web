@@ -1,17 +1,22 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Parameter \\$frameworkConfig of anonymous function has invalid type Symfony\\\\Config\\\\FrameworkConfig\\.$#"
+			count: 1
+			path: config/packages/workflow.php
+
+		-
 			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:clear\\(\\) invoked with 1 parameter, 0 required\\.$#"
 			count: 1
 			path: src/Command/GenerateDocuments.php
 
 		-
-			message: "#^Parameter \\#1 \\$errors of method App\\\\Form\\\\Dossier\\\\TranslatableFormErrorMapper\\:\\:mapGenericErrorsToForm\\(\\) expects array\\<int, array\\{message\\: string, translation\\: string, placeholders\\: array\\<string, string\\>\\}\\>, array\\<int, mixed\\> given\\.$#"
+			message: "#^Parameter \\#1 \\$errors of method App\\\\Form\\\\Dossier\\\\WooDecision\\\\TranslatableFormErrorMapper\\:\\:mapGenericErrorsToForm\\(\\) expects array\\<int, array\\{message\\: string, translation\\: string, placeholders\\: array\\<string, string\\>\\}\\>, array\\<int, mixed\\> given\\.$#"
 			count: 1
 			path: src/Controller/Admin/InquiryController.php
 
 		-
-			message: "#^Parameter \\#1 \\$rowErrors of method App\\\\Form\\\\Dossier\\\\TranslatableFormErrorMapper\\:\\:mapRowErrorsToForm\\(\\) expects array\\<int, array\\<int, array\\{message\\: string, translation\\: string, placeholders\\: array\\<string, string\\>\\}\\>\\>, array\\<int, mixed\\> given\\.$#"
+			message: "#^Parameter \\#1 \\$rowErrors of method App\\\\Form\\\\Dossier\\\\WooDecision\\\\TranslatableFormErrorMapper\\:\\:mapRowErrorsToForm\\(\\) expects array\\<int, array\\<int, array\\{message\\: string, translation\\: string, placeholders\\: array\\<string, string\\>\\}\\>\\>, array\\<int, mixed\\> given\\.$#"
 			count: 1
 			path: src/Controller/Admin/InquiryController.php
 
@@ -24,6 +29,36 @@ parameters:
 			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
 			count: 1
 			path: src/Controller/SecurityController.php
+
+		-
+			message: "#^Call to method workflows\\(\\) on an unknown class Symfony\\\\Config\\\\FrameworkConfig\\.$#"
+			count: 1
+			path: src/Domain/Publication/Dossier/Type/Covenant/CovenantWorkflow.php
+
+		-
+			message: "#^Parameter \\$framework of method App\\\\Domain\\\\Publication\\\\Dossier\\\\Type\\\\Covenant\\\\CovenantWorkflow\\:\\:configure\\(\\) has invalid type Symfony\\\\Config\\\\FrameworkConfig\\.$#"
+			count: 1
+			path: src/Domain/Publication/Dossier/Type/Covenant/CovenantWorkflow.php
+
+		-
+			message: "#^Call to method workflows\\(\\) on an unknown class Symfony\\\\Config\\\\FrameworkConfig\\.$#"
+			count: 1
+			path: src/Domain/Publication/Dossier/Type/WooDecision/WooDecisionWorkflow.php
+
+		-
+			message: "#^Parameter \\$framework of method App\\\\Domain\\\\Publication\\\\Dossier\\\\Type\\\\WooDecision\\\\WooDecisionWorkflow\\:\\:configure\\(\\) has invalid type Symfony\\\\Config\\\\FrameworkConfig\\.$#"
+			count: 1
+			path: src/Domain/Publication/Dossier/Type/WooDecision/WooDecisionWorkflow.php
+
+		-
+			message: "#^Call to method transition\\(\\) on an unknown class Symfony\\\\Config\\\\Framework\\\\Workflows\\\\WorkflowsConfig\\.$#"
+			count: 1
+			path: src/Domain/Publication/Dossier/Type/WorkflowConfigHelper.php
+
+		-
+			message: "#^Parameter \\$workflow of method App\\\\Domain\\\\Publication\\\\Dossier\\\\Type\\\\WorkflowConfigHelper\\:\\:defineNonMovingTransitions\\(\\) has invalid type Symfony\\\\Config\\\\Framework\\\\Workflows\\\\WorkflowsConfig\\.$#"
+			count: 1
+			path: src/Domain/Publication/Dossier/Type/WorkflowConfigHelper.php
 
 		-
 			message: "#^Method App\\\\Repository\\\\InquiryRepository\\:\\:getDocCountsByDossier\\(\\) should return array\\<int, array\\{title\\: string, dossierNr\\: string, doccount\\: int\\}\\> but returns array\\.$#"
@@ -44,16 +79,6 @@ parameters:
 			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser\\|null is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
 			count: 2
 			path: src/Service/UserService.php
-
-		-
-			message: "#^Method App\\\\Tests\\\\Unit\\\\Entity\\\\DocumentTest\\:\\:shouldBeUploadedProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: tests/Unit/Entity/DocumentTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$suspended of method App\\\\Entity\\\\Document\\:\\:setSuspended\\(\\) expects bool, bool\\|null given\\.$#"
-			count: 1
-			path: tests/Unit/Entity/DocumentTest.php
 
 		-
 			message: "#^Method App\\\\Tests\\\\Unit\\\\Enum\\\\DepartmentTest\\:\\:getEqualsShouldReturnFalseData\\(\\) return type has no value type specified in iterable type array\\.$#"
@@ -91,28 +116,18 @@ parameters:
 			path: tests/Unit/Service/DocumentServiceTest.php
 
 		-
-			message: "#^Call to an undefined method App\\\\Service\\\\Ingest\\\\IngestLogger\\|Mockery\\\\MockInterface\\:\\:expects\\(\\)\\.$#"
-			count: 1
-			path: tests/Unit/Service/DocumentServiceTest.php
-
-		-
 			message: "#^Call to an undefined method App\\\\Service\\\\Storage\\\\DocumentStorageService\\|Mockery\\\\MockInterface\\:\\:expects\\(\\)\\.$#"
-			count: 3
+			count: 2
 			path: tests/Unit/Service/DocumentServiceTest.php
 
 		-
 			message: "#^Call to an undefined method App\\\\Service\\\\Storage\\\\ThumbnailStorageService\\|Mockery\\\\MockInterface\\:\\:expects\\(\\)\\.$#"
-			count: 3
+			count: 2
 			path: tests/Unit/Service/DocumentServiceTest.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\EntityManagerInterface\\|Mockery\\\\MockInterface\\:\\:expects\\(\\)\\.$#"
-			count: 9
-			path: tests/Unit/Service/DocumentServiceTest.php
-
-		-
-			message: "#^Call to an undefined method Mockery\\\\MockInterface\\|Symfony\\\\Component\\\\Messenger\\\\MessageBusInterface\\:\\:expects\\(\\)\\.$#"
-			count: 1
+			count: 7
 			path: tests/Unit/Service/DocumentServiceTest.php
 
 		-
@@ -211,11 +226,6 @@ parameters:
 			path: tests/Unit/Service/Search/ConfigFactoryTest.php
 
 		-
-			message: "#^Parameter \\#2 \\$actualJson of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertJsonStringEqualsJsonString\\(\\) expects string, string\\|false given\\.$#"
-			count: 3
-			path: tests/Unit/Service/Search/Query/QueryGeneratorTest.php
-
-		-
 			message: "#^Parameter \\#2 \\$buckets of method App\\\\Service\\\\Search\\\\Result\\\\AggregationMapper\\:\\:map\\(\\) expects iterable\\<string, Jaytaph\\\\TypeArray\\\\TypeArray\\>, array\\<int, Jaytaph\\\\TypeArray\\\\TypeArray\\> given\\.$#"
 			count: 3
 			path: tests/Unit/Service/Search/Result/AggregationMapperTest.php
@@ -232,31 +242,6 @@ parameters:
 
 		-
 			message: "#^Method App\\\\Tests\\\\Unit\\\\Service\\\\Storage\\\\DocumentStorageTest\\:\\:getStorageService\\(\\) has parameter \\$isLocal with no type specified\\.$#"
-			count: 1
-			path: tests/Unit/Service/Storage/DocumentStorageTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$filename of function file_get_contents expects string, string\\|false given\\.$#"
-			count: 1
-			path: tests/Unit/Service/Storage/DocumentStorageTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$filename of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFileDoesNotExist\\(\\) expects string, string\\|false given\\.$#"
-			count: 1
-			path: tests/Unit/Service/Storage/DocumentStorageTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$filename of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFileExists\\(\\) expects string, string\\|false given\\.$#"
-			count: 1
-			path: tests/Unit/Service/Storage/DocumentStorageTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$localPath of method App\\\\Service\\\\Storage\\\\DocumentStorageService\\:\\:removeDownload\\(\\) expects string, string\\|false given\\.$#"
-			count: 2
-			path: tests/Unit/Service/Storage/DocumentStorageTest.php
-
-		-
-			message: "#^Parameter \\#2 \\$haystack of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertStringContainsString\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
 			path: tests/Unit/Service/Storage/DocumentStorageTest.php
 

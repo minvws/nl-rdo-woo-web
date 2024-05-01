@@ -1,6 +1,7 @@
 <script setup>
   import { provide, ref } from 'vue';
   import  Pending from '../Pending.vue';
+  import { isSuccessStatusCode } from '@js/admin/utils';
 
   const props = defineProps({
     action: {
@@ -26,7 +27,6 @@
     if (isSubmitting.value) {
       return;
     }
-
     props.store.markAsShouldDisplayErrors();
 
     if (props.store.isValid() && props.store.isPristine()) {
@@ -35,14 +35,26 @@
     }
 
     if (props.store.isValid()) {
+      props.store.resetSubmitValidationErrors();
+
       isSubmitting.value = true;
-      const response = await props.store.submit(props.store.getValue());
+      const response = await props.store.submit(props.store.getValue(), props.store.getDirtyValue());
+      const data = await response.json();
+
       isSubmitting.value = false;
-      if (Math.round(Math.random() * 100) < 80) {
-        emit('submitSuccess', response);
-      } else {
-        emit('submitError', response);
+      if (isSuccessStatusCode(response.status)) {
+        emit('submitSuccess', data);
+        return;
       }
+
+      if (response.status === 422) {
+        (data.violations || []).forEach((violation) => {
+          props.store.addSubmitValidationError(violation.propertyPath, violation.message);
+        });
+        return;
+      }
+
+      emit('submitError', data);
     }
   }
 

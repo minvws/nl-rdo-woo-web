@@ -33,6 +33,7 @@ yarn-error.log
 ### Robot Framework ###
 /tests/robot_framework/results
 /tests/robot_framework/libraries/__pycache__
+.venv
 ### Robot Framework ###
 
 ### Virtu ###

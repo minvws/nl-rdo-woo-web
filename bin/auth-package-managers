@@ -2,9 +2,9 @@
 
 set -eo pipefail
 
-BASE_PATH=$(dirname $0)/..
-AUTH_COMPOSER_JSON="$BASE_PATH/auth.json"
-AUTH_NPM_FILE="$BASE_PATH/.npmrc.auth"
+BASE_PATH=$(dirname "$0")/..
+AUTH_COMPOSER_JSON=$BASE_PATH/auth.json
+AUTH_NPM_FILE=$BASE_PATH/.npmrc.auth
 
 echo "Running auth-package-managers"
 echo ""
@@ -45,7 +45,7 @@ echo ""
 if test -f "$AUTH_COMPOSER_JSON"; then
     echo "> auth.json already exists!"
 else
-    echo "{\"github-oauth\":{\"github.com\":\"$CR_PAT\"}}" > $AUTH_COMPOSER_JSON
+    echo "{\"github-oauth\":{\"github.com\":\"$CR_PAT\"}}" > "$AUTH_COMPOSER_JSON"
 
     echo "> auth.json created!"
 fi
@@ -53,7 +53,7 @@ fi
 if test -f "$AUTH_NPM_FILE"; then
     echo "> .npmrc.auth already exists!"
 else
-    echo "//npm.pkg.github.com/:_authToken=$CR_PAT" > $AUTH_NPM_FILE
+    echo "//npm.pkg.github.com/:_authToken=$CR_PAT" > "$AUTH_NPM_FILE"
 
     echo "> .npmrc.auth created!"
 fi

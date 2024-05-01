@@ -13,7 +13,7 @@ final class DepartmentTest extends MockeryTestCase
     #[DataProvider('getTryFromShortTagData')]
     public function testTryFromShortTag(string $input, ?Department $expected): void
     {
-        $this->assertSame($expected, Department::tryFromShortTag($input));
+        self::assertSame($expected, Department::tryFromShortTag($input));
     }
 
     public static function getTryFromShortTagData(): array
@@ -53,7 +53,7 @@ final class DepartmentTest extends MockeryTestCase
     #[DataProvider('getTryFromNameData')]
     public function testTryFromName(string $input, ?Department $expected): void
     {
-        $this->assertSame($expected, Department::tryFromName($input));
+        self::assertSame($expected, Department::tryFromName($input));
     }
 
     public static function getTryFromNameData(): array
@@ -85,7 +85,7 @@ final class DepartmentTest extends MockeryTestCase
     #[DataProvider('getTryFromNameAndShortTagData')]
     public function testTryFromNameOrShortTag(string $input, ?Department $expected): void
     {
-        $this->assertSame($expected, Department::tryFromNameOrShortTag($input));
+        self::assertSame($expected, Department::tryFromNameOrShortTag($input));
     }
 
     public static function getTryFromNameAndShortTagData(): array
@@ -99,7 +99,7 @@ final class DepartmentTest extends MockeryTestCase
     #[DataProvider('getEqualsShouldReturnTrueData')]
     public function testEqualsShouldReturnTrue(string $inputName, Department $inputDepartment, bool $expected): void
     {
-        $this->assertSame($expected, $inputDepartment->equals($inputName));
+        self::assertSame($expected, $inputDepartment->equals($inputName));
     }
 
     public static function getEqualsShouldReturnTrueData(): array
@@ -121,7 +121,7 @@ final class DepartmentTest extends MockeryTestCase
     #[DataProvider('getEqualsShouldReturnFalseData')]
     public function testEqualsShouldReturnFalse(string $inputName, Department $inputDepartment, bool $expected): void
     {
-        $this->assertSame($expected, $inputDepartment->equals($inputName));
+        self::assertSame($expected, $inputDepartment->equals($inputName));
     }
 
     public static function getEqualsShouldReturnFalseData(): array

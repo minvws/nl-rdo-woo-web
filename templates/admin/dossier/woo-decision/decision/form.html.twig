@@ -1,0 +1,47 @@
+{{ form_start(form) }}
+
+{{ form_errors(form) }}
+
+{% if form.decision is defined %}
+    {{ form_row(form.decision) }}
+{% else %}
+    <div class="bhr-form-row -mt-4">
+        <h2 class="bhr-label">Soort besluit</h2>
+         {{ dossier.decision | decision }}
+    </div>
+{% endif %}
+
+{{ form_row(form.summary) }}
+
+{{ form_row(form.decision_document) }}
+
+{% if dossier.decisionDocument.fileInfo.isUploaded|default(false) %}
+    <div class="bhr-form-row -mt-6">
+        <twig:Admin:UploadedFile
+            downloadUrl="{{ path('app_admin_dossier_decision_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
+            fileName="{{ dossier.decisionDocument.fileInfo.name }}"
+            fileSize="{{ dossier.decisionDocument.fileInfo.size }}"
+            mimeType="{{ dossier.decisionDocument.fileInfo.mimetype }}"
+        />
+    </div>
+{% endif %}
+
+{{ form_row(form.decision_date) }}
+
+<div class="bhr-form-row">
+    <h2 class="bhr-label">Andere officiële bijlagen</h2>
+    <p class="bhr-form-help text-lg pb-2">De documenten die met dit besluit openbaar worden gemaakt upload je in de volgende stap. Voeg hier alleen bijlagen toe die te maken hebben met de totstandkoming van het besluit.</p>
+
+    <div {{ vue_component('PublicationAttachments', {
+        canDelete: canDeleteAttachments,
+        endpoint: '/balie/api/dossiers/' ~ dossier.id ~ '/decision-attachments',
+        documentTypeOptions: attachmentTypes,
+        documentLanguageOptions: attachmentLanguages,
+        groundOptions: grounds,
+        groupId: 'woo-decision-attachments',
+    }) }}>
+        <div class="min-h-14"></div>
+    </div>
+</div>
+
+{{ form_end(form) }}

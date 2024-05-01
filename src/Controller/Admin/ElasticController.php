@@ -65,7 +65,7 @@ class ElasticController extends AbstractController
 
             $this->rolloverService->initiateRollover($data);
 
-            $this->addFlash('backend', ['success' => $this->translator->trans('Elasticsearch rollover initiated')]);
+            $this->addFlash('backend', ['success' => $this->translator->trans('admin.elastic.rollover_initiated')]);
 
             return $this->redirectToRoute('app_admin_elastic');
         }
@@ -86,7 +86,7 @@ class ElasticController extends AbstractController
 
         $indices = $this->indexService->find($indexName);
         if (empty($indices)) {
-            $this->addFlash('backend', ['error' => 'Invalid elasticsearch index']);
+            $this->addFlash('backend', ['danger' => 'admin.elastic.invalid_index']);
 
             return $this->redirectToRoute('app_admin_elastic');
         }
@@ -115,14 +115,14 @@ class ElasticController extends AbstractController
     {
         $indices = $this->indexService->find($indexName);
         if (empty($indices)) {
-            $this->addFlash('backend', ['error' => 'Invalid elasticsearch index']);
+            $this->addFlash('backend', ['danger' => 'admin.elastic.invalid_index']);
 
             return $this->redirectToRoute('app_admin_elastic');
         }
 
         $index = reset($indices);
         if (count($index->aliases) !== 0) {
-            $this->addFlash('backend', ['error' => 'Cannot delete an index that is in active use']);
+            $this->addFlash('backend', ['danger' => 'admin.elastic.cannot_delete_active_index']);
 
             return $this->redirectToRoute('app_admin_elastic');
         }
@@ -132,7 +132,10 @@ class ElasticController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->indexService->delete($indexName);
 
-            $this->addFlash('backend', ['success' => $this->translator->trans("Elasticsearch index $indexName deleted")]);
+            $this->addFlash(
+                'backend',
+                ['success' => $this->translator->trans('admin.elastic.index_deleted', ['index' => $indexName])]
+            );
         }
 
         return $this->redirectToRoute('app_admin_elastic');
@@ -145,11 +148,11 @@ class ElasticController extends AbstractController
         $breadcrumbs->addRouteItem('Home', 'app_home');
         $breadcrumbs->addRouteItem('Admin', 'app_admin');
         $breadcrumbs->addRouteItem('Elastic', 'app_admin_elastic');
-        $breadcrumbs->addItem('Promote to Live');
+        $breadcrumbs->addItem('admin.elastic.promote_to_live');
 
         $indices = $this->indexService->find($indexName);
         if (empty($indices)) {
-            $this->addFlash('backend', ['error' => 'Invalid elasticsearch index']);
+            $this->addFlash('backend', ['danger' => 'admin.elastic.invalid_index']);
 
             return $this->redirectToRoute('app_admin_elastic');
         }
@@ -162,7 +165,7 @@ class ElasticController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->rolloverService->makeLive($indexName);
 
-            $this->addFlash('backend', ['success' => $this->translator->trans('Elasticsearch index switch initiated')]);
+            $this->addFlash('backend', ['success' => $this->translator->trans('admin.elastic.switch_initiated')]);
 
             return $this->redirectToRoute('app_admin_elastic');
         }

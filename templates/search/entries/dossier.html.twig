@@ -3,17 +3,17 @@
         <a
             class="woo-search-result__main-link"
             data-e2e-name="main-link"
-            href="{{ path('app_dossier_detail', { prefix: entry.dossier.documentPrefix, dossierId: entry.dossier.dossierNr }) }}"
+            href="{{ path('app_woodecision_detail', { prefix: entry.dossier.documentPrefix, dossierId: entry.dossier.dossierNr }) }}"
         >{{ entry.dossier.title }}</a>
     </h3>
 
     <ul class="woo-search-result__spec-list">
         <li class="woo-search-result__spec">
             <twig:Public:Icon name="map" class="mr-1" size="20" />
-            <span class="font-bold">{{ "Woo-dossier" | trans }}</span>
+            <span class="font-bold">{{ 'public.global.woo_dossier' | trans }}</span>
         </li>
         <li class="woo-search-result__spec">
-            {{ "# documents" | trans({"count": entry.dossier.documentCount})}}</span>
+            {{ "global.number_of_documents" | trans({"count": entry.dossier.documentCount})}}</span>
         </li>
         <li class="woo-search-result__spec">
             {{ entry.dossier.decision | decision }}</span>
@@ -35,8 +35,8 @@
 
 <ul class="woo-search-result__spec-list">
     <li class="woo-search-result__spec">
-        {{ "Decided on" | trans }}&nbsp;<time datetime="{{ entry.dossier.decisionDate | date("Y-m-d") }}">{{ entry.dossier.decisionDate | format_date('long') }}</time>,
-        {{ "published on" | trans }}&nbsp;<time datetime="{{ entry.dossier.publicationDate | date("Y-m-d") }}">{{ entry.dossier.publicationDate | format_date('long') }}</time>
+        {{ 'Decided on' | trans }}&nbsp;<time datetime="{{ entry.dossier.decisionDate | date('Y-m-d') }}">{{ entry.dossier.decisionDate | format_date('long') }}</time>,
+        {{ 'global.published_on' | trans | lower }}&nbsp;<time datetime="{{ entry.dossier.publicationDate | date("Y-m-d") }}">{{ entry.dossier.publicationDate | format_date('long') }}</time>
     </li>
     <li class="woo-search-result__spec">
         {{ entry.dossier.dossierNr}}

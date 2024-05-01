@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Entity\BatchDownload;
 use App\Entity\Document;
 use App\Entity\DocumentPrefix;
-use App\Entity\Dossier;
 use App\Entity\History;
-use App\Entity\IngestLog;
 use App\Entity\Inquiry;
 use App\Entity\User;
 use App\Service\Elastic\IndexService;
@@ -76,8 +75,7 @@ class CleanSheet extends Command
         $this->createElasticSearchIndex($indexName, $output);
 
         $this->deleteAllEntities(BatchDownload::class, $output);
-        $this->deleteAllEntities(IngestLog::class, $output);
-        $this->deleteAllEntities(Dossier::class, $output);
+        $this->deleteAllEntities(AbstractDossier::class, $output);
         $this->deleteAllEntities(Document::class, $output);
         $this->deleteAllEntities(Inquiry::class, $output);
         $this->deleteAllEntities(History::class, $output);

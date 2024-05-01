@@ -1,13 +1,13 @@
 {% extends 'admin.html.twig' %}
 
-{% set page_title = "Profiel" %}
+{% set page_title = 'admin.account.profile' | trans() %}
 {% if hasFormErrors %}
-    {% set page_title = "Ongeldige invoer" %}
+    {% set page_title = 'global.invalid_input' | trans() %}
 {% endif %}
 
 {% block body %}
     <div class="bhr-container bhr-container--sm">
-        <h1 class="bhr-title-lg mb-10">Profiel</h1>
+        <h1 class="bhr-title-lg mb-10">{{'admin.account.profile' | trans() }}</h1>
 
         <div class="px-11">
             <div class="bhr-card">
@@ -23,16 +23,16 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-                
-                <h2 class="bhr-title mb-8">{{ "Update your password" | trans }}</h1>
+
+                <h2 class="bhr-title mb-8">{{ 'admin.account.update_password' | trans() }}</h1>
 
                 <div class="bhr-content text-lg mb-8" id="password-instructions">
-                    <p>{{ "A password should follow the following rules:" | trans() }}</p>
+                    <p>{{ 'admin.account.password_requirements.explanation' | trans() }}</p>
                     <ul>
-                        <li>{{ "At least 14 characters" | trans() }}</li>
-                        <li>{{ "Should not be a common word" | trans() }}</li>
-                        <li>{{ "Does not contain only digits" | trans() }}</li>
-                        <li>{{ "May not be similar to your e-mail address" | trans() }}</li>
+                        <li>{{ 'admin.account.password_requirements.req1' | trans() }}</li>
+                        <li>{{ 'admin.account.password_requirements.req2' | trans() }}</li>
+                        <li>{{ 'admin.account.password_requirements.req3' | trans() }}</li>
+                        <li>{{ 'admin.account.password_requirements.req4' | trans() }}</li>
                     </ul>
                 </div>
 
@@ -41,7 +41,7 @@
             </div>
 
             <div class="bhr-card mt-10">
-                <h2 class="bhr-title mb-8">Accountgegevens</h2>
+                <h2 class="bhr-title mb-8">{{ 'admin.account.details' | trans() }}</h2>
 
                 <dl class="text-lg">
                     <twig:Admin:Definition term="Volledige naam">

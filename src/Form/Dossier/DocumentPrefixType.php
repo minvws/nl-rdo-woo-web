@@ -13,7 +13,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * @template-extends AbstractType<DocumentPrefixType>
@@ -47,16 +46,12 @@ class DocumentPrefixType extends AbstractType
 
             $options = [
                 'class' => DocumentPrefix::class,
-                'label' => 'Prefix voor documenten',
+                'label' => 'admin.dossiers.convenant.form.details.prefix',
                 'choice_label' => 'prefix',
                 'required' => true,
-                'help' => 'Deze voegen we automatisch toe aan de bestandsnaam van documenten. '
-                    . '<strong>Let op</strong>: deze prefix is na het opslaan van de basisgegevens niet meer aan te passen.',
+                'help' => 'admin.dossiers.convenant.form.details.prefix_help',
                 'help_html' => true,
-                'placeholder' => 'Kies een prefix',
-                'constraints' => [
-                    new NotBlank(),
-                ],
+                'placeholder' => 'admin.dossiers.convenant.form.details.prefix_placeholder',
                 'choices' => $prefixes,
             ];
 

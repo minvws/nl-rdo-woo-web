@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service;
 
 use App\Service\DateRangeConverter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class DateRangeConverterTest extends TestCase
@@ -70,11 +71,9 @@ class DateRangeConverterTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dateRangeProvider
-     */
-    public function testConverter(?\DateTimeImmutable $from, ?\DateTimeImmutable $to, string $result): void
+    #[DataProvider('dateRangeProvider')]
+    public function testConverter(?\DateTimeImmutable $from, ?\DateTimeImmutable $to, string $expectedResult): void
     {
-        $this->assertEquals($result, DateRangeConverter::convertToString($from, $to));
+        self::assertEquals($expectedResult, DateRangeConverter::convertToString($from, $to));
     }
 }

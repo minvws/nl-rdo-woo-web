@@ -53,7 +53,7 @@ class SitemapSubscriber implements EventSubscriberInterface
             $urls->addUrl(
                 new UrlConcrete(
                     $generator->generate(
-                        'app_dossier_detail',
+                        'app_woodecision_detail',
                         ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
                         UrlGeneratorInterface::ABSOLUTE_URL
                     ),

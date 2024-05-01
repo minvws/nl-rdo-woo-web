@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Domain\Publication\Dossier\DossierStatus;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Judgement;
 use App\Entity\Organisation;
-use App\Enum\PublicationStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
@@ -78,8 +78,8 @@ class InquiryRepository extends ServiceEntityRepository
             ->groupBy('dos.id')
             ->setParameter('inquiryId', $inquiry->getId())
             ->setParameter('statuses', [
-                PublicationStatus::PREVIEW,
-                PublicationStatus::PUBLISHED,
+                DossierStatus::PREVIEW,
+                DossierStatus::PUBLISHED,
             ])
             ->getQuery()
             ->getArrayResult()
@@ -115,8 +115,8 @@ class InquiryRepository extends ServiceEntityRepository
             ->setParameter('inquiryId', $inquiry->getId())
             ->setParameter('dossierId', $dossier->getId())
             ->setParameter('statuses', [
-                PublicationStatus::PREVIEW,
-                PublicationStatus::PUBLISHED,
+                DossierStatus::PREVIEW,
+                DossierStatus::PUBLISHED,
             ])
         ;
     }
@@ -134,8 +134,8 @@ class InquiryRepository extends ServiceEntityRepository
             ->andWhere('dos.status IN (:statuses)')
             ->setParameter('inquiryId', $inquiry->getId())
             ->setParameter('statuses', [
-                PublicationStatus::PREVIEW,
-                PublicationStatus::PUBLISHED,
+                DossierStatus::PREVIEW,
+                DossierStatus::PUBLISHED,
             ]);
 
         foreach (Judgement::cases() as $judgement) {
@@ -160,8 +160,8 @@ class InquiryRepository extends ServiceEntityRepository
             ->andWhere('dos.status IN (:statuses)')
             ->setParameter('inquiryId', $inquiry->getId())
             ->setParameter('statuses', [
-                PublicationStatus::PREVIEW,
-                PublicationStatus::PUBLISHED,
+                DossierStatus::PREVIEW,
+                DossierStatus::PUBLISHED,
             ])
             ->getQuery()
             ->getSingleScalarResult());
@@ -178,8 +178,8 @@ class InquiryRepository extends ServiceEntityRepository
             ->andWhere('dos.status IN (:statuses)')
             ->setParameter('inquiryId', $inquiry->getId())
             ->setParameter('statuses', [
-                PublicationStatus::PREVIEW,
-                PublicationStatus::PUBLISHED,
+                DossierStatus::PREVIEW,
+                DossierStatus::PUBLISHED,
             ]);
     }
 }

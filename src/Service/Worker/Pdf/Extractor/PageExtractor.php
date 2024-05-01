@@ -39,10 +39,12 @@ class PageExtractor implements PageExtractorInterface
 
     public function extract(Document $document, int $pageNr, bool $forceRefresh): void
     {
-        if (! $forceRefresh && $this->documentStorage->existsPage($document, $pageNr)) {
-            // Page already exists, and we are allowed to use it
-            return;
-        }
+        // TODO: Cache is temporarily disabled for #2142, to be improved and restored in #2144
+        // if (! $forceRefresh && $this->documentStorage->existsPage($document, $pageNr)) {
+        //     // Page already exists, and we are allowed to use it
+        //     return;
+        // }
+        unset($forceRefresh);
 
         /** @var string $localPath */
         $localPath = $this->statsService->measure('download.document', function ($document) {

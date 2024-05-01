@@ -1,15 +1,15 @@
-import { describe, expect, test } from '@jest/globals';
+import { Mock, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { getDocument } from '../browser';
 import type { DocumentMock } from '../mocks';
 import { onDomReady } from './dom-ready';
 
-jest.mock('../browser');
+vi.mock('../browser');
 
 describe('the "onDomReady" function', () => {
-  let someFunction: jest.Mock;
+  let someFunction: Mock;
 
   beforeEach(() => {
-    someFunction = jest.fn();
+    someFunction = vi.fn();
   });
 
   afterEach(() => {

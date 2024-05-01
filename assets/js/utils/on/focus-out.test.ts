@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { onFocusOut } from './focus-out';
 
 describe('the "onFocusOut" function', () => {
@@ -17,7 +17,7 @@ describe('the "onFocusOut" function', () => {
 
   test('should invoke the prodived function when focus is no longer within the provided element', () => {
     const buttonElement = getButtonElement();
-    const callbackFunction = jest.fn();
+    const callbackFunction = vi.fn();
 
     onFocusOut(buttonElement, callbackFunction);
 

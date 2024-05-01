@@ -7,7 +7,6 @@ namespace App\Entity;
 use App\Repository\DocumentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -64,10 +63,6 @@ class Document extends PublicationItem
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $period = null;
 
-    /** @var Collection<array-key,IngestLog> */
-    #[ORM\OneToMany(mappedBy: 'document', targetEntity: IngestLog::class, orphanRemoval: true)]
-    private Collection $ingestLogs;
-
     #[ORM\Column]
     private bool $suspended = false;
 
@@ -110,7 +105,6 @@ class Document extends PublicationItem
         parent::__construct();
 
         $this->dossiers = new ArrayCollection();
-        $this->ingestLogs = new ArrayCollection();
         $this->inquiries = new ArrayCollection();
         $this->refersTo = new ArrayCollection();
         $this->referredBy = new ArrayCollection();
@@ -309,67 +303,6 @@ class Document extends PublicationItem
         }
 
         return false;
-    }
-
-    /**
-     * @return Collection<array-key,IngestLog>
-     */
-    public function getIngestLogs(): Collection
-    {
-        return $this->ingestLogs;
-    }
-
-    public function addIngestLog(IngestLog $ingestLog): self
-    {
-        if (! $this->ingestLogs->contains($ingestLog)) {
-            $this->ingestLogs->add($ingestLog);
-            $ingestLog->setDocument($this);
-        }
-
-        return $this;
-    }
-
-    public function removeIngestLog(IngestLog $ingestLog): self
-    {
-        $this->ingestLogs->removeElement($ingestLog);
-
-        return $this;
-    }
-
-    /**
-     * @return array<string, IngestLog[]>
-     */
-    public function groupedIngestLogs(): array
-    {
-        $criteria = Criteria::create()
-            ->orderBy([
-                'createdAt' => Criteria::ASC,
-                'event' => Criteria::ASC,
-            ])
-        ;
-
-        $logs = $this->getIngestLogs()->matching($criteria);
-
-        $curEvent = '';
-        $baseTime = null;
-
-        $grouped = [];
-        foreach ($logs as $log) {
-            if ($curEvent !== $log->getEvent()) {
-                $curEvent = $log->getEvent();
-                $grouped[$log->getEvent()] = [];
-                $baseTime = $log->getCreatedAt();
-            }
-            $grouped[$log->getEvent()][] = $log;
-
-            if ($baseTime !== null) {
-                $log->diff = $baseTime->diff($log->getCreatedAt())->format('%I:%S');
-            } else {
-                $log->diff = '00:00';
-            }
-        }
-
-        return $grouped;
     }
 
     public function isSuspended(): bool

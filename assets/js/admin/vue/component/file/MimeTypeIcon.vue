@@ -14,7 +14,7 @@
     },
   });
 
-  const name = getIconNameByMimeType(props.mimeType);
+  const name = computed(() => getIconNameByMimeType(props.mimeType));
 </script>
 
 <template>

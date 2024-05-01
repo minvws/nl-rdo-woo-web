@@ -84,10 +84,10 @@ class BatchDownloadServiceTest extends MockeryTestCase
         $this->batchRepository->expects('save')->with(\Mockery::on(
             function (BatchDownload $batch) use ($batchUuid, $dossier): bool {
                 $batch->setId($batchUuid);
-                $this->assertEquals(BatchDownload::STATUS_PENDING, $batch->getStatus());
-                $this->assertEquals($dossier, $batch->getEntity());
-                $this->assertEquals(0, $batch->getDownloaded());
-                $this->assertEquals(['doc-a', 'doc-b'], $batch->getDocuments());
+                self::assertEquals(BatchDownload::STATUS_PENDING, $batch->getStatus());
+                self::assertEquals($dossier, $batch->getEntity());
+                self::assertEquals(0, $batch->getDownloaded());
+                self::assertEquals(['doc-a', 'doc-b'], $batch->getDocuments());
 
                 return true;
             }
@@ -146,6 +146,6 @@ class BatchDownloadServiceTest extends MockeryTestCase
 
         $batch = $this->service->findOrCreate($dossier, $docNrs, false);
 
-        $this->assertSame($expectedBatch, $batch);
+        self::assertSame($expectedBatch, $batch);
     }
 }

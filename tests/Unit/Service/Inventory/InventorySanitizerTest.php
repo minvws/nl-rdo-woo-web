@@ -82,7 +82,7 @@ class InventorySanitizerTest extends MockeryTestCase
         $inventory = \Mockery::mock(Inventory::class);
         $inventory->expects('setFileInfo')->with(\Mockery::on(
             function (FileInfo $fileInfo) {
-                $this->assertEquals('foo-bar.csv', $fileInfo->getName());
+                self::assertEquals('foo-bar.csv', $fileInfo->getName());
 
                 return true;
             }

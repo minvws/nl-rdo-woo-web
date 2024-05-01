@@ -1,28 +1,28 @@
 {% extends 'base.html.twig' %}
 
-{% set page_title = "An error occurred" | trans() %}
+{% set page_title = 'global.error_occured' | trans() %}
 
 {% block body %}
 <div class="woo-container woo-container--small">
-    <h1 class="woo-h1 woo-h1-spacing">{{ "An error occurred" | trans() }}</h1>
+    <h1 class="woo-h1 woo-h1-spacing">{{ page_title }}</h1>
 
     <p>
-        {{ "Something went wrong during the search. Try again later." | trans() }}
+        {{ 'global.error_message' | trans() }}
     </p>
 
     {% if app.debug %}
         <div class="pt-6">
             <table>
                 <tr>
-                    <th>{{ "Error message" | trans() }}</th>
+                    <th>{{ 'global.error_label' | trans() }}</th>
                     <td>{{ result.message }}</td>
                 </tr>
                 <tr>
-                    <th>{{ "Time" | trans() }}</th>
+                    <th>{{ 'global.time' | trans() }}</th>
                     <td>{{ "now" | date('d-m-Y H:i:s') }}</td>
                 </tr>
                 <tr>
-                    <th>{{ "Query" | trans() }}</th>
+                    <th>{{ 'global.query' | trans() }}</th>
                     <td><code><pre>{{ result.query | json_encode(128) }}</pre></code></td>
                 </tr>
             </table>

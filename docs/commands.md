@@ -1,5 +1,16 @@
 # Woo Platform
 
+<!-- TOC -->
+- [Woo Platform](#woo-platform)
+  - [Woo platform console commands](#woo-platform-console-commands)
+    - [Production check](#production-check)
+    - [Data / Document generation](#data--document-generation)
+    - [Index management](#index-management)
+    - [Ingestion](#ingestion)
+    - [User management](#user-management)
+    - [Document location](#document-location)
+<!-- TOC -->
+
 ## Woo platform console commands
 
 This is a list of all console commands available for the Woo platform.

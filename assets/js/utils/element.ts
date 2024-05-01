@@ -1,5 +1,4 @@
 import { isAnimationDisabled } from './animation';
-import { isFocusWithinElement } from './focus';
 
 const HIDDEN_CLASS_NAME = 'hidden';
 const TRANSITION_CLASSNAMES = ['transition-[height]', 'motion-reduce:transition-none'];
@@ -16,12 +15,9 @@ export const showElement = (element: Element | null) => {
   element?.classList.remove(HIDDEN_CLASS_NAME);
 };
 
-export const collapseElement = (element: HTMLElement, withAnimation = true, onCollapsed?: (containsFocus: boolean) => void) => {
+export const collapseElement = (element: HTMLElement, withAnimation = true) => {
   if (isAnimationDisabled()) {
     hideElement(element);
-    if (onCollapsed) {
-      onCollapsed(isFocusWithinElement(element));
-    }
     return;
   }
 
@@ -29,9 +25,6 @@ export const collapseElement = (element: HTMLElement, withAnimation = true, onCo
     hideElement(element);
     element.style.height = '0px';
     element.style.overflow = 'hidden';
-    if (onCollapsed) {
-      onCollapsed(isFocusWithinElement(element));
-    }
     return;
   }
 
@@ -53,20 +46,13 @@ export const collapseElement = (element: HTMLElement, withAnimation = true, onCo
       return;
     }
 
-    const containsFocus = isFocusWithinElement(element);
     hideElement(element);
-    if (onCollapsed) {
-      onCollapsed(containsFocus);
-    }
   }, { once: true });
 };
 
-export const expandElement = (element: HTMLElement, withAnimation = true, onExpanded?: (containsFocus: boolean) => void) => {
+export const expandElement = (element: HTMLElement, withAnimation = true) => {
   if (isAnimationDisabled()) {
     showElement(element);
-    if (onExpanded) {
-      onExpanded(isFocusWithinElement(element));
-    }
     return;
   }
 
@@ -74,9 +60,6 @@ export const expandElement = (element: HTMLElement, withAnimation = true, onExpa
     showElement(element);
     element.style.height = 'auto';
     element.style.overflow = '';
-    if (onExpanded) {
-      onExpanded(isFocusWithinElement(element));
-    }
     return;
   }
 
@@ -97,10 +80,6 @@ export const expandElement = (element: HTMLElement, withAnimation = true, onExpa
 
     element.style.height = '';
     element.style.overflow = '';
-
-    if (onExpanded) {
-      onExpanded(isFocusWithinElement(element));
-    }
   }, { once: true });
 };
 

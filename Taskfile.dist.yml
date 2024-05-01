@@ -35,7 +35,7 @@ tasks:
     cmds:
       - task: dc
         vars: { DOCKER_COMPOSE_ARGS: "build --build-arg USER_UID=$(id -u)" }
-      - task: rf:build
+      # - task: rf:build
 
   composer:install:
     desc: Install composer dependencies
@@ -47,7 +47,7 @@ tasks:
     desc: Install node dependencies
     cmds:
       - task: dc:run
-        vars: { CLI_ARGS: "app npm ci" }
+        vars: { CLI_ARGS: "app npm ci --no-fund" }
 
   npm:build:
     desc: Build assets
@@ -59,8 +59,9 @@ tasks:
     desc: Setup development environment
     interactive: true
     cmds:
+      - task: d:create-cache-volumes
       - task: env
-      - "{{.BASE_PATH}}/bin/auth-package-managers"
+      - '"{{.BASE_PATH}}/bin/auth-package-managers"'
       - task: dc:build
       - task: composer:install
       - task: dc
@@ -69,6 +70,7 @@ tasks:
         vars: { CLI_ARGS: "app bash -c 'wait-for-it postgres:5432 --timeout=0 --strict -- wait-for-it rabbitmq:5672 --timeout=0 --strict -- echo \"Done waiting\"'" }
       - task: app:migrate
       - task: app:loadfixtures
+      - task: app:migrate:test
       - task: dc:run
         vars: { CLI_ARGS: "app bin/console woopie:index:create woopie latest --read --write" }
       - task: npm:install
@@ -114,6 +116,12 @@ tasks:
       - task: down
       - task: up
 
+  ps:
+    desc: Show all project containers
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "ps -a" }
+
   env:
     desc: Template .env
     run: once
@@ -121,7 +129,7 @@ tasks:
       DATABASE_ENCRYPTION_KEY: 3140050008b203765bc6ed21721f020e8e72febd72669adcf3151098abdaedc13ddbceb53c7bea8688f9f9a20af5a8ea438528359b8f82ec6545bfa11dddb73735670403cd7495dd6726bb9d2815813d7808ec38d67cfea223113f1ab7d44f817ce6aeff
     cmds:
       - cp .env.development .env.local
-      - docker run --rm --volume $(pwd):/workspace --workdir /workspace ghcr.io/ilyes512/utils:latest
+      - docker run --rm --volume "$(pwd)":/workspace --workdir /workspace ghcr.io/ilyes512/utils:latest
         sed -i "s/DATABASE_ENCRYPTION_KEY=.*/DATABASE_ENCRYPTION_KEY={{.DATABASE_ENCRYPTION_KEY}}/g" .env.local
     sources:
       - .env.development
@@ -138,6 +146,8 @@ tasks:
         - /.idea
     cmds:
       - task: down
+      - docker volume rm woo_composer || true
+      - docker volume rm woo_npm || true
       - git clean
         -xd
         --force
@@ -174,6 +184,16 @@ tasks:
     cmds:
       - task: dc:run
         vars: { CLI_ARGS: "app bin/console woopie:sql:dump" }
+
+  app:migrate:test:
+    desc: Run (doctrine) database migrations in test environment
+    cmds:
+      - task: dc:run
+        vars: { CLI_ARGS: "app bin/console doctrine:database:create --if-not-exists --no-interaction --env=test" }
+      - task: dc:run
+        vars: { CLI_ARGS: "app bin/console doctrine:schema:drop --full-database --force --no-interaction --env=test" }
+      - task: dc:run
+        vars: { CLI_ARGS: "app bin/console doctrine:schema:create --no-interaction --env=test" }
 
   app:cleansheet:
     desc: Clears dossiers and inquiries (with related data) from the database. Also clears ES index and RabbitMq message queues.
@@ -266,12 +286,20 @@ tasks:
 
   app:update:
     desc: (re) Pull dependencies, run migrations, build front-end and sync .env
+    aliases: [app:refresh]
     cmds:
+      - task: d:create-cache-volumes
       - task: composer:install
       - task: app:migrate
+      - task: app:migrate:test
       - task: npm:install
       - task: npm:build
       - task: app:syncdotenv
+
+  d:create-cache-volumes:
+    cmds:
+      - docker volume create woo_composer
+      - docker volume create woo_npm
 
   worker:start:
     desc: Start the worker

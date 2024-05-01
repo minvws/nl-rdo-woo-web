@@ -25,9 +25,9 @@
     <body class="antialiased bg-bhr-anti-flash-white text-black flex min-h-screen flex-col text-base">
         {% set isAuthenticated = app.user and is_granted('ROLE_BALIE') %}
 
-        {% macro nav_item(routeName, titleTranslationKey, activeRouteNames, e2eName) %}
+        {% macro nav_item(routeName, titleTranslationKey, routePattern, e2eName) %}
             {% set isCurrentPage = app.request.get('_route') is same as (routeName) %}
-            {% set isActivePage = isCurrentPage or app.request.get('_route') in activeRouteNames %}
+            {% set isActivePage = isCurrentPage or (routePattern is not empty and app.request.get('_route') matches routePattern) %}
             <li>
                 <a
                     {% if isCurrentPage %}aria-current="page"{% endif %}
@@ -45,12 +45,12 @@
                 {% if isAuthenticated %}
                 <button class="p-4 lg:hidden js-visibility-toggler" aria-controls="main-nav" aria-expanded="false">
                     <twig:Admin:Icon color="fill-white" name="hamburger" class="" />
-                    <span class="sr-only">Hoofdmenu in- of uitklappen</span>
+                    <span class="sr-only">{{ 'global.menu_toggle.label' | trans() }}</span>
                 </button>
 
                 <nav class="text-white lg:flex hidden" id="main-nav">
                     <ul class="grow lg:flex items-center">
-                        <li><a href="#inhoud" class="bhr-site-header-nav-item bhr-site-header-nav-item--anchor bhr-site-header-nav-item--skip-link">{{ "Go directly to content" | trans() }}</a></li>
+                        <li><a href="#inhoud" class="bhr-site-header-nav-item bhr-site-header-nav-item--anchor bhr-site-header-nav-item--skip-link">{{ 'global.skip_link' | trans() }}</a></li>
 
                         {% set organisationSwitcher = get_organisation_switcher() %}
                         {% if organisationSwitcher.isSwitchAllowed(app.user) %}
@@ -61,7 +61,7 @@
                                         class="bhr-site-header-nav-item bhr-site-header-nav-item--divider max-h-20 flex items-center"
                                     >
                                         <span class="grow">
-                                            <span class="block text-sm font-normal">{{ 'Organisation'|trans }}</span>
+                                            <span class="block text-sm font-normal">{{ 'global.organisation' | trans() }}</span>
                                             <span class="block text-md truncate max-w-[165px]">
                                                 {{ activeOrganisation.name }}
                                             </span>
@@ -94,57 +94,25 @@
                         {% endif %}
 
                         {% if matrix_has_permission('dossier.read') %}
-                            {% set activeRouteNames = [
-                                'app_admin_dossiers',
-                                'app_admin_dossier',
-                                'app_admin_dossier_concept_create',
-                                'app_admin_dossier_concept_decision',
-                                'app_admin_dossier_concept_details',
-                                'app_admin_dossier_concept_documents',
-                                'app_admin_dossier_concept_publish',
-                                'app_admin_dossier_withdraw_all_documents',
-                                'app_admin_dossier_delete',
-                                'app_admin_dossier_edit_details',
-                                'app_admin_dossier_edit_decision',
-                                'app_admin_document',
-                                'app_admin_documents',
-                                'app_admin_dossier_replace_inventory',
-                            ] %}
-                            {{ _self.nav_item('app_admin_dossiers', 'Decision files', activeRouteNames) }}
+                            {{ _self.nav_item('app_admin_dossiers', 'admin.global.label.dossiers', '/^app_admin_dossier/') }}
                         {% endif %}
 
                         {% if matrix_has_permission('inquiry.read') %}
-                            {% set activeRouteNames = [
-                                'app_admin_inquiries',
-                                'app_admin_inquiries_link',
-                                'app_admin_inquiries_link_documents',
-                                'app_admin_inquiries_link_dossiers',
-                            ] %}
-                            {{ _self.nav_item('app_admin_inquiries', 'Cases', activeRouteNames) }}
+                            {{ _self.nav_item('app_admin_inquiries', 'admin.global.label.inquiries', '/^app_admin_inquiries/') }}
                         {% endif %}
 
                         {% if matrix_has_permission('department.read') %}
-                            {% set activeRouteNames = [
-                                'app_admin_departments',
-                                'app_admin_department_create',
-                                'app_admin_department_edit',
-                            ] %}
-                            {{ _self.nav_item('app_admin_departments', 'Departments', activeRouteNames) }}
+                            {{ _self.nav_item('app_admin_departments', 'admin.global.label.departments', '/^app_admin_department/') }}
                         {% endif %}
 
                         {% if matrix_has_permission('user.read') %}
-                            {% set activeRouteNames = [
-                                'app_admin_users',
-                                'app_admin_user',
-                                'app_admin_user_create',
-                            ] %}
-                            {{ _self.nav_item('app_admin_users', 'Access control', activeRouteNames) }}
+                            {{ _self.nav_item('app_admin_users', 'admin.global.label.access_control', '/^app_admin_user/') }}
                         {% endif %}
                     </ul>
 
                     <ul class="lg:flex items-center">
                         {{ _self.nav_item('app_admin_user_profile', app.user.name|default("unknown user")) }}
-                        {{ _self.nav_item('app_logout', 'Logout', [], 'logout-link') }}
+                        {{ _self.nav_item('app_logout', 'global.logout', null, 'logout-link') }}
                     </ul>
                 </nav>
                 {% else %}
@@ -169,9 +137,9 @@
             {% endif %}
 
             <ul class="flex justify-center print:hidden">
-                <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_privacy') }}">Privacy</a></li>
-                <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_contact') }}">Contact</a></li>
-                <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_accessibility') }}">Toegankelijkheid</a></li>
+                <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_privacy') }}">{{ 'global.footer.label.privacy' | trans() }}</a></li>
+                <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_contact') }}">{{ 'global.footer.label.contact' | trans()}}</a></li>
+                <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_accessibility') }}">{{ 'global.footer.label.accessibility' | trans() }}</a></li>
                 <li><a class="bhr-site-footer-nav-item" href="https://open.minvws.nl/">Publieke website</a></li>
             </ul>
         </footer>

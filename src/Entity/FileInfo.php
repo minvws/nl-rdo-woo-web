@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class FileInfo
@@ -23,6 +24,7 @@ class FileInfo
     private ?string $type = null;
 
     #[ORM\Column(length: 1024, nullable: true)]
+    #[Assert\Length(min: 1, max: 255, normalizer: 'trim')]
     private ?string $name = null;
 
     #[ORM\Column(nullable: false)]

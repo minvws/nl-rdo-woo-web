@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+{% import "document_macros.html.twig" as macro %}
+
+{% set page_title = covenantDocument.name %}
+
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-h1">{{ covenantDocument.name }}</h1>
+    <p>{{ 'public.documents.attachment_of' | trans()}} <a class="woo-a" href="{{ url('app_covenant_detail', { prefix: dossier.entity.documentPrefix, dossierId: dossier.entity.dossierNr } ) }}">
+            {{ dossier.entity.title }}
+        </a>
+    </p>
+
+    <a class="woo-button woo-button--primary mt-8" href="{{ covenantDocument.downloadUrl }}">{{ 'global.download_document' | trans() }} ({{ covenantDocument.sourceType | upper }} {{ covenantDocument.size | size }})</a>
+
+    <div class="mt-16">
+        <h2 class="woo-h2 woo-h2-spacing">{{ 'public.documents.document.about' | trans() }}</h2>
+        <div class="overflow-x-auto">
+            <table class="woo-table">
+                <caption class="sr-only">
+                    {{ 'public.documents.document.about' | trans() }}
+                </caption>
+                <tbody>
+                    <tr>
+                        <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                            {{ 'public.documents.document.date' | trans()}}
+                        </th>
+                        <td>
+                            {{ covenantDocument.formalDate | format_date('long') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                            {{ 'public.documents.document' | trans() }}
+                        </th>
+                        <td>
+                            {{ covenantDocument.type.name | capitalize }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'public.documents.document.type' | trans()}}</th>
+                        <td>
+                            <twig:Public:Icon name="{{ covenantDocument.sourceType }}" color="fill-woo-dim-gray" size="16" />
+                            {{ covenantDocument.sourceType | upper }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'public.documents.document.download_type' | trans()}}</th>
+                        <td>{{ covenantDocument.sourceType | upper }}, {{ covenantDocument.size | size }}</td>
+                    </tr>
+                    {% if covenantDocument.grounds is defined and covenantDocument.grounds|length > 0 %}
+                    <tr>
+                        <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                            {{ 'global.grounds' | trans()}}
+                        </th>
+                        <td class="woo-table-cell--wrap">
+                            {% for ground in covenantDocument.grounds %}
+                            {{ macro.document_ground(ground) }}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        {% if (attachments | length - 1) > 0 %}
+        <div class="mt-16">
+            <h2 class="woo-h2 woo-h2-spacing">
+                {{ 'public.documents.document.related_attachments' | trans }}
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="woo-table">
+                    <caption class="sr-only">
+                        {{ 'public.documents.document.related_attachments' | trans }}
+                    </caption>
+                    <tbody>
+                        <tr>
+                            <th class="sr-only">{{ 'global.document_name' | trans() }}</th>
+                            <th class="sr-only">{{ 'global.document_date' | trans() }}</th>
+                        </tr>
+                        {% for attachment in attachments %}
+                        <tr>
+                            <td>
+                                <twig:Public:Icon name="{{ attachment.sourceType }}" color="fill-woo-dim-gray" size="16" />
+                                <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a>
+                            </td>
+                            <td class="w-48 min-w-48 text-right">
+                                {{ attachment.formalDate | format_date('long') }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+        <div class="mt-16">
+            <h2 class="woo-h2 woo-h2-spacing">
+                {{ 'public.documents.document.background' | trans }}
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="woo-table">
+                    <caption class="sr-only">
+                        {{ 'public.documents.document.related_attachments' | trans }}
+                    </caption>
+                    <tbody>
+                        <tr>
+                            <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                                {{ 'public.documents.part_of' | trans() }}
+                            </th>
+                            <td>
+                                <a class="woo-a" href="{{ url('app_covenant_detail', { prefix: dossier.entity.documentPrefix, dossierId: dossier.entity.dossierNr } ) }}">
+                                    {{ dossier.entity.title }}
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                                {{ 'admin.publications.department' | trans()}}
+                            </th>
+                            <td>{{ dossier.entity.departments[0].name }}</td>
+                        </tr>
+                        <tr>
+                            <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                                {{ 'global.period' | trans()}}
+                            </th>
+                            <td>{{ dossier.entity.dateFrom | date("M Y") }} - {{ dossier.entity.dateTo | date("M Y") }}</td>
+                        </tr>
+                        <tr>
+                            <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                                {{ 'global.publication_date' | trans()}}
+                            </th>
+                            <td>{{ dossier.entity.publicationDate | format_date("long") }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

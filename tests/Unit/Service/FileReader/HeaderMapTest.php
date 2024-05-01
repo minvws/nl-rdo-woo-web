@@ -17,11 +17,11 @@ class HeaderMapTest extends MockeryTestCase
             'subject' => 'B',
         ]);
 
-        $this->assertEquals('A', $headerMap->getCellCoordinate('id'));
+        self::assertEquals('A', $headerMap->getCellCoordinate('id'));
 
-        $this->assertTrue($headerMap->has('subject'));
+        self::assertTrue($headerMap->has('subject'));
 
-        $this->assertFalse($headerMap->has('foobar'));
+        self::assertFalse($headerMap->has('foobar'));
 
         $this->expectExceptionObject(FileReaderException::forUnknownHeader('foobar'));
         $headerMap->getCellCoordinate('foobar');

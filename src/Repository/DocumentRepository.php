@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Domain\Publication\Dossier\DossierStatus;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Organisation;
-use App\Enum\PublicationStatus;
 use App\Service\Elastic\Model\DocumentCounts;
 use App\Service\Inventory\DocumentNumber;
 use App\ViewModel\DocumentSearchEntry;
@@ -66,7 +66,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->orderBy('d.documentDate', 'ASC')
             ->setParameter('threadId', $threadId)
             ->setParameter('dossier', $dossier)
-            ->setParameter('status', PublicationStatus::PUBLISHED)
+            ->setParameter('status', DossierStatus::PUBLISHED)
         ;
 
         return $qb->getQuery()->getResult();
@@ -85,7 +85,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->orderBy('d.documentDate', 'ASC')
             ->setParameter('familyId', $familyId)
             ->setParameter('dossier', $dossier)
-            ->setParameter('status', PublicationStatus::PUBLISHED)
+            ->setParameter('status', DossierStatus::PUBLISHED)
         ;
 
         return $qb->getQuery()->getResult();
@@ -135,7 +135,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->setParameter('threadId', $threadId)
             ->setParameter('dossier', $dossier)
             ->setParameter('document', $document)
-            ->setParameter('status', PublicationStatus::PUBLISHED)
+            ->setParameter('status', DossierStatus::PUBLISHED)
         ;
     }
 
@@ -157,7 +157,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->setParameter('familyId', $familyId)
             ->setParameter('dossier', $dossier)
             ->setParameter('document', $document)
-            ->setParameter('status', PublicationStatus::PUBLISHED)
+            ->setParameter('status', DossierStatus::PUBLISHED)
         ;
     }
 
@@ -300,7 +300,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->orderBy('d.createdAt', 'ASC')
             ->setMaxResults($limit)
             ->setFirstResult($offset)
-            ->setParameter('status', PublicationStatus::PUBLISHED);
+            ->setParameter('status', DossierStatus::PUBLISHED);
 
         return $qb->getQuery()->getResult();
     }
@@ -327,7 +327,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->innerJoin('doc.dossiers', 'dos')
             ->groupBy('doc.id')
             ->setParameter('documentNr', $documentNr)
-            ->setParameter('statuses', [PublicationStatus::PREVIEW, PublicationStatus::PUBLISHED])
+            ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
         ;
 
         /** @var ?DocumentSearchEntry $result */

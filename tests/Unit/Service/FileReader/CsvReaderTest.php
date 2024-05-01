@@ -38,7 +38,7 @@ class CsvReaderTest extends MockeryTestCase
             $ids[] = $this->csvReader->getInt($rowIndex, MetadataField::ID->value);
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [5033, 5034],
             $ids,
         );
@@ -51,7 +51,7 @@ class CsvReaderTest extends MockeryTestCase
             $subjects[] = $this->csvReader->getOptionalString($rowIndex, 'subject');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             ['Dummy onderwerp 1', null],
             $subjects,
         );
@@ -64,7 +64,7 @@ class CsvReaderTest extends MockeryTestCase
             $values[] = $this->csvReader->getOptionalString($rowIndex, 'foobar');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [null, null],
             $values,
         );
@@ -77,7 +77,7 @@ class CsvReaderTest extends MockeryTestCase
             $familyIds[] = $this->csvReader->getOptionalInt($rowIndex, 'family');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [5033, null],
             $familyIds,
         );
@@ -90,7 +90,7 @@ class CsvReaderTest extends MockeryTestCase
             $values[] = $this->csvReader->getOptionalInt($rowIndex, 'foobar');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [null, null],
             $values,
         );
@@ -101,7 +101,7 @@ class CsvReaderTest extends MockeryTestCase
         $rows = iterator_to_array($this->csvReader);
 
         // First row has a valid date
-        $this->assertEquals(
+        self::assertEquals(
             new \DateTimeImmutable('2022-10-09 13:34'),
             $this->csvReader->getDateTime(key($rows), 'date'),
         );
@@ -128,7 +128,7 @@ class CsvReaderTest extends MockeryTestCase
             $dates[] = $this->csvReader->getOptionalDateTime($rowIndex, 'date');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [new \DateTimeImmutable('2022-10-09 13:34'), null],
             $dates,
         );
@@ -141,7 +141,7 @@ class CsvReaderTest extends MockeryTestCase
             $dates[] = $this->csvReader->getOptionalDateTime($rowIndex, 'non-existent-column');
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [null, null],
             $dates,
         );

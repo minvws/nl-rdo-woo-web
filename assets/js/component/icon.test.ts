@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'vitest';
 import { icon, IconProperties } from './icon';
 
 describe('The "icon" component', () => {

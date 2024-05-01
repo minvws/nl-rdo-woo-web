@@ -1,12 +1,12 @@
 {% extends is_backend() ? 'admin.html.twig' : 'base.html.twig' %}
 
-{% set page_title = "Page or document not available" | trans() %}
+{% set page_title = 'global.page_not-available' | trans() %}
 
 {% block body %}
     {%
         include "bundles/TwigBundle/Exception/error-content.html.twig" with {
             title: page_title,
-            content: "The requested page or document is not available." | trans(),
+            content: 'global.page_not-available.message' | trans(),
         }
     %}
 {% endblock %}

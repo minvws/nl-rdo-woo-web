@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
+use App\Domain\Publication\Dossier\DossierStatus;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\FileInfo;
 use App\Entity\Judgement;
 use App\Entity\Organisation;
-use App\Enum\PublicationStatus;
 use App\Message\IngestMetadataOnlyMessage;
 use App\Message\RemoveDocumentMessage;
 use App\Repository\DocumentRepository;
@@ -40,7 +40,7 @@ class DocumentUpdaterTest extends MockeryTestCase
 
         $this->dossier = \Mockery::mock(Dossier::class);
         $this->dossier->shouldReceive('getDocumentPrefix')->andReturn('PREFIX');
-        $this->dossier->shouldReceive('getStatus')->andReturn(PublicationStatus::CONCEPT);
+        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
 
         $organisation = \Mockery::mock(Organisation::class);
         $this->dossier->shouldReceive('getOrganisation')->andReturn($organisation);

@@ -1,5 +1,12 @@
 # Woo Platform
 
+<!-- TOC -->
+- [Woo Platform](#woo-platform)
+  - [Creating dossiers](#creating-dossiers)
+    - [Create dummy dossiers and documents](#create-dummy-dossiers-and-documents)
+    - [Create and upload real data](#create-and-upload-real-data)
+<!-- TOC -->
+
 You must create a dossier and add documents in order to use the site.
 
 ## Creating dossiers
@@ -17,9 +24,6 @@ command:
 Press ctrl-C when you feel you have enough documents.
 
 ### Create and upload real data
-
-On the Google drive (woo), you will find a folder called `Proof-of-concept-Woopie/test bestanden`.
-This folder contains a ZIP file with a number of PDF files and a few inventory XLS files.
 
 You can create a dossier after logging in at `localhost:8000/balie/dossiers`. Fill in the dossier
 you want, and add a XLS file as inventory file.

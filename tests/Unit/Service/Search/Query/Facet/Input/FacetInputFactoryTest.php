@@ -9,15 +9,12 @@ use App\Service\Search\Query\Facet\Input\FacetInputFactory;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Group;
-use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 #[Group('facet')]
 #[Group('facetInput')]
 final class FacetInputFactoryTest extends UnitTestCase
 {
-    use MatchesSnapshots;
-
     private ParameterBag&MockInterface $bag;
 
     protected function setUp(): void
@@ -32,14 +29,14 @@ final class FacetInputFactoryTest extends UnitTestCase
     {
         $factory = new FacetInputFactory();
 
-        $this->assertInstanceOf(FacetInputFactory::class, $factory);
+        self::assertInstanceOf(FacetInputFactory::class, $factory);
     }
 
     public function testCreate(): void
     {
         $result = (new FacetInputFactory())->create();
 
-        $this->assertMatchesObjectSnapshot($result);
+        self::assertMatchesObjectSnapshot($result);
     }
 
     public function testFromParameterBag(): void
@@ -50,6 +47,6 @@ final class FacetInputFactoryTest extends UnitTestCase
 
         $result = (new FacetInputFactory())->fromParameterBag($this->bag);
 
-        $this->assertMatchesObjectSnapshot($result);
+        self::assertMatchesObjectSnapshot($result);
     }
 }

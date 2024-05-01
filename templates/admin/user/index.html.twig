@@ -1,6 +1,6 @@
 {% extends 'admin.html.twig' %}
 
-{% set page_title = "User management" | trans %}
+{% set page_title = 'admin.user.managment' | trans() %}
 
 {% block body %}
 <div class="bhr-container">
@@ -9,7 +9,7 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('user.create') %}
-            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_user_create') }}">{{ "Create new user" | trans() }}</a>
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_user_create') }}">{{ 'admin.user.create' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>
@@ -30,11 +30,11 @@
         <table class="bhr-table">
             <thead>
                 <tr>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "User" | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ "Roles" | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ "Last log in" | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.global.user' | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.global.roles' | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ 'admin.global.last_login' | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                        <span class="sr-only">{{ "Edit user" | trans }}</span>
+                        <span class="sr-only">{{ 'admin.user.edit' | trans() }}</span>
                     </th>
                 </tr>
             </thead>
@@ -48,7 +48,7 @@
                         <th class="text-left" scope="row">
                             <span class="font-bold">{{ user.name }}</span>
                             {% if not user.enabled %}
-                                <span class="bhr-badge bhr-badge--red">{{ "Deactivated" | trans() }}</span>
+                                <span class="bhr-badge bhr-badge--red">{{ 'admin.user.deactivated' | trans() }}</span>
                             {% endif %}
                         </th>
                         <td>{{ roles|join(', ') }}</td>
@@ -61,7 +61,7 @@
                         <td class="text-right">
                             {% set toUrl = app.user.id is same as (user.id) ? path('app_admin_user_profile') : path('app_admin_user', { id: user.id }) %}
                             <a class="js-clickable-row__focusable" href="{{ toUrl }}">
-                                <span class="sr-only">Details {{ user.name }}</span>
+                                <span class="sr-only">{{ 'global.details' | trans() }} {{ user.name }}</span>
                                 <twig:Admin:Icon name="chevron-right" />
                             </a>
                         </td>

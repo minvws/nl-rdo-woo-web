@@ -1,20 +1,31 @@
-import { describe, expect, test } from '@jest/globals';
-
-jest.useFakeTimers();
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { debounce } from './debounce';
 
 describe('The "debounce" function', () => {
-  test('should invoke the provided function only once within a time frame having a duration of the provided value', async () => {
-    const { debounce } = require('./debounce');
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
 
-    const mockedFunction = jest.fn();
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  test('should invoke the provided function only once within a time frame having a duration of the provided value', async () => {
+    const mockedFunction = vi.fn();
     const debouncedFunction = debounce(mockedFunction, 100);
 
     debouncedFunction();
     debouncedFunction();
     debouncedFunction();
 
-    jest.advanceTimersByTime(101);
+    vi.advanceTimersByTime(101);
 
     expect(mockedFunction).toHaveBeenCalledTimes(1);
+
+    debouncedFunction();
+    debouncedFunction();
+    vi.advanceTimersByTime(101);
+
+    expect(mockedFunction).toHaveBeenCalledTimes(2);
   });
 });

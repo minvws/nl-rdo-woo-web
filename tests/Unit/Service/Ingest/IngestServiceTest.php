@@ -7,11 +7,11 @@ namespace App\Tests\Unit\Service\Ingest;
 use App\Entity\Document;
 use App\Entity\FileInfo;
 use App\Service\Ingest\Handler;
-use App\Service\Ingest\IngestLogger;
 use App\Service\Ingest\IngestService;
 use App\Service\Ingest\Options;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Symfony\Component\Uid\Uuid;
 
 class IngestServiceTest extends MockeryTestCase
 {
@@ -21,8 +21,6 @@ class IngestServiceTest extends MockeryTestCase
 
     private Handler&MockInterface $handlerC;
 
-    private IngestLogger&MockInterface $ingestLogger;
-
     private IngestService $ingestService;
 
     public function setUp(): void
@@ -31,11 +29,8 @@ class IngestServiceTest extends MockeryTestCase
         $this->handlerB = \Mockery::mock(Handler::class);
         $this->handlerC = \Mockery::mock(Handler::class);
 
-        $this->ingestLogger = \Mockery::mock(IngestLogger::class);
-
         $this->ingestService = new IngestService(
             new \ArrayIterator([$this->handlerA, $this->handlerB, $this->handlerC]),
-            $this->ingestLogger
         );
 
         parent::setUp();
@@ -55,27 +50,26 @@ class IngestServiceTest extends MockeryTestCase
         $this->handlerB->shouldReceive('canHandle')->with($fileInfo)->andReturnTrue();
         $this->handlerC->shouldNotReceive('canHandle');
 
-        $this->ingestLogger->shouldReceive('success')->with($document, \Mockery::any(), \Mockery::any());
         $this->handlerB->shouldReceive('handle')->with($document, $options);
 
         $this->ingestService->ingest($document, $options);
     }
 
-    public function testIngestTriggersIngestErrorWhenThereIsNoMatchingHandler(): void
+    public function testIngestChecksAllHandlersAndThrowsExceptionIfNoneCanHandleTheIngest(): void
     {
         $fileInfo = \Mockery::mock(FileInfo::class);
 
         $document = \Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
+        $document->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $options = new Options();
 
-        $this->handlerA->shouldReceive('canHandle')->with($fileInfo)->andReturnFalse();
-        $this->handlerB->shouldReceive('canHandle')->with($fileInfo)->andReturnFalse();
-        $this->handlerC->shouldReceive('canHandle')->with($fileInfo)->andReturnFalse();
+        $this->handlerA->expects('canHandle')->with($fileInfo)->andReturnFalse();
+        $this->handlerB->expects('canHandle')->with($fileInfo)->andReturnFalse();
+        $this->handlerC->expects('canHandle')->with($fileInfo)->andReturnFalse();
 
-        $this->ingestLogger->expects('error')->with($document, \Mockery::any(), \Mockery::any());
-
+        $this->expectException(\RuntimeException::class);
         $this->ingestService->ingest($document, $options);
     }
 }

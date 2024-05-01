@@ -1,11 +1,14 @@
 <script setup>
-  import { computed, inject, ref, watch } from 'vue';
+  import UploadArea from '@admin-fe/component/file/upload/UploadArea.vue';
+  import { useInputStore } from '@admin-fe/composables';
   import { uniqueId } from '@js/utils';
+  import { computed, inject, ref } from 'vue';
   import FormHelp from './FormHelp.vue';
   import FormLabel from './FormLabel.vue';
   import InputErrors from './InputErrors.vue';
-  import UploadArea from '../file/upload/UploadArea.vue';
-  import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
+  import SubmitValidationErrors from './SubmitValidationErrors.vue';
+
+  const emit = defineEmits(['uploaded', 'uploadError', 'uploading']);
 
   const props = defineProps({
     allowedMimeTypes: {
@@ -18,7 +21,11 @@
       required: false,
       default: false,
     },
-    endpoint: {
+    enableAutoUpload: {
+      type: Boolean,
+      default: false,
+    },
+    groupId: {
       type: String,
       required: false,
     },
@@ -47,17 +54,66 @@
       type: String,
       required: true,
     },
+    uploadId: {
+      type: String,
+      required: false,
+    },
+    uploadedFileInfo: {
+      type: [Object, null],
+      required: false,
+      default: null,
+    },
+    validators: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    value: {
+      type: [Object, String],
+      required: false,
+    },
   });
 
+  const getValueFromProps = () => {
+    if (props.value) {
+      return props.value;
+    }
+
+    if (props.uploadId) {
+      return props.uploadId;
+    }
+
+    if (props.allowMultiple) {
+      return new DataTransfer().files;
+    }
+
+    return '';
+  }
+
   const inputId = `${uniqueId('input')}`;
-  const value = ref(new DataTransfer().files);
+  const value = ref(getValueFromProps());
   const formRowClass = computed(() => {
     return {
       'bhr-form-row': props.hasFormRow,
       'bhr-form-row--invalid': props.hasFormRow && inputStore.hasVisibleErrors,
     };
   });
+
+  const onUploading = (fileId, file) => {
+    emit('uploading', fileId, file);
+  }
+
+  const onUploaded = (file, uploadId) => {
+    value.value = uploadId;
+    emit('uploaded', file, uploadId);
+  }
+
+  const onUploadError = (fileId, file) => {
+    emit('uploadError', fileId, file);
+  }
+
   const inputStore = useInputStore(props.name, props.label, value, props.validators);
+  inject('form').addInput(inputStore);
 </script>
 
 <template>
@@ -79,14 +135,25 @@
       v-if="inputStore.hasVisibleErrors"
     />
 
+    <SubmitValidationErrors
+      :errors="inputStore.submitValidationErrors"
+      v-if="inputStore.hasVisibleErrors"
+    />
+
     <UploadArea
+      @selected="onSelected"
+      @uploaded="onUploaded"
+      @uploading="onUploading"
+      @uploadError="onUploadError"
       :allow-multiple="props.allowMultiple"
       :allowed-mime-types="props.allowedMimeTypes"
-      :endpoint="props.endpoint"
+      :enable-auto-upload="props.enableAutoUpload"
+      :group-id="props.groupId"
       :id="inputId"
       :max-file-size="props.maxFileSize"
       :name="props.name"
       :tip="props.tip"
+      :uploaded-file-info="props.uploadedFileInfo"
     />
   </div>
 </template>

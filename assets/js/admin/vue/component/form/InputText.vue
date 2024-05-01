@@ -1,23 +1,29 @@
 <script setup>
-  import { computed, inject, ref, watch } from 'vue';
+  import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
   import { uniqueId } from '@js/utils';
+  import { computed, inject, ref, watch } from 'vue';
   import FormHelp from './FormHelp.vue';
   import FormLabel from './FormLabel.vue';
   import InputErrors from './InputErrors.vue';
-  import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
+  import SubmitValidationErrors from './SubmitValidationErrors.vue';
 
   const props = defineProps({
     class: {
       type: String,
-      required: false,
       default: '',
     },
     hasFormRow: {
       type: Boolean,
-      required: false,
       default: true,
     },
     helpText: {
+      type: String,
+    },
+    isDisabled: {
+      type: Boolean,
+      default: false,
+    },
+    isDisabledMessage: {
       type: String,
       required: false,
     },
@@ -32,7 +38,7 @@
     required: {
       type: Boolean,
       required: false,
-      default: false,
+      default: true,
     },
     type: {
       type: String,
@@ -62,6 +68,7 @@
   const inputClass = computed(() => {
     return {
       'bhr-input-text': true,
+      'bhr-input-text--disabled': props.isDisabled,
       'bhr-input-text--invalid': inputStore.hasVisibleErrors,
       [props.class]: true,
     };
@@ -74,14 +81,13 @@
   });
   const ariaDescribedBy = computed(() => useInputAriaDescribedBy(inputId, props.helpText, inputStore.hasVisibleErrors));
 
-  const form = inject('form');
-  form.addInput(inputStore);
+  inject('form').addInput(inputStore);
 </script>
 
 <template>
   <div :class="formRowClass">
 
-    <FormLabel v-if="props.label" :for="inputId">
+    <FormLabel v-if="props.label" :for="inputId" :required="props.required">
       {{ props.label }}
     </FormLabel>
 
@@ -97,16 +103,29 @@
       v-if="inputStore.hasVisibleErrors"
     />
 
+    <SubmitValidationErrors
+      :errors="inputStore.submitValidationErrors"
+      v-if="inputStore.hasVisibleErrors"
+    />
+
     <input
       @blur="inputStore.markAsTouched"
       :aria-describedby="ariaDescribedBy"
+      :aria-disabled="props.isDisabled"
       :aria-invalid="inputStore.hasVisibleErrors"
       :class="inputClass"
+      :disabled="props.isDisabled"
       :id="inputId"
       :name="props.name"
       :type="props.type"
       :required="props.required"
       v-model="value"
     />
+
+    <p class="sr-only" aria-live="assertive">
+      <template v-if="props.isDisabled">
+        {{ props.isDisabledMessage }}
+      </template>
+    </p>
   </div>
 </template>

@@ -15,39 +15,39 @@
     {% set hasTabs = numberOfSectionsToDisplay > 1 %}
 
     {% if hasTabs %}
-        <ul class="woo-tab-list" role="tablist" aria-label="{{ "Documents" | trans }}">
+        <ul class="woo-tab-list" role="tablist" aria-label="{{ 'global.documents' | trans }}">
             {% if hasPublicDocuments %}
                 <li class="woo-tab-list__item">
-                    {{ _self.documents_tab_button(1, true, "Documents that match the request" | trans) }}
+                    {{ _self.documents_tab_button(1, true, "public.documents.match_request" | trans) }}
                 </li>
             {% endif %}
             {% if hasNotPublicDocuments %}
                 <li class="woo-tab-list__item">
-                    {{ _self.documents_tab_button(2, not hasPublicDocuments, "Not made public" | trans) }}
+                    {{ _self.documents_tab_button(2, not hasPublicDocuments, "public.documents.not_made_public" | trans) }}
                 </li>
             {% endif %}
             {% if hasNotOnlineDocuments %}
                 <li class="woo-tab-list__item">
-                    {{ _self.documents_tab_button(3, not hasPublicDocuments and not hasNotPublicDocuments, "Not (yet) online" | trans) }}
+                    {{ _self.documents_tab_button(3, not hasPublicDocuments and not hasNotPublicDocuments, "public.documents.not_yet_online" | trans) }}
                 </li>
             {% endif %}
         </ul>
 
         {% if hasPublicDocuments %}
-            {{ _self.documents_tab_content(1, false, public_docs, "Documents that match the request", dossier) }}
+            {{ _self.documents_tab_content(1, false, public_docs, "public.documents.match_request", dossier) }}
         {% endif %}
 
         {% if hasNotPublicDocuments %}
-            {{ _self.documents_tab_content(2, hasPublicDocuments, not_public_docs, "Not made public", dossier) }}
+            {{ _self.documents_tab_content(2, hasPublicDocuments, not_public_docs, "public.documents.not_made_public", dossier) }}
         {% endif %}
 
         {% if hasNotOnlineDocuments %}
-            {{ _self.documents_tab_content(3, hasPublicDocuments or hasNotPublicDocuments, not_online_docs, "Not (yet) online", dossier) }}
+            {{ _self.documents_tab_content(3, hasPublicDocuments or hasNotPublicDocuments, not_online_docs, "public.documents.not_yet_online", dossier) }}
         {% endif %}
     {% else %}
-        {{ _self.documents_sortable_table(public_docs, "Documents that match the request", fragment, dossier) }}
-        {{ _self.documents_sortable_table(not_public_docs, "Not made public", fragment, dossier) }}
-        {{ _self.documents_sortable_table(not_online_docs, "Not (yet) online", fragment, dossier) }}
+        {{ _self.documents_sortable_table(public_docs, "public.documents.match_request", fragment, dossier) }}
+        {{ _self.documents_sortable_table(not_public_docs, "public.documents.not_made_public", fragment, dossier) }}
+        {{ _self.documents_sortable_table(not_online_docs, "public.documents.not_yet_online", fragment, dossier) }}
     {% endif %}
 {% endmacro %}
 
@@ -85,14 +85,14 @@
             <table class="woo-table">
                 <caption class="sr-only">
                     <span>{{ tableTitleTranslationKey | trans() }}</span>
-                    <span>{{ "A columnhead with a link is sortable" | trans() }}</span>
+                    <span>{{ 'public.global.sortable' | trans() }}</span>
                 </caption>
                 <thead>
                     <tr>
-                        {{ knp_pagination_sortable(documents, "Document number" | trans | trans, 'doc.documentNr', { thClassName: "min-w-36 w-36" | trans(), 'fragment': fragment }) }}
-                        <th class="min-w-12 w-12" scope="col">{{ "Type" | trans() }}</th>
-                        {{ knp_pagination_sortable(documents, "Name" | trans() | trans, 'doc.fileInfo.name', { 'fragment': fragment }) }}
-                        {{ knp_pagination_sortable(documents, "Date" | trans() | trans, 'doc.documentDate', { thClassName: '!text-right min-w-40 w-40', 'fragment': fragment }) }}
+                        {{ knp_pagination_sortable(documents, 'global.document_number' | trans | trans, 'doc.documentNr', { thClassName: "min-w-36 w-36", 'fragment': fragment }) }}
+                        <th class="min-w-12 w-12" scope="col">{{ 'global.document_type' | trans() }}</th>
+                        {{ knp_pagination_sortable(documents, 'global.document_name' | trans() | trans, 'doc.fileInfo.name', { 'fragment': fragment }) }}
+                        {{ knp_pagination_sortable(documents, 'global.date' | trans() | trans, 'doc.documentDate', { thClassName: '!text-right min-w-40 w-40', 'fragment': fragment }) }}
                     </tr>
                 </thead>
                 {{ _self.documents_table_tbody(documents, dossier) }}
@@ -119,10 +119,10 @@
                 <caption class="sr-only">{{ tableTitleTranslationKey | trans() }}</caption>
                 <thead>
                     <tr>
-                        <th scope="row">{{ "Document number" | trans() }}</th>
-                        <th scope="row">{{ "Type" | trans() }}</th>
-                        <th scope="row">{{ "Name" | trans() }}</th>
-                        <th class="text-right" scope="row">{{ "Date" | trans() }}</th>
+                        <th scope="row">{{ 'global.document_number' | trans() }}</th>
+                        <th scope="row">{{ 'global.document_type' | trans() }}</th>
+                        <th scope="row">{{ 'global.name' | trans() }}</th>
+                        <th class="text-right" scope="row">{{ 'global.date' | trans() }}</th>
                     </tr>
                 </thead>
                 {{ _self.documents_table_tbody(documents) }}
@@ -147,7 +147,7 @@
             <td>
                 {% set iconName = doc.judgement.value is defined and doc.judgement.value is same as ('already_public') ? 'web' : doc.fileInfo.sourceType %}
                 <twig:Public:Icon name="{{ iconName }}" color="fill-woo-dim-gray" />
-                <span class="sr-only">{{ doc.fileInfo.sourceType | trans() }}</span>
+                <span class="sr-only">{{ ("public.documents.file_type." ~ doc.fileInfo.sourceType) | trans }}</span>
             </td>
             <td>
                 <div class="woo-readable-width">
@@ -173,9 +173,9 @@
 #}
 {% macro document_ground(ground) %}
     {% if get_citation_type(ground) == "woo" %}
-        <a href="https://wetten.overheid.nl/BWBR0045754/2022-08-01#Hoofdstuk5">{{ ground }} {{ ground|classification }}</a>
+        <a class="woo-a" href="https://wetten.overheid.nl/BWBR0045754/2022-08-01#Hoofdstuk5">{{ ground }} {{ ground|classification }}</a>
     {% elseif get_citation_type(ground) == "wob" %}
-        <a href="https://wetten.overheid.nl/BWBR0005252/2018-07-28#HoofdstukV">{{ ground }} {{ ground|classification }}</a>
+        <a class="woo-a" href="https://wetten.overheid.nl/BWBR0005252/2018-07-28#HoofdstukV">{{ ground }} {{ ground|classification }}</a>
     {% else %}
         {{ ground }}
     {% endif %}
@@ -216,8 +216,8 @@
                 <table class="woo-table">
                     <caption class="sr-only">{{ titleTranslationKey | trans }}</caption>
                     <thead>
-                        <th class="w-64 min-w-64" scope="col">{{ "Date" | trans() }}</th>
-                        <th class="min-w-64" scope="col">{{ "Action" | trans() }}</th>
+                        <th class="w-64 min-w-64" scope="col">{{ 'global.date' | trans() }}</th>
+                        <th class="min-w-64" scope="col">{{ "global.action" | trans() }}</th>
                     </thead>
                     <tbody>
                     {% for entry in history %}
@@ -240,11 +240,11 @@
 
 {% macro document_refers_to(documents) %}
     {% for document in documents %}
-        {% if loop.last and loop.index > 1 %}{{ "generic.and" | trans }}{% elseif not loop.first %}, {% endif %} {{ _self.document_url(document) }}
+        {% if loop.last and loop.index > 1 %}{{ "global.and" | trans }}{% elseif not loop.first %}, {% endif %} {{ _self.document_url(document) }}
     {% endfor %}
     {{
         "public.documents.refers_to" | trans({
-            "{has_or_have}": "has_or_have" | trans({ 'count': documents | length })
+            "{has_or_have}": "public.global.has_or_have" | trans({ 'count': documents | length })
         })
     }}
 {% endmacro %}

@@ -1,4 +1,4 @@
-import { areFilesEqual } from './file';
+import { areFilesEqual, isValidMaxFileSize } from './file';
 
 export interface InvalidFile {
   file: File;
@@ -106,7 +106,7 @@ export const validateFiles = (files: FileList, mimeTypes: string[], maxFileSize?
 
   const mimeTypesSet = new Set(mimeTypes);
   const hasValidMimeTypesDefined = mimeTypesSet.size > 0;
-  const hasValidMaxFileSize = Number.isInteger(maxFileSize) && Number(maxFileSize) > 0;
+  const hasValidMaxFileSize = isValidMaxFileSize(maxFileSize);
 
   const hasValidMimeType = (file: File) => {
     if (!hasValidMimeTypesDefined) {

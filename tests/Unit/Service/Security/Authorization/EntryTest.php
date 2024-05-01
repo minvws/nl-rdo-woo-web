@@ -13,10 +13,10 @@ class EntryTest extends MockeryTestCase
     {
         $entry = Entry::createFrom([]);
 
-        $this->assertEquals([], $entry->getFilters());
-        $this->assertEquals([], $entry->getPermissions());
-        $this->assertEquals([], $entry->getRoles());
-        $this->assertEquals('', $entry->getPrefix());
+        self::assertEquals([], $entry->getFilters());
+        self::assertEquals([], $entry->getPermissions());
+        self::assertEquals([], $entry->getRoles());
+        self::assertEquals('', $entry->getPrefix());
     }
 
     public function testCorrectEntry(): void
@@ -28,9 +28,9 @@ class EntryTest extends MockeryTestCase
             'filters' => ['filter1' => true],
         ]);
 
-        $this->assertEquals(['filter1' => true], $entry->getFilters());
-        $this->assertEquals(['create' => true], $entry->getPermissions());
-        $this->assertEquals(['ROLE_TEST'], $entry->getRoles());
-        $this->assertEquals('prefix', $entry->getPrefix());
+        self::assertEquals(['filter1' => true], $entry->getFilters());
+        self::assertEquals(['create' => true], $entry->getPermissions());
+        self::assertEquals(['ROLE_TEST'], $entry->getRoles());
+        self::assertEquals('prefix', $entry->getPrefix());
     }
 }

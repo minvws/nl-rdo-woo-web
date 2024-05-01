@@ -1,66 +1,57 @@
 {% extends 'base.html.twig' %}
-{% import "document_macros.html.twig" as macro %}
+{% import 'document_macros.html.twig' as macro %}
 
-{% set preview_mode = "" %}
-{% if dossier.entity.status.isPreview %}
-    {% set preview_mode = " (preview)" %}
-{% endif %}
-
-{% set page_title = dossier.entity.title ~ preview_mode %}
+{% set page_title = dossier.pageTitle %}
 
 {% block body %}
 <div class="woo-container woo-container--sm">
-    <h1 class="woo-h1">
-        <span class="font-normal block">{{ "Decision about" | trans }}:</span>
-        {{ dossier.entity.title }}
+    <h1 class="woo-h1" data-e2e-name="dossier-metadata-title">
+        <span class="font-normal block">{{ 'admin.global.decision_on' | trans }}</span>
+        {{ dossier.title }}
     </h1>
 
     <dl class="woo-muted">
         <div>
             <dt class="inline">
-                {% if dossier.entity.status.isPreview %}
-                    {{ "Date of publication" | trans() }}:
-                {% else %}
-                    {{ "Published on" | trans() }}:
-                {% endif %}
+                {{ (dossier.isPreview ? 'global.publication_date' : 'global.published_on') | trans | capitalize }}
             </dt>
-            <dd class="inline">
-                <time datetime="{{ dossier.entity.publicationDate | date("Y-m-d") }}">
-                    {{ dossier.entity.publicationDate | format_date('long') }}
+            <dd class="inline" data-e2e-name="dossier-metadata-published-date">
+                <time datetime="{{ dossier.publicationDate | date('Y-m-d') }}">
+                    {{ dossier.publicationDate | format_date('long') }}
                 </time>
             </dd>
         </div>
         <div>
-            <dt class="inline">{{ "Dossier number" | trans() }}:</dt>
-            <dd class="inline">{{ dossier.entity.dossierNr }}</dd>
+            <dt class="inline">{{ 'dossiers.dossier_number' | trans }}:</dt>
+            <dd class="inline" data-e2e-name="dossier-metadata-number">{{ dossier.dossierNr }}</dd>
         </div>
     </dl>
 
     {% if not dossier.isVwsResponsible %}
     <div class="pt-10">
         <twig:Public:Notification>
-            <p>{{ 'public.other_ministry_responsible' | trans({ '{source}': 'public.dossier.this_dossier' | trans | capitalize, '{ministry}': dossier.entity.departments[0].name }) | raw }}</p>
+            <p>{{ 'public.other_ministry_responsible' | trans({ '{source}': 'public.dossier.this_dossier' | trans | capitalize, '{ministry}': dossier.mainDepartment.name }) | raw }}</p>
         </twig:Public:Notification>
     </div>
     {% endif %}
 
     <div class="mt-10">
         <p>
-            {{ "Woo Wob request info" | trans }}
+            {{ 'Woo Wob request info' | trans }}
         </p>
         <p>
-            <a class="woo-a" href="{{ path('app_about') }}">{{ "More about Woo Wob requests" | trans }}</a>
+            <a class="woo-a" href="{{ path('app_about') }}">{{ 'More about Woo Wob requests' | trans }}</a>
         </p>
     </div>
 
-    {% include "dossier/snippets/notifications.html.twig" %}
+    {% include 'dossier/snippets/notifications.html.twig' %}
 
-    {% include "dossier/snippets/summary.html.twig" %}
+    {% include 'dossier/snippets/summary.html.twig' %}
 
-    {% include "dossier/snippets/about.html.twig" %}
+    {% include 'dossier/snippets/about.html.twig' %}
 
-    {% include "dossier/snippets/documents.html.twig" %}
+    {% include 'dossier/snippets/documents.html.twig' %}
 
-    {{ macro.history_section(get_frontend_history('dossier', dossier.entity.id), "History") }}
+    {{ macro.history_section(get_frontend_history('dossier', dossier.dossierId), 'global.history') }}
 </div>
 {% endblock %}

@@ -1,9 +1,9 @@
-import { describe, expect, test } from '@jest/globals';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 import { isAnimationDisabled } from './animation';
 
-const mockedMatchMediaFunction = jest.fn();
+const mockedMatchMediaFunction = vi.fn();
 
-jest.mock('./browser', () => ({
+vi.mock('./browser', () => ({
   getWindow: () => ({
     matchMedia: mockedMatchMediaFunction,
   }),

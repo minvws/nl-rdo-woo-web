@@ -1,14 +1,20 @@
 <script setup>
-  import Icon from '../../Icon.vue';
-  import InvalidFiles from './InvalidFiles.vue';
-  import SelectedFiles from './SelectedFiles.vue';
-  import UploadedFile from '../UploadedFile.vue';
-  import UploadVisual from './UploadVisual.vue';
-  import { areFilesEqual, filterDataTransferFiles, formatFileSize, formatList, getExtenstionsByMimeTypes, validateFiles } from '@js/admin/utils';
-  import { formatNumber, uniqueId } from '@utils';
-  import { ref, watch } from 'vue';
+  import Icon from '@admin-fe/component/Icon.vue';
+import UploadedFile from '@admin-fe/component/file/UploadedFile.vue';
+import { areFilesEqual, filterDataTransferFiles, formatFileSize, formatList, getExtenstionsByMimeTypes, isValidMaxFileSize, validateFiles } from '@js/admin/utils';
+import { uniqueId } from '@utils';
+import { useElementVisibility } from '@vueuse/core';
+import { onBeforeUnmount, provide, ref, watch } from 'vue';
+import AlreadyUploadedFiles from './AlreadyUploadedFiles.vue';
+import InvalidFiles from './InvalidFiles.vue';
+import SelectedFiles from './SelectedFiles.vue';
+import UploadVisual from './UploadVisual.vue';
 
-  const emit = defineEmits(['selected']);
+  const uploadAreaElement = ref(null);
+  const isUploadAreaVisible = useElementVisibility(uploadAreaElement);
+  const uploadAreaIdentifierClass = 'vue-upload-area';
+
+  const emit = defineEmits(['selected', 'uploaded', 'uploadError', 'uploading']);
 
   const props = defineProps({
     allowedMimeTypes: {
@@ -21,7 +27,11 @@
       required: false,
       default: false,
     },
-    endpoint: {
+    enableAutoUpload: {
+      type: Boolean,
+      default: false,
+    },
+    groupId: {
       type: String,
       required: false,
     },
@@ -41,23 +51,39 @@
       type: String,
       required: false,
     },
+    uploadedFileInfo: {
+      type: [Object, null],
+      required: false,
+      default: null,
+    },
   });
+
+  provide('groupId', props.groupId);
+
+  const createUploadedFileInfo = () => {
+    if (!props.uploadedFileInfo) {
+      return null
+    }
+
+    return { name: props.uploadedFileInfo.name, size: props.uploadedFileInfo.size, type: props.uploadedFileInfo.type };
+  }
 
   const allowedMimeTypes = [...new Set(props.allowedMimeTypes).values()];
   const id = props.id || uniqueId('upload-area');
   const idOfFileLimitationsElement = `${id}-file-limitations`;
   const idOfTipElement = `${id}-tip`;
   const idOfSelectFilesElement = `${id}-select-files`;
-  const hasMaxFileSize = props.maxFileSize !== undefined;
+  const hasMaxFileSize = isValidMaxFileSize(props.maxFileSize);
   const hasAllowedMimeTypes = allowedMimeTypes.length > 0;
   const hasFileLimitations = hasMaxFileSize || hasAllowedMimeTypes;
-  const formattedFileSize = formatFileSize(props.maxFileSize || 0);
+  const formattedFileSize = formatFileSize(props.maxFileSize);
   const formattedValidExtensions = formatList(getExtenstionsByMimeTypes(allowedMimeTypes), 'of');
   const formattedFileOrFiles = props.allowMultiple ? 'Bestanden' : 'Bestand';
   const invalidFiles = ref([]);
   const selectedFiles = ref(new Map());
-  const uploadedFile = ref(null);
+  const uploadedFile = ref(createUploadedFileInfo());
   const uploadedFiles = ref([]);
+  const alreadyUploadedFiles = ref([]);
   const failedFiles = ref([]);
 
   const buttonAriaLabelledBy = [
@@ -70,11 +96,54 @@
   const inputElement = ref(null);
   const uploadVisualElement = ref(null);
 
+  const abortController = new AbortController();
+
+  document.body.addEventListener('dragenter', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (event.currentTarget.contains(event.relatedTarget)) {
+      return;
+    }
+
+    if (!event.dataTransfer?.types.some((type) => type === 'Files')) {
+      // The user is dragging something that isn't a file.
+      return;
+    }
+
+    if (!isThisTheOnlyVisibleUploadArea()) {
+      return;
+    }
+
+    uploadVisualElement.value?.coverWholePage(true);
+    uploadVisualElement.value?.slideInUp();
+  }, { signal: abortController.signal });
+
+  const isThisTheOnlyVisibleUploadArea = () => {
+    const uploadAreaElements = document.querySelectorAll(`.${uploadAreaIdentifierClass}`);
+    if (uploadAreaElements.length === 1) {
+      return true;
+    }
+
+    const numberOfVisibleUploadAreas = [...uploadAreaElements].filter((element) => element.dataset.isVisible === 'true').length;
+    return numberOfVisibleUploadAreas === 1 && isUploadAreaVisible.value;
+  };
+
   const onDragEnter = (event) => {
     if ((event.currentTarget).contains(event.relatedTarget)) {
       return;
     }
 
+    if (!event.dataTransfer?.types.some((type) => type === 'Files')) {
+      // The user is dragging something that isn't a file.
+      return;
+    }
+
+    if (isThisTheOnlyVisibleUploadArea()) {
+      return;
+    }
+
+    uploadVisualElement.value?.coverWholePage(false);
     uploadVisualElement.value?.slideInUp();
   };
 
@@ -116,14 +185,20 @@
     const limitedFiles = limitFiles(validFiles);
 
     [...limitedFiles].forEach((file) => {
-      if (alreadyHasFile(file, [...selectedFiles.value.values()])) {
+      if (alreadyHasFile(file, [...selectedFiles.value.values(), ...alreadyUploadedFiles.value])) {
+        return;
+      }
+
+      if (alreadyHasFile(file, [...uploadedFiles.value])) {
+        alreadyUploadedFiles.value.push(file);
         return;
       }
 
       const id = uniqueId('file', 32);
       selectedFiles.value.set(id, file);
-      updateInputValue();
     });
+
+    updateInputValue();
   };
 
   const limitFiles = (files) => {
@@ -145,26 +220,54 @@
     buttonElement.value?.focus();
   };
 
-  const onUploaded = (fileId, file) => {
+  const onUploaded = (fileId, file, uploadId, elementHasFocus) => {
     selectedFiles.value.delete(fileId);
     updateInputValue();
 
-    uploadedFile.value = file;
+    if (elementHasFocus) {
+      buttonElement.value?.focus();
+    }
+
     uploadedFiles.value.push(file);
+    uploadedFile.value = file;
+    emit('uploaded', file, uploadId);
   };
 
-  const onUploadError = (fileId) => {
+  const onUploading = (fileId, file) => {
+    emit('uploading', fileId, file);
+  };
+
+  const onUploadError = (fileId, file) => {
     selectedFiles.value.delete(fileId);
     updateInputValue();
 
     failedFiles.value.push(fileId);
+    emit('uploadError', fileId, file);
   };
 
   const updateInputValue = () => {
+    if (props.enableAutoUpload) {
+      return;
+    }
+
     const dataTransfer = new DataTransfer();
     [...selectedFiles.value.values()].forEach((file) => dataTransfer.items.add(file));
     inputElement.value.files = dataTransfer.files;
+
+    emit('selected', inputElement.value.files);
   };
+
+  const cleanup = () => {
+    abortController.abort();
+  };
+
+  onBeforeUnmount(() => {
+    cleanup();
+  });
+
+  watch(() => props.uploadedFileInfo, () => {
+    uploadedFile.value = createUploadedFileInfo();
+  });
 </script>
 
 <template>
@@ -176,9 +279,19 @@
         :max-file-size="props.maxFileSize"
         class="mb-4"
       />
+
+      <AlreadyUploadedFiles
+        :files="alreadyUploadedFiles"
+        class="mb-4"
+      />
     </div>
 
-    <div class="bhr-upload-area" @dragenter.stop.prevent="onDragEnter">
+    <div
+      class="bhr-upload-area"
+      :class="uploadAreaIdentifierClass"
+      ref="uploadAreaElement"
+      :data-is-visible="isUploadAreaVisible"
+      @dragenter.stop.prevent="onDragEnter">
       <button
         @click="selectFiles"
         :aria-labelledby="buttonAriaLabelledBy"
@@ -232,11 +345,11 @@
         @select-files="selectFiles"
         @delete="onDelete"
         @uploaded="onUploaded"
+        @uploading="onUploading"
         @uploadError="onUploadError"
         :allow-multiple="props.allowMultiple"
-        :endpoint="props.endpoint"
+        :enable-auto-upload="props.enableAutoUpload"
         :files="selectedFiles"
-        :name="props.name"
       />
 
       <div

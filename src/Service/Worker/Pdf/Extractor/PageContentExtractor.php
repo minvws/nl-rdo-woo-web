@@ -50,13 +50,17 @@ class PageContentExtractor implements PageExtractorInterface
 
     public function extract(Document $document, int $pageNr, bool $forceRefresh): void
     {
-        if ($forceRefresh || ! $this->isCached($document, $pageNr)) {
-            list($content, $tikaData) = $this->extractContentFromPdf($document, $pageNr);
-
-            $this->setCachedContent($document, $pageNr, $content, $tikaData);
-        }
-
-        list($content, $tikaData) = $this->getCachedContent($document, $pageNr);
+        // TODO: Cache is temporarily disabled for #2142, to be improved and restored in #2144
+        //
+        // if ($forceRefresh || ! $this->isCached($document, $pageNr)) {
+        //     list($content, $tikaData) = $this->extractContentFromPdf($document, $pageNr);
+        //
+        //     $this->setCachedContent($document, $pageNr, $content, $tikaData);
+        // }
+        //
+        // list($content, $tikaData) = $this->getCachedContent($document, $pageNr);
+        unset($forceRefresh);
+        list($content, $tikaData) = $this->extractContentFromPdf($document, $pageNr);
 
         $this->statsService->measure('index.full.document', function ($document, $pageNr, $content, $tikaData) {
             $this->indexPage($document, $pageNr, $content, $tikaData);

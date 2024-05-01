@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Twig\Runtime;
 
 use App\Citation;
+use App\Domain\Publication\Dossier\DossierStatus;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\History;
-use App\Enum\PublicationStatus;
 use App\Repository\DocumentRepository;
 use App\Service\DateRangeConverter;
 use App\Service\DocumentUploadQueue;
@@ -77,11 +77,10 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
      *
      * @TODO: Remove as this uses bootstrap
      */
-    public function statusBadge(PublicationStatus $status): string
+    public function statusBadge(DossierStatus $status): string
     {
         $color = match ($status) {
-            PublicationStatus::SCHEDULED, PublicationStatus::PREVIEW, PublicationStatus::PUBLISHED => 'bhr-badge--green',
-            PublicationStatus::RETRACTED => 'bhr-badge--red',
+            DossierStatus::SCHEDULED, DossierStatus::PREVIEW, DossierStatus::PUBLISHED => 'bhr-badge--green',
             default => 'bhr-badge--purple',
         };
 

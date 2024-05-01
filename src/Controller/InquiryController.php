@@ -164,7 +164,7 @@ class InquiryController extends AbstractController
         return $this->render('batchdownload/batch.html.twig', [
             'inquiry' => $inquiry,
             'batch' => $batch,
-            'page_title' => 'Download inquiry archive',
+            'page_title' => 'public.documents.inquiry.download',
             'download_path' => $this->generateUrl('app_inquiry_batch_download', ['token' => $inquiry->getToken(), 'batchId' => $batch->getId()]),
         ]);
     }

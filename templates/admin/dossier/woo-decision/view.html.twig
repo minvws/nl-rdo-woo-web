@@ -1,0 +1,313 @@
+{% extends 'admin.html.twig' %}
+{% import "admin/document_macros.html.twig" as macro %}
+
+{% set page_title = "Dossier " | trans() ~ dossier.dossierNr %}
+{% set uploadStatus = dossier.uploadStatus %}
+{% set firstOpenStep = workflowStatus.firstOpenStep.stepName.value | default %}
+
+{% block body %}
+<div class="bhr-container bhr-container--sm">
+    <div class="mb-8">
+        <h1 class="mb-2">
+            <span class="block text-lg font-normal mb-2 text-bhr-black-olive">{{ 'admin.global.decision_on' | trans() }}</span>
+            <span class="bhr-title-lg">{{ dossier.title }}</span>
+        </h1>
+        {{ status_badge(dossier.status) }}
+    </div>
+
+    <div class="px-11">
+        <section class="bhr-card">
+            <twig:Admin:LeftAndRight>
+                <h2 class="bhr-title">{{ 'admin.dossiers.workflow.details' | trans() }}</h2>
+
+                <twig:block name="right">
+                    {% if matrix_has_permission('dossier.update') %}
+                    <a class="bhr-button bhr-button--secondary" href="{{ path(workflowStatus.detailsPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">{{ 'admin.global.edit' | trans() }} <span class="sr-only">({{ 'admin.dossiers.workflow.details' | trans() }})</span></a>
+                    {% endif %}
+                </twig:block>
+            </twig:Admin:LeftAndRight>
+
+            <dl class="text-lg">
+                <twig:Admin:Definition term="{{ 'admin.global.subject' | trans() }}">
+                    {{ dossier.title }}
+                </twig:Admin:Definition>
+
+                <twig:Admin:Definition term="{{ 'global.period' | trans() }}">
+                    {% if period(dossier.dateFrom, dossier.dateTo) %}
+                        {{ period(dossier.dateFrom, dossier.dateTo) }}
+                    {% endif %}
+                </twig:Admin:Definition>
+
+                <twig:Admin:Definition term="{{ 'admin.global.decision_number' | trans() }}">
+                    {{ dossier.dossierNr }}
+                </twig:Admin:Definition>
+
+                <twig:Admin:Definition term="{{ 'admin.global.responsible_department' | trans() }}">
+                    {{ dossier.departments[0].name | default('admin.global.no_record' | trans()) }}
+                </twig:Admin:Definition>
+            </dl>
+        </section>
+
+        <section class="bhr-card mt-10">
+            <twig:Admin:LeftAndRight>
+                <h2 class="bhr-title">{{ 'global.decision' | trans }}</h2>
+
+                <twig:block name="right">
+                    {% if matrix_has_permission('dossier.update') %}
+                    {% if workflowStatus.isReadyForDecision %}
+                    <a class="bhr-button bhr-button--secondary" href="{{ path(workflowStatus.decisionPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">{{ 'admin.global.edit' | trans() }} <span class="sr-only">({{ 'admin.dossiers.workflow.details' | trans() }})</span></a>
+                    {% endif %}
+                    {% endif %}
+                </twig:block>
+            </twig:Admin:LeftAndRight>
+
+            {% if workflowStatus.isReadyForDecision %}
+            <dl class="text-lg">
+                <twig:Admin:Definition term="{{ "public.decision.decision_made" | trans() }}">
+                    {% if dossier.decision is defined %}
+                        {{ dossier.decision | decision }}
+                    {% endif %}
+                </twig:Admin:Definition>
+
+                <twig:Admin:Definition term="{{ 'public.global.summary' | trans() }}">
+                    {{ dossier.summary | default('admin.global.no_record' | trans()) }}
+                </twig:Admin:Definition>
+
+                <twig:Admin:Definition term="Bijlage met officeel besluit">
+                    {% if dossier.decisionDocument.fileInfo.name is defined %}
+                        <twig:Admin:IconLink
+                            href="{{ path('app_admin_dossier_decision_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
+                            icon="file-pdf"
+                            text="{{ dossier.decisionDocument.fileInfo.name }}"
+                        />
+                    {% else %}
+                        {{ 'admin.global.no_record' | trans() }}
+                    {% endif %}
+                </twig:Admin:Definition>
+
+                {% if attachments | length > 0 %}
+                <twig:Admin:Definition term="Bijlagen">
+                    <ul>
+                        {% for attachment in attachments %}
+                            <li class="pt-0.5">
+                                <twig:Admin:DownloadFile
+                                    href="{{ attachment.downloadUrl }}"
+                                    mimeType="{{ attachment.mimeType }}"
+                                    text="{{ attachment.name }}"
+                                />
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </twig:Admin:Definition>
+                {% endif %}
+
+                <twig:Admin:Definition term="{{ "Decision date" | trans() }}">
+                    <time datetime="{{ dossier.decisionDate | date("Y-m-d") }}">{{ dossier.decisionDate | format_date('long') }}</time>
+                </twig:Admin:Definition>
+            </dl>
+            {% else %}
+                <p class="font-bold text-lg text-center py-6">{{ ("complete_step_" ~ firstOpenStep) | trans }}</p>
+            {% endif %}
+        </section>
+
+        <section class="bhr-card mt-10" data-e2e-name="documents-section">
+            <twig:Admin:LeftAndRight>
+                <h2 class="bhr-title">{{ 'global.documents' | trans }}{% if dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments and dossier.inventory is not null %} ({{ uploadStatus.actualUploadCount }}/{{ uploadStatus.expectedUploadCount }}){%endif %}</h2>
+
+                <twig:block name="right">
+                    {% if matrix_has_permission('dossier.update') %}
+                    {% if dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments %}
+                        <a
+                            class="bhr-button bhr-button--secondary"
+                            data-e2e-name="edit-link"
+                            href="{{ path(workflowStatus.documentsPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
+                        >Bewerken <span class="sr-only">(documenten)</span></a>
+                    {% endif %}
+                    {% endif %}
+                </twig:block>
+            </twig:Admin:LeftAndRight>
+
+            {% if not dossier.needsInventoryAndDocuments %}
+                <p class="font-bold text-lg text-center py-6">{{ "Not applicable to decision" | trans({'decision': dossier.decision | decision}) }}</p>
+            {% elseif workflowStatus.isReadyForDocuments %}
+                <dl class="text-lg">
+                    <twig:Admin:Definition term="{{ "public.publications.production_report" | trans() }}">
+                        {% if dossier.rawInventory is not null  %}
+                            <twig:Admin:IconLink
+                                href="{{ path('app_admin_dossier_raw_inventory_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
+                                icon="file-csv"
+                                text="{{ dossier.rawInventory.fileInfo.name }}"
+                            />
+                        {% else %}
+                            {{ 'admin.global.no_record' | trans() }}
+                        {% endif %}
+                    </twig:Admin:Definition>
+
+                    <twig:Admin:Definition term="{{ 'global.documents' | trans() }}">
+                        <p>{{ uploadStatus.actualUploadCount }}{% if dossier.inventory is not null  %} van {{ uploadStatus.expectedUploadCount }}{% endif %} bestanden geüpload</p>
+
+                        {% if dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments %}
+                        <p class="mt-3">
+                            <twig:Admin:IconLink
+                                href="{{ path(workflowStatus.documentsPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
+                                icon="folder"
+                                text="Naar documenten"
+                            />
+                        </p>
+                        {% endif %}
+                    </twig:Admin:Definition>
+                </dl>
+            {% else %}
+                <p class="font-bold text-lg text-center py-6">{{ ("complete_step_" ~ firstOpenStep) | trans }}</p>
+            {% endif %}
+        </section>
+
+        <section class="bhr-card mt-10">
+            <twig:Admin:LeftAndRight>
+                <div class="flex items-center">
+                    <h2 class="bhr-title mr-3">{{ 'admin.global.dossier' | trans }}</h2>
+                    {{ status_badge(dossier.status) }}
+                </div>
+
+                <twig:block name="right">
+                    {% if matrix_has_permission('dossier.update') %}
+                    {% if workflowStatus.isReadyForPublication %}
+                        <a class="bhr-button bhr-button--secondary" href="{{ path(workflowStatus.publicationPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">{{ 'admin.global.edit' | trans() }} <span class="sr-only">({{ 'admin.global.dossier' | trans() }})</span></a>
+                    {% endif %}
+                    {% endif %}
+                </twig:block>
+            </twig:Admin:LeftAndRight>
+
+            {% if workflowStatus.isCompleted %}
+                <dl class="text-lg">
+                    {% if dossier.previewDate is defined %}
+                    <twig:Admin:Definition term="{{ dossier.hasFuturePreviewDate ? "Will be available for preview on" | trans : "Preview on" | trans() }}">
+                        <time datetime="{{ dossier.previewDate | date("Y-m-d") }}">{{ dossier.previewDate | format_date('long') }}</time>
+                    </twig:Admin:Definition>
+                    {% endif %}
+
+                    <twig:Admin:Definition term="{{ dossier.hasFuturePublicationDate ? "Will be published on" | trans : "Published on" | trans() }}">
+                        {% if dossier.publicationDate is defined %}
+                            <time datetime="{{ dossier.publicationDate | date("Y-m-d") }}">{{ dossier.publicationDate | format_date('long') }}</time>
+                        {% else %}
+                            {{ 'admin.global.no_record' | trans() }}
+                        {% endif %}
+                    </twig:Admin:Definition>
+
+                    {% if workflowStatus.isPubliclyAvailable or dossier.hasFuturePreviewDate %}
+                    <twig:Admin:Definition term="Link naar gehele Woo-besluit">
+                        {% set publicDossierUrl = PUBLIC_BASE_URL ~ path('app_woodecision_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) %}
+                        <twig:Admin:CopyToClipboardLayout copy="{{ publicDossierUrl }}">
+                            <a class="bhr-a" href="{{ publicDossierUrl }}">
+                                {{ publicDossierUrl }}
+                            </a>
+                        </twig:Admin:CopyToClipboardLayout>
+                    </twig:Admin:Definition>
+
+                    <twig:Admin:Definition term="Unieke link per zaaknummer">
+                        {% set sorted = false %}
+                        {% set sortClassName = 'js-sort-table-toggler' %}
+                        {% set case_options = {
+                            'href': '/',
+                            'thClassName': 'w-40'
+                        } %}
+                        {% if dossier.inquiries | length %}
+                            <div class="text-base text-black">
+                                <table class="bhr-table table-fixed">
+                                    <thead>
+                                        {% include 'pagination/sort.admin.html.twig' with {'title': 'Zaaknummer', 'sorted': sorted, 'options': case_options, 'sortClassName': sortClassName} %}
+                                        <th class="bhr-column-head" scope="col">Link voor verzoeker</th>
+                                    </thead>
+                                    <tbody>
+                                        {% for inquiry in dossier.inquiries|sort((a, b) => a.casenr <=> b.casenr) %}
+                                        <tr>
+                                            <td>{{ inquiry.casenr }}</td>
+                                            <td class="!pr-0">
+                                                {% set url = PUBLIC_BASE_URL ~ path('app_inquiry_detail', {token: inquiry.token}) %}
+                                                <twig:Admin:CopyToClipboardLayout copy="{{ url }}">
+                                                    <a class="bhr-a" href="{{ url }}">
+                                                        {{ url }}
+                                                    </a>
+                                                </twig:Admin:CopyToClipboardLayout>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            Dit besluit heeft geen zaaknummers
+                        {% endif %}
+                    </twig:Admin:Definition>
+                    {% endif %}
+                </dl>
+            {% else %}
+                <p class="font-bold text-lg text-center py-6">{{ ("complete_step_" ~ firstOpenStep) | trans }}</p>
+            {% endif %}
+        </section>
+
+        {% set canWithdrawDocuments = not workflowStatus.isConcept %}
+        {% set canDeleteDossier = matrix_has_permission('dossier.delete') %}
+
+        {% if canWithdrawDocuments or canDeleteDossier %}
+            <section class="bhr-card mt-10">
+                <h2 class="bhr-title mb-6">{{ 'admin.global.danger_zone' | trans() }}</h2>
+
+                {% if canWithdrawDocuments %}
+                    <h3 class="font-bold">Alle documenten intrekken</h3>
+                    <ul class="bhr-ul mb-4">
+                        <li class="bhr-li">Alle documenten in het besluit worden verwijderd.</li>
+                        <li class="bhr-li">Om documenten weer beschikbaar te maken, moet je ze opnieuw uploaden.</li>
+                        <li class="bhr-li">Alle metadata over documenten blijft wel online zichtbaar en doorzoekbaar.</li>
+                        <li class="bhr-li">Het besluit blijft ook online.</li>
+                    </ul>
+                    <a class="bhr-button bhr-button--danger" data-e2e-name="withdraw-documents-link" href="{{ path('app_admin_dossier_withdraw_all_documents', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ 'admin.documents.withdraw_all' | trans }}</a>
+                {% endif %}
+
+                {% if canDeleteDossier %}
+                    <h3 class="font-bold{% if canWithdrawDocuments %} mt-10{% endif %}">Besluit verwijderen</h3>
+                    {% if workflowStatus.isConcept %}
+                        <ul class="bhr-ul mb-4">
+                            <li class="bhr-li">Het besluit en alle bijlagen en documenten worden verwijderd.</li>
+                            <li class="bhr-li">Een besluit kan niet meer verwijderd worden nadat het is gepubliceerd.</li>
+                            <li class="bhr-li">Je kan deze actie niet ongedaan maken.</li>
+                        </ul>
+                        <a class="bhr-button bhr-button--danger" data-e2e-name="delete-dossier-link" href="{{ path('app_admin_dossier_delete', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ 'Delete dossier' | trans }}</a>
+                    {% else %}
+                        <p>Dit besluit is gepubliceerd en kan daarom niet meer verwijderd worden.</p>
+                    {% endif %}
+                {% endif %}
+            </section>
+        {% endif %}
+
+        {% set entries = get_backend_history('dossier', dossier.id) %}
+        {% if entries | length > 0 %}
+            <div class="bhr-card mt-10">
+                <h2 class="bhr-title mb-6">{{ 'global.history' | trans() }}</h2>
+
+                <table class="bhr-table table-fixed">
+                    <thead>
+                        <th class="bhr-column-head w-52" scope="col">{{ 'global.date' | trans() }}</th>
+                        <th class="bhr-column-head" scope="col">{{ 'global.action' | trans()}}</th>
+                    </thead>
+                    <tbody>
+                    {% for entry in entries %}
+                        {% set tr = history_trans(entry, "private") %}
+                        {% if tr is not empty %}
+                        <tr>
+                            <td>
+                                <time datetime="{{ entry.createdDt | date("Y-m-d G:i") }}">{{ entry.createdDt | format_datetime(pattern="d LLLL y H:mm") }}</time>
+                            </td>
+                            <td>
+                                {{ tr }}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -31,6 +31,7 @@ module.exports = {
     '@typescript-eslint/lines-between-class-members': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
     'class-methods-use-this': 'off',
+    'import/no-extraneous-dependencies': 'off',
     'import/extensions': [
       'error',
       'never',
@@ -64,7 +65,7 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-var-requires': 'off',
         'global-require': 'off',
-        'import/no-extraneous-dependencies': 'off',
+        'import/extensions': 'off',
       },
     },
   ],

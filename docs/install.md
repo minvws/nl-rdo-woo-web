@@ -1,11 +1,18 @@
 # Woo Platform
 
 <!-- TOC -->
-* [Woo Platform](#woo-platform)
-* [Step 1: Clone the repository](#step-1-clone-the-repository)
-* [Step 2: Install dependencies](#step-2-install-dependencies)
-* [Step 3: Setup initial user](#step-3-setup-initial-user)
-* [Step 4: Browse to the site](#step-4-browse-to-the-site)
+- [Woo Platform](#woo-platform)
+  - [Step 1: Clone the repository](#step-1-clone-the-repository)
+  - [Step 2: Install dependencies](#step-2-install-dependencies)
+  - [Step 3: Setup and start docker containers](#step-3-setup-and-start-docker-containers)
+    - [Note: The Docker containers in this repository are for development purposes only and they are not meant for production use](#note-the-docker-containers-in-this-repository-are-for-development-purposes-only-and-they-are-not-meant-for-production-use)
+  - [Step 3: Setup initial user](#step-3-setup-initial-user)
+    - [a. Using Task](#a-using-task)
+    - [b. Using the shell](#b-using-the-shell)
+  - [Step 4: Browse to the site](#step-4-browse-to-the-site)
+  - [Misc](#misc)
+    - [Developing frontend](#developing-frontend)
+    - [Tasks](#tasks)
 <!-- TOC -->
 
 ## Step 1: Clone the repository
@@ -20,22 +27,22 @@ git clone git@github.com:minvws/nl-rdo-woo-web-private.git
 
 Install the dependencies for the project.
 
-* [Docker](https://docs.docker.com/install/)
-* [Task](https://taskfile.dev/#/installation)
+- [Docker](https://docs.docker.com/install/)
+- [Task](https://taskfile.dev/#/installation)
 
 <details>
-<summary>Optionally, but recommended, set a <code>CR_PATH</code> env variable:</summary>
+<summary>Optionally, but recommended, set a <code>CR_PAT</code> env variable:</summary>
 
 This project currently needs to access private Composer and NPM packages hosted on Github. When you try to setup
-the project, it will prompt you for the Github Access Token, if the `CR_PATH` env variable is not set.
+the project, it will prompt you for the Github Access Token, if the `CR_PAT` env variable is not set.
 
-Instead of it prompting you everytime you "reset" the project you can instead set the `CR_PATH` env variable so it will
+Instead of it prompting you everytime you "reset" the project you can instead set the `CR_PAT` env variable so it will
 automatically use that instead.
 
-The token can be created at <https://github.com/settings/tokens>. It will atleast need the following scopes:
+The token can be created at <https://github.com/settings/tokens>. It will at least need the following scopes:
 
-* repo
-* read:packages
+- repo
+- read:packages
 
 You can add more scopes, but the list contains the absolute minimal scopes needed.
 
@@ -53,7 +60,7 @@ create it yourself.
 Open the file and add the following line:
 
 ```shell
-export CR_PATH="<replace this with your token>"
+export CR_PAT="<replace this with your token>"
 ```
 
 Instead of manually opening the file and adding the line you can run one of the below commands instead. It will append
@@ -61,10 +68,10 @@ the line to the file for you:
 
 ```shell
 # For BASH
-echo "export CR_PATH='<replace this with your token>'" >> ~/.bash_profile
+echo "export CR_PAT='<replace this with your token>'" >> ~/.bash_profile
 
 # For ZSH
-echo "export CR_PATH='<replace this with your token>'" >> ~/.zshrc
+echo "export CR_PAT='<replace this with your token>'" >> ~/.zshrc
 ```
 
 </details>
@@ -86,7 +93,7 @@ You can replace `up` with `stop`, `down` and `restart`.
 
 ## Step 3: Setup initial user
 
-To setup an initial user, you can use one of the following methods:
+To set up an initial user, you can use one of the following methods:
 
 ### a. Using Task
 

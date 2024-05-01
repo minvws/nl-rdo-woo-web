@@ -4,25 +4,24 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Domain\Ingest\IngestDossierMessage;
+use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Step\StepName;
+use App\Domain\Publication\Dossier\Type\DossierTypeWithPreview;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Search\Index\IndexDossierMessage;
 use App\Entity\DecisionDocument;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\InventoryProcessRun;
-use App\Entity\WithdrawReason;
-use App\Enum\PublicationStatus;
 use App\Exception\ProcessInventoryException;
 use App\Message\GenerateSanitizedInventoryMessage;
 use App\Message\IngestDecisionMessage;
-use App\Message\IngestDossierMessage;
 use App\Message\InventoryProcessRunMessage;
-use App\Message\RemoveDossierMessage;
 use App\Message\RemoveInventoryAndDocumentsMessage;
 use App\Message\UpdateDossierArchivesMessage;
-use App\Message\UpdateDossierMessage;
-use App\Service\DocumentWorkflow\DocumentWorkflowStatus;
-use App\Service\DossierWorkflow\StepName;
-use App\Service\DossierWorkflow\WorkflowStatusFactory;
-use App\Service\Inquiry\InquiryService;
+use App\Service\DossierWizard\WizardStatusFactory;
 use App\Service\Inquiry\InquirySessionService;
 use App\Service\Storage\DocumentStorageService;
 use App\SourceType;
@@ -39,24 +38,27 @@ use Symfony\Component\Messenger\MessageBusInterface;
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
-class DossierService
+readonly class DossierService
 {
     public function __construct(
-        private readonly EntityManagerInterface $doctrine,
-        private readonly MessageBusInterface $messageBus,
-        private readonly LoggerInterface $logger,
-        private readonly InquirySessionService $inquirySession,
-        private readonly DocumentStorageService $documentStorage,
-        private readonly WorkflowStatusFactory $statusFactory,
-        private readonly DocumentService $documentService,
-        private readonly InquiryService $inquiryService,
-        private readonly HistoryService $historyService,
+        private EntityManagerInterface $doctrine,
+        private MessageBusInterface $messageBus,
+        private LoggerInterface $logger,
+        private InquirySessionService $inquirySession,
+        private DocumentStorageService $documentStorage,
+        private WizardStatusFactory $statusFactory,
+        private HistoryService $historyService,
     ) {
     }
 
-    public function updateHistory(Dossier $dossier): void
+    /**
+     * @todo This is to be refactored out of this service as part of #2066
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
+    public function updateHistory(AbstractDossier $dossier): void
     {
-        /** @var mixed[] $oldDossier */
         $oldDossier = $this->doctrine->getUnitOfWork()->getOriginalEntityData($dossier);
         if (empty($oldDossier)) {
             // There is no old dossier, so this is probably not an update, but a create.
@@ -64,7 +66,7 @@ class DossierService
         }
 
         $changes = [];
-        if ($oldDossier['decisionDate'] != $dossier->getDecisionDate()) {
+        if ($dossier instanceof WooDecision && $oldDossier['decisionDate'] != $dossier->getDecisionDate()) {
             $changes[] = 'decision_date';
         }
         if ($oldDossier['title'] !== $dossier->getTitle()) {
@@ -93,7 +95,7 @@ class DossierService
             );
         }
 
-        if ($oldDossier['previewDate'] != $dossier->getPreviewDate()) {
+        if ($dossier instanceof DossierTypeWithPreview && $oldDossier['previewDate'] != $dossier->getPreviewDate()) {
             $this->historyService->addDossierEntry(
                 $dossier,
                 'dossier_update_preview_date',
@@ -107,7 +109,7 @@ class DossierService
     public function updateDecision(Dossier $dossier): void
     {
         $this->updateHistory($dossier);
-        $this->persist($dossier);
+        $this->handleEntityUpdate($dossier);
 
         // If the dossier no longer needs inventory and documents: remove them
         if (! $dossier->needsInventoryAndDocuments()) {
@@ -117,12 +119,7 @@ class DossierService
         }
     }
 
-    public function remove(Dossier $dossier): void
-    {
-        $this->messageBus->dispatch(RemoveDossierMessage::forDossier($dossier));
-    }
-
-    public function ingest(Dossier $dossier): void
+    public function ingest(AbstractDossier $dossier): void
     {
         $this->messageBus->dispatch(new IngestDossierMessage($dossier->getId()));
     }
@@ -133,7 +130,7 @@ class DossierService
             return;
         }
 
-        $this->messageBus->dispatch(UpdateDossierMessage::forDossier($dossier));
+        $this->messageBus->dispatch(IndexDossierMessage::forDossier($dossier));
     }
 
     public function generateSanitizedInventory(Dossier $dossier): void
@@ -150,49 +147,10 @@ class DossierService
         $this->messageBus->dispatch(UpdateDossierArchivesMessage::forDossier($dossier));
     }
 
-    public function changeState(Dossier $dossier, PublicationStatus $newState): void
-    {
-        $oldState = $dossier->getStatus();
-
-        if (! $dossier->isAllowedState($newState)) {
-            $this->logger->error('Invalid state change', [
-                'dossier' => $dossier->getId(),
-                'oldState' => $dossier->getStatus(),
-                'newState' => $newState->value,
-                'reason' => 'Invalid state',
-            ]);
-
-            throw new \InvalidArgumentException('Invalid state change');
-        }
-
-        // This is a temporary fix for filtering the history by publicationDate (time component is important for this)
-        // To be improved in #1863
-        if ($newState->isPublished()) {
-            $dossier->setPublicationDate(new \DateTimeImmutable());
-        }
-
-        // Set new status
-        $dossier->setStatus($newState);
-        $this->persist($dossier);
-
-        $this->messageBus->dispatch(UpdateDossierArchivesMessage::forDossier($dossier));
-
-        $this->historyService->addDossierEntry($dossier, 'dossier_state_' . $newState->value, [
-            'old' => '%' . $oldState->value . '%',
-            'new' => '%' . $newState->value . '%',
-        ]);
-
-        $this->logger->info('Dossier state changed', [
-            'dossier' => $dossier->getId(),
-            'oldState' => $oldState,
-            'newState' => $newState,
-        ]);
-    }
-
     /**
      * Store the decision document to disk and add it to the dossier.
      */
-    public function updateDecisionDocument(UploadedFile $upload, Dossier $dossier): void
+    public function updateDecisionDocument(UploadedFile $upload, WooDecision $dossier): void
     {
         $this->logger->info('uploaded decision file', [
             'path' => $upload->getRealPath(),
@@ -201,8 +159,11 @@ class DossierService
             'file_hash' => hash_file('sha256', $upload->getRealPath()),
         ]);
 
+        $isUpdate = true;
+
         $decisionDocument = $dossier->getDecisionDocument();
-        if (! $decisionDocument) {
+        if ($decisionDocument === null) {
+            $isUpdate = false;
             $decisionDocument = new DecisionDocument();
             $dossier->setDecisionDocument($decisionDocument);
             $decisionDocument->setDossier($dossier);
@@ -228,11 +189,13 @@ class DossierService
 
         $this->validateCompletion($dossier);
 
-        $this->historyService->addDossierEntry($dossier, 'dossier_update_decision', [
-            'filetype' => $fileInfo->getType(),
-            'filename' => $upload->getClientOriginalName(),
-            'filesize' => Utils::size(strval($upload->getSize())),
-        ]);
+        if ($isUpdate) {
+            $this->historyService->addDossierEntry($dossier, 'dossier_update_decision', [
+                'filetype' => $fileInfo->getType(),
+                'filename' => $upload->getClientOriginalName(),
+                'filesize' => Utils::getFileSize($decisionDocument),
+            ]);
+        }
 
         $this->messageBus->dispatch(
             IngestDecisionMessage::forDossier($dossier)
@@ -241,7 +204,7 @@ class DossierService
 
     // Returns true when the dossier (and/or document) is allowed to be viewed. This will also
     // consider documents and dossiers which are marked as preview and that are allowed by the session.
-    public function isViewingAllowed(Dossier $dossier, ?Document $document = null): bool
+    public function isViewingAllowed(AbstractDossier $dossier, ?Document $document = null): bool
     {
         // If dossier is published, allow viewing
         if ($dossier->getStatus()->isPublished()) {
@@ -250,6 +213,10 @@ class DossierService
 
         // If dossier is not preview, deny access
         if (! $dossier->getStatus()->isPreview()) {
+            return false;
+        }
+
+        if (! $dossier instanceof WooDecision) {
             return false;
         }
 
@@ -342,7 +309,7 @@ class DossierService
         $this->historyService->addDossierEntry($dossier, 'dossier_update_inventory', [
             'filetype' => $fileInfo->getType(),
             'filename' => $fileInfo->getName(),
-            'filesize' => Utils::size(strval($fileInfo->getSize())),
+            'filesize' => Utils::getFileSize($run),
         ]);
 
         $this->messageBus->dispatch(
@@ -366,9 +333,9 @@ class DossierService
     /**
      * Validate dossier completion and set dossier completed flag.
      */
-    public function validateCompletion(Dossier $dossier, bool $flush = true): bool
+    public function validateCompletion(AbstractDossier $dossier, bool $flush = true): bool
     {
-        $completed = $this->statusFactory->getWorkflowStatus($dossier, StepName::DETAILS)->isCompleted();
+        $completed = $this->statusFactory->getWizardStatus($dossier, StepName::DETAILS)->isCompleted();
 
         $dossier->setCompleted($completed);
         $this->doctrine->persist($dossier);
@@ -380,72 +347,22 @@ class DossierService
         return $completed;
     }
 
-    public function updatePublication(Dossier $dossier): void
+    public function updateDetails(AbstractDossier $dossier): void
     {
         $this->updateHistory($dossier);
-
-        $now = new \DateTimeImmutable();
-
-        if ($dossier->getPublicationDate() <= $now && ! $dossier->getStatus()->isPublishedOrRetracted()) {
-            $this->changeState($dossier, PublicationStatus::PUBLISHED);
-            $this->handlePublication($dossier);
-
-            return;
-        }
-
-        if ($dossier->getPreviewDate() <= $now && $dossier->getStatus()->isConceptOrScheduled()) {
-            $this->changeState($dossier, PublicationStatus::PREVIEW);
-            $this->handlePublication($dossier);
-
-            return;
-        }
-
-        if ($dossier->getStatus()->isConcept()) {
-            $this->changeState($dossier, PublicationStatus::SCHEDULED);
-
-            return;
-        }
-
-        // If there is no status change still persist the dossier, as the planned dates might have changed.
-        $this->doctrine->persist($dossier);
-        $this->doctrine->flush();
+        $this->handleEntityUpdate($dossier);
     }
 
-    public function updateDetails(Dossier $dossier): void
+    public function handleEntityUpdate(AbstractDossier $dossier): void
     {
-        $this->updateHistory($dossier);
-        $this->persist($dossier);
-    }
+        if ($dossier->getStatus() === DossierStatus::DELETED) {
+            return;
+        }
 
-    private function persist(Dossier $dossier): void
-    {
         $this->validateCompletion($dossier);
 
         $this->messageBus->dispatch(
-            UpdateDossierMessage::forDossier($dossier)
+            IndexDossierMessage::forDossier($dossier)
         );
-    }
-
-    public function withdrawAllDocuments(Dossier $dossier, WithdrawReason $reason, string $explanation): void
-    {
-        $this->historyService->addDossierEntry($dossier, 'dossier_withdraw_all', [
-            'reason' => '%' . $reason->value . '%',
-            'explanation' => $explanation,
-        ]);
-
-        foreach ($dossier->getDocuments() as $document) {
-            $documentStatus = new DocumentWorkflowStatus($document);
-            if ($documentStatus->canWithdraw()) {
-                $this->documentService->withdraw($document, $reason, $explanation);
-            }
-        }
-    }
-
-    private function handlePublication(Dossier $dossier): void
-    {
-        foreach ($dossier->getInquiries() as $inquiry) {
-            $this->inquiryService->generateInventory($inquiry);
-            $this->inquiryService->generateArchives($inquiry);
-        }
     }
 }

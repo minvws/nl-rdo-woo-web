@@ -1,27 +1,27 @@
 {% if recents | length > 0 %}
 <section class="pt-10">
-    <h2 class="woo-h2 mb-4">{{ "Recent decisions" | trans }}</h2>
+    <h2 class="woo-h2 mb-4">{{ 'public.decisions.recent.title' | trans }}</h2>
 
     <ul>
         {% for recentDossier in recents %}
         <li>
-            <a class="block py-4 group" href="{{ path('app_dossier_detail', { prefix: recentDossier.prefix, dossierId: recentDossier.dossierNr }) }}">
-                <h3 class="woo-h3 mb-1 text-woo-sea-blue group-hover:text-woo-ateneo-blue group-focus:text-woo-ateneo-blue group-hover:underline group-focus:underline group-visited:!text-woo-plum">{{ recentDossier.title | default("No title available" | trans) }}</h3>
+            <a class="block py-4 group" href="{{ path('app_woodecision_detail', { prefix: recentDossier.prefix, dossierId: recentDossier.dossierNr }) }}">
+                <h3 class="woo-h3 mb-1 text-woo-sea-blue group-hover:text-woo-ateneo-blue group-focus:text-woo-ateneo-blue group-hover:underline group-focus:underline group-visited:!text-woo-plum">{{ recentDossier.title | default('public.decisions.decision.no_title' | trans) }}</h3>
                 <div>
                     <div class="font-bold">
-                        {{ "Decided on" | trans }} <time datetime="{{ recentDossier.decisionDate | date("Y-m-d") }}">{{ recentDossier.decisionDate | format_date('long') }}</time>,
-                        {{ "published on" | trans }} <time datetime="{{ recentDossier.publicationDate | date("Y-m-d") }}">{{ recentDossier.publicationDate | format_date('long') }}</time>
+                        {{ 'Decided on' | trans }} <time datetime="{{ recentDossier.decisionDate | date('Y-m-d') }}">{{ recentDossier.decisionDate | format_date('long') }}</time>,
+                        {{ 'global.published_on' | trans | lower }} <time datetime="{{ recentDossier.publicationDate | date("Y-m-d") }}">{{ recentDossier.publicationDate | format_date('long') }}</time>
                     </div>
                     {% set thereAreDocuments = recentDossier.documentCount > 0 %}
                     {% set thereArePages = recentDossier.pagecount > 0 %}
                     {% if (thereAreDocuments or thereArePages) %}
                         <p>
                             {% if thereAreDocuments %}
-                                {{ "# documents" | trans({"count": recentDossier.documentCount})}}{% if thereAreDocuments and thereArePages %},{% endif %}
+                                {{ 'global.number_of_documents' | trans({'count': recentDossier.documentCount})}}{% if thereAreDocuments and thereArePages %},{% endif %}
                             {% endif %}
 
                             {% if thereArePages %}
-                                {{ "# pages" | trans({"count": recentDossier.pagecount})}}
+                                {{ 'global.number_of_pages' | trans({'count': recentDossier.pagecount})}}
                             {% endif %}
                         </p>
                     {% endif %}
@@ -31,6 +31,6 @@
         {% endfor %}
     </ul>
 
-    <p class="mt-4"><twig:Public:ArrowedBoldLink to="{{ path('app_dossier_index') }}">{{ "View all decisions" | trans }}</twig:Public:ArrowedBoldLink></p>
+    <p class="mt-4"><twig:Public:ArrowedBoldLink to="{{ path('app_woodecision_index') }}">{{ 'public.decisions.label.all_decisions' | trans }}</twig:Public:ArrowedBoldLink></p>
 </section>
 {% endif %}

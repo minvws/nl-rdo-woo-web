@@ -1,6 +1,6 @@
 {% extends 'admin.html.twig' %}
 
-{% set page_title = "Create new organisation" | trans() %}
+{% set page_title = 'admin.organisation.create' | trans() %}
 
 {% block body %}
     <div class="bhr-container bhr-container--sm">
@@ -14,13 +14,12 @@
 
 
                 {{ form_row(organisationForm.name) }}
-                {# {{ form_label(organisationForm, 'bar', {'label_attr': {'class': 'sr-only'}}) }} #}
                 {{ form_row(organisationForm.department) }}
 
                 <div class="my-8">
                      <fieldset>
                         <legend class="bhr-legend mb-0">
-                            Prefixes
+                            {{'global.prefixes' | trans() }}
                         </legend>
                         <div id="js-widgets-container">
                             {# Let's print the CollectionType field that refers to the DocumentPrefixType class. #}
@@ -28,13 +27,12 @@
                                 <div class="bhr-widget flex items-center relative mb-4">
                                     {{ form_errors(widgetForm) }}
                                     {{ form_widget(widgetForm) }}
-                                    <twig:Admin:ClearButton label="Invoer verwijderen" />
+                                    <twig:Admin:ClearButton label="{{ 'admin.global.input_delete' | trans() }}" />
                                 </div>
                             {% endfor %}
                         </div>
                     </fieldset>
-                    <button type="button" id="js-add-widget" class="font-bold text-bhr-davys-grey">+ Nog een prefix
-                        toevoegen
+                    <button type="button" id="js-add-widget" class="font-bold text-bhr-davys-grey">+ {{ 'admin.organisation.add_prefix' |trans()}}
                     </button>
                 </div>
 
@@ -47,7 +45,7 @@
             <div id="js-widget-prototype" class="hidden">
                 <div class="bhr-widget flex items-center relative mb-4">
                     {{ form_widget(organisationForm.documentPrefixes.vars.prototype)|raw }}
-                    <twig:Admin:ClearButton label="Invoer verwijderen" />
+                    <twig:Admin:ClearButton label="{{ 'admin.global.input_delete' | trans() }}" />
                 </div>
             </div>
         </div>

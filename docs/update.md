@@ -1,9 +1,9 @@
 # Woo Platform
 
 <!-- TOC -->
-* [Woo Platform](#woo-platform)
-* [After pulling new changes or switching branches](#after-pulling-new-changes-or-switching-branches)
-* [Local setup troubleshooting](#local-setup-troubleshooting)
+- [Woo Platform](#woo-platform)
+  - [After pulling new changes or switching branches](#after-pulling-new-changes-or-switching-branches)
+  - [Local setup troubleshooting](#local-setup-troubleshooting)
 <!-- TOC -->
 
 ## After pulling new changes or switching branches

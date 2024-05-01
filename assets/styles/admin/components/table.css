@@ -3,11 +3,15 @@
         @apply w-full;
     }
 
+    .bhr-table th {
+        @apply whitespace-nowrap;
+    }
+    
     .bhr-table td,
     .bhr-table th {
         @apply py-2 px-4;
     }
-
+    
     .bhr-table tr {
         @apply border-b border-bhr-platinum;
     }
@@ -22,5 +26,11 @@
 
     .bhr-column-head--gray {
         @apply bg-bhr-anti-flash-white border-r border-bhr-platinum text-bhr-independence last:border-r-0;
+    }
+
+    .bhr-clamp {
+        @apply 
+        line-clamp-2 
+        max-w-md
     }
 }

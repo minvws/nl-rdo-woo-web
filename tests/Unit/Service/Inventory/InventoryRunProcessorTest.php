@@ -140,6 +140,9 @@ class InventoryRunProcessorTest extends MockeryTestCase
 
         $this->progressUpdater->expects('updateProgressForRun')->twice();
 
+        $this->entityManager->expects('persist')->with($this->dossier);
+        $this->entityManager->expects('refresh')->with($this->dossier);
+
         $this->runProcessor->process($this->run);
     }
 }

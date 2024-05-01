@@ -1,15 +1,15 @@
-{% import "document_macros.html.twig" as macro %}
+{% import 'document_macros.html.twig' as macro %}
 
-{% if dossier.entity.needsInventoryAndDocuments and (publicDocs.count > 0 or notPublicDocs.count > 0) %}
+{% if dossier.needsInventoryAndDocuments and (publicDocs.count > 0 or notPublicDocs.count > 0) %}
 <div class="mt-16">
-    <h2 class="woo-h2 woo-h2-spacing" id="documenten">{{ "Documents" | trans() }}</h2>
+    <h2 class="woo-h2 woo-h2-spacing" id="documenten">{{ 'global.documents' | trans }}</h2>
 
     <twig:Public:DownloadFilesForm
-        action="{{ path('app_dossier_batch', { prefix: dossier.entity.documentPrefix, dossierId: dossier.entity.dossierNr }) }}"
+        action="{{ path('app_woodecision_batch', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
         canDownload="{{ dossier.counts.hasUploads and publicDocs.count > 0 }}"
-        searchUrl="{{ path('app_search') }}?dnr[]={{ dossier.entity.dossierNr }}"
+        searchUrl="{{ path('app_search') }}?dnr[]={{ dossier.dossierNr }}"
     />
 
-    {{ macro.document_tabs(publicDocs, notPublicDocs, notOnlineDocs, '#documenten', dossier.entity) }}
+    {{ macro.document_tabs(publicDocs, notPublicDocs, notOnlineDocs, '#documenten', dossier) }}
 </div>
 {% endif %}

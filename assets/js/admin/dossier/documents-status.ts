@@ -8,7 +8,6 @@ export const dossierDocumentsStatus = () => {
   let canNotContinueYetErrorElement: HTMLElement | null = null;
   let placeholderElement: HTMLElement | null = null;
   let timeoutId: NodeJS.Timeout | null = null;
-  let uploadsProcessingElement: HTMLElement | null = null;
   let uploadsRemainingElement: HTMLElement | null = null;
   let uploadsSectionElement: HTMLElement | null = null;
 
@@ -20,7 +19,6 @@ export const dossierDocumentsStatus = () => {
 
     canNotContinueYetErrorElement = document.getElementById('js-dossier-documents-can-not-continue');
     uploadsRemainingElement = placeholderElement.querySelector('.js-uploads-remaining');
-    uploadsProcessingElement = placeholderElement.querySelector('.js-uploads-processing');
     uploadsSectionElement = placeholderElement.querySelector('.js-upload-section');
 
     abortController = new AbortController();
@@ -34,8 +32,12 @@ export const dossierDocumentsStatus = () => {
 
     areAllFilesUploaded = completed;
 
-    if (uploadsProcessingElement && uploadsRemainingElement) {
+    const uploadsProcessingElement = placeholderElement?.querySelector('.js-uploads-processing');
+    if (uploadsProcessingElement) {
       uploadsProcessingElement.innerHTML = uploadsProcessingContent;
+    }
+
+    if (uploadsRemainingElement) {
       uploadsRemainingElement.innerHTML = uploadsRemainingContent;
     }
 

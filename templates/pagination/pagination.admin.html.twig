@@ -5,7 +5,7 @@
         class="inline-block px-4 py-2.5 rounded-lg hover:bg-woo-anti-flash-white transition-colors {{ isActive ? 'bg-bhr-light-silver cursor-default font-bold' : '' }}"
         href="?{{ query|merge({(pageParameterName): pageNumber}) | url_encode }}{{ fragment }}"
     >
-        <span class="sr-only">{{ "Page" | trans() }}</span> {{ pageNumber }}
+        <span class="sr-only">{{ 'global.page' | trans }}</span> {{ pageNumber }}
     </a>
 {% endmacro %}
 
@@ -20,7 +20,7 @@
                     <span class="bhr-button__icon bhr-button__icon--left">
                         <twig:Admin:Icon name="chevron-left" size="20" />
                     </span>
-                    {{ "Previous" | trans }}
+                    {{ 'global.previous' | trans }}
                 </a>
             </li>
             {% endif %}
@@ -54,7 +54,7 @@
             {% if next is defined %}
             <li class="absolute right-0">
                 <a class="bhr-button bhr-button--secondary bhr-button--with-icon-right" href="?{{ query|merge({(pageParameterName): next}) | url_encode }}{{ fragment }}" rel="next">
-                    {{ "Next" | trans }}
+                    {{ 'global.next' | trans }}
                     <span class="bhr-button__icon bhr-button__icon--right">
                         <twig:Admin:Icon name="chevron-right" size="20" />
                     </span>

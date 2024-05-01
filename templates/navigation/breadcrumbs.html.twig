@@ -1,13 +1,19 @@
 {% if wo_breadcrumbs()|length %}
     {%- apply spaceless -%}
-        <nav class="-mx-4 py-2 sm:py-0" aria-label="{{ "You are here" | trans() }}">
+        <nav class="-mx-4 py-2 sm:py-0" aria-label="{{ 'public.global.current_location' | trans() }}">
             <ol class="flex flex-wrap leading-none">
                 {% for breadcrumb in breadcrumbs %}
                     <li>
-                        <a class="block px-4 sm:px-6 {{ loop.first ? 'sm:pl-4' : '' }} py-2 sm:py-7 {{ loop.last ? 'cursor-default' : '' }} sm:py-7 focus:-outline-offset-4 group" href="{{ breadcrumb.url }}" {% if loop.last %}aria-current="page"{% endif %}>
-                            <span class="{{ loop.last ? 'font-bold' : 'group-hover:underline group-focus:underline' }}">{{- breadcrumb.text | trans() -}}</span>
-                            {% if not loop.last %}<twig:Public:Icon class="absolute ml-1 sm:ml-2 -mt-px" size="20" name="chevron-right-thin" color="fill-black" />{% endif %}
+                        {% if loop.last %}
+                        <span class="block font-bold px-4 sm:px-6 py-2 sm:py-7" aria-current="page">{{- breadcrumb.text | trans() -}}</span>
+                        
+                        {% else %} 
+                        
+                        <a class="block px-4 sm:px-6 {{ loop.first ? 'sm:pl-4' : '' }} py-2 sm:py-7 focus:-outline-offset-4 group" href="{{ breadcrumb.url }}">
+                            <span class="group-hover:underline group-focus:underline">{{- breadcrumb.text | trans() -}}</span>
+                            <twig:Public:Icon class="absolute ml-1 sm:ml-2 -mt-px" size="20" name="chevron-right-thin" color="fill-black" />
                         </a>
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ol>

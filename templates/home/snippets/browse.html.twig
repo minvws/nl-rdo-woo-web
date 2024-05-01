@@ -2,7 +2,7 @@
 
 <section class="bg-woo-anti-flash-white py-8 lg:py-16">
     <div class="woo-container woo-container--sm">
-        <h2 class="woo-h2 woo-readable-width">{{ "Search or browse decisions and published documents through the categories" | trans | raw }}</h2>
+        <h2 class="woo-h2 woo-readable-width">{{ 'public.browse.title' | trans | raw }}</h2>
 
         <div class="my-10 max-w-2xl mx-auto">
             <twig:Public:SearchForm id="search-field-bottom" />
@@ -11,14 +11,14 @@
 
     <div class="woo-container">
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
-            {{ macro.facet_preview("Subject" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, facets) }}
-            {{ macro.facet_preview("Source document type" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, facets) }}
-            {{ macro.facet_preview("Judgement" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, facets) }}
-            {{ macro.facet_preview("Grounds" | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, facets) }}
+            {{ macro.facet_preview('categories.category.subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, facets) }}
+            {{ macro.facet_preview('categories.category.source_file' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, facets) }}
+            {{ macro.facet_preview('categories.category.judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, facets) }}
+            {{ macro.facet_preview('categories.category.grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, facets) }}
         </div>
 
         <p class="text-center mt-9">
-            <twig:Public:ArrowedBoldLink to="{{ path('app_browse') }}">{{ "To all categories" | trans }}</twig:Public:ArrowedBoldLink>
+            <twig:Public:ArrowedBoldLink to="{{ path('app_browse') }}">{{ 'categories.label.all-categories' | trans }}</twig:Public:ArrowedBoldLink>
         </p>
     </div>
 </section>

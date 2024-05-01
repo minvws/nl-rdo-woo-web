@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Controller\Admin\Dossier\DossierAuthorizationTrait;
 use App\Entity\Inquiry;
 use App\Form\Inquiry\AdministrationActionsType;
 use App\Repository\InquiryRepository;
 use App\Service\Inquiry\InquiryService;
-use App\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,11 +17,8 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class InquiryAdmininistrationController extends AbstractController
 {
-    use DossierAuthorizationTrait;
-
     public function __construct(
         private readonly InquiryRepository $repository,
-        private readonly AuthorizationMatrix $authorizationMatrix,
         private readonly InquiryService $inquiryService,
     ) {
     }

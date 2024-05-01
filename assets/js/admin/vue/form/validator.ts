@@ -1,8 +1,22 @@
+import { endOfDay, isAfter } from 'date-fns';
 import { InputErrorId, type InputValueType, type Validator } from './interface';
 
 export const required = (): Validator => (value: InputValueType) => {
+  const error = { id: InputErrorId.Required };
   if (!value) {
-    return { id: InputErrorId.Required };
+    return error;
+  }
+
+  if (typeof value === 'string' && value.trim() === '') {
+    return error;
+  }
+
+  if (typeof value === 'object' && Object.keys(value).length === 0) {
+    return error;
+  }
+
+  if (Array.isArray(value) && value.length === 0) {
+    return error;
   }
 
   return undefined;
@@ -23,6 +37,18 @@ export const email = (): Validator => (value: InputValueType) => {
   return undefined;
 };
 
+export const forbidden = (forbiddenValues: InputValueType[]): Validator => (value: InputValueType) => {
+  if (!value) {
+    return undefined;
+  }
+
+  if (forbiddenValues.includes(value)) {
+    return { id: InputErrorId.Forbidden };
+  }
+
+  return undefined;
+};
+
 export const minLength = (min: number): Validator => (value: InputValueType) => {
   if (typeof value !== 'string') {
     return undefined;
@@ -37,5 +63,20 @@ export const minLength = (min: number): Validator => (value: InputValueType) => 
     id: InputErrorId.MinLength,
     minLength: min,
     tooLittleLength: min - value.length,
+  };
+};
+
+export const dateMaxUntilToday = (): Validator => {
+  const today = endOfDay(new Date());
+  return (value: InputValueType) => {
+    if (typeof value !== 'string') {
+      return undefined;
+    }
+
+    if (isAfter(new Date(value), today)) {
+      return { id: InputErrorId.DateMaxUntilToday };
+    }
+
+    return undefined;
   };
 };

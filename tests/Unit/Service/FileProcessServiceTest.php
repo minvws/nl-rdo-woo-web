@@ -12,6 +12,7 @@ use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -44,9 +45,7 @@ class FileProcessServiceTest extends MockeryTestCase
         parent::setUp();
     }
 
-    /**
-     * @dataProvider getDocumentNumberFromFileNameProvider
-     */
+    #[DataProvider('getDocumentNumberFromFileNameProvider')]
     public function testGetDocumentNumberFromFileName(string $filename, string $expectedDocNr, bool $expectException = false): void
     {
         $uuid = Uuid::v6();
@@ -57,7 +56,7 @@ class FileProcessServiceTest extends MockeryTestCase
             $this->expectException(\RuntimeException::class);
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             $expectedDocNr,
             $this->service->getDocumentNumberFromFilename($filename, $dossier)
         );
@@ -71,40 +70,40 @@ class FileProcessServiceTest extends MockeryTestCase
         return [
             'numbers-only' => [
                 'filename' => '1234.pdf',
-                'expected' => '1234',
+                'expectedDocNr' => '1234',
             ],
             'alpha-numerical' => [
                 'filename' => '1234abc.pdf',
-                'expected' => '1234abc',
+                'expectedDocNr' => '1234abc',
             ],
             'alpha-numerical-mixed' => [
                 'filename' => '1234abc789xyz.pdf',
-                'expected' => '1234abc789xyz',
+                'expectedDocNr' => '1234abc789xyz',
             ],
             'alpha-numerical-with-dashes' => [
                 'filename' => '1234abc7-89xyz.pdf',
-                'expected' => '1234abc7-89xyz',
+                'expectedDocNr' => '1234abc7-89xyz',
             ],
             'dashes-only' => [
                 'filename' => '---.pdf',
-                'expected' => '---',
+                'expectedDocNr' => '---',
             ],
             'characters-after-whitespace-are-ignored' => [
                 'filename' => '1234 - test.pdf',
-                'expected' => '1234',
+                'expectedDocNr' => '1234',
             ],
             'invalid-start-character-is-not-accepted' => [
                 'filename' => '*1234.pdf',
-                'expected' => '',
+                'expectedDocNr' => '',
                 'expectException' => true,
             ],
             'invalid-end-character-is-ignored' => [
                 'filename' => '1234*.pdf',
-                'expected' => '1234',
+                'expectedDocNr' => '1234',
             ],
             'underscore-is-not-accepted' => [
                 'filename' => '_.pdf',
-                'expected' => '',
+                'expectedDocNr' => '',
                 'expectException' => true,
             ],
         ];

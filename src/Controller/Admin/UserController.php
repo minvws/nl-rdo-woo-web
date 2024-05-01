@@ -14,6 +14,7 @@ use App\Form\User\UserInfoFormType;
 use App\Repository\UserRepository;
 use App\Roles;
 use App\Service\Security\Authorization\AuthorizationMatrix;
+use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use App\Service\UserService;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
@@ -145,16 +146,16 @@ class UserController extends AbstractController
         $loggedInUser = $this->getUser();
 
         if ($user === $loggedInUser) {
-            $this->addFlash('backend', ['warning' => $this->translator->trans('Modifying your own account is not allowed')]);
+            $this->addFlash('backend', ['danger' => $this->translator->trans('admin.users.error.edit_own_account_not_allowed')]);
 
             return $this->redirectToRoute('app_admin_users');
         }
 
         if (
-            $this->authorizationMatrix->getFilter(AuthorizationMatrix::FILTER_ORGANISATION_ONLY)
+            $this->authorizationMatrix->hasFilter(AuthorizationMatrixFilter::ORGANISATION_ONLY)
             && $user->getOrganisation() !== $this->authorizationMatrix->getActiveOrganisation()
         ) {
-            $this->addFlash('backend', ['warning' => $this->translator->trans('Modifying this account is not allowed')]);
+            $this->addFlash('backend', ['danger' => $this->translator->trans('admin.users.error.edit_other_organisation_account_not_allowed')]);
 
             return $this->redirectToRoute('app_admin_users');
         }

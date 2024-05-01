@@ -2,6 +2,8 @@ framework:
     messenger:
         buses:
             command_bus:
+                default_middleware:
+                    allow_no_handlers: true
                 middleware:
                     - doctrine_ping_connection
 #        failure_transport: failed
@@ -55,7 +57,7 @@ framework:
             App\Message\RemoveInventoryAndDocumentsMessage: high
 
             App\Message\IngestDossiersMessage: ingestor                # Ingests all dossiers
-            App\Message\IngestDossierMessage: ingestor                 # Ingests a single dossier
+            App\Domain\Ingest\IngestDossierMessage: ingestor           # Ingests a single dossier
             App\Message\IngestPdfMessage: ingestor                     # Ingests a complete PDF document and fires a message for each page
             App\Message\IngestPdfPageMessage: ingestor                 # Ingests a single PDF page from a PDF document
             App\Message\IngestDecisionMessage: ingestor
@@ -63,9 +65,9 @@ framework:
             App\Message\GenerateInquiryInventoryMessage: ingestor
             App\Message\GenerateInquiryArchivesMessage: ingestor
 
-            App\Message\UpdateDossierMessage: esupdater                # Updates the dossier in the elastic index
+            App\Domain\Search\Index\IndexDossierMessage: esupdater     # Updates the dossier in the elastic index
             App\Message\UpdateDepartmentMessage: esupdater             # Updates the dossier in the elastic index
-            App\Message\RemoveDossierMessage: esupdater                # Removes a dossier in the elastic index
+            App\Domain\Publication\Dossier\Command\DeleteDossierCommand: esupdater
             App\Message\RemoveDocumentMessage: esupdater
 
             App\Message\GenerateArchiveMessage: global                 # Generates a ZIP archive of the dossier

@@ -13,6 +13,7 @@ use App\Service\Storage\ThumbnailStorageService;
 use App\Twig\Runtime\WooExtensionRuntime;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -40,9 +41,7 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
         );
     }
 
-    /**
-     * @dataProvider queryStringWithoutParamProvider
-     */
+    #[DataProvider('queryStringWithoutParamProvider')]
     public function testQueryStringWithoutParam(
         string $queryString,
         string $paramToRemove,
@@ -54,7 +53,7 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
 
         $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($request);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expectedQuery,
             urldecode($this->runtime->queryStringWithoutParam($paramToRemove, $valueToRemove))
         );
@@ -69,25 +68,25 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
             'remove-a-non-existing-param-does-nothing' => [
                 'queryString' => '?a=1&b[]=2&b[]=3&c[x]=4',
                 'paramToRemove' => 'foo',
-                'value' => '',
+                'valueToRemove' => '',
                 'expectedQuery' => '?a=1&b[]=2&b[]=3&c[x]=4',
             ],
             'remove-a-basic-param' => [
                 'queryString' => '?a=1&b=2&c=3',
                 'paramToRemove' => 'b',
-                'value' => '',
+                'valueToRemove' => '',
                 'expectedQuery' => '?a=1&c=3',
             ],
             'remove-a-single-value-from-a-multivalue-param' => [
                 'queryString' => '?a=1&b[]=2&b[]=3',
                 'paramToRemove' => 'b',
-                'value' => '2',
+                'valueToRemove' => '2',
                 'expectedQuery' => '?a=1&b[]=3',
             ],
             'remove-only-one-named-subparam' => [
                 'queryString' => '?a=1&dt[from]=a&dt[to]=b',
                 'paramToRemove' => 'dt[from]',
-                'value' => '',
+                'valueToRemove' => '',
                 'expectedQuery' => '?a=1&dt[to]=b',
             ],
         ];

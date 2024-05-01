@@ -8,12 +8,11 @@ use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Service\Inventory\DocumentNumber;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class DocumentNumberTest extends MockeryTestCase
 {
-    /**
-     * @dataProvider fromDossierAndReferralProvider
-     */
+    #[DataProvider('fromDossierAndReferralProvider')]
     public function testFromReferral(string $documentNr, string $prefix, string $documentId, string $referral, string $expected): void
     {
         $dossier = \Mockery::mock(Dossier::class);
@@ -25,7 +24,7 @@ class DocumentNumberTest extends MockeryTestCase
 
         $documentNumber = DocumentNumber::fromReferral($dossier, $document, $referral);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             strval($documentNumber)
         );

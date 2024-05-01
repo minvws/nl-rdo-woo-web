@@ -17,5 +17,5 @@ class NotTheSamePassword extends Constraint
      * Any public properties become valid options for the annotation.
      * Then, use these in your validator class.
      */
-    public string $message = 'Your new password cannot be the same as your current password';
+    public string $message = 'admin.user.password.validation.same_current';
 }

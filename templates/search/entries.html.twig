@@ -2,15 +2,28 @@
 
 {% set numberOfResults = result.entries | length %}
 {% set numberOfPages = result.pagination.pageCount %}
+{% set sortBy = app.request.query.get('sort') %}
+{% set sortOrder = app.request.query.get('sortorder') %}
+
+{% if sortBy == 'decision_date' %}
+    {% set sortByText = 'Date of decision' | trans %}
+{% elseif sortBy == 'publication_date' %}
+    {% set sortByText = 'global.publication_date' | trans %}
+{% endif %}
+{% if sortOrder == 'desc' %}
+    {% set sortOrderText = 'newest first' | trans %}
+{% elseif sortOrder == 'asc' %}
+    {% set sortOrderText = 'oldest first' | trans %}
+{% endif %}
 
 <div class="md:flex pb-3">
     <div class="grow">
         <h2 class="font-bold mt-2" aria-live="polite" id="js-number-of-search-results">
-            {% if result.type == constant('App\\Service\\Search\\Result\\ResultEntry::TYPE_DOSSIER') %}
-                {{ "# dossiers" | trans({'count': result.dossierCount}) }}
+            {% if result.type == constant('App\\Service\\Search\\Model\\Config::TYPE_DOSSIER') %}
+                {{ "global.number_of_dossiers" | trans({'count': result.dossierCount}) }}
             {% else %}
-                {{ "# documents" | trans({'count': result.documentCount}) }}
-                <span class="font-normal">{{ "in # dossiers" | trans({'count': result.dossierCount}) }}</span>
+                {{ "global.number_of_documents" | trans({'count': result.documentCount}) }}
+                <span class="font-normal">{{ "public.results.in_dossiers" | trans({'count': result.dossierCount}) }}</span>
             {% endif %}
         </h2>
 
@@ -24,8 +37,8 @@
                 {{ "Did you mean any of the following search terms:" | trans }}
             {% endif %}
             {% for entry in result.suggestion(suggestionsId).entries %}
-                {% if loop.last and loop.index > 1 %}{{ "generic.or" | trans }}{% elseif not loop.first %}, {% endif %}
-                <a class="woo-a" href="{{ path('app_home', { q: entry.name|url_encode }) }}">{{ entry.name }}</a>{{loop.last ? '?' : '' }}
+                {% if loop.last and loop.index > 1 %}{{ "global.or" | trans }}{% elseif not loop.first %}, {% endif %}
+                <a class="woo-a" href="{{ path('app_home', { q: entry.name }) }}">{{ entry.name }}</a>{{loop.last ? '?' : '' }}
             {% endfor %}
         </p>
         {% endif %}
@@ -42,32 +55,36 @@
     <div class="shrink-0 md:ml-4 pt-3 md:pt-0">
         <details class="relative js-details">
             <summary class="woo-bordered-button woo-bordered-button--secondary" id="sort-results">
-                {{ "Sort" | trans }}
+                {% if sortBy and sortOrder %}
+                    {{ sortByText }} ({{ sortOrderText }})
+                {% else %}
+                    {{ "Sort" | trans }}
+                {% endif %}
                 <twig:Public:Icon class="woo-button-icon-right" name="sort" />
             </summary>
 
             <div aria-labelledby="sort-results" class="woo-overlay-card md:right-0 w-72 sm:w-96">
-                {% macro sort_items(sortOnProperty, sortOnText) %}
-                    {{ _self.sort_item(sortOnProperty, 'desc', sortOnText, 'newest first' | trans) }}
-                    {{ _self.sort_item(sortOnProperty, 'asc', sortOnText, 'oldest first' | trans) }}
+                {% macro sort_items(sortBy, sortText) %}
+                    {{ _self.sort_item(sortBy, 'desc', sortText, 'newest first' | trans) }}
+                    {{ _self.sort_item(sortBy, 'asc', sortText, 'oldest first' | trans) }}
                 {% endmacro %}
 
-                {% macro sort_item(sortOnProperty, sortOrder, sortOnText, sortOrderText) %}
+                {% macro sort_item(sortBy, sortOrder, sortByText, sortOrderText) %}
                     <li class="group/li leading-none">
                         <a
                             class="block px-4 group/a"
-                            href="?{{ query_string_with_params({'sort': sortOnProperty, 'sortorder': sortOrder}) }}"
+                            href="?{{ query_string_with_params({'sort': sortBy, 'sortorder': sortOrder}) }}"
                         >
                             <span
                                 class="block border-b border-woo-chinese-silver group-last/li:border-b-0 py-4 group-hover/a:underline group-focus/a:underline"
-                            >{{ sortOnText }} ({{ sortOrderText }})</span>
+                            >{{ sortByText }} ({{ sortOrderText }})</span>
                         </a>
                     </li>
                 {% endmacro %}
 
                 <ul class="-mx-4 -my-2">
                     {{ _self.sort_items('decision_date', 'Date of decision' | trans) }}
-                    {{ _self.sort_items('publication_date', 'Date of publication' | trans) }}
+                    {{ _self.sort_items('publication_date', 'global.publication_date' | trans) }}
                 </ul>
             </div>
         </details>
@@ -91,10 +108,10 @@
         {% endif %}
 
         {{ macro.facet_pills('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}
-        {{ macro.facet_pills('Subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
-        {{ macro.facet_pills('Source document type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
-        {{ macro.facet_pills('Judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
-        {{ macro.facet_pills('Grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
+        {{ macro.facet_pills('categories.category.subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
+        {{ macro.facet_pills('categories.category.source_file' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
+        {{ macro.facet_pills('categories.category.judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
+        {{ macro.facet_pills('categories.category.grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
     </ul>
 {% endif %}
 
@@ -103,7 +120,7 @@
     <ul>
         {% for entry in result.entries %}
         <li class="woo-search-result" data-e2e-name="search-result">
-            {% include "search/entries/" ~ entry.type ~ ".html.twig" %}
+            {% include "search/entries/" ~ entry.type.value ~ ".html.twig" %}
         </li>
         {% endfor %}
     </ul>

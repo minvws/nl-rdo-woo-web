@@ -83,7 +83,7 @@ class CollectorClient implements ClientInterface, ElasticClientInterface
 
         $this->collector->addCall($method, $arguments, $response, $type);
 
-        /** @var ElasticSearch|Promise $response */
+        /** @var Elasticsearch|Promise $response */
         return $response;
     }
 
@@ -104,7 +104,7 @@ class CollectorClient implements ClientInterface, ElasticClientInterface
 
     public function count(array $params = []): Elasticsearch|Promise
     {
-        /** @var ElasticSearch|Promise $response */
+        /** @var Elasticsearch|Promise $response */
         $response = $this->elastic->count($params);
 
         return $response;

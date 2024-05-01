@@ -1,10 +1,11 @@
 <script setup>
-  import { computed, inject, ref, watch } from 'vue';
+  import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
   import { uniqueId } from '@js/utils';
+  import { computed, inject, ref, watch } from 'vue';
   import FormHelp from './FormHelp.vue';
   import FormLabel from './FormLabel.vue';
   import InputErrors from './InputErrors.vue';
-  import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
+  import SubmitValidationErrors from './SubmitValidationErrors.vue';
 
   const props = defineProps({
     emptyLabel: {
@@ -32,6 +33,11 @@
     options: {
       type: Array,
       required: true,
+      default: () => [],
+    },
+    optgroups: {
+      type: Array,
+      required: false,
       default: () => [],
     },
     validators: {
@@ -67,8 +73,7 @@
   });
   const ariaDescribedBy = computed(() => useInputAriaDescribedBy(inputId, props.helpText, inputStore.hasVisibleErrors));
 
-  const form = inject('form');
-  form.addInput(inputStore);
+  inject('form').addInput(inputStore);
 </script>
 
 <template>
@@ -89,6 +94,11 @@
       v-if="inputStore.hasVisibleErrors"
     />
 
+    <SubmitValidationErrors
+      :errors="inputStore.submitValidationErrors"
+      v-if="inputStore.hasVisibleErrors"
+    />
+
     <div class="bhr-select">
       <select
         @change="inputStore.markAsTouched"
@@ -99,7 +109,7 @@
         :name="props.name"
         v-model="value"
       >
-        <option :value="null">{{ props.emptyLabel }}</option>
+        <option value="">{{ props.emptyLabel }}</option>
         <option
           v-for="option in props.options"
           :key="option.value"
@@ -107,6 +117,19 @@
         >
           {{ option.label }}
         </option>
+        <optgroup
+          v-for="optgroup in props.optgroups"
+          :key="optgroup.label"
+          :label="optgroup.label"
+        >
+          <option
+            v-for="option in optgroup.options"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </option>
+        </optgroup>
       </select>
     </div>
   </div>

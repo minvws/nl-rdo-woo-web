@@ -24,10 +24,10 @@ class DeleteFormType extends AbstractType
                 'mapped' => false,
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Remove dossier',
+                'label' => 'admin.dossier.delete.submit',
             ])
             ->add('cancel', SubmitType::class, [
-                'label' => 'Annuleren',
+                'label' => 'global.cancel',
                 'attr' => [
                     'class' => 'bhr-button--secondary',
                     'data-last-button' => true,

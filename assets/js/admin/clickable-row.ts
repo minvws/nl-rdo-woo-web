@@ -1,4 +1,4 @@
-import { getLocation } from '../utils/browser';
+import { getLocation } from '../utils';
 import { onFocusIn, onFocusOut } from '../utils/on';
 
 const enum ClickableRowClassNames {

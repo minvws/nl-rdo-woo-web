@@ -9,7 +9,7 @@
 
         <title>
             {% if page_title is defined %} {{ page_title }} | {% endif %}
-            {{ "Woo Platform" | trans }}
+            {{ 'global.domain_title' | trans() }}
         </title>
 
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -25,7 +25,7 @@
 
     <body class="antialiased flex min-h-screen flex-col text-lg">
         <header>
-            <a href="#main-content" class="woo-skip-link woo-skip-link--to-main-content">{{ "Go directly to content" | trans }}</a>
+            <a href="#main-content" class="woo-skip-link woo-skip-link--to-main-content">{{ 'global.skip_link' | trans() }}</a>
 
             <p>
                 <a class="woo-logo" href="{{ path('app_home') }}">
@@ -37,13 +37,13 @@
                         width="50"
                     />
                     {% apply spaceless %}
-                    <span class="woo-logo__text">{{ "Ministry of Health, Welfare and Sport" | trans }}</span>
-                    <span class="sr-only">, {{ "Go to homepage" | trans }}</span>
+                    <span class="woo-logo__text">{{ 'public.global.logo.text' | trans }}</span>
+                    <span class="sr-only">, {{ 'public.global.logo.label' | trans }}</span>
                     {% endapply %}
                 </a>
             </p>
 
-            <nav class="woo-main-nav" aria-label="{{ "Main Navigation" | trans }}">
+            <nav class="woo-main-nav" aria-label="{{ 'public.global.navigation.accessible.label' | trans }}">
                 <div class="woo-container">
                     <div class="-mx-4 relative z-10">
                         <div class="md:hidden no-js:hidden">
@@ -51,7 +51,7 @@
                                 <twig:Public:Icon class="js-icon-collapsed" color="fill-white" name="hamburger" />
                                 <twig:Public:Icon class="hidden js-icon-expanded" color="fill-white" name="cross" />
                                 <span class="js-text sr-only">
-                                    {{ "public.navigation.label" | trans }}
+                                    {{ 'global.menu_toggle.label' | trans }}
                                 </span>
                             </button>
                         </div>
@@ -69,20 +69,20 @@
                             {{ _self.main_nav_item(
                                     path('app_home'),
                                     app.request.get('_route') == 'app_home',
-                                    "Home" | trans,
+                                    'public.global.label.home' | trans,
                                     "house"
                                 )
                             }}
                             {{ _self.main_nav_item(
                                     path('app_browse'),
                                     app.request.get('_route') == 'app_browse' or (app.request.get('_route') == 'app_search' and app.request.get('type') != 'dossier'),
-                                    "Search for documents and decisions" | trans
+                                    'public.global.label.search_publications' | trans
                                 )
                             }}
                             {{ _self.main_nav_item(
                                     path('app_search', {'type': 'dossier', 'sort': 'decision_date', 'sortorder': 'desc'}),
                                     app.request.get('_route') == 'app_search' and app.request.get('type') == 'dossier',
-                                    "All published decisions" | trans
+                                    'public.global.label.overview_publications' | trans
                                 )
                             }}
                         </ul>
@@ -127,28 +127,24 @@
                     {% endmacro %}
 
                     <nav class="woo-footer-nav" aria-labelledby="page-footer-nav-1-heading">
-                        <h3 class="woo-footer-nav__title" id="page-footer-nav-1-heading">Service</h3>
+                        <h3 class="woo-footer-nav__title" id="page-footer-nav-1-heading">{{ 'public.footer.title.service' | trans }}</h3>
                         <ul>
-                            {{ _self.footer_nav_item(path('app_contact'), "Contact") }}
-                            {# {{ _self.footer_nav_item("", "RSS recent publications" | trans) }} #}
-                            {# {{ _self.footer_nav_item("https://wobcovid19.rijksoverheid.nl/archief/", "Archive" | trans) }} #}
-                            {% if not app.user %}
-                                {# {{ _self.footer_nav_item(path('app_login'), "Login" | trans) }} #}
-                            {% else %}
-                                {{ _self.footer_nav_item(path('app_admin'), "Counter" | trans) }}
-                                {{ _self.footer_nav_item(path('app_logout'), "Logout" | trans) }}
+                            {{ _self.footer_nav_item(path('app_contact'), 'global.footer.label.contact' | trans) }}
+                           {% if app.user %}
+                                {{ _self.footer_nav_item(path('app_admin'), 'public.footer.label.counter' | trans) }}
+                                {{ _self.footer_nav_item(path('app_logout'), 'global.logout' | trans) }}
                             {% endif %}
                         </ul>
                     </nav>
 
                     <nav class="woo-footer-nav" aria-labelledby="page-footer-nav-2-heading">
-                        <h3 class="woo-footer-nav__title" id="page-footer-nav-2-heading">{{ "About this site" | trans }}</h3>
+                        <h3 class="woo-footer-nav__title" id="page-footer-nav-2-heading">{{ 'public.footer.title.about' | trans }}</h3>
                         <ul>
-                            {{ _self.footer_nav_item(path('app_about'), "About Woo" | trans) }}
-                            {{ _self.footer_nav_item(path('app_copyright'), "Copyright" | trans) }}
-                            {{ _self.footer_nav_item(path('app_privacy'), "Privacy" | trans) }}
-                            {{ _self.footer_nav_item(path('app_cookies'), "Cookies" | trans) }}
-                            {{ _self.footer_nav_item(path('app_accessibility'), "Accessibility" | trans) }}
+                            {{ _self.footer_nav_item(path('app_about'), 'public.footer.label.woo' | trans) }}
+                            {{ _self.footer_nav_item(path('app_copyright'), 'public.footer.label.copyright' | trans) }}
+                            {{ _self.footer_nav_item(path('app_privacy'), 'global.footer.label.privacy' | trans) }}
+                            {{ _self.footer_nav_item(path('app_cookies'), 'public.footer.label.cookies' | trans) }}
+                            {{ _self.footer_nav_item(path('app_accessibility'), 'global.footer.label.accessibility' | trans) }}
                         </ul>
                     </nav>
                 </div>

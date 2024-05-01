@@ -4,23 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
+use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Search\Index\IndexDossierMessage;
 use App\Entity\DecisionDocument;
-use App\Entity\Department;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\FileInfo;
 use App\Entity\Inquiry;
-use App\Entity\Inventory;
-use App\Enum\PublicationStatus;
-use App\Service\DocumentService;
+use App\Message\IngestDecisionMessage;
 use App\Service\DossierService;
-use App\Service\DossierWorkflow\Step\DecisionStep;
-use App\Service\DossierWorkflow\Step\DetailsStep;
-use App\Service\DossierWorkflow\Step\DocumentsStep;
-use App\Service\DossierWorkflow\Step\PublicationStep;
-use App\Service\DossierWorkflow\WorkflowStatusFactory;
+use App\Service\DossierWizard\WizardStatusFactory;
 use App\Service\HistoryService;
-use App\Service\Inquiry\InquiryService;
 use App\Service\Inquiry\InquirySessionService;
 use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,6 +23,7 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -35,30 +31,24 @@ class DossierServiceTest extends MockeryTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
     private DossierService $dossierService;
+    private WooDecision&MockInterface $dossier;
+    private MessageBusInterface&MockInterface $messageBus;
     private LoggerInterface&MockInterface $logger;
-    private MessageBusInterface $messageBus;
-    private Dossier $dossier;
-    private UploadedFile&MockInterface $decisionUpload;
-    private MockInterface&DocumentStorageService $documentStorage;
-    private DecisionDocument $decisionDocument;
+    private DocumentStorageService&MockInterface $documentStorage;
+    private HistoryService&MockInterface $historyService;
     private InquirySessionService&MockInterface $inquirySession;
-    private WorkflowStatusFactory $workflowFactory;
-    private InquiryService&MockInterface $inquiryService;
+    private WizardStatusFactory&MockInterface $wizardStatusFactory;
 
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->messageBus = new CollectingMessageBus();
+        $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->documentStorage = \Mockery::mock(DocumentStorageService::class);
         $this->inquirySession = \Mockery::mock(InquirySessionService::class);
-        $this->workflowFactory = new WorkflowStatusFactory(
-            new DocumentsStep(),
-            new DecisionStep(),
-            new PublicationStep(),
-            new DetailsStep(),
-        );
-        $this->inquiryService = \Mockery::mock(InquiryService::class);
+        $this->historyService = \Mockery::mock(HistoryService::class);
+
+        $this->wizardStatusFactory = \Mockery::mock(WizardStatusFactory::class);
 
         $this->dossierService = new DossierService(
             $this->entityManager,
@@ -66,40 +56,16 @@ class DossierServiceTest extends MockeryTestCase
             $this->logger,
             $this->inquirySession,
             $this->documentStorage,
-            $this->workflowFactory,
-            \Mockery::mock(DocumentService::class),
-            $this->inquiryService,
-            \Mockery::mock(HistoryService::class),
+            $this->wizardStatusFactory,
+            $this->historyService,
         );
 
         $this->entityManager->shouldReceive('getUnitOfWork->getOriginalEntityData')->andReturn([]);
 
-        $this->decisionDocument = $this->createDecisionDocument();
-        $inventory = $this->createInventory();
-
-        $this->decisionUpload = \Mockery::mock(UploadedFile::class);
-        $this->decisionUpload->shouldReceive('getClientOriginalExtension')->andReturn('pdf');
-        $this->decisionUpload->shouldReceive('getRealPath')->andReturn(__FILE__);
-        $this->decisionUpload->shouldReceive('getClientOriginalName')->andReturn('xyz');
-        $this->decisionUpload->shouldReceive('getSize')->andReturn(123);
-
-        $this->documentStorage->shouldReceive('storeDocument')->with($this->decisionUpload, $this->decisionDocument)->andReturnTrue();
-
-        $this->dossier = $this->createDossier();
-        $this->dossier->setDecisionDocument($this->decisionDocument);
-        $this->dossier->setInventory($inventory);
+        $this->dossier = \Mockery::mock(WooDecision::class);
+        $this->dossier->shouldReceive('getId')->andReturn(Uuid::v6());
 
         parent::setUp();
-    }
-
-    public function testChangeStateIsRejectedWhenInvalid(): void
-    {
-        $this->dossier->setStatus(PublicationStatus::CONCEPT);
-
-        $this->logger->expects('error')->with('Invalid state change', \Mockery::any());
-        $this->expectException(\InvalidArgumentException::class);
-
-        $this->dossierService->changeState($this->dossier, PublicationStatus::RETRACTED);
     }
 
     public function testIsAllowedToView(): void
@@ -116,7 +82,7 @@ class DossierServiceTest extends MockeryTestCase
         $setId($uuid2);
         $inquiry2->setCasenr('901');
 
-        $dossier = new Dossier();
+        $dossier = new WooDecision();
         $setId = \Closure::bind(fn ($id) => $this->id = $id, $dossier, $dossier);
         $setId(Uuid::v7());
         $dossier->setDossierNr('1000');
@@ -131,137 +97,131 @@ class DossierServiceTest extends MockeryTestCase
         $document->addInquiry($inquiry2);
         $inquiry2->addDocument($document);
 
-        $dossier->setStatus(PublicationStatus::PUBLISHED);
-        $this->assertTrue($this->dossierService->isViewingAllowed($dossier));
-
-        $dossier->setStatus(PublicationStatus::RETRACTED);
-        $this->assertFalse($this->dossierService->isViewingAllowed($dossier));
+        $dossier->setStatus(DossierStatus::PUBLISHED);
+        self::assertTrue($this->dossierService->isViewingAllowed($dossier));
 
         $this->inquirySession->expects('getInquiries')->andReturn([]);
-        $dossier->setStatus(PublicationStatus::PREVIEW);
-        $this->assertFalse($this->dossierService->isViewingAllowed($dossier));
+        $dossier->setStatus(DossierStatus::PREVIEW);
+        self::assertFalse($this->dossierService->isViewingAllowed($dossier));
 
         $this->inquirySession->expects('getInquiries')->andReturn([$uuid1]);
-        $this->assertTrue($this->dossierService->isViewingAllowed($dossier));
+        self::assertTrue($this->dossierService->isViewingAllowed($dossier));
 
         $this->inquirySession->expects('getInquiries')->andReturn([$uuid2]);
-        $this->assertFalse($this->dossierService->isViewingAllowed($dossier));
+        self::assertFalse($this->dossierService->isViewingAllowed($dossier));
         $this->inquirySession->expects('getInquiries')->andReturn([$uuid2]);
-        $this->assertTrue($this->dossierService->isViewingAllowed($dossier, $document));
+        self::assertTrue($this->dossierService->isViewingAllowed($dossier, $document));
     }
 
-    public function testIncompleteDossier(): void
+    public function testIsViewingAllowedDefaultsToFalseForNonWooDecisionDossier(): void
     {
-        $dossier = $this->createDossier();
-        $this->assertFalse($dossier->isCompleted());
+        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
 
-        $this->entityManager->expects('persist')->with($dossier);
+        $result = $this->dossierService->isViewingAllowed($dossier);
+
+        $this->assertFalse($result);
+        $this->inquirySession->shouldNotHaveReceived('getInquiries');
+    }
+
+    public function testDossierCompletionIsSetToTrueWhenWorkflowStatusIsCompleted(): void
+    {
+        $this->entityManager->expects('persist')->with($this->dossier);
         $this->entityManager->expects('flush');
 
-        $this->dossierService->updateDetails($dossier);
-        $this->assertFalse($dossier->isCompleted());
+        $this->wizardStatusFactory->expects('getWizardStatus->isCompleted')->andReturnTrue();
+
+        $this->dossier->expects('setCompleted')->with(true);
+        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
+
+        $this->messageBus->expects('dispatch')
+            ->with(\Mockery::type(IndexDossierMessage::class))
+            ->andReturns(new Envelope(new \stdClass()));
+
+        $this->dossierService->updateDetails($this->dossier);
     }
 
-    public function testCompletedDossier(): void
+    public function testDossierCompletionIsSetToFalseWhenWorkflowStatusIsIncomplete(): void
     {
-        $document = $this->createDocument();
-        $document2 = $this->createDocument();
-        $decision = $this->createDecisionDocument();
-        $inventory = $this->createInventory();
-
-        $dossier = $this->createDossier();
-        $dossier->addDocument($document);
-        $dossier->addDocument($document2);
-        $dossier->setDecisionDocument($decision);
-        $dossier->setInventory($inventory);
-        $dossier->setPublicationDate(new \DateTimeImmutable('tomorrow'));
-        $this->assertFalse($dossier->isCompleted());
-
-        $this->entityManager->expects('persist')->with($dossier)->twice();
-        $this->entityManager->expects('flush')->twice();
-
-        $this->dossierService->updateDetails($dossier);
-        $this->assertTrue($dossier->isCompleted());
-
-        $dossier->setDecisionDocument(null);
-
-        $this->dossierService->updateDetails($dossier);
-        $this->assertFalse($dossier->isCompleted());
-    }
-
-    public function testInCompleteDossierWithNonuploadedDocument(): void
-    {
-        $document = $this->createDocument();
-        $document2 = $this->createDocument(uploaded: false);
-        $decision = $this->createDecisionDocument();
-        $inventory = $this->createInventory();
-
-        $dossier = $this->createDossier();
-        $dossier->addDocument($document);
-        $dossier->addDocument($document2);
-        $dossier->setDecisionDocument($decision);
-        $dossier->setInventory($inventory);
-        $this->assertFalse($dossier->isCompleted());
-
-        $this->entityManager->expects('persist')->with($dossier);
+        $this->entityManager->expects('persist')->with($this->dossier);
         $this->entityManager->expects('flush');
 
-        $this->dossierService->updateDetails($dossier);
-        $this->assertFalse($dossier->isCompleted());
+        $this->wizardStatusFactory->expects('getWizardStatus->isCompleted')->andReturnFalse();
+
+        $this->dossier->expects('setCompleted')->with(false);
+        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
+
+        $this->messageBus->expects('dispatch')
+            ->with(\Mockery::type(IndexDossierMessage::class))
+            ->andReturns(new Envelope(new \stdClass()));
+
+        $this->dossierService->updateDetails($this->dossier);
     }
 
-    protected function createDossier(): Dossier
+    public function testUpdateDecisionDocumentForInitialUpload(): void
     {
-        $dossier = new Dossier();
-        $setId = \Closure::bind(fn ($id) => $this->id = $id, $dossier, $dossier);
-        $setId(Uuid::v7());
-        $dossier->setDossierNr('1000');
-        $dossier->setDecision(Dossier::DECISION_PUBLIC);
-        $dossier->setStatus(PublicationStatus::PREVIEW);
-        $dossier->setSummary('aaa');
-        $dossier->setTitle('aaa');
-        $dossier->addDepartment(new Department());
-        $dossier->setDocumentPrefix('foo');
-        $dossier->setPublicationReason('bar');
-        $dossier->setDefaultSubjects(['baz']);
-        $dossier->setCompleted(false);
+        $upload = \Mockery::mock(UploadedFile::class);
+        $upload->shouldReceive('getRealPath')->andReturn(__FILE__);
+        $upload->shouldReceive('getClientOriginalName')->andReturn('bar');
+        $upload->shouldReceive('getSize')->andReturn(123);
 
-        return $dossier;
+        $this->logger->expects('info');
+        $this->entityManager->expects('persist')->with(\Mockery::type(DecisionDocument::class));
+
+        $this->documentStorage
+            ->expects('storeDocument')
+            ->with($upload, \Mockery::type(DecisionDocument::class))
+            ->andReturnTrue();
+
+        $this->wizardStatusFactory->expects('getWizardStatus->isCompleted')->andReturnTrue();
+
+        $this->dossier->expects('setCompleted')->with(true);
+        $this->dossier->expects('getDecisionDocument')->andReturnNull();
+        $this->dossier->expects('setDecisionDocument')->with(\Mockery::type(DecisionDocument::class));
+        $this->entityManager->expects('persist')->with($this->dossier);
+        $this->entityManager->expects('flush');
+
+        $this->messageBus->expects('dispatch')
+            ->with(\Mockery::type(IngestDecisionMessage::class))
+            ->andReturns(new Envelope(new \stdClass()));
+
+        $this->dossierService->updateDecisionDocument($upload, $this->dossier);
     }
 
-    private function createDecisionDocument(): DecisionDocument
+    public function testUpdateDecisionDocument(): void
     {
-        $fileInfo = new FileInfo();
-        $fileInfo->setName('decision.pdf');
-        $fileInfo->setUploaded(true);
+        $decisionDocument = \Mockery::mock(DecisionDocument::class);
+        $decisionDocument->shouldReceive('getFileInfo')->andReturn(new FileInfo());
 
-        $decisionDocument = new DecisionDocument();
-        $decisionDocument->setFileInfo($fileInfo);
+        $upload = \Mockery::mock(UploadedFile::class);
+        $upload->shouldReceive('getRealPath')->andReturn(__FILE__);
+        $upload->shouldReceive('getClientOriginalName')->andReturn('bar');
+        $upload->shouldReceive('getSize')->andReturn(123);
 
-        return $decisionDocument;
-    }
+        $this->logger->expects('info');
+        $this->entityManager->expects('persist')->with($decisionDocument);
 
-    private function createDocument(bool $uploaded = true): Document
-    {
-        $fileInfo = new FileInfo();
-        $fileInfo->setName('document.pdf');
-        $fileInfo->setUploaded($uploaded);
+        $this->documentStorage
+            ->expects('storeDocument')
+            ->with($upload, \Mockery::type(DecisionDocument::class))
+            ->andReturnTrue();
 
-        $document = new Document();
-        $document->setFileInfo($fileInfo);
+        $this->wizardStatusFactory->expects('getWizardStatus->isCompleted')->andReturnTrue();
 
-        return $document;
-    }
+        $this->dossier->expects('setCompleted')->with(true);
+        $this->dossier->expects('getDecisionDocument')->andReturn($decisionDocument);
 
-    private function createInventory(): Inventory
-    {
-        $fileInfo = new FileInfo();
-        $fileInfo->setName('document.pdf');
-        $fileInfo->setUploaded(true);
+        $this->entityManager->expects('persist')->with($this->dossier);
+        $this->entityManager->expects('flush');
 
-        $inventory = new Inventory();
-        $inventory->setFileInfo($fileInfo);
+        $this->messageBus->expects('dispatch')
+            ->with(\Mockery::type(IngestDecisionMessage::class))
+            ->andReturns(new Envelope(new \stdClass()));
 
-        return $inventory;
+        $this->historyService
+            ->expects('addDossierEntry')
+            ->with($this->dossier, 'dossier_update_decision', \Mockery::any());
+
+        $this->dossierService->updateDecisionDocument($upload, $this->dossier);
     }
 }

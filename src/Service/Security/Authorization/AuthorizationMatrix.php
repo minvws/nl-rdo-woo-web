@@ -13,9 +13,6 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 class AuthorizationMatrix
 {
     public const AUTH_MATRIX_ATTRIB = 'auth_matrix';
-    public const FILTER_ORGANISATION_ONLY = 'org_only';
-    public const FILTER_PUBLISHED_DOSSIERS = 'published_dossiers';
-    public const FILTER_UNPUBLISHED_DOSSIERS = 'unpublished_dossiers';
 
     /**
      * @param Entry[] $entries
@@ -74,31 +71,42 @@ class AuthorizationMatrix
         return $matches;
     }
 
-    public function getFilter(string $filter): bool
+    public function hasFilter(AuthorizationMatrixFilter $filter): bool
     {
         foreach ($this->entryStore->getEntries() as $entry) {
-            switch ($filter) {
-                case self::FILTER_ORGANISATION_ONLY:
-                    if ($entry->getFilters()['organisation_only'] ?? false) {
-                        return true;
-                    }
-                    break;
-                case self::FILTER_PUBLISHED_DOSSIERS:
-                    if ($entry->getFilters()['published_dossiers'] ?? false) {
-                        return true;
-                    }
-                    break;
-                case self::FILTER_UNPUBLISHED_DOSSIERS:
-                    if ($entry->getFilters()['unpublished_dossiers'] ?? false) {
-                        return true;
-                    }
-                    break;
-                default:
-                    throw new \RuntimeException(sprintf('Unknown filter "%s".', $filter));
+            if ($this->entryMatchesFilter($entry, $filter)) {
+                return true;
             }
         }
 
         return false;
+    }
+
+    private function entryMatchesFilter(Entry $entry, AuthorizationMatrixFilter $filter): bool
+    {
+        $matches = false;
+
+        switch ($filter) {
+            case AuthorizationMatrixFilter::ORGANISATION_ONLY:
+                if ($entry->getFilters()['organisation_only'] ?? false) {
+                    $matches = true;
+                }
+                break;
+            case AuthorizationMatrixFilter::PUBLISHED_DOSSIERS:
+                if ($entry->getFilters()['published_dossiers'] ?? false) {
+                    $matches = true;
+                }
+                break;
+            case AuthorizationMatrixFilter::UNPUBLISHED_DOSSIERS:
+                if ($entry->getFilters()['unpublished_dossiers'] ?? false) {
+                    $matches = true;
+                }
+                break;
+            default:
+                throw AuthorizationMatrixException::forUnknownFilter($filter);
+        }
+
+        return $matches;
     }
 
     public function getActiveOrganisation(): Organisation
@@ -106,7 +114,7 @@ class AuthorizationMatrix
         /** @var User|null $user */
         $user = $this->security->getUser();
         if ($user === null) {
-            throw new \RuntimeException('No active user to get active organisation for');
+            throw AuthorizationMatrixException::forNoActiveUser();
         }
 
         return $this->organisationSwitcher->getActiveOrganisation($user);

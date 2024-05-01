@@ -7,7 +7,7 @@
 
 {%- block choice_widget_expanded -%}
     <fieldset>
-        <legend class="bhr-legend">{{ form.vars.label | trans }}{% if form.vars.required is not same as (true) %} <span class="font-normal">(optioneel)</span>{% endif %}</legend>
+        <legend class="bhr-legend">{{ form.vars.label | trans }}</legend>
         {{- form_help(form) -}}
         {{- form_errors(form) -}}
 
@@ -81,7 +81,7 @@
         {%- endif -%}
         {% set displayIsOptional = required is not same as (true) and (label_attr.displayIsOptional ?? true) is not same as (false) %}
         <label {% if label_attr %}{% with { attr: label_attr } %}{{ block('attributes') }}{% endwith %}{% endif %}>
-            {{ label | trans }}{% if displayIsOptional %} <span class="font-normal">(optioneel)</span>{% endif %}
+            {{ label | trans }}{% if displayIsOptional %} <span class="font-normal">({{'global.optional' | trans() }})</span>{% endif %}
         </label>
     {%- endif -%}
 {%- endblock form_label -%}
@@ -89,10 +89,10 @@
 {%- block form_fieldset -%}
     <fieldset>
         <legend class="bhr-legend">
-            {{ row_attr | default([])['data-legend'] | default('') }}
+            {{ row_attr | default([])['data-legend'] | default('') | trans() }}
             {% set isOptional = (row_attr|default([])['data-required'] ?? true) is same as (false) %}
             {% if isOptional %}
-                <span class="font-normal">(optioneel)</span>
+                <span class="font-normal">({{'global.optional' | trans() }})</span>
             {% endif %}
         </legend>
 
@@ -111,12 +111,15 @@
 
 {%- block file_widget -%}
     {% set allowMultiple = 'multiple' in attr|default([])|keys %}
-    <twig:Admin:UploadArea
-        accept="{{ attr.accept|default([]) }}"
-        id="{{ id }}"
-        multiple="{{ allowMultiple }}"
-        name="{{ full_name }}"
-    />
+
+    <div {{ vue_component('UploadAreaController', {
+        allowedMimeTypes: attr.accept|default([]),
+        allowMultiple: allowMultiple,
+        id: id,
+        name: full_name,
+    }) }}>
+        <div class="min-h-56"></div>
+    </div>
 {%- endblock file_widget -%}
 
 {%- block form_row -%}

@@ -1,8 +1,6 @@
-import { formatNumber } from '@utils';
+import { formatNumber, isNumber } from '@utils';
 
 const enum MimeType {
-  AudioMp4 = 'audio/mp4',
-  AudioMpeg = 'audio/mpeg',
   Csv = 'application/csv',
   Pdf = 'application/pdf',
   PdfX = 'application/x-pdf',
@@ -15,8 +13,7 @@ const enum MimeType {
   Zip = 'application/zip',
 }
 
-const MimeTypes: Readonly<Record<string, string[]>> = {
-  Audio: [MimeType.AudioMp4, MimeType.AudioMpeg],
+export const MimeTypes: Readonly<Record<string, string[]>> = {
   Csv: [MimeType.Csv],
   Pdf: [MimeType.Pdf],
   Spreadsheet: [MimeType.OpenDocumentSpeadsheet, MimeType.OfficeDocumentSpreadsheet],
@@ -40,7 +37,6 @@ export const formatFileSize = (bytes: number): string => {
 
 export const getIconNameByMimeType = (mimeType: string) => {
   const mappings = {
-    'file-audio': MimeTypes.Audio,
     'file-csv': [...MimeTypes.Csv, ...MimeTypes.Spreadsheet],
     'file-pdf': MimeTypes.Pdf,
     'file-video': MimeTypes.Video,
@@ -55,7 +51,6 @@ export const getIconNameByMimeType = (mimeType: string) => {
 
 export const getFileTypeByMimeType = (mimeType: string) => {
   const mappings = {
-    audio: MimeTypes.Audio,
     csv: MimeTypes.Csv,
     spreadsheet: MimeTypes.Spreadsheet,
     pdf: MimeTypes.Pdf,
@@ -67,10 +62,11 @@ export const getFileTypeByMimeType = (mimeType: string) => {
   return (Object.keys(mappings) as (keyof typeof mappings)[]).find((key) => mappings[key].includes(mimeType)) ?? 'onbekend';
 };
 
+export const isValidMaxFileSize = (maxFileSize: unknown): boolean => isNumber(maxFileSize) && Number(maxFileSize) > 0;
+
 const getExtenstionByMimeType = (mimeType: string): string | undefined => {
   const mappings: Record<string, string[]> = {
-    '.mp4': [MimeType.AudioMp4, MimeType.VideoMp4],
-    '.mp3': [MimeType.AudioMpeg],
+    '.mp4': [MimeType.VideoMp4],
     '.pdf': [MimeType.Pdf],
     '.ods': [MimeType.OpenDocumentSpeadsheet],
     '.xlsx': [MimeType.OfficeDocumentSpreadsheet],

@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace App\Tests\Unit;
 
 use App\SourceType;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class SourceTypeTest extends TestCase
 {
-    /**
-     * @dataProvider getTypeProvider
-     */
+    #[DataProvider('getTypeProvider')]
     public function testGetType(?string $input, string $expectedResult): void
     {
-        $this->assertEquals($expectedResult, SourceType::getType($input));
+        self::assertEquals($expectedResult, SourceType::getType($input));
     }
 
     /**
