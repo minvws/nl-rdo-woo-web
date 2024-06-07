@@ -10,5 +10,5 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 class DownloadFileButton
 {
     public string $href;
-    public string $e2eName = '';
+    public string $e2eName = 'download-file-link';
 }

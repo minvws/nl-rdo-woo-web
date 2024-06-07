@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\ViewModel\DossierCounts;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

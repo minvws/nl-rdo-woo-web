@@ -27,9 +27,9 @@ class StatsController extends AbstractController
     #[IsGranted('AuthMatrix.stat.read')]
     public function stats(Breadcrumbs $breadcrumbs): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
-        $breadcrumbs->addItem('Statistics');
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
+        $breadcrumbs->addRouteItem('global.admin', 'app_admin');
+        $breadcrumbs->addItem('admin.global.statistics');
 
         $rabbitmqStats = null;
 

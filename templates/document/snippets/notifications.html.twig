@@ -1,7 +1,7 @@
 {% import 'document_macros.html.twig' as macro %}
 
-{% set isDocumentAlreadyPublic = document.entity.judgement.value is defined and document.entity.judgement.value is same as ('already_public') %}
-{% set isDocumentNotPublic = document.entity.judgement.value is defined and document.entity.judgement.value is same as ('not_public') %}
+{% set isDocumentAlreadyPublic = document.entity.judgement is defined and document.entity.judgement.isAlreadyPublic %}
+{% set isDocumentNotPublic = document.entity.judgement is defined and document.entity.judgement.isNotPublic %}
 {% set isDocumentNotYetProcessed = document.entity.isUploaded and not document.ingested %}
 {% set isDocumentSuspended = document.entity.suspended %}
 {% set isDocumentWithdrawn = document.entity.withdrawn %}
@@ -109,7 +109,7 @@
                     {{
                         'public.documents.document_withdrawn' | trans({
                             '{date}': document.entity.withdrawDate | format_date('long'),
-                            '{reason}': document.entity.withdrawReason.name | trans,
+                            '{reason}': document.entity.withdrawReason | trans | lower,
                         })
                     }}
                 </p>

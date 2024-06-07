@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierReference;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\ViewModel\RecentDossier;
+use App\Domain\Search\Result\ProvidesDossierTypeSearchResultInterface;
+use App\Domain\Search\Result\WooDecision\WooDecisionSearchResult;
 use App\Entity\Dossier;
 use App\Entity\Organisation;
-use App\ViewModel\DossierReference;
-use App\ViewModel\DossierSearchEntry;
-use App\ViewModel\RecentDossier;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
@@ -25,7 +26,7 @@ use Symfony\Component\Uid\Uuid;
  * @method Dossier[]    findAll()
  * @method Dossier[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class DossierRepository extends ServiceEntityRepository
+class DossierRepository extends ServiceEntityRepository implements ProvidesDossierTypeSearchResultInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -92,7 +93,7 @@ class DossierRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getDossierSearchEntry(string $prefix, string $dossierNr): ?DossierSearchEntry
+    public function getSearchResultViewModel(string $prefix, string $dossierNr): ?WooDecisionSearchResult
     {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(
@@ -105,7 +106,7 @@ class DossierRepository extends ServiceEntityRepository
                     dos.decisionDate,
                     COUNT(doc)
                 )',
-                DossierSearchEntry::class,
+                WooDecisionSearchResult::class,
             ))
             ->where('dos.documentPrefix = :prefix')
             ->andWhere('dos.dossierNr = :dossierNr')
@@ -117,7 +118,7 @@ class DossierRepository extends ServiceEntityRepository
             ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
         ;
 
-        /** @var ?DossierSearchEntry $result */
+        /** @var ?WooDecisionSearchResult $result */
         $result = $qb->getQuery()->getOneOrNullResult();
 
         return $result;

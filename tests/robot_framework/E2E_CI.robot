@@ -4,9 +4,10 @@ Resource            resources/Setup.resource
 Resource            resources/Generic.resource
 Resource            resources/Public.resource
 Resource            resources/Admin.resource
-Resource            resources/DecisionDossiers.resource
-Resource            resources/Inquiries.resource
-Suite Setup         CI Suite Setup
+Resource            resources/Dossier.resource
+Resource            resources/Document.resource
+Resource            resources/Inquiry.resource
+Suite Setup         Suite Setup - CI
 Test Tags           ci
 
 
@@ -18,9 +19,15 @@ ${TST_BALIE_PASSWORD}   IkLoopNooitVastVandaag
 
 
 *** Test Cases ***
-Login Balie and filter decision dossier
+Create decision dossier
+  [Documentation]  Create a decision dossier, as a starting point for all other test cases
+  Login Admin
+  Create WooDecision Dossier - CI
+  Verify Published Decision Dossier
+
+Login Admin and filter decision dossier
   [Documentation]  Check the filter functionality in the decision dossier page in the Balie
-  Login Balie
+  Login Admin
   Filter Op Bestuursorgaan En Status  Ministerie van Algemene Zaken
   Get Text  //body  *=  Bestuursorgaan: Ministerie van Algemene Zaken
   Get Text  //body  *=  Er zijn geen publicaties gevonden die aan de filters voldoen.
@@ -35,7 +42,7 @@ Login Balie and filter decision dossier
   Get Text  //body  *=  Bestuursorgaan: Ministerie van Volksgezondheid, Welzijn en Sport
   Get Text  //body  *=  Robot ${CURRENT_TIME}
   Get Text  //body  *=  Status: Openbaar
-  Logout Balie
+  Logout Admin
 
 Decision Dossier overview page
   [Documentation]  Locate a existing decision dossier, check if the predefined metadata are available, the numbers match and expected documents are shown
@@ -45,12 +52,11 @@ Decision Dossier overview page
   Click  xpath=//*[@data-e2e-name="search-result"][1]//*[@data-e2e-name="main-link"]
   Get Text  //h1  *=  Robot ${CURRENT_TIME}
   Get Text  //body  *=  Samenvatting voor het besluitdossier Robot ${CURRENT_TIME}
-  Debug
-  Verify Decision Dossier Metadata
+  Verify Dossier Metadata
   ...  dossier_status=Openbaar
   ...  responsible=Ministerie van Volksgezondheid, Welzijn en Sport
   ...  period=December 2021 - januari 2023
-  ...  decision_date=${CURRENT_DATE}
+  ...  decision_date=${CURRENT_DATE_FORMAT2}
   ...  dossier_type=Woo-verzoek
   ...  publication_size=19 documenten, 19 pagina's
   Verify Listed Document In Dossier  5062  case-2-email-with-more-emails-in-thread-4.pdf  9 oktober 2020
@@ -75,14 +81,14 @@ Document overview page (document is made public)
   Verify Related Document Mentions  case-2-email-with-more-emails-in-thread-1.pdf
   Verify Related Document Mentions  case-2-email-with-more-emails-in-thread-2.pdf
   Get Text  //body  *=  Bijlagen bij dit e-mailbericht
-  Verify Listed Document In Dossier  5146  case-5-attachment-multi-1.pdf  3 augustus 2020
-  Verify Listed Document In Dossier  5148  case-5-attachment-multi-1.pdf  17 augustus 2020
-  Verify Listed Document In Dossier  5167  case-5-attachment-multi-1.pdf  21 augustus 2020
+  Verify Listed Attachments In Document  5146  case-5-attachment-multi-1.pdf  3 augustus 2020
+  Verify Listed Attachments In Document  5148  case-5-attachment-multi-1.pdf  17 augustus 2020
+  Verify Listed Attachments In Document  5167  case-5-attachment-multi-1.pdf  21 augustus 2020
   Verify Document Background Data
   ...  part_of=${EMPTY}
   ...  period=December 2021 - januari 2023
-  ...  dossier_type=Wob-verzoek
-  ...  dossier_date=${CURRENT_DATE}
+  ...  dossier_type=Woo-verzoek
+  ...  dossier_date=${CURRENT_DATE_FORMAT2}
   ...  publication_size=19 documenten, 19 pagina's
   Download File  case-5-mail-with-multi-attachment-no-thread.pdf  xpath=//*[@data-e2e-name="download-file-link"]
 
@@ -186,7 +192,7 @@ Filter decision dossiers
 
 Link Zaaknummer to a decision dossier
   [Documentation]  Login to Balie and link a Zaaknummer to a Decision Dossier
-  Login Balie
+  Login Admin
   Click  "Zaken"
   Verify Existence Of Inquiry  11-111
   Verify Existence Of Inquiry  62-487
@@ -198,8 +204,8 @@ Link Zaaknummer to a decision dossier
   Verify Document Listed In Inquiry Overview  case-5-mail-with-multi-attachment-no-thread.pdf
   Verify Document Listed In Inquiry Overview  case-2-email-with-more-emails-in-thread-1.pdf
   Go Back
-  Click  "Zaaknummer aan besluiten of documenten koppelen"
-  Click  "Koppel aan besluiten"
+  Click  xpath=//*[@data-e2e-name="go-to-link-inquires-link"]
+  Click  xpath=//*[data-e2e-name="go-to-link-dossiers-link"]
   Fill Text  id=inquiry_link_dossier_form_map  33-66-99
   Click  "+ Kies besluit..."
   Type Text  id=link-dossiers-search-input  Robot ${CURRENT_TIME}  delay=50 ms  clear=Yes
@@ -213,11 +219,11 @@ Link Zaaknummer to a decision dossier
   Click  "33-66-99"
   Verify Decision Listed In Inquiry Overview  Robot ${CURRENT_TIME}
   Go Back
-  Logout Balie
+  Logout Admin
 
 Link Zaaknummer to documents
   [Documentation]  Login to Balie and link a Zaaknummer to documents
-  Login Balie
+  Login Admin
   Click  "Zaken"
   Verify Existence Of Inquiry  11-111
   Verify Existence Of Inquiry  62-487
@@ -228,8 +234,8 @@ Link Zaaknummer to documents
   Verify Document Listed In Inquiry Overview  case-2-email-with-more-emails-in-thread-1.pdf
   Verify Documents Summary In Inquiry Overview  6 documenten met zaaknummer 11-111
   Go Back
-  Click  "Zaaknummer aan besluiten of documenten koppelen"
-  Click  "Koppel aan documenten"
+  Click  xpath=//*[@data-e2e-name="go-to-link-inquires-link"]
+  Click  xpath=//*[data-e2e-name="go-to-link-documents-link"]
   Upload File By Selector
   ...  xpath=//*[@id="inquiry_link_documents_form_upload"]
   ...  tests/robot_framework/files/koppel_zaaknummer.xlsx
@@ -247,29 +253,29 @@ Link Zaaknummer to documents
   Click Download File Link
   Go Back
   Go Back
-  Logout Balie
+  Logout Admin
 
 Retract a decision dossier
   [Documentation]  Login to Balie and retract the existing decision dossier
-  Login Balie
+  Login Admin
   Search For A Publication  Robot ${CURRENT_TIME}
   Click Button Withdraw All Documents
   Select Withdraw Reason  Document is nog opgeschort
   Provide Withdraw Explanation  Alle documenten in besluitdossier Robot ${CURRENT_EPOCH} worden ingetrokken
   Click  "Intrekken"
   Get Text  //body  *=  Ingetrokken
-  Logout Balie
+  Logout Admin
   # Check if all the documents are retracted from the portal
   Click  "Alle gepubliceerde besluiten"
   Get Text  //body  *=  Robot ${CURRENT_TIME}
   Click  "Robot ${CURRENT_TIME}"
   Reload
-  Verify Decision Dossier Metadata
+  Verify Dossier Metadata
   ...  dossier_status=Openbaar
   ...  responsible=Ministerie van Volksgezondheid, Welzijn en Sport
   ...  period=December 2021 - januari 2023
-  ...  decision_date=${CURRENT_DATE}
-  ...  dossier_type=Wob-verzoek
+  ...  decision_date=${CURRENT_DATE_FORMAT2}
+  ...  dossier_type=Woo-verzoek
   ...  publication_size=19 documenten, 19 pagina's
   Verify File History  Alle documenten in dit besluit zijn ingetrokken
   Get Text  //body  not contains  5080
@@ -284,10 +290,10 @@ Retract a decision dossier
 
 Replace Decision Dossier
   [Documentation]  Login to Balie and replace the existing productierapport and some documents
-  Login Balie
+  Login Admin
   Search For A Publication  Robot ${CURRENT_TIME}
   Get Text  //body  *=  Robot ${CURRENT_TIME}
-  Click Button Edit
+  Click Document Edit
   Verify Document Listed In File  5080  case-4-mail-with-attachment-thread-1.pdf
   Verify Document Listed In File  5044  case-2-email-with-more-emails-in-thread-2.pdf
   Verify Document Listed In File  5146  case-5-attachment-multi-1.pdf
@@ -297,7 +303,7 @@ Replace Decision Dossier
   Sleep  5s
   Get Text  //body  *=  Productierapport geüpload en gecontroleerd
   Get Text  //body  *=  19 bestaande documenten worden aangepast.
-  Click  "Ok, vervang productierapport"
+  Click Confirm Inventory Replacement
   Sleep  5s
   Get Text  //body  *=  De inventaris is succesvol vervangen.
   # Replace documents
@@ -329,7 +335,7 @@ Replace Decision Dossier
   Get Text  //body  *=  1 besluitdossier(s) toegevoegd
   Get Text  //body  *=  6 document(en) toegevoegd
   Go Back
-  Logout Balie
+  Logout Admin
   # Check if all the documents are replaced on the portal
   Click  "Alle gepubliceerde besluiten"
   Get Text  //body  *=  Robot ${CURRENT_TIME}
@@ -345,25 +351,19 @@ Filter search results
   Get Checkbox State  id=input_pdf  ==  unchecked
   Check Checkbox  id=input_pdf
   Get Checkbox State  id=input_pdf  ==  checked
-  Get Text  //body  *=  vervangen_case-7-attachment-for-non-existing-email.pdf
-  Get Text  //body  *=  Type bronbestand: pdf
-  # Filter by "Onderwerp"
-  #  Get Checkbox State  id=input_Testen  ==  unchecked
-  #  Check Checkbox  id=input_Testen
-  #  Get Checkbox State  id=input_Testen  ==  checked
-  #  Get Text  //body  *=  vervangen_case-7-attachment-for-non-existing-email.pdf
-  #  Get Text  //body  *=  Onderwerp: Testen
+  Get Text  //*[@data-e2e-name="search-results"]  contains  vervangen_case-7-attachment-for-non-existing-email.pdf
+  Get Text  //*[@data-e2e-name="face-pill"]  contains  Type bronbestand: PDF
   # Filter by "Soort besluit"
   Get Checkbox State  id=input_partial_public  ==  unchecked
   Check Checkbox  id=input_partial_public
   Get Checkbox State  id=input_partial_public  ==  checked
-  Get Text  //body  *=  vervangen_case-7-attachment-for-non-existing-email.pdf
-  Get Text  //body  *=  Soort besluit: Deels openbaar
+  Get Text  //*[@data-e2e-name="search-results"]  contains  vervangen_case-7-attachment-for-non-existing-email.pdf
+  Get Text  //*[@data-e2e-name="face-pill"][2]  contains  Soort besluit: Deels openbaar
   # Filter by "Uitzonderingsgrond"
   Get Checkbox State  id=input_5.1.2i  ==  unchecked
   Check Checkbox  id=input_5.1.2i
   Get Checkbox State  id=input_5.1.2i  ==  checked
-  Get Text  //body  *=  vervangen_case-7-attachment-for-non-existing-email.pdf
+  Get Text  //*[@data-e2e-name="search-results"]  contains  vervangen_case-7-attachment-for-non-existing-email.pdf
   Get Text
   ...  //body
   ...  *=

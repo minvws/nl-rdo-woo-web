@@ -15,7 +15,7 @@
 
         {# Let the user select the authentication method #}
         {% if availableTwoFactorProviders|length > 1 %}
-            <p class="mb-6">{{ "choose_provider"|trans() }}:
+            <p class="mb-6">{{ 'admin.account.2fa.choose_provider' | trans() }}:
             {% for provider in availableTwoFactorProviders %}
                 <a class="bhr-a mr-1" href="{{ path("2fa_login", {"preferProvider": provider}) }}">{{ provider }}</a>
             {% endfor %}

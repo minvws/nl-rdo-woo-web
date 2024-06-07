@@ -237,12 +237,12 @@
     {
         "type": "AttachmentType",
         "value": "c_6d494ab6",
-        "label": "parliamentary_qustion_with_answer"
+        "label": "parliamentary_question_with_answer"
     },
     {
         "type": "AttachmentType",
         "value": "c_03c52ba0",
-        "label": "parliamentary_qustion_without_answer"
+        "label": "parliamentary_question_without_answer"
     },
     {
         "type": "AttachmentType",

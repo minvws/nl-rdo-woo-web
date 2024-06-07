@@ -6,6 +6,7 @@ namespace App\Form\Dossier\Covenant;
 
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Form\Dossier\AbstractDossierStepType;
+use App\Form\Dossier\DocumentType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -35,7 +36,7 @@ class ContentFormType extends AbstractDossierStepType
                 'required' => true,
             ])
             ->add('summary', TextareaType::class, [
-                'label' => 'admin.dossiers.convenant.form.content.summary_label',
+                'label' => 'admin.dossiers.convenant.summary',
                 'required' => true,
                 'attr' => ['rows' => 5],
                 'empty_data' => '',

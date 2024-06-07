@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\Covenant;
 
+use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\MainDocument\AbstractMainDocument;
+use App\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
+use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 /**
  * @extends ServiceEntityRepository<CovenantDocument>
@@ -16,14 +21,14 @@ use Symfony\Component\Uid\Uuid;
  * @method CovenantDocument[]    findAll()
  * @method CovenantDocument[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CovenantDocumentRepository extends ServiceEntityRepository
+class CovenantDocumentRepository extends ServiceEntityRepository implements MainDocumentRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, CovenantDocument::class);
     }
 
-    public function save(CovenantDocument $entity, bool $flush = false): void
+    public function save(AbstractMainDocument $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -32,7 +37,7 @@ class CovenantDocumentRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(CovenantDocument $entity, bool $flush = false): void
+    public function remove(AbstractMainDocument $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -64,5 +69,16 @@ class CovenantDocumentRepository extends ServiceEntityRepository
 
         /** @var ?CovenantDocument */
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function create(AbstractDossier $dossier, CreateMainDocumentCommand $command): AbstractMainDocument
+    {
+        Assert::isInstanceOf($dossier, Covenant::class);
+
+        return new CovenantDocument(
+            dossier: $dossier,
+            formalDate: $command->formalDate,
+            language: $command->language,
+        );
     }
 }

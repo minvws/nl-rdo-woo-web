@@ -81,7 +81,7 @@
 #}
 {% macro documents_sortable_table(documents, tableTitleTranslationKey, fragment, dossier) %}
     {% if documents | length > 0 %}
-        <div class="overflow-x-auto">
+        <div class="woo-responsive-table">
             <table class="woo-table">
                 <caption class="sr-only">
                     <span>{{ tableTitleTranslationKey | trans() }}</span>
@@ -89,10 +89,10 @@
                 </caption>
                 <thead>
                     <tr>
-                        {{ knp_pagination_sortable(documents, 'global.document_number' | trans | trans, 'doc.documentNr', { thClassName: "min-w-36 w-36", 'fragment': fragment }) }}
-                        <th class="min-w-12 w-12" scope="col">{{ 'global.document_type' | trans() }}</th>
+                        {{ knp_pagination_sortable(documents, 'global.document_number' | trans | trans, 'doc.documentNr', { thClassName: "x-min-w-36 x-w-36", 'fragment': fragment }) }}
+                        <th class="x-min-w-12 x-w-12" scope="col">{{ 'global.document_type' | trans() }}</th>
                         {{ knp_pagination_sortable(documents, 'global.document_name' | trans() | trans, 'doc.fileInfo.name', { 'fragment': fragment }) }}
-                        {{ knp_pagination_sortable(documents, 'global.date' | trans() | trans, 'doc.documentDate', { thClassName: '!text-right min-w-40 w-40', 'fragment': fragment }) }}
+                        {{ knp_pagination_sortable(documents, 'global.date' | trans() | trans, 'doc.documentDate', { thClassName: '!text-right x-min-w-40 w-40', 'fragment': fragment }) }}
                     </tr>
                 </thead>
                 {{ _self.documents_table_tbody(documents, dossier) }}
@@ -114,7 +114,7 @@
 #}
 {% macro documents_table(documents, tableTitleTranslationKey) %}
     {% if documents | length > 0 %}
-        <div class="overflow-x-auto">
+        <div class="woo-responsive-table">
             <table class="woo-table">
                 <caption class="sr-only">{{ tableTitleTranslationKey | trans() }}</caption>
                 <thead>
@@ -145,7 +145,7 @@
                 {{ doc.documentId }}
             </td>
             <td>
-                {% set iconName = doc.judgement.value is defined and doc.judgement.value is same as ('already_public') ? 'web' : doc.fileInfo.sourceType %}
+                {% set iconName = doc.judgement is defined and doc.judgement.isAlreadyPublic ? 'web' : doc.fileInfo.sourceType %}
                 <twig:Public:Icon name="{{ iconName }}" color="fill-woo-dim-gray" />
                 <span class="sr-only">{{ ("public.documents.file_type." ~ doc.fileInfo.sourceType) | trans }}</span>
             </td>
@@ -154,7 +154,7 @@
                     <a class="woo-a break-all" href="{{ path('app_document_detail', { prefix: dossier.documentPrefix ?? doc.dossiers.first.documentPrefix, dossierId: dossier.dossierNr ?? doc.dossiers.first.dossierNr, documentId: doc.documentNr }) }}">{{ doc.fileInfo.name }}</a>
                 </div>
             </td>
-            <td class="text-right">
+            <td class="text-right whitespace-nowrap">
                 {% if doc.documentDate is not null %}
                     <time datetime="{{ doc.documentDate | date("Y-m-d") }}">{{ doc.documentDate | format_date('long') }}</time>
                 {% else %}
@@ -189,7 +189,7 @@
 #}
 {% macro documents_section(documents, titleTranslationKey, isTableSortable = true) %}
     {% if documents | length > 0 %}
-        <div class="mt-16">
+        <div class="mt-16" data-e2e-name="documents-section">
             <h2 class="woo-h2 woo-h2-spacing">{{ titleTranslationKey | trans }}</h2>
 
             {% if isTableSortable %}
@@ -212,7 +212,7 @@
         <div class="mt-16">
             <h2 class="woo-h2 woo-h2-spacing">{{ titleTranslationKey | trans }}</h2>
 
-            <div class="overflow-x-auto">
+            <div class="woo-responsive-table">
                 <table class="woo-table">
                     <caption class="sr-only">{{ titleTranslationKey | trans }}</caption>
                     <thead>

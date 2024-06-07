@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Twig\Runtime;
 
 use App\Citation;
-use App\Domain\Publication\Dossier\DossierStatus;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\History;
@@ -21,7 +20,6 @@ use App\SourceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Translation\Translator;
 use Twig\Extension\RuntimeExtensionInterface;
 
 /**
@@ -33,7 +31,6 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
     public function __construct(
         private readonly RequestStack $requestStack,
         private readonly ThumbnailStorageService $storageService,
-        private readonly Translator $translator,
         private readonly DocumentRepository $documentRepository,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly FacetTwigService $facetService,
@@ -70,36 +67,6 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
         }
 
         return false;
-    }
-
-    /**
-     * Returns badge based on status.
-     *
-     * @TODO: Remove as this uses bootstrap
-     */
-    public function statusBadge(DossierStatus $status): string
-    {
-        $color = match ($status) {
-            DossierStatus::SCHEDULED, DossierStatus::PREVIEW, DossierStatus::PUBLISHED => 'bhr-badge--green',
-            default => 'bhr-badge--purple',
-        };
-
-        return "<span class=\"bhr-badge {$color}\">" . $this->translator->trans($status->value) . '</span>';
-    }
-
-    /**
-     * Returns textual representation of a decision.
-     */
-    public function decision(string $value): string
-    {
-        return match ($value) {
-            Dossier::DECISION_ALREADY_PUBLIC => 'Reeds gepubliceerd',
-            Dossier::DECISION_PUBLIC => 'Openbaar',
-            Dossier::DECISION_NOT_PUBLIC => 'Niet openbaar',
-            Dossier::DECISION_NOTHING_FOUND => 'Niets gevonden',
-            Dossier::DECISION_PARTIAL_PUBLIC => 'Deels openbaar',
-            default => 'Onbekend',
-        };
     }
 
     /**

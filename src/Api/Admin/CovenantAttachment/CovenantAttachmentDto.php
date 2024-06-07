@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Api\Admin\CovenantAttachment;
 
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -13,15 +12,10 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Model\Operation;
+use App\Api\Admin\Attachment\AttachmentDto;
 use App\Api\Admin\Dossier\DossierReferenceDto;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\Covenant\Handler\CovenantAttachment\CovenantAttachmentNotFoundException;
-use Symfony\Component\Serializer\Attribute\Context;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
 
-/**
- * @SuppressWarnings(PHPMD.ExcessiveParameterList)
- */
 #[ApiResource(
     uriTemplate: '/covenant-attachments/{attachmentId}',
     operations: [
@@ -54,7 +48,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
     ],
     uriVariables: [
         'dossierId' => new Link(toProperty: 'dossier', fromClass: DossierReferenceDto::class),
-        'attachmentId' => new Link(fromClass: CovenantAttachmentDto::class),
+        'attachmentId' => new Link(fromClass: self::class),
     ],
     routePrefix: '/dossiers/{dossierId}',
     stateless: false,
@@ -63,55 +57,11 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
     ),
     paginationEnabled: false,
     exceptionToStatus: [
-        CovenantAttachmentNotFoundException::class => 404,
+        AttachmentNotFoundException::class => 404,
     ],
     provider: CovenantAttachmentProvider::class,
     processor: CovenantAttachmentProcessor::class,
 )]
-final readonly class CovenantAttachmentDto
+final readonly class CovenantAttachmentDto extends AttachmentDto
 {
-    /**
-     * @param string[] $grounds
-     */
-    public function __construct(
-        #[ApiProperty(writable: false, identifier: true, genId: false)]
-        public string $id,
-        public DossierReferenceDto $dossier,
-        public string $name,
-        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-        #[ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'format' => 'date',
-            ],
-            jsonSchemaContext: [
-                'type' => 'string',
-                'format' => 'date',
-            ]
-        )]
-        public \DateTimeImmutable $formalDate,
-        public string $type,
-        public ?string $mimeType,
-        public int $size,
-        public string $internalReference,
-        public string $language,
-        public array $grounds,
-    ) {
-    }
-
-    public static function fromEntity(CovenantAttachment $entity): self
-    {
-        return new self(
-            $entity->getId()->toRfc4122(),
-            DossierReferenceDto::fromEntity($entity->getDossier()),
-            $entity->getFileInfo()->getName() ?? '',
-            $entity->getFormalDate(),
-            $entity->getType()->value,
-            $entity->getFileInfo()->getMimeType(),
-            $entity->getFileInfo()->getSize(),
-            $entity->getInternalReference(),
-            $entity->getLanguage()->value,
-            $entity->getGrounds()
-        );
-    }
 }

@@ -1,208 +1,58 @@
-{% extends 'admin.html.twig' %}
-{% import "admin/document_macros.html.twig" as macro %}
+{% extends 'admin/dossier/publication/view.html.twig' %}
 
-{% set page_title = 'admin.global.file' | trans() ~ ' ' ~ dossier.dossierNr %}
-{% set firstOpenStep = workflowStatus.firstOpenStep.stepName.value | default %}
+{% set aboutTitle = 'admin.global.convenant_on' | trans %}
 
-{% block body %}
+{% set descriptionLabel = 'admin.dossiers.convenant.description' | trans %}
+{% set internalReferenceLabel = 'admin.dossiers.convenant.form.details.ref_int' | trans %}
 
-<div class="bhr-container bhr-container--sm">
-    <div class="mb-8">
-        <h1 class="mb-2">
-            <span class="block text-lg font-normal mb-2 text-bhr-black-olive">{{ 'admin.global.convenant_on' | trans() }}</span>
-            <span class="bhr-title-lg">{{ dossier.title }}</span>
-        </h1>
-        {{ status_badge(dossier.status) }}
-    </div>
+{% set dossierTypeTitle = 'global.covenant' | trans %}
+{% set periodLabel = 'admin.dossiers.convenant.period' | trans %}
+{% set summaryLabel = 'admin.dossiers.convenant.summary' | trans %}
+{% set documentLabel = 'admin.dossiers.convenant.document' | trans %}
+{% set downloadDocumentPath = path('app_admin_covenant_covenantdocument_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) %}
+{% set completeFirstOpenStepTitle = ('admin.dossiers.covenant.complete_step.' ~ workflowStatus.firstOpenStep.stepName.value | default) | trans %}
 
-    <div class="px-11">
-        <section class="bhr-card">
-            <twig:Admin:LeftAndRight>
-                <h2 class="bhr-title">{{ 'admin.dossiers.workflow.details' | trans() }}</h2>
+{% set deleteTitle = 'admin.dossiers.convenant.delete' | trans %}
+{% set deleteBullets = [
+    'admin.dossiers.convenant.delete_bullet-1' | trans,
+    'admin.dossiers.convenant.delete_bullet-2' | trans,
+    'admin.dossiers.convenant.delete_bullet-3' | trans,
+] %}
 
-                <twig:block name="right">
-                    {% if matrix_has_permission('dossier.update') %}
-                    <a class="bhr-button bhr-button--secondary" href="{{ path(workflowStatus.detailsPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">{{ 'admin.global.edit' | trans() }} <span class="sr-only">({{ 'admin.dossiers.workflow.details' | trans() }})</span></a>
-                    {% endif %}
-                </twig:block>
-            </twig:Admin:LeftAndRight>
+{% block dossier_period %}
+<twig:Admin:Definition term="{{ 'admin.dossiers.convenant.period' | trans }}">
+    {% if dossier.dateFrom is not empty %}
+        <twig:Date date="{{ dossier.dateFrom }}" />
+    {% else %}
+        ({{ 'admin.global.no_record' | trans | lower }})
+    {% endif %}
+    {{ 'global.from_till.abbreviation' | trans }}
+    {% if dossier.dateTo is not empty %}
+        <twig:Date date="{{ dossier.dateTo }}" />
+    {% else %}
+        ({{ 'admin.global.no_record' | trans | lower }})
+    {% endif %}
+</twig:Admin:Definition>
+{% endblock %}
 
-            <dl class="text-lg">
-                <twig:Admin:Definition term="{{ 'admin.dossiers.convenant.description' | trans() }}">
-                    {{ dossier.title }}
-                </twig:Admin:Definition>
+{% block dossier_parties %}
+<twig:Admin:Definition term="{{ 'admin.dossiers.convenant.parties' | trans }}">
+    {% if dossier.parties | length > 0 %}
+        <ul>
+        {% for party in dossier.parties %}
+            <li>{{ party }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+    <p>{{ 'admin.global.no_record' | trans }}</p>
+    {% endif %}
+</twig:Admin:Definition>
+{% endblock %}
 
-                <twig:Admin:Definition term="{{ 'admin.global.responsible_department' | trans() }}">
-                    {{ dossier.departments[0].name | default('admin.global.no_record' | trans()) }}
-                </twig:Admin:Definition>
-
-                <twig:Admin:Definition term="{{ 'admin.dossiers.convenant.form.details.ref_nr' | trans() }}">
-                        {{ dossier.dossierNr }}
-                </twig:Admin:Definition>
-
-                <twig:Admin:Definition term="{{ 'admin.dossiers.convenant.form.details.ref_int' | trans() }}">
-                    {{ dossier.internalReference }}
-                </twig:Admin:Definition>
-            </dl>
-        </section>
-
-        <section class="bhr-card mt-10">
-            <twig:Admin:LeftAndRight>
-                <h2 class="bhr-title">{{ 'global.covenant' | trans }}</h2>
-
-                <twig:block name="right">
-                    {% if matrix_has_permission('dossier.update') %}
-                        {% if workflowStatus.isReadyForDecision %}
-                            <a class="bhr-button bhr-button--secondary" href="{{ path(workflowStatus.contentStep.routeName, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">{{ 'admin.global.edit' | trans() }} <span class="sr-only">({{ 'admin.dossiers.workflow.content' | trans() }})</span></a>
-                        {% endif %}
-                    {% endif %}
-                </twig:block>
-            </twig:Admin:LeftAndRight>
-
-            {% if workflowStatus.contentStep.isAccessible %}
-                <dl class="text-lg">
-                    <twig:Admin:Definition term="{{ 'admin.dossiers.convenant.parties' | trans() }}">
-                        <ul>
-                        {% for party in dossier.parties %}
-                            <li>{{ party }}</li>
-                        {% endfor %}
-                        </ul>
-                    </twig:Admin:Definition>
-
-                    <twig:Admin:Definition term="{{ 'admin.dossiers.convenant.period' | trans() }}">
-                        {{ dossier.dateFrom | format_date('long') }} {{ 'global.from_till.abbreviation' | trans() }} {{ dossier.dateTo | format_date('long') }}
-                    </twig:Admin:Definition>
-
-                    <twig:Admin:Definition term="{{ 'admin.dossiers.convenant.summary' | trans() }}">
-                        {{ dossier.summary }}
-                    </twig:Admin:Definition>
-
-                    <twig:Admin:Definition term="{{ 'admin.dossiers.convenant.document' | trans() }}">
-                        {% if dossier.document.fileInfo.name is defined %}
-                            <twig:Admin:IconLink
-                                href="{{ path('app_admin_covenant_covenantdocument_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
-                                icon="file-pdf"
-                                text="{{ dossier.document.fileInfo.name }}"
-                            />
-                        {% else %}
-                            {{ 'admin.global.no_record' | trans() }}
-                        {% endif %}
-                    </twig:Admin:Definition>
-
-                    {% if dossier.previousVersionLink is not empty %}
-                        <twig:Admin:Definition term="{{ 'admin.dossiers.convenant.previous_version_link' | trans() }}">
-                            <a class="text-bhr-sea-blue underline" href="{{ dossier.previousVersionLink }}">{{ dossier.previousVersionLink }}</a>
-                        </twig:Admin:Definition>
-                    {% endif %}
-
-
-                    {% if attachments | length > 0 %}
-                        <twig:Admin:Definition term="Bijlagen">
-                            <ul>
-                                {% for attachment in attachments %}
-                                    <li class="pt-0.5">
-                                        <twig:Admin:DownloadFile
-                                            href="{{ attachment.downloadUrl }}"
-                                            mimeType="{{ attachment.mimeType }}"
-                                            text="{{ attachment.name }}"
-                                        />
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </twig:Admin:Definition>
-                    {% endif %}
-                </dl>
-            {% else %}
-                <p class="font-bold text-lg text-center py-6">{{ ("complete_step_" ~ firstOpenStep) | trans }}</p>
-            {% endif %}
-        </section>
-
-
-        <section class="bhr-card mt-10">
-            <twig:Admin:LeftAndRight>
-                <div class="flex items-center">
-                    <h2 class="bhr-title mr-3">{{ 'admin.global.dossier' | trans }}</h2>
-                    {{ status_badge(dossier.status) }}
-                </div>
-
-                <twig:block name="right">
-                    {% if matrix_has_permission('dossier.update') %}
-                    {% if workflowStatus.isReadyForPublication %}
-                        <a class="bhr-button bhr-button--secondary" href="{{ path(workflowStatus.publicationPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">{{ 'admin.global.edit' | trans() }} <span class="sr-only">({{ 'admin.global.dossier' | trans() }})</span></a>
-                    {% endif %}
-                    {% endif %}
-                </twig:block>
-            </twig:Admin:LeftAndRight>
-
-            {% if workflowStatus.isCompleted %}
-                <dl class="text-lg">
-                    <twig:Admin:Definition term="{{ 'admin.dossiers.public_date' | trans() }}">
-                        {% if dossier.publicationDate is not empty %}
-                            <time datetime="{{ dossier.publicationDate | date("Y-m-d") }}">{{ dossier.publicationDate | format_date('long') }}</time>
-                        {% else %}
-                            {{ 'admin.global.no_record' | trans() }}
-                        {% endif %}
-                    </twig:Admin:Definition>
-
-                    {% if workflowStatus.isPubliclyAvailable %}
-                    <twig:Admin:Definition term="{{ 'admin.dossiers.public_link' | trans() }}">
-                        <p>{{ 'admin.dossiers.public_link_available' | trans() }} <strong>{{ dossier.publicationDate | format_date('long') }}</strong></p>
-                        <twig:Admin:CopyToClipboardLayout copy="{{ publicDossierUrl }}">
-                            <a class="bhr-a" href="{{ publicDossierUrl }}">
-                                {{ publicDossierUrl }}
-                            </a>
-                        </twig:Admin:CopyToClipboardLayout>
-                    </twig:Admin:Definition>
-
-                    {% endif %}
-                </dl>
-            {% else %}
-                <p class="font-bold text-lg text-center py-6">{{ ("complete_step_" ~ firstOpenStep) | trans }}</p>
-            {% endif %}
-        </section>
-
-        {% if matrix_has_permission('dossier.delete') and workflowStatus.isConcept %}
-            <section class="bhr-card mt-10">
-                <h2 class="bhr-title mb-6">{{ 'admin.global.danger_zone' | trans() }}</h2>
-
-                <h3 class="font-bold">{{ 'admin.dossiers.convenant.delete' | trans() }}</h3>
-                    <ul class="bhr-ul mb-4">
-                        <li class="bhr-li">{{ 'admin.dossiers.convenant.delete_bullet-1' | trans() }}</li>
-                        <li class="bhr-li">{{ 'admin.dossiers.convenant.delete_bullet-2' | trans() }}</li>
-                        <li class="bhr-li">{{ 'admin.dossiers.convenant.delete_bullet-3' | trans() }}</li>
-                    </ul>
-                    <a class="bhr-button bhr-button--danger" data-e2e-name="delete-dossier-link" href="{{ path('app_admin_dossier_delete', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ 'admin.dossiers.convenant.delete' | trans() }}</a>
-            </section>
-        {% endif %}
-
-        {% set entries = get_backend_history('dossier', dossier.id) %}
-        {% if entries | length > 0 %}
-            <div class="bhr-card mt-10">
-                <h2 class="bhr-title mb-6">{{ 'global.history' | trans() }}</h2>
-
-                <table class="bhr-table table-fixed">
-                    <thead>
-                        <th class="bhr-column-head w-52" scope="col">{{'public.global.date' | trans() }}</th>
-                        <th class="bhr-column-head" scope="col">{{'global.action' | trans() }}</th>
-                    </thead>
-                    <tbody>
-                    {% for entry in entries %}
-                        {% set tr = history_trans(entry, "private") %}
-                        {% if tr is not empty %}
-                        <tr>
-                            <td>
-                                <time datetime="{{ entry.createdDt | date("Y-m-d G:i") }}">{{ entry.createdDt | format_datetime(pattern="d LLLL y H:mm") }}</time>
-                            </td>
-                            <td>
-                                {{ tr }}
-                            </td>
-                        </tr>
-                        {% endif %}
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% endif %}
-    </div>
-</div>
+{% block dossier_previous_link %}
+    {% if dossier.previousVersionLink is not empty %}
+        <twig:Admin:Definition term="{{ 'admin.dossiers.convenant.previous_version_link' | trans }}">
+            <a class="text-bhr-sea-blue underline" href="{{ dossier.previousVersionLink }}">{{ dossier.previousVersionLink }}</a>
+        </twig:Admin:Definition>
+    {% endif %}
 {% endblock %}

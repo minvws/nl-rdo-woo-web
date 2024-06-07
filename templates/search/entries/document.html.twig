@@ -13,9 +13,9 @@
             {{ ("public.documents.file_type." ~ entry.document.fileInfo.sourceType) | trans }}
         </li>
         {% if entry.document.fileInfo.isUploaded %}
-        <li class="woo-search-result__spec">{{ "global.number_of_pages" | trans({"count": entry.document.pagecount})}}</li>
+        <li class="woo-search-result__spec">{{ "global.number_of_pages" | trans({"count": entry.document.pageCount})}}</li>
         {% endif %}
-        <li class="woo-search-result__spec">{{ entry.document.judgement.value | decision }}</li>
+        <li class="woo-search-result__spec">{{ entry.document.judgement | trans }}</li>
     </ul>
 </header>
 

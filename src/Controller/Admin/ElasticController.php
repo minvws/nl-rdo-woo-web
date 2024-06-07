@@ -31,9 +31,9 @@ class ElasticController extends AbstractController
     #[IsGranted('AuthMatrix.elastic.read')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
-        $breadcrumbs->addItem('Elastic');
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
+        $breadcrumbs->addRouteItem('global.admin', 'app_admin');
+        $breadcrumbs->addItem('admin.elastic.generic');
 
         $indices = $this->indexService->list();
         $rolloverDetails = $this->rolloverService->getDetailsFromIndices($indices);
@@ -48,10 +48,10 @@ class ElasticController extends AbstractController
     #[IsGranted('AuthMatrix.elastic.create')]
     public function create(Breadcrumbs $breadcrumbs, Request $request): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
-        $breadcrumbs->addRouteItem('Elastic', 'app_admin_elastic');
-        $breadcrumbs->addItem('New elasticsearch rollover');
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
+        $breadcrumbs->addRouteItem('global.admin', 'app_admin');
+        $breadcrumbs->addRouteItem('admin.elastic.generic', 'app_admin_elastic');
+        $breadcrumbs->addItem('admin.elastic.new_rollover');
 
         $form = $this->createForm(
             RolloverParametersType::class,
@@ -79,10 +79,10 @@ class ElasticController extends AbstractController
     #[IsGranted('AuthMatrix.elastic.read')]
     public function details(Breadcrumbs $breadcrumbs, string $indexName): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
-        $breadcrumbs->addRouteItem('Elastic', 'app_admin_elastic');
-        $breadcrumbs->addItem('Details');
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
+        $breadcrumbs->addRouteItem('global.admin', 'app_admin');
+        $breadcrumbs->addRouteItem('admin.elastic.generic', 'app_admin_elastic');
+        $breadcrumbs->addItem('global.details');
 
         $indices = $this->indexService->find($indexName);
         if (empty($indices)) {
@@ -145,9 +145,9 @@ class ElasticController extends AbstractController
     #[IsGranted('AuthMatrix.elastic.update')]
     public function makeLive(Breadcrumbs $breadcrumbs, Request $request, string $indexName): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addRouteItem('Admin', 'app_admin');
-        $breadcrumbs->addRouteItem('Elastic', 'app_admin_elastic');
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
+        $breadcrumbs->addRouteItem('global.admin', 'app_admin');
+        $breadcrumbs->addRouteItem('admin.elastic.generic', 'app_admin_elastic');
         $breadcrumbs->addItem('admin.elastic.promote_to_live');
 
         $indices = $this->indexService->find($indexName);

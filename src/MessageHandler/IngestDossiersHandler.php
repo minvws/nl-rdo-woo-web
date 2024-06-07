@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
+use App\Domain\Publication\Dossier\AbstractDossierRepository;
 use App\Message\IngestDossiersMessage;
-use App\Repository\AbstractDossierRepository;
 use App\Service\DossierService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;

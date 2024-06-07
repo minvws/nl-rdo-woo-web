@@ -22,7 +22,7 @@
 
     {% if inventoryStatus.isQueued or inventoryStatus.isRunning %}
         <div class="pt-8 js-inventory-status-continue-later">
-            <a href="{{ path('app_admin_dossiers') }}" class="bhr-button bhr-button--secondary bhr-button--fixed-width">Later verdergaan</a>
+            <a href="{{ path('app_admin_dossiers') }}" class="bhr-button bhr-button--secondary bhr-button--fixed-width">{{ 'admin.global.continue_later' | trans }}</a>
         </div>
     {% endif %}
 </div>
@@ -32,7 +32,7 @@
     <div class="text-lg pb-2">
         <h2 class="bhr-form-help">Stap 2</h2>
         <p><strong>Upload documenten</strong></p>
-        <p class="bhr-form-help mt-2 mb-3">Upload alle documenten die met beoordeling ‘openbaar’ of ‘deels openbaar’ in het productierapport staan. Zorg dat de bestandsnamen overeenkomen met de documentnummers in het productierapport (bijvoorbeeld: 123.pdf)</p>
+        <p class="bhr-form-help mt-2 mb-3">Upload alle documenten die met beoordeling 'openbaar' of 'deels openbaar' in het productierapport staan. Zorg dat de bestandsnamen overeenkomen met de documentnummers in het productierapport (bijvoorbeeld: 123.pdf)</p>
     </div>
 
     <twig:Admin:DossierDocuments
@@ -52,12 +52,12 @@
             class="bhr-button bhr-button--primary bhr-button--fixed-width mr-4"
             id="js-dossier-documents-next-step"
             data-e2e-name="to-next-step-link"
-        >{{ "On to publication"|trans }}</a>
+        >{{ 'publication.dossier.to_publication' | trans }}</a>
 
         <a
-            href="{{ path('app_admin_dossier', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
+            href="{{ path('app_admin_dossier', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
             class="bhr-button bhr-button--secondary bhr-button--fixed-width mr-4"
-        >{{ "Later verdergaan"|trans }}</a>
+        >{{ 'admin.global.continue_later' | trans }}</a>
     </div>
 </div>
 {% endif %}

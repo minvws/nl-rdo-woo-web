@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace App\Domain\Search\Result;
 
 use App\Domain\Search\Index\ElasticDocumentType;
-use App\ViewModel\CovenantSearchEntry;
-use App\ViewModel\DossierSearchEntry;
 
 class MainTypeEntry implements ResultEntryInterface
 {
     public function __construct(
         private readonly ElasticDocumentType $type,
-        private readonly DossierSearchEntry|CovenantSearchEntry $dossier,
+        private readonly DossierTypeSearchResultInterface $dossier,
         /** @var string[] */
         private readonly array $highlights,
     ) {
@@ -23,7 +21,7 @@ class MainTypeEntry implements ResultEntryInterface
         return $this->type;
     }
 
-    public function getDossier(): DossierSearchEntry|CovenantSearchEntry
+    public function getDossier(): DossierTypeSearchResultInterface
     {
         return $this->dossier;
     }

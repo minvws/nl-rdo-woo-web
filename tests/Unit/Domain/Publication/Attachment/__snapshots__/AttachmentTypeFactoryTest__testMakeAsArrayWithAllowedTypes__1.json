@@ -1,0 +1,46 @@
+[
+    {
+        "type": "AttachmentTypeBranch",
+        "label": "branch.decision_to_impose",
+        "subbranch": {
+            "type": "AttachmentTypeBranch",
+            "label": "branch.decision_to_impose_enforcement",
+            "subbranch": null,
+            "attachmentTypes": [
+                {
+                    "type": "AttachmentType",
+                    "value": "c_a55b7649",
+                    "label": "decision_to_impose_an_order_under_administrative_enforcement"
+                }
+            ]
+        },
+        "attachmentTypes": []
+    },
+    {
+        "type": "AttachmentType",
+        "value": "c_386e74cb",
+        "label": "covenant"
+    },
+    {
+        "type": "AttachmentTypeBranch",
+        "label": "branch.parliamentary_document",
+        "subbranch": {
+            "type": "AttachmentTypeBranch",
+            "label": "branch.parliamentary_question",
+            "subbranch": null,
+            "attachmentTypes": [
+                {
+                    "type": "AttachmentType",
+                    "value": "c_6d494ab6",
+                    "label": "parliamentary_question_with_answer"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_03c52ba0",
+                    "label": "parliamentary_question_without_answer"
+                }
+            ]
+        },
+        "attachmentTypes": []
+    }
+]

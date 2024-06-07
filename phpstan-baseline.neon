@@ -1,14 +1,89 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Parameter \\$frameworkConfig of anonymous function has invalid type Symfony\\\\Config\\\\FrameworkConfig\\.$#"
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
 			count: 1
-			path: config/packages/workflow.php
+			path: src/Command/CleanSheet.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/ExtractContent.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/GenerateBatch.php
 
 		-
 			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:clear\\(\\) invoked with 1 parameter, 0 required\\.$#"
 			count: 1
 			path: src/Command/GenerateDocuments.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/GenerateDocuments.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Command/Index/Alias.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/Index/Create.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/Index/Create.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/Index/Delete.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Command/Ingest/IngestDossier.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/LoadFixture.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/NormalizeDocumentGrounds.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Command/User/Create.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/User/Reset.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/User/View.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/Where.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Controller/Admin/Dossier/WooDecision/DocumentsEditStepController.php
 
 		-
 			message: "#^Parameter \\#1 \\$errors of method App\\\\Form\\\\Dossier\\\\WooDecision\\\\TranslatableFormErrorMapper\\:\\:mapGenericErrorsToForm\\(\\) expects array\\<int, array\\{message\\: string, translation\\: string, placeholders\\: array\\<string, string\\>\\}\\>, array\\<int, mixed\\> given\\.$#"
@@ -21,44 +96,44 @@ parameters:
 			path: src/Controller/Admin/InquiryController.php
 
 		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Controller/Admin/InquiryController.php
+
+		-
+			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
+			count: 1
+			path: src/Controller/Admin/SecurityController.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Controller/Admin/SecurityController.php
+
+		-
 			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
 			count: 3
 			path: src/Controller/Admin/UserController.php
 
 		-
-			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
-			count: 1
-			path: src/Controller/SecurityController.php
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/DataFixtures/WorkerStatsFixtures.php
 
 		-
-			message: "#^Call to method workflows\\(\\) on an unknown class Symfony\\\\Config\\\\FrameworkConfig\\.$#"
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
 			count: 1
-			path: src/Domain/Publication/Dossier/Type/Covenant/CovenantWorkflow.php
+			path: src/Doctrine/EncryptedArray.php
 
 		-
-			message: "#^Parameter \\$framework of method App\\\\Domain\\\\Publication\\\\Dossier\\\\Type\\\\Covenant\\\\CovenantWorkflow\\:\\:configure\\(\\) has invalid type Symfony\\\\Config\\\\FrameworkConfig\\.$#"
-			count: 1
-			path: src/Domain/Publication/Dossier/Type/Covenant/CovenantWorkflow.php
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Doctrine/EncryptedString.php
 
 		-
-			message: "#^Call to method workflows\\(\\) on an unknown class Symfony\\\\Config\\\\FrameworkConfig\\.$#"
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
 			count: 1
-			path: src/Domain/Publication/Dossier/Type/WooDecision/WooDecisionWorkflow.php
-
-		-
-			message: "#^Parameter \\$framework of method App\\\\Domain\\\\Publication\\\\Dossier\\\\Type\\\\WooDecision\\\\WooDecisionWorkflow\\:\\:configure\\(\\) has invalid type Symfony\\\\Config\\\\FrameworkConfig\\.$#"
-			count: 1
-			path: src/Domain/Publication/Dossier/Type/WooDecision/WooDecisionWorkflow.php
-
-		-
-			message: "#^Call to method transition\\(\\) on an unknown class Symfony\\\\Config\\\\Framework\\\\Workflows\\\\WorkflowsConfig\\.$#"
-			count: 1
-			path: src/Domain/Publication/Dossier/Type/WorkflowConfigHelper.php
-
-		-
-			message: "#^Parameter \\$workflow of method App\\\\Domain\\\\Publication\\\\Dossier\\\\Type\\\\WorkflowConfigHelper\\:\\:defineNonMovingTransitions\\(\\) has invalid type Symfony\\\\Config\\\\Framework\\\\Workflows\\\\WorkflowsConfig\\.$#"
-			count: 1
-			path: src/Domain/Publication/Dossier/Type/WorkflowConfigHelper.php
+			path: src/EventSubscriber/LocaleListener.php
 
 		-
 			message: "#^Method App\\\\Repository\\\\InquiryRepository\\:\\:getDocCountsByDossier\\(\\) should return array\\<int, array\\{title\\: string, dossierNr\\: string, doccount\\: int\\}\\> but returns array\\.$#"
@@ -66,9 +141,54 @@ parameters:
 			path: src/Repository/InquiryRepository.php
 
 		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Service/FileReader/CsvReader.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Service/FileReader/CsvReader.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Service/FileReader/ExcelReader.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Service/FileReader/ExcelReader.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Service/FileReader/ExcelReaderFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Service/Inquiry/InquiryLinkImporter.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 3
+			path: src/Service/Inventory/InventoryDataHelper.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Service/Inventory/Reader/InventoryReader.php
+
+		-
 			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser\\|null is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
 			count: 2
 			path: src/Service/OrganisationService.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Service/Security/OrganisationSwitcher.php
 
 		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
@@ -79,6 +199,11 @@ parameters:
 			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser\\|null is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
 			count: 2
 			path: src/Service/UserService.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Twig/Runtime/CspExtensionRuntime.php
 
 		-
 			message: "#^Method App\\\\Tests\\\\Unit\\\\Enum\\\\DepartmentTest\\:\\:getEqualsShouldReturnFalseData\\(\\) return type has no value type specified in iterable type array\\.$#"

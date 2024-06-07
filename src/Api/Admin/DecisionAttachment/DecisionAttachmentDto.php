@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Api\Admin\DecisionAttachment;
 
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -13,17 +12,15 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Model\Operation;
+use App\Api\Admin\Attachment\AttachmentDto;
 use App\Api\Admin\Dossier\DossierReferenceDto;
-use App\Domain\Publication\Dossier\Type\WooDecision\Handler\DecisionAttachmentNotFoundException;
-use App\Entity\DecisionAttachment;
-use Symfony\Component\Serializer\Attribute\Context;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
 #[ApiResource(
-    uriTemplate: '/decision-attachments/{decisionAttachmentId}',
+    uriTemplate: '/decision-attachments/{attachmentId}',
     operations: [
         new Get(
             security: "is_granted('AuthMatrix.dossier.read')",
@@ -34,7 +31,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
                 'dossierId' => new Link(toProperty: 'dossier', fromClass: DossierReferenceDto::class),
             ],
             security: "is_granted('AuthMatrix.dossier.read')",
-            itemUriTemplate: '/decision-attachments/{decisionAttachmentId}',
+            itemUriTemplate: '/decision-attachments/{attachmentId}',
         ),
         new Post(
             uriTemplate: '/decision-attachments',
@@ -54,7 +51,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
     ],
     uriVariables: [
         'dossierId' => new Link(toProperty: 'dossier', fromClass: DossierReferenceDto::class),
-        'decisionAttachmentId' => new Link(fromClass: DecisionAttachmentDto::class),
+        'attachmentId' => new Link(fromClass: self::class),
     ],
     routePrefix: '/dossiers/{dossierId}',
     stateless: false,
@@ -63,55 +60,11 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
     ),
     paginationEnabled: false,
     exceptionToStatus: [
-        DecisionAttachmentNotFoundException::class => 404,
+        AttachmentNotFoundException::class => 404,
     ],
     provider: DecisionAttachmentProvider::class,
     processor: DecisionAttachmentProcessor::class,
 )]
-final readonly class DecisionAttachmentDto
+final readonly class DecisionAttachmentDto extends AttachmentDto
 {
-    /**
-     * @param list<string> $grounds
-     */
-    public function __construct(
-        #[ApiProperty(writable: false, identifier: true, genId: false)]
-        public string $id,
-        public DossierReferenceDto $dossier,
-        public string $name,
-        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-        #[ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'format' => 'date',
-            ],
-            jsonSchemaContext: [
-                'type' => 'string',
-                'format' => 'date',
-            ]
-        )]
-        public \DateTimeImmutable $formalDate,
-        public string $type,
-        public ?string $mimeType,
-        public int $size,
-        public string $internalReference,
-        public string $language,
-        public array $grounds,
-    ) {
-    }
-
-    public static function fromEntity(DecisionAttachment $entity): self
-    {
-        return new self(
-            $entity->getId()->toRfc4122(),
-            DossierReferenceDto::fromEntity($entity->getDossier()),
-            $entity->getFileInfo()->getName() ?? '',
-            $entity->getFormalDate(),
-            $entity->getType()->value,
-            $entity->getFileInfo()->getMimeType(),
-            $entity->getFileInfo()->getSize(),
-            $entity->getInternalReference(),
-            $entity->getLanguage()->value,
-            $entity->getGrounds()
-        );
-    }
 }

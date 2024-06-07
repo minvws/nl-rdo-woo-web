@@ -12,14 +12,14 @@
 {% block body %}
 <div class="bhr-container">
     <div class="px-11">
-        <h1 class="bhr-title mb-6">{{ "Admin" | trans() }}</h1>
+        <h1 class="bhr-title mb-6">{{ 'global.admin' | trans() }}</h1>
 
         <div class="bhr-card">
             <table class="bhr-table table-fixed">
                 <thead>
                     <tr>
-                        <th class="w-56 text-left" scope="col">Link</th>
-                        <th class="text-left" scope="col">Omschrijving</th>
+                        <th class="w-56 text-left" scope="col">{{ 'global.link' | trans }}</th>
+                        <th class="text-left" scope="col">{{ 'global.description' | trans }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,32 +27,32 @@
                         _self.table_row(
                             matrix_has_permission('dossier.administration'),
                             path('app_admin_dossier_administration'),
-                            "Dossier management" | trans,
-                            "This link provides access to dossier admin actions." | trans()
+                            'admin.decisions.manage' | trans,
+                            'admin.decisions.manage_help' | trans()
                         )
                     }}
                     {{
                         _self.table_row(
                             matrix_has_permission('inquiry.administration'),
                             path('app_admin_inquiry_administration'),
-                            "Inquiry management" | trans,
-                            "This link provides access to inquiry admin actions." | trans
+                            'admin.inquiries.manage' | trans,
+                            'admin.inquiries.manage_help' | trans
                         )
                     }}
                     {{
                         _self.table_row(
                             matrix_has_permission('stat.read'),
                             path('app_admin_stats'),
-                            "Statistics & Monitoring" | trans,
-                            "This link provides access to system statistics and monitoring." | trans
+                            'admin.stats.manage' | trans,
+                            'admin.stats.manage_help' | trans
                         )
                     }}
                     {{
                         _self.table_row(
                             matrix_has_permission('elastic.read'),
                             path('app_admin_elastic'),
-                            "Elasticsearch management" | trans,
-                            "This link provides access to Elasticsearch index management." | trans
+                            'admin.elastic.manage' | trans,
+                            'admin.elastic.mange_help' | trans
                         )
                     }}
                 </tbody>

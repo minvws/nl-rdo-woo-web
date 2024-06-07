@@ -5,47 +5,20 @@ declare(strict_types=1);
 namespace App\Api\Admin\CovenantDocument;
 
 use ApiPlatform\Metadata\ApiProperty;
-use App\Domain\Publication\Attachment\AttachmentLanguage;
-use Symfony\Component\Validator\Constraints as Assert;
+use App\Api\Admin\Attachment\AttachmentCreateDto;
+use App\Domain\Publication\Attachment\AttachmentType;
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocument;
 
-class CovenantDocumentCreateDto
+final class CovenantDocumentCreateDto extends AttachmentCreateDto
 {
-    #[Assert\NotBlank]
-    #[Assert\Date]
-    #[ApiProperty(
-        openapiContext: [
-            'type' => 'string',
-            'format' => 'date',
-        ],
-        jsonSchemaContext: [
-            'type' => 'string',
-            'format' => 'date',
-        ]
-    )]
-    public string $formalDate;
-
-    public string $internalReference = '';
-
-    #[Assert\NotNull]
-    public AttachmentLanguage $language;
+    #[ApiProperty(writable: false)]
+    public AttachmentType $type = AttachmentType::COVENANT;
 
     /**
-     * @var string[] $grounds
+     * @return array<array-key,AttachmentType>
      */
-    #[Assert\All([
-        new Assert\Type('string'),
-        new Assert\NotBlank(),
-    ])]
-    public array $grounds = [];
-
-    #[Assert\NotBlank]
-    public string $uploadUuid;
-
-    #[Assert\NotBlank]
-    public string $name;
-
-    public function getFormalDateInstance(): \DateTimeImmutable
+    public function getAllowedAttachmentTypes(): array
     {
-        return new \DateTimeImmutable($this->formalDate);
+        return CovenantDocument::getAllowedTypes();
     }
 }

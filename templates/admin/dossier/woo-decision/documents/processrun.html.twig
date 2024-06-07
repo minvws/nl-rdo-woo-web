@@ -37,12 +37,12 @@
     <div class="px-11">
         <div class="bhr-card">
             <twig:Admin:Alert class="mb-8" type="success">
-                <strong>{{ "Inventory uploaded and checked" | trans }}</strong>
+                <strong>{{ 'admin.inventory.checked' | trans }}</strong>
             </twig:Admin:Alert>
 
             <div class="text-lg">
-                <h2 class="font-bold mb-4">{{ "if you continue the inventory will be replaced" | trans }}</h2>
-                <p>{{ "This has the following consequences" | trans }}:</p>
+                <h2 class="font-bold mb-4">{{ 'admin.inventory.warning' | trans }}</h2>
+                <p>{{ 'admin.inventory.explanation' | trans }}:</p>
                 <ul class="bhr-ul">
                     {% if changeset['create'] > 0 %}
                         <li class="bhr-li">{{ "admin.dossiers.documents_added" | trans({'count': changeset['create']}) }}</li>
@@ -54,8 +54,8 @@
             </div>
 
             <div class="mt-8">
-                <a class="bhr-button bhr-button--primary bhr-button--fixed-width mr-4" href="?confirm=1">{{ "Confirm inventory replacement" | trans }}</a>
-                <a class="bhr-button bhr-button--secondary bhr-button--fixed-width" href="?reject=1">{{ "Reject inventory replacement" | trans }}</a>
+                <a class="bhr-button bhr-button--primary bhr-button--fixed-width mr-4" href="?confirm=1" data-e2e-name="confirm-replacement">{{ 'admin.inventory.confirm_replacement' | trans }}</a>
+                <a class="bhr-button bhr-button--secondary bhr-button--fixed-width" href="?reject=1">{{ 'global.cancel' | trans }}</a>
             </div>
         </div>
     </div>
@@ -71,6 +71,6 @@
     {% else %}
         <p>De inventaris is succesvol vervangen.</p>
 
-        <p class="mt-6"><a class="bhr-button bhr-button--primary" href="{{ path('app_admin_dossier_woodecision_documents_edit', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">Naar documenten</a></p>
+        <p class="mt-6"><a class="bhr-button bhr-button--primary" href="{{ path('app_admin_dossier_woodecision_documents_edit', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" data-e2e-name="continue-to-documents">Naar documenten</a></p>
     {% endif %}
 {% endif %}

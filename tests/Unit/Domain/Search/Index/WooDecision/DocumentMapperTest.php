@@ -38,7 +38,7 @@ class DocumentMapperTest extends MockeryTestCase
         $dossier->shouldReceive('getDossierNr')->andReturn('dos-123');
 
         $dossierDoc = \Mockery::mock(ElasticDocument::class);
-        $dossierDoc->shouldReceive('getFieldValues')->andReturn(['mapped-dossier-data' => 'dummy']);
+        $dossierDoc->shouldReceive('getDocumentValues')->andReturn(['mapped-dossier-data' => 'dummy']);
 
         $this->wooDecisionMapper->expects('map')->with($dossier)->andReturn($dossierDoc);
 
@@ -104,7 +104,7 @@ class DocumentMapperTest extends MockeryTestCase
                     $inquiryId,
                 ],
             ],
-            $doc->getFieldValues(),
+            $doc->getDocumentValues(),
         );
     }
 }

@@ -17,7 +17,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Translation\Translator;
 
 class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
 {
@@ -31,7 +30,6 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
         $this->runtime = new WooExtensionRuntime(
             $this->requestStack,
             \Mockery::mock(ThumbnailStorageService::class),
-            \Mockery::mock(Translator::class),
             \Mockery::mock(DocumentRepository::class),
             \Mockery::mock(UrlGeneratorInterface::class),
             \Mockery::mock(FacetTwigService::class),

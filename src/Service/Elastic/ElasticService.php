@@ -89,7 +89,7 @@ EOF,
             'index' => ElasticConfig::WRITE_INDEX,
             'id' => $document->getDocumentNr(),
             'body' => [
-                'doc' => $this->documentMapper->map($document, $metadata, $pages)->getFieldValues(),
+                'doc' => $this->documentMapper->map($document, $metadata, $pages)->getDocumentValues(),
                 'doc_as_upsert' => true,
             ],
         ]);
@@ -127,7 +127,7 @@ EOF,
      */
     public function updateDossier(Dossier $dossier, bool $updateDocuments = true): void
     {
-        $dossierDoc = $this->wooDecisionMapper->map($dossier)->getFieldValues();
+        $dossierDoc = $this->wooDecisionMapper->map($dossier)->getDocumentValues();
 
         // Update main dossier document
         $this->logger->debug('[Elasticsearch][Update Dossier] Updating dossier');
@@ -151,7 +151,7 @@ EOF,
             'index' => ElasticConfig::WRITE_INDEX,
             'id' => $id,
             'body' => [
-                'doc' => $doc->getFieldValues(),
+                'doc' => $doc->getDocumentValues(),
                 'doc_as_upsert' => true,
             ],
         ]);

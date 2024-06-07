@@ -56,8 +56,7 @@ tasks:
     cmds:
       - task: :up
       - source .venv/bin/activate
-      - robot --outputdir tests/robot_framework/results --include '{{.tag}}' -v headless:false -v RUN_LOCALLY:True tests/robot_framework
-      - task: :stop
+      - robot  --outputdir tests/robot_framework/results --include '{{.tag}}' -v headless:false -v RUN_LOCALLY:True tests/robot_framework
 
   test-headless:
     desc: Run Robot tests with headless browser
@@ -66,7 +65,6 @@ tasks:
       - task: :up
       - source .venv/bin/activate
       - robot --outputdir tests/robot_framework/results --include '{{.tag}}' -v headless:true -v RUN_LOCALLY:True tests/robot_framework
-      - task: :stop
 
   robocop:
     desc: Run Robocop

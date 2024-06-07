@@ -80,9 +80,10 @@ class DetailsType extends AbstractDossierStepType
                 'label' => 'global.date_to',
                 'required' => false,
                 'placeholder' => 'global.date_to.placeholder',
-                'day_mode' => YearMonthType::MODE_TO,
-                'min_years' => 10,
-                'plus_years' => 5,
+                YearMonthType::DAY_MODE => YearMonthType::MODE_TO,
+                YearMonthType::MIN_YEARS => 10,
+                YearMonthType::PLUS_YEARS => 5,
+                YearMonthType::REVERSE => true,
                 'property_path' => 'dateTo',
             ])
             ->add('internal_reference', TextType::class, [
@@ -226,7 +227,7 @@ class DetailsType extends AbstractDossierStepType
                 'choice_label' => 'name_and_short',
                 'placeholder' => 'admin.publications.responsible_department_placeholder',
                 'attr' => [
-                    'class' => 'bhr-input-select w-3/6',
+                    'class' => 'bhr-input-select w-full',
                 ],
             ];
 

@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\Covenant;
 
+use App\Domain\Publication\Dossier\Command\CreateDossierCommand;
+use App\Domain\Publication\Dossier\Command\UpdateDossierDetailsCommand;
 use App\Domain\Publication\Dossier\DossierFactory;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\Covenant\Command\CreateCovenantCommand;
-use App\Domain\Publication\Dossier\Type\Covenant\Command\UpdateCovenantDetailsCommand;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\DossierType;
+use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use App\Form\Dossier\Covenant\DetailsType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +23,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class DetailsStepController extends AbstractController
 {
     private const STEP_NAME = StepName::DETAILS;
@@ -48,7 +52,7 @@ class DetailsStepController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->messageBus->dispatch(
-                new CreateCovenantCommand($dossier),
+                new CreateDossierCommand($dossier),
             );
 
             $wizardStatus = $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME);
@@ -79,7 +83,7 @@ class DetailsStepController extends AbstractController
             'app_admin_dossier',
             ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
         );
-        $breadcrumbs->addItem('workflow_step_details');
+        $breadcrumbs->addItem('admin.dossiers.covenant.step.details');
 
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME);
         if (! $wizardStatus->isCurrentStepAccessibleInConceptMode()) {
@@ -90,7 +94,7 @@ class DetailsStepController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->messageBus->dispatch(
-                new UpdateCovenantDetailsCommand($dossier),
+                new UpdateDossierDetailsCommand($dossier),
             );
 
             return $this->stepHelper->redirectAfterFormSubmit($wizardStatus, $form);
@@ -114,7 +118,7 @@ class DetailsStepController extends AbstractController
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
-        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'workflow_step_details');
+        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossiers.covenant.step.details');
 
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME);
         if (! $wizardStatus->isCurrentStepAccessibleInEditMode()) {
@@ -130,7 +134,7 @@ class DetailsStepController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->messageBus->dispatch(
-                new UpdateCovenantDetailsCommand($dossier),
+                new UpdateDossierDetailsCommand($dossier),
             );
 
             return $this->stepHelper->redirectToDossier($dossier);
@@ -149,7 +153,12 @@ class DetailsStepController extends AbstractController
         return $this->createForm(
             DetailsType::class,
             $dossier,
-            ['validation_groups' => [self::STEP_NAME->value]]
+            [
+                'validation_groups' => [
+                    self::STEP_NAME->value,
+                    DossierValidationGroup::COVENANT_DETAILS->value,
+                ],
+            ]
         );
     }
 }

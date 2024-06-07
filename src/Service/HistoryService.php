@@ -31,8 +31,12 @@ class HistoryService
     /**
      * @param mixed[] $context
      */
-    public function addDossierEntry(AbstractDossier $dossier, string $key, array $context, string $mode = self::MODE_BOTH): void
-    {
+    public function addDossierEntry(
+        AbstractDossier $dossier,
+        string $key,
+        array $context = [],
+        string $mode = self::MODE_BOTH,
+    ): void {
         $this->addEntry(self::TYPE_DOSSIER, $dossier->getId(), $key, $context, $mode, flush: true);
     }
 

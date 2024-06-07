@@ -2,7 +2,7 @@
 
 {% import "admin/macros/facet.html.twig" as macro %}
 
-{% set page_title = "Dossier administration" | trans %}
+{% set page_title = 'admin.decisions.manage' | trans %}
 
 {% block body %}
 <div class="bhr-container">
@@ -38,7 +38,7 @@
                     {% for dossier in dossiers %}
                     <tr>
                         <td>{{ dossier.dossierNr }}</td>
-                        <td>{{ status_badge(dossier.status) }}</td>
+                        <td><twig:Admin:DossierStatusBadge status="{{ dossier.status }}" /></td>
                         <td>{{ dossier.id }}</td>
                         <td>{{ dossier.title }}</td>
                         <td>

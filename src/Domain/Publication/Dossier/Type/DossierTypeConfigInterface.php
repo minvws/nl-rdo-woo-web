@@ -25,6 +25,4 @@ interface DossierTypeConfigInterface
     public function getSteps(): array;
 
     public function getCreateRouteName(): string;
-
-    public function getDeleteStrategy(): DossierDeleteStrategyInterface;
 }

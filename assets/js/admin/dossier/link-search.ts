@@ -35,10 +35,31 @@ export const dossierLinkSearch = () => {
 
   const displayPossibleErrors = () => {
     const errorNotification = selectedDossiersFallbackElement?.closest('.bhr-form-row--invalid') as HTMLDivElement;
-    if (errorNotification) {
-      selectedDossiersElement.querySelector('.js-input-errors')!.outerHTML = errorNotification.querySelector('.js-input-errors')!.outerHTML;
-      selectedDossiersElement.classList.add('bhr-form-row--invalid');
+    if (!errorNotification) {
+      return;
     }
+
+    const originalErrorElement = errorNotification.querySelector('.js-input-errors');
+    const copiedErrorElement = selectedDossiersElement.querySelector('.js-input-errors');
+
+    if (!originalErrorElement || !copiedErrorElement) {
+      return;
+    }
+
+    const invalidInputField = document.getElementById('link-dossiers-search-input') as HTMLInputElement;
+    if (!invalidInputField) {
+      return;
+    }
+
+    copiedErrorElement.outerHTML = originalErrorElement.outerHTML;
+
+    invalidInputField.setAttribute('aria-invalid', 'true');
+    const currentAriaDescribedBy = invalidInputField.getAttribute('aria-describedby') ?? '';
+    invalidInputField.setAttribute('aria-describedby', `${currentAriaDescribedBy} ${originalErrorElement.id}`.trim());
+
+    originalErrorElement.remove();
+
+    selectedDossiersElement.classList.add('bhr-form-row--invalid');
   };
 
   const addSearchResultsFunctionality = (searchResultsElement: HTMLElement, inputElement: HTMLInputElement) => {

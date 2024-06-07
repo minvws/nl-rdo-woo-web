@@ -1,0 +1,20 @@
+{% extends 'admin/dossier/publication/view.html.twig' %}
+
+{% set aboutTitle = 'admin.global.disposition_on' | trans %}
+
+{% set descriptionLabel = 'admin.dossiers.disposition.description' | trans %}
+{% set internalReferenceLabel = 'admin.dossiers.disposition.form.details.ref_int' | trans %}
+
+{% set dossierTypeTitle = 'dossier.type.disposition' | trans %}
+{% set periodLabel = 'admin.dossiers.disposition.date' | trans %}
+{% set summaryLabel = 'admin.dossiers.disposition.summary' | trans %}
+{% set documentLabel = 'admin.dossiers.disposition.document' | trans %}
+{% set downloadDocumentPath = path('app_admin_disposition_document_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) %}
+{% set completeFirstOpenStepTitle = ('admin.dossiers.disposition.complete_step.' ~ workflowStatus.firstOpenStep.stepName.value | default) | trans %}
+
+{% set deleteTitle = 'admin.dossiers.disposition.delete' | trans %}
+{% set deleteBullets = [
+    'admin.dossiers.disposition.delete_bullet-1' | trans,
+    'admin.dossiers.disposition.delete_bullet-2' | trans,
+    'admin.dossiers.disposition.delete_bullet-3' | trans,
+] %}

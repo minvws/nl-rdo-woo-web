@@ -52,7 +52,7 @@
                 </div>
 
                 <div class="bhr-form-row">
-                    <h3 class="bhr-label">{{ (user_info.email.vars.label | default('global.email.capital')) | trans }}</h3>
+                    <h3 class="bhr-label">{{ (user_info.email.vars.label | default('global.email')) | trans }}</h3>
 
                     {{ form_help(user_info.email) }}
                     <p><strong>{{ field_value(user_info.email) }}</strong></p>

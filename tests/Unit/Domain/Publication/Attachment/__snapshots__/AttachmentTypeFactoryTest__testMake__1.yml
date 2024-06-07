@@ -1,43 +1,39 @@
 -
     branch: false
     attachmentTypes: true
-    name: adviesdocument
--
-    branch: false
-    attachmentTypes: true
-    name: beleidsdocument
+    name: branch.advice_document
 -
     branch: true
     attachmentTypes: true
-    name: beleidsdocument
+    name: branch.policy_document
 -
     branch: true
     attachmentTypes: true
-    name: beschikking
+    name: branch.decision_to_impose
 -
     branch: false
     attachmentTypes: true
-    name: brief
+    name: branch.letter
 -
     name: COVENANT
     value: c_386e74cb
 -
     branch: false
     attachmentTypes: true
-    name: 'document van burger'
+    name: branch.citizen_document
 -
     branch: true
     attachmentTypes: true
-    name: 'parlementair document'
+    name: branch.parliamentary_document
 -
     branch: false
     attachmentTypes: true
-    name: publicatieblad
+    name: branch.publication_sheet
 -
     branch: false
     attachmentTypes: true
-    name: regelgeving
+    name: branch.regulation
 -
     branch: false
     attachmentTypes: true
-    name: vergaderstuk
+    name: branch.meeting_document

@@ -117,6 +117,6 @@ enum DossierStatus: string implements TranslatableInterface
 
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
-        return $translator->trans($this->value, locale: $locale);
+        return $translator->trans('admin.publications.status.' . $this->value, locale: $locale);
     }
 }

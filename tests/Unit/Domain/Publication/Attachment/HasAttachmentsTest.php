@@ -7,6 +7,8 @@ namespace App\Tests\Unit\Domain\Publication\Attachment;
 use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Attachment\EntityWithAttachments;
 use App\Domain\Publication\Attachment\HasAttachments;
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\Collection;
 
@@ -67,6 +69,16 @@ final class HasAttachmentsTest extends UnitTestCase
             use HasAttachments;
 
             public Collection $attachments;
+
+            public function getAttachmentEntityClass(): string
+            {
+                return CovenantAttachment::class;
+            }
+
+            public function getAttachmentTransition(): DossierStatusTransition
+            {
+                return DossierStatusTransition::UPDATE_CONTENT;
+            }
         };
         $entity->attachments = $attachments;
 

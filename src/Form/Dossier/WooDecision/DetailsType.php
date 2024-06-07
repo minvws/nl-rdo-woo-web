@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier\WooDecision;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Entity\Department;
 use App\Entity\Dossier;
 use App\Entity\User;
@@ -15,6 +16,7 @@ use App\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -48,7 +50,7 @@ class DetailsType extends AbstractDossierStepType
     {
         $builder
             ->add('title', TextType::class, [
-                'label' => 'Description of the decision',
+                'label' => 'publication.dossier.description.title',
                 'required' => true,
                 /*
                  * The translation below contains the following class names:
@@ -59,7 +61,7 @@ class DetailsType extends AbstractDossierStepType
                  *
                  * We mention these here so that Tailwind will pick them up.
                  */
-                'help' => 'create_dossier_decision_help',
+                'help' => 'publication.dossier.description.help',
                 'help_html' => true,
                 'attr' => [
                     'class' => 'w-full',
@@ -75,35 +77,31 @@ class DetailsType extends AbstractDossierStepType
                 ],
                 'required' => false,
                 'placeholder' => 'kies beginmaand',
-                'day_mode' => YearMonthType::MODE_FROM,
+                YearMonthType::DAY_MODE => YearMonthType::MODE_FROM,
                 'property_path' => 'dateFrom',
             ])
             ->add('date_to', YearMonthType::class, [
                 'label' => 'tot en met',
                 'required' => false,
                 'placeholder' => 'kies eindmaand',
-                'day_mode' => YearMonthType::MODE_TO,
+                YearMonthType::DAY_MODE => YearMonthType::MODE_TO,
+                YearMonthType::REVERSE => true,
                 'property_path' => 'dateTo',
             ])
             // Used as a placeholder to make sure the department is at the correct order
             ->add('departments', HiddenType::class, [
                 'mapped' => false,
             ])
-            ->add('publication_reason', ChoiceType::class, [
-                'label' => 'Choose the type of decision',
-                'choices' => [
-                    'Wob-verzoek' => Dossier::REASON_WOB_REQUEST,
-                    'Woo-verzoek' => Dossier::REASON_WOO_REQUEST,
-                    // Not in use for now
-                    // 'Woo-actieve openbaarmaking' => Dossier::REASON_WOO_ACTIVE,
-                ],
+            ->add('publication_reason', EnumType::class, [
+                'label' => 'publication.dossier.description.category.title',
+                'class' => PublicationReason::class,
                 'expanded' => true,
                 'required' => true,
             ])
             ->add('default_subjects', ChoiceType::class, [
                 'label' => 'Standaard onderwerp',
                 'required' => false, // @codingStandardsIgnoreStart
-                'help' => 'Choose the category under which this decision falls. The chosen topic will also be linked to all documents in this decision.', // @codingStandardsIgnoreEnd
+                'help' => 'publication.dossier.description.category.help', // @codingStandardsIgnoreEnd
                 'choices' => [
                     'Opstart Corona' => 'Opstart Corona',
                     'Overleg VWS' => 'Overleg VWS',
@@ -118,8 +116,7 @@ class DetailsType extends AbstractDossierStepType
                     'Vaccinaties en medicatie' => 'Vaccinaties en medicatie',
                 ],
                 'placeholder' => 'Kies een onderwerp',
-            ])
-        ;
+            ]);
 
         $this->addDepartmentField($builder);
 
@@ -245,13 +242,16 @@ class DetailsType extends AbstractDossierStepType
 
             $options = [
                 'class' => Department::class,
-                'label' => 'Verantwoordelijke bestuursorgaan',
+                'label' => 'admin.publications.responsible_department',
                 'required' => true,
                 'multiple' => false,
                 // We use a non-mapped field, and deal with the data in the event listeners.
                 'mapped' => false,
                 'choice_label' => 'name_and_short',
-                'placeholder' => 'Kies een bestuursorgaan',
+                'placeholder' => 'admin.publications.responsible_department_placeholder',
+                'attr' => [
+                    'class' => 'bhr-input-select w-full',
+                ],
             ];
 
             // If we have more than one entity, we need to use a choice type

@@ -4,32 +4,26 @@ declare(strict_types=1);
 
 namespace App\Api\Admin\CovenantDocument;
 
-use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\ProviderInterface;
+use App\Api\Admin\Document\DocumentDto;
+use App\Api\Admin\Document\DocumentProvider;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocumentRepository;
-use Symfony\Component\Uid\Uuid;
+use App\Domain\Publication\MainDocument\AbstractMainDocument;
+use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 
-final readonly class CovenantDocumentProvider implements ProviderInterface
+final readonly class CovenantDocumentProvider extends DocumentProvider
 {
     public function __construct(
-        private CovenantDocumentRepository $repository,
+        private CovenantDocumentRepository $documentRepository,
     ) {
     }
 
-    /**
-     * @param array<array-key, string> $uriVariables
-     * @param array<array-key, mixed>  $context
-     */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ?CovenantDocumentDto
+    protected function fromEntityToDto(AbstractMainDocument $entity): DocumentDto
     {
-        unset($operation);
-        unset($context);
+        return CovenantDocumentDto::fromEntity($entity);
+    }
 
-        $document = $this->repository->findOneByDossierId(Uuid::fromString($uriVariables['dossierId']));
-        if ($document === null) {
-            return null;
-        }
-
-        return CovenantDocumentDto::fromEntity($document);
+    protected function getAttachmentRepository(): MainDocumentRepositoryInterface
+    {
+        return $this->documentRepository;
     }
 }

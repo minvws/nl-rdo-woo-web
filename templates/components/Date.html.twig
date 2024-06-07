@@ -1,1 +1,1 @@
-<time datetime="{{ date | date('Y-m-d') }}">{{ date | format_date('long') }}</time>
+<time datetime="{{ date | date(format | default('Y-m-d')) }}">{% block content %}{{ date | format_date('long') }}{% endblock %}</time>

@@ -1,6 +1,6 @@
 {% extends 'admin.html.twig' %}
 
-{% set page_title = "Statistics & Monitoring" | trans() %}
+{% set page_title = 'admin.stats.manage' | trans() %}
 
 {% block meta %}
     <meta http-equiv="refresh" content="10"/>
@@ -8,21 +8,21 @@
 
 {% block body %}
 <div class="bhr-container">
-    <h1 class="bhr-title mb-6">{{ "Statistics & Monitoring" | trans }}</h1>
+    <h1 class="bhr-title mb-6">{{ 'admin.stats.manage' | trans }}</h1>
 
     <div class="bhr-card">
         <table class="bhr-table">
             <tbody>
                 <tr>
-                    <th class="text-left w-56" scope="row">{{ "Dossiers available" | trans }}</th>
+                    <th class="text-left w-56" scope="row">{{ 'admin.stats.available_dossiers' | trans }}</th>
                     <td>{{ "global.number_of_dossiers" | trans({'count': dossier_count}) }}</td>
                 </tr>
                 <tr>
-                    <th class="text-left" scope="row">{{ "Documents available" | trans }}</th>
+                    <th class="text-left" scope="row">{{ 'admin.stats.available_docs' | trans }}</th>
                     <td>{{ "global.number_of_documents" | trans({'count': document_count}) }}</td>
                 </tr>
                 <tr>
-                    <th class="text-left" scope="row">{{ "Total pages" | trans }}</th>
+                    <th class="text-left" scope="row">{{ 'admin.stats.total_pages' | trans }}</th>
                     <td>{{ "global.number_of_pages" | trans({'count': page_count}) }}</td>
                 </tr>
             </tbody>
@@ -31,18 +31,18 @@
         {% if rabbitmq_stats %}
             <div class="pt-8">
                 <table class="bhr-table">
-                    <caption class="sr-only">{{ "RabbitMQ stats" | trans() }}</caption>
+                    <caption class="sr-only">{{ 'admin.stats.rabbit_mq' | trans() }}</caption>
                     <thead>
                         <tr>
-                            <th class="text-left" scope="col">{{ "Node" | trans() }}</th>
+                            <th class="text-left" scope="col">{{ 'admin.stats.node' | trans() }}</th>
                             <th class="text-left" scope="col">{{ 'global.name' | trans() }}</th>
-                            <th class="text-right" scope="col">{{ "Messages" | trans() }}</th>
-                            <th class="text-right" scope="col">{{ "Msg ready" | trans() }}</th>
-                            <th class="text-right" scope="col">{{ "Msg unacknowledged" | trans() }}</th>
-                            <th class="text-right" scope="col">{{ "Msg Published" | trans() }}</th>
-                            <th class="text-right" scope="col">{{ "Msg Published Rate" | trans() }}</th>
-                            <th class="text-right" scope="col">{{ "Msg Delivered" | trans() }}</th>
-                            <th class="text-right" scope="col">{{ "Msg Delivered Rate" | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.messages' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.msg_ready' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.msg_unacknowledged' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.msg_published' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.msg_pub_rate' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.msg_delivered' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.msg_delivered_rate' | trans() }}</th>
                         </tr>
                     </thead>
 
@@ -64,7 +64,7 @@
                 </table>
 
                 <p class="mt-6 text-right text-sm">
-                    {{ "Last updated" | trans() }}: {{ "now"|format_datetime('medium') }}
+                    {{ 'admin.stats.last_updated' | trans() }}: {{ "now"|format_datetime('medium') }}
                 </p>
             </div>
         {% endif %}

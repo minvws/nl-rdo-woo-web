@@ -7,9 +7,10 @@ namespace App\Domain\Publication\Dossier\Type\Covenant;
 use App\Domain\Publication\Attachment\EntityWithAttachments;
 use App\Domain\Publication\Attachment\HasAttachments;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Repository\CovenantRepository;
+use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use App\Domain\Publication\MainDocument\EntityWithMainDocument;
+use App\Domain\Publication\MainDocument\HasMainDocument;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -18,30 +19,34 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @implements EntityWithAttachments<CovenantAttachment>
+ * @implements EntityWithMainDocument<CovenantDocument>
  */
 #[ORM\Entity(repositoryClass: CovenantRepository::class)]
-class Covenant extends AbstractDossier implements EntityWithAttachments
+class Covenant extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument
 {
     /** @use HasAttachments<CovenantAttachment> */
     use HasAttachments;
 
+    /** @use HasMainDocument<CovenantDocument> */
+    use HasMainDocument;
+
     #[ORM\Column(length: 255)]
-    #[Assert\Url(groups: [StepName::CONTENT->value])]
+    #[Assert\Url(groups: [DossierValidationGroup::CONTENT->value])]
     protected string $previousVersionLink = '';
 
-    /** @var array<string> */
+    /** @var list<string> */
     #[ORM\Column(type: Types::JSON, nullable: false)]
-    #[Assert\Count(min: 2, minMessage: 'at_least_two_parties_required', groups: [StepName::CONTENT->value])]
+    #[Assert\Count(min: 2, minMessage: 'at_least_two_parties_required', groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\All(
         constraints: [new Assert\NotBlank()],
-        groups: [StepName::CONTENT->value],
+        groups: [DossierValidationGroup::CONTENT->value],
     )]
     private array $parties = [];
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: CovenantDocument::class)]
-    #[Assert\NotBlank(groups: [StepName::CONTENT->value])]
-    #[Assert\Valid(groups: [StepName::CONTENT->value])]
-    private ?CovenantDocument $document = null;
+    #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
+    #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
+    private ?CovenantDocument $document;
 
     /** @var Collection<array-key,CovenantAttachment> */
     #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: CovenantAttachment::class, orphanRemoval: true)]
@@ -52,6 +57,7 @@ class Covenant extends AbstractDossier implements EntityWithAttachments
         parent::__construct();
 
         $this->attachments = new ArrayCollection();
+        $this->document = null;
     }
 
     public function getType(): DossierType
@@ -70,28 +76,28 @@ class Covenant extends AbstractDossier implements EntityWithAttachments
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public function getParties(): array
     {
-        return array_values($this->parties);
+        return $this->parties;
     }
 
     /**
-     * @param string[] $parties
+     * @param array<array-key,string> $parties
      */
     public function setParties(array $parties): void
     {
-        $this->parties = $parties;
+        $this->parties = array_values($parties);
     }
 
-    public function getDocument(): ?CovenantDocument
+    public function getAttachmentEntityClass(): string
     {
-        return $this->document;
+        return CovenantAttachment::class;
     }
 
-    public function setDocument(?CovenantDocument $document): void
+    public function getMainDocumentEntityClass(): string
     {
-        $this->document = $document;
+        return CovenantDocument::class;
     }
 }

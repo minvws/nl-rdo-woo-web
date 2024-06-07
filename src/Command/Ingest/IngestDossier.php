@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Command\Ingest;
 
 use App\Domain\Ingest\IngestDossierMessage;
-use App\Repository\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\AbstractDossierRepository;
 use App\Service\Ingest\Options;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

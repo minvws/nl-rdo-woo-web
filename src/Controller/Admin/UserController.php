@@ -146,7 +146,7 @@ class UserController extends AbstractController
         $loggedInUser = $this->getUser();
 
         if ($user === $loggedInUser) {
-            $this->addFlash('backend', ['danger' => $this->translator->trans('admin.users.error.edit_own_account_not_allowed')]);
+            $this->addFlash('backend', ['danger' => $this->translator->trans('admin.user.error.edit_own_account_not_allowed')]);
 
             return $this->redirectToRoute('app_admin_users');
         }
@@ -155,7 +155,7 @@ class UserController extends AbstractController
             $this->authorizationMatrix->hasFilter(AuthorizationMatrixFilter::ORGANISATION_ONLY)
             && $user->getOrganisation() !== $this->authorizationMatrix->getActiveOrganisation()
         ) {
-            $this->addFlash('backend', ['danger' => $this->translator->trans('admin.users.error.edit_other_organisation_account_not_allowed')]);
+            $this->addFlash('backend', ['danger' => $this->translator->trans('admin.user.error.edit_other_organisation_account_not_allowed')]);
 
             return $this->redirectToRoute('app_admin_users');
         }
@@ -202,7 +202,7 @@ class UserController extends AbstractController
         /** @var LoggableUser $loggedInUser */
         $this->userService->updateRoles($loggedInUser, $user, $roles);
 
-        $this->addFlash('backend', ['success' => $this->translator->trans('The user has been modified')]);
+        $this->addFlash('backend', ['success' => $this->translator->trans('admin.user.user_modified')]);
 
         $this->auditLogger->log((new AccountChangeLogEvent())
             ->asUpdate()
@@ -240,7 +240,7 @@ class UserController extends AbstractController
         // User name.
         $userName = $user->getName();
         $this->addFlash('backend', ['success' => $this->translator
-            ->trans('Account of {name} has been disabled.', ['{name}' => $userName])]);
+            ->trans('admin.user.user_deactivated', ['{name}' => $userName])]);
 
         /** @var LoggableUser $loggedInUser */
         $loggedInUser = $this->getUser();
@@ -272,7 +272,7 @@ class UserController extends AbstractController
         $userName = $user->getName();
         $this->addFlash(
             'backend',
-            ['success' => $this->translator->trans('Account of {name} has been enabled.', ['{name}' => $userName])]
+            ['success' => $this->translator->trans('admin.user.user_activated', ['{name}' => $userName])]
         );
 
         /** @var LoggableUser $loggedInUser */

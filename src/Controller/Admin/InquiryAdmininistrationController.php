@@ -27,8 +27,8 @@ class InquiryAdmininistrationController extends AbstractController
     #[IsGranted('AuthMatrix.inquiry.administration')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {
-        $breadcrumbs->addRouteItem('Administration', 'app_admin');
-        $breadcrumbs->addItem('Inquiry');
+        $breadcrumbs->addRouteItem('global.admin', 'app_admin');
+        $breadcrumbs->addItem('global.inquiry');
 
         return $this->render('admin/inquiry/administration/index.html.twig', [
             'inquiries' => $this->repository->findAll(),
@@ -60,8 +60,8 @@ class InquiryAdmininistrationController extends AbstractController
             $this->addFlash('backend', ['success' => 'The action has been scheduled for execution']);
         }
 
-        $breadcrumbs->addRouteItem('Administration', 'app_admin');
-        $breadcrumbs->addRouteItem('Inquiry', 'app_admin_inquiry_administration');
+        $breadcrumbs->addRouteItem('global.admin', 'app_admin');
+        $breadcrumbs->addRouteItem('global.inquiry', 'app_admin_inquiry_administration');
         $breadcrumbs->addItem($inquiry->getCasenr());
 
         return $this->render('admin/inquiry/administration/details.html.twig', [

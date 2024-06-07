@@ -1,0 +1,17 @@
+{{ form_start(form) }}
+    {{ form_row(form.summary) }}
+
+    <twig:Admin:Publication:ManageDocument
+        canDelete="{{ canDeleteDocument }}"
+        documentType="{{ 'admin.dossiers.complaint-judgement.document' | trans | trans }}"
+        documentTypes="{{ documentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/complaint-judgement-document' }}"
+        formField="{{ form.document }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.complaint-judgement.form.content.document_help' | trans }}"
+        languages="{{ documentLanguages }}"
+        title="{{ 'admin.dossiers.complaint-judgement.form.content.document_label' | trans }}"
+        uploadGroupId="complaint-judgement-documents"
+    />
+
+{{ form_end(form) }}

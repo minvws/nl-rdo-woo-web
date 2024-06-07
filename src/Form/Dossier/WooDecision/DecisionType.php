@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType as DecisionTypeEnum;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Form\Dossier\AbstractDossierStepType;
-use App\Form\Transformer\NullToEmptyStringTransformer;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -24,7 +24,7 @@ class DecisionType extends AbstractDossierStepType
 
     public function getDataClass(): string
     {
-        return Dossier::class;
+        return WooDecision::class;
     }
 
     /**
@@ -32,24 +32,17 @@ class DecisionType extends AbstractDossierStepType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var Dossier $dossier */
+        /** @var WooDecision $dossier */
         $dossier = $builder->getData();
 
         if ($dossier->getStatus()->isConcept()) {
-            $builder->add('decision', ChoiceType::class, [
+            $builder->add('decision', EnumType::class, [
                 'label' => 'Besluit',
                 'required' => true,
                 'help' => 'Hoe komen we tegemoet aan het verzoek?',
-                'choices' => [
-                    'Gedeeltelijke openbaarmaking' => Dossier::DECISION_PARTIAL_PUBLIC,
-                    'Reeds openbaar' => Dossier::DECISION_ALREADY_PUBLIC,
-                    'Openbaarmaking' => Dossier::DECISION_PUBLIC,
-                    'Geen openbaarmaking' => Dossier::DECISION_NOT_PUBLIC,
-                    'Niets aangetroffen' => Dossier::DECISION_NOTHING_FOUND,
-                ],
+                'class' => DecisionTypeEnum::class,
                 'expanded' => true,
             ]);
-            $builder->get('decision')->addModelTransformer(new NullToEmptyStringTransformer());
         }
 
         $builder
@@ -68,7 +61,7 @@ class DecisionType extends AbstractDossierStepType
                     'mimeTypes' => self::DOCUMENT_MIMETYPES,
                     'mimeTypesMessage' => 'Gebruik een document van het type PDF',
                 ],
-                groups: [StepName::DECISION->value]
+                groups: [DossierValidationGroup::DECISION->value]
             ),
         ];
 
@@ -103,7 +96,7 @@ class DecisionType extends AbstractDossierStepType
         $this->addSubmits($dossier, $builder);
     }
 
-    public function addSubmits(Dossier $dossier, FormBuilderInterface $builder): void
+    public function addSubmits(WooDecision $dossier, FormBuilderInterface $builder): void
     {
         if ($dossier->getStatus()->isConcept()) {
             $builder

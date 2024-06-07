@@ -97,6 +97,10 @@
     <title>sort</title>
     <path d="M8 13V5.825L5.425 8.4L4 7L9 2L14 7L12.575 8.4L10 5.825V13H8ZM15 22L10 17L11.425 15.6L14 18.175V11H16V18.175L18.575 15.6L20 17L15 22Z" />
   </symbol>
+  <symbol id="sort-alt" viewBox="0 0 24 24">
+    <title>sort</title>
+    <path d="M18.8225 10.4112H6L12.4113 4C14.5481 6.13687 16.6856 8.27437 18.8225 10.4112ZM6.03563 12.875H18.8581L12.4469 19.2863C10.31 17.1494 8.1725 15.0119 6.03563 12.875Z" />
+  </symbol>
   <symbol id="sort-down" viewBox="0 0 24 24">
     <title>sort down</title>
     <path d="M12 16L6 10H18L12 16Z" />

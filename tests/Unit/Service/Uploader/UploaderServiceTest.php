@@ -157,7 +157,7 @@ final class UploaderServiceTest extends UnitTestCase
         $uploaderService->registerUpload($postUploadEvent);
 
         $this->assertArrayHasKey($myUploadUuid, $capturedUploads);
-        $this->assertSame([$myPathname], $capturedUploads[$myUploadUuid]);
+        $this->assertSame([$myPathname], $capturedUploads[$myUploadUuid] ?? null);
 
         $this->assertArrayHasKey('existing-uuid-one', $capturedUploads);
         $this->assertSame($existingPaths['existing-uuid-one'], $capturedUploads['existing-uuid-one']);

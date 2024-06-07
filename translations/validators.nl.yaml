@@ -134,6 +134,7 @@ Error: Fout
 'Please upload a valid spreadsheet': 'Upload een geldige spreadsheet.'
 'Enter a case number or multiple case numbers, separate multiple case numbers with commas': 'Vul een zaaknummer of meerdere zaaknummers in, scheid meerdere zaaknummers met komma’s'
 'Choose from the selection of published decisions': 'Kies uit de selectie gepubliceerde besluiten'
+date_mandatory: 'Vul een geldige datum in'
 date_to_before_date_from: 'Einddatum dient na begindatum te liggen'
 date_max_10_year_old: "Datum mag niet meer dan 10 jaar in het verleden liggen"
 date_max_5_year_in_future: "Datum mag niet meer dan 5 jaar in de toekomst liggen"
@@ -141,6 +142,7 @@ use_only_letters_numbers_and_dashes: 'Gebruik alleen letters, cijfers en verbind
 date_must_not_be_in_future: 'Deze datum mag niet in de toekomst liggen'
 at_least_two_parties_required: 'Vul minimaal 2 partijen in'
 publication_date_must_be_today_or_future: 'De datum van feitelijke verstrekking moet gelijk of later zijn dan vandaag'
+annual_report_year_mandatory: 'Vul een jaar in'
 admin.user.roles.validation: "Selecteer minimaal één toegangsrol"
 admin.user.email.validation.in_use: "Dit e-mailadres is al in gebruik"
 admin.user.password.validation.must_match: "De nieuwe wachtwoorden moeten gelijk zijn"

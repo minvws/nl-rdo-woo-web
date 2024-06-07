@@ -27,7 +27,7 @@ final readonly class AttachmentTypeFactory
         /** @var ArrayCollection<int,AttachmentType|AttachmentTypeBranch> */
         return new ArrayCollection([
             new AttachmentTypeBranch(
-                name: $this->trans('adviesdocument'),
+                name: $this->trans('branch.advice_document'),
                 attachmentTypes: [
                     AttachmentType::ADVICE,
                     AttachmentType::REQUEST_FOR_ADVICE,
@@ -36,20 +36,9 @@ final readonly class AttachmentTypeFactory
             ),
 
             new AttachmentTypeBranch(
-                name: $this->trans('beleidsdocument'),
-                attachmentTypes: [
-                    AttachmentType::BUDGET,
-                    AttachmentType::POLICY_NOTE,
-                    AttachmentType::DECISION_NOTE,
-                    AttachmentType::ANNUAL_PLAN,
-                    AttachmentType::ANNUAL_REPORT,
-                ],
-            ),
-
-            new AttachmentTypeBranch(
-                name: $this->trans('beleidsdocument'),
+                name: $this->trans('branch.policy_document'),
                 branch: new AttachmentTypeBranch(
-                    name: $this->trans('rapport'),
+                    name: $this->trans('branch.report'),
                     branch: null,
                     attachmentTypes: [
                         AttachmentType::OFFICIAL_MESSAGE,
@@ -61,14 +50,19 @@ final readonly class AttachmentTypeFactory
                     ],
                 ),
                 attachmentTypes: [
+                    AttachmentType::BUDGET,
+                    AttachmentType::POLICY_NOTE,
+                    AttachmentType::DECISION_NOTE,
+                    AttachmentType::ANNUAL_PLAN,
+                    AttachmentType::ANNUAL_REPORT,
                     AttachmentType::TERM_AGENDA,
                 ],
             ),
 
             new AttachmentTypeBranch(
-                name: $this->trans('beschikking'),
+                name: $this->trans('branch.decision_to_impose'),
                 branch: new AttachmentTypeBranch(
-                    name: $this->trans('beschikking tot handhaving'),
+                    name: $this->trans('branch.decision_to_impose_enforcement'),
                     attachmentTypes: [
                         AttachmentType::DECISION_TO_IMPOSE_A_FINE,
                         AttachmentType::DECISION_TO_IMPOSE_AN_ORDER_UNDER_ADMINISTRATIVE_ENFORCEMENT,
@@ -90,7 +84,7 @@ final readonly class AttachmentTypeFactory
             ),
 
             new AttachmentTypeBranch(
-                name: $this->trans('brief'),
+                name: $this->trans('branch.letter'),
                 attachmentTypes: [
                     AttachmentType::LETTER,
                     AttachmentType::BROCHURE,
@@ -105,7 +99,7 @@ final readonly class AttachmentTypeFactory
             AttachmentType::COVENANT,
 
             new AttachmentTypeBranch(
-                name: $this->trans('document van burger'),
+                name: $this->trans('branch.citizen_document'),
                 attachmentTypes: [
                     AttachmentType::APPLICATION_ART_4_1_WOO,
                     AttachmentType::OBJECTION,
@@ -119,12 +113,12 @@ final readonly class AttachmentTypeFactory
             ),
 
             new AttachmentTypeBranch(
-                name: $this->trans('parlementair document'),
+                name: $this->trans('branch.parliamentary_document'),
                 branch: new AttachmentTypeBranch(
-                    name: $this->trans('Kamervraag'),
+                    name: $this->trans('branch.parliamentary_question'),
                     attachmentTypes: [
-                        AttachmentType::PARLIAMENTARY_QUSTION_WITH_ANSWER,
-                        AttachmentType::PARLIAMENTARY_QUSTION_WITHOUT_ANSWER,
+                        AttachmentType::PARLIAMENTARY_QUESTION_WITH_ANSWER,
+                        AttachmentType::PARLIAMENTARY_QUESTION_WITHOUT_ANSWER,
                     ],
                 ),
                 attachmentTypes: [
@@ -135,7 +129,7 @@ final readonly class AttachmentTypeFactory
             ),
 
             new AttachmentTypeBranch(
-                name: $this->trans('publicatieblad'),
+                name: $this->trans('branch.publication_sheet'),
                 attachmentTypes: [
                     AttachmentType::GOVERNMENT_GAZETTE,
                     AttachmentType::STAATSCOURANT,
@@ -143,7 +137,7 @@ final readonly class AttachmentTypeFactory
             ),
 
             new AttachmentTypeBranch(
-                name: $this->trans('regelgeving'),
+                name: $this->trans('branch.regulation'),
                 attachmentTypes: [
                     AttachmentType::POLICY,
                     AttachmentType::PLAN,
@@ -151,7 +145,7 @@ final readonly class AttachmentTypeFactory
             ),
 
             new AttachmentTypeBranch(
-                name: $this->trans('vergaderstuk'),
+                name: $this->trans('branch.meeting_document'),
                 attachmentTypes: [
                     AttachmentType::AGENDA,
                     AttachmentType::DECISION_LIST,
@@ -163,17 +157,32 @@ final readonly class AttachmentTypeFactory
     }
 
     /**
+     * @param ?array<array-key,AttachmentType> $allowedTypes
+     *
      * @return array<int,AttachmentTypeBranchArray|AttachmentTypeArray>
      */
-    public function makeAsArray(?AttachmentType $exclude = null): array
+    public function makeAsArray(?array $allowedTypes = null): array
     {
         $collection = $this->make();
 
-        if ($exclude !== null) {
-            $collection->removeElement($exclude);
+        if ($allowedTypes !== null) {
+            /** @var ArrayCollection<int,AttachmentType|AttachmentTypeBranch> $newCollection */
+            $newCollection = new ArrayCollection();
+
+            foreach ($collection as $item) {
+                if ($item instanceof AttachmentTypeBranch) {
+                    $branch = $item->filter($allowedTypes);
+                    if ($branch !== null) {
+                        $newCollection->add($branch);
+                    }
+                } elseif (in_array($item, $allowedTypes, true)) {
+                    $newCollection->add($item);
+                }
+            }
+
+            $collection = $newCollection;
         }
 
-        /** @var array<int,AttachmentTypeBranchArray|AttachmentTypeArray> */
         return $collection
             ->map(fn (AttachmentTypeBranch|AttachmentType $item): array => $item->toArray($this->translator))
             ->toArray();

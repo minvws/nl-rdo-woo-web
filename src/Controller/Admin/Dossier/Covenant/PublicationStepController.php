@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\Covenant;
 
+use App\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\Covenant\Command\UpdateCovenantPublicationCommand;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Form\Dossier\Covenant\PublishType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -47,7 +47,7 @@ class PublicationStepController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->messageBus->dispatch(
-                new UpdateCovenantPublicationCommand($dossier),
+                new UpdateDossierPublicationCommand($dossier),
             );
 
             return $this->stepHelper->redirectToPublicationConfirmation($dossier);
@@ -80,13 +80,13 @@ class PublicationStepController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->messageBus->dispatch(
-                new UpdateCovenantPublicationCommand($dossier),
+                new UpdateDossierPublicationCommand($dossier),
             );
 
             return $this->stepHelper->redirectToPublicationConfirmation($dossier);
         }
 
-        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'workflow_step_publication');
+        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossiers.covenant.step.publication');
 
         return $this->render('admin/dossier/covenant/publication/edit.html.twig', [
             'breadcrumbs' => $breadcrumbs,

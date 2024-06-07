@@ -6,19 +6,19 @@
 {% set sortOrder = app.request.query.get('sortorder') %}
 
 {% if sortBy == 'decision_date' %}
-    {% set sortByText = 'Date of decision' | trans %}
+    {% set sortByText = 'global.decision_date' | trans %}
 {% elseif sortBy == 'publication_date' %}
     {% set sortByText = 'global.publication_date' | trans %}
 {% endif %}
 {% if sortOrder == 'desc' %}
-    {% set sortOrderText = 'newest first' | trans %}
+    {% set sortOrderText = 'global.sort_newest' | trans %}
 {% elseif sortOrder == 'asc' %}
-    {% set sortOrderText = 'oldest first' | trans %}
+    {% set sortOrderText = 'global.sort_oldest' | trans %}
 {% endif %}
 
 <div class="md:flex pb-3">
     <div class="grow">
-        <h2 class="font-bold mt-2" aria-live="polite" id="js-number-of-search-results">
+        <h2 class="font-bold mt-2" aria-live="polite" id="js-number-of-search-results" tabindex="-1">
             {% if result.type == constant('App\\Service\\Search\\Model\\Config::TYPE_DOSSIER') %}
                 {{ "global.number_of_dossiers" | trans({'count': result.dossierCount}) }}
             {% else %}
@@ -32,9 +32,9 @@
         {% if result.suggestion(suggestionsId) is not null and result.suggestion(suggestionsId).entries|length %}
         <p class="italic pt-1">
             {% if result.suggestion(suggestionsId).entries | length == 1 %}
-                {{ "Did you mean:" | trans }}
+                {{ 'public.search_suggestion' | trans }}
             {% else %}
-                {{ "Did you mean any of the following search terms:" | trans }}
+                {{ 'public.search_suggestion.terms' | trans }}
             {% endif %}
             {% for entry in result.suggestion(suggestionsId).entries %}
                 {% if loop.last and loop.index > 1 %}{{ "global.or" | trans }}{% elseif not loop.first %}, {% endif %}
@@ -58,22 +58,22 @@
                 {% if sortBy and sortOrder %}
                     {{ sortByText }} ({{ sortOrderText }})
                 {% else %}
-                    {{ "Sort" | trans }}
+                    {{ 'global.sort' | trans }}
                 {% endif %}
                 <twig:Public:Icon class="woo-button-icon-right" name="sort" />
             </summary>
 
             <div aria-labelledby="sort-results" class="woo-overlay-card md:right-0 w-72 sm:w-96">
                 {% macro sort_items(sortBy, sortText) %}
-                    {{ _self.sort_item(sortBy, 'desc', sortText, 'newest first' | trans) }}
-                    {{ _self.sort_item(sortBy, 'asc', sortText, 'oldest first' | trans) }}
+                    {{ _self.sort_item(sortBy, 'desc', sortText, 'global.sort_newest' | trans) }}
+                    {{ _self.sort_item(sortBy, 'asc', sortText, 'global.sort_oldest' | trans) }}
                 {% endmacro %}
 
                 {% macro sort_item(sortBy, sortOrder, sortByText, sortOrderText) %}
                     <li class="group/li leading-none">
                         <a
                             class="block px-4 group/a"
-                            href="?{{ query_string_with_params({'sort': sortBy, 'sortorder': sortOrder}) }}"
+                            href="?{{ query_string_with_params({'sort': sortBy, 'sortorder': sortOrder}) }}#search-results-list"
                         >
                             <span
                                 class="block border-b border-woo-chinese-silver group-last/li:border-b-0 py-4 group-hover/a:underline group-focus/a:underline"
@@ -83,7 +83,7 @@
                 {% endmacro %}
 
                 <ul class="-mx-4 -my-2">
-                    {{ _self.sort_items('decision_date', 'Date of decision' | trans) }}
+                    {{ _self.sort_items('decision_date', 'global.decision_date' | trans) }}
                     {{ _self.sort_items('publication_date', 'global.publication_date' | trans) }}
                 </ul>
             </div>
@@ -107,17 +107,17 @@
             {{ macro.facet_pill('Datum: niet beschikbaar', 'dt[without_date]', '') }}
         {% endif %}
 
-        {{ macro.facet_pills('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}
-        {{ macro.facet_pills('categories.category.subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
-        {{ macro.facet_pills('categories.category.source_file' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
-        {{ macro.facet_pills('categories.category.judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
-        {{ macro.facet_pills('categories.category.grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
+        {# {{ macro.facet_pills('Department' | trans, constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }} #}
+        {{ macro.facet_pills('categories.category.subject' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
+        {{ macro.facet_pills('categories.category.source_file' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
+        {{ macro.facet_pills('categories.category.judgement' | trans, constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
+        {{ macro.facet_pills('categories.category.grounds' | trans, constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, result) }}
     </ul>
 {% endif %}
 
 {# Results #}
 {% if numberOfResults > 0 %}
-    <ul>
+    <ul data-e2e-name="search-results" id="search-results-list">
         {% for entry in result.entries %}
         <li class="woo-search-result" data-e2e-name="search-result">
             {% include "search/entries/" ~ entry.type.value ~ ".html.twig" %}
@@ -128,16 +128,16 @@
     <div class="pt-2 woo-rich-text">
         <h3 class="!font-normal">
             <twig:Public:Icon name="magnifier" color="fill-dim-gray" />
-            {{ "No search results" | trans }}
+            {{ 'public.search.no_search_results.title' | trans }}
         </h3>
 
-        <p>{{ "No documents found related to {query}" | trans({ 'query': app.request.query.get('q') }) }}.</p>
+        <p>{{ 'public.search.no_search_results.description' | trans({ 'query': app.request.query.get('q') }) }}.</p>
 
-        <h4>{{ "Suggestions" | trans }}:</h4>
+        <h4>{{ 'public.search.suggestions' | trans }}:</h4>
         <ul>
-            <li>{{ "Check query spelling" | trans }}</li>
-            <li>{{ "Try a different search term" | trans }}</li>
-            <li>{{ "Use less keywords" | trans }}</li>
+            <li>{{ 'public.search.check_spelling' | trans }}</li>
+            <li>{{ 'public.search.try_different_search_term' | trans }}</li>
+            <li>{{ 'public.search.use_less_keywords' | trans }}</li>
         </ul>
     </div>
 {% endif %}

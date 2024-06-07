@@ -2,7 +2,7 @@
 
 {% import "admin/macros/facet.html.twig" as macro %}
 
-{% set page_title = 'admin.dossier.list.title' | trans %}
+{% set page_title = 'admin.dossiers.all_dossiers' | trans %}
 
 {% block body %}
 
@@ -12,7 +12,7 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('dossier.create') %}
-            <a class="bhr-button bhr-button--secondary" data-e2e-name="create-dossier" href="{{ path('app_admin_dossier_create') }}">{{ 'admin.dossier.list.create' | trans() }}</a>
+            <a class="bhr-button bhr-button--secondary" data-e2e-name="create-dossier" href="{{ path('app_admin_dossier_create') }}">{{ 'admin.dossiers.new_dossier' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>
@@ -38,7 +38,7 @@
                 <twig:block name="right">
                     <twig:Admin:Search:SearchPreviewsForm
                         endpoint="{{ path('app_admin_dossiers_search') }}"
-                        label="{{ 'Zoek op zaak-, dossier- of documentnummer' }}"
+                        label="{{ 'admin.publications.search_within' | trans }}"
                     />
                 </twig:block>
             </twig:Admin:LeftAndRight>
@@ -63,13 +63,13 @@
                 <caption class="sr-only">Alle dossiers. Kolomkoppen met links zijn sorteerbaar.</caption>
                 <thead>
                     <tr>
-                        {{ knp_pagination_sortable(pagination, 'Org & reference' | trans, ['dos.documentPrefix','dos.dossierNr'], {}, {}, 'pagination/sort.admin.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'admin.publications.organisation_and_reference' | trans, ['dos.documentPrefix','dos.dossierNr'], {}, {}, 'pagination/sort.admin.html.twig') }}
                         {{ knp_pagination_sortable(pagination, 'admin.publications.status' | trans, 'dos.status', {}, {}, 'pagination/sort.admin.html.twig') }}
-                        <th class="bhr-column-head bhr-column-head--gray border-r-1 font-bold" scope="col">{{ "admin.dossier.list.category" | trans() }}</th>
-                        {{ knp_pagination_sortable(pagination, 'Published date' | trans, 'dos.publicationDate', {}, {}, 'pagination/sort.admin.html.twig') }}
-                        {{ knp_pagination_sortable(pagination, 'admin.publications.summary' | trans, 'dos.summary', { thClassName: 'border-r-0' }, {}, 'pagination/sort.admin.html.twig') }}
+                        <th class="bhr-column-head bhr-column-head--gray border-r-1 font-bold" scope="col">{{ "admin.dossiers.category" | trans() }}</th>
+                        {{ knp_pagination_sortable(pagination, 'global.publication_date' | trans, 'dos.publicationDate', {}, {}, 'pagination/sort.admin.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'global.summary' | trans, 'dos.summary', { thClassName: 'border-r-0' }, {}, 'pagination/sort.admin.html.twig') }}
                         <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                            <span class="sr-only">{{ 'Edit dossier'| trans() }}</span>
+                            <span class="sr-only">{{ 'admin.global.edit'| trans }}</span>
                         </th>
                     </tr>
                 </thead>
@@ -77,7 +77,7 @@
                     {% for dossier in pagination %}
                     <tr>
                         <td>{{ dossier.documentPrefix }} / {{ dossier.dossierNr }}</td>
-                        <td>{{ status_badge(dossier.status) }}</td>
+                        <td><twig:Admin:DossierStatusBadge status="{{ dossier.status }}" /></td>
                         <td>{{ dossier.type | trans }}</td>
                         <td nowrap>{{ dossier.publicationDate  is empty ? "-" : dossier.publicationDate|format_date('medium') }}</td>
                         <td><span class="bhr-clamp">{{ dossier.summary }}</span></td>
@@ -95,11 +95,11 @@
             {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
         {% elseif formData is not null %}
             <p class="text-center">
-                {{ 'admin.dossier.list.no_matches_found' | trans }}
+                {{ 'admin.dossiers.no_matches_found' | trans }}
             </p>
         {% else %}
             <p class="text-center">
-                {{ 'admin.dossier.list.no_dossiers_exist' | trans }}
+                {{ 'admin.dossiers.no_dossiers' | trans }}
 
             </p>
         {% endif %}

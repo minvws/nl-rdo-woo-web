@@ -27,6 +27,11 @@ In the examples below the name 'foo' is used for the new dossier type.
 
 Also add the ```isFoo``` helper method.
 
+#### Update match cases using this enum
+
+In ```src/Controller/Admin/Dossier/DossierController.php``` there are two 2 match statements using the DossierType cases.
+Add the new case in both.
+
 ### Translations
 
 Add the following translation keys:
@@ -44,9 +49,11 @@ In this case: `App\Domain\Publication\Dossier\Type\Foo`.
 
 - This class is placed within the newly created namespace.
 - Each dossiertype should extend the AbstractDossier entity. See one of the existing implementations like ```WooDecision``` in ```src/Domain/Publication/Dossier/Type/WooDecision``` as an example.
-- Define properties and relationships that are unique to this type in the entity and generate a migration.
+- Define properties and relationships that are unique to this type in the entity.
 - Add the new entity to the DiscriminatorMap attribute in ```AbstractDossier```
-- Optional: declare a type-specific repository class in the new entity class, see ```WooDecision``` for an example. Only if you need special queries for this type.
+- Also create a type-specific repository class in the new entity class, see ```CovenantRepository``` for an example.
+- Usually a dossier type also has relationships to sub-entities, at least attachments. Create these entities and a repositoy for each.
+- Generate a database migration
 
 ### Create workflow definition
 
@@ -68,6 +75,11 @@ In this case: `App\Domain\Publication\Dossier\Type\Foo`.
 - See the existing implementations for reference.
 - For the `getSteps` method you need to implement the `StepDefinitionInterface` in a separate class for each wizard step.
 - Each step definition refers to route names, see the controller implementation docs below.
+
+### Dossier delete strategy
+
+There are generic delete strategies in place that remove the dossier from elasticsearch, remove the main document (when present) and remove attachments (when present).
+If you introduce additional related entities and/or files you should implement an additional delete strategy. See ``WooDecisionDeleteStrategy`` as an example.
 
 ### Implement admin (balie) actions
 
@@ -100,3 +112,37 @@ For the 'details' step of the 'foo' dossier type this results in the following p
 - forms
   - In many cases a single form can be used for both edit modes: `App\Form\Dossier\Foo\DetailsType`
   - If needed separate forms per edit mode can be defined: `App\Form\Dossier\Foo\DetailsConceptType`
+
+### Ingest
+
+Ingesting is the process of data (re-)ingestion into the system.
+Not just for the dossier entity itself but also all related data (relationships, files etcetera).
+Some examples of the resulting actions: indexing into ElasticSearch, generating thumbnails, executing OCR.
+
+Ingest must be able to completely restore or renew all data for the public website based on the database and file storage.
+It can be executed for all dossiers, or just for a single dossier.
+
+All dossier types automatically use the ``DefaultIngester`` which is based on data available in ``AbstractDossier``.
+For most dossiertypes this should suffice, but if you need to ingest additional relationships and/or related files that are specific to the dossier type you should implement the ``DossierIngestStrategyInterface`` and add it to the mapping in ``DossierIngester``.
+See ``WooDecisionIngestStrategy`` for an example.
+
+### Search index mapper
+
+- Add a new case to the ``ElasticDocumentType`` enum.
+- Implement ``ElasticDossierMapperInterface`` if needed. All dossier types automatically use the ``DefaultDossierMapper`` which indexes common properties from ``AbstractDossier``.
+If you need to map additional data into ElasticSearch that is specific to the dossier type you should implement a custom mapper. In that case you probably also need to add new fields to the ES schema.
+See ``WooDecisionMapper`` for an example. If you implement the ``ElasticDossierMapperInterface`` your mapper will be autowired with a higher priority than the default mapper.
+
+### Search results
+
+- Create a search result viewmodel that implements the marker interface ``DossierTypeSearchResultInterface``.
+- Implement ``ProvidesDossierTypeSearchResultInterface`` in the repository of the dossier type, this should return the new search result viewmodel.
+- Implement ``DossierTypeSearchResultMapperInterface``. In most cases you can use ``DossierTypeSearchResultMapper`` as a base to make this easier.
+- Add a new ``match`` case to ``ResultFactory::map``
+- Create a template at ``templates/search/entries/[ELASTICDOCUMENTTYPE-VALUE].html.twig``
+
+### Implement public website controller actions and templates
+
+- Implement a controller in ``src/Controller/Public/Dossier/[DOSSIERTYPE]/[DOSSIERTYPE]Controller.php``
+- Use one of the existing implementations as an example
+- Add templates for all new actions

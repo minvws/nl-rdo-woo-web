@@ -1,0 +1,15 @@
+{% extends 'admin/dossier/publication/confirmation.html.twig' %}
+
+{% block about_title %}
+    {{ 'admin.global.disposition_on' | trans }}
+{% endblock %}
+
+{% block success_message %}
+    <twig:Admin:Alert type="success">
+        {{ 'admin.dossiers.disposition.create.success' | trans | raw }}
+    </twig:Admin:Alert>
+{% endblock %}
+
+{% block edit_link %}
+    {{'admin.dossiers.disposition.edit_link' | trans }}
+{% endblock %}

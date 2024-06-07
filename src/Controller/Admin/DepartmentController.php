@@ -47,7 +47,7 @@ class DepartmentController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->repository->save($department, true);
 
-            $this->addFlash('backend', ['success' => $this->translator->trans('Department created')]);
+            $this->addFlash('backend', ['success' => $this->translator->trans('admin.department.created')]);
 
             return $this->redirectToRoute('app_admin_departments');
         }
@@ -66,7 +66,7 @@ class DepartmentController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->repository->save($department, true);
-            $this->addFlash('backend', ['success' => $this->translator->trans('Department modified')]);
+            $this->addFlash('backend', ['success' => $this->translator->trans('admin.department.modified')]);
 
             $this->messageBus->dispatch(UpdateDepartmentMessage::forDepartment($department));
 

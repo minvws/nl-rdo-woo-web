@@ -1,0 +1,14 @@
+{% extends 'publication/details.html.twig' %}
+
+{% set tagline = 'public.dossiers.complaint-judgement.tagline' | trans %}
+
+{% block attachments %}
+    {% include 'publication/attachments.html.twig' %}
+{% endblock %}
+
+{% block about %}
+    <twig:Public:Publication:About
+        dossier="{{ dossier }}"
+        title="{{ 'public.dossiers.complaint-judgement.about' | trans }}"
+    />
+{% endblock %}

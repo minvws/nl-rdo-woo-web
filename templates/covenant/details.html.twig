@@ -1,33 +1,12 @@
-{% extends 'base.html.twig' %}
-{% import 'document_macros.html.twig' as macro %}
+{% extends 'publication/details.html.twig' %}
 
-{% set page_title = dossier.pageTitle %}
+{% set tagline = 'public.dossiers.covenant.tagline' | trans %}
+{% set description = 'public.dossiers.covenant.description' | trans %}
 
-{% block body %}
-<div class="woo-container woo-container--sm">
-    <h1 class="woo-h1" data-e2e-name="dossier-metadata-title">
-        <span class="font-normal block">{{ 'public.dossiers.covenant.tagline' | trans }}</span>
-        {{ dossier.title }}
-    </h1>
-    <dl class="woo-muted">
-        <div>
-            <dt class="inline">
-                {{ (dossier.isPreview ? 'global.publication_date' : 'global.published_on') | trans | capitalize }}
-            </dt>
-            <dd class="inline" data-e2e-name="dossier-metadata-published-date">
-                <time datetime="{{ dossier.publicationDate | date('Y-m-d') }}">
-                    {{ dossier.publicationDate | format_date('long') }}
-                </time>
-            </dd>
-        </div>
-    </dl>
+{% block attachments %}
+    {% include 'publication/attachments.html.twig' %}
+{% endblock %}
 
-    <p class="mt-10">{{ 'public.dossiers.covenant.description' | trans }}</p>
-
-    {% include 'dossier/snippets/summary.html.twig' %}
-
-    {% include 'covenant/attachments.html.twig' %}
-
-    {% include 'dossier/snippets/about-covenant.html.twig' %}
-</div>
+{% block about %}
+    {% include 'covenant/about.html.twig' %}
 {% endblock %}

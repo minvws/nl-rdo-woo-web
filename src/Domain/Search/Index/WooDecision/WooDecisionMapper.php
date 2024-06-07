@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\AbstractDossierMapper;
+use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Search\Index\DefaultDossierMapper;
 use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Entity\Dossier;
@@ -14,13 +14,21 @@ use App\Entity\Inquiry;
 readonly class WooDecisionMapper
 {
     public function __construct(
-        private AbstractDossierMapper $abstractDossierMapper,
+        private DefaultDossierMapper $defaultMapper,
     ) {
     }
 
-    public function map(Dossier|WooDecision $dossier): ElasticDocument
+    public function supports(AbstractDossier $dossier): bool
     {
-        $fields = $this->abstractDossierMapper->mapCommonFields($dossier);
+        return $dossier instanceof Dossier;
+    }
+
+    /**
+     * @param Dossier $dossier
+     */
+    public function map(AbstractDossier $dossier): ElasticDocument
+    {
+        $fields = $this->defaultMapper->map($dossier)->getFields();
 
         $fields['publication_reason'] = $dossier->getPublicationReason();
         $fields['decision_date'] = $dossier->getDecisionDate()?->format(\DateTimeInterface::ATOM);

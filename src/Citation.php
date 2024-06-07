@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
+use Webmozart\Assert\Assert;
+
 /**
  * Converts citation codes to human-readable classifications.
  */
@@ -11,7 +13,7 @@ class Citation
 {
     public const DUBBEL = 'dubbel';
 
-    /** @var array|string[] */
+    /** @var array<string,string> */
     public static array $wooCitations = [
         '5.1.1a' => 'Eenheid van de Kroon',
         '5.1.1b' => 'Veiligheid van de Staat',
@@ -34,7 +36,7 @@ class Citation
         self::DUBBEL => 'Dubbel: inhoud is in een ander document al beoordeeld',
     ];
 
-    /** @var array|string[] */
+    /** @var array<string,string> */
     public static array $wobCitations = [
         '10.1a' => 'Eenheid van de Kroon',
         '10.1b' => 'Veiligheid van de Staat',
@@ -86,5 +88,42 @@ class Citation
         }
 
         return 'unknown';
+    }
+
+    /**
+     * @param array<array-key,string> $citations
+     *
+     * @return list<string>
+     */
+    public static function sortWooCitations(array $citations): array
+    {
+        Assert::allString($citations);
+
+        $allCitations = self::$wooCitations;
+        if (key_exists(Citation::DUBBEL, $allCitations)) {
+            unset($allCitations[Citation::DUBBEL]);
+        }
+        $allCitations = array_keys($allCitations);
+        Assert::allString($allCitations);
+
+        $allCitations = array_flip($allCitations);
+
+        usort($citations, function (string $a, string $b) use ($allCitations): int {
+            if (isset($allCitations[$a], $allCitations[$b])) {
+                return $allCitations[$a] <=> $allCitations[$b];
+            }
+
+            if (isset($allCitations[$a])) {
+                return -1;
+            }
+
+            if (isset($allCitations[$b])) {
+                return 1;
+            }
+
+            return strcmp($a, $b);
+        });
+
+        return $citations;
     }
 }

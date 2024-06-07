@@ -5,19 +5,23 @@ declare(strict_types=1);
 namespace App\Domain\Search\Index;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\Covenant\CovenantMapper;
-use App\Domain\Search\Index\WooDecision\WooDecisionMapper;
 use App\Service\Elastic\ElasticService;
 
 readonly class DossierIndexer
 {
+    /**
+     * @var iterable<ElasticDossierMapperInterface>
+     */
+    private iterable $mappers;
+
+    /**
+     * @param iterable<ElasticDossierMapperInterface> $mappers
+     */
     public function __construct(
         private ElasticService $elasticService,
-        private CovenantMapper $covenantMapper,
-        private WooDecisionMapper $wooDecisionMapper,
+        iterable $mappers,
     ) {
+        $this->mappers = $mappers;
     }
 
     public function index(AbstractDossier $dossier, bool $updateSubItems = true): void
@@ -30,16 +34,18 @@ readonly class DossierIndexer
         );
 
         if ($updateSubItems) {
-            $this->elasticService->updateAllDocumentsForDossier($dossier, $doc->getFieldValues());
+            $this->elasticService->updateAllDocumentsForDossier($dossier, $doc->getDocumentValues());
         }
     }
 
     public function map(AbstractDossier $dossier): ElasticDocument
     {
-        return match (true) {
-            $dossier instanceof WooDecision => $this->wooDecisionMapper->map($dossier),
-            $dossier instanceof Covenant => $this->covenantMapper->map($dossier),
-            default => throw IndexException::forUnsupportedDossierType($dossier->getType()),
-        };
+        foreach ($this->mappers as $mapper) {
+            if ($mapper->supports($dossier)) {
+                return $mapper->map($dossier);
+            }
+        }
+
+        throw IndexException::forUnsupportedDossierType($dossier->getType());
     }
 }

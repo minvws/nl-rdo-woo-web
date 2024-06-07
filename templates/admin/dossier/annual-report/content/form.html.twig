@@ -1,0 +1,27 @@
+{{ form_start(form) }}
+    {{ form_row(form.summary) }}
+
+    <twig:Admin:Publication:ManageDocument
+        canDelete="{{ canDeleteDocument }}"
+        documentType="{{ 'admin.dossiers.annual_report.document' | trans }}"
+        documentTypes="{{ documentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/annual-report-document' }}"
+        formField="{{ form.document }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.annual_report.form.content.document_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        title="{{ 'admin.dossiers.annual_report.form.content.document_label' | trans }}"
+        uploadGroupId="annual-report-documents"
+    />
+
+    <twig:Admin:Publication:ManageAttachments
+        canDelete="{{ canDeleteAttachments }}"
+        documentTypes="{{ attachmentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/annual-report-attachments' }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.annual-report.form.content.attachments_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        uploadGroupId="annual-report-attachments"
+    />
+
+{{ form_end(form) }}

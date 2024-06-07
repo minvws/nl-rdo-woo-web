@@ -24,18 +24,18 @@ class InquiryLinkDossierFormType extends AbstractType
     {
         $builder
             ->add('map', TextType::class, [
-                'label' => 'Zaaknummer(s)',
+                'label' => 'admin.dossiers.inquiries',
                 'attr' => [
                     'class' => 'w-2/3',
                 ],
-                'help' => 'Separate multiple case numbers with commas',
+                'help' => 'admin.dossiers.inquiries.help',
                 'required' => true,
                 'constraints' => [
                     new NotBlank(['message' => 'Enter a case number or multiple case numbers, separate multiple case numbers with commas']),
                 ],
             ])
             ->add('dossiers', ChoiceType::class, [
-                'label' => 'Published decisions',
+                'label' => 'admin.dossiers.published_decisions',
                 'help' => '',
                 'multiple' => true,
                 'expanded' => false,
@@ -44,7 +44,7 @@ class InquiryLinkDossierFormType extends AbstractType
                     'class' => 'js:hidden',
                 ],
                 'attr' => [
-                    'placeholder' => 'Nothing chosen yet',
+                    'placeholder' => 'admin.global.no_choices',
                     'class' => 'w-full js-select-dossiers-fallback',
                 ],
                 'required' => true,
@@ -53,13 +53,13 @@ class InquiryLinkDossierFormType extends AbstractType
                 ],
             ])
             ->add('link', SubmitType::class, [
-                'label' => 'Attach',
+                'label' => 'global.attach',
                 'attr' => [
                     'data-first-button' => true,
                 ],
             ])
             ->add('cancel', SubmitType::class, [
-                'label' => 'Cancel',
+                'label' => 'global.cancel',
                 'attr' => [
                     'class' => 'bhr-button--secondary',
                     'data-last-button' => true,

@@ -30,8 +30,18 @@ class GenerateDocuments extends Command
         private readonly FakeDataGenerator $fakeDataGenerator,
         private readonly LoggingHelper $loggingHelper,
         private readonly InquiryService $inquiryService,
+        private readonly string $appEnvironment,
     ) {
         parent::__construct();
+    }
+
+    public function isEnabled(): bool
+    {
+        if ($this->appEnvironment === 'prod') {
+            return false;
+        }
+
+        return true;
     }
 
     protected function configure(): void

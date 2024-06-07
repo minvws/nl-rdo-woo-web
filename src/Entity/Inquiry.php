@@ -161,7 +161,7 @@ class Inquiry implements EntityWithBatchDownload
     public function getDownloadFilePrefix(): TranslatableMessage
     {
         return new TranslatableMessage(
-            'filename-inquiry-{caseNr}',
+            'admin.dossiers.inquiries.number',
             [
                 'caseNr' => $this->casenr,
             ]

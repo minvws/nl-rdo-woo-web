@@ -9,6 +9,7 @@ use App\Entity\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<AbstractDossier>
@@ -63,5 +64,38 @@ class AbstractDossierRepository extends ServiceEntityRepository
 
         /** @var AbstractDossier[] */
         return $qb->getQuery()->getResult();
+    }
+
+    public function findOneByDossierId(Uuid $dossierId): AbstractDossier
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.id = :dossierId')
+            ->setParameter('dossierId', $dossierId);
+
+        /** @var AbstractDossier */
+        return $qb->getQuery()->getSingleResult();
+    }
+
+    /**
+     * @return AbstractDossier[]
+     */
+    public function findDossiersPendingPublication(): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.status IN (:statuses)')
+            ->andWhere('d.completed = true')
+            ->setParameter('statuses', [
+                DossierStatus::CONCEPT,
+                DossierStatus::SCHEDULED,
+                DossierStatus::PREVIEW,
+            ]);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function remove(AbstractDossier $dossier): void
+    {
+        $this->getEntityManager()->remove($dossier);
+        $this->getEntityManager()->flush();
     }
 }

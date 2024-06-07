@@ -10,6 +10,9 @@ use App\Domain\Publication\Dossier\Workflow\DossierMarkingStore;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Symfony\Config\FrameworkConfig;
 
+/**
+ * @codeCoverageIgnore
+ */
 class CovenantWorkflow
 {
     public static function configure(FrameworkConfig $framework): void
@@ -54,13 +57,33 @@ class CovenantWorkflow
             ],
         );
 
+        WorkflowConfigHelper::defineNonMovingTransitions(
+            $workflow,
+            DossierStatusTransition::UPDATE_ATTACHMENT,
+            [
+                DossierStatus::CONCEPT,
+                DossierStatus::SCHEDULED,
+                DossierStatus::PUBLISHED,
+            ],
+        );
+
+        WorkflowConfigHelper::defineNonMovingTransitions(
+            $workflow,
+            DossierStatusTransition::UPDATE_MAIN_DOCUMENT,
+            [
+                DossierStatus::CONCEPT,
+                DossierStatus::SCHEDULED,
+                DossierStatus::PUBLISHED,
+            ],
+        );
+
         $workflow->transition()
-            ->name(DossierStatusTransition::DELETE_COVENANT_DOCUMENT->value)
+            ->name(DossierStatusTransition::DELETE_MAIN_DOCUMENT->value)
             ->from(DossierStatus::CONCEPT->value)
             ->to(DossierStatus::CONCEPT->value);
 
         $workflow->transition()
-            ->name(DossierStatusTransition::DELETE_COVENANT_ATTACHMENT->value)
+            ->name(DossierStatusTransition::DELETE_ATTACHMENT->value)
             ->from(DossierStatus::CONCEPT->value)
             ->to(DossierStatus::CONCEPT->value);
 

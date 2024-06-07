@@ -1,0 +1,15 @@
+<div class="bhr-form-row">
+    <h2 class="bhr-label">{{ title | default('Bijlagen') }} <span class="font-normal">(optioneel)</span></h2>
+    <p class="bhr-form-help text-lg pb-2">{{ helpText }}</p>
+
+    <div {{ vue_component('PublicationAttachments', {
+        canDelete: canDelete,
+        documentLanguageOptions: languages,
+        documentTypeOptions: documentTypes,
+        endpoint: endpoint,
+        groundOptions: grounds,
+        uploadGroupId: uploadGroupId
+    }) }}>
+        <div class="min-h-14"></div>
+    </div>
+</div>

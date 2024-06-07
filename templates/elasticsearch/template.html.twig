@@ -58,7 +58,7 @@
 
 {% block panel %}
     <h2>Elasticsearch Calls</h2>
-    
+
     {% for call in collector.calls %}
 
         <table>
@@ -80,7 +80,7 @@
             </div>
 
             <div class="tab">
-                <h3 class="tab-title">Request</h3>
+                <h3 class="tab-title">{{ 'global.request' | trans }}</h3>
 
                 <div class="tab-content">
                     <div id="formatted-query-{{ loop.index0 }}" class="sql-runnable">

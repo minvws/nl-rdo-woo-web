@@ -63,7 +63,7 @@ final class DepartmentFactory extends ModelFactory
     protected function getDefaults(): array
     {
         return [
-            'name' => self::faker()->unique()->words(asText: true),
+            'name' => self::faker()->unique()->words(nb: 6, asText: true),
             'shortTag' => self::faker()->optional()->word(),
         ];
     }

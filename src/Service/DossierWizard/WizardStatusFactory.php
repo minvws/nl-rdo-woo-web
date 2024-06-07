@@ -7,11 +7,13 @@ namespace App\Service\DossierWizard;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 readonly class WizardStatusFactory
 {
     public function __construct(
         private DossierTypeManager $typeManager,
+        private ValidatorInterface $validator,
     ) {
     }
 
@@ -43,7 +45,7 @@ readonly class WizardStatusFactory
             } else {
                 $status = new StepStatus(
                     $step->getName(),
-                    $step->isCompleted($dossier),
+                    $step->isCompleted($dossier, $this->validator),
                     $dossier->getStatus()->isConcept() ? $step->getConceptEditRouteName() : $step->getEditRouteName(),
                     $step->getConceptEditRouteName(),
                     $step->getEditRouteName(),

@@ -59,6 +59,14 @@ abstract class AbstractAttachment extends PublicationItem
         $this->type = $type;
     }
 
+    /**
+     * @return list<AttachmentType>
+     */
+    public static function getAllowedTypes(): array
+    {
+        return AttachmentType::cases();
+    }
+
     public function getInternalReference(): string
     {
         return $this->internalReference;

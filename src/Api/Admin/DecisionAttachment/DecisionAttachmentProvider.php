@@ -4,51 +4,26 @@ declare(strict_types=1);
 
 namespace App\Api\Admin\DecisionAttachment;
 
-use ApiPlatform\Metadata\CollectionOperationInterface;
-use ApiPlatform\Metadata\Operation;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\State\ProviderInterface;
-use App\Entity\DecisionAttachment;
+use App\Api\Admin\Attachment\AttachmentDto;
+use App\Api\Admin\Attachment\AttachmentProvider;
+use App\Domain\Publication\Attachment\AbstractAttachment;
+use App\Domain\Publication\Attachment\AttachmentRepositoryInterface;
 use App\Repository\DecisionAttachmentRepository;
-use Symfony\Component\Uid\Uuid;
-use Webmozart\Assert\Assert;
 
-final readonly class DecisionAttachmentProvider implements ProviderInterface
+final readonly class DecisionAttachmentProvider extends AttachmentProvider
 {
     public function __construct(
-        private DecisionAttachmentRepository $repository,
+        private DecisionAttachmentRepository $attachmentRepository,
     ) {
     }
 
-    /**
-     * @param array<array-key, string> $uriVariables
-     * @param array<array-key, mixed>  $context
-     *
-     * @return array<array-key,DecisionAttachmentDto>|DecisionAttachmentDto|object[]|null
-     */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): array|DecisionAttachmentDto|null
+    protected function fromEntityToDto(AbstractAttachment $entity): AttachmentDto
     {
-        unset($context);
+        return DecisionAttachmentDto::fromEntity($entity);
+    }
 
-        Assert::allString($uriVariables);
-        $dossierId = Uuid::fromString(strval($uriVariables['dossierId']));
-        $decisionAttachmentId = isset($uriVariables['decisionAttachmentId']) ? Uuid::fromString($uriVariables['decisionAttachmentId']) : null;
-
-        if ($operation instanceof CollectionOperationInterface) {
-            return $this->repository->findAllForDossier($dossierId)->map(
-                fn (DecisionAttachment $entity): DecisionAttachmentDto => DecisionAttachmentDto::fromEntity($entity)
-            )->toArray();
-        }
-
-        if ($operation instanceof Post || $decisionAttachmentId === null) {
-            return null;
-        }
-
-        return DecisionAttachmentDto::fromEntity(
-            $this->repository->findOneForDossier(
-                $dossierId,
-                $decisionAttachmentId,
-            )
-        );
+    protected function getAttachmentRepository(): AttachmentRepositoryInterface
+    {
+        return $this->attachmentRepository;
     }
 }

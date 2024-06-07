@@ -6,16 +6,16 @@ namespace App\Controller\Admin\Dossier\WooDecision;
 
 use App\Domain\Publication\Attachment\AttachmentLanguageFactory;
 use App\Domain\Publication\Attachment\AttachmentTypeFactory;
+use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use App\Enum\ApplicationMode;
 use App\Form\Dossier\WooDecision\DecisionType;
 use App\Service\DossierWizard\DossierWizardHelper;
-use App\ViewModel\Factory\ApplicationMode;
-use App\ViewModel\Factory\AttachmentViewFactory;
-use App\ViewModel\Factory\GroundViewFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -102,7 +102,7 @@ class DecisionStepController extends AbstractController
             ),
             'canDeleteAttachments' => $this->dossierWorkflowManager->isTransitionAllowed(
                 $dossier,
-                DossierStatusTransition::DELETE_DECISION_ATTACHMENT,
+                DossierStatusTransition::DELETE_ATTACHMENT,
             ),
         ]);
     }
@@ -159,7 +159,7 @@ class DecisionStepController extends AbstractController
             }
         }
 
-        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'workflow_step_decision');
+        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossiers.woo-decision.step.decision');
 
         return $this->render('admin/dossier/woo-decision/decision/edit.html.twig', [
             'breadcrumbs' => $breadcrumbs,
@@ -175,7 +175,7 @@ class DecisionStepController extends AbstractController
             ),
             'canDeleteAttachments' => $this->dossierWorkflowManager->isTransitionAllowed(
                 $dossier,
-                DossierStatusTransition::DELETE_DECISION_ATTACHMENT,
+                DossierStatusTransition::DELETE_ATTACHMENT,
             ),
         ]);
     }

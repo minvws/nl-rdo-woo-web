@@ -30,8 +30,8 @@ class DossierAdministrationController extends AbstractController
     #[IsGranted('AuthMatrix.dossier.administration')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {
-        $breadcrumbs->addRouteItem('Administration', 'app_admin');
-        $breadcrumbs->addItem('Dossier');
+        $breadcrumbs->addRouteItem('global.admin', 'app_admin');
+        $breadcrumbs->addItem('global.decision');
 
         return $this->render('admin/dossier/administration/index.html.twig', [
             'dossiers' => $this->repository->findAll(),
@@ -72,9 +72,9 @@ class DossierAdministrationController extends AbstractController
             $this->addFlash('backend', ['success' => 'The action has been scheduled for execution']);
         }
 
-        $breadcrumbs->addRouteItem('Administration', 'app_admin');
-        $breadcrumbs->addRouteItem('Dossier', 'app_admin_dossier_administration');
-        $breadcrumbs->addItem('Dossier ' . $dossier->getDossierNr());
+        $breadcrumbs->addRouteItem('global.admin', 'app_admin');
+        $breadcrumbs->addRouteItem('global.decision', 'app_admin_dossier_administration');
+        $breadcrumbs->addItem('Besluit ' . $dossier->getDossierNr());
 
         return $this->render('admin/dossier/administration/details.html.twig', [
             'dossier' => $dossier,

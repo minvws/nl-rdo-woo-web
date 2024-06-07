@@ -39,7 +39,7 @@
 {% macro empty_list_item() %}<li class="min-w-11 text-center">&hellip;</li>{% endmacro %}
 
 {% if pageCount > 1 %}
-<nav aria-label="{{ "Pagination" | trans }}" class="border-t-2 border-woo-sea-blue text-base" data-e2e-name="pagination">
+<nav aria-label="{{ 'global.pagination' | trans }}" class="border-t-2 border-woo-sea-blue text-base" data-e2e-name="pagination">
     <ul class="flex flex-wrap relative items-center pt-11 sm:pt-0 sm:justify-center">
         {{ _self.previous_or_next('prev', previous|default(null), query, pageParameterName, targetAnchor) }}
 

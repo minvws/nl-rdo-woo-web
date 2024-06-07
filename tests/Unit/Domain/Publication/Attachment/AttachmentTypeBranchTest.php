@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Domain\Publication\Attachment;
 
 use App\Domain\Publication\Attachment\AttachmentType;
 use App\Domain\Publication\Attachment\AttachmentTypeBranch;
-use App\Domain\Publication\Attachment\AttachmentTypeBranchException;
+use App\Domain\Publication\Attachment\Exception\AttachmentTypeBranchException;
 use App\Tests\Unit\UnitTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -181,5 +181,62 @@ final class AttachmentTypeBranchTest extends UnitTestCase
                 ],
             ],
         ], $result);
+    }
+
+    public function testFilter(): void
+    {
+        $allowedTypes = [
+            AttachmentType::ADVICE,
+            AttachmentType::ANNUAL_PLAN,
+            AttachmentType::SPEECH,
+        ];
+
+        $mockedbranch = \Mockery::mock(AttachmentTypeBranch::class);
+        $mockedbranch->shouldReceive('filter')->with($allowedTypes)->once()->andReturn($mockedbranch);
+
+        $dto = new AttachmentTypeBranch(
+            name: 'test',
+            branch: $mockedbranch,
+            attachmentTypes: [
+                AttachmentType::ANNUAL_PLAN,
+                AttachmentType::CONCESSION,
+                AttachmentType::ADVICE,
+                AttachmentType::TERM_AGENDA,
+            ],
+        );
+
+        $result = $dto->filter($allowedTypes);
+
+        $this->assertNotNull($result);
+        $this->assertSame([AttachmentType::ANNUAL_PLAN, AttachmentType::ADVICE], $result->attachmentTypes);
+    }
+
+    public function testFilterWithoutPassingAnyAllowedTypes(): void
+    {
+        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator->shouldReceive('trans')->andReturnArg(0);
+
+        $dto = new AttachmentTypeBranch(
+            name: 'test',
+            attachmentTypes: $expectedAttachmentTypes = [AttachmentType::ADVICE, AttachmentType::REQUEST_FOR_ADVICE],
+        );
+        $result = $dto->filter();
+
+        $this->assertNotNull($result);
+        $this->assertSame($expectedAttachmentTypes, $result->attachmentTypes);
+    }
+
+    public function testFilterPassingEmptyAllowedTypesArray(): void
+    {
+        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator->shouldReceive('trans')->andReturnArg(0);
+
+        $dto = new AttachmentTypeBranch(
+            name: 'test',
+            attachmentTypes: [AttachmentType::ADVICE, AttachmentType::REQUEST_FOR_ADVICE],
+        );
+        $result = $dto->filter([]);
+
+        $this->assertNull($result);
     }
 }

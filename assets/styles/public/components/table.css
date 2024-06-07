@@ -4,7 +4,7 @@
     }
 
     .woo-table th {
-        @apply text-left;
+        @apply text-left whitespace-nowrap;
     }
 
     .woo-table th,
@@ -23,5 +23,10 @@
 
     .woo-table-cell--wrap {
         @apply flex flex-wrap gap-4;
+    }
+
+    .woo-responsive-table {
+        @apply overflow-x-auto;
+        @apply overflow-y-hidden; /* This doesn't do any harm (since there's no fixed height set) and prevents a bug with a scrollbar appearing on the right side of the table */
     }
 }

@@ -6,8 +6,13 @@ export const resetFocus = () => {
   const initialize = (previousActiveElement?: HTMLElement) => {
     cleanup();
 
+    if (!previousActiveElement) {
+      return;
+    }
+
     const newActiveElement = findElement(previousActiveElement);
     if (!newActiveElement) {
+      document.getElementById('js-number-of-search-results')?.focus();
       return;
     }
 
@@ -35,11 +40,7 @@ export const resetFocus = () => {
     }, { once: true, signal: abortController.signal });
   };
 
-  const findElement = (previousActiveElement?: HTMLElement): HTMLElement | null => {
-    if (!previousActiveElement) {
-      return null;
-    }
-
+  const findElement = (previousActiveElement: HTMLElement): HTMLElement | null => {
     const { id } = previousActiveElement;
     if (id) {
       return document.getElementById(id) as HTMLElement | null;

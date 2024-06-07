@@ -28,6 +28,6 @@ class DocumentReplaceException extends \RuntimeException
 
     public static function forFilenameMismatch(Document $document, string $filename): self
     {
-        return new self("Filename doesn't match document number", $document, $filename);
+        return new self('publication.dossier.error.file_name_does_not_match_document_number', $document, $filename);
     }
 }

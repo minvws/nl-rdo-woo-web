@@ -1,12 +1,12 @@
 {% macro inquiry_facets(result) %}
     {% for dossier_nr in result.filterDetails.dossierNumbers %}
-        {{ _self.facet_pill("Dossier with number {dossier_nr}" | trans({'dossier_nr': dossier_nr}), constant('App\\Service\\Search\\Model\\FacetKey::DOSSIER_NR').value ~ '[]', dossier_nr) }}
+        {{ _self.facet_pill('admin.dossiers.decision.number' | trans({'dossier_nr': dossier_nr}), constant('App\\Service\\Search\\Model\\FacetKey::DOSSIER_NR').value ~ '[]', dossier_nr) }}
     {% endfor %}
     {% for inquiryDescription in result.filterDetails.documentInquiries %}
-        {{ _self.facet_pill("Documents with casenumber {case_nr}" | trans({'case_nr': inquiryDescription.casenumber}), constant('App\\Service\\Search\\Model\\FacetKey::INQUIRY_DOCUMENTS').value ~ '[]', inquiryDescription.id) }}
+        {{ _self.facet_pill('admin.dossiers.documents.inquiry_number' | trans({'case_nr': inquiryDescription.casenumber}), constant('App\\Service\\Search\\Model\\FacetKey::INQUIRY_DOCUMENTS').value ~ '[]', inquiryDescription.id) }}
     {% endfor %}
     {% for inquiryDescription in result.filterDetails.dossierInquiries %}
-        {{ _self.facet_pill("Dossiers with casenumber {case_nr}" | trans({'case_nr': inquiryDescription.casenumber}), constant('App\\Service\\Search\\Model\\FacetKey::INQUIRY_DOSSIERS').value ~ '[]', inquiryDescription.id) }}
+        {{ _self.facet_pill('admin.dossiers.decision.inquiry_number' | trans({'case_nr': inquiryDescription.casenumber}), constant('App\\Service\\Search\\Model\\FacetKey::INQUIRY_DOSSIERS').value ~ '[]', inquiryDescription.id) }}
     {% endfor %}
 {% endmacro %}
 
@@ -45,7 +45,7 @@ Display facet with hyperlinks
     {% set entries = result.aggregation(facetKey).entries|default([])[:3] %}
 
     {% if entries | length > 0 %}
-    <div>
+    <div data-e2e-name="categories-{{ title }}">
         <h3 class="woo-h3 font-normal mb-6">{{ title }}</h3>
 
         <ul>
@@ -69,14 +69,14 @@ Display facet with hyperlinks
     when displaying date range pills.
 #}
 {% macro facet_pill(title, key, value) %}
-    <li class="mb-2">
+    <li class="mb-2" data-e2e-name="face-pill">
         <a
             class="bg-woo-anti-flash-white text-woo-davys-grey leading-none text-sm py-1.5 px-3 rounded-2xl js-active-filter-pill group"
             data-key="{{ key }}"
             data-value="{{ value }}"
             href="?{{ query_string_without_param(key, value) }}"
         >
-            <span class="sr-only">{{ "Remove filter" | trans }}</span>
+            <span class="sr-only">{{ 'public.search.filter_remove' | trans }}</span>
             <span class="group-hover:line-through group-focus:line-through">{{ title }}</span>
             <twig:Public:Icon class="ml-1" color="fill-woo-davys-grey" name="cross" size="16" />
         </a>

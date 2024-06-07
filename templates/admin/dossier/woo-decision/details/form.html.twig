@@ -12,7 +12,7 @@
     {% elseif dossier.dossierNr %}
         <div class="bhr-form-row">
             {% if form.children.dossierNr is not defined %}
-            <h2 class="bhr-label">{{ 'Reference number'|trans }}</h2>
+            <h2 class="bhr-label">{{ 'global.ref_number'|trans }}</h2>
             {% endif %}
             {{ dossier.dossierNr }}
         </div>
@@ -22,8 +22,8 @@
         {{ form_row(form.documentPrefix) }}
     {% else %}
         <div class="bhr-form-row">
-            <h2 class="bhr-label">{{ 'Prefix for documents'|trans }}</h2>
-            <p>{{ "You can no longer edit this after creating the decision file." | trans | raw }}</p>
+            <h2 class="bhr-label">{{ 'publication.dossier.documents_prefix' | trans }}</h2>
+            <p>{{ 'publication.dossier.can_not_edit_after_creation' | trans | raw }}</p>
             <p class="mt-2"><strong>{{ dossier.documentPrefix }}-</strong></p>
         </div>
     {% endif %}

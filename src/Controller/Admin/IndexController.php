@@ -20,8 +20,8 @@ class IndexController extends AbstractController
     #[Route('/balie/admin', name: 'app_admin', methods: ['GET'])]
     public function admin(Breadcrumbs $breadcrumbs): Response
     {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addItem('Admin');
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
+        $breadcrumbs->addItem('global.admin');
 
         return $this->render('admin/index.html.twig', []);
     }

@@ -32,7 +32,7 @@ class ResetCredentialsFormType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Reset credentials',
+                'label' => 'admin.user.reset',
                 'attr' => [
                     'class' => 'bhr-button--secondary mt-6',
                 ],

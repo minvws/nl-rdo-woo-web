@@ -4,51 +4,26 @@ declare(strict_types=1);
 
 namespace App\Api\Admin\CovenantAttachment;
 
-use ApiPlatform\Metadata\CollectionOperationInterface;
-use ApiPlatform\Metadata\Operation;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\State\ProviderInterface;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use App\Api\Admin\Attachment\AttachmentDto;
+use App\Api\Admin\Attachment\AttachmentProvider;
+use App\Domain\Publication\Attachment\AbstractAttachment;
+use App\Domain\Publication\Attachment\AttachmentRepositoryInterface;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachmentRepository;
-use Symfony\Component\Uid\Uuid;
-use Webmozart\Assert\Assert;
 
-final readonly class CovenantAttachmentProvider implements ProviderInterface
+final readonly class CovenantAttachmentProvider extends AttachmentProvider
 {
     public function __construct(
-        private CovenantAttachmentRepository $repository,
+        private CovenantAttachmentRepository $attachmentRepository,
     ) {
     }
 
-    /**
-     * @param array<array-key, string> $uriVariables
-     * @param array<array-key, mixed>  $context
-     *
-     * @return array<array-key,CovenantAttachmentDto>|CovenantAttachmentDto|object[]|null
-     */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): array|CovenantAttachmentDto|null
+    protected function fromEntityToDto(AbstractAttachment $entity): AttachmentDto
     {
-        unset($context);
+        return CovenantAttachmentDto::fromEntity($entity);
+    }
 
-        Assert::allString($uriVariables);
-        $dossierId = Uuid::fromString(strval($uriVariables['dossierId']));
-        $attachmentId = isset($uriVariables['attachmentId']) ? Uuid::fromString($uriVariables['attachmentId']) : null;
-
-        if ($operation instanceof CollectionOperationInterface) {
-            return $this->repository->findAllForDossier($dossierId)->map(
-                fn (CovenantAttachment $entity): CovenantAttachmentDto => CovenantAttachmentDto::fromEntity($entity)
-            )->toArray();
-        }
-
-        if ($operation instanceof Post || $attachmentId === null) {
-            return null;
-        }
-
-        return CovenantAttachmentDto::fromEntity(
-            $this->repository->findOneForDossier(
-                $dossierId,
-                $attachmentId,
-            )
-        );
+    protected function getAttachmentRepository(): AttachmentRepositoryInterface
+    {
+        return $this->attachmentRepository;
     }
 }
