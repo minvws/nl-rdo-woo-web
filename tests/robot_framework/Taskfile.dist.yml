@@ -2,7 +2,7 @@
 version: "3"
 
 vars:
-  NETWORK_NAME: nl-rdo-woo-web-private_woopie
+  NETWORK_NAME: nl-rdo-woo-web_woopie
 
 tasks:
   build:

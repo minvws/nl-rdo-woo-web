@@ -14,7 +14,7 @@ networks:
 
 services:
   app:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.1.0
+    image: ghcr.io/minvws/nl-rdo-woo-web/php:0.1.0
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -40,7 +40,7 @@ services:
   worker:
     depends_on:
       - rabbitmq
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.1.0
+    image: ghcr.io/minvws/nl-rdo-woo-web/php:0.1.0
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true

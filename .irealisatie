@@ -1,5 +1,5 @@
 GIT=GitHub
-REPO=minvws/nl-rdo-woo-web-private
+REPO=minvws/nl-rdo-woo-web
 CLUSTER=Woo
 MAINTAINER=rdo-woo-codeowners
 COMPONENTS=audit-logger-bundle,horsebattery

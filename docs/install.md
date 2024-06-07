@@ -20,7 +20,7 @@
 Clone the repository to your local machine:
 
 ```shell
-git clone git@github.com:minvws/nl-rdo-woo-web-private.git
+git clone git@github.com:minvws/nl-rdo-woo-web.git
 ```
 
 ## Step 2: Install dependencies
