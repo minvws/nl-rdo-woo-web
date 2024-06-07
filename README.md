@@ -1,7 +1,5 @@
 # Woo-platform Ministry of VWS
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=nl-rdo-woo-web-private&metric=alert_status&token=b35ec24b06834af668d51efc85b6f181dabf4a5b)](https://sonarcloud.io/summary/new_code?id=nl-rdo-woo-web-private) [![E2E Tests - CI](https://github.com/minvws/nl-rdo-woo-web-private/actions/workflows/e2e-ci.yml/badge.svg)](https://github.com/minvws/nl-rdo-woo-web-private/actions/workflows/e2e-ci.yml)
-
 ## Introduction
 
 This repository contains the source code and the technical documentation of the website <https://open.minvws.nl/>.
