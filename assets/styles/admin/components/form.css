@@ -45,12 +45,8 @@
         @apply bhr-input-text;
     }
 
-    .bhr-select {
-        @apply flex;
-    }
-
     .bhr-select::after {
-        @apply bg-bhr-dim-gray content-[''] pointer-events-none relative right-8 top-[.7rem] w-6 h-6;
+        @apply bg-bhr-dim-gray content-[''] pointer-events-none absolute -ml-8 mt-3 w-6 h-6;
         mask-image: url(../../img/chevron-down.svg);
     }
 

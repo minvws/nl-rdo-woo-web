@@ -100,7 +100,7 @@ class InquiryController extends AbstractController
                 );
 
                 if (count($errors['generic']) === 0 && count($errors['row']) === 0) {
-                    $this->addFlash('backend', ['success' => $this->translator->trans('Case numbers are being been linked')]);
+                    $this->addFlash('backend', ['success' => $this->translator->trans('admin.dossiers.inquiries.are_linked')]);
 
                     return $this->redirectToRoute('app_admin_inquiries');
                 }

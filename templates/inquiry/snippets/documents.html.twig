@@ -6,7 +6,7 @@
 
     {% form_theme form 'forms/public_form_theme.html.twig' %}
     {{ form_start(form, { 'attr' : { 'class': 'js-auto-submit-form p-0' }}) }}
-        <h3 class="sr-only">{{ "Filter documents. By changing the value this page will refresh and show the data for the selected value." | trans }}</h3>
+        <h3 class="sr-only">{{ 'global.documents.filter_help' | trans }}</h3>
     {{ form_end(form) }}
 
     <div class="pt-4">

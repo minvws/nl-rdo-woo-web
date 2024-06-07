@@ -22,7 +22,7 @@
             </dd>
         </div>
         <div>
-            <dt class="inline">{{ 'dossiers.dossier_number' | trans }}:</dt>
+            <dt class="inline">{{ 'global.decision.dossier_number' | trans }}:</dt>
             <dd class="inline" data-e2e-name="dossier-metadata-number">{{ dossier.dossierNr }}</dd>
         </div>
     </dl>
@@ -30,17 +30,17 @@
     {% if not dossier.isVwsResponsible %}
     <div class="pt-10">
         <twig:Public:Notification>
-            <p>{{ 'public.other_ministry_responsible' | trans({ '{source}': 'public.dossier.this_dossier' | trans | capitalize, '{ministry}': dossier.mainDepartment.name }) | raw }}</p>
+            <p>{{ 'public.global.contact_other' | trans({ '{source}': 'public.dossier.this_dossier' | trans | capitalize, '{ministry}': dossier.mainDepartment.name }) | raw }}</p>
         </twig:Public:Notification>
     </div>
     {% endif %}
 
     <div class="mt-10">
         <p>
-            {{ 'Woo Wob request info' | trans }}
+            {{ 'public.publication.woo_request_explanation' | trans }}
         </p>
         <p>
-            <a class="woo-a" href="{{ path('app_about') }}">{{ 'More about Woo Wob requests' | trans }}</a>
+            <a class="woo-a" href="{{ path('app_about') }}">{{ 'public.publication.woo_request_more' | trans }}</a>
         </p>
     </div>
 

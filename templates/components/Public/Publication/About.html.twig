@@ -1,0 +1,38 @@
+<div class="mt-16">
+    <h2 class="woo-h2 woo-h2-spacing">{{ title }}</h2>
+
+    <div class="woo-responsive-table">
+        <table class="woo-table">
+            <caption class="sr-only">
+                {{ title }}
+            </caption>
+            <tbody>
+                <tr>
+                    <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                        {{ dateLabel | default('global.date' | trans) }}
+                    </th>
+                    <td data-e2e-name="dossier-metadata-period">
+                        {% block content %}
+                            <twig:Date date="{{ dossier.date }}" />
+                        {% endblock %}
+                    </td>
+                </tr>
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.responsible_parties' | trans }}</th>
+                    <td data-e2e-name="dossier-metadata-responsible">
+                        {# Only display the first entries #}
+                        {{ dossier.mainDepartment.name }}
+                    </td>
+                </tr>
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">
+                        {{ 'public.dossiers.type' | trans }}
+                    </th>
+                    <td>
+                        <p>{{ dossier.type | trans | capitalize}}</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -15,9 +15,12 @@ ${TST_BALIE_PASSWORD}   ${EMPTY}
 
 
 *** Keywords ***
-Login Balie
-  [Arguments]  ${username}=${TST_BALIE_USER}  ${password}=${TST_BALIE_PASSWORD}
+Go To Admin
   Go To  ${BASE_URL_BALIE}
+
+Login Admin
+  [Arguments]  ${username}=${TST_BALIE_USER}  ${password}=${TST_BALIE_PASSWORD}
+  Go To Admin
   Fill Text  id=inputEmail  ${username}
   Fill Text  id=inputPassword  ${password}
   Click  " Inloggen "
@@ -27,5 +30,5 @@ Login Balie
   Click  " Controleren "
   Get Text  //body  *=  Uitloggen
 
-Logout Balie
+Logout Admin
   Click  xpath=//*[@data-e2e-name="logout-link"]

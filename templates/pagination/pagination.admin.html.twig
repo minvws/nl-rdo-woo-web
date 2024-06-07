@@ -12,7 +12,7 @@
 {% if pageCount > 1 %}
     {% set fragment = fragment|default("#resultaten") %}
 
-    <nav class="px-6 pt-6" aria-label="{{ "Pagination" | trans() }}">
+    <nav class="px-6 pt-6" aria-label="{{ 'global.pagination' | trans }}">
         <ul class="flex justify-center relative items-center">
             {% if previous is defined %}
             <li class="absolute left-0">

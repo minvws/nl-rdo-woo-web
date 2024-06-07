@@ -10,7 +10,7 @@ class InquiryLinkImportException extends TranslatableException
     {
         return new self(
             "Document $documentNr does not exist",
-            'Document {documentNr} does not exist',
+            'public.global.no_doc_number',
             [
                 '{documentNr}' => $documentNr,
             ]

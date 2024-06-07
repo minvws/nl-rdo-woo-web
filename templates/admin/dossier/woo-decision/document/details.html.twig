@@ -27,9 +27,9 @@
                             <th class="bhr-row-head" scope="row">Publicatiestatus</th>
                             <td>
                                 {% if document.suspended %}
-                                    <span class="bhr-badge bhr-badge--red">{{ "publication.status.suspended" | trans() }}</span>
+                                    <span class="bhr-badge bhr-badge--red">{{ 'admin.publications.status.suspended' | trans }}</span>
                                 {% elseif document.withdrawn %}
-                                    <span class="bhr-badge bhr-badge--red">{{ "publication.status.withdrawn" | trans() }}</span>
+                                    <span class="bhr-badge bhr-badge--red">{{ 'admin.publications.status.withdrawn' | trans }}</span>
                                 {% else %}
                                     <span class="bhr-badge bhr-badge--green">Gepubliceerd</span>
                                 {% endif %}
@@ -52,7 +52,7 @@
                         </tr>
                         <tr>
                             <th class="bhr-row-head" scope="row">Status</th>
-                            <td>{{ document.judgement.value | trans }}</td>
+                            <td>{{ document.judgement | trans }}</td>
                         </tr>
                         <tr>
                             <th class="bhr-row-head" scope="row">Gelakte gegevens</th>
@@ -120,7 +120,7 @@
                 </table>
             </div>
 
-            {{ macro.history_section(get_backend_history('document', document.id), "History of this document") }}
+            {{ macro.history_section(get_backend_history('document', document.id), 'public.documents.document_history') }}
         </div>
     </div>
 {% endblock %}

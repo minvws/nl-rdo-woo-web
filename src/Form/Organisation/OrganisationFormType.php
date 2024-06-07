@@ -71,7 +71,7 @@ class OrganisationFormType extends AbstractType
                     return $er->createQueryBuilder('d')
                         ->orderBy('d.name', 'ASC');
                 },
-                'placeholder' => 'Choose an organisation',
+                'placeholder' => 'admin.organisation.select',
                 'constraints' => [
                     new NotBlank(),
                 ],

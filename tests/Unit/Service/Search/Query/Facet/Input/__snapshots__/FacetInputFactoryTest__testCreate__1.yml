@@ -27,7 +27,7 @@ PERIOD:
     stringValues: {  }
     notActive: true
 DATE:
-    isActive: false
+    active: false
     notActive: true
     withoutDate: false
     anyPeriodFilterDates: false

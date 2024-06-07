@@ -82,7 +82,7 @@ final class UserFactory extends ModelFactory
         return [
             'changepwd' => self::faker()->boolean(),
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'email' => self::faker()->email(),
+            'email' => sprintf('%s@example.local', self::faker()->uuid()),
             'enabled' => self::faker()->boolean(),
             'name' => self::faker()->name(),
             'organisation' => OrganisationFactory::new(),

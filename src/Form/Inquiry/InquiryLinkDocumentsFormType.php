@@ -26,8 +26,8 @@ class InquiryLinkDocumentsFormType extends AbstractType
     {
         $builder
             ->add('upload', FileType::class, [
-                'label' => 'Link case numbers to previously published documents on the platform',
-                'help' => 'Upload an Excel document containing the document numbers, matters and case numbers to be linked (View example).',
+                'label' => 'admin.dossiers.inquiries.link_documents',
+                'help' => 'admin.dossiers.inquiries.link_documents_help',
                 'help_html' => true,
                 'required' => true,
                 'constraints' => [
@@ -39,14 +39,14 @@ class InquiryLinkDocumentsFormType extends AbstractType
                 ],
             ])
             ->add('prefix', ChoiceType::class, [
-                'label' => 'Select decision prefix', // @codingStandardsIgnoreStart
+                'label' => 'admin.dossiers.decision_prefix', // @codingStandardsIgnoreStart
                 'attr' => [
                     'class' => 'w-9/12',
                 ],
                 // @codingStandardsIgnoreStart
-                'help' => 'You can find the prefix of the decision by looking up the decision and going to the basic information page.', // @codingStandardsIgnoreEnds
+                'help' => 'admin.dossiers.decision_prefix_help', // @codingStandardsIgnoreEnds
                 'choice_loader' => $options['choice_loader'],
-                'placeholder' => 'Kies een prefix',
+                'placeholder' => 'admin.global.dossiers.prefix_placeholder',
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),
@@ -54,7 +54,7 @@ class InquiryLinkDocumentsFormType extends AbstractType
                 ],
             ])
             ->add('link', SubmitType::class, [
-                'label' => 'Attach',
+                'label' => 'global.attach',
                 'attr' => [
                     'data-first-button' => true,
                 ],

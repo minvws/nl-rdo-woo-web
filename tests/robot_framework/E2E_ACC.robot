@@ -4,7 +4,9 @@ Documentation       End-to-end tests for the Staging/Acceptance environment.
 Resource            resources/Setup.resource
 Resource            resources/Generic.resource
 Resource            resources/Public.resource
-Suite Setup         Test Suite Setup
+Resource            resources/Dossier.resource
+Resource            resources/Document.resource
+Suite Setup         Suite Setup - Test
 Test Tags           e2e_acc  e2e  acc
 
 
@@ -42,7 +44,7 @@ Decision Dossier overview page
   ...  //body
   ...  *=
   ...  De minister van Volksgezondheid, Welzijn en Sport heeft op 25 april 2023 een besluit genomen op verzoeken in het kader van de Wet open overheid. Het besluit betreft openbaarmaking van documenten die betrekking hebben op informatie aangaande Overleg VWS over de periode mei 2021.
-  Verify Decision Dossier Metadata
+  Verify Dossier Metadata
   ...  dossier_status=Deels openbaar
   ...  responsible=Ministerie van Volksgezondheid, Welzijn en Sport
   ...  period=Mei 2021

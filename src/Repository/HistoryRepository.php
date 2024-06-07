@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\History;
@@ -42,7 +43,7 @@ class HistoryRepository extends ServiceEntityRepository
         if ($mode === HistoryService::MODE_PUBLIC) {
             if ($type == HistoryService::TYPE_DOSSIER) {
                 // If we show frontend dossiers, we only have to show entries since publication date
-                $qb->leftJoin(Dossier::class, 'd', 'WITH', 'd.id = h.identifier')
+                $qb->leftJoin(AbstractDossier::class, 'd', 'WITH', 'd.id = h.identifier')
                     ->andWhere('h.createdDt >= d.publicationDate');
             }
 

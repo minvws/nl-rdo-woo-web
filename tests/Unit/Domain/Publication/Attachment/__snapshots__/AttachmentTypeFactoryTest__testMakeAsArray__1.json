@@ -1,7 +1,7 @@
 [
     {
         "type": "AttachmentTypeBranch",
-        "label": "adviesdocument",
+        "label": "branch.advice_document",
         "subbranch": null,
         "attachmentTypes": [
             {
@@ -23,42 +23,10 @@
     },
     {
         "type": "AttachmentTypeBranch",
-        "label": "beleidsdocument",
-        "subbranch": null,
-        "attachmentTypes": [
-            {
-                "type": "AttachmentType",
-                "value": "c_dfa0ff1f",
-                "label": "budget"
-            },
-            {
-                "type": "AttachmentType",
-                "value": "c_9376c730",
-                "label": "policy_note"
-            },
-            {
-                "type": "AttachmentType",
-                "value": "c_2977c34f",
-                "label": "decision_note"
-            },
-            {
-                "type": "AttachmentType",
-                "value": "c_a6f44748",
-                "label": "annual_plan"
-            },
-            {
-                "type": "AttachmentType",
-                "value": "c_3d782f30",
-                "label": "annual_report"
-            }
-        ]
-    },
-    {
-        "type": "AttachmentTypeBranch",
-        "label": "beleidsdocument",
+        "label": "branch.policy_document",
         "subbranch": {
             "type": "AttachmentTypeBranch",
-            "label": "rapport",
+            "label": "branch.report",
             "subbranch": null,
             "attachmentTypes": [
                 {
@@ -96,6 +64,31 @@
         "attachmentTypes": [
             {
                 "type": "AttachmentType",
+                "value": "c_dfa0ff1f",
+                "label": "budget"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_9376c730",
+                "label": "policy_note"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_2977c34f",
+                "label": "decision_note"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_a6f44748",
+                "label": "annual_plan"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_3d782f30",
+                "label": "annual_report"
+            },
+            {
+                "type": "AttachmentType",
                 "value": "c_a1dae55d",
                 "label": "term_agenda"
             }
@@ -103,10 +96,10 @@
     },
     {
         "type": "AttachmentTypeBranch",
-        "label": "beschikking",
+        "label": "branch.decision_to_impose",
         "subbranch": {
             "type": "AttachmentTypeBranch",
-            "label": "beschikking tot handhaving",
+            "label": "branch.decision_to_impose_enforcement",
             "subbranch": null,
             "attachmentTypes": [
                 {
@@ -181,7 +174,7 @@
     },
     {
         "type": "AttachmentTypeBranch",
-        "label": "brief",
+        "label": "branch.letter",
         "subbranch": null,
         "attachmentTypes": [
             {
@@ -228,7 +221,7 @@
     },
     {
         "type": "AttachmentTypeBranch",
-        "label": "document van burger",
+        "label": "branch.citizen_document",
         "subbranch": null,
         "attachmentTypes": [
             {
@@ -275,21 +268,21 @@
     },
     {
         "type": "AttachmentTypeBranch",
-        "label": "parlementair document",
+        "label": "branch.parliamentary_document",
         "subbranch": {
             "type": "AttachmentTypeBranch",
-            "label": "Kamervraag",
+            "label": "branch.parliamentary_question",
             "subbranch": null,
             "attachmentTypes": [
                 {
                     "type": "AttachmentType",
                     "value": "c_6d494ab6",
-                    "label": "parliamentary_qustion_with_answer"
+                    "label": "parliamentary_question_with_answer"
                 },
                 {
                     "type": "AttachmentType",
                     "value": "c_03c52ba0",
-                    "label": "parliamentary_qustion_without_answer"
+                    "label": "parliamentary_question_without_answer"
                 }
             ]
         },
@@ -313,7 +306,7 @@
     },
     {
         "type": "AttachmentTypeBranch",
-        "label": "publicatieblad",
+        "label": "branch.publication_sheet",
         "subbranch": null,
         "attachmentTypes": [
             {
@@ -330,7 +323,7 @@
     },
     {
         "type": "AttachmentTypeBranch",
-        "label": "regelgeving",
+        "label": "branch.regulation",
         "subbranch": null,
         "attachmentTypes": [
             {
@@ -347,7 +340,7 @@
     },
     {
         "type": "AttachmentTypeBranch",
-        "label": "vergaderstuk",
+        "label": "branch.meeting_document",
         "subbranch": null,
         "attachmentTypes": [
             {

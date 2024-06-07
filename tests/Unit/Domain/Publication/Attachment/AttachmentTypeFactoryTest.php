@@ -44,13 +44,18 @@ final class AttachmentTypeFactoryTest extends UnitTestCase
         $this->assertMatchesJsonSnapshot($result);
     }
 
-    public function testMakeAsArrayWithExclude(): void
+    public function testMakeAsArrayWithAllowedTypes(): void
     {
         $translator = \Mockery::mock(TranslatorInterface::class);
         $translator->shouldReceive('trans')->andReturnArg(0);
 
         $factory = new AttachmentTypeFactory($translator);
-        $result = $factory->makeAsArray(AttachmentType::COVENANT);
+        $result = $factory->makeAsArray([
+            AttachmentType::COVENANT,
+            AttachmentType::PARLIAMENTARY_QUESTION_WITH_ANSWER,
+            AttachmentType::PARLIAMENTARY_QUESTION_WITHOUT_ANSWER,
+            AttachmentType::DECISION_TO_IMPOSE_AN_ORDER_UNDER_ADMINISTRATIVE_ENFORCEMENT,
+        ]);
 
         $this->assertMatchesJsonSnapshot($result);
     }

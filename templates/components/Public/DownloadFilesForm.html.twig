@@ -3,13 +3,13 @@
         {% if canDownload %}
         <button class="woo-bordered-button woo-bordered-button--primary" data-e2e-name="download-documents-button" type="submit">
             <twig:Public:Icon class="woo-button-icon-left" name="download" />
-            {{ 'public.global.download' | trans }}
+            {{ 'public.global.download_verb' | trans }}
         </button>
         {% endif %}
 
         <div class="leading-none pt-6 sm:pt-0">
             <a class="woo-a inline-block py-1" href="{{ searchUrl }}">
-                {{ "Search in these documents..." | trans }}
+                {{ 'global.search_through' | trans }}
             </a>
         </div>
     </form>

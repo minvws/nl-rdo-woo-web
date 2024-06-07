@@ -29,7 +29,11 @@
                                                 "terms": {
                                                     "type": [
                                                         "dossier",
-                                                        "covenant"
+                                                        "covenant",
+                                                        "annual_report",
+                                                        "investigation_report",
+                                                        "disposition",
+                                                        "complaint_judgement"
                                                     ]
                                                 }
                                             },

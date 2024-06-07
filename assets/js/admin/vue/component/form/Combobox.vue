@@ -1,10 +1,10 @@
 <script setup>
-  import InputErrors from './InputErrors.vue';
   import Icon from '@admin-fe/component/Icon.vue';
   import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
   import { validators } from '@admin-fe/form';
   import { removeAccents, uniqueId } from '@js/utils';
   import { computed, onMounted, ref, watch } from 'vue';
+  import RemovableInput from './RemovableInput.vue';
 
   const emit = defineEmits(['delete', 'mounted', 'update']);
 
@@ -51,7 +51,7 @@
   const inputId = `${uniqueId('input')}`;
   const isListVisible = ref(false);
   const listId = `${uniqueId('list')}`;
-  const wrapperElement = ref(null);
+  const optionsListElement = ref(null);
   const value = ref(props.value);
 
   const onDelete = () => {
@@ -71,12 +71,20 @@
   const hasSearchResults = computed(() => searchResults.value.length > 0);
   const hasVisibleList = computed(() => isListVisible.value && hasSearchResults.value);
 
-  const searchResults = computed(() => {
-    if (!props.value) {
+  const filteredOptions = computed(() => {
+    if (props.forbiddenValues.length === 0) {
       return props.options;
     }
 
-    return props.options.filter((option) => {
+    return props.options.filter((option) => !props.forbiddenValues.includes(option));
+  });
+
+  const searchResults = computed(() => {
+    if (!props.value) {
+      return filteredOptions.value;
+    }
+
+    return filteredOptions.value.filter((option) => {
       return removeAccents(option.toLowerCase()).includes(removeAccents(props.value.toLowerCase()));
     });
   });
@@ -166,7 +174,7 @@
       return;
     }
 
-    const optionElement = wrapperElement.value.querySelector(`#${getOptionIdByIndex(index)}`);
+    const optionElement = optionsListElement.value.querySelector(`#${getOptionIdByIndex(index)}`);
     optionElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
@@ -206,9 +214,6 @@
 
   const inputStore = useInputStore(props.name, props.label, value, createValidators(props.forbiddenValues));
   const ariaDescribedBy = computed(() => useInputAriaDescribedBy(inputId, undefined, inputStore.hasVisibleErrors));
-  const validatorMessages = {
-    forbidden: () => `De waarde "${value.value}" is meerdere keren ingevuld.`,
-  };
 
   onMounted(() => {
     if (props.autoFocus) {
@@ -220,97 +225,78 @@
 </script>
 
 <template>
-  <div class="bhr-combobox" ref="wrapperElement">
-    <label class="sr-only" :for="inputId">{{ label }}</label>
-
-    <InputErrors
-      class="mt-2"
-      :errors="[...inputStore.errors, ...errors]"
-      :inputId="inputId"
-      :validator-messages="validatorMessages"
-      :value="value"
-      v-if="inputStore.hasVisibleErrors || errors.length > 0"
-    />
-
-    <div class="flex">
-      <div class="relative grow">
-        <div class="bhr-combobox__input grow" @click="onClickOnInputWrapper">
-          <input
-            @blur="onBlur"
-            @focus="onFocus"
-            @input="onUpdate"
-            @keyup.alt.down="onAltPlusArrowDown"
-            @keyup.down.exact="onArrowDown"
-            @keypress.enter.stop.prevent="onEnter"
-            @keyup.esc="onEscape"
-            @keyup.up="onArrowUp"
-            :aria-activedescendant="getActiveDescendant()"
-            :aria-describedby="ariaDescribedBy"
-            aria-autocomplete="list"
-            :aria-controls="listId"
-            :aria-expanded="hasVisibleList"
-            autocomplete="off"
-            :id="inputId"
-            :name="name"
-            class="bhr-input-text w-full pr-12"
-            :class="{ 'bhr-input-text--invalid': inputStore.hasVisibleErrors }"
-            ref="inputElement"
-            role="combobox"
-            type="text"
-            v-model="value"
-          >
-          <button
-            v-if="hasSearchResults"
-            :aria-controls="listId"
-            :aria-expanded="hasVisibleList"
-            aria-label="Opties"
-            class="absolute inset-y-0 right-0 px-2 cursor-pointer"
-            tabindex="-1"
-            type="button"
-          >
-            <Icon
-              :class="{ 'rotate-180': hasVisibleList }"
-              color="fill-bhr-dim-gray"
-              name="chevron-down"
-              size="24"
-            />
-          </button>
-        </div>
-
-        <ul
-          class="bhr-combobox__options"
-          :class="{ 'hidden': !hasVisibleList }"
-          :id="listId"
-          role="listbox"
-          aria-label="Opties"
+  <RemovableInput
+    @delete="onDelete"
+    :are-errors-visible="inputStore.hasVisibleErrors || errors.length > 0"
+    :can-delete="canDelete"
+    :errors="[...inputStore.errors, ...errors]"
+    :id="inputId"
+    :label="label"
+  >
+    <div class="relative">
+      <div class="bhr-combobox__input" @click="onClickOnInputWrapper">
+        <input
+          @blur="onBlur"
+          @focus="onFocus"
+          @input="onUpdate"
+          @keyup.alt.down="onAltPlusArrowDown"
+          @keyup.down.exact="onArrowDown"
+          @keypress.enter.stop.prevent="onEnter"
+          @keyup.esc="onEscape"
+          @keyup.up="onArrowUp"
+          :aria-activedescendant="getActiveDescendant()"
+          :aria-describedby="ariaDescribedBy"
+          aria-autocomplete="list"
+          :aria-controls="listId"
+          :aria-expanded="hasVisibleList"
+          autocomplete="off"
+          :id="inputId"
+          :name="name"
+          class="bhr-input-text w-full pr-12"
+          :class="{ 'bhr-input-text--invalid': inputStore.hasVisibleErrors }"
+          ref="inputElement"
+          role="combobox"
+          type="text"
+          v-model="value"
         >
-          <li
-            @click="() => onClick(option)"
-            :class="{ 'bhr-combobox__option--active': isSearchResultActive(index) }"
-            :id="getOptionIdByIndex(index)"
-            class="bhr-combobox__option"
-            role="option"
-            v-for="(option, index) in searchResults"
-            :key="option"
-          >
-            {{ option }}
-          </li>
-        </ul>
+        <button
+          v-if="hasSearchResults"
+          :aria-controls="listId"
+          :aria-expanded="hasVisibleList"
+          aria-label="Opties"
+          class="absolute inset-y-0 right-0 px-2 cursor-pointer"
+          tabindex="-1"
+          type="button"
+        >
+          <Icon
+            :class="{ 'rotate-180': hasVisibleList }"
+            color="fill-bhr-dim-gray"
+            name="chevron-down"
+            size="24"
+          />
+        </button>
       </div>
 
-      <button
-        v-if="canDelete"
-        @click="onDelete"
-        class="bhr-button cursor-pointer shadow-none text-bhr-independence hover-focus:text-bhr-maximum-red"
-        type="button"
+      <ul
+        aria-label="Opties"
+        class="bhr-combobox__options"
+        ref="optionsListElement"
+        role="listbox"
+        :class="{ 'hidden': !hasVisibleList }"
+        :id="listId"
       >
-        <span class="sr-only">Verwijder {{ props.label }}</span>
-        <Icon
-          color="fill-current"
-          name="trash-bin"
-          size="18"
-        />
-      </button>
+        <li
+          @click="() => onClick(option)"
+          :class="{ 'bhr-combobox__option--active': isSearchResultActive(index) }"
+          :id="getOptionIdByIndex(index)"
+          class="bhr-combobox__option"
+          role="option"
+          v-for="(option, index) in searchResults"
+          :key="option"
+        >
+          {{ option }}
+        </li>
+      </ul>
     </div>
-  </div>
+  </RemovableInput>
 </template>

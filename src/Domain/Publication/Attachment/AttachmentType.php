@@ -77,8 +77,8 @@ enum AttachmentType: string implements TranslatableInterface
     case PARLIAMENTARY_DOCUMENT = 'c_056a75e1';
     case NON_DOSSIER_DOCUMENT = 'c_f1652921';
 
-    case PARLIAMENTARY_QUSTION_WITH_ANSWER = 'c_6d494ab6';
-    case PARLIAMENTARY_QUSTION_WITHOUT_ANSWER = 'c_03c52ba0';
+    case PARLIAMENTARY_QUESTION_WITH_ANSWER = 'c_6d494ab6';
+    case PARLIAMENTARY_QUESTION_WITHOUT_ANSWER = 'c_03c52ba0';
 
     case GOVERNMENT_GAZETTE = 'c_61e3099a';
     case STAATSCOURANT = 'c_0670bae1';

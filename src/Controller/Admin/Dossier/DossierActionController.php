@@ -62,7 +62,6 @@ class DossierActionController extends AbstractController
         $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossier.delete.title');
 
         return $this->render('admin/dossier/delete.html.twig', [
-            'dossier' => $dossier,
             'breadcrumbs' => $breadcrumbs,
             'form' => $form->createView(),
             'success' => $success,
@@ -97,10 +96,9 @@ class DossierActionController extends AbstractController
             );
         }
 
-        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.documents.withdraw_all');
+        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossiers.decision.documents.withdraw_all');
 
         return $this->render('admin/dossier/woo-decision/withdraw-all-documents.html.twig', [
-            'dossier' => $dossier,
             'breadcrumbs' => $breadcrumbs,
             'form' => $form,
         ]);

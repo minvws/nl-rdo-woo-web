@@ -36,7 +36,7 @@ class InquiryFilterFormType extends AbstractType
 
         $dossierCount = $inquiry->getDossiers()->count();
         $dossiersName = $this->translator->trans('public.inquiries.dossiers_these', ['count' => $dossierCount]);
-        $submitLabel = $this->translator->trans('Filter');
+        $submitLabel = $this->translator->trans('admin.publications.submit.filter');
 
         $choices = [
             $this->translator->trans(

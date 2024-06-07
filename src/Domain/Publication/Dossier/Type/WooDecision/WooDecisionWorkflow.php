@@ -73,6 +73,17 @@ class WooDecisionWorkflow
 
         WorkflowConfigHelper::defineNonMovingTransitions(
             $workflow,
+            DossierStatusTransition::UPDATE_ATTACHMENT,
+            [
+                DossierStatus::CONCEPT,
+                DossierStatus::SCHEDULED,
+                DossierStatus::PREVIEW,
+                DossierStatus::PUBLISHED,
+            ],
+        );
+
+        WorkflowConfigHelper::defineNonMovingTransitions(
+            $workflow,
             DossierStatusTransition::UPDATE_INVENTORY,
             [
                 DossierStatus::CONCEPT,
@@ -114,7 +125,7 @@ class WooDecisionWorkflow
             ->to(DossierStatus::PUBLISHED->value);
 
         $workflow->transition()
-            ->name(DossierStatusTransition::DELETE_DECISION_ATTACHMENT->value)
+            ->name(DossierStatusTransition::DELETE_ATTACHMENT->value)
             ->from(DossierStatus::CONCEPT->value)
             ->to(DossierStatus::CONCEPT->value);
     }

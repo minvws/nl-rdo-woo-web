@@ -32,9 +32,9 @@ class DepartmentType extends AbstractType
                 ],
             ])
             ->add('name', TextType::class, [
-                'label' => 'Name',
+                'label' => 'admin.department.name',
                 'required' => true,
-                'help' => 'Name of the department',
+                'help' => 'admin.department.name_help',
                 'constraints' => [
                     new NotBlank(),
                     new Length(['min' => 2, 'max' => 100]),

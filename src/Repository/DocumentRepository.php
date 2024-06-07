@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Search\Result\WooDecision\DocumentSearchResult;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Organisation;
 use App\Service\Elastic\Model\DocumentCounts;
 use App\Service\Inventory\DocumentNumber;
-use App\ViewModel\DocumentSearchEntry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\Expr\Join;
@@ -305,7 +305,7 @@ class DocumentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getDocumentSearchEntry(string $documentNr): ?DocumentSearchEntry
+    public function getDocumentSearchEntry(string $documentNr): ?DocumentSearchResult
     {
         $qb = $this->createQueryBuilder('doc')
             ->select(sprintf(
@@ -320,7 +320,7 @@ class DocumentRepository extends ServiceEntityRepository
                     doc.judgement,
                     doc.documentDate
                 )',
-                DocumentSearchEntry::class,
+                DocumentSearchResult::class,
             ))
             ->where('doc.documentNr = :documentNr')
             ->andWhere('dos.status IN (:statuses)')
@@ -330,7 +330,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
         ;
 
-        /** @var ?DocumentSearchEntry $result */
+        /** @var ?DocumentSearchResult $result */
         $result = $qb->getQuery()->getOneOrNullResult();
 
         return $result;

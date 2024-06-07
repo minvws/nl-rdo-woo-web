@@ -55,7 +55,7 @@ class UserCreateFormType extends AbstractType
             ])
             ->add('roles', HiddenType::class)
             ->add('email', EmailType::class, [
-                'label' => 'global.email.capital',
+                'label' => 'global.email',
                 'help' => 'admin.user.email_help',
                 'constraints' => [
                     new NotBlank(),
@@ -66,8 +66,7 @@ class UserCreateFormType extends AbstractType
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'admin.user.create.confirm',
-            ])
-        ;
+            ]);
 
         $builder->addeventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             $form = $event->getForm();

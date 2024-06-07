@@ -48,18 +48,18 @@ complaint: klacht
 exemption_request: ontheffingsaanvraag
 subsidy_application: subsidieaanvraag
 permit_application: vergunningaanvraag
-wob_request: Wob-verzoek
+wob_request: wob-verzoek
 point_of_view: zienswijze
 
-actions: Handelingen
-parliamentary_document: Kamerstuk
+actions: handelingen
+parliamentary_document: kamerstuk
 non_dossier_document: niet-dossierstuk
 
-parliamentary_qustion_with_answer: Kamervraag met antwoord
-parliamentary_qustion_without_answer: Kamervraag zonder antwoord
+parliamentary_question_with_answer: kamervraag met antwoord
+parliamentary_question_without_answer: kamervraag zonder antwoord
 
-government_gazette: Staatsblad
-staatscourant: Staatscourant
+government_gazette: staatsblad
+staatscourant: staatscourant
 
 policy: beleidsregel
 plan: plan
@@ -71,3 +71,16 @@ meeting_report: vergaderverslag
 
 dutch: Nederlands
 english: Engels
+
+branch.advice_document: "adviesdocument"
+branch.policy_document: "beleidsdocument"
+branch.report: "rapport"
+branch.decision_to_impose: "beschikking"
+branch.decision_to_impose_enforcement: "forcementbeschikking tot handhaving"
+branch.letter: "brief"
+branch.citizen_document: "document van burger"
+branch.parliamentary_document: "parlementair document"
+branch.parliamentary_question: "kamervraag"
+branch.publication_sheet: "publicatieblad"
+branch.regulation: "regelgeving"
+branch.meeting_document: "vergaderstuk"

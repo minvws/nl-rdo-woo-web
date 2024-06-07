@@ -27,7 +27,7 @@ class PublicationStepController extends AbstractController
 
     #[Route(
         path: '/balie/dossier/woodecision/publish/concept/{prefix}/{dossierId}',
-        name: 'app_admin_dossier_woodecision_publish_concept',
+        name: 'app_admin_dossier_woodecision_publication_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
@@ -57,7 +57,7 @@ class PublicationStepController extends AbstractController
 
     #[Route(
         path: '/balie/dossier/woodecision/publish/edit/{prefix}/{dossierId}',
-        name: 'app_admin_dossier_woodecision_publish_edit',
+        name: 'app_admin_dossier_woodecision_publication_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
@@ -79,7 +79,7 @@ class PublicationStepController extends AbstractController
             return $this->stepHelper->redirectToPublicationConfirmation($dossier);
         }
 
-        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'workflow_step_publication');
+        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossiers.woo-decision.step.publication');
 
         return $this->render('admin/dossier/woo-decision/publication/edit.html.twig', [
             'breadcrumbs' => $breadcrumbs,

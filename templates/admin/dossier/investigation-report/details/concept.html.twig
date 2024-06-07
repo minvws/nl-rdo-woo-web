@@ -1,0 +1,9 @@
+{% extends 'admin/dossier/publication/concept.html.twig' %}
+
+{% block dossier_title %}
+    {{ 'admin.dossiers.investigation-report.create_new' | trans }}
+{% endblock %}
+
+{% block form %}
+    {% include 'admin/dossier/investigation-report/details/form.html.twig' %}
+{% endblock %}

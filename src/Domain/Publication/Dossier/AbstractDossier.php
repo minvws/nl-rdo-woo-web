@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier;
 
 use App\Doctrine\TimestampableTrait;
-use App\Domain\Publication\Dossier\Step\StepName;
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use App\Domain\Publication\Dossier\Type\DossierType;
+use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Department;
 use App\Entity\Organisation;
@@ -29,10 +33,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap([
     DossierType::WOO_DECISION->value => WooDecision::class,
     DossierType::COVENANT->value => Covenant::class,
+    DossierType::ANNUAL_REPORT->value => AnnualReport::class,
+    DossierType::INVESTIGATION_REPORT->value => InvestigationReport::class,
+    DossierType::DISPOSITION->value => Disposition::class,
+    DossierType::COMPLAINT_JUDGEMENT->value => ComplaintJudgement::class,
 ])]
 #[ORM\UniqueConstraint(name: 'dossier_unique_index', columns: ['dossier_nr', 'document_prefix'])]
 #[ORM\HasLifecycleCallbacks]
-#[UniqueEntity(fields: ['dossierNr', 'documentPrefix'], groups: [StepName::DETAILS->value])]
+#[UniqueEntity(
+    fields: ['dossierNr', 'documentPrefix'],
+    entityClass: AbstractDossier::class,
+    groups: [DossierValidationGroup::DETAILS->value],
+)]
 abstract class AbstractDossier
 {
     use TimestampableTrait;
@@ -42,16 +54,16 @@ abstract class AbstractDossier
     protected Uuid $id;
 
     #[ORM\Column(length: 255)]
-    #[Assert\Length(min: 3, max: 50, groups: [StepName::DETAILS->value])]
+    #[Assert\Length(min: 3, max: 50, groups: [DossierValidationGroup::DETAILS->value])]
     #[Assert\Regex(
         pattern: '/^[a-z0-9-]+$/i',
         message: 'use_only_letters_numbers_and_dashes',
-        groups: [StepName::DETAILS->value]
+        groups: [DossierValidationGroup::DETAILS->value]
     )]
     protected string $dossierNr = '';
 
     #[ORM\Column(length: 500)]
-    #[Assert\Length(min: 2, max: 500, groups: [StepName::DETAILS->value])]
+    #[Assert\Length(min: 2, max: 500, groups: [DossierValidationGroup::DETAILS->value])]
     protected string $title = '';
 
     #[ORM\Column(length: 255, enumType: DossierStatus::class)]
@@ -61,14 +73,36 @@ abstract class AbstractDossier
     #[ORM\ManyToMany(targetEntity: Department::class)]
     #[ORM\JoinTable(name: 'dossier_department')]
     #[ORM\JoinColumn(name: 'dossier_id', onDelete: 'cascade')]
-    #[Assert\Count(min: 1, groups: [StepName::DETAILS->value])]
+    #[Assert\Count(min: 1, groups: [DossierValidationGroup::DETAILS->value])]
     protected Collection $departments;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     #[Assert\GreaterThanOrEqual(
         value: 'today -10 years',
         message: 'date_max_10_year_old',
-        groups: [StepName::DETAILS->value]
+        groups: [DossierValidationGroup::DETAILS->value]
+    )]
+    #[Assert\NotNull(
+        message: 'annual_report_year_mandatory',
+        groups: [DossierValidationGroup::ANNUAL_REPORT_DETAILS->value],
+    )]
+    #[Assert\NotNull(
+        message: 'date_mandatory',
+        groups: [
+            DossierValidationGroup::COVENANT_DETAILS->value,
+            DossierValidationGroup::INVESTIGATION_REPORT_DETAILS->value,
+            DossierValidationGroup::COMPLAINT_JUDGEMENT_DETAILS->value,
+            DossierValidationGroup::DISPOSITION_DETAILS->value,
+        ],
+    )]
+    #[Assert\LessThanOrEqual(
+        value: 'today',
+        message: 'date_must_not_be_in_future',
+        groups: [
+            DossierValidationGroup::INVESTIGATION_REPORT_DETAILS->value,
+            DossierValidationGroup::COMPLAINT_JUDGEMENT_DETAILS->value,
+            DossierValidationGroup::DISPOSITION_DETAILS->value,
+        ],
     )]
     protected ?\DateTimeImmutable $dateFrom = null;
 
@@ -76,25 +110,25 @@ abstract class AbstractDossier
     #[Assert\GreaterThanOrEqual(
         propertyPath: 'dateFrom',
         message: 'date_to_before_date_from',
-        groups: [StepName::DETAILS->value]
+        groups: [DossierValidationGroup::DETAILS->value]
     )]
     #[Assert\LessThanOrEqual(
         value: 'today +5 years',
         message: 'date_max_5_year_in_future',
-        groups: [StepName::DETAILS->value]
+        groups: [DossierValidationGroup::DETAILS->value]
     )]
     protected ?\DateTimeImmutable $dateTo = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(groups: [StepName::DECISION->value, StepName::CONTENT->value])]
+    #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value, DossierValidationGroup::CONTENT->value])]
     protected string $summary = '';
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(groups: [StepName::DETAILS->value])]
+    #[Assert\NotBlank(groups: [DossierValidationGroup::DETAILS->value])]
     protected string $documentPrefix = '';
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Assert\NotBlank(groups: [StepName::PUBLICATION->value])]
+    #[Assert\NotBlank(groups: [DossierValidationGroup::PUBLICATION->value])]
     protected ?\DateTimeImmutable $publicationDate = null;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: false)]

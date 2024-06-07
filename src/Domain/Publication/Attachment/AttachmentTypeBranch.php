@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Attachment;
 
+use App\Domain\Publication\Attachment\Exception\AttachmentTypeBranchException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -43,6 +44,40 @@ final readonly class AttachmentTypeBranch
     public function hasAttachmentTypes(): bool
     {
         return count($this->attachmentTypes) > 0;
+    }
+
+    /**
+     * @param ?array<array-key,AttachmentType> $allowedTypes
+     */
+    public function filter(?array $allowedTypes = null): ?AttachmentTypeBranch
+    {
+        if ($allowedTypes === null) {
+            return $this;
+        }
+
+        $branch = null;
+        $attachmentTypes = [];
+
+        if ($this->hasBranch()) {
+            $branch = $this->branch->filter($allowedTypes);
+        }
+
+        if ($this->hasAttachmentTypes()) {
+            $attachmentTypes = array_values(array_filter(
+                $this->attachmentTypes,
+                static fn (AttachmentType $attachmentType): bool => in_array($attachmentType, $allowedTypes, true)
+            ));
+        }
+
+        if ($branch === null && count($attachmentTypes) === 0) {
+            return null;
+        }
+
+        return new self(
+            name: $this->name,
+            branch: $branch,
+            attachmentTypes: $attachmentTypes,
+        );
     }
 
     /**

@@ -6,7 +6,7 @@
                 {% set dates = '' %}
                 {% for scheduledDossier in scheduledDossiers %}
                     {% if not loop.first %}
-                        {% set dates = dates ~ " " ~ "and on" | trans ~ " " %}
+                        {% set dates = dates ~ " " ~ "global.and_on" | trans ~ " " %}
                     {% endif %}
                     {% set dates = dates ~ scheduledDossier.previewDate | format_date('long')  %}
                 {% endfor %}

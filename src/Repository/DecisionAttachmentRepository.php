@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Domain\Publication\Attachment\AbstractAttachment;
+use App\Domain\Publication\Attachment\AttachmentRepositoryInterface;
+use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
+use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Entity\DecisionAttachment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,14 +22,14 @@ use Symfony\Component\Uid\Uuid;
  * @method DecisionAttachment[]    findAll()
  * @method DecisionAttachment[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class DecisionAttachmentRepository extends ServiceEntityRepository
+class DecisionAttachmentRepository extends ServiceEntityRepository implements AttachmentRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, DecisionAttachment::class);
     }
 
-    public function save(DecisionAttachment $entity, bool $flush = false): void
+    public function save(AbstractAttachment $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -34,7 +38,7 @@ class DecisionAttachmentRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(DecisionAttachment $entity, bool $flush = false): void
+    public function remove(AbstractAttachment $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -98,5 +102,15 @@ class DecisionAttachmentRepository extends ServiceEntityRepository
 
         /** @var ?DecisionAttachment */
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function create(AbstractDossier $dossier, CreateAttachmentCommand $command): AbstractAttachment
+    {
+        return new DecisionAttachment(
+            dossier: $dossier,
+            formalDate: $command->formalDate,
+            type: $command->type,
+            language: $command->language,
+        );
     }
 }

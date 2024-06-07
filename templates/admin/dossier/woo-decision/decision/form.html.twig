@@ -7,7 +7,7 @@
 {% else %}
     <div class="bhr-form-row -mt-4">
         <h2 class="bhr-label">Soort besluit</h2>
-         {{ dossier.decision | decision }}
+        {{ dossier.decision | trans }}
     </div>
 {% endif %}
 
@@ -28,20 +28,15 @@
 
 {{ form_row(form.decision_date) }}
 
-<div class="bhr-form-row">
-    <h2 class="bhr-label">Andere officiële bijlagen</h2>
-    <p class="bhr-form-help text-lg pb-2">De documenten die met dit besluit openbaar worden gemaakt upload je in de volgende stap. Voeg hier alleen bijlagen toe die te maken hebben met de totstandkoming van het besluit.</p>
-
-    <div {{ vue_component('PublicationAttachments', {
-        canDelete: canDeleteAttachments,
-        endpoint: '/balie/api/dossiers/' ~ dossier.id ~ '/decision-attachments',
-        documentTypeOptions: attachmentTypes,
-        documentLanguageOptions: attachmentLanguages,
-        groundOptions: grounds,
-        groupId: 'woo-decision-attachments',
-    }) }}>
-        <div class="min-h-14"></div>
-    </div>
-</div>
+<twig:Admin:Publication:ManageAttachments
+    canDelete="{{ canDeleteAttachments }}"
+    documentTypes="{{ attachmentTypes }}"
+    endpoint="{{'/balie/api/dossiers/' ~ dossier.id ~ '/decision-attachments'}}"
+    grounds="{{ grounds }}"
+    helpText="{{ 'admin.dossiers.woo-decision.form.content.attachments_help' | trans }}"
+    languages="{{ attachmentLanguages }}"
+    title="Andere officiële bijlagen"
+    uploadGroupId="woo-decision-attachments"
+/>
 
 {{ form_end(form) }}

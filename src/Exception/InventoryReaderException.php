@@ -10,7 +10,7 @@ class InventoryReaderException extends FileReaderException
     {
         return new self(
             "Missing document ID in inventory row #$rowIndex",
-            'Missing document number in row {rownumber}',
+            'publication.dossier.error.missing_document_number',
             [
                 '{rownumber}' => strval($rowIndex),
             ]
@@ -21,7 +21,7 @@ class InventoryReaderException extends FileReaderException
     {
         return new self(
             "Invalid document ID in inventory row #$rowIndex",
-            'Invalid document number in row {rownumber}',
+            'publication.dossier.error.invalid_document_number',
             [
                 '{rownumber}' => strval($rowIndex),
             ]
@@ -32,7 +32,7 @@ class InventoryReaderException extends FileReaderException
     {
         return new self(
             "Missing matter in inventory row #$rowIndex",
-            'Missing matter in row {rownumber}',
+            'publication.dossier.error.missing_matter',
             [
                 '{rownumber}' => strval($rowIndex),
             ]
@@ -43,7 +43,7 @@ class InventoryReaderException extends FileReaderException
     {
         return new self(
             "Link '$link' is too long in inventory row #$rowIdx",
-            'Link too long in row {rownumber}',
+            'publication.dossier.error.link_too_long',
             [
                 '{rownumber}' => strval($rowIdx),
             ]
@@ -54,7 +54,7 @@ class InventoryReaderException extends FileReaderException
     {
         return new self(
             "Filename '$filename' is too long in inventory row #$rowIdx",
-            'Filename too long in row {rownumber}',
+            'publication.dossier.error.file_name_too_long',
             [
                 '{rownumber}' => strval($rowIdx),
             ]

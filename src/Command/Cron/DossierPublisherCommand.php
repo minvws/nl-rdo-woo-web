@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command\Cron;
 
+use App\Domain\Publication\Dossier\AbstractDossierRepository;
 use App\Domain\Publication\Dossier\DossierPublisher;
-use App\Repository\AbstractDossierRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

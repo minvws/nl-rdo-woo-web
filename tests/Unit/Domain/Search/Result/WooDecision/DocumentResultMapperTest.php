@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Result\WooDecision;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierReference;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\SubTypeEntry;
-use App\Domain\Search\Result\WooDecision\DocumentResultMapper;
+use App\Domain\Search\Result\WooDecision\DocumentSearchResult;
+use App\Domain\Search\Result\WooDecision\DocumentSearchResultMapper;
 use App\Repository\DocumentRepository;
 use App\Repository\DossierRepository;
-use App\ViewModel\DocumentSearchEntry;
-use App\ViewModel\DossierReference;
 use Jaytaph\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -19,14 +19,14 @@ class DocumentResultMapperTest extends MockeryTestCase
 {
     private DocumentRepository&MockInterface $documentRepository;
     private DossierRepository&MockInterface $dossierRepository;
-    private DocumentResultMapper $mapper;
+    private DocumentSearchResultMapper $mapper;
 
     public function setUp(): void
     {
         $this->documentRepository = \Mockery::mock(DocumentRepository::class);
         $this->dossierRepository = \Mockery::mock(DossierRepository::class);
 
-        $this->mapper = new DocumentResultMapper(
+        $this->mapper = new DocumentSearchResultMapper(
             $this->documentRepository,
             $this->dossierRepository,
         );
@@ -59,7 +59,7 @@ class DocumentResultMapperTest extends MockeryTestCase
         $hit->shouldReceive('exists')->with('[highlight][dossiers.title]')->andReturnFalse();
         $hit->shouldReceive('exists')->with('[highlight][dossiers.summary]')->andReturnFalse();
 
-        $viewModel = \Mockery::mock(DocumentSearchEntry::class);
+        $viewModel = \Mockery::mock(DocumentSearchResult::class);
         $dossierReference = \Mockery::mock(DossierReference::class);
 
         $this->documentRepository->shouldReceive('getDocumentSearchEntry')->with('foo')->andReturn($viewModel);

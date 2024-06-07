@@ -62,7 +62,7 @@ class DocumentActionController extends AbstractController
             'app_admin_dossier_woodecision_document',
             ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()]
         );
-        $breadcrumbs->addItem('Document intrekken');
+        $breadcrumbs->addItem('admin.dossiers.woo-decision.step.withdraw_document');
 
         $form = $this->createForm(WithdrawFormType::class);
         $form->handleRequest($request);
@@ -129,7 +129,7 @@ class DocumentActionController extends AbstractController
             'app_admin_dossier_woodecision_document',
             ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()]
         );
-        $breadcrumbs->addItem('Document vervangen');
+        $breadcrumbs->addItem('admin.dossiers.woo-decision.step.replace_document');
 
         $error = '';
         $replaced = false;

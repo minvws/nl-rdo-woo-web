@@ -1,7 +1,5 @@
 <script setup>
   import Icon from '../Icon.vue';
-  import { computed } from 'vue';
-  import { getErrorsId, validatorMessages as validatorMessageFunctions } from '@admin-fe/form';
 
   const props = defineProps({
     id: {

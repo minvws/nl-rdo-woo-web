@@ -14,6 +14,11 @@ use Doctrine\Common\Collections\Collection;
 interface EntityWithAttachments
 {
     /**
+     * @return class-string<TAttachment>
+     */
+    public function getAttachmentEntityClass(): string;
+
+    /**
      * @return Collection<array-key,TAttachment>
      */
     public function getAttachments(): Collection;

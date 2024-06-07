@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\Covenant;
 
+use App\Domain\Publication\Attachment\AbstractAttachment;
+use App\Domain\Publication\Attachment\AttachmentRepositoryInterface;
+use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
+use App\Domain\Publication\Dossier\AbstractDossier;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
@@ -17,14 +21,14 @@ use Symfony\Component\Uid\Uuid;
  * @method CovenantAttachment[]    findAll()
  * @method CovenantAttachment[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CovenantAttachmentRepository extends ServiceEntityRepository
+class CovenantAttachmentRepository extends ServiceEntityRepository implements AttachmentRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, CovenantAttachment::class);
     }
 
-    public function save(CovenantAttachment $entity, bool $flush = false): void
+    public function save(AbstractAttachment $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -33,7 +37,7 @@ class CovenantAttachmentRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(CovenantAttachment $entity, bool $flush = false): void
+    public function remove(AbstractAttachment $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -109,5 +113,15 @@ class CovenantAttachmentRepository extends ServiceEntityRepository
 
         /** @var ?CovenantAttachment */
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function create(AbstractDossier $dossier, CreateAttachmentCommand $command): AbstractAttachment
+    {
+        return new CovenantAttachment(
+            dossier: $dossier,
+            formalDate: $command->formalDate,
+            type: $command->type,
+            language: $command->language,
+        );
     }
 }

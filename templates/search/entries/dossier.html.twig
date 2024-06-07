@@ -16,7 +16,7 @@
             {{ "global.number_of_documents" | trans({"count": entry.dossier.documentCount})}}</span>
         </li>
         <li class="woo-search-result__spec">
-            {{ entry.dossier.decision | decision }}</span>
+            {{ entry.dossier.decision | trans }}</span>
         </li>
     </ul>
 </header>
@@ -35,7 +35,7 @@
 
 <ul class="woo-search-result__spec-list">
     <li class="woo-search-result__spec">
-        {{ 'Decided on' | trans }}&nbsp;<time datetime="{{ entry.dossier.decisionDate | date('Y-m-d') }}">{{ entry.dossier.decisionDate | format_date('long') }}</time>,
+        {{ 'global.decision_made' | trans }}&nbsp;<time datetime="{{ entry.dossier.decisionDate | date('Y-m-d') }}">{{ entry.dossier.decisionDate | format_date('long') }}</time>,
         {{ 'global.published_on' | trans | lower }}&nbsp;<time datetime="{{ entry.dossier.publicationDate | date("Y-m-d") }}">{{ entry.dossier.publicationDate | format_date('long') }}</time>
     </li>
     <li class="woo-search-result__spec">

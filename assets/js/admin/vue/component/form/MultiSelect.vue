@@ -1,10 +1,9 @@
 <script setup>
   import { useMultiInputStore } from '@admin-fe/composables';
-  import { uniqueId } from '@js/utils';
-  import { computed, inject, ref, watch } from 'vue';
+  import { createName, getOtherValues, shouldAutoFocus } from '@admin-fe/form';
+  import { computed, inject, ref } from 'vue';
+  import MultiInput from './MultiInput.vue';
   import RemovableSelect from './RemovableSelect.vue';
-  import ErrorMessages from './ErrorMessages.vue';
-  import FormHelp from './FormHelp.vue';
 
   const props = defineProps({
     buttonText: {
@@ -51,150 +50,61 @@
     },
   });
 
-  const transformedOptions = computed(() => {
-    return props.options.map((option) => {
-      if (typeof option === 'string') {
-        return { label: option, value: option };
-      }
-
-      return option;
-    });
-  });
-
-  const optionLabels = computed(() => transformedOptions.value.map((option) => option.label));
-
-  const addItemButton = ref(null);
-
-  const createItem = (value = '') => ({
-    id: uniqueId(),
-    value,
-  });
-
-  const getItemsFromProps = () => {
-    if (props.values.length > 0) {
-      return props.values.map((value) => createItem(getDisplayValue(value)));
-    }
-
-    return Array.from({ length: props.minLength }).map(() => createItem());
-  };
-
-  const getDisplayValue = (fromValue) => {
-    if (!fromValue) {
-      return '';
-    }
-
-    const trimmedValue = fromValue.trim();
-    const formattedValue = trimmedValue.toLowerCase();
-    const foundOption = transformedOptions.value.find((option) => option.value.toLowerCase() === formattedValue);
-    return foundOption ? foundOption.label : trimmedValue;
-  }
-
-  const getInputStoreValue = (fromValue) => {
-    const trimmedValue = fromValue.trim();
-    const formattedValue = trimmedValue.toLowerCase();
-    const foundOption = transformedOptions.value.find((option) => option.label.toLowerCase() === formattedValue);
-    return foundOption ? foundOption.value : trimmedValue;
-  }
-
-  const items = ref(getItemsFromProps());
-  const value = computed(() => items.value.map((item) => getInputStoreValue(item.value)));
-
-  const getOtherValues = (itemId) => items.value.filter((item) => item.id !== itemId).map((item) => item.value);
-
-  const addItem = () => {
-    items.value.push(createItem());
-  }
-
-  const createName = (index) => {
-    const regex = /\[(\d+)\]/;
-    if (!props.name.match(regex)) {
-      return `${props.name}[${index}]`;
-    }
-    return props.name.replace(regex, `[${index}]`)
-  };
-
-  const deleteItem = (itemId) => {
-    items.value = items.value.filter((item) => item.id !== itemId);
-    addItemButton.value?.focus();
-  };
+  const items = ref([]);
+  const multiInputComponent = ref(null);
 
   const updateItem = (value, itemId) => {
-    items.value.map((item) => {
-      if (item.id === itemId) {
-        item.value = value;
-      }
-      return item;
-    });
+    multiInputComponent.value?.updateItem(value, itemId);
   };
 
-  const onDelete = (inputStore, itemId) => {
-    deleteItem(itemId)
+  const deleteItem = (inputStore, itemId) => {
+    multiInputComponent.value?.deleteItem(itemId);
     multiInputStore.removeInputStore(inputStore);
     multiInputStore.makeDirty();
   };
 
-  const canDeleteItem = computed(() => items.value.length > props.minLength);
+  const canDeleteItem = computed(() => multiInputComponent.value?.canDeleteItem || false);
 
-  const buttonText = computed(() => {
-    if (items.value.length > 0) {
-      return props.buttonTextMultiple || props.buttonText;
-    }
-
-    return props.buttonText;
-  });
-
-  const multiInputStore = useMultiInputStore(props.name, props.legend, value);
+  const multiInputStore = useMultiInputStore(props.name, props.legend, computed(() => items.value.map((item) => item.value)));
   inject('form')?.addInput(multiInputStore);
 
-  watch(() => props.values, () => {
-    items.value = getItemsFromProps();
-  });
-
-  const shouldAutoFocus = (index) => {
-    const numberOfItems = items.value.length;
-    if (props.minLength == numberOfItems) {
-      return false;
-    }
-
-    if (items.value[index].value) {
-      return false;
-    }
-
-    return index === numberOfItems - 1;
+  const onItemsUpdate = (updatedItems) => {
+    items.value = updatedItems;
   }
 </script>
 
 <template>
-  <div class="bhr-form-row" :class="{ 'bhr-form-row--invalid': multiInputStore.hasVisibleErrors || props.submitErrors.length > 0 }">
-    <fieldset class="flex flex-col gap-2">
-      <legend class="bhr-label">{{ props.legend }} <span class="font-normal" v-if="!props.isRequired"> (optioneel)</span></legend>
+  <MultiInput
+    @update="onItemsUpdate"
 
-      <FormHelp v-if="props.helpText">{{ props.helpText }}</FormHelp>
+    :button-text="props.buttonText"
+    :button-text-multiple="props.buttonTextMultiple"
+    :errors="props.submitErrors"
+    :help-text="props.helpText"
+    :is-invalid="multiInputStore.hasVisibleErrors || props.submitErrors.length > 0"
+    :legend="props.legend"
+    :min-length="props.minLength"
+    :options="props.options"
+    :values="props.values"
 
-      <ErrorMessages :messages="props.submitErrors" />
+    ref="multiInputComponent"
+  >
+    <RemovableSelect
+      v-for="(item, index) in items"
 
-      <RemovableSelect
-        @delete="(comboboxInputStore) => onDelete(comboboxInputStore, item.id)"
-        @mounted="(comboboxInputStore) => multiInputStore.addInputStore(comboboxInputStore)"
-        @update="(value) => updateItem(value, item.id)"
-        v-for="(item, index) in items"
-        :auto-focus="shouldAutoFocus(index, item.value)"
-        :can-delete="canDeleteItem"
-        :errors="errors"
-        :forbidden-values="getOtherValues(item.id)"
-        :key="item.id"
-        :label="`${props.label} ${index + 1}`"
-        :name="createName(index)"
-        :options="optionLabels"
-        :value="item.value"
-      />
-    </fieldset>
+      @delete="(comboboxInputStore) => deleteItem(comboboxInputStore, item.id)"
+      @mounted="(comboboxInputStore) => multiInputStore.addInputStore(comboboxInputStore)"
+      @update="(value) => updateItem(value, item.id)"
 
-    <button
-      @click="addItem"
-      class="font-bold text-bhr-davys-grey text-lg mt-2"
-      ref="addItemButton"
-      type="button"
-    >+ {{ buttonText }}</button>
-  </div>
+      :auto-focus="shouldAutoFocus(index, items, props.minLength)"
+      :can-delete="canDeleteItem"
+      :errors="errors"
+      :forbidden-values="getOtherValues(item.id, items)"
+      :key="item.id"
+      :label="`${props.label} ${index + 1}`"
+      :name="createName(props.name, index)"
+      :options="props.options"
+      :value="item.value"
+    />
+  </MultiInput>
 </template>

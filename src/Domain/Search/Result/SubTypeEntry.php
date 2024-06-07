@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Result;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierReference;
 use App\Domain\Search\Index\ElasticDocumentType;
-use App\ViewModel\DocumentSearchEntry;
-use App\ViewModel\DossierReference;
+use App\Domain\Search\Result\WooDecision\DocumentSearchResult;
 
 class SubTypeEntry implements ResultEntryInterface
 {
     public function __construct(
-        private readonly DocumentSearchEntry $document,
+        private readonly DocumentSearchResult $document,
         /** @var DossierReference[] */
         private readonly array $dossiers,
         /** @var string[] */
@@ -24,7 +24,7 @@ class SubTypeEntry implements ResultEntryInterface
         return ElasticDocumentType::WOO_DECISION_DOCUMENT;
     }
 
-    public function getDocument(): DocumentSearchEntry
+    public function getDocument(): DocumentSearchResult
     {
         return $this->document;
     }

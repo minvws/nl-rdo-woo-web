@@ -6,8 +6,7 @@ namespace App\Domain\Publication\Dossier\Handler;
 
 use App\Domain\Publication\Dossier\AbstractDossierRepository;
 use App\Domain\Publication\Dossier\Command\DeleteDossierCommand;
-use App\Domain\Publication\Dossier\DossierDeleteHelper;
-use App\Domain\Publication\Dossier\Type\DossierTypeManager;
+use App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Psr\Log\LoggerInterface;
@@ -16,13 +15,21 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 class DeleteDossierHandler
 {
+    /**
+     * @var iterable<DossierDeleteStrategyInterface>
+     */
+    private iterable $deleteStrategies;
+
+    /**
+     * @param iterable<DossierDeleteStrategyInterface> $deleteStrategies
+     */
     public function __construct(
-        private readonly DossierDeleteHelper $dossierDeleteHelper,
         private readonly AbstractDossierRepository $repository,
         private readonly LoggerInterface $logger,
-        private readonly DossierTypeManager $dossierTypeManager,
         private readonly DossierWorkflowManager $dossierWorkflowManager,
+        iterable $deleteStrategies,
     ) {
+        $this->deleteStrategies = $deleteStrategies;
     }
 
     public function __invoke(DeleteDossierCommand $command): void
@@ -38,11 +45,10 @@ class DeleteDossierHandler
 
         $this->dossierWorkflowManager->applyTransition($dossier, DossierStatusTransition::DELETE);
 
-        $this->dossierDeleteHelper->deleteFromElasticSearch($dossier);
+        foreach ($this->deleteStrategies as $strategy) {
+            $strategy->delete($dossier);
+        }
 
-        $config = $this->dossierTypeManager->getConfig($dossier->getType());
-        $config->getDeleteStrategy()->delete($dossier);
-
-        $this->dossierDeleteHelper->delete($dossier);
+        $this->repository->remove($dossier);
     }
 }

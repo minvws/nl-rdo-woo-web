@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace App\Controller\Admin\Dossier\Covenant;
 
 use App\Domain\Publication\Attachment\AttachmentLanguageFactory;
-use App\Domain\Publication\Attachment\AttachmentType;
 use App\Domain\Publication\Attachment\AttachmentTypeFactory;
+use App\Domain\Publication\Dossier\Command\UpdateDossierContentCommand;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\Covenant\Command\UpdateCovenantContentCommand;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocument;
+use App\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Form\Dossier\Covenant\ContentFormType;
 use App\Repository\DepartmentRepository;
-use App\ViewModel\Factory\GroundViewFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -60,7 +61,7 @@ class ContentStepController extends AbstractController
             'app_admin_dossier',
             ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
         );
-        $breadcrumbs->addItem('workflow_step_content');
+        $breadcrumbs->addItem('admin.dossiers.covenant.step.content');
 
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME);
         if (! $wizardStatus->isCurrentStepAccessibleInConceptMode()) {
@@ -71,7 +72,7 @@ class ContentStepController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->messageBus->dispatch(
-                new UpdateCovenantContentCommand($dossier),
+                new UpdateDossierContentCommand($dossier),
             );
 
             return $this->stepHelper->redirectAfterFormSubmit($wizardStatus, $form);
@@ -85,14 +86,15 @@ class ContentStepController extends AbstractController
             'partiesErrors' => $this->getPartiesErrors($form),
             'canDeleteCovenantDocument' => $this->dossierWorkflowManager->isTransitionAllowed(
                 $dossier,
-                DossierStatusTransition::DELETE_COVENANT_DOCUMENT,
+                DossierStatusTransition::DELETE_MAIN_DOCUMENT,
             ),
-            'attachmentTypes' => $this->attachmentTypeFactory->makeAsArray(AttachmentType::COVENANT),
+            'documentTypes' => $this->attachmentTypeFactory->makeAsArray(CovenantDocument::getAllowedTypes()),
+            'attachmentTypes' => $this->attachmentTypeFactory->makeAsArray(CovenantAttachment::getAllowedTypes()),
             'attachmentLanguages' => $this->attachmentLanguageFactory->makeAsArray(),
             'grounds' => $this->groundViewFactory->makeAsArray(),
             'canDeleteAttachments' => $this->dossierWorkflowManager->isTransitionAllowed(
                 $dossier,
-                DossierStatusTransition::DELETE_COVENANT_ATTACHMENT,
+                DossierStatusTransition::DELETE_ATTACHMENT,
             ),
         ]);
     }
@@ -108,7 +110,7 @@ class ContentStepController extends AbstractController
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
-        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'workflow_step_content');
+        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossiers.covenant.step.content');
 
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME);
         if (! $wizardStatus->isCurrentStepAccessibleInEditMode()) {
@@ -124,7 +126,7 @@ class ContentStepController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->messageBus->dispatch(
-                new UpdateCovenantContentCommand($dossier),
+                new UpdateDossierContentCommand($dossier),
             );
 
             return $this->stepHelper->redirectToDossier($dossier);
@@ -139,14 +141,15 @@ class ContentStepController extends AbstractController
             'partiesErrors' => $this->getPartiesErrors($form),
             'canDeleteCovenantDocument' => $this->dossierWorkflowManager->isTransitionAllowed(
                 $dossier,
-                DossierStatusTransition::DELETE_COVENANT_DOCUMENT,
+                DossierStatusTransition::DELETE_MAIN_DOCUMENT,
             ),
-            'attachmentTypes' => $this->attachmentTypeFactory->makeAsArray(),
+            'documentTypes' => $this->attachmentTypeFactory->makeAsArray(CovenantDocument::getAllowedTypes()),
+            'attachmentTypes' => $this->attachmentTypeFactory->makeAsArray(CovenantAttachment::getAllowedTypes()),
             'attachmentLanguages' => $this->attachmentLanguageFactory->makeAsArray(),
             'grounds' => $this->groundViewFactory->makeAsArray(),
             'canDeleteAttachments' => $this->dossierWorkflowManager->isTransitionAllowed(
                 $dossier,
-                DossierStatusTransition::DELETE_COVENANT_ATTACHMENT,
+                DossierStatusTransition::DELETE_ATTACHMENT,
             ),
         ]);
     }

@@ -3,7 +3,7 @@
 <div class="mt-16">
     <h2 class="woo-h2 woo-h2-spacing">{{ 'public.documents.document.about' | trans }}</h2>
 
-    <div class="overflow-x-auto">
+    <div class="woo-responsive-table">
         <table class="woo-table">
             <caption class="sr-only">
                 {{ 'public.documents.document.about' | trans }}
@@ -50,13 +50,13 @@
                     </td>
                 </tr>
                 {% endif %}
-                {% if document.entity.judgement.value is defined %}
+                {% if document.entity.judgement is defined %}
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'public.documents.judgement' | trans }}</th>
-                    <td>{{ document.entity.judgement.value | trans }}</td>
+                    <td>{{ document.entity.judgement | trans }}</td>
                 </tr>
                 {% endif %}
-                {% set documentIsAlreadyPublic = document.entity.judgement.value is defined and document.entity.judgement.value is same as ('already_public') %}
+                {% set documentIsAlreadyPublic = document.entity.judgement is defined and document.entity.judgement.isAlreadyPublic %}
                 {% if document.entity.remark or (document.entity.links | length > 0 and not documentIsAlreadyPublic) %}
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'public.documents.explanation' | trans }}</th>
@@ -90,7 +90,7 @@
                             <p class="woo-readable-width {{ hasGrounds ? 'mt-4' : '' }}">
                                 {{ 'public.documents.redacted_comments' | trans }}
                                 {% if not dossier.isVwsResponsible %}
-                                    {{ 'public.then_contact_ministry' | trans({ '{ministry}': dossier.mainDepartment.name }) | raw }}.
+                                    {{ 'public.global.contact' | trans({ '{ministry}': dossier.mainDepartment.name }) | raw }}.
                                 {% else %}
                                     <a
                                         class="woo-a-email"

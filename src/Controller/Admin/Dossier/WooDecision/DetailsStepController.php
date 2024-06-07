@@ -102,7 +102,7 @@ class DetailsStepController extends AbstractController
         Request $request,
         Breadcrumbs $breadcrumbs
     ): Response {
-        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'workflow_step_details');
+        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossiers.woo-decision.step.details');
 
         $stepName = StepName::DETAILS;
 

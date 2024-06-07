@@ -1,13 +1,13 @@
 <div class="mt-16">
     <h2 class="woo-h2 woo-h2-spacing">{{ 'public.documents.background' | trans }}</h2>
 
-    {% if document.entity.judgement.value is defined %}
+    {% if document.entity.judgement is defined %}
     <p class="mb-6 woo-readable-width">
-        {{ ('public.documents.judgement.' ~ document.entity.judgement.value) | trans }} {{ 'public.documents.why_judgement_was_made' | trans }} {{ 'More info about request below' | trans }}:
+        {{ ('public.documents.judgement.' ~ document.entity.judgement.value) | trans }} {{ 'public.documents.why_judgement_was_made' | trans }} {{ 'public.documents.request_info' | trans }}:
     </p>
     {% endif %}
 
-    <div class="overflow-x-auto">
+    <div class="woo-responsive-table">
         <table class="woo-table">
             <caption class="sr-only">
                 {{ 'public.documents.background' | trans }}
@@ -15,7 +15,7 @@
             <tbody>
                 <tr>
                     <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'public.documents.part_of' | trans }}</th>
-                    <td class="min-w-64">
+                    <td class="min-w-64" data-e2e-name="dossier-title">
                         <a class="woo-a" href="{{ path('app_woodecision_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
                     </td>
                 </tr>
@@ -27,20 +27,20 @@
                 </tr>
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'global.period' | trans }}</th>
-                    <td>{{ period(dossier.dateFrom, dossier.dateTo) }}</td>
+                    <td data-e2e-name="dossier-period">{{ period(dossier.dateFrom, dossier.dateTo) }}</td>
                 </tr>
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ 'public.global.decision_type' | trans }}</th>
-                    <td>{{ dossier.publicationReason | trans }}</td>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.decision_type' | trans }}</th>
+                    <td data-e2e-name="dossier-type">{{ dossier.publicationReason | trans }}</td>
                 </tr>
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ 'public.global.decision_date' | trans }}</th>
-                    <td><time datetime="{{ dossier.decisionDate | date('Y-m-d') }}">{{ dossier.decisionDate | format_date('long') }}</time></td>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.decision_date' | trans }}</th>
+                    <td data-e2e-name="dossier-date"><time datetime="{{ dossier.decisionDate | date('Y-m-d') }}">{{ dossier.decisionDate | format_date('long') }}</time></td>
                 </tr>
 
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ 'public.publications.scope' | trans }}</th>
-                    <td>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.scope' | trans }}</th>
+                    <td data-e2e-name="dossier-publication-size">
                         {% if dossier.counts.hasDocuments %}
                             {{ 'global.number_of_documents' | trans({'count': dossier.counts.documentCount})}}{% if dossier.counts.hasDocuments and dossier.counts.hasPages %},{% endif %}
                         {% endif %}
@@ -49,9 +49,7 @@
                             {{ 'global.number_of_pages' | trans({'count': dossier.counts.pageCount})}}
                         {% endif %}
 
-                        {% if dossier.inventory is not null  %}
-                            <a class="woo-a" href="{{ path('app_woodecision_inventory_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" download>{{ 'public.publications.inventory_list' | trans }}</a>
-                        {% endif %}
+                        <a class="woo-a" href="{{ path('app_woodecision_inventory_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" download>{{ 'public.dossiers.inventory_list' | trans }}</a>
                     </td>
                 </tr>
             </tbody>

@@ -3,8 +3,9 @@
 namespace App\Tests\Factory\Publication\Dossier\Type\WooDecision;
 
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
+use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Dossier;
 use App\Tests\Factory\OrganisationFactory;
 use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityRepository;
@@ -83,23 +84,19 @@ final class WooDecisionFactory extends ModelFactory
             'title' => self::faker()->sentence(),
             'summary' => self::faker()->sentences(4, true),
             'documentPrefix' => 'PREF',
-            'publicationReason' => self::faker()->randomElement([
-                Dossier::REASON_WOB_REQUEST,
-                Dossier::REASON_WOO_REQUEST,
-                Dossier::REASON_WOO_ACTIVE,
-            ]),
+            'publicationReason' => self::faker()->randomElement(PublicationReason::cases()),
             'decision' => self::faker()->randomElement([
-                Dossier::DECISION_ALREADY_PUBLIC,
-                Dossier::DECISION_NOT_PUBLIC,
-                Dossier::DECISION_NOTHING_FOUND,
-                Dossier::DECISION_PARTIAL_PUBLIC,
-                Dossier::DECISION_PARTIAL_PUBLIC,
-                Dossier::DECISION_PARTIAL_PUBLIC,
-                Dossier::DECISION_PARTIAL_PUBLIC,
-                Dossier::DECISION_PUBLIC,
-                Dossier::DECISION_PUBLIC,
-                Dossier::DECISION_PUBLIC,
-                Dossier::DECISION_PUBLIC,
+                DecisionType::ALREADY_PUBLIC,
+                DecisionType::NOT_PUBLIC,
+                DecisionType::NOTHING_FOUND,
+                DecisionType::PARTIAL_PUBLIC,
+                DecisionType::PARTIAL_PUBLIC,
+                DecisionType::PARTIAL_PUBLIC,
+                DecisionType::PARTIAL_PUBLIC,
+                DecisionType::PUBLIC,
+                DecisionType::PUBLIC,
+                DecisionType::PUBLIC,
+                DecisionType::PUBLIC,
             ]),
             'status' => DossierStatus::PUBLISHED,
             'organisation' => OrganisationFactory::new(),

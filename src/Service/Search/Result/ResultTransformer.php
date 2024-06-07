@@ -19,6 +19,8 @@ use App\ValueObject\InquiryDescription;
 use Doctrine\ORM\EntityManagerInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Jaytaph\TypeArray\TypeArray;
+use Knp\Component\Pager\Pagination\AbstractPagination;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Psr\Log\LoggerInterface;
 use Webmozart\Assert\Assert;
@@ -63,6 +65,7 @@ class ResultTransformer
         $result->setLimit($config->limit);
 
         if ($config->pagination && $result->getLimit() > 0) {
+            /** @var PaginationInterface<int,AbstractPagination> $pagination */
             $pagination = $this->paginator->paginate(
                 target: $result,
                 page: $config->limit > 0 ? ($config->offset / $config->limit + 1) : 1,

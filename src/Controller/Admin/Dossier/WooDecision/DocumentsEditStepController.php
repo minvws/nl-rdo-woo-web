@@ -53,7 +53,7 @@ class DocumentsEditStepController extends AbstractController
             $request->query->getInt('page', 1),
         );
 
-        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'workflow_step_documents');
+        $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossiers.woo-decision.step.documents');
 
         $dataPath = null;
         if ($dossier->getProcessRun()?->isNotFinal()) {
@@ -130,11 +130,11 @@ class DocumentsEditStepController extends AbstractController
 
         $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier);
         $breadcrumbs->addRouteItem(
-            'workflow_step_documents',
+            'admin.dossiers.woo-decision.step.documents',
             'app_admin_dossier_woodecision_documents_edit',
             ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
         );
-        $breadcrumbs->addItem('Replace inventory');
+        $breadcrumbs->addItem('admin.dossiers.woo-decision.step.replace_inventory');
 
         return $this->render('admin/dossier/woo-decision/documents/replace-inventory.html.twig', [
             'breadcrumbs' => $breadcrumbs,

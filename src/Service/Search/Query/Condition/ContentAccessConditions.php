@@ -15,7 +15,15 @@ class ContentAccessConditions implements QueryConditions
 {
     public function applyToQuery(FacetList $facetList, Config $config, BoolQuery $query): void
     {
-        switch ($config->searchType) {
+        if (empty($config->dossierInquiries) && ! empty($config->documentInquiries)) {
+            // If a documentInquiries filter is active but no dossierInquiries filter: limit results to documents.
+            // Otherwise all dossiers will match as there are no dossier conditions for documentInquiries.
+            $searchType = Config::TYPE_DOCUMENT;
+        } else {
+            $searchType = $config->searchType;
+        }
+
+        switch ($searchType) {
             case Config::TYPE_DOCUMENT:
                 $query->addFilter($this->createSubTypesQuery($config, [ElasticDocumentType::WOO_DECISION_DOCUMENT]));
                 break;

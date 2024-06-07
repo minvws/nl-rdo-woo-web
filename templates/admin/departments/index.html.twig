@@ -1,6 +1,6 @@
 {% extends 'admin.html.twig' %}
 
-{% set page_title = "Department management" | trans %}
+{% set page_title = 'admin.department.all_departments' | trans %}
 
 {% block body %}
 <div class="bhr-container">
@@ -9,7 +9,7 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('department.create') %}
-            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_department_create') }}">{{ "New department" | trans() }}</a>
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_department_create') }}">{{ 'admin.department.new_department' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>
@@ -33,7 +33,7 @@
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.publications.department' | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ 'global.acronym' | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                        <span class="sr-only">{{ "Edit department" | trans() }}</span>
+                        <span class="sr-only">{{ 'admin.department.edit' | trans() }}</span>
                     </th>
                 </tr>
             </thead>

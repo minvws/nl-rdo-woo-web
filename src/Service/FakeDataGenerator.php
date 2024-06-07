@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
+use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Department;
 use App\Entity\Document;
@@ -21,6 +23,8 @@ use Faker\Generator;
  * This class is not used in production.
  *
  * @codeCoverageIgnore
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class FakeDataGenerator
 {
@@ -42,26 +46,22 @@ class FakeDataGenerator
         /** @var string $sentences */
         $sentences = $this->faker->sentences(4, true);
 
-        /** @var string $reason */
-        $reason = $this->faker->randomElement([
-            Dossier::REASON_WOB_REQUEST,
-            Dossier::REASON_WOO_REQUEST,
-            Dossier::REASON_WOO_ACTIVE,
-        ]);
+        /** @var PublicationReason $reason */
+        $reason = $this->faker->randomElement(PublicationReason::cases());
 
-        /** @var string $decision */
+        /** @var DecisionType $decision */
         $decision = $this->faker->randomElement([
-            Dossier::DECISION_ALREADY_PUBLIC,
-            Dossier::DECISION_NOT_PUBLIC,
-            Dossier::DECISION_NOTHING_FOUND,
-            Dossier::DECISION_PARTIAL_PUBLIC,
-            Dossier::DECISION_PARTIAL_PUBLIC,
-            Dossier::DECISION_PARTIAL_PUBLIC,
-            Dossier::DECISION_PARTIAL_PUBLIC,
-            Dossier::DECISION_PUBLIC,
-            Dossier::DECISION_PUBLIC,
-            Dossier::DECISION_PUBLIC,
-            Dossier::DECISION_PUBLIC,
+            DecisionType::ALREADY_PUBLIC,
+            DecisionType::NOT_PUBLIC,
+            DecisionType::NOTHING_FOUND,
+            DecisionType::PARTIAL_PUBLIC,
+            DecisionType::PARTIAL_PUBLIC,
+            DecisionType::PARTIAL_PUBLIC,
+            DecisionType::PARTIAL_PUBLIC,
+            DecisionType::PUBLIC,
+            DecisionType::PUBLIC,
+            DecisionType::PUBLIC,
+            DecisionType::PUBLIC,
         ]);
 
         $dossier = new WooDecision();
@@ -155,14 +155,6 @@ class FakeDataGenerator
     }
 
     public function generateContent(): string
-    {
-        /** @var string $string */
-        $string = $this->faker->sentences(random_int(20, 100), true);
-
-        return $string;
-    }
-
-    public function generateSentences(): string
     {
         /** @var string $string */
         $string = $this->faker->sentences(random_int(20, 100), true);

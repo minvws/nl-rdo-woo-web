@@ -35,7 +35,7 @@
                 {{ 'global.date_start' | trans }} <twig:Date date="{{ entry.dossier.dateFrom }}" />
             {% endif %}
         {% else %}
-            {{ 'public.covenant.period' | trans }} <twig:Date date="{{ entry.dossier.dateFrom }}" />
+            {{ 'public.dossiers.covenant.period' | trans }} <twig:Date date="{{ entry.dossier.dateFrom }}" />
             {{ 'global.from_till.abbreviation' | trans }} <twig:Date date="{{ entry.dossier.dateTo }}" />
         {% endif %}
     </li>

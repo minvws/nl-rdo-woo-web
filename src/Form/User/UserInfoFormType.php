@@ -49,7 +49,7 @@ class UserInfoFormType extends AbstractType
             ])
             ->add('email', EmailType::class, [
                 'disabled' => true,
-                'label' => 'global.email.capital',
+                'label' => 'global.email',
                 'help' => 'admin.user.email_help',
             ])
             ->add('roles', HiddenType::class)
@@ -88,8 +88,7 @@ class UserInfoFormType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-        ]);
+        $resolver->setDefaults([]);
     }
 
     /**

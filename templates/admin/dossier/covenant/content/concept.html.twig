@@ -1,23 +1,5 @@
-{% extends 'admin.html.twig' %}
+{% extends 'admin/dossier/publication/concept.html.twig' %}
 
-{% block inline_style %}
-    {% include 'admin/dossier/workflow-styles.html.twig' %}
-{% endblock %}
-
-{% block body %}
-    <div class="bhr-container bhr-container--sm">
-        <h1 class="bhr-title text-center mb-10">
-            {% if workflowStatus.isReadyForDecision %}
-                {{ dossier.title }}
-            {% else %}
-                {{ "New covenant - content" | trans() }}
-            {% endif %}
-        </h1>
-
-        {% include 'admin/dossier/workflow.html.twig' %}
-
-        <div class="bhr-card">
-            {% include 'admin/dossier/covenant/content/form.html.twig' %}
-        </div>
-    </div>
+{% block form %}
+    {% include 'admin/dossier/covenant/content/form.html.twig' %}
 {% endblock %}

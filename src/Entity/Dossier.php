@@ -7,8 +7,10 @@ namespace App\Entity;
 use App\Domain\Publication\Attachment\EntityWithAttachments;
 use App\Domain\Publication\Attachment\HasAttachments;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\DossierTypeWithPreview;
+use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
+use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Repository\DossierRepository;
 use App\ValueObject\DossierUploadStatus;
 use App\ValueObject\TranslatableMessage;
@@ -31,24 +33,14 @@ abstract class Dossier extends AbstractDossier implements EntityWithBatchDownloa
     /** @use HasAttachments<DecisionAttachment> */
     use HasAttachments;
 
-    public const DECISION_ALREADY_PUBLIC = 'already_public';
-    public const DECISION_PUBLIC = 'public';
-    public const DECISION_PARTIAL_PUBLIC = 'partial_public';
-    public const DECISION_NOT_PUBLIC = 'not_public';
-    public const DECISION_NOTHING_FOUND = 'nothing_found';
-
-    public const REASON_WOB_REQUEST = 'wob_request';
-    public const REASON_WOO_REQUEST = 'woo_request';
-    public const REASON_WOO_ACTIVE = 'woo_active';
-
     /** @var Collection<array-key, Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'dossiers', fetch: 'EXTRA_LAZY')]
     #[ORM\OrderBy(['documentNr' => 'ASC'])]
     private Collection $documents;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\NotBlank(groups: [StepName::DETAILS->value])]
-    private ?string $publicationReason = null;
+    #[ORM\Column(length: 255, nullable: true, enumType: PublicationReason::class)]
+    #[Assert\NotBlank(groups: [DossierValidationGroup::DETAILS->value])]
+    private ?PublicationReason $publicationReason = null;
 
     /** @var Collection<array-key,Inquiry> */
     #[ORM\ManyToMany(targetEntity: Inquiry::class, mappedBy: 'dossiers')]
@@ -73,17 +65,17 @@ abstract class Dossier extends AbstractDossier implements EntityWithBatchDownloa
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: InventoryProcessRun::class)]
     private ?InventoryProcessRun $processRun = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\NotBlank(groups: [StepName::DECISION->value])]
-    private ?string $decision = null;
+    #[ORM\Column(length: 255, nullable: true, enumType: DecisionType::class)]
+    #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value])]
+    private ?DecisionType $decision = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
-    #[Assert\NotBlank(groups: [StepName::DECISION->value])]
-    #[Assert\LessThanOrEqual(value: 'today', message: 'date_must_not_be_in_future', groups: [StepName::DECISION->value])]
+    #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value])]
+    #[Assert\LessThanOrEqual(value: 'today', message: 'date_must_not_be_in_future', groups: [DossierValidationGroup::DECISION->value])]
     private ?\DateTimeImmutable $decisionDate = null;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: DecisionDocument::class)]
-    #[Assert\NotBlank(groups: [StepName::DECISION->value])]
+    #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value])]
     private ?DecisionDocument $decisionDocument = null;
 
     /** @var Collection<array-key,DecisionAttachment> */
@@ -142,12 +134,12 @@ abstract class Dossier extends AbstractDossier implements EntityWithBatchDownloa
         return $this;
     }
 
-    public function getPublicationReason(): ?string
+    public function getPublicationReason(): ?PublicationReason
     {
         return $this->publicationReason;
     }
 
-    public function setPublicationReason(string $publicationReason): static
+    public function setPublicationReason(PublicationReason $publicationReason): static
     {
         $this->publicationReason = $publicationReason;
 
@@ -220,8 +212,8 @@ abstract class Dossier extends AbstractDossier implements EntityWithBatchDownloa
 
     public function needsInventoryAndDocuments(): bool
     {
-        return $this->getDecision() !== self::DECISION_NOTHING_FOUND
-            && $this->getDecision() !== self::DECISION_NOT_PUBLIC;
+        return $this->getDecision() !== DecisionType::NOTHING_FOUND
+            && $this->getDecision() !== DecisionType::NOT_PUBLIC;
     }
 
     public function getPreviewDate(): ?\DateTimeImmutable
@@ -270,12 +262,12 @@ abstract class Dossier extends AbstractDossier implements EntityWithBatchDownloa
         return true;
     }
 
-    public function getDecision(): string
+    public function getDecision(): ?DecisionType
     {
-        return $this->decision ?? '';
+        return $this->decision;
     }
 
-    public function setDecision(string $decision): static
+    public function setDecision(DecisionType $decision): static
     {
         $this->decision = $decision;
 
@@ -309,7 +301,7 @@ abstract class Dossier extends AbstractDossier implements EntityWithBatchDownloa
     public function getDownloadFilePrefix(): TranslatableMessage
     {
         return new TranslatableMessage(
-            'filename-decision-{dossierNr}',
+            'admin.dossiers.decision.number',
             [
                 'dossierNr' => $this->dossierNr,
             ]

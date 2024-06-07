@@ -3,7 +3,6 @@
 namespace App\Tests\Factory\Publication\Dossier\Type\WooDecision;
 
 use App\Domain\Publication\Attachment\AttachmentLanguage;
-use App\Domain\Publication\Attachment\AttachmentType;
 use App\Entity\DecisionAttachment;
 use App\Repository\DecisionAttachmentRepository;
 use App\Tests\Factory\FileInfoFactory;
@@ -70,7 +69,7 @@ final class DecisionAttachmentFactory extends ModelFactory
             'dossier' => WooDecisionFactory::new(),
             'fileInfo' => FileInfoFactory::new(),
             'formalDate' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'type' => self::faker()->randomElement(AttachmentType::cases()),
+            'type' => self::faker()->randomElement(DecisionAttachment::getAllowedTypes()),
             'internalReference' => self::faker()->optional(default: '')->words(asText: true),
             'language' => self::faker()->randomElement(AttachmentLanguage::cases()),
             'grounds' => self::faker()->optional(default: [])->words(),

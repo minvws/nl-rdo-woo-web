@@ -1,0 +1,10 @@
+{% if dossier.dateFrom is not empty and dossier.dateTo is not empty %}
+    {% set dateFromFormat = dossier.dateFrom | format_date(pattern="MMMM Y") %}
+    {% set dateToFormat = dossier.dateTo | format_date(pattern="MMMM Y") %}
+    <twig:Date date="{{ dossier.dateFrom }}" format="Y-m">{{ dateFromFormat | capitalize }}</twig:Date>
+    {% if dateFromFormat != dateToFormat %}
+        - <twig:Date date="{{ dossier.dateTo }}" format="Y-m">{{ dateToFormat }}</twig:Date>
+    {% endif %}
+{% else %}
+    -
+{% endif %}

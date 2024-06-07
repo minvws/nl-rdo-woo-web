@@ -15,7 +15,7 @@ class FileReaderException extends TranslatableException
 
         return new self(
             "Could not find the correct headers in the spreadsheet. Missing: $missing",
-            'Missing inventory header {headername}',
+            'publication.dossier.error.missing_inventory_header',
             [
                 '{headername}' => $missing,
             ]
@@ -30,7 +30,7 @@ class FileReaderException extends TranslatableException
 
         return new self(
             "Error while processing row $rowIndex in the spreadsheet: " . $exception->getMessage(),
-            'Error while processing inventory row {rowIndex}',
+            'publication.dossier.error.processing_inventory_row',
             [
                 '{rowIndex}' => strval($rowIndex),
             ]
@@ -41,7 +41,7 @@ class FileReaderException extends TranslatableException
     {
         return new self(
             'Error while opening the spreadsheet: ' . $exception->getMessage(),
-            'Error while opening the inventory spreadsheet',
+            'publication.dossier.error.opening_inventory_file',
         );
     }
 
@@ -49,7 +49,7 @@ class FileReaderException extends TranslatableException
     {
         return new self(
             sprintf('The header "%s" does not exist in the spreadsheet', $headerName),
-            'Error while reading spreadsheet cell',
+            'publication.dossier.error.reading_cell',
         );
     }
 

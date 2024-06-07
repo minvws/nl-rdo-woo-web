@@ -6,7 +6,7 @@
   const props = defineProps({
     action: {
       type: String,
-      required: true
+      required: false,
     },
     method: {
       type: String,

@@ -7,9 +7,11 @@ namespace App\Entity;
 use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Attachment\AttachmentType;
+use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Repository\DecisionAttachmentRepository;
 use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
+use Webmozart\Assert\Assert;
 
 #[ORM\Entity(repositoryClass: DecisionAttachmentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -20,12 +22,14 @@ class DecisionAttachment extends AbstractAttachment
     private Dossier $dossier;
 
     public function __construct(
-        Dossier $dossier,
+        AbstractDossier $dossier,
         \DateTimeImmutable $formalDate,
         AttachmentType $type,
         AttachmentLanguage $language,
     ) {
         parent::__construct();
+
+        Assert::isInstanceOf($dossier, Dossier::class);
 
         $this->dossier = $dossier;
         $this->formalDate = $formalDate;

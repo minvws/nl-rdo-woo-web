@@ -3,7 +3,6 @@
 namespace App\Tests\Factory\Publication\Dossier\Type\Covenant;
 
 use App\Domain\Publication\Attachment\AttachmentLanguage;
-use App\Domain\Publication\Attachment\AttachmentType;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocument;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocumentRepository;
 use App\Tests\Factory\FileInfoFactory;
@@ -73,7 +72,7 @@ final class CovenantDocumentFactory extends ModelFactory
             'grounds' => self::faker()->optional(default: [])->words(),
             'internalReference' => self::faker()->optional(default: '')->words(asText: true),
             'language' => self::faker()->randomElement(AttachmentLanguage::cases()),
-            'type' => self::faker()->randomElement(AttachmentType::cases()),
+            'type' => self::faker()->randomElement(CovenantDocument::getAllowedTypes()),
             'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];
     }

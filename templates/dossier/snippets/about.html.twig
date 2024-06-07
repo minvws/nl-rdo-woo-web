@@ -1,27 +1,25 @@
 <div class="mt-16">
-    <h2 class="woo-h2 woo-h2-spacing">{{ 'About this decision' | trans }}</h2>
+    <h2 class="woo-h2 woo-h2-spacing">{{ 'public.dossiers.decision.about_decision' | trans }}</h2>
 
-    <div class="overflow-x-auto">
+    <div class="woo-responsive-table">
         <table class="woo-table">
-            <caption class="sr-only">
-                {{ 'About this decision' | trans }}
-            </caption>
+            <caption class="sr-only">{{ 'public.dossiers.decision.about_decision' | trans }}</caption>
             <tbody>
                 <tr>
-                    <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'public.decision.decision_made' | trans }}</th>
-                    <td class="font-bold min-w-64" data-e2e-name="dossier-metadata-decision">{{ dossier.decision | decision }}</td>
+                    <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'categories.category.judgement' | trans }}</th>
+                    <td class="font-bold min-w-64" data-e2e-name="dossier-metadata-decision">{{ dossier.decision | trans }}</td>
                 </tr>
-                {% if dossier.decisionDocument.fileInfo.isUploaded | default(false) %}
+                {% if dossier.decisionDocument.isUploaded %}
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ 'Reasoning for decision' | trans }}</th>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.decision.reason' | trans }}</th>
                     <td>
-                        <a class="woo-a" data-e2e-name="download-decision-file-link" href="{{ path('app_woodecision_decision_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" download>{{ 'Download decision' | trans }}</a> ({{ dossier.decisionDocument.fileInfo.size | size }})
+                        <a class="woo-a" data-e2e-name="download-decision-file-link" href="{{ path('app_woodecision_decision_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" download>{{ 'public.dossiers.decision.download_decision' | trans }}</a> ({{ dossier.decisionDocument.fileSize | size }})
                     </td>
                 </tr>
                 {% endif %}
                 {% if attachments | length > 0 %}
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ 'public.publications.additional_attachments' | trans }}</th>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.additional_attachments' | trans }}</th>
                     <td>
                         <ul>
                             {% for attachment in attachments %}
@@ -35,7 +33,7 @@
                 </tr>
                 {% endif %}
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ 'Responsible(s)' | trans }}</th>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.responsible_parties' | trans }}</th>
                     <td data-e2e-name="dossier-metadata-responsible">
                         {# Only display the first entries #}
                         {{ dossier.mainDepartment.name }}
@@ -46,16 +44,16 @@
                     <td data-e2e-name="dossier-metadata-period">{{ period(dossier.dateFrom, dossier.dateTo) }}</td>
                 </tr>
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ 'Decision date' | trans }}</th>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.decision_date' | trans }}</th>
                     <td data-e2e-name="dossier-metadata-decision-date"><time datetime="{{ dossier.decisionDate | date('Y-m-d') }}">{{ dossier.decisionDate | format_date('long') }}</time></td>
                 </tr>
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ 'public.global.decision_type' | trans }}</th>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.decision_type' | trans }}</th>
                     <td data-e2e-name="dossier-metadata-publication-reason">{{ dossier.publicationReason | trans }}</td>
                 </tr>
 
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ 'public.publications.scope' | trans }}</th>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.scope' | trans }}</th>
                     <td  data-e2e-name="dossier-metadata-size">
                         <span>
                         {% if dossier.counts.hasDocuments %}
@@ -64,10 +62,14 @@
 
                         {% if dossier.counts.hasPages %}
                             {{ 'global.number_of_pages' | trans({'count': dossier.counts.pageCount})}}
+                            {% endif %}
+
+                        {% if not dossier.counts.hasPages and not dossier.counts.hasDocuments %}
+                            {{ 'global.no_documents' | trans }}
                         {% endif %}
                         </span>
-                        {% if dossier.inventory is not null  %}
-                            <a class="woo-a" data-e2e-name="download-inventory-file-link" href="{{ path('app_woodecision_inventory_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" download>{{ 'public.publications.inventory_list' | trans }}</a>
+                        {% if dossier.counts.hasDocuments or dossier.counts.hasPages %}
+                        <a class="woo-a" data-e2e-name="download-inventory-file-link" href="{{ path('app_woodecision_inventory_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" download>{{ 'public.dossiers.inventory_list' | trans }}</a>
                         {% endif %}
                     </td>
                 </tr>

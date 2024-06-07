@@ -4,9 +4,9 @@
         <div class="woo-rich-text">
             <p class="font-bold">
                 {{
-                    "{number_of_decisions} made for case" | trans({
-                        '{are_or_is}': "public.global.are_or_is" | trans({ 'count': dossiers.count }),
-                        '{number_of_decisions}': "public.inquiries.number_of_decisions" | trans({ 'count': dossiers.count }),
+                    'public.inquiry.decisions_for_case' | trans({
+                        '{are_or_is}': 'public.global.are_or_is' | trans({ 'count': dossiers.count }),
+                        '{number_of_decisions}': 'public.inquiries.number_of_decisions' | trans({ 'count': dossiers.count }),
                         '{case_number}': inquiry.casenr,
                     })
                 }}:
@@ -31,12 +31,12 @@
             {% endif %}
 
             <p>
-                <a href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}">{{ "Download the inventory for casenumber {casenumber}" | trans({'{casenumber}': inquiry.casenr}) }}</a>
+                <a href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}">{{ 'public.inquiries.download_inventory' | trans({'{casenumber}': inquiry.casenr}) }}</a>
             </p>
         </div>
     {% else %}
         <p>
-            {{ "At this moment no documents are available for the inquiry with casenumber {casenumber}" | trans({'casenumber': inquiry.casenr}) }}
+            {{ 'public.inquiries.no_docs_available' | trans({'casenumber': inquiry.casenr}) }}
         </p>
     {% endif %}
     </div>

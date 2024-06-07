@@ -1,0 +1,15 @@
+{% extends 'admin/dossier/publication/confirmation.html.twig' %}
+
+{% block about_title %}
+    {{ 'admin.global.investigation-report_on' | trans }}
+{% endblock %}
+
+{% block success_message %}
+    <twig:Admin:Alert type="success">
+        {{ 'admin.dossiers.investigation-report.create.success' | trans | raw }}
+    </twig:Admin:Alert>
+{% endblock %}
+
+{% block edit_link %}
+    {{'admin.dossiers.investigation-report.edit_link' | trans }}
+{% endblock %}

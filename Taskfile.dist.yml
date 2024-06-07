@@ -21,14 +21,25 @@ silent: true
 
 tasks:
   dc:
+    vars:
+      FIXUID:
+        sh: echo ${FIXUID:-$(id -u)}
+      FIXGID:
+        sh: echo ${FIXGID:-$(id -g)}
     cmds:
-      - 'docker compose {{.DOCKER_COMPOSE_ARGS}} {{.CLI_ARGS}}'
+      - 'FIXUID={{.FIXUID}} FIXGID={{.FIXGID}} docker compose {{.DOCKER_COMPOSE_ARGS}} {{.CLI_ARGS}}'
 
   dc:run:
     interactive: true
     cmds:
       - task: dc
         vars: { DOCKER_COMPOSE_ARGS: "run --rm --user $(id -u):$(id -g)", CLI_ARGS: "{{.CLI_ARGS}}" }
+
+  dc:pull:
+    desc: Pull all docker images
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "pull --include-deps" }
 
   dc:build:
     desc: Build all docker images
@@ -62,15 +73,17 @@ tasks:
       - task: d:create-cache-volumes
       - task: env
       - '"{{.BASE_PATH}}/bin/auth-package-managers"'
+      - task: dc:pull
       - task: dc:build
       - task: composer:install
       - task: dc
         vars: { DOCKER_COMPOSE_ARGS: "up -d", CLI_ARGS: "" }
       - task: dc:run
-        vars: { CLI_ARGS: "app bash -c 'wait-for-it postgres:5432 --timeout=0 --strict -- wait-for-it rabbitmq:5672 --timeout=0 --strict -- echo \"Done waiting\"'" }
+        vars: { CLI_ARGS: "app bash -c 'wait-for-it postgres:5432 --timeout=0 --strict -- wait-for-it rabbitmq:5672 --timeout=0 --strict -- wait-for-it elasticsearch:9200 --timeout=0 --strict -- echo \"Done waiting\"'" }
       - task: app:migrate
       - task: app:loadfixtures
-      - task: app:migrate:test
+      - task: dc:run
+        vars: { CLI_ARGS: "app bash -c 'curl -X GET \"elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=30s\"'" }
       - task: dc:run
         vars: { CLI_ARGS: "app bin/console woopie:index:create woopie latest --read --write" }
       - task: npm:install
@@ -84,6 +97,7 @@ tasks:
       - test ! -z "{{.PROJECT_EXISTS}}"
     cmds:
       - task: setup
+      - task: app:migrate:test
 
   shell:
     desc: Open shell in app container

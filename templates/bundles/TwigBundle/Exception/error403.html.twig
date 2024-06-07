@@ -1,12 +1,12 @@
 {% extends is_backend() ? 'admin.html.twig' : 'base.html.twig' %}
 
-{% set page_title = "Access denied" | trans() %}
+{% set page_title = 'global.access_denied' | trans %}
 
 {% block body %}
     {%
         include "bundles/TwigBundle/Exception/error-content.html.twig" with {
             title: page_title,
-            content: "You do not have the required access rights to view this page or document." | trans(),
+            content: 'global.access_denied.message' | trans,
         }
     %}
 {% endblock %}

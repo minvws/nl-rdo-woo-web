@@ -1,11 +1,13 @@
 import { debounce, hideElement, isElementHidden, onFocusOut, onKeyDown, showElement } from '@utils';
 
+export type AddExternalFunctionalityFunction = (searchResultsElement: HTMLElement, inputElement: HTMLInputElement) => void;
+
 export const searchPreviews = () => {
   let abortControllerMain: AbortController | null = null;
   let abortControllerTemporary: AbortController | null = null;
 
   let addExternalFunctionality: (searchResultsElement: HTMLElement, inputElement: HTMLInputElement) => void;
-  let formElement: HTMLFormElement | null = null;
+  let formElement: HTMLFormElement;
   let iconMagnifierElement: HTMLSpanElement | null = null;
   let iconCrossElement: HTMLButtonElement | null = null;
   let inputElement: HTMLInputElement | null = null;
@@ -63,7 +65,11 @@ export const searchPreviews = () => {
       switchIconsVisibility('');
       hide();
       setPlaceholderContent('');
-    });
+    }, { signal: abortControllerMain.signal });
+
+    formElement.addEventListener('submit', (event) => {
+      event.preventDefault();
+    }, { signal: abortControllerMain.signal });
   };
 
   const addTemporaryFunctionality = () => {

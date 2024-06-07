@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier;
 
-use App\Domain\Publication\Attachment\EntityWithAttachments;
+use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Admin\DossierFilterParameters;
 use App\Domain\Publication\Dossier\Admin\DossierListingService;
 use App\Domain\Publication\Dossier\Admin\DossierSearchService;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
+use App\Enum\ApplicationMode;
 use App\Form\Dossier\SearchFormType;
 use App\Service\DossierWizard\DossierWizardHelper;
-use App\ViewModel\Factory\ApplicationMode;
-use App\ViewModel\Factory\AttachmentViewFactory;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,7 +21,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -119,16 +117,25 @@ class DossierController extends AbstractController
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function dossier(
         #[MapEntity(
-            mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'],
             class: AbstractDossier::class,
+            mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'],
         )]
-        EntityWithAttachments&AbstractDossier $dossier,
+        AbstractDossier $dossier,
     ): Response {
         /** @TODO move to ViewModel */
         $detailsEndpointName = match ($dossier->getType()) {
             DossierType::WOO_DECISION => 'app_woodecision_detail',
             DossierType::COVENANT => 'app_covenant_detail',
+            DossierType::ANNUAL_REPORT => 'app_annualreport_detail',
+            DossierType::INVESTIGATION_REPORT => 'app_investigationreport_detail',
+            DossierType::DISPOSITION => 'app_disposition_detail',
+            DossierType::COMPLAINT_JUDGEMENT => 'app_complaintjudgement_detail',
         };
+
+        $publicDossierUrl = $this->urlGenerator->generate(
+            $detailsEndpointName,
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+        );
 
         return $this->render(
             'admin/dossier/' . $dossier->getType()->value . '/view.html.twig',
@@ -139,11 +146,7 @@ class DossierController extends AbstractController
                 ),
                 'dossier' => $dossier,
                 'workflowStatus' => $this->wizardHelper->getStatus($dossier),
-                'publicDossierUrl' => $this->urlGenerator->generate(
-                    $detailsEndpointName,
-                    ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
-                    UrlGenerator::ABSOLUTE_URL,
-                ),
+                'publicDossierUrl' => sprintf('%s%s', $this->publicBaseUrl, $publicDossierUrl),
             ]
         );
     }
@@ -161,6 +164,10 @@ class DossierController extends AbstractController
         $detailsEndpointName = match ($dossier->getType()) {
             DossierType::WOO_DECISION => 'app_woodecision_detail',
             DossierType::COVENANT => 'app_covenant_detail',
+            DossierType::ANNUAL_REPORT => 'app_annualreport_detail',
+            DossierType::INVESTIGATION_REPORT => 'app_investigationreport_detail',
+            DossierType::DISPOSITION => 'app_disposition_detail',
+            DossierType::COMPLAINT_JUDGEMENT => 'app_complaintjudgement_detail',
         };
 
         $detailsEndpointPath = $this->urlGenerator->generate(

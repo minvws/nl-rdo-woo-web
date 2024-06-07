@@ -15,6 +15,11 @@ export default defineConfig({
     },
     environment: 'jsdom',
     include: ['**/*.test.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      include: ['assets/js/**'],
+    },
   },
   plugins: [vue()],
 });

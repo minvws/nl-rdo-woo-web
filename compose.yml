@@ -14,8 +14,8 @@ networks:
 
 services:
   app:
-    build: ./docker
-    user: woopie
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.1.0
+    user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
     ports:
@@ -40,8 +40,8 @@ services:
   worker:
     depends_on:
       - rabbitmq
-    build: ./docker
-    user: woopie
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.1.0
+    user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
     volumes:

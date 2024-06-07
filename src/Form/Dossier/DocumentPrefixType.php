@@ -51,7 +51,7 @@ class DocumentPrefixType extends AbstractType
                 'required' => true,
                 'help' => 'admin.dossiers.convenant.form.details.prefix_help',
                 'help_html' => true,
-                'placeholder' => 'admin.dossiers.convenant.form.details.prefix_placeholder',
+                'placeholder' => 'admin.global.dossiers.prefix_placeholder',
                 'choices' => $prefixes,
             ];
 

@@ -26,7 +26,7 @@
                 <a class="bhr-steps__anchor" {% if stepUrl %} href="{{ stepUrl }}"{% endif %}>
                     <twig:Admin:Icon class="bhr-steps__icon {{ iconClass }}" name="{{ iconName }}" color="fill-white" size="{{ isCurrentStep ? 40 : 32 }}" />
                     <span class="bhr-steps__step-text {{ stepTextClass }}">
-                        <span class="font-bold">{{ ("workflow_step_" ~ step.stepName.value) | trans }}</span>
+                        <span class="font-bold">{{ ("admin.dossiers." ~ dossier.type.value ~  ".step." ~ step.stepName.value) | trans }}</span>
                         <span class="sr-only">
                             {% if step.isBeforeCurrentStep %}
                                 (voltooide stap)

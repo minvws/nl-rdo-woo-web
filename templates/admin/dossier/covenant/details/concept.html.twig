@@ -1,42 +1,9 @@
-{% extends 'admin.html.twig' %}
+{% extends 'admin/dossier/publication/concept.html.twig' %}
 
-{% block inline_style %}
-    {% include 'admin/dossier/workflow-styles.html.twig' %}
+{% block dossier_title %}
+    {{ 'admin.dossiers.convenant.create_new' | trans }}
 {% endblock %}
 
-{% block body %}
-    <div class="bhr-container bhr-container--sm">
-        <h1 class="bhr-title text-center mb-10">
-            {% if workflowStatus.isReadyForDecision %}
-                {{ dossier.title }}
-            {% else %}
-                {{ 'admin.dossiers.convenant.create_new' | trans() }}
-            {% endif %}
-        </h1>
-
-        {% include 'admin/dossier/workflow.html.twig' %}
-
-        <div class="bhr-card">
-            {{ form_start(form) }}
-            {{ form_errors(form) }}
-
-            {{ form_row(form.title) }}
-            {{ form_row(form.date_from) }}
-            {{ form_row(form.departments) }}
-            {{ form_row(form.internal_reference) }}
-
-            {% if form.children.dossier_nr is defined %}
-                {{ form_row(form.dossier_nr) }}
-            {% elseif dossier.dossierNr %}
-                <div class="bhr-form-row">
-                    {% if form.children.dossierNr is not defined %}
-                        <h2 class="bhr-label">{{ 'Reference number'|trans }}</h2>
-                    {% endif %}
-                    {{ dossier.dossierNr }}
-                </div>
-            {% endif %}
-
-            {{ form_end(form) }}
-        </div>
-    </div>
+{% block form %}
+    {% include 'admin/dossier/covenant/details/form.html.twig' %}
 {% endblock %}

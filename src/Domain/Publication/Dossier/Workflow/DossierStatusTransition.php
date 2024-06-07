@@ -16,7 +16,8 @@ enum DossierStatusTransition: string
     case PUBLISH = 'publish';
     case DELETE = 'delete';
     case UPDATE_CONTENT = 'update_content';
-    case DELETE_COVENANT_DOCUMENT = 'delete_covenant_document';
-    case DELETE_COVENANT_ATTACHMENT = 'delete_covenant_attachment';
-    case DELETE_DECISION_ATTACHMENT = 'delete_decision_attachment';
+    case UPDATE_MAIN_DOCUMENT = 'update_main_document';
+    case DELETE_MAIN_DOCUMENT = 'delete_main_document';
+    case UPDATE_ATTACHMENT = 'update_attachment';
+    case DELETE_ATTACHMENT = 'delete_attachment';
 }

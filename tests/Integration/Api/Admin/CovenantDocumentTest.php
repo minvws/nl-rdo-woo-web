@@ -6,9 +6,12 @@ namespace App\Tests\Integration\Api\Admin;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Symfony\Bundle\Test\Client;
+use App\Api\Admin\CovenantDocument\CovenantDocumentDto;
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Service\Uploader\UploadGroupId;
+use App\Tests\Factory\FileInfoFactory;
+use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantDocumentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use App\Tests\Factory\UserFactory;
 use App\Tests\Integration\IntegrationTestTrait;
@@ -16,6 +19,7 @@ use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 final class CovenantDocumentTest extends ApiTestCase
 {
@@ -94,6 +98,57 @@ final class CovenantDocumentTest extends ApiTestCase
 
         unset($data['uploadUuid']); // This is only used for processing and not returned in the response
         self::assertJsonContains($data);
+    }
+
+    public function testUpdateAnnualReportDocument(): void
+    {
+        $user = UserFactory::new()
+            ->asAdmin()
+            ->isEnabled()
+            ->create();
+
+        $document = CovenantDocumentFactory::createOne([
+            'fileInfo' => FileInfoFactory::createOne([
+                'name' => 'test_file.pdf',
+            ]),
+            'dossier' => CovenantFactory::createOne([
+                'organisation' => $user->getOrganisation(),
+            ]),
+        ]);
+
+        $client = static::createClient()->loginUser($user->object(), 'balie');
+
+        $response = $client->request(
+            Request::METHOD_PUT,
+            sprintf('/balie/api/dossiers/%s/covenant-document', $document->getDossier()->getId()),
+            [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => [
+                    'name' => 'foobar.pdf',
+                ],
+            ],
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        self::assertMatchesResourceItemJsonSchema(CovenantDocumentDto::class);
+
+        $response2 = $client->request(
+            Request::METHOD_GET,
+            sprintf('/balie/api/dossiers/%s/covenant-document', $document->getDossier()->getId()),
+            [
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
+            ],
+        );
+
+        self::assertResponseIsSuccessful();
+        self::assertMatchesResourceItemJsonSchema(CovenantDocumentDto::class);
+
+        $this->assertSame($response->toArray(), $response2->toArray());
     }
 
     public function testCovenantDocumentCanBeDeletedAfterCreation(): void

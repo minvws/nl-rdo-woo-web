@@ -1,13 +1,15 @@
 # Test
 
-- [All use cases](#all-use-cases)
-- [Robot Framework](#robot-framework)
-- [Install Robot Framework](#install-robot-framework)
-- [Step 1: Install Python](#step-1-install-python)
-- [Step 2: Install Robot Framework](#step-2-install-robot-framework)
-- [Step 3: Run CI tests locally](#step-3-run-ci-tests-locally)
-- [Step 4: Run TST and ACC tests locally](#step-4-run-tst-and-acc-tests-locally)
-- [E2E Coverage](#e2e-coverage)
+- [Test](#test)
+  - [All use cases](#all-use-cases)
+  - [Robot Framework](#robot-framework)
+  - [Install Robot Framework](#install-robot-framework)
+  - [Step 1: Install Python](#step-1-install-python)
+  - [Step 2: Install Robot Framework](#step-2-install-robot-framework)
+  - [Step 3: Initialize the application](#step-3-initialize-the-application)
+  - [Step 4: Run tests locally](#step-4-run-tests-locally)
+    - [CI tests](#ci-tests)
+    - [Test and Acceptance tests](#test-and-acceptance-tests)
 
 ## All use cases
 
@@ -46,20 +48,33 @@ Execute the following commands. This command will automatically install the Robo
 task rf:venv
 ```
 
-## Step 3: Run CI tests locally
+## Step 3: Initialize the application
 
-To run CI tests locally you need to create a initial user with 'super admin'-rights as described in the [install](install.md) instructions. You only have to do once. Make sure they have following username/password
+To run CI tests locally you need to create a initial user with 'super admin'-rights, username `email@example.org` and password `IkLoopNooitVastVandaag`.
+This can be done as described in the [install](install.md) instructions, or you can run the following testcase:
 
 ```shell
-email@example.org
-IkLoopNooitVastVandaag
+task rf:test tag=init
 ```
 
-and set the OTP secret in your environment variables:
+This will create the user with username `email@example.org`, password `IkLoopNooitVastVandaag` and stores the OTP secret in your `~/zshrc` as environment variable `SECRET_WOO_LOCAL`.
+You only have to do once.
+
+Note that you have to restart your shell for any following `task rf:test` calls, otherwise it won't know the new secret.
 
 ```shell
 export SECRET_WOO_LOCAL=<otp secret here>
 ```
+
+If you ever need an OTP code to login manually, use the following testcase:
+
+```shell
+task rf:test tag=otp
+```
+
+## Step 4: Run tests locally
+
+### CI tests
 
 To execute the CI tests use the following command:
 
@@ -68,7 +83,7 @@ task rf:test
 task rf:test-headless
 ```
 
-## Step 4: Run TST and ACC tests locally
+### Test and Acceptance tests
 
 TST and ACC requires basic authentication to access it. To run this tests locally You need to have the following environment variables set locally. You only need to do this once. Ask a teammember for the values.
 
@@ -85,8 +100,8 @@ TST and ACC requires basic authentication to access it. To run this tests locall
 To execute the TST tests use the following command:
 
 ```shell
-task rf:test TAG=E2E_TST
-task rf:test-headless TAG=E2E_TST
+task rf:test TAG=tst
+task rf:test-headless TAG=acc
 ```
 
 To execute the ACC tests use the following command:
@@ -95,40 +110,3 @@ To execute the ACC tests use the following command:
 task rf:test TAG=E2E_ACC
 task rf:test-headless TAG=E2E_ACC
 ```
-
-## E2E Coverage
-
-TST & ACC runs every night. CI is currently disabled.
-
-|        |                                       | CI                 | TST                | ACC                           |
-|--------|---------------------------------------|--------------------|--------------------|-------------------------------|
-| Portal |                                       |                    |                    |                               |
-|        | Search                                | :white_check_mark: | :white_check_mark: | :white_check_mark:            |
-|        | Filter search results                 | :white_check_mark: |                    | :white_check_mark:            |
-|        | Document overview page                | :white_check_mark: |                    | :white_check_mark:            |
-|        | Related documents                     | :white_check_mark: |                    | :white_check_mark:            |
-|        | Download document                     | :white_check_mark: |                    | :white_check_mark:            |
-|        | Besluitdossier overview page          | :white_check_mark: |                    | :white_check_mark:            |
-|        | Filter Besluitdossier                 | :white_check_mark: |                    |                               |
-|        | Download Besluitdossier               | :white_check_mark: |                    |                               |
-|        | Download Besluitdossier (small)       |                    |                    | :white_check_mark:            |
-|        | Download Besluitdossier (large)       |                    |                    | :white_check_mark:            |
-|        | Download Besluitbrief                 | :white_check_mark: |                    | :white_check_mark:            |
-|        | Download Inventarislijst              | :white_check_mark: |                    | :white_check_mark:            |
-| Balie  |                                       |                    |                    |                               |
-|        | Login module                          | :white_check_mark: | :white_check_mark: | :white_check_mark:            |
-|        | Filter Besluitdossier                 | :white_check_mark: | :white_check_mark: |                               |
-|        | Search Besluitdossier                 | :white_check_mark: | :white_check_mark: |                               |
-|        | Create Besluitdossier                 | :white_check_mark: | :white_check_mark: |                               |
-|        | Delete Besluitdossier                 |                    | :white_check_mark: |                               |
-|        | Retract Besluitdossier documenten     | :white_check_mark: |                    |                               |
-|        | Replace Besluitdossier documenten     | :white_check_mark: |                    |                               |
-|        | Create user                           | :white_check_mark: |                    |                               |
-|        | Edit user                             | :white_check_mark: |                    |                               |
-|        | Password reset user                   | :white_check_mark: |                    |                               |
-|        | 2FA reset user                        | :white_check_mark: |                    |                               |
-|        | (De)Activate user                     | :white_check_mark: |                    |                               |
-|        | Change user role                      | :white_check_mark: |                    |                               |
-|        | Bestuursorganen beheren               | :construction:     |                    |                               |
-|        | Link documents Zakenpagina            | :white_check_mark: |                    |                               |
-|        | Link besluit Zakenpagina              | :white_check_mark: |                    |                               |

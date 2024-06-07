@@ -2,11 +2,11 @@
 Documentation       Resource file with generic keywords.
 Library             Process
 Library             String
+Library             DateTime
 Library             OperatingSystem
 Library             Browser
 Library             OTP
 Resource            Admin.resource
-Resource            DecisionDossiers.resource
 
 
 *** Variables ***
@@ -18,9 +18,9 @@ ${OTP_CODE}     ${EMPTY}
 
 
 *** Keywords ***
-CI Suite Setup
+Suite Setup - CI
   IF  ${RUN_LOCALLY}
-    Cleanup Script
+    Cleansheet
     Set Suite Variable  ${OTP_CODE}  %{SECRET_WOO_LOCAL}
   ELSE
     Create Woo Admin User
@@ -29,20 +29,39 @@ CI Suite Setup
   Open Browser And BaseUrl
   Close Symfony Dev Bar
   Setting Suite Variables
-  Login Balie
-  Create New Decision Dossier  upload_files=${TRUE}  env=ci
 
-Test Suite Setup
+Suite Setup - Test
   Open Browser And BaseUrl
   Setting Suite Variables
 
-Cleanup Script
-  ${cleanup_db} =  Set Variable  docker-compose exec app bin/console woopie:dev:clean-sheet --force
-  Run Process  ${cleanup_db}  shell=True  alias=cleanup
+Cleansheet
+  Run Process  task app:cleansheet  shell=True
+
+Setting Suite Variables
+  ${current_time} =  Get Time  format=%Y-%m-%d %H:%M:%S
+  ${current_date} =  Get Current Date  result_format=%Y-%m-%d
+  ${current_date_format2} =  Get Current Date  result_format=%d %B %Y
+  ${current_date_format2} =  Convert To Lower Case  ${current_date_format2}
+  ${current_epoch} =  Get Time  format=epoch
+  Set Suite Variable  $CURRENT_TIME  ${current_time}
+  Set Suite Variable  $CURRENT_DATE  ${current_date}
+  Set Suite Variable  $CURRENT_DATE  ${current_date_format2}
+  Set Suite Variable  $CURRENT_EPOCH  ${current_epoch}
+
+Open Browser And BaseUrl
+  [Arguments]  ${device}=Desktop Chrome  ${slow_mo}=50ms
+  ${device_context} =  Get Device  ${device}
+  New Browser
+  ...  browser=${device_context}[defaultBrowserType]
+  ...  headless=${HEADLESS}
+  ...  args=["--ignore-certificate-errors", "--lang=nl"]
+  ...  slowMo=${slow_mo}
+  New Context  &{device_context}  locale=nl-NL  acceptDownloads=True
+  New Page  ${BASE_URL}
 
 Create Woo Admin User
   ${make_user_command} =  Set Variable
-  ...  php bin/console woopie:user:create "${TST_BALIE_USER}" "full name" --super-admin
+  ...  task app:user:create -- "${TST_BALIE_USER}" "full name" --super-admin
   Run Process  ${make_user_command}  shell=True  alias=create_admin
   ${stdout}  ${stderr} =  Get Process Result  create_admin  stdout=True  stderr=True
   Should Be Empty  ${stderr}  Error creating admin ${stderr}
@@ -54,34 +73,16 @@ Create Woo Admin User
   Set Suite Variable  ${OTP_CODE}  ${otp_code}
   Set Suite Variable  ${WW}  ${ww}
 
-Open Browser And BaseUrl
-  ${device_context} =  Get Device  Desktop Chrome
-  New Browser
-  ...  browser=${device_context}[defaultBrowserType]
-  ...  headless=${HEADLESS}
-  ...  args=["--ignore-certificate-errors", "--lang=nl"]
-  New Context  &{device_context}  locale=nl-NL  acceptDownloads=True
-  New Page  ${BASE_URL}
-
-Setting Suite Variables
-  ${yyyy}  ${mm}  ${dd} =  Get Time  year,month,day
-  ${current_time} =  Get Time  format=%Y-%m-%d %H:%M:%S
-  ${current_date} =  Catenate  SEPARATOR=-  ${yyyy}  ${mm}  ${dd}
-  ${current_epoch} =  Get Time  format=epoch
-  Set Suite Variable  $CURRENT_TIME  ${current_time}
-  Set Suite Variable  $CURRENT_DATE  ${current_date}
-  Set Suite Variable  $CURRENT_EPOCH  ${current_epoch}
-
 First Time Login With Admin
   Open Browser And BaseUrl
-  Login Balie  ${TST_BALIE_USER}  ${WW}
+  Login Admin  ${TST_BALIE_USER}  ${WW}
   Go To  ${BASE_URL}/balie/login
   Fill Text  id=change_password_current_password  ${WW}
   Fill Text  id=change_password_plainPassword_first  ${TST_BALIE_PASSWORD}
   Fill Text  id=change_password_plainPassword_second  ${TST_BALIE_PASSWORD}
   Click  " Wachtwoord aanpassen "
   Get Text  //body  *=  Uitloggen
-  Logout Balie
+  Logout Admin
   Close Page  CURRENT
 
 Close Symfony Dev Bar

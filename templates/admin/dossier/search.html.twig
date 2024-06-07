@@ -1,14 +1,14 @@
 {% set hasDossiers = dossiers | default | length > 0 %}
 
 {% if hasDossiers %}
-    <h2 class="bhr-title mb-2" id="search-results-dossiers">{{ 'global.decision' | trans }}</h2>
+    <h2 class="bhr-title mb-2" id="search-results-dossiers">{{ 'admin.global.label.publications' | trans }}</h2>
 
     <table class="bhr-table" aria-labelledby="search-results-dossiers">
         <thead class="sr-only">
             <tr>
-                <th scope="col">{{ 'dossiers.dossier_number' | trans() }}</th>
+                <th scope="col">{{ 'global.decision.dossier_number' | trans() }}</th>
                 <th scope="col">{{ 'global.title' | trans() }}</th>
-                <th scope="col">{{ "More..." | trans() }}</th>
+                <th scope="col">{{ 'global.more' | trans() }}</th>
             </tr>
         </thead>
         <tbody>
@@ -39,7 +39,7 @@
             <tr>
                 <th scope="col">{{ 'global.document_number' | trans() }}</th>
                 <th scope="col">{{ 'global.title' | trans() }}</th>
-                <th scope="col">{{ "More..." | trans() }}</th>
+                <th scope="col">{{ 'global.more' | trans() }}</th>
             </tr>
         </thead>
         <tbody>

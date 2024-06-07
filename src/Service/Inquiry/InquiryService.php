@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Inquiry;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Search\Index\IndexDossierMessage;
 use App\Entity\BatchDownload;
 use App\Entity\Document;
 use App\Entity\Dossier;
@@ -12,6 +14,7 @@ use App\Entity\InquiryInventory;
 use App\Entity\Organisation;
 use App\Message\GenerateInquiryArchivesMessage;
 use App\Message\GenerateInquiryInventoryMessage;
+use App\Message\IngestMetadataOnlyMessage;
 use App\Message\UpdateInquiryLinksMessage;
 use App\Service\BatchDownloadService;
 use App\Service\HistoryService;
@@ -58,7 +61,7 @@ class InquiryService
      * Removes the given dossier from all inquiries that are currently linked to it.
      * If no other dossiers remain in the inquiry it will be removed.
      */
-    public function removeDossierFromInquiries(Dossier $dossier): void
+    public function removeDossierFromInquiries(WooDecision $dossier): void
     {
         foreach ($this->doctrine->getRepository(Inquiry::class)->findByDossier($dossier) as $inquiry) {
             /** @var Inquiry $inquiry */
@@ -128,38 +131,49 @@ class InquiryService
         array $docIdsToDelete,
         array $dossierIdsToAdd,
     ): void {
-        $generateFiles = false;
+        $updateFiles = false;
+        $updatedDossiers = [];
+        $updatedDocuments = [];
         $inquiry = $this->findOrCreateInquiryForCaseNumber($organisation, $caseNr);
 
         $dossiersAdded = 0;
 
         foreach ($docIdsToAdd as $docIdToAdd) {
             $document = $this->doctrine->getRepository(Document::class)->find($docIdToAdd);
-            if ($document) {
-                $inquiry->addDocument($document);
-                foreach ($document->getDossiers() as $dossier) {
-                    if ($this->addDossierToInquiry($inquiry, $dossier, $caseNr)) {
-                        $dossiersAdded++;
-                        $generateFiles = true;
-                    }
+            if ($document === null) {
+                continue;
+            }
+
+            $inquiry->addDocument($document);
+            foreach ($document->getDossiers() as $dossier) {
+                if ($this->addDossierToInquiry($inquiry, $dossier, $caseNr)) {
+                    $dossiersAdded++;
+                    $updatedDossiers[] = $dossier->getId();
+                    $updateFiles = true;
                 }
             }
+
+            $updatedDocuments[] = $document->getId();
         }
 
         foreach ($docIdsToDelete as $docIdToDelete) {
             $document = $this->doctrine->getRepository(Document::class)->find($docIdToDelete);
-            if ($document) {
-                $inquiry->removeDocument($document);
+            if ($document === null) {
+                continue;
             }
 
-            $generateFiles = true;
+            $inquiry->removeDocument($document);
+
+            $updatedDocuments[] = $document->getId();
+            $updateFiles = true;
         }
 
         foreach ($dossierIdsToAdd as $dossierId) {
-            $dossier = $this->doctrine->getRepository(Dossier::class)->find($dossierId);
-            if ($this->addDossierToInquiry($inquiry, $dossier, $caseNr)) {
+            $dossier = $this->doctrine->getRepository(WooDecision::class)->find($dossierId);
+            if ($dossier !== null && $this->addDossierToInquiry($inquiry, $dossier, $caseNr)) {
                 $dossiersAdded++;
-                $generateFiles = true;
+                $updatedDossiers[] = $dossier->getId();
+                $updateFiles = true;
             }
         }
 
@@ -173,10 +187,13 @@ class InquiryService
         $this->doctrine->persist($inquiry);
         $this->doctrine->flush();
 
-        if ($generateFiles) {
+        if ($updateFiles) {
             $this->generateInventory($inquiry);
             $this->generateArchives($inquiry);
         }
+
+        $this->updateDocuments($updatedDocuments);
+        $this->updateDossiers($updatedDossiers);
     }
 
     public function applyChangesetAsync(InquiryChangeset $changeset): void
@@ -202,8 +219,28 @@ class InquiryService
 
         $inquiry->addDossier($dossier);
 
-        $this->historyService->addDossierEntry($dossier, 'inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
+        $this->historyService->addDossierEntry($dossier, 'dossier_inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
 
         return $dossier->getStatus()->isPubliclyAvailable();
+    }
+
+    /**
+     * @param array<array-key,Uuid> $ids
+     */
+    private function updateDocuments(array $ids): void
+    {
+        foreach ($ids as $id) {
+            $this->messageBus->dispatch(new IngestMetadataOnlyMessage($id));
+        }
+    }
+
+    /**
+     * @param array<array-key,Uuid> $ids
+     */
+    private function updateDossiers(array $ids): void
+    {
+        foreach ($ids as $id) {
+            $this->messageBus->dispatch(new IndexDossierMessage($id));
+        }
     }
 }

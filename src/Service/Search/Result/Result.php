@@ -31,7 +31,7 @@ final class Result
     /**
      * Not null when pagination is enabled.
      *
-     * @var PaginationInterface<string,AbstractPagination>|null
+     * @var PaginationInterface<int,AbstractPagination>|null
      */
     protected ?PaginationInterface $paginator = null;
 
@@ -343,7 +343,7 @@ final class Result
     }
 
     /**
-     * @param PaginationInterface<string,AbstractPagination> $paginator
+     * @param PaginationInterface<int,AbstractPagination> $paginator
      */
     public function setPagination(PaginationInterface $paginator): void
     {
@@ -351,7 +351,7 @@ final class Result
     }
 
     /**
-     * @return PaginationInterface<string,AbstractPagination>|null
+     * @return PaginationInterface<int,AbstractPagination>|null
      */
     public function pagination(): ?PaginationInterface
     {

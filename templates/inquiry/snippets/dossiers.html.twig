@@ -2,12 +2,12 @@
     <h2 class="woo-h2 woo-h2-spacing">{{ 'public.global.decisions' | trans() }}</h2>
 
     {% if dossiers.count > 0 %}
-    <div class="overflow-x-auto">
+    <div class="woo-responsive-table">
         <table class="woo-table">
             <thead>
                 <tr>
                     <th class="min-w-64" scope="col">{{ 'global.decision' | trans }}</th>
-                    <th class="min-w-64 !text-right" scope="col">{{ 'public.global.decision_date' | trans }}</th>
+                    <th class="min-w-64 !text-right" scope="col">{{ 'global.decision_date' | trans }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -21,6 +21,6 @@
         </table>
     </div>
     {% else %}
-        <p>{{ "No dossiers" | trans }}</p>
+        <p>{{ 'public.dossiers.no_dossiers' | trans }}</p>
     {% endif %}
 </section>

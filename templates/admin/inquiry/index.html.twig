@@ -9,7 +9,7 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('inquiry.update') %}
-            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_inquiries_link') }}">{{ 'admin.inquiries.link_case' | trans() }}</a>
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_inquiries_link') }}" data-e2e-name="go-to-link-inquires-link">{{ 'admin.inquiries.link_case' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>

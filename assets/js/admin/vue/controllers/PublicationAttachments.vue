@@ -1,8 +1,8 @@
 <script setup>
   import Alert from '@admin-fe/component/Alert.vue';
   import Dialog from '@admin-fe/component/Dialog.vue';
-  import AttachmentsList from '@admin-fe/component/publication-attachments/AttachmentsList.vue';
-  import PublicationAttachmentsForm from '@admin-fe/component/publication-attachments/PublicationAttachmentsForm.vue';
+  import AttachmentsList from '@admin-fe/component/publication/AttachmentsList.vue';
+  import PublicationAttachmentsForm from '@admin-fe/component/publication/PublicationAttachmentsForm.vue';
   import { computed, ref } from 'vue';
 
   const props = defineProps({
@@ -30,10 +30,8 @@
       required: true,
       default: () => [],
     },
-    groupId: {
+    uploadGroupId: {
       type: String,
-      required: true,
-      default: 'default',
     },
   });
 
@@ -139,8 +137,8 @@
         :document-type-options="props.documentTypeOptions"
         :endpoint="props.endpoint"
         :ground-options="props.groundOptions"
-        :group-id="props.groupId"
         :is-edit-mode="isEditMode"
+        :upload-group-id="props.uploadGroupId"
       />
     </Dialog>
   </Teleport>

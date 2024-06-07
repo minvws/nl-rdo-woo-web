@@ -24,7 +24,6 @@ class WooExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('decision', [$this->runtime, 'decision']),
             new TwigFilter('sourceTypeIcon', [$this->runtime, 'sourceTypeIcon']),
             new TwigFilter('classification', [$this->runtime, 'classification']),
             new TwigFilter(
@@ -41,7 +40,6 @@ class WooExtension extends AbstractExtension
             new TwigFunction('has_facets', [$this->runtime, 'hasFacets']),
             new TwigFunction('facet_checked', [$this->runtime, 'facetChecked']),
             new TwigFunction('facet2query', [$this->runtime, 'facet2query']),
-            new TwigFunction('status_badge', [$this->runtime, 'statusBadge'], ['is_safe' => ['html']]),
             new TwigFunction('period', [$this->runtime, 'period']),
             new TwigFunction('has_thumbnail', [$this->runtime, 'hasThumbnail']),
             new TwigFunction('is_document_id', [$this->runtime, 'isDocumentLink']),

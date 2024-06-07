@@ -37,7 +37,7 @@ readonly class TranslatableFormErrorMapper
 
                 $translatedError = $this->translator->trans($error['translation'], $placeholders);
                 $errorMessage = $this->translator->trans(
-                    'Line {line_number} error: {error}',
+                    'publication.dossier.error.line_number',
                     [
                         '{error}' => $translatedError,
                         '{line_number}' => $lineNumber,

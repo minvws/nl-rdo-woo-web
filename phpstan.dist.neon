@@ -11,7 +11,6 @@ includes:
 parameters:
     tmpDir: ./.phpstan.cache
     treatPhpDocTypesAsCertain: false
-    checkMissingIterableValueType: false
     doctrine:
         objectManagerLoader: phpstan-doctrine-orm-bootstrap.php
     paths:
@@ -22,16 +21,17 @@ parameters:
         - tests/
     excludePaths:
         - src/Service/FixtureService.php
+        - src/Domain/Publication/Dossier/Type/**/*Workflow.php
+        - config/packages/workflow.php
+        - src/Domain/Publication/Dossier/Type/WorkflowConfigHelper.php
     level: max
     symfony:
         container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml
-    checkGenericClassInNonGenericObjectType: false
     faker:
         providerClasses:
             - App\Tests\Faker\GroundsFakerProvider
     ignoreErrors:
-        - '/Parameter #\d \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given./'
-        - '/Parameter #\d \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given./'
+        - identifier: missingType.generics
 
 services:
     errorFormatter.junit:

@@ -4,7 +4,7 @@
 {% macro active_facet(title, url) %}
     <li class="inline-block mr-2">
         <a class="bhr-pill bhr-pill--with-icon hover:line-through" href="{{ url }}">
-            <span class="sr-only">{{ "Remove filter" | trans() }}</span> {{ title }}
+            <span class="sr-only">{{ 'public.search.filter_remove' | trans() }}</span> {{ title }}
             <span class="bhr-pill__icon"><twig:Admin:Icon name="cross" size="12" /></span>
         </a>
     </li>

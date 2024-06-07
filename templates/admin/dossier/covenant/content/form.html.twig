@@ -16,39 +16,30 @@
 
     {{ form_row(form.summary) }}
 
-    <div class="bhr-form-row">
-        <h2 class="bhr-label">Convenant</h2>
-        {{ form_errors(form.document) }}
-        {% do form.document.setRendered %}
-        <p class="bhr-form-help text-lg pb-2">Upload minimaal het convenant.</p>
-
-        <div {{ vue_component('ConvenantUpload', {
-            canDelete: canDeleteCovenantDocument,
-            endpoint: '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-document',
-            documentLanguageOptions: attachmentLanguages,
-            groundOptions: grounds,
-        }) }}>
-            <div class="min-h-14"></div>
-        </div>
-    </div>
+    <twig:Admin:Publication:ManageDocument
+        canDelete="{{ canDeleteCovenantDocument }}"
+        documentType="{{ 'admin.dossiers.convenant.document' | trans }}"
+        documentTypes="{{ documentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-document' }}"
+        formField="{{ form.document }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.convenant.form.content.document_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        title="{{ 'admin.dossiers.convenant.form.content.document_label' | trans }}"
+        uploadGroupId="covenant-documents"
+    />
 
     {{ form_row(form.previous_version_link) }}
 
-    <div class="bhr-form-row">
-        <h2 class="bhr-label">Bijlagen <span class="font-normal">(optioneel)</span></h2>
-        <p class="bhr-form-help text-lg pb-2">Voeg hier alleen bijlagen toe die te maken hebben met de totstandkoming van het convenant.</p>
-
-        <div {{ vue_component('PublicationAttachments', {
-            canDelete: canDeleteAttachments,
-            endpoint: '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-attachments',
-            documentTypeOptions: attachmentTypes,
-            documentLanguageOptions: attachmentLanguages,
-            groundOptions: grounds,
-            groupId: 'covenant-attachments',
-        }) }}>
-            <div class="min-h-14"></div>
-        </div>
-    </div>
+    <twig:Admin:Publication:ManageAttachments
+        canDelete="{{ canDeleteAttachments }}"
+        documentTypes="{{ attachmentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-attachments' }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.convenant.form.content.attachments_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        uploadGroupId="covenant-attachments"
+    />
 
     {% do form.parties.setRendered %}
 

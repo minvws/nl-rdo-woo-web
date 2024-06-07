@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-enum Judgement: string
+use Symfony\Contracts\Translation\TranslatableInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+enum Judgement: string implements TranslatableInterface
 {
     case PUBLIC = 'public';
     case PARTIAL_PUBLIC = 'partial_public';
@@ -24,8 +27,23 @@ enum Judgement: string
         };
     }
 
+    public function isAlreadyPublic(): bool
+    {
+        return $this === self::ALREADY_PUBLIC;
+    }
+
+    public function isNotPublic(): bool
+    {
+        return $this === self::NOT_PUBLIC;
+    }
+
     public function isAtLeastPartialPublic(): bool
     {
         return $this === self::PARTIAL_PUBLIC || $this === self::PUBLIC;
+    }
+
+    public function trans(TranslatorInterface $translator, ?string $locale = null): string
+    {
+        return $translator->trans('dossier.type.woo-decision.judgement.' . $this->value, locale: $locale);
     }
 }

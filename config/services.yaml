@@ -20,6 +20,7 @@ services:
             $configPageLimit: '%configPageLimit%'
             Psr\Log\LoggerInterface $logger: '@App\Service\Logging\EnrichedPsrLogger'
             string $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
+            string $appEnvironment: '%kernel.environment%'
 
     App\:
         resource: '../src/'
@@ -67,7 +68,6 @@ services:
                 - '@App\Service\Stats\Handler\ElasticHandler'
                 - '@App\Service\Stats\Handler\DoctrineHandler'
 
-    # Tag all classes that implements Handler with the app.ingest.handler tag.
     _instanceof:
         App\Service\Ingest\Handler:
             tags: ['app.ingest.handler']
@@ -77,6 +77,10 @@ services:
             tags: [ 'app.stats.handler' ]
         App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface:
             tags: ['domain.publication.dossier_type_config']
+        App\Domain\Search\Index\ElasticDossierMapperInterface:
+            tags: [ 'domain.search.index.dossier_mapper' ]
+        App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface:
+            tags: [ 'domain.publication.dossier_delete_strategy' ]
 
     # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
     App\Service\Encryption\EncryptionService:
@@ -140,7 +144,6 @@ services:
 
     App\Command\CleanSheet:
         arguments:
-            $environment: '%kernel.environment%'
             $queueDsns: [
                 '%env(HIGH_TRANSPORT_DSN)%',
                 '%env(INGESTOR_TRANSPORT_DSN)%',
@@ -152,7 +155,7 @@ services:
         arguments:
             - !tagged_iterator app.logging.type
 
-    App\Controller\StatsController:
+    App\Controller\Public\StatsController:
         arguments:
             $redis: '@snc_redis.ingest'
             $rabbitMqStatUrl: '%rabbitmq_stats_url%'
@@ -206,10 +209,6 @@ services:
             $writer: '@App\Service\Inventory\Sanitizer\ExcelWriter'
             $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
 
-    App\Twig\Runtime\WooExtensionRuntime:
-        arguments:
-            $translator: '@translator.default'
-
     App\Service\HistoryService:
         arguments:
             $translator: '@translator.default'
@@ -221,6 +220,18 @@ services:
     App\Domain\Publication\Dossier\Type\DossierTypeManager:
         arguments:
             $configs: !tagged_iterator domain.publication.dossier_type_config
+
+    App\Domain\Search\Index\DossierIndexer:
+        arguments:
+            $mappers: !tagged_iterator domain.search.index.dossier_mapper
+
+    App\Domain\Search\Index\DefaultDossierMapper:
+        tags:
+            - { name: 'tagged_iterator domain.search.index.dossier_mapper', priority: -100 }
+
+    App\Domain\Publication\Dossier\Handler\DeleteDossierHandler:
+        arguments:
+            $deleteStrategies: !tagged_iterator domain.publication.dossier_delete_strategy
 
     App\Service\Uploader\UploaderNamer:
         public: true

@@ -25,7 +25,7 @@ readonly class DocumentMapper
         $dossiers = [];
         $dossierNrs = [];
         foreach ($document->getDossiers() as $dossier) {
-            $dossiers[] = $this->wooDecisionMapper->map($dossier)->getFieldValues();
+            $dossiers[] = $this->wooDecisionMapper->map($dossier)->getDocumentValues();
             $dossierNrs[] = $dossier->getDossierNr();
         }
 

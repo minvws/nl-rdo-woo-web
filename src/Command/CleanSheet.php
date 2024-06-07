@@ -29,7 +29,7 @@ class CleanSheet extends Command
      * @param string[] $queueDsns
      */
     public function __construct(
-        private readonly string $environment,
+        private readonly string $appEnvironment,
         private readonly array $queueDsns,
         private readonly EntityManagerInterface $entityManager,
         private readonly IndexService $indexService,
@@ -52,14 +52,17 @@ class CleanSheet extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function isEnabled(): bool
     {
-        if ($this->environment === 'prod') {
-            $output->writeln('<error>This command cannot be used on production</error>');
-
-            return 1;
+        if ($this->appEnvironment === 'prod') {
+            return false;
         }
 
+        return true;
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
         $shouldForce = $input->getOption('force');
         $io = new SymfonyStyle($input, $output);
         if (! $shouldForce && ! $io->confirm('Are you REALLY sure you want to clear data from the system?', false)) {

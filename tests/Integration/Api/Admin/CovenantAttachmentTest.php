@@ -185,7 +185,7 @@ final class CovenantAttachmentTest extends ApiTestCase
                 'json' => [
                     'uploadUuid' => $uploadUuid,
                     'name' => 'foobar',
-                    'type' => AttachmentType::COVENANT->value,
+                    'type' => AttachmentType::RECOGNITION_DECISION->value,
                     'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
                     'language' => AttachmentLanguage::DUTCH->value,
                 ],
@@ -395,7 +395,7 @@ final class CovenantAttachmentTest extends ApiTestCase
                 'input' => [
                     'uploadUuid' => '55ae5de9-55f4-3420-b50b-5cde6e07fc5a',
                     'name' => 'foobar',
-                    'type' => AttachmentType::COVENANT->value,
+                    'type' => AttachmentType::RECOGNITION_DECISION->value,
                     'formalDate' => CarbonImmutable::now()->addYear()->format('Y-m-d'),
                     'internalReference' => str_repeat('a', 256),
                     'language' => AttachmentLanguage::DUTCH->value,
@@ -690,7 +690,7 @@ final class CovenantAttachmentTest extends ApiTestCase
             'invalid business logic data' => [
                 'input' => [
                     'formalDate' => CarbonImmutable::now()->addYear()->format('Y-m-d'),
-                    'type' => AttachmentType::COVENANT->value,
+                    'type' => AttachmentType::APPOINTMENT_DECISION->value,
                     'internalReference' => str_repeat('a', 256),
                 ],
                 'expectedViolations' => [

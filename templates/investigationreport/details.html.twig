@@ -1,0 +1,14 @@
+{% extends 'publication/details.html.twig' %}
+
+{% set tagline = 'public.dossiers.investigation-report.tagline' | trans %}
+
+{% block attachments %}
+    {% include 'publication/attachments.html.twig' with { documentType: document.type | trans | capitalize } %}
+{% endblock %}
+
+{% block about %}
+    <twig:Public:Publication:About
+        dossier="{{ dossier }}"
+        title="{{ 'public.dossiers.investigation-report.about' | trans }}"
+    />
+{% endblock %}

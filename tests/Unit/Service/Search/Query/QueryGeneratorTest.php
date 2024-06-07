@@ -104,4 +104,20 @@ class QueryGeneratorTest extends UnitTestCase
         self::assertMatchesJsonSnapshot($result);
         self::assertSame($this->index, $result['index']);
     }
+
+    public function testCreateQueryWithInquiryDocumentsFilter(): void
+    {
+        $result = $this->queryGenerator->createQuery(
+            new Config(
+                facetInputs: $this->facetInputFactory->create(),
+                pagination: false,
+                aggregations: false,
+                documentInquiries: ['foo', 'bar'],
+            )
+        );
+
+        $result = $result->build();
+        self::assertMatchesJsonSnapshot($result);
+        self::assertSame($this->index, $result['index']);
+    }
 }
