@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Ingest\Handler;
 
+use App\Domain\Ingest\IngestMetadataOnlyMessage;
 use App\Entity\Document;
 use App\Entity\FileInfo;
-use App\Message\IngestMetadataOnlyMessage;
 use App\Service\Ingest\Handler;
 use App\Service\Ingest\Options;
 use Psr\Log\LoggerInterface;
@@ -23,11 +23,12 @@ class MetadataOnlyHandler implements Handler
     public function handle(Document $document, Options $options): void
     {
         $this->logger->info('Dispatching ingest for metadata-only document', [
-            'document' => $document->getId(),
+            'id' => $document->getId(),
+            'class' => $document::class,
         ]);
 
         // Force refresh to true so any existing metadata or pages from an older document version is removed.
-        $message = new IngestMetadataOnlyMessage($document->getId(), true);
+        $message = new IngestMetadataOnlyMessage($document->getId(), $document::class, true);
         $this->bus->dispatch($message);
     }
 

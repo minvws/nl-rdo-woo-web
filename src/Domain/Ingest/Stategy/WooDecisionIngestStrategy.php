@@ -24,6 +24,7 @@ readonly class WooDecisionIngestStrategy implements DossierIngestStrategyInterfa
 
     public function ingest(AbstractDossier $dossier, bool $refresh): void
     {
+        /** @var WooDecision $dossier */
         Assert::isInstanceOf($dossier, WooDecision::class);
 
         $this->defaultDossierIngester->ingest($dossier, $refresh);

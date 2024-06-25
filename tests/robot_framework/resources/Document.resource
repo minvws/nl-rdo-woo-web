@@ -1,6 +1,7 @@
 *** Settings ***
-Library     Browser
-Library     DebugLibrary
+Documentation       Keywords related to document pages on public.
+Library             Browser
+Library             DebugLibrary
 
 
 *** Keywords ***

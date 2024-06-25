@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Ingest\Handler;
 
+use App\Domain\Ingest\IngestPdfMessage;
 use App\Entity\Document;
 use App\Entity\FileInfo;
-use App\Message\IngestPdfMessage;
 use App\Service\Ingest\Handler;
 use App\Service\Ingest\Options;
 use Psr\Log\LoggerInterface;
@@ -23,10 +23,11 @@ class PdfHandler implements Handler
     public function handle(Document $document, Options $options): void
     {
         $this->logger->info('Dispatching ingest for PDF document', [
-            'document' => $document->getId(),
+            'id' => $document->getId(),
+            'class' => $document::class,
         ]);
 
-        $message = new IngestPdfMessage($document->getId(), $options->forceRefresh());
+        $message = new IngestPdfMessage($document->getId(), $document::class, $options->forceRefresh());
         $this->bus->dispatch($message);
     }
 

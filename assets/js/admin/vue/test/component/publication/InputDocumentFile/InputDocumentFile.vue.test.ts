@@ -6,6 +6,7 @@ describe('The "InputDocumentFile" component', () => {
   const createComponent = (displayMaxOneFileMessage = false) => mount(InputDocumentFile, {
     props: {
       displayMaxOneFileMessage,
+      uploadedFileInfo: null,
       groupId: 'mocked-group-id',
       value: 'mocked-value',
     },

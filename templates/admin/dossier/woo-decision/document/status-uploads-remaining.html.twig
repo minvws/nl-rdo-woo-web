@@ -3,7 +3,7 @@
 
 {% if missingDocuments | length > 0 %}
 <div class="bg-bhr-cornsilk p-6 max-h-80 overflow-y-auto">
-    <h3 class="mb-3 text-lg">
+    <h3 class="mb-3 text-lg" data-e2e-name="missingDocuments">
         Nog te uploaden: <span class="font-bold">{{ missingDocuments | length }}</span> van {{ uploadStatus.expectedUploadCount }} document{% if uploadStatus.expectedUploadCount != 1 %}en{% endif %}.
     </h3>
 

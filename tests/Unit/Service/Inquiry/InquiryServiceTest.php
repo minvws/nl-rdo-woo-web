@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inquiry;
 
+use App\Domain\Ingest\IngestMetadataOnlyMessage;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\IndexDossierMessage;
@@ -13,7 +14,6 @@ use App\Entity\Inquiry;
 use App\Entity\Organisation;
 use App\Message\GenerateInquiryArchivesMessage;
 use App\Message\GenerateInquiryInventoryMessage;
-use App\Message\IngestMetadataOnlyMessage;
 use App\Message\UpdateInquiryLinksMessage;
 use App\Repository\DocumentRepository;
 use App\Repository\DossierRepository;
@@ -158,7 +158,7 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (IngestMetadataOnlyMessage $message) use ($addDoc1Id) {
-                self::assertEquals($addDoc1Id, $message->getUuid());
+                self::assertEquals($addDoc1Id, $message->getEntityId());
 
                 return true;
             }
@@ -166,7 +166,7 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (IngestMetadataOnlyMessage $message) use ($addDoc2Id) {
-                self::assertEquals($addDoc2Id, $message->getUuid());
+                self::assertEquals($addDoc2Id, $message->getEntityId());
 
                 return true;
             }
@@ -174,7 +174,7 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (IngestMetadataOnlyMessage $message) use ($removeDocId) {
-                self::assertEquals($removeDocId, $message->getUuid());
+                self::assertEquals($removeDocId, $message->getEntityId());
 
                 return true;
             }
@@ -265,7 +265,7 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (IngestMetadataOnlyMessage $message) use ($addDoc1Id) {
-                self::assertEquals($addDoc1Id, $message->getUuid());
+                self::assertEquals($addDoc1Id, $message->getEntityId());
 
                 return true;
             }
@@ -273,7 +273,7 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (IngestMetadataOnlyMessage $message) use ($addDoc2Id) {
-                self::assertEquals($addDoc2Id, $message->getUuid());
+                self::assertEquals($addDoc2Id, $message->getEntityId());
 
                 return true;
             }
@@ -281,7 +281,7 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (IngestMetadataOnlyMessage $message) use ($removeDocId) {
-                self::assertEquals($removeDocId, $message->getUuid());
+                self::assertEquals($removeDocId, $message->getEntityId());
 
                 return true;
             }

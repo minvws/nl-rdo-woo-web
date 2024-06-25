@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
+use App\Domain\Ingest\IngestMetadataOnlyMessage;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentWithDrawnEvent;
 use App\Domain\Publication\Dossier\Type\WooDecision\Handler\WithDrawDocumentHandler;
@@ -13,7 +14,6 @@ use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Entity\Document;
 use App\Entity\WithdrawReason;
 use App\Exception\DocumentWorkflowException;
-use App\Message\IngestMetadataOnlyMessage;
 use App\Message\UpdateDossierArchivesMessage;
 use App\Repository\DocumentRepository;
 use App\Service\Storage\DocumentStorageService;
@@ -79,7 +79,7 @@ class WithDrawDocumentHandlerTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             static function (IngestMetadataOnlyMessage $message) use ($uuid) {
-                return $message->getUuid() === $uuid;
+                return $message->getEntityId() === $uuid;
             }
         ))->andReturns(new Envelope(new \stdClass()));
 

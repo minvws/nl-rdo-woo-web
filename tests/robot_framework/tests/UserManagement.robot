@@ -24,17 +24,6 @@ ${NEW_USER_TEMP_PASSWORD}   ${EMPTY}
 
 
 *** Test Cases ***
-# AA-001 - Login As A Super Admin
-#  Login Admin
-#  Click  "Toegangsbeheer"
-# AA-002 - Show List All Users
-#  Login Admin
-#  Click  "Toegangsbeheer"
-#  Get Text  //*[@data-e2e-name="user-table"]  contains  Super beheerder
-# AA-003 - Create Another Super Admin
-#  Login Admin
-#  Click  "Toegangsbeheer"
-#  Create New User  super_admin  SuperAdmin${CURRENT_EPOCH}  superadmin${CURRENT_EPOCH}@test.org  superadmin
 Create New User
   [Documentation]  Login to Admin and create a new user
   Login Admin

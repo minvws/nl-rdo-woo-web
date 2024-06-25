@@ -52,7 +52,7 @@
     },
     tip: {
       type: String,
-      required: true,
+      required: false,
     },
     uploadId: {
       type: String,

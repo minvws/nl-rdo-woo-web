@@ -55,6 +55,7 @@ Verify Draft Dossier
   Get Text  //body  *=  Maak eerst documenten compleet
 
 Verify Published Decision Dossier
+  [Documentation]  Used in ci-old
   Click  "Alle gepubliceerde besluiten"
   Sleep  5s
   Reload
@@ -172,7 +173,7 @@ Verify File History
   [Arguments]  ${text}
   Get Text  //*[@id="main-content"]/div/div[4]/div/table  contains  ${text}
 
-Click Document Edit
+Click Documents Edit
   Click  xpath=//*[@data-e2e-name="documents-section"]//*[@data-e2e-name="edit-link"]
 
 Verify Document Listed In File
@@ -205,3 +206,9 @@ Publish Dossier And Return To Admin Home
 
 Click Publications
   Click  "Publicaties"
+
+Verify Publication Confirmation
+  [Arguments]  ${preview_date}  ${publication_date}
+  Get Text  //*[@data-e2e-name="dossier-preview-date"]  contains  ${preview_date}
+  Get Text  //*[@data-e2e-name="dossier-publication-date"]  contains  ${publication_date}
+  Get Text  //*[@data-e2e-name="dossier-publication-date-link"]  contains  ${preview_date}

@@ -49,4 +49,12 @@ Check Document Existence On Public
   [Documentation]  The document with the given ID should NOT be visible on public
   [Arguments]  ${document_id}
   Go To Public
-  Search For  ${document_id}  0 documenten
+  Search On Public For  ${document_id}  0 documenten
+
+Verify Notification
+  [Arguments]  ${notification_message}
+  Get Text  //*[@data-e2e-name="notifications"]  contains  ${notification_message}
+
+Verify Document History
+  [Arguments]  ${history}
+  Get Text  //*[@data-e2e-name="document-history"]  contains  ${history}

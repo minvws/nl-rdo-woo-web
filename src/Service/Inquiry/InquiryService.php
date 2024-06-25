@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Inquiry;
 
+use App\Domain\Ingest\IngestMetadataOnlyMessage;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\IndexDossierMessage;
 use App\Entity\BatchDownload;
@@ -14,7 +15,6 @@ use App\Entity\InquiryInventory;
 use App\Entity\Organisation;
 use App\Message\GenerateInquiryArchivesMessage;
 use App\Message\GenerateInquiryInventoryMessage;
-use App\Message\IngestMetadataOnlyMessage;
 use App\Message\UpdateInquiryLinksMessage;
 use App\Service\BatchDownloadService;
 use App\Service\HistoryService;
@@ -230,7 +230,7 @@ class InquiryService
     private function updateDocuments(array $ids): void
     {
         foreach ($ids as $id) {
-            $this->messageBus->dispatch(new IngestMetadataOnlyMessage($id));
+            $this->messageBus->dispatch(new IngestMetadataOnlyMessage($id, Document::class));
         }
     }
 

@@ -253,7 +253,22 @@
         {% set canWithdrawDocuments = not workflowStatus.isConcept %}
         {% set canDeleteDossier = matrix_has_permission('dossier.delete') %}
 
-        {% if canWithdrawDocuments or canDeleteDossier %}
+        {% if not dossier.needsInventoryAndDocuments %}
+            <section class="bhr-card mt-10" data-e2e-name="danger-zone">
+                <h2 class="bhr-title mb-6">{{ 'admin.global.danger_zone' | trans }}</h2>
+                <p>{{ 'admin.dossiers.woo-decision.no_docs' | trans }}</p>
+                {% if canDeleteDossier %}
+                    <h3 class="font-bold{% if canWithdrawDocuments %} mt-10{% endif %}">{{ 'admin.dossiers.decision.delete' | trans }}</h3>
+                    {% if workflowStatus.isConcept %}
+                        <a class="bhr-button bhr-button--danger mt-10" data-e2e-name="delete-dossier-link" href="{{ path('app_admin_dossier_delete', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ 'admin.dossiers.woo-decision.withdraw_decision' | trans }}</a>
+                    {% else %}
+                        <p>{{ 'admin.dossiers.decision.delete.can_not_be_deleted' | trans }}</p>
+                    {% endif %}
+                {% endif %}
+            </section>
+        {% endif %}
+
+        {% if dossier.needsInventoryAndDocuments and (canWithdrawDocuments or canDeleteDossier) %}
             <section class="bhr-card mt-10" data-e2e-name="danger-zone">
                 <h2 class="bhr-title mb-6">{{ 'admin.global.danger_zone' | trans }}</h2>
 
@@ -283,6 +298,7 @@
                 {% endif %}
             </section>
         {% endif %}
+
 
         {% set entries = get_backend_history('dossier', dossier.id) %}
         {% if entries | length > 0 %}

@@ -77,7 +77,7 @@ class InventoryChangeset
     {
         return array_reduce(
             array_keys($this->documentStatus),
-            function ($totals, $changeKey) {
+            function (array $totals, string $changeKey) {
                 $status = $this->documentStatus[$changeKey];
                 $totals[$status]++;
 
