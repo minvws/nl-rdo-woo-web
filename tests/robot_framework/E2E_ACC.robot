@@ -50,7 +50,7 @@ Decision Dossier overview page
   ...  period=Mei 2021
   ...  decision_date=29 augustus 2023
   ...  dossier_type=Woo-verzoek
-  ...  publication_size=792 documenten, 1.815 pagina's
+  ...  publication_size=792 documenten, 1.831 pagina's
   # First page
   Verify Listed Document In Dossier  701061  Dagstart bespreeklijst Toegangstesten.docx.docx  14 mei 2021
   Verify Listed Document In Dossier  701841  4.1. Notitie - Verdelingssystematiek Toegangstesten.pdf  25 mei 2021
@@ -106,7 +106,7 @@ Document overview page (document is made public)
   ...  period=Mei 2021
   ...  dossier_type=Woo-verzoek
   ...  dossier_date=29 augustus 2023
-  ...  publication_size=792 documenten, 1.815 pagina's
+  ...  publication_size=792 documenten, 1.831 pagina's
   Download File  Dagstart bespreeklijst Toegangstesten.docx.docx  "Downloaden (PDF 249.7 KB)"
 
 Document overview page (document is NOT made public)
@@ -127,7 +127,7 @@ Document overview page (document is NOT made public)
   ...  period=Mei 2021
   ...  dossier_type=Woo-verzoek
   ...  dossier_date=29 augustus 2023
-  ...  publication_size=792 documenten, 1.815 pagina's
+  ...  publication_size=792 documenten, 1.831 pagina's
   # Some checks to make sure download options are NOT available
   Get Text  //body  not contains  Klik op een pagina om de PDF
   Get Text  //body  not contains  Downloaden
@@ -149,7 +149,7 @@ Download inventarislijst
   # The search term is the exact match of the decision dossier. The first result should be the decision dossier.
   Click  xpath=//*[@data-e2e-name="search-result"][1]//*[@data-e2e-name="main-link"]
   Get Text  //h1  *=  Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
-  Get Text  //body  *=  792 documenten, 1.815 pagina's Inventarislijst
+  Get Text  //body  *=  792 documenten, 1.831 pagina's Inventarislijst
   Download File  "inventarislijst-VWS-561-2639.xlsx"  "Inventarislijst"
 
 Download small decision dossier

@@ -20,6 +20,7 @@ tasks:
       - task: build
 
   shell:
+
     desc: Shell into environment with Robot Framework
     cmds:
       - task: build:if-not-exists
@@ -55,27 +56,23 @@ tasks:
     dir: ../../
     cmds:
       - task: :up
-      - source .venv/bin/activate
-      - robot  --outputdir tests/robot_framework/results --include '{{.tag}}' -v headless:false -v RUN_LOCALLY:True tests/robot_framework
+      - source .venv/bin/activate && robot  --outputdir tests/robot_framework/results --include '{{.tag}}' -v headless:false -v RUN_LOCALLY:True tests/robot_framework
 
   test-headless:
     desc: Run Robot tests with headless browser
     dir: ../../
     cmds:
       - task: :up
-      - source .venv/bin/activate
-      - robot --outputdir tests/robot_framework/results --include '{{.tag}}' -v headless:true -v RUN_LOCALLY:True tests/robot_framework
+      - source .venv/bin/activate && robot --outputdir tests/robot_framework/results --include '{{.tag}}' -v headless:true -v RUN_LOCALLY:True tests/robot_framework
 
   robocop:
     desc: Run Robocop
     dir: ../../
     cmds:
-      - source .venv/bin/activate
-      - robocop .
+      - source .venv/bin/activate && robocop .
 
   robotidy:
     desc: Run Robotidy
     dir: ../../
     cmds:
-      - source .venv/bin/activate
-      - robotidy .
+      - source .venv/bin/activate && robotidy .

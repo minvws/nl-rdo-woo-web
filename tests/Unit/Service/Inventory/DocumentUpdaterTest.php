@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
+use App\Domain\Ingest\IngestMetadataOnlyMessage;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\FileInfo;
 use App\Entity\Judgement;
 use App\Entity\Organisation;
-use App\Message\IngestMetadataOnlyMessage;
 use App\Message\RemoveDocumentMessage;
 use App\Repository\DocumentRepository;
 use App\Service\Inventory\DocumentMetadata;
@@ -167,7 +167,7 @@ class DocumentUpdaterTest extends MockeryTestCase
         $this->messageBus->expects('dispatch')->once()
             ->with(\Mockery::on(
                 static function (IngestMetadataOnlyMessage $message) use ($docId) {
-                    return $message->getUuid() === $docId && $message->getForceRefresh() === false;
+                    return $message->getEntityId() === $docId && $message->getForceRefresh() === false;
                 }
             ))
             ->andReturns(new Envelope(new \stdClass()));

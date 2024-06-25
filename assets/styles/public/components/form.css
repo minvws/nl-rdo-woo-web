@@ -10,6 +10,10 @@
             placeholder:text-woo-dim-gray;
     }
 
+    .woo-input-text--invalid {
+        @apply border-2 border-woo-maximum-red;
+    }
+
     .woo-legend {
         @apply block
             font-bold

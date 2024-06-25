@@ -7,3 +7,4 @@ rpaframework-pdf
 opencv-python
 robotframework-robocop
 robotframework-tidy
+robotframework-datetime-tz

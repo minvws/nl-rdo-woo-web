@@ -51,7 +51,8 @@
 <ul class="mt-1 woo-muted">
     {% for dossier in entry.dossiers %}
     <li>
-        <a class="woo-a" href="{{ path('app_woodecision_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
+        <twig:Public:Icon name="part-of" size="20" />
+        <span>{{ 'global.part_of' | trans | capitalize }}</span> <a class="woo-a woo-a--search-result" href="{{ path('app_woodecision_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
         {{dossier.dossierNr}}
     </li>
     {% endfor %}

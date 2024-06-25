@@ -30,9 +30,12 @@ module.exports = {
         'woo-platinum': '#e6e6e6',
         'woo-plum': '#814081',
         'woo-rose-garnet': '#8d0041',
+        'woo-maximum-red': '#d52a1e',
         'woo-royal-red': '#ca005d',
         'woo-sea-blue': '#01689b',
         'woo-spanish-gray': '#999999',
+        'woo-japanese-laurel': '#358734',
+        'woo-san-felix': '#1D611C',
       },
 
       fontFamily: {

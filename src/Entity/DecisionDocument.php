@@ -14,6 +14,13 @@ class DecisionDocument extends PublicationItem
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
     private Dossier $dossier;
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->fileInfo->setPaginatable(true);
+    }
+
     public function setDossier(Dossier $dossier): self
     {
         $this->dossier = $dossier;

@@ -16,7 +16,7 @@
                             <a href="{{ path('app_admin_dossier_woodecision_document_replace', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}" class="bhr-button bhr-button--secondary">Document vervangen</a>
                         {% endif %}
                         {% if workflow.canWithdraw %}
-                            <a href="{{ path('app_admin_dossier_woodecision_document_withdraw', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}" class="bhr-button bhr-button--secondary {% if workflow.canReplace %}ml-4{% endif %}">Intrekken</a>
+                            <a href="{{ path('app_admin_dossier_woodecision_document_withdraw', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}" class="bhr-button bhr-button--secondary {% if workflow.canReplace %}ml-4{% endif %}" data-e2e-name="retract">Intrekken</a>
                         {% endif %}
                     </twig:block>
                 </twig:Admin:LeftAndRight>
@@ -25,7 +25,7 @@
                     <tbody>
                         <tr>
                             <th class="bhr-row-head" scope="row">Publicatiestatus</th>
-                            <td>
+                            <td data-e2e-name="publication-status">
                                 {% if document.suspended %}
                                     <span class="bhr-badge bhr-badge--red">{{ 'admin.publications.status.suspended' | trans }}</span>
                                 {% elseif document.withdrawn %}
@@ -44,7 +44,7 @@
                             <td>
                                 {% if dossier.status.isPublished %}
                                     {% set url = PUBLIC_BASE_URL ~ path('app_document_detail', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) %}
-                                    <a class="bhr-a" href="{{ url }}">{{ url }}</a>
+                                    <a class="bhr-a" href="{{ url }}" data-e2e-name="public-url">{{ url }}</a>
                                 {% else %}
                                     Nog niet beschikbaar
                                 {% endif %}
@@ -104,7 +104,7 @@
                         </tr>
                         <tr>
                             <th class="bhr-row-head" scope="row">Type download</th>
-                            <td>
+                            <td data-e2e-name="download-type">
                                 {% if document.isUploaded %}
                                     {{ document.fileInfo.type | upper }}, {{ document.fileinfo.size | size }}
                                 {% else %}

@@ -9,8 +9,10 @@
 
     <ul class="woo-search-result__spec-list">
         <li class="woo-search-result__spec">
-            <twig:Public:Icon name="map" class="mr-1" size="20" />
-            <span class="font-bold">{{ 'dossier.type.investigation-report' | trans }}</span>
+            <span class="bg-gray-100 rounded-full inline-grid place-content-center align-bottom aspect-square w-6">
+                <twig:Public:Icon name="map" size="20" />
+            </span>
+            <span class="font-bold text-gray-700">{{ 'dossier.type.investigation-report' | trans }}</span>
         </li>
         <li class="woo-search-result__spec">{{ "global.number_of_documents" | trans({"count": entry.dossier.documentCount })}}</li>
     </ul>

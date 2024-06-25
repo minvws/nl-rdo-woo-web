@@ -8,6 +8,7 @@ use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Symfony\Bundle\Test\Client;
 use App\Api\Admin\CovenantDocument\CovenantDocumentDto;
 use App\Domain\Publication\Attachment\AttachmentLanguage;
+use App\Domain\Publication\Attachment\AttachmentType;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Factory\FileInfoFactory;
@@ -65,6 +66,7 @@ final class CovenantDocumentTest extends ApiTestCase
         $data = [
             'formalDate' => (new \DateTimeImmutable('yesterday'))->format('Y-m-d'),
             'internalReference' => 'foo bar',
+            'type' => AttachmentType::COVENANT->value,
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $uploadUuid,
@@ -183,6 +185,7 @@ final class CovenantDocumentTest extends ApiTestCase
         $data = [
             'formalDate' => (new \DateTimeImmutable('yesterday'))->format('Y-m-d'),
             'internalReference' => 'foo bar',
+            'type' => AttachmentType::COVENANT->value,
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $uploadUuid,
@@ -235,6 +238,7 @@ final class CovenantDocumentTest extends ApiTestCase
         $data = [
             'formalDate' => (new \DateTimeImmutable('yesterday'))->format('Y-m-d'),
             'internalReference' => 'foo bar',
+            'type' => AttachmentType::COVENANT->value,
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $uploadUuid,

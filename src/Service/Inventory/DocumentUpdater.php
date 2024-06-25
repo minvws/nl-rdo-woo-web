@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
+use App\Domain\Ingest\IngestMetadataOnlyMessage;
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Message\IngestMetadataOnlyMessage;
 use App\Message\RemoveDocumentMessage;
 use App\Repository\DocumentRepository;
 use App\Service\Storage\DocumentStorageService;
@@ -52,7 +52,7 @@ class DocumentUpdater
     public function asyncUpdate(Document $document): void
     {
         $this->messageBus->dispatch(
-            new IngestMetadataOnlyMessage($document->getId(), ! $document->shouldBeUploaded())
+            new IngestMetadataOnlyMessage($document->getId(), Document::class, ! $document->shouldBeUploaded())
         );
     }
 

@@ -108,6 +108,7 @@ class Document extends PublicationItem
         $this->inquiries = new ArrayCollection();
         $this->refersTo = new ArrayCollection();
         $this->referredBy = new ArrayCollection();
+        $this->fileInfo->setPaginatable(true);
     }
 
     public function getPageCount(): int

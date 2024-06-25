@@ -25,7 +25,7 @@
             <p data-e2e-name="dossier-publication-date">{{ dossier.publicationDate | format_date('long') }}</p>
 
             <h2 class="mt-8 font-bold">{{ 'admin.dossiers.public_link' | trans() }}</h2>
-            <p>{{ 'admin.dossiers.public_link_available' | trans() }} <strong>{% block available_from %}{{ dossier.publicationDate | format_date('long') }}{% endblock %}</strong></p>
+            <p data-e2e-name="dossier-publication-date-link">{{ 'admin.dossiers.public_link_available' | trans() }} <strong>{% block available_from %}{{ dossier.publicationDate | format_date('long') }}{% endblock %}</strong></p>
 
             <a class="bhr-a" href="{{ publicDossierUrl }}" data-e2e-name="dossier-public-dossier-link">
                 {{ publicDossierUrl }}
