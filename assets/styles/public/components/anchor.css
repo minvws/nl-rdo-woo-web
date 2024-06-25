@@ -24,4 +24,10 @@
         mask: url('@img/envelope.svg');
         content: ' via e-mail';
     }
+
+    .woo-a--search-result {
+        @apply text-woo-japanese-laurel
+        hover-focus:no-underline
+        visited:text-woo-san-felix visited:hover-focus:text-woo-san-felix;
+    }
 }

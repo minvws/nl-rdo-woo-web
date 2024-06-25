@@ -15,7 +15,7 @@ interface AttachmentTypeBranch {
 }
 
 type DocumentType = AttachmentType | AttachmentTypeBranch;
-type DocumentTypes = Record<number, DocumentType>;
+export type DocumentTypes = Record<number, DocumentType>;
 
 export const collectAllSelectOptionsFromDocumentTypes = (documentTypes: DocumentTypes): SelectOption[] => {
   const options = getSelectOptionsFromDocumentTypes(documentTypes);

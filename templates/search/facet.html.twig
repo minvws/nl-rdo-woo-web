@@ -6,15 +6,22 @@
     <fieldset>
         <legend class="woo-legend">{{ 'public.global.date' | trans }}</legend>
 
+        {% macro date_input(fromOrTo, label) %}
+            <label class="block text-base mb-0.5" for="date-{{ fromOrTo }}">{{ label }}</label>
+            <input class="woo-input-text" id="date-{{ fromOrTo }}" name="dt[{{ fromOrTo }}]" type="date" value="{{ app.request.get('dt')[fromOrTo] | default }}">
+        {% endmacro %}
+
         <div class="grid gap-4 xs:grid-cols-2 md:grid-cols-1">
             <div>
-                <label class="block text-base mb-0.5" for="date-from">{{ 'public.global.from' | trans }}</label>
-                <input class="woo-input-text js-date-filter" id="date-from" name="dt[from]" type="date" value="{{ app.request.get('dt').from | default }}">
+                {{ _self.date_input('from', 'public.global.from' | trans) }}
             </div>
 
+            <twig:Public:InputError css="hidden" id="filter-dates-error">
+                {{ 'public.search.invalid_date_period' | trans }}
+            </twig:Public:InputError>
+
             <div>
-                <label class="block text-base mb-0.5" for="date-to">{{ 'public.global.to' | trans }}</label>
-                <input class="woo-input-text js-date-filter" id="date-to" name="dt[to]" type="date" value="{{ app.request.get('dt').to | default }}">
+                {{ _self.date_input('to', 'public.global.to' | trans) }}
             </div>
         </div>
     </fieldset>

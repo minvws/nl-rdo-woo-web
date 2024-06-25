@@ -29,6 +29,7 @@ class CovenantDocument extends AbstractMainDocument
         $this->formalDate = $formalDate;
         $this->type = AttachmentType::COVENANT;
         $this->language = $language;
+        $this->fileInfo->setPaginatable(true);
     }
 
     public function getDossier(): Covenant

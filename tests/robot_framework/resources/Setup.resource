@@ -3,6 +3,7 @@ Documentation       Resource file with generic keywords.
 Library             Process
 Library             String
 Library             DateTime
+Library             DateTimeTZ
 Library             OperatingSystem
 Library             Browser
 Library             OTP
@@ -40,12 +41,12 @@ Cleansheet
 Setting Suite Variables
   ${current_time} =  Get Time  format=%Y-%m-%d %H:%M:%S
   ${current_date} =  Get Current Date  result_format=%Y-%m-%d
-  ${current_date_format2} =  Get Current Date  result_format=%d %B %Y
-  ${current_date_format2} =  Convert To Lower Case  ${current_date_format2}
+  ${timestamp} =  Get Utc Timestamp  locale=nl  time_format=dd LLL y H:mm:ss
+  ${current_date_format2} =  Convert Timestamp Format  ${timestamp}  time_format=d MMMM y  locale=nl
   ${current_epoch} =  Get Time  format=epoch
   Set Suite Variable  $CURRENT_TIME  ${current_time}
   Set Suite Variable  $CURRENT_DATE  ${current_date}
-  Set Suite Variable  $CURRENT_DATE  ${current_date_format2}
+  Set Suite Variable  $CURRENT_DATE_FORMAT2  ${current_date_format2}
   Set Suite Variable  $CURRENT_EPOCH  ${current_epoch}
 
 Open Browser And BaseUrl

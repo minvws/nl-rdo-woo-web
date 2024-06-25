@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\MessageHandler;
+namespace App\Domain\Ingest;
 
 use App\Entity\Document;
-use App\Message\IngestMetadataOnlyMessage;
 use App\Service\Elastic\ElasticService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Webmozart\Assert\Assert;
 
 /**
  * Ingest a metadata-only document into the system.
  */
 #[AsMessageHandler]
-class IngestMetadataOnlyHandler
+final readonly class IngestMetadataOnlyHandler
 {
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
@@ -26,26 +26,30 @@ class IngestMetadataOnlyHandler
 
     public function __invoke(IngestMetadataOnlyMessage $message): void
     {
-        $document = $this->doctrine->getRepository(Document::class)->find($message->getUuid());
-        if (! $document) {
-            // No document found for this message
+        $entity = $this->doctrine->getRepository($message->getEntityClass())->find($message->getEntityId());
+        if (is_null($entity)) {
             $this->logger->warning('No document found for this message', [
-                'uuid' => $message->getUuid(),
+                'id' => $message->getEntityId(),
+                'class' => $message->getEntityClass(),
             ]);
 
             return;
         }
 
         try {
+            // TODO This assert is temp! Will be removed after below services are more generic.
+            Assert::isInstanceOf($entity, Document::class);
+
             // The second and third argument are important: removes existing metadata and pages if refresh=true
             $this->elasticService->updateDocument(
-                $document,
+                $entity,
                 $message->getForceRefresh() ? [] : null,
                 $message->getForceRefresh() ? [] : null
             );
         } catch (\Exception $e) {
             $this->logger->error('Failed to ingest metadata-only document into ES', [
-                'document' => $document->getDocumentNr(),
+                'id' => $message->getEntityId(),
+                'class' => $message->getEntityClass(),
                 'exception' => $e->getMessage(),
             ]);
         }

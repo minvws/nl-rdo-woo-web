@@ -8,7 +8,7 @@ Resource            resources/Dossier.resource
 Resource            resources/Document.resource
 Resource            resources/Inquiry.resource
 Suite Setup         Suite Setup - CI
-Test Tags           ci
+Test Tags           ci-old
 
 
 *** Variables ***
@@ -293,7 +293,7 @@ Replace Decision Dossier
   Login Admin
   Search For A Publication  Robot ${CURRENT_TIME}
   Get Text  //body  *=  Robot ${CURRENT_TIME}
-  Click Document Edit
+  Click Documents Edit
   Verify Document Listed In File  5080  case-4-mail-with-attachment-thread-1.pdf
   Verify Document Listed In File  5044  case-2-email-with-more-emails-in-thread-2.pdf
   Verify Document Listed In File  5146  case-5-attachment-multi-1.pdf

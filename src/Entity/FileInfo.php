@@ -34,6 +34,12 @@ class FileInfo
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $sourceType = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $pageCount = null;
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $paginatable = false;
+
     public function getMimetype(): ?string
     {
         return $this->mimetype;
@@ -118,11 +124,36 @@ class FileInfo
         return $this;
     }
 
+    public function getPageCount(): ?int
+    {
+        return $this->pageCount;
+    }
+
+    public function setPageCount(?int $pageCount): self
+    {
+        $this->pageCount = $pageCount;
+
+        return $this;
+    }
+
+    public function setPaginatable(bool $paginatable): self
+    {
+        $this->paginatable = $paginatable;
+
+        return $this;
+    }
+
+    public function isPaginatable(): bool
+    {
+        return $this->paginatable;
+    }
+
     public function removeFileProperties(): void
     {
         $this->setMimetype(null);
         $this->setUploaded(false);
         $this->setSize(0);
         $this->setPath(null);
+        $this->setPageCount(null);
     }
 }

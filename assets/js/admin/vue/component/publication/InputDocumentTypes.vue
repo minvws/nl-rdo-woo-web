@@ -1,13 +1,15 @@
 <script setup>
   import InputSelect from '@admin-fe/component/form/InputSelect.vue';
+  import { useInputStore } from '@admin-fe/composables';
   import { validators } from '@admin-fe/form';
   import { collectAllSelectOptionsFromDocumentTypes, getOptgroupsFromDocumentTypes, getSelectOptionsFromDocumentTypes } from './helper';
+  import { inject, ref } from 'vue';
 
   const props = defineProps({
     options: {
-      type: Array,
+      type: Object,
       required: true,
-      default: () => [],
+      default: () => ({}),
     },
     value: {
       type: String,
@@ -18,7 +20,13 @@
 
   const documentTypeOptions = getSelectOptionsFromDocumentTypes(props.options);
   const documentTypeOptgroups = getOptgroupsFromDocumentTypes(props.options);
-  const isVisible = collectAllSelectOptionsFromDocumentTypes(props.options).length > 1;
+  const allSelectedOptions = collectAllSelectOptionsFromDocumentTypes(props.options);
+  const isVisible = allSelectedOptions.length > 1;
+
+  if (!isVisible) {
+    const inputStore = useInputStore('type', 'Soort document', ref(allSelectedOptions[0]?.value));
+    inject('form')?.addInput(inputStore);
+  }
 </script>
 
 <template>

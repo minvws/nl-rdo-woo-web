@@ -35,6 +35,7 @@ class DecisionAttachment extends AbstractAttachment
         $this->formalDate = $formalDate;
         $this->type = $type;
         $this->language = $language;
+        $this->fileInfo->setPaginatable(true);
     }
 
     public function getDossier(): Dossier

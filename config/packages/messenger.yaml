@@ -58,10 +58,10 @@ framework:
 
             App\Message\IngestDossiersMessage: ingestor                # Ingests all dossiers
             App\Domain\Ingest\IngestDossierMessage: ingestor           # Ingests a single dossier
-            App\Message\IngestPdfMessage: ingestor                     # Ingests a complete PDF document and fires a message for each page
-            App\Message\IngestPdfPageMessage: ingestor                 # Ingests a single PDF page from a PDF document
+            App\Domain\Ingest\IngestPdfMessage: ingestor               # Ingests a complete PDF document and fires a message for each page
+            App\Domain\Ingest\IngestPdfPageMessage: ingestor           # Ingests a single PDF page from a PDF document
             App\Message\IngestDecisionMessage: ingestor
-            App\Message\IngestMetadataOnlyMessage: ingestor
+            App\Domain\Ingest\IngestMetadataOnlyMessage: ingestor
             App\Message\GenerateInquiryInventoryMessage: ingestor
             App\Message\GenerateInquiryArchivesMessage: ingestor
 

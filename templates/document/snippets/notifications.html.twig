@@ -12,7 +12,7 @@
 {% set isStandAloneHasReferencesToMessage = hasReferencesTo and hasMessage == false %}
 
 {% if hasMessage or isStandAloneHasReferencesToMessage %}
-<div class="mt-10">
+<div class="mt-10" data-e2e-name="notifications">
     {% if isStandAloneHasReferencesToMessage %}
         <twig:Public:Notification>
             {% import 'document_macros.html.twig' as macro %}
