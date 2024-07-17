@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Entity\Organisation;
 use App\Entity\User;
 use App\Roles;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Endroid\QrCode\Builder\Builder;
 use MinVWS\AuditLogger\AuditLogger;
@@ -111,6 +112,7 @@ class UserService
      * @return array{plainPassword: string, user: User}
      *
      * @throws \Minvws\HorseBattery\Exception\WordCountTooShort
+     * @throws UniqueConstraintViolationException
      */
     public function createUser(string $name, string $email, array $roles, Organisation $organisation): array
     {

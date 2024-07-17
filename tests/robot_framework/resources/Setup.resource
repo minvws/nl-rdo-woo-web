@@ -20,10 +20,12 @@ ${OTP_CODE}     ${EMPTY}
 
 *** Keywords ***
 Suite Setup - CI
-  IF  ${RUN_LOCALLY}
-    Cleansheet
-    Set Global Variable  ${OTP_CODE}  %{SECRET_WOO_LOCAL}
-  ELSE IF  '${OTP_CODE}' == '${EMPTY}'
+  [Arguments]  ${include_prefixes}=${FALSE}
+  Cleansheet  ${include_prefixes}
+  # If run locally, set the OTP code from the local env vars coz the setup has likely already ran
+  IF  ${RUN_LOCALLY}  Set Global Variable  ${OTP_CODE}  %{SECRET_WOO_LOCAL}
+  # On first run of this keyword, create the user.
+  IF  '${OTP_CODE}' == '${EMPTY}'
     Create Woo Admin User
     First Time Login With Admin
   END
@@ -36,8 +38,14 @@ Suite Setup - Test
   Setting Global Variables
 
 Cleansheet
+  [Documentation]  In some tests we want unique prefixes, which must also be cleaned up afterwards.
+  [Arguments]  ${include_prefixes}=${FALSE}
   Run Process  task worker:stop  shell=True
-  Run Process  task app:cleansheet  shell=True
+  IF  ${include_prefixes}
+    Run Process  task app:cleansheet -- -p  shell=True
+  ELSE
+    Run Process  task app:cleansheet  shell=True
+  END
   Run Process  task worker:start  shell=True
 
 Setting Global Variables
@@ -90,3 +98,11 @@ First Time Login With Admin
 
 Close Symfony Dev Bar
   Click  //body/div/div[3]/button
+
+Create MINVWS Prefix
+  [Documentation]  When cleansheet -p is ran, the default prefix is also removed. This keyword can bring it back.
+  Click Organisation Selector
+  Click Manage Organisations
+  Click  "VWS"
+  Add A New Organisation Prefix  MINVWS
+  Click Save Prefixes

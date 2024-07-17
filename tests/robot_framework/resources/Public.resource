@@ -49,7 +49,7 @@ Check Document Existence On Public
   [Documentation]  The document with the given ID should NOT be visible on public
   [Arguments]  ${document_id}
   Go To Public
-  Search On Public For  ${document_id}  0 documenten
+  Search On Public For  ${document_id}  0 resultaten
 
 Verify Notification
   [Arguments]  ${notification_message}

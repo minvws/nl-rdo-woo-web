@@ -6,12 +6,13 @@
     not_online_docs: a list of documents that are not (yet) online ()
     fragment: the fragment to use for the pagination links, like #documenten
 #}
-{% macro document_tabs(public_docs, not_public_docs, not_online_docs, fragment, dossier) %}
+{% macro document_tabs(public_docs, already_public_docs, not_public_docs, not_online_docs, fragment, dossier) %}
     {% set hasPublicDocuments = public_docs | length > 0 %}
+    {% set hasAlreadyPublicDocuments = already_public_docs | length > 0 %}
     {% set hasNotPublicDocuments = not_public_docs | length > 0 %}
     {% set hasNotOnlineDocuments = not_online_docs | length > 0 %}
 
-    {% set numberOfSectionsToDisplay = [hasPublicDocuments, hasNotPublicDocuments, hasNotOnlineDocuments] | filter(value => value) | length %}
+    {% set numberOfSectionsToDisplay = [hasPublicDocuments, hasAlreadyPublicDocuments, hasNotPublicDocuments, hasNotOnlineDocuments] | filter(value => value) | length %}
     {% set hasTabs = numberOfSectionsToDisplay > 1 %}
 
     {% if hasTabs %}
@@ -21,14 +22,19 @@
                     {{ _self.documents_tab_button(1, true, "public.documents.match_request" | trans) }}
                 </li>
             {% endif %}
+            {% if hasAlreadyPublicDocuments %}
+                <li class="woo-tab-list__item">
+                    {{ _self.documents_tab_button(2, not hasPublicDocuments, "public.documents.already_public_short" | trans) }}
+                </li>
+            {% endif %}
             {% if hasNotPublicDocuments %}
                 <li class="woo-tab-list__item">
-                    {{ _self.documents_tab_button(2, not hasPublicDocuments, "public.documents.not_made_public" | trans) }}
+                    {{ _self.documents_tab_button(3, not hasPublicDocuments, "public.documents.not_made_public" | trans) }}
                 </li>
             {% endif %}
             {% if hasNotOnlineDocuments %}
                 <li class="woo-tab-list__item">
-                    {{ _self.documents_tab_button(3, not hasPublicDocuments and not hasNotPublicDocuments, "public.documents.not_yet_online" | trans) }}
+                    {{ _self.documents_tab_button(4, not hasPublicDocuments and not hasNotPublicDocuments, "public.documents.not_yet_online" | trans) }}
                 </li>
             {% endif %}
         </ul>
@@ -37,12 +43,16 @@
             {{ _self.documents_tab_content(1, false, public_docs, "public.documents.match_request", dossier) }}
         {% endif %}
 
+        {% if hasAlreadyPublicDocuments %}
+            {{ _self.documents_tab_content(2, false, already_public_docs, "public.documents.already_public_short", dossier) }}
+        {% endif %}
+
         {% if hasNotPublicDocuments %}
-            {{ _self.documents_tab_content(2, hasPublicDocuments, not_public_docs, "public.documents.not_made_public", dossier) }}
+            {{ _self.documents_tab_content(3, hasPublicDocuments, not_public_docs, "public.documents.not_made_public", dossier) }}
         {% endif %}
 
         {% if hasNotOnlineDocuments %}
-            {{ _self.documents_tab_content(3, hasPublicDocuments or hasNotPublicDocuments, not_online_docs, "public.documents.not_yet_online", dossier) }}
+            {{ _self.documents_tab_content(4, hasPublicDocuments or hasNotPublicDocuments, not_online_docs, "public.documents.not_yet_online", dossier) }}
         {% endif %}
     {% else %}
         {{ _self.documents_sortable_table(public_docs, "public.documents.match_request", fragment, dossier) }}
@@ -145,8 +155,8 @@
                 {{ doc.documentId }}
             </td>
             <td>
-                {% set iconName = doc.judgement is defined and doc.judgement.isAlreadyPublic ? 'web' : doc.fileInfo.sourceType %}
-                <twig:Public:Icon name="{{ iconName }}" color="fill-woo-dim-gray" />
+                {% set documentType = doc.judgement is defined and doc.judgement.isAlreadyPublic ? 'web' : doc.fileInfo.sourceType %}
+                <twig:Public:FileIcon type="{{ documentType }}" />
                 <span class="sr-only">{{ ("public.documents.file_type." ~ doc.fileInfo.sourceType) | trans }}</span>
             </td>
             <td>

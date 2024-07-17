@@ -33,7 +33,7 @@ class DecisionAttachment extends AbstractAttachment
         $this->fileInfo->setPaginatable(true);
     }
 
-    public function getUploadGroupId(): UploadGroupId
+    public static function getUploadGroupId(): UploadGroupId
     {
         return UploadGroupId::WOO_DECISION_ATTACHMENTS;
     }

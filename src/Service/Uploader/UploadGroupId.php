@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Uploader;
 
+use App\Domain\Upload\FileType\FileType;
+
 enum UploadGroupId: string
 {
     case DEFAULT = 'default';
@@ -17,4 +19,15 @@ enum UploadGroupId: string
     case DISPOSITION_DOCUMENTS = 'disposition-documents';
     case DISPOSITION_ATTACHMENTS = 'disposition-attachments';
     case COMPLAINT_JUDGEMENT_DOCUMENTS = 'complaint-judgement-documents';
+
+    /**
+     * @return FileType[]
+     */
+    public function getFileTypes(): array
+    {
+        return match ($this) {
+            self::DEFAULT => FileType::cases(),
+            default => [FileType::PDF, FileType::XLS, FileType::DOC, FileType::PPT, FileType::TXT],
+        };
+    }
 }

@@ -8,6 +8,7 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
+use App\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
 use App\Service\DossierWizard\DossierWizardHelper;
 use App\Service\DossierWizard\DossierWizardStatus;
 use App\Service\DossierWizard\StepStatus;
@@ -25,6 +26,7 @@ class StepActionHelperTest extends MockeryTestCase
     private DossierWizardHelper&MockInterface $dossierWizardHelper;
     private AbstractDossier&MockInterface $dossier;
     private DossierWizardStatus&MockInterface $wizardStatus;
+    private DossierViewParamsBuilder&MockInterface $paramsBuilder;
 
     public function setUp(): void
     {
@@ -39,11 +41,14 @@ class StepActionHelperTest extends MockeryTestCase
         $this->wizardStatus = \Mockery::mock(DossierWizardStatus::class);
         $this->wizardStatus->shouldReceive('getDossier')->andReturn($this->dossier);
 
+        $this->paramsBuilder = \Mockery::mock(DossierViewParamsBuilder::class);
+
         $this->router = \Mockery::mock(RouterInterface::class);
         $this->helper = new StepActionHelper(
             $this->router,
             $this->dossierWizardHelper,
             \Mockery::mock(PaginatorInterface::class),
+            $this->paramsBuilder,
         );
     }
 
@@ -252,5 +257,18 @@ class StepActionHelperTest extends MockeryTestCase
         $response = $this->helper->redirectToPublicationConfirmation($dossier);
 
         $this->assertEquals('dummy-url', $response->getTargetUrl());
+    }
+
+    public function testGetParamsBuilder(): void
+    {
+        $dossier = \Mockery::mock(AbstractDossier::class);
+        $expectedResult = \Mockery::mock(DossierViewParamsBuilder::class);
+
+        $this->paramsBuilder->expects('forDossier')->with($dossier)->andReturn($expectedResult);
+
+        self::assertSame(
+            $expectedResult,
+            $this->helper->getParamsBuilder($dossier),
+        );
     }
 }

@@ -10,6 +10,7 @@ export const hideElement = (element: Element | null) => {
 };
 
 export const isElementHidden = (element: Element | null) => Boolean(element?.classList.contains(HIDDEN_CLASS_NAME));
+export const isElementVisible = (element: Element | null) => !isElementHidden(element);
 
 export const showElement = (element: Element | null) => {
   element?.classList.remove(HIDDEN_CLASS_NAME);

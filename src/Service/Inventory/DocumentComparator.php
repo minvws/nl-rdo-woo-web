@@ -16,69 +16,51 @@ readonly class DocumentComparator
     ) {
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     */
     public function needsUpdate(Dossier $dossier, Document $document, DocumentMetadata $metadata): bool
     {
+        return $this->getChangeset($dossier, $document, $metadata)->hasChanges();
+    }
+
+    public function getChangeset(Dossier $dossier, Document $document, DocumentMetadata $metadata): PropertyChangeset
+    {
+        $changeset = new PropertyChangeset();
+
         // No comparison for 'id' and 'matter', these are part of the documentNr that was used to fetch $document, so they certainly match.
 
-        if ($document->getJudgement() !== $metadata->getJudgement()) {
-            return true;
-        }
-
-        // Important: compare by value, not by identity (!==)
-        if ($document->getDocumentDate() != $metadata->getDate()) {
-            return true;
-        }
-
-        if ($document->getFamilyId() !== $metadata->getFamilyId()) {
-            return true;
-        }
-
-        if ($document->getThreadId() !== $metadata->getThreadId()) {
-            return true;
-        }
-
-        if ($document->getGrounds() !== $metadata->getGrounds()) {
-            return true;
-        }
-
-        if ($document->getSubjects() !== $metadata->getSubjects()) {
-            return true;
-        }
-
-        if ($document->getPeriod() !== $metadata->getPeriod()) {
-            return true;
-        }
-
-        if ($document->isSuspended() !== $metadata->isSuspended()) {
-            return true;
-        }
-
-        if ($document->getLinks() !== $metadata->getLinks()) {
-            return true;
-        }
-
-        if ($document->getRemark() !== $metadata->getRemark()) {
-            return true;
-        }
-
-        $file = $document->getFileInfo();
-        if ($file->getSourceType() !== $metadata->getSourceType()) {
-            return true;
-        }
-
-        if ($file->getName() !== $metadata->getFilename($document->getDocumentNr())) {
-            return true;
-        }
+        $changeset->compare(MetadataField::JUDGEMENT->value, $document->getJudgement(), $metadata->getJudgement());
+        $changeset->compare(MetadataField::FAMILY->value, $document->getFamilyId(), $metadata->getFamilyId());
+        $changeset->compare(MetadataField::THREADID->value, $document->getThreadId(), $metadata->getThreadId());
+        $changeset->compare(MetadataField::GROUND->value, $document->getGrounds(), $metadata->getGrounds());
+        $changeset->compare('subjects', $document->getSubjects(), $metadata->getSubjects());
+        $changeset->compare('period', $document->getPeriod(), $metadata->getPeriod());
+        $changeset->compare(MetadataField::SUSPENDED->value, $document->isSuspended(), $metadata->isSuspended());
+        $changeset->compare(MetadataField::LINK->value, $document->getLinks(), $metadata->getLinks());
+        $changeset->compare(MetadataField::REMARK->value, $document->getRemark(), $metadata->getRemark());
+        $changeset->compare(
+            MetadataField::DATE->value,
+            $document->getDocumentDate()?->format('Y-m-d'),
+            $metadata->getDate()?->format('Y-m-d'),
+        );
+        $changeset->compare(
+            MetadataField::SOURCETYPE->value,
+            $document->getFileInfo()->getSourceType(),
+            $metadata->getSourceType()
+        );
+        $changeset->compare(
+            MetadataField::DOCUMENT->value,
+            $document->getFileInfo()->getName(),
+            $metadata->getFilename($document->getDocumentNr()),
+        );
 
         if ($this->hasCaseNrUpdate($document, $metadata)) {
-            return true;
+            $changeset->add(MetadataField::CASENR->value);
         }
 
-        return $this->hasRefersToUpdate($dossier, $document, $metadata);
+        if ($this->hasRefersToUpdate($dossier, $document, $metadata)) {
+            $changeset->add(MetadataField::REFERS_TO->value);
+        }
+
+        return $changeset;
     }
 
     private function hasCaseNrUpdate(Document $document, DocumentMetadata $metadata): bool

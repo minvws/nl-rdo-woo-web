@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\InventoryProcessRun;
 use App\Service\DossierService;
 use App\Service\Inventory\InventoryChangeset;
@@ -31,7 +31,7 @@ class InventoryRunProcessorTest extends MockeryTestCase
     private InventoryRunProcessor $runProcessor;
     private InventoryProcessRun&MockInterface $run;
     private InventoryReaderInterface&MockInterface $reader;
-    private Dossier&MockInterface $dossier;
+    private WooDecision&MockInterface $dossier;
     private ProgressUpdater&MockInterface $progressUpdater;
 
     public function setUp(): void
@@ -54,7 +54,7 @@ class InventoryRunProcessorTest extends MockeryTestCase
             $this->progressUpdater,
         );
 
-        $this->dossier = \Mockery::mock(Dossier::class);
+        $this->dossier = \Mockery::mock(WooDecision::class);
 
         $this->run = \Mockery::mock(InventoryProcessRun::class);
         $this->run->expects('startComparing');

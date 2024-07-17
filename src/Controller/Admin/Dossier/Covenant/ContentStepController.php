@@ -4,19 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\Covenant;
 
-use App\Domain\Publication\Attachment\AttachmentLanguageFactory;
-use App\Domain\Publication\Attachment\AttachmentTypeFactory;
 use App\Domain\Publication\Dossier\Command\UpdateDossierContentCommand;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocument;
-use App\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Form\Dossier\Covenant\ContentFormType;
-use App\Repository\DepartmentRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -27,20 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
 class ContentStepController extends AbstractController
 {
     private const STEP_NAME = StepName::CONTENT;
 
     public function __construct(
         private readonly StepActionHelper $stepHelper,
-        private readonly DepartmentRepository $departmentRepository,
-        private readonly DossierWorkflowManager $dossierWorkflowManager,
-        private readonly AttachmentTypeFactory $attachmentTypeFactory,
-        private readonly AttachmentLanguageFactory $attachmentLanguageFactory,
-        private readonly GroundViewFactory $groundViewFactory,
         private readonly MessageBusInterface $messageBus,
     ) {
     }
@@ -78,25 +62,18 @@ class ContentStepController extends AbstractController
             return $this->stepHelper->redirectAfterFormSubmit($wizardStatus, $form);
         }
 
-        return $this->render('admin/dossier/covenant/content/concept.html.twig', [
-            'dossier' => $dossier,
-            'workflowStatus' => $wizardStatus,
-            'form' => $form,
-            'departments' => $this->departmentRepository->getNames(),
-            'partiesErrors' => $this->getPartiesErrors($form),
-            'canDeleteCovenantDocument' => $this->dossierWorkflowManager->isTransitionAllowed(
-                $dossier,
-                DossierStatusTransition::DELETE_MAIN_DOCUMENT,
-            ),
-            'documentTypes' => $this->attachmentTypeFactory->makeAsArray(CovenantDocument::getAllowedTypes()),
-            'attachmentTypes' => $this->attachmentTypeFactory->makeAsArray(CovenantAttachment::getAllowedTypes()),
-            'attachmentLanguages' => $this->attachmentLanguageFactory->makeAsArray(),
-            'grounds' => $this->groundViewFactory->makeAsArray(),
-            'canDeleteAttachments' => $this->dossierWorkflowManager->isTransitionAllowed(
-                $dossier,
-                DossierStatusTransition::DELETE_ATTACHMENT,
-            ),
-        ]);
+        return $this->render(
+            'admin/dossier/covenant/content/concept.html.twig',
+            $this->stepHelper->getParamsBuilder($dossier)
+                ->withMainDocumentParams($dossier)
+                ->withAttachmentsParams($dossier)
+                ->withForm($form)
+                ->withWizardStatus($wizardStatus)
+                ->withBreadCrumbs($breadcrumbs)
+                ->withDepartments()
+                ->with('partiesErrors', $this->getPartiesErrors($form))
+                ->getParams()
+        );
     }
 
     #[Route(
@@ -132,26 +109,18 @@ class ContentStepController extends AbstractController
             return $this->stepHelper->redirectToDossier($dossier);
         }
 
-        return $this->render('admin/dossier/covenant/content/edit.html.twig', [
-            'breadcrumbs' => $breadcrumbs,
-            'dossier' => $dossier,
-            'workflowStatus' => $wizardStatus,
-            'form' => $form,
-            'departments' => $this->departmentRepository->getNames(),
-            'partiesErrors' => $this->getPartiesErrors($form),
-            'canDeleteCovenantDocument' => $this->dossierWorkflowManager->isTransitionAllowed(
-                $dossier,
-                DossierStatusTransition::DELETE_MAIN_DOCUMENT,
-            ),
-            'documentTypes' => $this->attachmentTypeFactory->makeAsArray(CovenantDocument::getAllowedTypes()),
-            'attachmentTypes' => $this->attachmentTypeFactory->makeAsArray(CovenantAttachment::getAllowedTypes()),
-            'attachmentLanguages' => $this->attachmentLanguageFactory->makeAsArray(),
-            'grounds' => $this->groundViewFactory->makeAsArray(),
-            'canDeleteAttachments' => $this->dossierWorkflowManager->isTransitionAllowed(
-                $dossier,
-                DossierStatusTransition::DELETE_ATTACHMENT,
-            ),
-        ]);
+        return $this->render(
+            'admin/dossier/covenant/content/edit.html.twig',
+            $this->stepHelper->getParamsBuilder($dossier)
+                ->withMainDocumentParams($dossier)
+                ->withAttachmentsParams($dossier)
+                ->withForm($form)
+                ->withWizardStatus($wizardStatus)
+                ->withBreadCrumbs($breadcrumbs)
+                ->withDepartments()
+                ->with('partiesErrors', $this->getPartiesErrors($form))
+                ->getParams()
+        );
     }
 
     private function getForm(Covenant $dossier): FormInterface

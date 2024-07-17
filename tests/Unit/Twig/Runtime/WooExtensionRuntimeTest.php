@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Twig\Runtime;
 
+use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use App\Repository\DocumentRepository;
 use App\Service\DocumentUploadQueue;
 use App\Service\HistoryService;
@@ -36,6 +37,7 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
             \Mockery::mock(DocumentUploadQueue::class),
             \Mockery::mock(OrganisationSwitcher::class),
             \Mockery::mock(HistoryService::class),
+            \Mockery::mock(DossierPathHelper::class),
         );
     }
 

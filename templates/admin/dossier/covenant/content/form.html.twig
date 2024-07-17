@@ -17,7 +17,9 @@
     {{ form_row(form.summary) }}
 
     <twig:Admin:Publication:ManageDocument
-        canDelete="{{ canDeleteCovenantDocument }}"
+        allowedExtensions="{{ documentExtensions }}"
+        allowedMimeTypes="{{ documentMimeTypes }}"
+        canDelete="{{ canDeleteDocument }}"
         documentType="{{ 'admin.dossiers.convenant.document' | trans }}"
         documentTypes="{{ documentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-document' }}"
@@ -32,6 +34,8 @@
     {{ form_row(form.previous_version_link) }}
 
     <twig:Admin:Publication:ManageAttachments
+        allowedExtensions="{{ attachmentExtensions }}"
+        allowedMimeTypes="{{ attachmentMimeTypes }}"
         canDelete="{{ canDeleteAttachments }}"
         documentTypes="{{ attachmentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-attachments' }}"

@@ -56,7 +56,7 @@ trait AttachmentAndMainDocumentEntityTrait
     ])]
     protected array $grounds = [];
 
-    abstract public function getUploadGroupId(): UploadGroupId;
+    abstract public static function getUploadGroupId(): UploadGroupId;
 
     abstract public function getDossier(): AbstractDossier;
 

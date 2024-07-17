@@ -17,6 +17,16 @@
   const emit = defineEmits(['cancel', 'saved']);
 
   const props = defineProps({
+    allowedExtensions: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
+    allowedMimeTypes: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
     document: {
       type: Object,
       required: true,
@@ -150,6 +160,8 @@
       @uploaded="onUploaded"
       @uploadError="onUploadError"
       @uploading="onUploading"
+      :allowed-extensions="props.allowedExtensions"
+      :allowed-mime-types="props.allowedMimeTypes"
       :file-info="fileInfo"
       :group-id="props.uploadGroupId"
       :display-max-one-file-message="true"

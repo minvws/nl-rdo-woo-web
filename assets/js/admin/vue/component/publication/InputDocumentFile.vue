@@ -1,15 +1,24 @@
 <script setup>
   import InputFile from '@admin-fe/component/form/InputFile.vue';
-  import { MimeTypes } from '@js/admin/utils';
   import { validators } from '@admin-fe/form';
 
   const props = defineProps({
+    allowedExtensions: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
+    allowedMimeTypes: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
     displayMaxOneFileMessage: {
       type: Boolean,
       default: false,
     },
     fileInfo: {
-      type: String,
+      type: [Object, null],
       required: false,
       default: '',
     },
@@ -28,7 +37,8 @@
     @uploaded="(file) => emit('uploaded', file)"
     @uploadError="() => emit('uploadError')"
     @uploading="() => emit('uploading')"
-    :allowed-mime-types="MimeTypes.Pdf"
+    :allowed-extensions="props.allowedExtensions"
+    :allowed-mime-types="props.allowedMimeTypes"
     :enable-auto-upload="true"
     :help-text="helpText"
     :group-id="props.groupId"

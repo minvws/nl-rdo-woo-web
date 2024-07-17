@@ -44,7 +44,7 @@ class AnnualReportDocument extends AbstractMainDocument
         return $this->dossier;
     }
 
-    public function getUploadGroupId(): UploadGroupId
+    public static function getUploadGroupId(): UploadGroupId
     {
         return UploadGroupId::ANNUAL_REPORT_DOCUMENTS;
     }

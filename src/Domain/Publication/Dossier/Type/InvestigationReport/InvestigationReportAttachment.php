@@ -32,7 +32,7 @@ class InvestigationReportAttachment extends AbstractAttachment
         $this->fileInfo->setPaginatable(true);
     }
 
-    public function getUploadGroupId(): UploadGroupId
+    public static function getUploadGroupId(): UploadGroupId
     {
         return UploadGroupId::INVESTIGATION_REPORT_ATTACHMENTS;
     }

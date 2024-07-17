@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Twig\Runtime;
 
 use App\Citation;
+use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\Type\DossierReference;
+use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\History;
@@ -26,17 +29,18 @@ use Twig\Extension\RuntimeExtensionInterface;
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
-class WooExtensionRuntime implements RuntimeExtensionInterface
+readonly class WooExtensionRuntime implements RuntimeExtensionInterface
 {
     public function __construct(
-        private readonly RequestStack $requestStack,
-        private readonly ThumbnailStorageService $storageService,
-        private readonly DocumentRepository $documentRepository,
-        private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly FacetTwigService $facetService,
-        private readonly DocumentUploadQueue $uploadQueue,
-        private readonly OrganisationSwitcher $organisationSwitcher,
-        private readonly HistoryService $historyService,
+        private RequestStack $requestStack,
+        private ThumbnailStorageService $storageService,
+        private DocumentRepository $documentRepository,
+        private UrlGeneratorInterface $urlGenerator,
+        private FacetTwigService $facetService,
+        private DocumentUploadQueue $uploadQueue,
+        private OrganisationSwitcher $organisationSwitcher,
+        private HistoryService $historyService,
+        private DossierPathHelper $dossierPathHelper,
     ) {
     }
 
@@ -282,5 +286,10 @@ class WooExtensionRuntime implements RuntimeExtensionInterface
     public function historyTranslation(History $entry, string $mode = HistoryService::MODE_PUBLIC): string
     {
         return $this->historyService->translate($entry, $mode);
+    }
+
+    public function dossierDetailsPath(AbstractDossier|DossierReference $dossier): string
+    {
+        return $this->dossierPathHelper->getDetailsPath($dossier);
     }
 }

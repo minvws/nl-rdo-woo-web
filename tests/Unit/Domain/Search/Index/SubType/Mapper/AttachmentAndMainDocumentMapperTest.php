@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Search\Index\SubType\Mapper;
 
 use App\Domain\Publication\Attachment\AbstractAttachment;
+use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\Dossier\DossierIndexer;
 use App\Domain\Search\Index\ElasticDocument;
@@ -32,6 +33,7 @@ class AttachmentAndMainDocumentMapperTest extends MockeryTestCase
     {
         $dossier = \Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getDossierNr')->andReturn('foo-123');
+        $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
 
         $fileInfo = \Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getMimetype')->andReturn('application/pdf');
@@ -49,7 +51,7 @@ class AttachmentAndMainDocumentMapperTest extends MockeryTestCase
         $attachment->shouldReceive('getFormalDate')->andReturn(new \DateTimeImmutable('2024-06-18 19:31:12'));
 
         $this->dossierIndexer->shouldReceive('map')->with($dossier)->andReturn(
-            new ElasticDocument('foo-123', ElasticDocumentType::COVENANT, ['mapped-dossier-data' => 'dummy'])
+            new ElasticDocument('foo-123', ElasticDocumentType::COVENANT, null, ['mapped-dossier-data' => 'dummy'])
         );
 
         $doc = $this->mapper->map($attachment);
@@ -57,6 +59,8 @@ class AttachmentAndMainDocumentMapperTest extends MockeryTestCase
         self::assertEquals(
             [
                 'type' => ElasticDocumentType::ATTACHMENT,
+                'toplevel_type' => ElasticDocumentType::COVENANT,
+                'sublevel_type' => ElasticDocumentType::ATTACHMENT,
                 'mime_type' => 'application/pdf',
                 'file_size' => 1234,
                 'file_type' => 'pdf',
@@ -67,7 +71,12 @@ class AttachmentAndMainDocumentMapperTest extends MockeryTestCase
                     1 => 'y',
                 ],
                 'dossiers' => [
-                    0 => ['mapped-dossier-data' => 'dummy', 'type' => ElasticDocumentType::COVENANT],
+                    0 => [
+                        'mapped-dossier-data' => 'dummy',
+                        'type' => ElasticDocumentType::COVENANT,
+                        'toplevel_type' => ElasticDocumentType::COVENANT,
+                        'sublevel_type' => null,
+                    ],
                 ],
                 'dossier_nr' => ['foo-123'],
             ],

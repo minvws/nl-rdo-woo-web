@@ -69,7 +69,7 @@ readonly class CreateMainDocumentHandler
         $this->uploaderService->attachFileToEntity(
             $command->uploadFileReference,
             $mainDocument,
-            $mainDocument->getUploadGroupId(),
+            $mainDocument::getUploadGroupId(),
         );
 
         $documentRepository->save($mainDocument, true);

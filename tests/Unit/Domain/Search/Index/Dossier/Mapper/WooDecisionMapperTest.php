@@ -52,7 +52,7 @@ class WooDecisionMapperTest extends MockeryTestCase
         $this->defaultMapper
             ->expects('map')
             ->with($dossier)
-            ->andReturn(new ElasticDocument($dossierNr, ElasticDocumentType::WOO_DECISION, ['foo' => 'bar']));
+            ->andReturn(new ElasticDocument($dossierNr, ElasticDocumentType::WOO_DECISION, null, ['foo' => 'bar']));
 
         $doc = $this->mapper->map($dossier);
 

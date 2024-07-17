@@ -1,0 +1,70 @@
+# This repository adheres to the publiccode.yml standard by including this
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+
+name: OpenMinVWS publicatie platform
+url: 'https://github.com/minvws/nl-rdo-woo-web'
+landingURL: 'https://open.minvws.nl/'
+softwareType: standalone/web
+releaseDate: '1970-01-01'
+platforms:
+  - linux
+
+categories:
+  - content-management
+  - document-management
+
+developmentStatus: development
+
+description:
+  en:
+    shortDescription: |-
+      This repository contains the source code and the technical documentation
+      of the website https://open.minvws.nl/.
+    features:
+      - Publication of dossiers
+      - Searching through dossiers
+    genericName: Publication platform
+    longDescription: |
+      [Open.minvws.nl](https://open.minvws.nl/) is the Open Government Act
+      (Woo; Wet Open Overheid) publication platform of the Ministry of Health,
+      Welfare, and Sport in the  Netherlands (Ministerie van Volksgezondheid,
+      Welzijn en Sport; short:  MinVWS). The aim of the OpenMinVWS platform is
+      to streamline the process for  government officials to publish documents,
+      while also improving  accessibility for journalists and the public to
+      search through these  documents.
+
+
+      The Woo consists of [17
+      categories](https://open.overheid.nl/documenten/fd3aaf98-ad83-4a15-a526-b0511f283bad/file)
+      of documents that need to be made public. At the moment the OpenMinVWS
+      platform only supports the publication of category 14 (Woo-verzoeken,
+      -besluiten en verstrekte informatie). Future  development will consist of
+      adding more categories such as covenants and  year plans.
+
+legal:
+  license: EUPL-1.2
+  repoOwner: iRealisatie Department
+
+intendedAudience:
+  countries:
+    - nl
+  scope:
+    - government
+
+localisation:
+  availableLanguages:
+    - nl
+  localisationReady: true
+
+maintenance:
+  contacts:
+    - affiliation: iRealisatie
+      email: aj.brouwer@minvws.nl
+      name: Anne Jan Brouwer
+  type: internal
+
+usedBy:
+  - Ministry of Health, Welfare, and Sport in the  Netherlands

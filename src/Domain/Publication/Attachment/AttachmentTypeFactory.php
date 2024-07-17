@@ -13,7 +13,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  *
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
-final readonly class AttachmentTypeFactory
+readonly class AttachmentTypeFactory
 {
     public function __construct(private TranslatorInterface $translator)
     {

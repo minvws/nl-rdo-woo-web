@@ -57,6 +57,8 @@ class DefaultDossierMapperTest extends MockeryTestCase
         self::assertEquals(
             [
                 'type' => ElasticDocumentType::COVENANT,
+                'toplevel_type' => ElasticDocumentType::COVENANT,
+                'sublevel_type' => null,
                 'dossier_nr' => 'dos-123',
                 'title' => 'test-title',
                 'status' => DossierStatus::PUBLISHED,

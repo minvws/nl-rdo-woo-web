@@ -16,7 +16,7 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['**/*.test.ts'],
     coverage: {
-      provider: 'v8',
+      provider: 'istanbul',
       reporter: ['text', 'lcov'],
       include: ['assets/js/**'],
     },

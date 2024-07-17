@@ -14,11 +14,15 @@ ${CURRENT_DATE}             ${EMPTY}
 ${CURRENT_DATE_FORMAT2}     ${EMPTY}
 ${CURRENT_EPOCH}            ${EMPTY}
 ${DOSSIER_REFERENCE}        ${EMPTY}
+${PREFIX_INDEX}             ${EMPTY}
 
 
 *** Keywords ***
 Fill Out Basic Details
-  [Arguments]  ${date_from}=2021-12-01T00:00:00+00:00  ${date_to}=2023-01-31T00:00:00+00:00  ${type}=${EMPTY}
+  [Arguments]  ${date_from}=2021-12-01T00:00:00+00:00
+  ...  ${date_to}=2023-01-31T00:00:00+00:00
+  ...  ${type}=${EMPTY}
+  ...  ${prefix}=MINVWS
   Generate Dossier Reference Number
   Fill Text  id=details_title  Robot ${DOSSIER_REFERENCE}
   IF  '${type}' == 'disposition' or '${type}' == 'investigation-report' or '${type}' == 'complaint-judgement'
@@ -34,7 +38,7 @@ Fill Out Basic Details
     Check Checkbox  text=Woo-verzoek
     Select Options By  id=details_default_subjects  label  Opstart Corona
   END
-  Select Options By  id=details_documentPrefix_documentPrefix  index  1
+  Select Options By  id=details_documentPrefix_documentPrefix  text  ${prefix}
   Fill Text  id=details_dossierNr  ${DOSSIER_REFERENCE}
   Click  "Opslaan en verder"
 

@@ -287,6 +287,7 @@
       >
         <li
           @click="() => onClick(option)"
+          :aria-selected="value === option"
           :class="{ 'bhr-combobox__option--active': isSearchResultActive(index) }"
           :id="getOptionIdByIndex(index)"
           class="bhr-combobox__option"

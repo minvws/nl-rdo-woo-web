@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\DossierReference;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\RecentDossier;
 use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
@@ -122,26 +121,6 @@ class DossierRepository extends ServiceEntityRepository implements ProvidesDossi
         $result = $qb->getQuery()->getOneOrNullResult();
 
         return $result;
-    }
-
-    /**
-     * @return DossierReference[]
-     */
-    public function getDossierReferencesForDocument(string $documentNr): array
-    {
-        $qb = $this->createQueryBuilder('dos')
-            ->select(sprintf(
-                'new %s(dos.dossierNr, dos.documentPrefix, dos.title)',
-                DossierReference::class,
-            ))
-            ->where('doc.documentNr = :documentNr')
-            ->andWhere('dos.status IN (:statuses)')
-            ->innerJoin('dos.documents', 'doc')
-            ->setParameter('documentNr', $documentNr)
-            ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
-        ;
-
-        return $qb->getQuery()->getResult();
     }
 
     public function findOneByDossierId(Uuid $dossierId): WooDecision

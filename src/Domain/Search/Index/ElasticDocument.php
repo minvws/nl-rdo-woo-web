@@ -11,7 +11,8 @@ readonly class ElasticDocument
      */
     public function __construct(
         private string $id,
-        private ElasticDocumentType $type,
+        private ElasticDocumentType $topLevelType,
+        private ?ElasticDocumentType $subLevelType,
         private array $fields,
     ) {
     }
@@ -36,7 +37,11 @@ readonly class ElasticDocument
     {
         return array_merge(
             $this->fields,
-            ['type' => $this->type],
+            [
+                'type' => $this->subLevelType ?? $this->topLevelType,
+                'toplevel_type' => $this->topLevelType,
+                'sublevel_type' => $this->subLevelType,
+            ],
         );
     }
 }

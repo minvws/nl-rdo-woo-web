@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\DossierReference;
+use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -42,5 +45,26 @@ class WooDecisionRepository extends ServiceEntityRepository
             ->setParameter('dossier', $dossier)
             ->getQuery()
             ->getSingleResult();
+    }
+
+    /**
+     * @return DossierReference[]
+     */
+    public function getDossierReferencesForDocument(string $documentNr): array
+    {
+        $qb = $this->createQueryBuilder('dos')
+            ->select(sprintf(
+                'new %s(dos.dossierNr, dos.documentPrefix, dos.title, :type)',
+                DossierReference::class,
+            ))
+            ->where('doc.documentNr = :documentNr')
+            ->andWhere('dos.status IN (:statuses)')
+            ->innerJoin('dos.documents', 'doc')
+            ->setParameter('documentNr', $documentNr)
+            ->setParameter('type', DossierType::WOO_DECISION)
+            ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
+        ;
+
+        return $qb->getQuery()->getResult();
     }
 }

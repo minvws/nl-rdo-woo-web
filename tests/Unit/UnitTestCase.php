@@ -10,7 +10,7 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class UnitTestCase extends BaseTestCase
+abstract class UnitTestCase extends BaseTestCase
 {
     use MockeryPHPUnitIntegration;
     use MatchesSnapshots;

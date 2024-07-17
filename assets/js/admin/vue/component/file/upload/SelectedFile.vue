@@ -77,12 +77,12 @@
           isCollapsed.value = true;
         }, uploadResultTimeoutDuration);
       },
-      onError: () => {
+      onError: (error) => {
         isSpinnerVisible.value = false;
         isErrorVisible.value = true;
 
         uploadResultTimeoutId = setTimeout(() => {
-          emit('uploadError', props.fileId, props.file);
+          emit('uploadError', props.fileId, props.file, error);
         }, uploadResultTimeoutDuration);
       }
     });

@@ -1,9 +1,15 @@
 <script setup>
-  import Alert from '../../Alert.vue';
-  import { formatFileSize, formatList, getExtenstionsByMimeTypes, isValidMaxFileSize } from '@js/admin/utils';
+  import { formatExtensions, formatFileSize, isValidMaxFileSize } from '@js/admin/utils';
   import { computed } from 'vue';
+  import Alert from '../../Alert.vue';
+  import FilesList from './FilesList.vue';
 
   const props = defineProps({
+    allowedExtensions: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
     allowedMimeTypes: {
       type: Array,
       required: false,
@@ -20,7 +26,7 @@
   });
 
   const hasAllowedMimeTypes = props.allowedMimeTypes.length > 0;
-  const formattedValidExtensions = hasAllowedMimeTypes ? formatList(getExtenstionsByMimeTypes(props.allowedMimeTypes), 'en') : '';
+  const formattedValidExtensions = hasAllowedMimeTypes ? formatExtensions(props.allowedExtensions, 'en') : '';
   const hasMaxFileSize = isValidMaxFileSize(props.maxFileSize);
   const numberOfFiles = computed(() => props.files.length);
   const firstFile = computed(() => props.files[0].file);
@@ -35,11 +41,7 @@
       </p>
 
       <template v-if="numberOfFiles > 1" #extra>
-        <ul class="bhr-ul grid grid-cols-2 gap-x-8 gap-y-1">
-          <li class="bhr-li" v-for="entry in props.files" :key="entry.file.name">
-            <div class="truncate">{{ entry.file.name }} ({{ formatFileSize(entry.file.size) }})</div>
-          </li>
-        </ul>
+        <FilesList :files="props.files.map((invalidFile) => invalidFile.file)" />
       </template>
     </Alert>
   </div>

@@ -31,13 +31,10 @@ class PeriodFilter implements FilterInterface
             return;
         }
 
-        switch (true) {
-            case $input->isWithoutDate():
-                $this->handleWithoutDate($query);
-                break;
-            case $input->hasAnyPeriodFilterDates():
-                $this->handleWithDate($query, $input);
-                break;
+        if ($input->isWithoutDate()) {
+            $this->handleWithoutDate($query);
+        } elseif ($input->hasAnyPeriodFilterDates()) {
+            $this->handleWithDate($query, $input);
         }
     }
 

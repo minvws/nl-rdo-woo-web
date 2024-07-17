@@ -213,7 +213,9 @@ tasks:
     desc: Clears dossiers and inquiries (with related data) from the database. Also clears ES index and RabbitMq message queues.
     cmds:
       - task: dc:run
-        vars: { CLI_ARGS: app bin/console woopie:dev:clean-sheet --force }
+        vars:
+          CLI_ARGS: |
+            app bin/console woopie:dev:clean-sheet --force {{.CLI_ARGS}}
 
   app:db:reset:
     desc: Reset the application database including RabbitMQ queues and ElasticSearch indexes

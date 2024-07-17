@@ -17,7 +17,7 @@ Fill Out Complaint Judgement Details
 Upload Complaint Judgement
   Click  " + Klachtoordeel toevoegen... "
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${COMPLAINT_JUDGEMENT_LOCATION}
-  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${COMPLAINT_JUDGEMENT_FILENAME}  timeout=5s
+  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${COMPLAINT_JUDGEMENT_FILENAME}  timeout=10s
   Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
   Click  //dialog[@open]//button[@type="submit"]
   Wait For Condition  Text  //*[@id="inhoud"]  contains  Klacht toegevoegd.

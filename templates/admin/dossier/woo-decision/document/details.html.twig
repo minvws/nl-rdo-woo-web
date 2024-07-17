@@ -9,7 +9,7 @@
         <div class="px-11">
             <div class="bhr-card">
                 <twig:Admin:LeftAndRight>
-                    <h2 class="bhr-title">{{ document.documentNr }}</h2>
+                    <h2 class="bhr-title" data-e2e-name="document-nr">{{ document.documentNr }}</h2>
 
                     <twig:block name="right">
                         {% if workflow.canReplace %}

@@ -10,7 +10,7 @@ use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentSearchResultMapper;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use App\Repository\DocumentRepository;
-use App\Repository\DossierRepository;
+use App\Repository\WooDecisionRepository;
 use Jaytaph\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -18,13 +18,13 @@ use Mockery\MockInterface;
 class DocumentResultMapperTest extends MockeryTestCase
 {
     private DocumentRepository&MockInterface $documentRepository;
-    private DossierRepository&MockInterface $dossierRepository;
+    private WooDecisionRepository&MockInterface $dossierRepository;
     private DocumentSearchResultMapper $mapper;
 
     public function setUp(): void
     {
         $this->documentRepository = \Mockery::mock(DocumentRepository::class);
-        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
+        $this->dossierRepository = \Mockery::mock(WooDecisionRepository::class);
 
         $this->mapper = new DocumentSearchResultMapper(
             $this->documentRepository,

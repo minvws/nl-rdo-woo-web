@@ -1,7 +1,8 @@
 <script setup>
-  import Alert from '../../Alert.vue';
-  import { formatFileSize, formatList, getExtenstionsByMimeTypes, isValidMaxFileSize } from '@js/admin/utils';
+  import { formatFileSize } from '@js/admin/utils';
   import { computed } from 'vue';
+  import Alert from '../../Alert.vue';
+  import FilesList from './FilesList.vue';
 
   const props = defineProps({
     files: {
@@ -20,11 +21,7 @@
       <p v-else>De volgende bestanden werden genegeerd omdat ze al geüpload zijn.</p>
 
       <template v-if="numberOfFiles > 1" #extra>
-        <ul class="bhr-ul grid grid-cols-2 gap-x-8 gap-y-1">
-          <li class="bhr-li" v-for="file in props.files" :key="file.name">
-            <div class="truncate">{{ file.name }} ({{ formatFileSize(file.size) }})</div>
-          </li>
-        </ul>
+        <FilesList :files="props.files" />
       </template>
     </Alert>
   </div>

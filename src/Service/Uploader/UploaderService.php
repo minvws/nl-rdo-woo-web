@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Uploader;
 
+use App\Domain\Upload\FileType\FileTypeHelper;
 use App\Entity\EntityWithFileInfo;
 use App\Exception\UploaderServiceException;
 use App\Service\Storage\EntityStorageService;
@@ -21,6 +22,7 @@ readonly class UploaderService
         private RequestStack $requestStack,
         private FilesystemOrphanageStorage $orphanageStorage,
         private EntityStorageService $entityStorageService,
+        private FileTypeHelper $fileTypeHelper,
     ) {
     }
 
@@ -91,8 +93,9 @@ readonly class UploaderService
             $fileInfo->removeFileProperties();
         }
 
-        $fileInfo->setSourceType(SourceType::SOURCE_PDF);
-        $fileInfo->setType('pdf');
+        $fileType = $this->fileTypeHelper->getFileType($file->getMimeType() ?? '');
+        $fileInfo->setSourceType($fileType ? SourceType::fromFileType($fileType) : SourceType::SOURCE_UNKNOWN);
+        $fileInfo->setType($fileType->value ?? SourceType::SOURCE_UNKNOWN);
 
         if (! $this->entityStorageService->storeEntity($file, $entity)) {
             throw UploaderServiceException::forCouldNotAttachFileToEntity($entity);

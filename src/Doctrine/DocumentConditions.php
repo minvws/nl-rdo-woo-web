@@ -15,7 +15,18 @@ class DocumentConditions
 
         $queryBuilder->andWhere("$docAlias.judgement IN (:judgements)");
         $queryBuilder->andWhere("$docAlias.suspended != true AND $docAlias.withdrawn != true");
-        $queryBuilder->setParameter('judgements', [Judgement::PUBLIC, Judgement::PARTIAL_PUBLIC, Judgement::ALREADY_PUBLIC]);
+        $queryBuilder->setParameter('judgements', [Judgement::PUBLIC, Judgement::PARTIAL_PUBLIC]);
+
+        return $queryBuilder;
+    }
+
+    public static function onlyAlreadyPublic(QueryBuilder $queryBuilder, string $docAlias = 'doc'): QueryBuilder
+    {
+        $queryBuilder = clone $queryBuilder;
+
+        $queryBuilder->andWhere("$docAlias.judgement = :judgement");
+        $queryBuilder->andWhere("$docAlias.suspended != true AND $docAlias.withdrawn != true");
+        $queryBuilder->setParameter('judgement', Judgement::ALREADY_PUBLIC);
 
         return $queryBuilder;
     }

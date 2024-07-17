@@ -38,7 +38,7 @@ class DispositionDocument extends AbstractMainDocument
         return $this->dossier;
     }
 
-    public function getUploadGroupId(): UploadGroupId
+    public static function getUploadGroupId(): UploadGroupId
     {
         return UploadGroupId::DISPOSITION_DOCUMENTS;
     }

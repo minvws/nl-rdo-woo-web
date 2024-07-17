@@ -37,7 +37,7 @@ class CovenantDocument extends AbstractMainDocument
         return $this->dossier;
     }
 
-    public function getUploadGroupId(): UploadGroupId
+    public static function getUploadGroupId(): UploadGroupId
     {
         return UploadGroupId::COVENANT_DOCUMENTS;
     }

@@ -9,6 +9,7 @@ use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
 use App\Domain\Publication\Attachment\ViewModel\Attachment;
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\SubType\Attachment\AttachmentSearchResultMapper;
 use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
@@ -64,6 +65,7 @@ class AttachmentSearchResultMapperTest extends MockeryTestCase
         $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr = '123');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($documentPrefix = 'foo');
         $dossier->shouldReceive('getTitle')->andReturn($title = 'bar');
+        $dossier->shouldReceive('getType')->andReturn($dossierType = DossierType::COVENANT);
 
         $attachment = \Mockery::mock(AbstractAttachment::class);
         $attachment->shouldReceive('getDossier')->andReturn($dossier);
@@ -84,6 +86,7 @@ class AttachmentSearchResultMapperTest extends MockeryTestCase
         $this->assertSame($viewModel, $entry->getViewModel());
         $this->assertSame($dossierNr, $dossierReference->getDossierNr());
         $this->assertSame($documentPrefix, $dossierReference->getDocumentPrefix());
+        $this->assertSame($dossierType, $dossierReference->getType());
         $this->assertSame($title, $dossierReference->getTitle());
         $this->assertSame(['x', 'y'], $entry->getHighlights());
         $this->assertSame(ElasticDocumentType::ATTACHMENT, $entry->getType());

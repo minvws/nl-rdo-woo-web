@@ -17,12 +17,19 @@ readonly class WizardStatusFactory
     ) {
     }
 
-    public function getWizardStatus(AbstractDossier $dossier, StepName $currentStep): DossierWizardStatus
-    {
+    public function getWizardStatus(
+        AbstractDossier $dossier,
+        StepName $currentStep,
+        bool $withAccessCheck = true
+    ): DossierWizardStatus {
         $beforeCurrentStep = true;
         $nextStepAccessible = true;
 
-        $typeConfig = $this->typeManager->getConfigWithAccessCheck($dossier->getType());
+        if ($withAccessCheck) {
+            $typeConfig = $this->typeManager->getConfigWithAccessCheck($dossier->getType());
+        } else {
+            $typeConfig = $this->typeManager->getConfig($dossier->getType());
+        }
 
         $stepStatuses = [];
         $stepDefinition = null;

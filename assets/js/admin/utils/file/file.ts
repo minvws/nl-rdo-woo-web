@@ -1,4 +1,5 @@
 import { formatNumber, isNumber } from '@utils';
+import { formatList } from '../list';
 
 const enum MimeType {
   Csv = 'application/csv',
@@ -13,12 +14,60 @@ const enum MimeType {
   Zip = 'application/zip',
 }
 
+export const formatExtensions = (extensions: string[], glue: string): string => {
+  const sorted = extensions.slice().sort((a, b) => a.localeCompare(b));
+  const withDot = sorted.map((extension) => (extension.startsWith('.') ? extension : `.${extension}`));
+  return formatList(withDot, glue);
+};
+
 export const MimeTypes: Readonly<Record<string, string[]>> = {
-  Csv: [MimeType.Csv],
-  Pdf: [MimeType.Pdf],
-  Spreadsheet: [MimeType.OpenDocumentSpeadsheet, MimeType.OfficeDocumentSpreadsheet],
+  Csv: [
+    'application/vnd.ms-excel',
+    'application/msexcel',
+    'application/x-msexcel',
+    'zz-application/zz-winassoc-xls',
+  ],
+  Pdf: [
+    'application/pdf',
+    'application/acrobat',
+    'application/nappdf',
+    'application/x-pdf',
+    'image/pdf',
+  ],
+  Presentation: [
+    'application/mspowerpoint',
+    'application/powerpoint',
+    'application/vnd.ms-powerpoint',
+    'application/x-mspowerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+    'application/vnd.ms-powerpoint',
+    'application/mspowerpoint',
+    'application/powerpoint',
+    'application/x-mspowerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.oasis.opendocument.presentation',
+  ],
+  Spreadsheet: [
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.oasis.opendocument.spreadsheet',
+    'application/vnd.oasis.opendocument.formula',
+  ],
+  Text: [
+    'text/plain',
+    'text/rdf',
+  ],
   Video: [MimeType.VideoMp4],
-  Word: [MimeType.Word],
+  Word: [
+    'application/msword',
+    'application/vnd.ms-word',
+    'application/x-msword',
+    'zz-application/zz-winassoc-doc',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.oasis.opendocument.text',
+  ],
+  Xml: [
+    'application/rdf+xml',
+  ],
   Zip: [MimeType.Zip, MimeType.SevenZip],
 };
 
@@ -39,8 +88,11 @@ export const getIconNameByMimeType = (mimeType: string) => {
   const mappings = {
     'file-csv': [...MimeTypes.Csv, ...MimeTypes.Spreadsheet],
     'file-pdf': MimeTypes.Pdf,
+    'file-presentation': MimeTypes.Presentation,
+    'file-text': MimeTypes.Text,
     'file-video': MimeTypes.Video,
     'file-word': MimeTypes.Word,
+    'file-xml': MimeTypes.Xml,
     'file-zip': MimeTypes.Zip,
   };
 
@@ -54,8 +106,11 @@ export const getFileTypeByMimeType = (mimeType: string) => {
     csv: MimeTypes.Csv,
     spreadsheet: MimeTypes.Spreadsheet,
     pdf: MimeTypes.Pdf,
+    presentatie: MimeTypes.Presentation,
+    text: MimeTypes.Text,
     video: MimeTypes.Video,
     Word: MimeTypes.Word,
+    xml: MimeTypes.Xml,
     zip: MimeTypes.Zip,
   };
 
@@ -63,34 +118,6 @@ export const getFileTypeByMimeType = (mimeType: string) => {
 };
 
 export const isValidMaxFileSize = (maxFileSize: unknown): boolean => isNumber(maxFileSize) && Number(maxFileSize) > 0;
-
-const getExtenstionByMimeType = (mimeType: string): string | undefined => {
-  const mappings: Record<string, string[]> = {
-    '.mp4': [MimeType.VideoMp4],
-    '.pdf': [MimeType.Pdf],
-    '.ods': [MimeType.OpenDocumentSpeadsheet],
-    '.xlsx': [MimeType.OfficeDocumentSpreadsheet],
-    '.7z': [MimeType.SevenZip],
-    '.docx': [MimeType.Word],
-    '.zip': [MimeType.Zip],
-  };
-
-  return (Object.keys(mappings) as (keyof typeof mappings)[]).find((key) => mappings[key].includes(mimeType));
-};
-
-export const getExtenstionsByMimeTypes = (mimeTypes: string[]): string[] => {
-  const map: Set<string> = mimeTypes.reduce((accumulated, mimeType) => {
-    const extension = getExtenstionByMimeType(mimeType);
-    if (extension) {
-      return accumulated.add(extension);
-    }
-    return accumulated;
-  }, new Set<string>());
-
-  const extensions = Array.from(map.values());
-  extensions.sort();
-  return [...extensions];
-};
 
 export const areFilesEqual = (file1: File, file2: File) => {
   const properties: (keyof File)[] = ['lastModified', 'name', 'size', 'type'];

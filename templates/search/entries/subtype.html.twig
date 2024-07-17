@@ -9,7 +9,7 @@
 
      <ul class="woo-search-result__spec-list">
         <li class="woo-search-result__spec">
-            <twig:Public:Icon name="{{ entry.viewmodel.sourceType }}" class="mr-1" size="20" />
+            <twig:Public:FileIcon type="{{ entry.viewmodel.sourceType }}" class="mr-1" size="20" />
             {{ ("public.documents.file_type." ~ entry.viewmodel.sourceType) | trans }}
         </li>
         {% if entry.viewmodel.pageCount > 0 %}
@@ -46,7 +46,7 @@
     {% for dossier in entry.dossiers %}
     <li>
         <twig:Public:Icon name="part-of" size="20" />
-        <span>{{ 'global.part_of' | trans | capitalize }}</span> <a class="woo-a woo-a--search-result" href="{{ path('app_woodecision_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
+        <span>{{ 'global.part_of' | trans | capitalize }}</span> <a class="woo-a woo-a--search-result" href="{{ dossier_details_path(dossier) }}">{{ dossier.title }}</a>
         {{dossier.dossierNr}}
     </li>
     {% endfor %}

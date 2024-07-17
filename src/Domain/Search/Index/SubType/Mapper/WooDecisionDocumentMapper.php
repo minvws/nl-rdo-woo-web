@@ -77,6 +77,7 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
 
         return new ElasticDocument(
             $this->getId($entity),
+            ElasticDocumentType::WOO_DECISION,
             ElasticDocumentType::WOO_DECISION_DOCUMENT,
             $fields,
         );

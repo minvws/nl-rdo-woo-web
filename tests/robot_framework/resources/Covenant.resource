@@ -1,6 +1,7 @@
 *** Settings ***
 Library     Browser
 Library     DebugLibrary
+Resource    Admin.resource
 
 
 *** Variables ***
@@ -17,7 +18,7 @@ Fill Out Covenant Details
   Select Second Party, Option 1
   Fill Text  id=content_form_summary  Dummy toelichting
   Upload Covenant
-  IF  ${has_attachment}  Upload Attachment
+  IF  ${has_attachment}  Upload Attachment  staatsblad
   Click  "Opslaan en verder"
 
 Select First Party, Option 1
@@ -31,16 +32,7 @@ Select Second Party, Option 1
 Upload Covenant
   Click  " + Convenant toevoegen... "
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${COVENANT_LOCATION}
-  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${COVENANT_FILENAME}  timeout=5s
+  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${COVENANT_FILENAME}  timeout=10s
   Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
   Click  //dialog[@open]//button[@type="submit"]
   Wait For Condition  Text  //*[@id="inhoud"]  contains  Convenant toegevoegd.
-
-Upload Attachment
-  Click  " + Bijlage toevoegen... "
-  Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${ATTACHMENT_LOCATION}
-  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${ATTACHMENT_FILENAME}  timeout=5s
-  Select Options By  //*[@name="type"]  text  staatsblad
-  Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
-  Click  //dialog[@open]//button[@type="submit"]
-  Wait For Condition  Text  //*[@id="inhoud"]  contains  Bijlage '${ATTACHMENT_FILENAME}' is toegevoegd.

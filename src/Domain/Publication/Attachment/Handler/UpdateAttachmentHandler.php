@@ -106,7 +106,7 @@ readonly class UpdateAttachmentHandler
             $this->uploaderService->attachFileToEntity(
                 $command->uploadFileReference,
                 $entity,
-                $entity->getUploadGroupId(),
+                $entity::getUploadGroupId(),
             );
         }
     }

@@ -32,7 +32,7 @@ class DispositionAttachment extends AbstractAttachment
         $this->fileInfo->setPaginatable(true);
     }
 
-    public function getUploadGroupId(): UploadGroupId
+    public static function getUploadGroupId(): UploadGroupId
     {
         return UploadGroupId::DISPOSITION_ATTACHMENTS;
     }

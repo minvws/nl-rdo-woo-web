@@ -6,8 +6,10 @@ namespace App\Command\User;
 
 use App\Entity\Organisation;
 use App\Entity\User;
+use App\Roles;
 use App\Service\Totp;
 use App\Service\UserService;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -17,6 +19,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Create extends Command
 {
     protected UserService $userService;
@@ -48,25 +53,34 @@ class Create extends Command
     /**
      * @throws \JsonException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         if ($input->getOption('super-admin')) {
-            $role = ['ROLE_SUPER_ADMIN'];
+            $role = Roles::ROLE_SUPER_ADMIN;
         } elseif ($input->getOption('admin')) {
-            $role = ['ROLE_ADMIN'];
+            $role = Roles::ROLE_GLOBAL_ADMIN;
         } else {
-            $role = ['ROLE_BALIE'];
+            $role = Roles::ROLE_VIEW_ACCESS;
         }
 
         // We assume that the created user is always part of the first organisation
         $organisation = $this->doctrine->getRepository(Organisation::class)->findAll()[0];
 
-        ['plainPassword' => $plainPassword, 'user' => $user] = $this->userService->createUser(
-            strval($input->getArgument('name')),
-            strval($input->getArgument('email')),
-            $role,
-            $organisation
-        );
+        $name = strval($input->getArgument('name'));
+        $email = strval($input->getArgument('email'));
+        try {
+            ['plainPassword' => $plainPassword, 'user' => $user] = $this->userService->createUser(
+                $name,
+                $email,
+                [$role],
+                $organisation
+            );
+        } catch (UniqueConstraintViolationException) {
+            $output->writeln("<error>A user account with email $email already exists</error>");
+            $output->writeln("Please provide a unique email address using 'email' argument");
+
+            return 1;
+        }
 
         $output->writeln("User <info>{$user->getEmail()}</info> created.");
         $output->writeln("Password   : <info>{$plainPassword}</info>");

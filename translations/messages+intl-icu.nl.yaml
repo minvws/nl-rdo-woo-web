@@ -48,6 +48,7 @@ global.document_edit: "Document bewerken"
 global.documents.filter_help: "Filter de documenten. Bij het veranderen van de selectie wordt deze pagina herladen en worden de gegevens voor de geselecteerde waarde getoond."
 global.no_documents: "Geen documenten"
 global.domain_title: "OpenVWS"
+global.meta_description: "Op deze website vindt u interne informatie van het ministerie van VWS. Deze informatie is openbaar gemaakt om inzicht te geven in de werkzaamheden en beslissingen van het ministerie."
 global.expires: "Verloopt"
 global.error_occured: "Er is een fout opgetreden"
 global.error_message: "Er is iets mis gegaan tijdens het zoeken. Probeer het later nog eens."
@@ -115,6 +116,7 @@ global.summary: "Samenvatting"
 global.email: "E-mailadres"
 global.print_page: "Print deze pagina"
 global.withdrawn: "Ingetrokken"
+global.suspended: "Opgeschort "
 global.year: "Jaar"
 global.year.placeholder: "kies een jaar"
 global.number_of_documents: >-
@@ -577,6 +579,7 @@ public.documents.not_made_public: "Niet openbaar gemaakt"
 public.documents.not_public: "Niet openbaar"
 public.documents.not_yet_online: "(Nog) niet online"
 public.documents.public: "Openbaar"
+public.documents.already_public_short: "Reeds openbaar"
 public.documents.related_documents: "Gerelateerde documenten"
 public.documents.strong_relationship: "Sterke relatie"
 public.documents.refers_to: "{has_or_have} een sterke relatie met dit document."
@@ -882,6 +885,10 @@ history.document_withdraw.private: 'Ingetrokken: {explanation} ({explanation_det
 history.document_withdraw.public: 'Ingetrokken met reden: {explanation}'
 history.document_removed.private: 'Verwijderd'
 history.document_removed.public: 'Verwijderd'
+history.document_suspended.private: 'Opgeschort'
+history.document_suspended.public: 'Opgeschort'
+history.document_unsuspended.private: 'Opschorting opgeheven'
+history.document_unsuspended.public: 'Opschorting opgeheven'
 date {date} cannot be parsed: 'de datum "{date}" heeft niet het juiste formaat'
 history.value.decision_date: 'Besluit datum'
 history.value.title: 'Titel'

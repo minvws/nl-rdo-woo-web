@@ -42,8 +42,8 @@
     emit('uploading', fileId, file);
   };
 
-  const onUploadError = (fileId, file) => {
-    emit('uploadError', fileId, file);
+  const onUploadError = (fileId, file, error) => {
+    emit('uploadError', fileId, file, error);
   };
 
   const onSelectFiles = () => {
