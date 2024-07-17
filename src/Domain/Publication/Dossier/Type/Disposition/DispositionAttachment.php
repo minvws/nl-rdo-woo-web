@@ -13,13 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
 
 #[ORM\Entity(repositoryClass: DispositionAttachmentRepository::class)]
-#[ORM\HasLifecycleCallbacks]
 class DispositionAttachment extends AbstractAttachment
 {
-    #[ORM\ManyToOne(targetEntity: Disposition::class, inversedBy: 'attachments')]
-    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private Disposition $dossier;
-
     public function __construct(
         AbstractDossier $dossier,
         \DateTimeImmutable $formalDate,
@@ -35,11 +30,6 @@ class DispositionAttachment extends AbstractAttachment
         $this->type = $type;
         $this->language = $language;
         $this->fileInfo->setPaginatable(true);
-    }
-
-    public function getDossier(): Disposition
-    {
-        return $this->dossier;
     }
 
     public function getUploadGroupId(): UploadGroupId

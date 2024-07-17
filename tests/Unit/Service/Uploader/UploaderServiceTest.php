@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Service\Uploader;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocument;
 use App\Entity\FileInfo;
 use App\Exception\UploaderServiceException;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use App\Service\Uploader\UploaderService;
 use App\Service\Uploader\UploadGroupId;
 use App\SourceType;
@@ -31,7 +31,7 @@ final class UploaderServiceTest extends UnitTestCase
 {
     private RequestStack&MockInterface $requestStack;
     private FilesystemOrphanageStorage&MockInterface $orphanageStorage;
-    private DocumentStorageService&MockInterface $documentStorage;
+    private EntityStorageService&MockInterface $entityStorageService;
     private Session&MockInterface $session;
     private vfsStreamDirectory $fileSystem;
 
@@ -40,7 +40,7 @@ final class UploaderServiceTest extends UnitTestCase
         $this->fileSystem = vfsStream::setup();
 
         $this->orphanageStorage = \Mockery::mock(FilesystemOrphanageStorage::class);
-        $this->documentStorage = \Mockery::mock(DocumentStorageService::class);
+        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->session = \Mockery::mock(Session::class);
 
         $this->requestStack = \Mockery::mock(RequestStack::class);
@@ -54,7 +54,7 @@ final class UploaderServiceTest extends UnitTestCase
         $uploaderService = new UploaderService(
             $this->requestStack,
             $this->orphanageStorage,
-            $this->documentStorage,
+            $this->entityStorageService,
         );
 
         $this->assertInstanceOf(UploaderService::class, $uploaderService);
@@ -100,7 +100,7 @@ final class UploaderServiceTest extends UnitTestCase
         $uploaderService = new UploaderService(
             $this->requestStack,
             $this->orphanageStorage,
-            $this->documentStorage,
+            $this->entityStorageService,
         );
         $uploaderService->registerUpload($postUploadEvent, UploadGroupId::WOO_DECISION_ATTACHMENTS);
     }
@@ -152,7 +152,7 @@ final class UploaderServiceTest extends UnitTestCase
         $uploaderService = new UploaderService(
             $this->requestStack,
             $this->orphanageStorage,
-            $this->documentStorage,
+            $this->entityStorageService,
         );
         $uploaderService->registerUpload($postUploadEvent);
 
@@ -180,7 +180,7 @@ final class UploaderServiceTest extends UnitTestCase
         $uploaderService = new UploaderService(
             $this->requestStack,
             $this->orphanageStorage,
-            $this->documentStorage,
+            $this->entityStorageService,
         );
         $uploaderService->confirmUpload($myUuid, UploadGroupId::DEFAULT);
     }
@@ -202,7 +202,7 @@ final class UploaderServiceTest extends UnitTestCase
         $uploaderService = new UploaderService(
             $this->requestStack,
             $this->orphanageStorage,
-            $this->documentStorage,
+            $this->entityStorageService,
         );
         $uploaderService->confirmUpload($myUuid);
     }
@@ -257,7 +257,7 @@ final class UploaderServiceTest extends UnitTestCase
         $uploaderService = new UploaderService(
             $this->requestStack,
             $this->orphanageStorage,
-            $this->documentStorage,
+            $this->entityStorageService,
         );
         $uploaderService->confirmUpload($myUuid, UploadGroupId::WOO_DECISION_ATTACHMENTS);
     }
@@ -276,7 +276,7 @@ final class UploaderServiceTest extends UnitTestCase
         $uploaderService = new UploaderService(
             $this->requestStack,
             $this->orphanageStorage,
-            $this->documentStorage,
+            $this->entityStorageService,
         );
 
         $this->expectExceptionObject(UploaderServiceException::forNoFilesUploaded($myUuid));
@@ -333,7 +333,7 @@ final class UploaderServiceTest extends UnitTestCase
         $uploaderService = new UploaderService(
             $this->requestStack,
             $this->orphanageStorage,
-            $this->documentStorage,
+            $this->entityStorageService,
         );
 
         $this->expectExceptionObject(UploaderServiceException::forMultipleFilesUploaded($myUuid));
@@ -396,7 +396,7 @@ final class UploaderServiceTest extends UnitTestCase
         $uploaderService = new UploaderService(
             $this->requestStack,
             $this->orphanageStorage,
-            $this->documentStorage,
+            $this->entityStorageService,
         );
 
         $entityId = Uuid::v6();
@@ -408,12 +408,12 @@ final class UploaderServiceTest extends UnitTestCase
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $entity->shouldReceive('getId')->andReturn($entityId);
 
-        $this->documentStorage->expects('removeFileForEntity')->with($entity);
+        $this->entityStorageService->expects('removeFileForEntity')->with($entity);
         $fileInfo->expects('removeFileProperties');
         $fileInfo->expects('setSourceType')->with(SourceType::SOURCE_PDF);
         $fileInfo->expects('setType')->with('pdf');
 
-        $this->documentStorage->expects('storeDocument')->with($storedFile, $entity)->andReturnTrue();
+        $this->entityStorageService->expects('storeEntity')->with($storedFile, $entity)->andReturnTrue();
 
         self::assertFalse($this->fileSystem->hasChild($mockFilePath));
 

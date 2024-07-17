@@ -20,7 +20,6 @@ services:
             $configPageLimit: '%configPageLimit%'
             Psr\Log\LoggerInterface $logger: '@App\Service\Logging\EnrichedPsrLogger'
             string $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
-            string $appEnvironment: '%kernel.environment%'
 
     App\:
         resource: '../src/'
@@ -52,10 +51,9 @@ services:
         arguments:
             $tikaHost: '%env(TIKA_HOST)%'
 
-    # Add all classes that implements Ingest\Handler to the ingest service.
-    App\Service\Ingest\IngestService:
+    App\Domain\Ingest\SubType\SubTypeIngester:
         arguments:
-            - !tagged_iterator app.ingest.handler
+            - !tagged_iterator domain.ingest.subtype.strategy
 
     App\Service\Inventory\Reader\InventoryReaderFactory:
         arguments:
@@ -69,18 +67,26 @@ services:
                 - '@App\Service\Stats\Handler\DoctrineHandler'
 
     _instanceof:
-        App\Service\Ingest\Handler:
-            tags: ['app.ingest.handler']
+        App\Domain\Ingest\SubType\SubTypeIngestStrategyInterface:
+            tags: ['domain.ingest.subtype.strategy']
         App\Service\Logging\LoggingTypeInterface:
             tags: [ 'app.logging.type' ]
         App\Service\Stats\Handler\StatsHandlerInterface:
             tags: [ 'app.stats.handler' ]
         App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface:
             tags: ['domain.publication.dossier_type_config']
-        App\Domain\Search\Index\ElasticDossierMapperInterface:
+        App\Domain\Search\Index\Dossier\Mapper\ElasticDossierMapperInterface:
             tags: [ 'domain.search.index.dossier_mapper' ]
+        App\Domain\Search\Index\SubType\Mapper\ElasticSubTypeMapperInterface:
+            tags: [ 'domain.search.index.subtype_mapper' ]
         App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface:
             tags: [ 'domain.publication.dossier_delete_strategy' ]
+        App\Domain\Publication\Attachment\AttachmentDeleteStrategyInterface:
+            tags: [ 'domain.publication.attachment_delete_strategy' ]
+        App\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface:
+            tags: [ 'domain.publication.main_document_delete_strategy' ]
+        App\Domain\Search\Result\SearchResultMapperInterface:
+            tags: [ 'domain.search.result_mapper' ]
 
     # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
     App\Service\Encryption\EncryptionService:
@@ -88,15 +94,10 @@ services:
         arguments:
             $encryptionKey: '%env(DATABASE_ENCRYPTION_KEY)%'
 
-    App\Service\Storage\DocumentStorageService:
+    App\Service\Storage\EntityStorageService:
         arguments:
-            $storage: '@document.storage'
             $isLocal: "@=env('STORAGE_DOCUMENT_ADAPTER')=='local' ? true : false"
             $documentRoot: '%document_path%'
-
-    App\Service\Storage\ThumbnailStorageService:
-        arguments:
-            $storage: '@thumbnail.storage'
 
     # We need to create an alias to the monolog.logger service, as these services are by default private. This means
     # it is not possible to fetch these services from the container. This is normally a "good thing"(tm), but in this
@@ -109,23 +110,7 @@ services:
         arguments:
             $projectPath: '%kernel.project_dir%'
 
-    App\Service\Worker\Pdf\Extractor\DocumentContentExtractor:
-        arguments:
-            $redis: '@snc_redis.ingest'
-
-    App\Service\Worker\Pdf\Extractor\PageContentExtractor:
-        arguments:
-            $redis: '@snc_redis.ingest'
-
-    App\Service\Worker\Pdf\Extractor\PagecountExtractor:
-        arguments:
-            $redis: '@snc_redis.ingest'
-
-    App\Service\Worker\Pdf\Extractor\DecisionContentExtractor:
-      arguments:
-        $redis: '@snc_redis.ingest'
-
-    App\Service\Worker\Pdf\Tools\Tika:
+    App\Service\Worker\Pdf\Tools\TikaService:
         arguments:
             $tika: '@tika.service'
 
@@ -221,7 +206,7 @@ services:
         arguments:
             $configs: !tagged_iterator domain.publication.dossier_type_config
 
-    App\Domain\Search\Index\DossierIndexer:
+    App\Domain\Search\Index\Dossier\DossierIndexer:
         arguments:
             $mappers: !tagged_iterator domain.search.index.dossier_mapper
 
@@ -229,9 +214,25 @@ services:
         tags:
             - { name: 'tagged_iterator domain.search.index.dossier_mapper', priority: -100 }
 
+    App\Domain\Search\Index\SubType\SubTypeIndexer:
+        arguments:
+            $mappers: !tagged_iterator domain.search.index.subtype_mapper
+
     App\Domain\Publication\Dossier\Handler\DeleteDossierHandler:
         arguments:
             $deleteStrategies: !tagged_iterator domain.publication.dossier_delete_strategy
+
+    App\Domain\Publication\Attachment\Handler\DeleteAttachmentHandler:
+        arguments:
+            $deleteStrategies: !tagged_iterator domain.publication.attachment_delete_strategy
+
+    App\Domain\Publication\MainDocument\Handler\DeleteMainDocumentHandler:
+        arguments:
+            $deleteStrategies: !tagged_iterator domain.publication.main_document_delete_strategy
+
+    App\Domain\Search\Result\ResultFactory:
+        arguments:
+            $mappers: !tagged_iterator domain.search.result_mapper
 
     App\Service\Uploader\UploaderNamer:
         public: true

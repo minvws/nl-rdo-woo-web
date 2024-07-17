@@ -19,12 +19,12 @@ ${ACC_PASSWORD}     %{PASSWORD_WOO_STAGING}
 *** Test Cases ***
 Basic search
   [Documentation]  Do a basic search and check if it returns results
-  Search For  search_term=notulen
+  Search On Public For  search_term=notulen
   ...  search_results=notulen
 
 Search returns search suggestions
   [Documentation]  Do a basic search with a typo (DocumAnten instead of DocumEnten) and check if Woo returns search suggestions
-  Search For  search_term=documanten
+  Search On Public For  search_term=documanten
   ...  search_results=0 documenten in 0 besluiten
   ${suggest_search_element} =  Get Element  //a[normalize-space()='documenten']
   Should Contain  ${suggest_search_element}  documenten
@@ -33,7 +33,7 @@ Search returns search suggestions
 
 Decision Dossier overview page
   [Documentation]  Locate an existing decision dossier, check if the predefined metadata are available, the numbers match and expected documents are shown
-  Search For  search_term=Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
+  Search On Public For  search_term=Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
   ...  search_results=Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
   # The search term is the exact match of the decision dossier. The first result should be the decision dossier.
   Click  xpath=//*[@data-e2e-name="search-result"][1]//*[@data-e2e-name="main-link"]
@@ -79,14 +79,14 @@ Decision Dossier overview page
 
 Document overview page (document is made public)
   [Documentation]  Locate a existing document, check if the predefined metadata are available, document can be downloaded.
-  Search For  search_term=Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
+  Search On Public For  search_term=Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
   ...  search_results=Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
   # The search term is the exact match of the decision dossier. The first result should be the decision dossier.
   Click  xpath=//*[@data-e2e-name="search-result"][1]//*[@data-e2e-name="main-link"]
   Click  "Zoeken in deze documenten..."
   Get Text  //body  *=  792 documenten in 1 besluit
   # search by documentnumber
-  Search For  search_term=701061
+  Search On Public For  search_term=701061
   ...  search_results=701061
   # The search term is the exact match of the decision dossier. The first result should be the decision dossier.
   Click  xpath=//*[@data-e2e-name="search-result"][1]//*[@data-e2e-name="main-link"]
@@ -134,7 +134,7 @@ Document overview page (document is NOT made public)
 
 Download besluitbrief
   [Documentation]  Locate an existing decision dossier and download and verify the corresponding besluitbrief
-  Search For  search_term=Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
+  Search On Public For  search_term=Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
   ...  search_results=Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
   # The search term is the exact match of the decision dossier. The first result should be the decision dossier.
   Click  xpath=//*[@data-e2e-name="search-result"][1]//*[@data-e2e-name="main-link"]
@@ -144,7 +144,7 @@ Download besluitbrief
 
 Download inventarislijst
   [Documentation]  Locate a existing decision dossier and download and verify the corresponding inventarislijst
-  Search For  search_term=Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
+  Search On Public For  search_term=Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
   ...  search_results=Woo-deelbesluit aangaande Overleg VWS over de periode mei 2021
   # The search term is the exact match of the decision dossier. The first result should be the decision dossier.
   Click  xpath=//*[@data-e2e-name="search-result"][1]//*[@data-e2e-name="main-link"]
@@ -154,7 +154,8 @@ Download inventarislijst
 
 Download small decision dossier
   [Documentation]  Download a small (<30MB) pre-defined decision dossier, check if the file exists and verify the exact filesize of the download
-  Search For  search_term=Besluit op uw Wob-verzoek inzake de financiële steun die het kabinet heeft verleend aan KLM
+  Search On Public For
+  ...  search_term=Besluit op uw Wob-verzoek inzake de financiële steun die het kabinet heeft verleend aan KLM
   ...  search_results=Besluit op uw Wob-verzoek inzake de financiële steun die het kabinet heeft verleend aan KLM
   Click  xpath=//*[@data-e2e-name="search-result"][1]//*[@data-e2e-name="main-link"]
   Click  xpath=//*[@data-e2e-name="download-documents-button"]
@@ -167,7 +168,7 @@ Download small decision dossier
 Download large decision dossier
   [Documentation]  Download a large (>1GB) pre-defined decision dossier, check if the file exists and verify the exact filesize of the download
   IF  ${RUN_LOCALLY}  Skip
-  Search For  search_term=Woo-deelbesluit aangaande Scenario’s en maatregelen over de periode september 2020
+  Search On Public For  search_term=Woo-deelbesluit aangaande Scenario’s en maatregelen over de periode september 2020
   ...  search_results=Woo-deelbesluit aangaande Scenario’s en maatregelen over de periode september 2020
   Click  xpath=//*[@data-e2e-name="search-result"][1]//*[@data-e2e-name="main-link"]
   Click  xpath=//*[@data-e2e-name="download-documents-button"]

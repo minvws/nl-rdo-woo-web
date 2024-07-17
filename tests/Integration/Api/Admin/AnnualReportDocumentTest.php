@@ -47,7 +47,7 @@ final class AnnualReportDocumentTest extends ApiTestCase
             'organisation' => $user->getOrganisation(),
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         // There should be no annualReport document yet, so 404
         $client->request(
@@ -120,7 +120,7 @@ final class AnnualReportDocumentTest extends ApiTestCase
             ]),
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         $response = $client->request(
             Request::METHOD_PUT,
@@ -167,7 +167,7 @@ final class AnnualReportDocumentTest extends ApiTestCase
             'status' => DossierStatus::CONCEPT,
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         // There should be no annualReport document yet, so 404
         $client->request(
@@ -233,7 +233,7 @@ final class AnnualReportDocumentTest extends ApiTestCase
             'status' => DossierStatus::PUBLISHED,
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         ['uploadUuid' => $uploadUuid, 'uploadName' => $uploadName] = $this->uploadDocument($client);
 
@@ -286,7 +286,7 @@ final class AnnualReportDocumentTest extends ApiTestCase
             'organisation' => $user->getOrganisation(),
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         ['uploadUuid' => $uploadUuid, 'uploadName' => $uploadName] = $this->uploadDocument($client);
 
@@ -335,7 +335,7 @@ final class AnnualReportDocumentTest extends ApiTestCase
             ]),
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         $client->request(
             Request::METHOD_PUT,

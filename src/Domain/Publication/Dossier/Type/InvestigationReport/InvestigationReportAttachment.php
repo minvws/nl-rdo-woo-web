@@ -13,13 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
 
 #[ORM\Entity(repositoryClass: InvestigationReportAttachmentRepository::class)]
-#[ORM\HasLifecycleCallbacks]
 class InvestigationReportAttachment extends AbstractAttachment
 {
-    #[ORM\ManyToOne(targetEntity: InvestigationReport::class, inversedBy: 'attachments')]
-    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private InvestigationReport $dossier;
-
     public function __construct(
         AbstractDossier $dossier,
         \DateTimeImmutable $formalDate,
@@ -35,11 +30,6 @@ class InvestigationReportAttachment extends AbstractAttachment
         $this->type = $type;
         $this->language = $language;
         $this->fileInfo->setPaginatable(true);
-    }
-
-    public function getDossier(): InvestigationReport
-    {
-        return $this->dossier;
     }
 
     public function getUploadGroupId(): UploadGroupId

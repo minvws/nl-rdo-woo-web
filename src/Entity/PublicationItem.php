@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Doctrine\FileCacheKeyBasedOnClassAndIdTrait;
 use App\Doctrine\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -12,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 abstract class PublicationItem implements EntityWithFileInfo
 {
     use TimestampableTrait;
+    use FileCacheKeyBasedOnClassAndIdTrait;
 
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
@@ -42,14 +44,5 @@ abstract class PublicationItem implements EntityWithFileInfo
         $this->fileInfo = $fileInfo;
 
         return $this;
-    }
-
-    public function getFileCacheKey(): string
-    {
-        $fqn = get_class($this);
-        $lastBackslash = intval(strrpos($fqn, '\\'));
-        $classBasename = substr($fqn, $lastBackslash + 1);
-
-        return $classBasename . '-' . $this->id->toBase58();
     }
 }

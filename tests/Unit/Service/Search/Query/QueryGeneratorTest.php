@@ -88,6 +88,7 @@ class QueryGeneratorTest extends UnitTestCase
                     new ParameterBag([
                         'doctype' => [ElasticDocumentType::WOO_DECISION->value],
                         'jdg' => [Judgement::PUBLIC->value, Judgement::PARTIAL_PUBLIC->value],
+                        'dt' => ['from' => '2020-01-12', 'to' => '2024-06-20'],
                     ])
                 ),
                 limit: 15,
@@ -113,6 +114,25 @@ class QueryGeneratorTest extends UnitTestCase
                 pagination: false,
                 aggregations: false,
                 documentInquiries: ['foo', 'bar'],
+            )
+        );
+
+        $result = $result->build();
+        self::assertMatchesJsonSnapshot($result);
+        self::assertSame($this->index, $result['index']);
+    }
+
+    public function testCreateQueryWithOutDateFilter(): void
+    {
+        $result = $this->queryGenerator->createQuery(
+            new Config(
+                facetInputs: $this->facetInputFactory->fromParameterBag(
+                    new ParameterBag([
+                        'dt' => ['without_date' => '1'],
+                    ])
+                ),
+                pagination: false,
+                aggregations: false,
             )
         );
 

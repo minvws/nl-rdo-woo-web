@@ -12,7 +12,7 @@ use App\Entity\Judgement;
 use App\Service\Inventory\Sanitizer\InventoryDataProviderInterface;
 use App\Service\Inventory\Sanitizer\InventorySanitizer;
 use App\Service\Inventory\Sanitizer\InventoryWriterInterface;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -23,7 +23,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class InventorySanitizerTest extends MockeryTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
-    private DocumentStorageService&MockInterface $documentStorage;
+    private EntityStorageService&MockInterface $entityStorageService;
     private TranslatorInterface&MockInterface $translator;
     private InventoryWriterInterface&MockInterface $writer;
     private UrlGeneratorInterface&MockInterface $urlGenerator;
@@ -33,7 +33,7 @@ class InventorySanitizerTest extends MockeryTestCase
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->documentStorage = \Mockery::mock(DocumentStorageService::class);
+        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->translator = \Mockery::mock(TranslatorInterface::class);
         $this->writer = \Mockery::mock(InventoryWriterInterface::class);
         $this->urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
@@ -42,7 +42,7 @@ class InventorySanitizerTest extends MockeryTestCase
 
         $this->sanitizer = new InventorySanitizer(
             $this->entityManager,
-            $this->documentStorage,
+            $this->entityStorageService,
             $this->translator,
             $this->writer,
             $this->urlGenerator,
@@ -109,7 +109,7 @@ class InventorySanitizerTest extends MockeryTestCase
         $this->dataProvider->expects('getFilename')->andReturn('foo-bar');
         $this->entityManager->expects('persist')->with($inventory);
 
-        $this->documentStorage->expects('storeDocument')->andReturnTrue();
+        $this->entityStorageService->expects('storeEntity')->andReturnTrue();
 
         $this->sanitizer->generateSanitizedInventory($this->dataProvider);
     }

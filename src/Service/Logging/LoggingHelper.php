@@ -14,7 +14,7 @@ class LoggingHelper
         private readonly iterable $loggingTypes,
     ) {
         foreach ($this->loggingTypes as $loggingType) {
-            $this->loggers[get_class($loggingType)] = $loggingType;
+            $this->loggers[$loggingType::class] = $loggingType;
         }
     }
 

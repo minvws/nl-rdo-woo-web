@@ -3,47 +3,46 @@
 namespace App\Tests\Factory;
 
 use App\Entity\Department;
-use App\Repository\DepartmentRepository;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
 
 /**
- * @extends ModelFactory<Department>
+ * @method        \App\Entity\Department|\Zenstruck\Foundry\Persistence\Proxy                                                           create(array|callable $attributes = [])
+ * @method static \App\Entity\Department|\Zenstruck\Foundry\Persistence\Proxy                                                           createOne(array $attributes = [])
+ * @method static \App\Entity\Department|\Zenstruck\Foundry\Persistence\Proxy                                                           find(object|array|mixed $criteria)
+ * @method static \App\Entity\Department|\Zenstruck\Foundry\Persistence\Proxy                                                           findOrCreate(array $attributes)
+ * @method static \App\Entity\Department|\Zenstruck\Foundry\Persistence\Proxy                                                           first(string $sortedField = 'id')
+ * @method static \App\Entity\Department|\Zenstruck\Foundry\Persistence\Proxy                                                           last(string $sortedField = 'id')
+ * @method static \App\Entity\Department|\Zenstruck\Foundry\Persistence\Proxy                                                           random(array $attributes = [])
+ * @method static \App\Entity\Department|\Zenstruck\Foundry\Persistence\Proxy                                                           randomOrCreate(array $attributes = [])
+ * @method static \App\Entity\Department[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                       all()
+ * @method static \App\Entity\Department[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                       createMany(int $number, array|callable $attributes = [])
+ * @method static \App\Entity\Department[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                       createSequence(iterable|callable $sequence)
+ * @method static \App\Entity\Department[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                       findBy(array $attributes)
+ * @method static \App\Entity\Department[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                       randomRange(int $min, int $max, array $attributes = [])
+ * @method static \App\Entity\Department[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                       randomSet(int $number, array $attributes = [])
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Entity\Department|\Zenstruck\Foundry\Persistence\Proxy>                     many(int $min, int|null $max = null)
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Entity\Department|\Zenstruck\Foundry\Persistence\Proxy>                     sequence(iterable|callable $sequence)
+ * @method static \Zenstruck\Foundry\Persistence\ProxyRepositoryDecorator<\App\Entity\Department, \App\Repository\DepartmentRepository> repository()
  *
- * @method        Department|Proxy                     create(array|callable $attributes = [])
- * @method static Department|Proxy                     createOne(array $attributes = [])
- * @method static Department|Proxy                     find(object|array|mixed $criteria)
- * @method static Department|Proxy                     findOrCreate(array $attributes)
- * @method static Department|Proxy                     first(string $sortedField = 'id')
- * @method static Department|Proxy                     last(string $sortedField = 'id')
- * @method static Department|Proxy                     random(array $attributes = [])
- * @method static Department|Proxy                     randomOrCreate(array $attributes = [])
- * @method static DepartmentRepository|RepositoryProxy repository()
- * @method static Department[]|Proxy[]                 all()
- * @method static Department[]|Proxy[]                 createMany(int $number, array|callable $attributes = [])
- * @method static Department[]|Proxy[]                 createSequence(iterable|callable $sequence)
- * @method static Department[]|Proxy[]                 findBy(array $attributes)
- * @method static Department[]|Proxy[]                 randomRange(int $min, int $max, array $attributes = [])
- * @method static Department[]|Proxy[]                 randomSet(int $number, array $attributes = [])
+ * @phpstan-method \App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department> create(array|callable $attributes = [])
+ * @phpstan-method static \App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department> createOne(array $attributes = [])
+ * @phpstan-method static \App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department> find(object|array|mixed $criteria)
+ * @phpstan-method static \App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department> findOrCreate(array $attributes)
+ * @phpstan-method static \App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department> first(string $sortedField = 'id')
+ * @phpstan-method static \App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department> last(string $sortedField = 'id')
+ * @phpstan-method static \App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department> random(array $attributes = [])
+ * @phpstan-method static \App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department> randomOrCreate(array $attributes = [])
+ * @phpstan-method static list<\App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department>> all()
+ * @phpstan-method static list<\App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department>> createMany(int $number, array|callable $attributes = [])
+ * @phpstan-method static list<\App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department>> createSequence(iterable|callable $sequence)
+ * @phpstan-method static list<\App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department>> findBy(array $attributes)
+ * @phpstan-method static list<\App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department>> randomRange(int $min, int $max, array $attributes = [])
+ * @phpstan-method static list<\App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department>> randomSet(int $number, array $attributes = [])
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department>> many(int $min, int|null $max = null)
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Entity\Department&\Zenstruck\Foundry\Persistence\Proxy<\App\Entity\Department>> sequence(iterable|callable $sequence)
  *
- * @phpstan-method        Proxy<Department> create(array|callable $attributes = [])
- * @phpstan-method static Proxy<Department> createOne(array $attributes = [])
- * @phpstan-method static Proxy<Department> find(object|array|mixed $criteria)
- * @phpstan-method static Proxy<Department> findOrCreate(array $attributes)
- * @phpstan-method static Proxy<Department> first(string $sortedField = 'id')
- * @phpstan-method static Proxy<Department> last(string $sortedField = 'id')
- * @phpstan-method static Proxy<Department> random(array $attributes = [])
- * @phpstan-method static Proxy<Department> randomOrCreate(array $attributes = [])
- * @phpstan-method static RepositoryProxy<Department> repository()
- * @phpstan-method static list<Proxy<Department>> all()
- * @phpstan-method static list<Proxy<Department>> createMany(int $number, array|callable $attributes = [])
- * @phpstan-method static list<Proxy<Department>> createSequence(iterable|callable $sequence)
- * @phpstan-method static list<Proxy<Department>> findBy(array $attributes)
- * @phpstan-method static list<Proxy<Department>> randomRange(int $min, int $max, array $attributes = [])
- * @phpstan-method static list<Proxy<Department>> randomSet(int $number, array $attributes = [])
+ * @extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory<\App\Entity\Department>
  */
-final class DepartmentFactory extends ModelFactory
+final class DepartmentFactory extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -58,9 +57,9 @@ final class DepartmentFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
-     * @todo add your default values here
+     * @return array<string, mixed>
      */
-    protected function getDefaults(): array
+    protected function defaults(): array
     {
         return [
             'name' => self::faker()->unique()->words(nb: 6, asText: true),
@@ -71,14 +70,14 @@ final class DepartmentFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    protected function initialize(): self
+    protected function initialize(): static
     {
         return $this
             // ->afterInstantiate(function(Department $department): void {})
         ;
     }
 
-    protected static function getClass(): string
+    public static function class(): string
     {
         return Department::class;
     }

@@ -1,8 +1,8 @@
 *** Settings ***
 Documentation       Resource file with generic keywords.
 Library             OperatingSystem
-Library             Browser
 Library             Process
+Library             Browser
 
 
 *** Keywords ***

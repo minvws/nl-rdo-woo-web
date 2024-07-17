@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Service;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\IndexDossierMessage;
+use App\Domain\Search\Index\Dossier\IndexDossierCommand;
 use App\Entity\DecisionDocument;
 use App\Entity\Document;
 use App\Entity\FileInfo;
@@ -17,7 +17,7 @@ use App\Service\DossierService;
 use App\Service\DossierWizard\WizardStatusFactory;
 use App\Service\HistoryService;
 use App\Service\Inquiry\InquirySessionService;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -34,7 +34,7 @@ class DossierServiceTest extends MockeryTestCase
     private WooDecision&MockInterface $dossier;
     private MessageBusInterface&MockInterface $messageBus;
     private LoggerInterface&MockInterface $logger;
-    private DocumentStorageService&MockInterface $documentStorage;
+    private EntityStorageService&MockInterface $entityStorageService;
     private HistoryService&MockInterface $historyService;
     private InquirySessionService&MockInterface $inquirySession;
     private WizardStatusFactory&MockInterface $wizardStatusFactory;
@@ -44,7 +44,7 @@ class DossierServiceTest extends MockeryTestCase
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
-        $this->documentStorage = \Mockery::mock(DocumentStorageService::class);
+        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->inquirySession = \Mockery::mock(InquirySessionService::class);
         $this->historyService = \Mockery::mock(HistoryService::class);
 
@@ -55,7 +55,7 @@ class DossierServiceTest extends MockeryTestCase
             $this->messageBus,
             $this->logger,
             $this->inquirySession,
-            $this->documentStorage,
+            $this->entityStorageService,
             $this->wizardStatusFactory,
             $this->historyService,
         );
@@ -135,7 +135,7 @@ class DossierServiceTest extends MockeryTestCase
         $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
 
         $this->messageBus->expects('dispatch')
-            ->with(\Mockery::type(IndexDossierMessage::class))
+            ->with(\Mockery::type(IndexDossierCommand::class))
             ->andReturns(new Envelope(new \stdClass()));
 
         $this->dossierService->updateDetails($this->dossier);
@@ -152,7 +152,7 @@ class DossierServiceTest extends MockeryTestCase
         $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
 
         $this->messageBus->expects('dispatch')
-            ->with(\Mockery::type(IndexDossierMessage::class))
+            ->with(\Mockery::type(IndexDossierCommand::class))
             ->andReturns(new Envelope(new \stdClass()));
 
         $this->dossierService->updateDetails($this->dossier);
@@ -168,8 +168,8 @@ class DossierServiceTest extends MockeryTestCase
         $this->logger->expects('info');
         $this->entityManager->expects('persist')->with(\Mockery::type(DecisionDocument::class));
 
-        $this->documentStorage
-            ->expects('storeDocument')
+        $this->entityStorageService
+            ->expects('storeEntity')
             ->with($upload, \Mockery::type(DecisionDocument::class))
             ->andReturnTrue();
 
@@ -201,8 +201,8 @@ class DossierServiceTest extends MockeryTestCase
         $this->logger->expects('info');
         $this->entityManager->expects('persist')->with($decisionDocument);
 
-        $this->documentStorage
-            ->expects('storeDocument')
+        $this->entityStorageService
+            ->expects('storeEntity')
             ->with($upload, \Mockery::type(DecisionDocument::class))
             ->andReturnTrue();
 

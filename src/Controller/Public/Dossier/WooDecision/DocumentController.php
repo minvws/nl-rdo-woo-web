@@ -13,7 +13,7 @@ use App\Repository\DocumentRepository;
 use App\Service\DossierService;
 use App\Service\DownloadResponseHelper;
 use App\Service\Search\SearchService;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -33,7 +33,7 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 class DocumentController extends AbstractController
 {
     public function __construct(
-        private readonly DocumentStorageService $documentStorage,
+        private readonly EntityStorageService $entityStorageService,
         private readonly ThumbnailStorageService $thumbnailStorage,
         private readonly SearchService $searchService,
         private readonly DocumentRepository $documentRepository,
@@ -162,7 +162,7 @@ class DocumentController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $stream = $this->documentStorage->retrieveResourcePage($document, intval($pageNr));
+        $stream = $this->entityStorageService->retrieveResourcePage($document, intval($pageNr));
         if (! $stream) {
             throw new NotFoundHttpException();
         }

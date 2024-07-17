@@ -4,48 +4,47 @@ namespace App\Tests\Factory\Publication\Dossier\Type\Covenant;
 
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachmentRepository;
 use App\Tests\Factory\FileInfoFactory;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
 
 /**
- * @extends ModelFactory<CovenantAttachment>
+ * @method        \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                 create(array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                 createOne(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                 find(object|array|mixed $criteria)
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                 findOrCreate(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                 first(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                 last(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                 random(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                 randomOrCreate(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                             all()
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                             createMany(int $number, array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                             createSequence(iterable|callable $sequence)
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                             findBy(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                             randomRange(int $min, int $max, array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                             randomSet(int $number, array $attributes = [])
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment|\Zenstruck\Foundry\Persistence\Proxy>                                                           many(int $min, int|null $max = null)
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment|\Zenstruck\Foundry\Persistence\Proxy>                                                           sequence(iterable|callable $sequence)
+ * @method static \Zenstruck\Foundry\Persistence\ProxyRepositoryDecorator<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment, \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachmentRepository> repository()
  *
- * @method        CovenantAttachment|Proxy                     create(array|callable $attributes = [])
- * @method static CovenantAttachment|Proxy                     createOne(array $attributes = [])
- * @method static CovenantAttachment|Proxy                     find(object|array|mixed $criteria)
- * @method static CovenantAttachment|Proxy                     findOrCreate(array $attributes)
- * @method static CovenantAttachment|Proxy                     first(string $sortedField = 'id')
- * @method static CovenantAttachment|Proxy                     last(string $sortedField = 'id')
- * @method static CovenantAttachment|Proxy                     random(array $attributes = [])
- * @method static CovenantAttachment|Proxy                     randomOrCreate(array $attributes = [])
- * @method static CovenantAttachmentRepository|RepositoryProxy repository()
- * @method static CovenantAttachment[]|Proxy[]                 all()
- * @method static CovenantAttachment[]|Proxy[]                 createMany(int $number, array|callable $attributes = [])
- * @method static CovenantAttachment[]|Proxy[]                 createSequence(iterable|callable $sequence)
- * @method static CovenantAttachment[]|Proxy[]                 findBy(array $attributes)
- * @method static CovenantAttachment[]|Proxy[]                 randomRange(int $min, int $max, array $attributes = [])
- * @method static CovenantAttachment[]|Proxy[]                 randomSet(int $number, array $attributes = [])
+ * @phpstan-method \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment> create(array|callable $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment> createOne(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment> find(object|array|mixed $criteria)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment> findOrCreate(array $attributes)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment> first(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment> last(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment> random(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment> randomOrCreate(array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment>> all()
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment>> createMany(int $number, array|callable $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment>> createSequence(iterable|callable $sequence)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment>> findBy(array $attributes)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment>> randomRange(int $min, int $max, array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment>> randomSet(int $number, array $attributes = [])
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment>> many(int $min, int|null $max = null)
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment>> sequence(iterable|callable $sequence)
  *
- * @phpstan-method        Proxy<CovenantAttachment> create(array|callable $attributes = [])
- * @phpstan-method static Proxy<CovenantAttachment> createOne(array $attributes = [])
- * @phpstan-method static Proxy<CovenantAttachment> find(object|array|mixed $criteria)
- * @phpstan-method static Proxy<CovenantAttachment> findOrCreate(array $attributes)
- * @phpstan-method static Proxy<CovenantAttachment> first(string $sortedField = 'id')
- * @phpstan-method static Proxy<CovenantAttachment> last(string $sortedField = 'id')
- * @phpstan-method static Proxy<CovenantAttachment> random(array $attributes = [])
- * @phpstan-method static Proxy<CovenantAttachment> randomOrCreate(array $attributes = [])
- * @phpstan-method static RepositoryProxy<CovenantAttachment> repository()
- * @phpstan-method static list<Proxy<CovenantAttachment>> all()
- * @phpstan-method static list<Proxy<CovenantAttachment>> createMany(int $number, array|callable $attributes = [])
- * @phpstan-method static list<Proxy<CovenantAttachment>> createSequence(iterable|callable $sequence)
- * @phpstan-method static list<Proxy<CovenantAttachment>> findBy(array $attributes)
- * @phpstan-method static list<Proxy<CovenantAttachment>> randomRange(int $min, int $max, array $attributes = [])
- * @phpstan-method static list<Proxy<CovenantAttachment>> randomSet(int $number, array $attributes = [])
+ * @extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory<\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment>
  */
-final class CovenantAttachmentFactory extends ModelFactory
+final class CovenantAttachmentFactory extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -60,9 +59,9 @@ final class CovenantAttachmentFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
-     * @todo add your default values here
+     * @return array<string, mixed>
      */
-    protected function getDefaults(): array
+    protected function defaults(): array
     {
         return [
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
@@ -80,12 +79,12 @@ final class CovenantAttachmentFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    protected function initialize(): self
+    protected function initialize(): static
     {
         return $this;
     }
 
-    protected static function getClass(): string
+    public static function class(): string
     {
         return CovenantAttachment::class;
     }

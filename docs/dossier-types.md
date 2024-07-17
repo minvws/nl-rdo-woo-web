@@ -128,7 +128,7 @@ See ``WooDecisionIngestStrategy`` for an example.
 
 ### Search index mapper
 
-- Add a new case to the ``ElasticDocumentType`` enum.
+- Add a new case to the ``ElasticDocumentType`` enum. Also update the ``getMainTypes`` method.
 - Implement ``ElasticDossierMapperInterface`` if needed. All dossier types automatically use the ``DefaultDossierMapper`` which indexes common properties from ``AbstractDossier``.
 If you need to map additional data into ElasticSearch that is specific to the dossier type you should implement a custom mapper. In that case you probably also need to add new fields to the ES schema.
 See ``WooDecisionMapper`` for an example. If you implement the ``ElasticDossierMapperInterface`` your mapper will be autowired with a higher priority than the default mapper.

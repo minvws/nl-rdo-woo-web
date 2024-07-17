@@ -13,13 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
 
 #[ORM\Entity(repositoryClass: CovenantAttachmentRepository::class)]
-#[ORM\HasLifecycleCallbacks]
 class CovenantAttachment extends AbstractAttachment
 {
-    #[ORM\ManyToOne(targetEntity: Covenant::class, inversedBy: 'attachments')]
-    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private Covenant $dossier;
-
     public function __construct(
         AbstractDossier $dossier,
         \DateTimeImmutable $formalDate,
@@ -35,11 +30,6 @@ class CovenantAttachment extends AbstractAttachment
         $this->type = $type;
         $this->language = $language;
         $this->fileInfo->setPaginatable(true);
-    }
-
-    public function getDossier(): Covenant
-    {
-        return $this->dossier;
     }
 
     public function getUploadGroupId(): UploadGroupId

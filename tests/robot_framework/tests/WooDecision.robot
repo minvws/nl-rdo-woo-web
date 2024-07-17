@@ -23,7 +23,7 @@ ${DOSSIER_REFERENCE}    ${EMPTY}
 Upload a production report with N public files and a zip with N-1 files
   Create New Dossier  woo-decision
   Fill Out Basic Details
-  Fill Out Decision Details  Openbaarmaking  tests/robot_framework/files/besluitbrief.pdf
+  Fill Out Decision Details  Openbaarmaking
   Upload Inventory  tests/robot_framework/files/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
   Upload Document Zip  tests/robot_framework/files/documenten - 10-1.zip
@@ -32,18 +32,19 @@ Upload a production report with N public files and a zip with N-1 files
 Upload a production report with N public files and a zip with N+1 files
   Create New Dossier  woo-decision
   Fill Out Basic Details
-  Fill Out Decision Details  Openbaarmaking  tests/robot_framework/files/besluitbrief.pdf
+  Fill Out Decision Details  Openbaarmaking
   Upload Inventory  tests/robot_framework/files/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
   Upload Document Zip  tests/robot_framework/files/documenten - 10+1.zip
   Verify Document Upload Completed
+  Click Continue To Publish
   Publish Dossier And Return To Admin Home
   Check Document Existence On Public  Dummy PDF file
 
 Upload a production report with N public files and a zip with N other files
   Create New Dossier  woo-decision
   Fill Out Basic Details
-  Fill Out Decision Details  Openbaarmaking  tests/robot_framework/files/besluitbrief.pdf
+  Fill Out Decision Details  Openbaarmaking
   Upload Inventory  tests/robot_framework/files/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
   Upload Document Zip  tests/robot_framework/files/documenten - 10 andere.zip
@@ -52,11 +53,12 @@ Upload a production report with N public files and a zip with N other files
 Upload a production report with N public files, M non-public files, and a zip with N + M files
   Create New Dossier  woo-decision
   Fill Out Basic Details
-  Fill Out Decision Details  Openbaarmaking  tests/robot_framework/files/besluitbrief.pdf
+  Fill Out Decision Details  Openbaarmaking
   Upload Inventory  tests/robot_framework/files/productierapport - 8 openbaar 2 niet openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 8 van 8 documenten.
   Upload Document Zip  tests/robot_framework/files/documenten - 10.zip
   Verify Document Upload Completed
+  Click Continue To Publish
   Publish Dossier And Return To Admin Home
   Check Document Existence On Public  duizendacht
   Check Document Existence On Public  duizendtien
@@ -68,7 +70,7 @@ Upload a production report with N public files, M already public files, and a zi
   ...  number_of_documents=2
   Create New Dossier  woo-decision
   Fill Out Basic Details
-  Fill Out Decision Details  Openbaarmaking  tests/robot_framework/files/besluitbrief.pdf
+  Fill Out Decision Details  Openbaarmaking
   Upload Inventory  tests/robot_framework/files/productierapport - 8 openbaar 2 niet openbaar.xlsx  ${TRUE}
   Verify Inventory Error  Regel 1: documentnummer 1001 bestaat al in een ander dossier
   Verify Inventory Error  Regel 2: documentnummer 1002 bestaat al in een ander dossier
@@ -121,7 +123,7 @@ In a public dossier with N public files, retract one of the documents
   Click Documents Edit
   Open Document In Dossier  1001
   Retract Document
-  Click Breadcrumb Element 3
+  Click Breadcrumb Element  3
   Click Public URL
   Verify Notification  Dit document is op dit moment niet beschikbaar.
   Verify Document History  Ingetrokken met reden
@@ -166,7 +168,7 @@ In a public dossier with N public files, retract all documents via the Danger Zo
 Create a publication that becomes public in the future
   Create New Dossier  woo-decision
   Fill Out Basic Details
-  Fill Out Decision Details  Openbaarmaking  tests/robot_framework/files/besluitbrief.pdf
+  Fill Out Decision Details  Openbaarmaking
   Upload Inventory  tests/robot_framework/files/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
   Upload Document Zip  tests/robot_framework/files/documenten - 10.zip
@@ -180,6 +182,30 @@ Create a publication that becomes public in the future
   ${next_week_localized} =  Convert Timestamp Format  ${next_week}  time_format=d MMMM y  locale=nl
   Verify Publication Confirmation  ${today_localized}  ${next_week_localized}
   # TODO: Click the Public URL without getting a 404?
+
+In a public dossier with N public files, replace the production report with a copy where one document is replaced with a new document
+  [Tags]  deze
+  Publish Test Dossier
+  ...  inventory=tests/robot_framework/files/productierapport - 10 openbaar.xlsx
+  ...  documents=tests/robot_framework/files/documenten - 10.zip
+  ...  number_of_documents=10
+  Search For A Publication  ${DOSSIER_REFERENCE}
+  Click Documents Edit
+  Click Replace Report
+  Upload Inventory  tests/robot_framework/files/productierapport - 10 openbaar waarvan 1 verwisseld.xlsx  ${TRUE}
+  Verify Inventory Replace  1001 mist in het productierapport
+
+Retract a document that has already been published
+  Publish Test Dossier
+  ...  inventory=tests/robot_framework/files/productierapport - 10 openbaar.xlsx
+  ...  documents=tests/robot_framework/files/documenten - 10.zip
+  ...  number_of_documents=10
+  Search For A Publication  ${DOSSIER_REFERENCE}
+  Click Documents Edit
+  Open Document In Dossier  1001
+  Retract Document
+  Click Breadcrumb Element  2
+  Verify Document Retraction  1001
 
 
 *** Keywords ***
@@ -195,11 +221,12 @@ Publish Test Dossier
   [Arguments]  ${inventory}  ${documents}  ${number_of_documents}
   Create New Dossier  woo-decision
   Fill Out Basic Details
-  Fill Out Decision Details  Openbaarmaking  tests/robot_framework/files/besluitbrief.pdf
+  Fill Out Decision Details  Openbaarmaking
   Upload Inventory  ${inventory}
   Verify Document Upload Remaining  Nog te uploaden: ${number_of_documents} van ${number_of_documents} documenten.
   Upload Document Zip  ${documents}
   Verify Document Upload Completed
+  Click Continue To Publish
   Publish Dossier And Return To Admin Home
 
 Verify Document Retraction

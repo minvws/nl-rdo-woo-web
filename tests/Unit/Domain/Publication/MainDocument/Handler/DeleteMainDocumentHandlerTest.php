@@ -14,9 +14,9 @@ use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use App\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent;
 use App\Domain\Publication\MainDocument\Handler\DeleteMainDocumentHandler;
+use App\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface;
 use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 use App\Entity\FileInfo;
-use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -33,7 +33,7 @@ class DeleteMainDocumentHandlerTest extends MockeryTestCase
     private DossierWorkflowManager&MockInterface $dossierWorkflowManager;
     private DeleteMainDocumentHandler $handler;
     private AbstractDossierRepository&MockInterface $dossierRepository;
-    private DocumentStorageService&MockInterface $documentStorage;
+    private MainDocumentDeleteStrategyInterface&MockInterface $deleteStrategy;
 
     public function setUp(): void
     {
@@ -42,14 +42,14 @@ class DeleteMainDocumentHandlerTest extends MockeryTestCase
         $this->dossierRepository = \Mockery::mock(AbstractDossierRepository::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
-        $this->documentStorage = \Mockery::mock(DocumentStorageService::class);
+        $this->deleteStrategy = \Mockery::mock(MainDocumentDeleteStrategyInterface::class);
 
         $this->handler = new DeleteMainDocumentHandler(
             $this->messageBus,
             $this->dossierWorkflowManager,
             $this->entityManager,
             $this->dossierRepository,
-            $this->documentStorage,
+            [$this->deleteStrategy],
         );
 
         parent::setUp();
@@ -94,7 +94,7 @@ class DeleteMainDocumentHandlerTest extends MockeryTestCase
             }
         ))->andReturns(new Envelope(new \stdClass()));
 
-        $this->documentStorage->expects('removeFileForEntity')->with($annualReportDocument);
+        $this->deleteStrategy->expects('delete')->with($annualReportDocument);
 
         $this->handler->__invoke(
             new DeleteMainDocumentCommand($dossierUuid)

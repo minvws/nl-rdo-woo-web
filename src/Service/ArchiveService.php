@@ -8,7 +8,7 @@ use App\Entity\BatchDownload;
 use App\Entity\Document;
 use App\Entity\EntityWithBatchDownload;
 use App\Repository\DocumentRepository;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
@@ -22,7 +22,7 @@ class ArchiveService
 {
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
-        private readonly DocumentStorageService $storageService,
+        private readonly EntityStorageService $entityStorageService,
         private readonly FilesystemOperator $storage,
         private readonly LoggerInterface $logger,
         private readonly DocumentRepository $documentRepository,
@@ -81,7 +81,7 @@ class ArchiveService
             }
 
             // Load the document from the storage service locally, and add it to the ZIP archive.
-            $localPath = $this->storageService->downloadDocument($document);
+            $localPath = $this->entityStorageService->downloadEntity($document);
             if (! $localPath || ! file_exists($localPath)) {
                 $this->logger->error('Could not save document to local path', [
                     'batch_id' => $batch->getId()->toRfc4122(),
@@ -125,7 +125,7 @@ class ArchiveService
 
         // Remove all temporary local files
         foreach ($localPaths as $localPath) {
-            $this->storageService->removeDownload($localPath);
+            $this->entityStorageService->removeDownload($localPath);
         }
         unlink($zipArchivePath);
 

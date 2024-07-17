@@ -15,4 +15,20 @@ class IndexException extends \RuntimeException
             $dossierType->value,
         ));
     }
+
+    public static function forUnsupportedSubType(object $entity): self
+    {
+        return new self(sprintf(
+            'Cannot index subtype of class %s',
+            $entity::class,
+        ));
+    }
+
+    public static function noTypeFoundForEntity(object $entity): self
+    {
+        return new self(sprintf(
+            'No ES document type defined for entity of class %s',
+            get_class($entity),
+        ));
+    }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Service\Worker\Pdf\Tools\Tesseract;
-use App\Service\Worker\Pdf\Tools\Tika;
+use App\Service\Worker\Pdf\Tools\TesseractService;
+use App\Service\Worker\Pdf\Tools\TikaService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,8 +15,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class ExtractContent extends Command
 {
     public function __construct(
-        private readonly Tika $tika,
-        private readonly Tesseract $tesseract,
+        private readonly TikaService $tika,
+        private readonly TesseractService $tesseract,
     ) {
         parent::__construct();
     }

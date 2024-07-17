@@ -13,9 +13,35 @@ ${CURRENT_TIME}             ${EMPTY}
 ${CURRENT_DATE}             ${EMPTY}
 ${CURRENT_DATE_FORMAT2}     ${EMPTY}
 ${CURRENT_EPOCH}            ${EMPTY}
+${DOSSIER_REFERENCE}        ${EMPTY}
 
 
 *** Keywords ***
+Fill Out Basic Details
+  [Arguments]  ${date_from}=2021-12-01T00:00:00+00:00  ${date_to}=2023-01-31T00:00:00+00:00  ${type}=${EMPTY}
+  Generate Dossier Reference Number
+  Fill Text  id=details_title  Robot ${DOSSIER_REFERENCE}
+  IF  '${type}' == 'disposition' or '${type}' == 'investigation-report' or '${type}' == 'complaint-judgement'
+    Type Text  id=details_date  01012022
+  ELSE IF  '${type}' == 'annual-report'
+    Select Options By  id=details_year  index  5
+  ELSE
+    Select Options By  id=details_date_from  value  ${date_from}
+    Select Options By  id=details_date_to  value  ${date_to}
+  END
+  Select Options By  id=details_departments  index  0
+  IF  '${type}' == 'woo-decision'
+    Check Checkbox  text=Woo-verzoek
+    Select Options By  id=details_default_subjects  label  Opstart Corona
+  END
+  Select Options By  id=details_documentPrefix_documentPrefix  index  1
+  Fill Text  id=details_dossierNr  ${DOSSIER_REFERENCE}
+  Click  "Opslaan en verder"
+
+Generate Dossier Reference Number
+  ${reference_number} =  Generate Random String  3  [NUMBERS][UPPER]
+  Set Test Variable  $DOSSIER_REFERENCE  ${reference_number}
+
 Create WooDecision Dossier - CI
   Create New Dossier  woo-decision
   Fill Out Basic Details
@@ -28,13 +54,6 @@ Create WooDecision Dossier - CI
   Click  "Opslaan en klaarzetten"
   Verify Dossier Confirmation  Openbaar
   Logout Admin
-
-Fill Out Decision Details
-  [Arguments]  ${decision}  ${decision_document_location}
-  Check Checkbox  text="${decision}"
-  Fill Text  id=decision_summary  Samenvatting voor het besluitdossier Robot ${CURRENT_TIME}
-  Upload File By Selector  id=decision_decision_document  ${decision_document_location}
-  Click  "Opslaan en verder"
 
 Verify Dossier Confirmation
   [Arguments]  ${dossier_status}
@@ -192,17 +211,22 @@ Click New Dossier
 Choose Dossier Type
   [Documentation]  Check if there is an option to choose Convenant or Woo -- This is only shown when you have super-admin permissions.
   [Arguments]  ${dossier_type}=woo-decision
-  ${old_timeout} =  Set Browser Timeout  1s
-  ${present} =  Run Keyword And Return Status  Get Element  //*[@data-e2e-name="create-dossier-type-${dossier_type}"]
-  IF  ${present}
-    Click  //*[@data-e2e-name="create-dossier-type-${dossier_type}"]
-  END
-  Set Browser Timeout  ${old_timeout}
+  Click  //*[@data-e2e-name="create-dossier-type-${dossier_type}"]
 
 Publish Dossier And Return To Admin Home
-  Click Continue To Publish
-  Click Save And Prepare
-  Click Publications
+  [Arguments]  ${publication_status}=Gepubliceerd
+  IF  "${publication_status}" == "Gepubliceerd"
+    Click Save And Prepare
+    Click Publications
+  ELSE IF  "${publication_status}" == "Gepland"
+    ${timestamp} =  Get Current Date
+    ${next_year} =  Add Time To Date  ${timestamp}  730 days
+    Fill Publication Date  ${next_year}
+    Click Save And Prepare
+    Click Publications
+  ELSE IF  "${publication_status}" == "Concept"
+    Click Publications
+  END
 
 Click Publications
   Click  "Publicaties"

@@ -17,6 +17,7 @@ use App\SourceType;
 use App\Tests\Faker\FakerFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Faker\Generator;
+use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
  * Class that generates fake document/page/dossier data that can be used for debugging and development purposes.
@@ -26,6 +27,7 @@ use Faker\Generator;
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
+#[When('dev')]
 class FakeDataGenerator
 {
     protected Generator $faker;

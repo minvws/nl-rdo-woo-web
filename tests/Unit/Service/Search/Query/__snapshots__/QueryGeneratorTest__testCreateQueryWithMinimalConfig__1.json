@@ -53,7 +53,13 @@
                                             {
                                                 "terms": {
                                                     "type": [
-                                                        "document"
+                                                        "document",
+                                                        "covenant_main_document",
+                                                        "annual_report_main_document",
+                                                        "investigation_report_main_document",
+                                                        "disposition_main_document",
+                                                        "complaint_judgement_main_document",
+                                                        "attachment"
                                                     ]
                                                 }
                                             },
@@ -82,12 +88,6 @@
             "unique_dossiers": {
                 "cardinality": {
                     "field": "dossier_nr",
-                    "precision_threshold": 40000
-                }
-            },
-            "unique_documents": {
-                "cardinality": {
-                    "field": "document_nr",
                     "precision_threshold": 40000
                 }
             }

@@ -4,106 +4,41 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Attachment;
 
+use App\Domain\Publication\AttachmentAndMainDocumentEntityTrait;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Entity\PublicationItem;
-use App\Service\Uploader\UploadGroupId;
-use Doctrine\DBAL\Types\Types;
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
+use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
+use App\Entity\DecisionAttachment;
+use App\Entity\EntityWithFileInfo;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use Webmozart\Assert\Assert;
 
-abstract class AbstractAttachment extends PublicationItem
+#[ORM\Entity(repositoryClass: AbstractAttachmentRepository::class)]
+#[ORM\Table(name: 'attachment')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'entity_type', type: 'string')]
+#[ORM\DiscriminatorMap([
+    'covenant_attachment' => CovenantAttachment::class,
+    'annual_report_attachment' => AnnualReportAttachment::class,
+    'decision_attachment' => DecisionAttachment::class,
+    'investigation_report_attachment' => InvestigationReportAttachment::class,
+    'disposition_attachment' => DispositionAttachment::class,
+])]
+#[ORM\HasLifecycleCallbacks]
+abstract class AbstractAttachment implements EntityWithFileInfo
 {
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    #[Assert\LessThanOrEqual(value: 'now')]
-    protected \DateTimeImmutable $formalDate;
+    use AttachmentAndMainDocumentEntityTrait;
 
-    #[ORM\Column(length: 255, enumType: AttachmentType::class)]
-    protected AttachmentType $type;
+    #[ORM\ManyToOne(targetEntity: AbstractDossier::class)]
+    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
+    protected AbstractDossier $dossier;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\Length(max: 255)]
-    protected string $internalReference = '';
-
-    #[ORM\Column(length: 255, enumType: AttachmentLanguage::class)]
-    protected AttachmentLanguage $language;
-
-    /** @var list<string> */
-    #[ORM\Column(type: Types::JSON, nullable: false)]
-    #[Assert\All([
-        new Assert\Type('string'),
-        new Assert\NotBlank(),
-    ])]
-    protected array $grounds = [];
-
-    abstract public function getUploadGroupId(): UploadGroupId;
-
-    abstract public function getDossier(): AbstractDossier;
-
-    public function getFormalDate(): \DateTimeImmutable
+    public function getDossier(): AbstractDossier&EntityWithAttachments
     {
-        return $this->formalDate;
-    }
+        Assert::isInstanceOf($this->dossier, EntityWithAttachments::class);
 
-    public function setFormalDate(\DateTimeImmutable $formalDate): void
-    {
-        $this->formalDate = $formalDate;
-    }
-
-    public function getType(): AttachmentType
-    {
-        return $this->type;
-    }
-
-    public function setType(AttachmentType $type): void
-    {
-        $this->type = $type;
-    }
-
-    /**
-     * @return list<AttachmentType>
-     */
-    public static function getAllowedTypes(): array
-    {
-        return AttachmentType::cases();
-    }
-
-    public function getInternalReference(): string
-    {
-        return $this->internalReference;
-    }
-
-    public function setInternalReference(string $internalReference): void
-    {
-        $this->internalReference = $internalReference;
-    }
-
-    public function getLanguage(): AttachmentLanguage
-    {
-        return $this->language;
-    }
-
-    public function setLanguage(AttachmentLanguage $language): void
-    {
-        $this->language = $language;
-    }
-
-    /**
-     * @return list<string>
-     */
-    public function getGrounds(): array
-    {
-        return $this->grounds;
-    }
-
-    /**
-     * @param array<array-key,string> $grounds
-     *
-     * @return $this
-     */
-    public function setGrounds(array $grounds): static
-    {
-        $this->grounds = array_values($grounds);
-
-        return $this;
+        return $this->dossier;
     }
 }

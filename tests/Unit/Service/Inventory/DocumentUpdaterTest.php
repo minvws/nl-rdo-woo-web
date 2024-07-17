@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
-use App\Domain\Ingest\IngestMetadataOnlyMessage;
+use App\Domain\Ingest\MetadataOnly\IngestMetadataOnlyCommand;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Entity\Document;
 use App\Entity\Dossier;
@@ -16,7 +16,7 @@ use App\Repository\DocumentRepository;
 use App\Service\Inventory\DocumentMetadata;
 use App\Service\Inventory\DocumentNumber;
 use App\Service\Inventory\DocumentUpdater;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -26,7 +26,7 @@ use Symfony\Component\Uid\Uuid;
 
 class DocumentUpdaterTest extends MockeryTestCase
 {
-    private MockInterface&DocumentStorageService $documentStorage;
+    private MockInterface&EntityStorageService $entityStorageService;
     private MessageBusInterface&MockInterface $messageBus;
     private DocumentUpdater $documentUpdater;
     private Dossier&MockInterface $dossier;
@@ -35,7 +35,7 @@ class DocumentUpdaterTest extends MockeryTestCase
     public function setUp(): void
     {
         $this->repository = \Mockery::mock(DocumentRepository::class);
-        $this->documentStorage = \Mockery::mock(DocumentStorageService::class);
+        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
 
         $this->dossier = \Mockery::mock(Dossier::class);
@@ -47,7 +47,7 @@ class DocumentUpdaterTest extends MockeryTestCase
 
         $this->documentUpdater = new DocumentUpdater(
             $this->messageBus,
-            $this->documentStorage,
+            $this->entityStorageService,
             $this->repository,
         );
 
@@ -83,7 +83,7 @@ class DocumentUpdaterTest extends MockeryTestCase
 
         $this->repository->expects('save')->with($existingDocument);
 
-        $this->documentStorage->shouldReceive('deleteAllFilesForDocument')->with($existingDocument);
+        $this->entityStorageService->shouldReceive('deleteAllFilesForEntity')->with($existingDocument);
         $fileInfo->expects('removeFileProperties');
         $existingDocument->expects('setPageCount')->with(0);
 
@@ -166,7 +166,7 @@ class DocumentUpdaterTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->once()
             ->with(\Mockery::on(
-                static function (IngestMetadataOnlyMessage $message) use ($docId) {
+                static function (IngestMetadataOnlyCommand $message) use ($docId) {
                     return $message->getEntityId() === $docId && $message->getForceRefresh() === false;
                 }
             ))

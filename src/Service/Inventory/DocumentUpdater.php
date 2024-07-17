@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Domain\Ingest\IngestMetadataOnlyMessage;
+use App\Domain\Ingest\MetadataOnly\IngestMetadataOnlyCommand;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Message\RemoveDocumentMessage;
 use App\Repository\DocumentRepository;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
@@ -19,7 +19,7 @@ class DocumentUpdater
 {
     public function __construct(
         private readonly MessageBusInterface $messageBus,
-        private readonly DocumentStorageService $documentStorage,
+        private readonly EntityStorageService $entityStorageService,
         private readonly DocumentRepository $documentRepository,
     ) {
     }
@@ -52,7 +52,7 @@ class DocumentUpdater
     public function asyncUpdate(Document $document): void
     {
         $this->messageBus->dispatch(
-            new IngestMetadataOnlyMessage($document->getId(), Document::class, ! $document->shouldBeUploaded())
+            new IngestMetadataOnlyCommand($document->getId(), Document::class, ! $document->shouldBeUploaded())
         );
     }
 
@@ -92,7 +92,7 @@ class DocumentUpdater
     private function removeObsoleteUpload(Document $document): void
     {
         if (! $document->shouldBeUploaded()) {
-            $this->documentStorage->deleteAllFilesForDocument($document);
+            $this->entityStorageService->deleteAllFilesForEntity($document);
             $document->getFileInfo()->removeFileProperties();
             $document->setPageCount(0);
         }

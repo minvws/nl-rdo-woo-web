@@ -46,7 +46,7 @@ final class CovenantDocumentTest extends ApiTestCase
             'organisation' => $user->getOrganisation(),
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         // There should be no covenant document yet, so 404
         $client->request(
@@ -118,7 +118,7 @@ final class CovenantDocumentTest extends ApiTestCase
             ]),
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         $response = $client->request(
             Request::METHOD_PUT,
@@ -165,7 +165,7 @@ final class CovenantDocumentTest extends ApiTestCase
             'status' => DossierStatus::CONCEPT,
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         // There should be no covenant document yet, so 404
         $client->request(
@@ -230,7 +230,7 @@ final class CovenantDocumentTest extends ApiTestCase
             'status' => DossierStatus::PUBLISHED,
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         [$uploadUuid, $uploadName] = $this->uploadDocument($client);
 

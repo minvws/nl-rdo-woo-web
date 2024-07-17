@@ -57,7 +57,7 @@ final class DecisionAttachmentTest extends ApiTestCase
         ]);
 
         $response = static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments', $dossier->getId()),
@@ -87,7 +87,7 @@ final class DecisionAttachmentTest extends ApiTestCase
         ]);
 
         static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
@@ -114,7 +114,7 @@ final class DecisionAttachmentTest extends ApiTestCase
         ]);
 
         static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
@@ -139,7 +139,7 @@ final class DecisionAttachmentTest extends ApiTestCase
             'organisation' => $user->getOrganisation(),
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         vfsStream::newFile('test_file.pdf')
             ->withContent('This is a test file.')
@@ -223,7 +223,7 @@ final class DecisionAttachmentTest extends ApiTestCase
             'organisation' => $user->getOrganisation(),
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         vfsStream::newFile('test_file.pdf')
             ->withContent('This is a test file.')
@@ -442,7 +442,7 @@ final class DecisionAttachmentTest extends ApiTestCase
         ]);
 
         static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
@@ -468,7 +468,7 @@ final class DecisionAttachmentTest extends ApiTestCase
         ]);
 
         static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
@@ -499,7 +499,7 @@ final class DecisionAttachmentTest extends ApiTestCase
         ]);
 
         $response = static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_PUT,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
@@ -523,7 +523,7 @@ final class DecisionAttachmentTest extends ApiTestCase
         $this->assertMatchesResourceItemJsonSchema(DecisionAttachmentDto::class);
 
         $response2 = static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
@@ -552,7 +552,7 @@ final class DecisionAttachmentTest extends ApiTestCase
         ]);
 
         static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
@@ -588,7 +588,7 @@ final class DecisionAttachmentTest extends ApiTestCase
         ]);
 
         static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_PUT,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),

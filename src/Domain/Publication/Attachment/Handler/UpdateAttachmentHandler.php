@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Attachment\Handler;
 
 use App\Domain\Publication\Attachment\AbstractAttachment;
-use App\Domain\Publication\Attachment\AttachmentRepositoryInterface;
+use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
 use App\Domain\Publication\Attachment\Command\UpdateAttachmentCommand;
 use App\Domain\Publication\Attachment\EntityWithAttachments;
 use App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
@@ -15,7 +15,6 @@ use App\Domain\Publication\Dossier\AbstractDossierRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Service\Uploader\UploaderService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -31,7 +30,7 @@ readonly class UpdateAttachmentHandler
     public function __construct(
         private MessageBusInterface $messageBus,
         private DossierWorkflowManager $dossierWorkflowManager,
-        private EntityManagerInterface $entityManager,
+        private AbstractAttachmentRepository $attachmentRepository,
         private AbstractDossierRepository $dossierRepository,
         private ValidatorInterface $validator,
         private UploaderService $uploaderService,
@@ -45,10 +44,7 @@ readonly class UpdateAttachmentHandler
         $dossier = $this->dossierRepository->findOneByDossierId($dossierId);
         Assert::isInstanceOf($dossier, EntityWithAttachments::class);
 
-        /** @var AttachmentRepositoryInterface $attachmentRepository */
-        $attachmentRepository = $this->entityManager->getRepository($dossier->getAttachmentEntityClass());
-        Assert::isInstanceOf($attachmentRepository, AttachmentRepositoryInterface::class);
-        $entity = $attachmentRepository->findOneOrNullForDossier($dossierId, $command->attachmentId);
+        $entity = $this->attachmentRepository->findOneOrNullForDossier($dossierId, $command->attachmentId);
         if ($entity === null) {
             throw new AttachmentNotFoundException();
         }
@@ -64,7 +60,7 @@ readonly class UpdateAttachmentHandler
 
         $this->mapUpload($command, $entity);
 
-        $attachmentRepository->save($entity, true);
+        $this->attachmentRepository->save($entity, true);
 
         $this->messageBus->dispatch(
             AttachmentUpdatedEvent::forAttachment($entity),

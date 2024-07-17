@@ -4,93 +4,90 @@ declare(strict_types=1);
 
 namespace App\Service\Worker\Pdf\Extractor;
 
-use App\Entity\Document;
+use App\Entity\EntityWithFileInfo;
 use App\Service\Stats\WorkerStatsService;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
+use App\Service\Storage\LocalFilesystem;
 use App\Service\Storage\ThumbnailStorageService;
-use App\Service\Worker\Pdf\Tools\FileUtils;
+use App\Service\Worker\Pdf\Tools\Pdftk\PdftkPageExtractResult;
+use App\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Process\Process;
+use Webmozart\Assert\Assert;
 
 /**
- * Extractor that will extract a single page as a PDF file from a multi-paged PDF document.
+ * Extractor that will extract a single page as a PDF file from a multi-paged PDF entity.
  */
-class PageExtractor implements PageExtractorInterface
+readonly class PageExtractor implements PageExtractorInterface
 {
-    protected LoggerInterface $logger;
-    protected ThumbnailStorageService $thumbnailStorage;
-    protected DocumentStorageService $documentStorage;
-    protected FileUtils $fileUtils;
-    protected WorkerStatsService $statsService;
-
     public function __construct(
-        LoggerInterface $logger,
-        ThumbnailStorageService $thumbnailStorage,
-        DocumentStorageService $documentStorage,
-        WorkerStatsService $statsService,
+        protected LoggerInterface $logger,
+        protected PdftkService $pdftkService,
+        protected ThumbnailStorageService $thumbnailStorage,
+        protected EntityStorageService $entityStorageService,
+        protected WorkerStatsService $statsService,
+        protected LocalFilesystem $localFilesystem,
     ) {
-        $this->logger = $logger;
-        $this->thumbnailStorage = $thumbnailStorage;
-        $this->documentStorage = $documentStorage;
-        $this->statsService = $statsService;
-
-        $this->fileUtils = new FileUtils();
     }
 
-    public function extract(Document $document, int $pageNr, bool $forceRefresh): void
+    public function extract(EntityWithFileInfo $entity, int $pageNr, bool $forceRefresh): void
     {
-        // TODO: Cache is temporarily disabled for #2142, to be improved and restored in #2144
-        // if (! $forceRefresh && $this->documentStorage->existsPage($document, $pageNr)) {
-        //     // Page already exists, and we are allowed to use it
-        //     return;
-        // }
+        Assert::true($entity->getFileInfo()->isPaginatable(), 'Entity is not paginatable');
+
+        // TODO: Cache is removed for #2142, to be improved and restored in #2144
         unset($forceRefresh);
 
-        /** @var string $localPath */
-        $localPath = $this->statsService->measure('download.document', function ($document) {
-            return $this->documentStorage->downloadDocument($document);
-        }, [$document]);
+        /** @var string|false $localPath */
+        $localPath = $this->statsService->measure(
+            'download.entity',
+            fn (): string|false => $this->entityStorageService->downloadEntity($entity),
+        );
 
-        if (! $localPath) {
-            $this->logger->error('cannot download document from storage', [
-                'document' => $document->getId(),
+        if ($localPath === false) {
+            $this->logger->error('cannot download entity from storage', [
+                'id' => $entity->getId(),
+                'class' => $entity::class,
             ]);
 
             return;
         }
 
-        $tempDir = $this->fileUtils->createTempDir();
+        $tempDir = $this->localFilesystem->createTempDir();
+        if ($tempDir === false) {
+            $this->logger->error('Failed creating temp dir', [
+                'id' => $entity->getId(),
+                'class' => $entity::class,
+            ]);
+
+            return;
+        }
         $targetPath = $tempDir . '/page.pdf';
 
-        /** @var Process $process */
-        $process = $this->statsService->measure('pdftk', function ($localPath, $pageNr, $targetPath, $logger) {
-            $params = ['/usr/bin/pdftk', $localPath, 'cat', $pageNr, 'output', $targetPath];
-            $logger->debug('EXEC: ' . join(' ', $params));
-            $process = new Process($params);
-            $process->run();
-
-            return $process;
-        }, [$localPath, $pageNr, $targetPath, $this->logger]);
+        /** @var PdftkPageExtractResult $pdftkPageExtractResult */
+        $pdftkPageExtractResult = $this->statsService->measure(
+            'pdftk.extractPage',
+            fn (): PdftkPageExtractResult => $this->pdftkService->extractPage($localPath, $pageNr, $targetPath),
+        );
 
         // Remove local file
-        $this->documentStorage->removeDownload($localPath);
+        $this->entityStorageService->removeDownload($localPath);
 
-        if (! $process->isSuccessful()) {
-            $this->logger->error('Failed to fetch PDF page: ', [
-                'document' => $document->getId(),
-                'pageNr' => $pageNr,
-                'sourcePath' => $localPath,
-                'targetPath' => $targetPath,
-                'error_output' => $process->getErrorOutput(),
+        if ($pdftkPageExtractResult->isFailed()) {
+            $this->logger->error('Failed to fetch PDF page', [
+                'id' => $entity->getId(),
+                'class' => $entity::class,
+                'pageNr' => $pdftkPageExtractResult->pageNr,
+                'sourcePdf' => $pdftkPageExtractResult->sourcePdf,
+                'targetPath' => $pdftkPageExtractResult->targetPath,
+                'errorOutput' => $pdftkPageExtractResult->errorMessage,
             ]);
 
-            $this->fileUtils->deleteTempDirectory($tempDir);
+            $this->localFilesystem->deleteDirectory($tempDir);
 
             return;
         }
 
-        $this->documentStorage->storePage(new \SplFileInfo($targetPath), $document, $pageNr);
+        $this->entityStorageService->storePage(new \SplFileInfo($targetPath), $entity, $pageNr);
 
-        $this->fileUtils->deleteTempDirectory($tempDir);
+        $this->localFilesystem->deleteDirectory($tempDir);
     }
 }

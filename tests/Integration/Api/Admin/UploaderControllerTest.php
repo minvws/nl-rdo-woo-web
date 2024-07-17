@@ -48,7 +48,7 @@ final class UploaderControllerTest extends ApiTestCase
         );
 
         $response = static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 'POST',
                 '/balie/uploader',

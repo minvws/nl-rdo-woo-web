@@ -6,13 +6,10 @@ namespace App\Service\Elastic;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Search\Index\ElasticDocument;
-use App\Domain\Search\Index\WooDecision\DocumentMapper;
-use App\Domain\Search\Index\WooDecision\WooDecisionMapper;
+use App\Domain\Search\Index\ElasticDocumentType;
 use App\ElasticConfig;
 use App\Entity\Department;
-use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Service\Search\Model\Config;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Jaytaph\TypeArray\TypeArray;
@@ -20,32 +17,27 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Service for interacting with Elasticsearch. Together with the SearchService, this should be the only entrypoint to elasticsearch.
- *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class ElasticService
 {
-    protected static int $maxRetries = 10;
+    private const MAX_RETRIES = 10;
 
     public function __construct(
         private readonly ElasticClientInterface $elastic,
         private LoggerInterface $logger,
-        private readonly WooDecisionMapper $wooDecisionMapper,
-        private readonly DocumentMapper $documentMapper,
     ) {
     }
 
     /**
      * @throws \Elastic\Elasticsearch\Exception\ServerResponseException
      */
-    public function updatePage(Document $document, int $pageNr, string $content): void
+    public function updatePage(string $id, int $pageNr, string $content): void
     {
-        $this->logger->debug('[Elasticsearch][Index Page] Inserting page');
-        $this->retry(function () use ($document, $pageNr, $content) {
+        $this->logger->debug('[Elasticsearch] Updating page');
+        $this->retry(function () use ($id, $pageNr, $content) {
             $this->elastic->update([
                 'index' => ElasticConfig::WRITE_INDEX,
-                'id' => $document->getDocumentNr(),
+                'id' => $id,
                 'body' => [
                     'script' => [
                         'source' => <<< EOF
@@ -78,85 +70,21 @@ EOF,
         });
     }
 
-    /**
-     * @param string[]               $metadata
-     * @param array<int, mixed>|null $pages
-     */
-    public function updateDocument(Document $document, ?array $metadata = null, ?array $pages = null): void
+    public function updateDocument(ElasticDocument $document): void
     {
-        // Update main document
         $this->elastic->update([
             'index' => ElasticConfig::WRITE_INDEX,
-            'id' => $document->getDocumentNr(),
+            'id' => $document->getId(),
             'body' => [
-                'doc' => $this->documentMapper->map($document, $metadata, $pages)->getDocumentValues(),
+                'doc' => $document->getDocumentValues(),
                 'doc_as_upsert' => true,
             ],
         ]);
     }
 
     /**
-     * @param array<int, string> $pages
+     * @deprecated Use updateDoc instead. This method is to be phased out as part of woo-2705.
      */
-    public function setPages(Document $document, array $pages): void
-    {
-        $pageDocs = [];
-        foreach ($pages as $pageNr => $content) {
-            $pageDocs[] = [
-                'page_nr' => $pageNr,
-                'content' => $content,
-            ];
-        }
-
-        $documentDoc = [
-            'pages' => $pageDocs,
-        ];
-
-        // Update main document
-        $this->elastic->update([
-            'index' => ElasticConfig::WRITE_INDEX,
-            'id' => $document->getDocumentNr(),
-            'body' => [
-                'doc' => $documentDoc,
-            ],
-        ]);
-    }
-
-    /**
-     * @deprecated use DossierIndexer::index()
-     */
-    public function updateDossier(Dossier $dossier, bool $updateDocuments = true): void
-    {
-        $dossierDoc = $this->wooDecisionMapper->map($dossier)->getDocumentValues();
-
-        // Update main dossier document
-        $this->logger->debug('[Elasticsearch][Update Dossier] Updating dossier');
-        $this->elastic->update([
-            'index' => ElasticConfig::WRITE_INDEX,
-            'id' => $dossier->getDossierNr(),
-            'body' => [
-                'doc' => $dossierDoc,
-                'doc_as_upsert' => true,
-            ],
-        ]);
-
-        if ($updateDocuments === true) {
-            $this->updateAllDocumentsForDossier($dossier, $dossierDoc);
-        }
-    }
-
-    public function updateDoc(string $id, ElasticDocument $doc): void
-    {
-        $this->elastic->update([
-            'index' => ElasticConfig::WRITE_INDEX,
-            'id' => $id,
-            'body' => [
-                'doc' => $doc->getDocumentValues(),
-                'doc_as_upsert' => true,
-            ],
-        ]);
-    }
-
     public function updateDossierDecisionContent(Dossier $dossier, string $content): void
     {
         $dossierDoc = [
@@ -173,22 +101,22 @@ EOF,
         ]);
     }
 
-    public function documentExists(string $documentNr): bool
+    private function documentExists(string $id): bool
     {
         $result = $this->elastic->exists([
             'index' => ElasticConfig::WRITE_INDEX,
-            'id' => $documentNr,
+            'id' => $id,
         ]);
 
         /** @var Elasticsearch $result */
         return $result->asBool();
     }
 
-    public function getDocument(Document $document): TypeArray
+    public function getDocument(string $id): TypeArray
     {
         $result = $this->elastic->get([
             'index' => ElasticConfig::WRITE_INDEX,
-            'id' => $document->getDocumentNr(),
+            'id' => $id,
         ]);
 
         /** @var Elasticsearch $result */
@@ -265,7 +193,8 @@ EOF,
      */
     public function updateAllDocumentsForDossier(AbstractDossier $dossier, array $dossierDoc): void
     {
-        $this->logger->debug('[Elasticsearch][Update Dossier] Updating dossier in document');
+        $this->logger->debug('[Elasticsearch] Updating nested dossiers');
+
         $this->retry(function () use ($dossier, $dossierDoc) {
             $this->elastic->updateByQuery([
                 'index' => ElasticConfig::WRITE_INDEX,
@@ -273,7 +202,7 @@ EOF,
                     'query' => [
                         'bool' => [
                             'must' => [
-                                ['match' => ['type' => Config::TYPE_DOCUMENT]],
+                                ['terms' => ['type' => ElasticDocumentType::getSubTypeValues()]],
                                 ['match' => ['dossier_nr' => $dossier->getDossierNr()]],
                             ],
                         ],
@@ -296,19 +225,16 @@ EOF,
         });
     }
 
-    // Removes a given document
-    public function removeDocument(string $documentNr): void
+    public function removeDocument(string $id): void
     {
-        if (! $this->documentExists($documentNr)) {
+        if (! $this->documentExists($id)) {
             return;
         }
 
         // @Note: it's possible that the document is removed in between checking for existence and deleting.
-
-        // Delete document
         $this->elastic->delete([
             'index' => ElasticConfig::WRITE_INDEX,
-            'id' => $documentNr,
+            'id' => $id,
         ]);
     }
 
@@ -333,15 +259,15 @@ EOF,
     // Will retry a callable for a specified number of times. If the callable throws a ClientResponseException with a 409 code, it will
     // retry the callable. If the callable throws a ClientResponseException with a different code, it will throw the exception.
     // If the callable throws any other exception, it will throw the exception.
-    protected function retry(callable $fn): void
+    private function retry(callable $fn): void
     {
-        for ($retryCount = 0; $retryCount <= self::$maxRetries; $retryCount++) {
+        for ($retryCount = 0; $retryCount <= self::MAX_RETRIES; $retryCount++) {
             try {
                 $fn();
 
                 return;
             } catch (ClientResponseException $e) {
-                if ($retryCount == self::$maxRetries) {
+                if ($retryCount === self::MAX_RETRIES) {
                     $this->logger->error('[Elasticsearch] Too many retries', [
                         'message' => $e->getMessage(),
                         'code' => $e->getCode(),

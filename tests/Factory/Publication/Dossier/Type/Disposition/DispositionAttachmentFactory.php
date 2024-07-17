@@ -6,49 +6,48 @@ namespace App\Tests\Factory\Publication\Dossier\Type\Disposition;
 
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachmentRepository;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
 
 /**
- * @extends ModelFactory<DispositionAttachment>
+ * @method        \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                       create(array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                       createOne(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                       find(object|array|mixed $criteria)
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                       findOrCreate(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                       first(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                       last(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                       random(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                       randomOrCreate(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                   all()
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                   createMany(int $number, array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                   createSequence(iterable|callable $sequence)
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                   findBy(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                   randomRange(int $min, int $max, array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                   randomSet(int $number, array $attributes = [])
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment|\Zenstruck\Foundry\Persistence\Proxy>                                                                 many(int $min, int|null $max = null)
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment|\Zenstruck\Foundry\Persistence\Proxy>                                                                 sequence(iterable|callable $sequence)
+ * @method static \Zenstruck\Foundry\Persistence\ProxyRepositoryDecorator<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment, \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachmentRepository> repository()
  *
- * @method        DispositionAttachment|Proxy                     create(array|callable $attributes = [])
- * @method static DispositionAttachment|Proxy                     createOne(array $attributes = [])
- * @method static DispositionAttachment|Proxy                     find(object|array|mixed $criteria)
- * @method static DispositionAttachment|Proxy                     findOrCreate(array $attributes)
- * @method static DispositionAttachment|Proxy                     first(string $sortedField = 'id')
- * @method static DispositionAttachment|Proxy                     last(string $sortedField = 'id')
- * @method static DispositionAttachment|Proxy                     random(array $attributes = [])
- * @method static DispositionAttachment|Proxy                     randomOrCreate(array $attributes = [])
- * @method static DispositionAttachmentRepository|RepositoryProxy repository()
- * @method static DispositionAttachment[]|Proxy[]                 all()
- * @method static DispositionAttachment[]|Proxy[]                 createMany(int $number, array|callable $attributes = [])
- * @method static DispositionAttachment[]|Proxy[]                 createSequence(iterable|callable $sequence)
- * @method static DispositionAttachment[]|Proxy[]                 findBy(array $attributes)
- * @method static DispositionAttachment[]|Proxy[]                 randomRange(int $min, int $max, array $attributes = [])
- * @method static DispositionAttachment[]|Proxy[]                 randomSet(int $number, array $attributes = [])
+ * @phpstan-method \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment> create(array|callable $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment> createOne(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment> find(object|array|mixed $criteria)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment> findOrCreate(array $attributes)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment> first(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment> last(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment> random(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment> randomOrCreate(array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment>> all()
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment>> createMany(int $number, array|callable $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment>> createSequence(iterable|callable $sequence)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment>> findBy(array $attributes)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment>> randomRange(int $min, int $max, array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment>> randomSet(int $number, array $attributes = [])
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment>> many(int $min, int|null $max = null)
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment>> sequence(iterable|callable $sequence)
  *
- * @phpstan-method        Proxy<DispositionAttachment> create(array|callable $attributes = [])
- * @phpstan-method static Proxy<DispositionAttachment> createOne(array $attributes = [])
- * @phpstan-method static Proxy<DispositionAttachment> find(object|array|mixed $criteria)
- * @phpstan-method static Proxy<DispositionAttachment> findOrCreate(array $attributes)
- * @phpstan-method static Proxy<DispositionAttachment> first(string $sortedField = 'id')
- * @phpstan-method static Proxy<DispositionAttachment> last(string $sortedField = 'id')
- * @phpstan-method static Proxy<DispositionAttachment> random(array $attributes = [])
- * @phpstan-method static Proxy<DispositionAttachment> randomOrCreate(array $attributes = [])
- * @phpstan-method static RepositoryProxy<DispositionAttachment> repository()
- * @phpstan-method static list<Proxy<DispositionAttachment>> all()
- * @phpstan-method static list<Proxy<DispositionAttachment>> createMany(int $number, array|callable $attributes = [])
- * @phpstan-method static list<Proxy<DispositionAttachment>> createSequence(iterable|callable $sequence)
- * @phpstan-method static list<Proxy<DispositionAttachment>> findBy(array $attributes)
- * @phpstan-method static list<Proxy<DispositionAttachment>> randomRange(int $min, int $max, array $attributes = [])
- * @phpstan-method static list<Proxy<DispositionAttachment>> randomSet(int $number, array $attributes = [])
+ * @extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory<\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment>
  */
-final class DispositionAttachmentFactory extends ModelFactory
+final class DispositionAttachmentFactory extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -63,9 +62,9 @@ final class DispositionAttachmentFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
-     * @todo add your default values here
+     * @return array<string, mixed>
      */
-    protected function getDefaults(): array
+    protected function defaults(): array
     {
         return [
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
@@ -83,12 +82,12 @@ final class DispositionAttachmentFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    protected function initialize(): self
+    protected function initialize(): static
     {
         return $this;
     }
 
-    protected static function getClass(): string
+    public static function class(): string
     {
         return DispositionAttachment::class;
     }

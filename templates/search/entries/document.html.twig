@@ -3,19 +3,19 @@
         <a
             class="woo-search-result__main-link"
             data-e2e-name="main-link"
-            href="{{ path('app_document_detail', { prefix: entry.dossiers[0].documentPrefix, dossierId: entry.dossiers[0].dossierNr, documentId: entry.document.documentNr }) }}"
-        >{{ entry.document.fileInfo.name }}</a>
+            href="{{ path('app_document_detail', { prefix: entry.dossiers[0].documentPrefix, dossierId: entry.dossiers[0].dossierNr, documentId: entry.viewmodel.documentNr }) }}"
+        >{{ entry.viewmodel.fileInfo.name }}</a>
     </h3>
 
      <ul class="woo-search-result__spec-list">
         <li class="woo-search-result__spec">
-            <twig:Public:Icon name="{{ entry.document.fileInfo.sourceType }}" class="mr-1" size="20" />
-            {{ ("public.documents.file_type." ~ entry.document.fileInfo.sourceType) | trans }}
+            <twig:Public:Icon name="{{ entry.viewmodel.fileInfo.sourceType }}" class="mr-1" size="20" />
+            {{ ("public.documents.file_type." ~ entry.viewmodel.fileInfo.sourceType) | trans }}
         </li>
-        {% if entry.document.fileInfo.isUploaded %}
-        <li class="woo-search-result__spec">{{ "global.number_of_pages" | trans({"count": entry.document.pageCount})}}</li>
+        {% if entry.viewmodel.fileInfo.isUploaded %}
+        <li class="woo-search-result__spec">{{ "global.number_of_pages" | trans({"count": entry.viewmodel.pageCount})}}</li>
         {% endif %}
-        <li class="woo-search-result__spec">{{ entry.document.judgement | trans }}</li>
+        <li class="woo-search-result__spec">{{ entry.viewmodel.judgement | trans }}</li>
     </ul>
 </header>
 
@@ -29,21 +29,21 @@
 
 <ul class="woo-search-result__spec-list">
     <li class="woo-search-result__spec">
-        {% if entry.document.documentDate is not empty %}
-            <time datetime="{{ entry.document.documentDate | date("Y-m-d") }}">
-                {{ entry.document.documentDate | format_date('long') }}
+        {% if entry.viewmodel.documentDate is not empty %}
+            <time datetime="{{ entry.viewmodel.documentDate | date("Y-m-d") }}">
+                {{ entry.viewmodel.documentDate | format_date('long') }}
             </time>
         {% else %}
             {{ 'global.date_not_available' | trans }}
         {% endif %}
     </li>
-    {% if entry.document.fileInfo.isUploaded %}
+    {% if entry.viewmodel.fileInfo.isUploaded %}
     <li class="woo-search-result__spec">
-        {{ entry.document.fileInfo.size | size}}
+        {{ entry.viewmodel.fileInfo.size | size}}
     </li>
     {% endif %}
     <li class="woo-search-result__spec">
-        {{ 'global.document_number' | trans() }} {{ entry.document.documentId }}
+        {{ 'global.document_number' | trans() }} {{ entry.viewmodel.documentId }}
     </li>
 </ul>
 

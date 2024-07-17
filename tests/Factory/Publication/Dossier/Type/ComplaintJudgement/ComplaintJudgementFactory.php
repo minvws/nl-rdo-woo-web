@@ -8,49 +8,51 @@ use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use App\Tests\Factory\OrganisationFactory;
 use Carbon\CarbonImmutable;
-use Doctrine\ORM\EntityRepository;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
 
 /**
- * @extends ModelFactory<ComplaintJudgement>
+ * @method        \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement|\Zenstruck\Foundry\Persistence\Proxy                                                                                                           create(array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement|\Zenstruck\Foundry\Persistence\Proxy                                                                                                           createOne(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement|\Zenstruck\Foundry\Persistence\Proxy                                                                                                           find(object|array|mixed $criteria)
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement|\Zenstruck\Foundry\Persistence\Proxy                                                                                                           findOrCreate(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement|\Zenstruck\Foundry\Persistence\Proxy                                                                                                           first(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement|\Zenstruck\Foundry\Persistence\Proxy                                                                                                           last(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement|\Zenstruck\Foundry\Persistence\Proxy                                                                                                           random(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement|\Zenstruck\Foundry\Persistence\Proxy                                                                                                           randomOrCreate(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                       all()
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                       createMany(int $number, array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                       createSequence(iterable|callable $sequence)
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                       findBy(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                       randomRange(int $min, int $max, array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                       randomSet(int $number, array $attributes = [])
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement|\Zenstruck\Foundry\Persistence\Proxy>                                                                     many(int $min, int|null $max = null)
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement|\Zenstruck\Foundry\Persistence\Proxy>                                                                     sequence(iterable|callable $sequence)
+ * @method static \Zenstruck\Foundry\Persistence\ProxyRepositoryDecorator<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement, \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementRepository> repository()
  *
- * @method        ComplaintJudgement|Proxy         create(array|callable $attributes = [])
- * @method static ComplaintJudgement|Proxy         createOne(array $attributes = [])
- * @method static ComplaintJudgement|Proxy         find(object|array|mixed $criteria)
- * @method static ComplaintJudgement|Proxy         findOrCreate(array $attributes)
- * @method static ComplaintJudgement|Proxy         first(string $sortedField = 'id')
- * @method static ComplaintJudgement|Proxy         last(string $sortedField = 'id')
- * @method static ComplaintJudgement|Proxy         random(array $attributes = [])
- * @method static ComplaintJudgement|Proxy         randomOrCreate(array $attributes = [])
- * @method static EntityRepository|RepositoryProxy repository()
- * @method static ComplaintJudgement[]|Proxy[]     all()
- * @method static ComplaintJudgement[]|Proxy[]     createMany(int $number, array|callable $attributes = [])
- * @method static ComplaintJudgement[]|Proxy[]     createSequence(iterable|callable $sequence)
- * @method static ComplaintJudgement[]|Proxy[]     findBy(array $attributes)
- * @method static ComplaintJudgement[]|Proxy[]     randomRange(int $min, int $max, array $attributes = [])
- * @method static ComplaintJudgement[]|Proxy[]     randomSet(int $number, array $attributes = [])
+ * @phpstan-method \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement> create(array|callable $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement> createOne(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement> find(object|array|mixed $criteria)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement> findOrCreate(array $attributes)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement> first(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement> last(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement> random(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement> randomOrCreate(array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement>> all()
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement>> createMany(int $number, array|callable $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement>> createSequence(iterable|callable $sequence)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement>> findBy(array $attributes)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement>> randomRange(int $min, int $max, array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement>> randomSet(int $number, array $attributes = [])
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement>> many(int $min, int|null $max = null)
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement>> sequence(iterable|callable $sequence)
  *
- * @phpstan-method        Proxy<ComplaintJudgement> create(array|callable $attributes = [])
- * @phpstan-method static Proxy<ComplaintJudgement> createOne(array $attributes = [])
- * @phpstan-method static Proxy<ComplaintJudgement> find(object|array|mixed $criteria)
- * @phpstan-method static Proxy<ComplaintJudgement> findOrCreate(array $attributes)
- * @phpstan-method static Proxy<ComplaintJudgement> first(string $sortedField = 'id')
- * @phpstan-method static Proxy<ComplaintJudgement> last(string $sortedField = 'id')
- * @phpstan-method static Proxy<ComplaintJudgement> random(array $attributes = [])
- * @phpstan-method static Proxy<ComplaintJudgement> randomOrCreate(array $attributes = [])
- * @phpstan-method static RepositoryProxy<ComplaintJudgement> repository()
- * @phpstan-method static list<Proxy<ComplaintJudgement>> all()
- * @phpstan-method static list<Proxy<ComplaintJudgement>> createMany(int $number, array|callable $attributes = [])
- * @phpstan-method static list<Proxy<ComplaintJudgement>> createSequence(iterable|callable $sequence)
- * @phpstan-method static list<Proxy<ComplaintJudgement>> findBy(array $attributes)
- * @phpstan-method static list<Proxy<ComplaintJudgement>> randomRange(int $min, int $max, array $attributes = [])
- * @phpstan-method static list<Proxy<ComplaintJudgement>> randomSet(int $number, array $attributes = [])
+ * @extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory<\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement>
  */
-final class ComplaintJudgementFactory extends ModelFactory
+final class ComplaintJudgementFactory extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory
 {
-    protected function getDefaults(): array
+    /**
+     * @return array<string, mixed>
+     */
+    protected function defaults(): array
     {
         $publicationDate = CarbonImmutable::createFromMutable(self::faker()->dateTimeBetween('01-01-2010', '01-01-2023'));
 
@@ -65,7 +67,7 @@ final class ComplaintJudgementFactory extends ModelFactory
         ];
     }
 
-    protected static function getClass(): string
+    public static function class(): string
     {
         return ComplaintJudgement::class;
     }

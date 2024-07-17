@@ -10,7 +10,7 @@ use Symfony\Component\Uid\Uuid;
 
 abstract readonly class AbstractAttachmentEvent
 {
-    final private function __construct(
+    final public function __construct(
         public Uuid $dossierId,
         public Uuid $attachmentId,
         public string $fileName,

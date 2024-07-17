@@ -36,11 +36,6 @@ final class Result
     protected ?PaginationInterface $paginator = null;
 
     /**
-     * Total number of documents found.
-     */
-    protected int $documentCount = 0;
-
-    /**
      * Total of unique dossiers found.
      */
     protected int $dossierCount = 0;
@@ -126,18 +121,6 @@ final class Result
     public function setResultCount(int $resultCount): self
     {
         $this->resultCount = $resultCount;
-
-        return $this;
-    }
-
-    public function getDocumentCount(): int
-    {
-        return $this->documentCount;
-    }
-
-    public function setDocumentCount(int $documentCount): self
-    {
-        $this->documentCount = $documentCount;
 
         return $this;
     }
@@ -292,7 +275,7 @@ final class Result
 
     public function isEmpty(): bool
     {
-        return $this->documentCount === 0;
+        return $this->resultCount === 0;
     }
 
     /**

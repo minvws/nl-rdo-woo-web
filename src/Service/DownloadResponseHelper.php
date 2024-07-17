@@ -6,14 +6,14 @@ namespace App\Service;
 
 use App\Entity\BatchDownload;
 use App\Entity\EntityWithFileInfo;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DownloadResponseHelper
 {
     public function __construct(
-        private readonly DocumentStorageService $documentStorage,
+        private readonly EntityStorageService $entityStorageService,
         private readonly ArchiveService $archiveService,
     ) {
     }
@@ -27,7 +27,7 @@ class DownloadResponseHelper
             throw new NotFoundHttpException('File is not available for download');
         }
 
-        $stream = $this->documentStorage->retrieveResourceDocument($entity);
+        $stream = $this->entityStorageService->retrieveResourceEntity($entity);
         if (! $stream) {
             throw new NotFoundHttpException('File is not available for download');
         }

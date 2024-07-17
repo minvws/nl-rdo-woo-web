@@ -9,17 +9,17 @@ use App\Domain\Publication\Dossier\AbstractEntityWithFileInfoDeleteStrategy;
 use App\Service\BatchDownloadService;
 use App\Service\DocumentService;
 use App\Service\Inquiry\InquiryService;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 
 readonly class WooDecisionDeleteStrategy extends AbstractEntityWithFileInfoDeleteStrategy
 {
     public function __construct(
-        DocumentStorageService $storageService,
+        EntityStorageService $entityStorageService,
         private DocumentService $documentService,
         private BatchDownloadService $downloadService,
         private InquiryService $inquiryService,
     ) {
-        parent::__construct($storageService);
+        parent::__construct($entityStorageService);
     }
 
     public function delete(AbstractDossier $dossier): void

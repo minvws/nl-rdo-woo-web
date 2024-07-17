@@ -9,7 +9,7 @@ use Symfony\Component\Uid\Uuid;
 
 abstract readonly class AbstractMainDocumentEvent
 {
-    final private function __construct(
+    final public function __construct(
         public Uuid $documentId,
         public Uuid $dossierId,
         public string $filename,

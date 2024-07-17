@@ -39,10 +39,7 @@ class MainTypesAndNestedMainTypesFilter implements FilterInterface
                         filter: [
                             Query::terms(
                                 field: 'type',
-                                values: array_map(
-                                    static fn (ElasticDocumentType $type) => $type->value,
-                                    ElasticDocumentType::getSubTypes(),
-                                ),
+                                values: ElasticDocumentType::getSubTypeValues(),
                             ),
                             Query::nested(
                                 path: 'dossiers',
@@ -54,10 +51,7 @@ class MainTypesAndNestedMainTypesFilter implements FilterInterface
                         filter: [
                             Query::terms(
                                 field: 'type',
-                                values: array_map(
-                                    static fn (ElasticDocumentType $type) => $type->value,
-                                    ElasticDocumentType::getMainTypes(),
-                                ),
+                                values: ElasticDocumentType::getMainTypeValues(),
                             ),
                             $dossierQuery,
                         ]

@@ -9,7 +9,7 @@ use App\Entity\Dossier;
 use App\Entity\EntityWithFileInfo;
 use App\Entity\FileInfo;
 use App\Exception\InventorySanitizerException;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -19,7 +19,7 @@ class InventorySanitizer
 {
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
-        private readonly DocumentStorageService $documentStorage,
+        private readonly EntityStorageService $entityStorageService,
         private readonly TranslatorInterface $translator,
         private readonly InventoryWriterInterface $writer,
         private readonly UrlGeneratorInterface $urlGenerator,
@@ -56,7 +56,7 @@ class InventorySanitizer
 
         $inventoryEntity = $dataProvider->getInventoryEntity();
         $this->persistInventory($inventoryEntity, $dataProvider->getFilename());
-        if (! $this->documentStorage->storeDocument(new \SplFileInfo($tmpFilename), $inventoryEntity)) {
+        if (! $this->entityStorageService->storeEntity(new \SplFileInfo($tmpFilename), $inventoryEntity)) {
             throw new InventorySanitizerException('Could not store the sanitized inventory spreadsheet.');
         }
     }

@@ -95,10 +95,16 @@
                             ],
                             "filter": [
                                 {
-                                    "term": {
-                                        "type": {
-                                            "value": "document"
-                                        }
+                                    "terms": {
+                                        "type": [
+                                            "document",
+                                            "covenant_main_document",
+                                            "annual_report_main_document",
+                                            "investigation_report_main_document",
+                                            "disposition_main_document",
+                                            "complaint_judgement_main_document",
+                                            "attachment"
+                                        ]
                                     }
                                 }
                             ]
@@ -201,7 +207,13 @@
                                             {
                                                 "terms": {
                                                     "type": [
-                                                        "document"
+                                                        "document",
+                                                        "covenant_main_document",
+                                                        "annual_report_main_document",
+                                                        "investigation_report_main_document",
+                                                        "disposition_main_document",
+                                                        "complaint_judgement_main_document",
+                                                        "attachment"
                                                     ]
                                                 }
                                             },
@@ -257,7 +269,13 @@
                                                         {
                                                             "terms": {
                                                                 "type": [
-                                                                    "document"
+                                                                    "document",
+                                                                    "covenant_main_document",
+                                                                    "annual_report_main_document",
+                                                                    "investigation_report_main_document",
+                                                                    "disposition_main_document",
+                                                                    "complaint_judgement_main_document",
+                                                                    "attachment"
                                                                 ]
                                                             }
                                                         },
@@ -325,7 +343,13 @@
                                 {
                                     "terms": {
                                         "type": [
-                                            "document"
+                                            "document",
+                                            "covenant_main_document",
+                                            "annual_report_main_document",
+                                            "investigation_report_main_document",
+                                            "disposition_main_document",
+                                            "complaint_judgement_main_document",
+                                            "attachment"
                                         ]
                                     }
                                 },
@@ -334,6 +358,73 @@
                                         "judgement": [
                                             "public",
                                             "partial_public"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "bool": {
+                            "filter": [
+                                {
+                                    "bool": {
+                                        "minimum_should_match": 1,
+                                        "should": [
+                                            {
+                                                "bool": {
+                                                    "filter": [
+                                                        {
+                                                            "terms": {
+                                                                "type": [
+                                                                    "document",
+                                                                    "covenant_main_document",
+                                                                    "annual_report_main_document",
+                                                                    "investigation_report_main_document",
+                                                                    "disposition_main_document",
+                                                                    "complaint_judgement_main_document",
+                                                                    "attachment"
+                                                                ]
+                                                            }
+                                                        },
+                                                        {
+                                                            "range": {
+                                                                "date": {
+                                                                    "gte": "2020-01-12",
+                                                                    "lte": "2024-06-20"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "bool": {
+                                                    "filter": [
+                                                        {
+                                                            "terms": {
+                                                                "type": [
+                                                                    "dossier",
+                                                                    "covenant",
+                                                                    "annual_report",
+                                                                    "investigation_report",
+                                                                    "disposition",
+                                                                    "complaint_judgement"
+                                                                ]
+                                                            }
+                                                        },
+                                                        {
+                                                            "range": {
+                                                                "date_range": {
+                                                                    "relation": "intersects",
+                                                                    "gte": "2020-01-12",
+                                                                    "lte": "2024-06-20"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
                                         ]
                                     }
                                 }
@@ -536,10 +627,16 @@
                                             ],
                                             "filter": [
                                                 {
-                                                    "term": {
-                                                        "type": {
-                                                            "value": "document"
-                                                        }
+                                                    "terms": {
+                                                        "type": [
+                                                            "document",
+                                                            "covenant_main_document",
+                                                            "annual_report_main_document",
+                                                            "investigation_report_main_document",
+                                                            "disposition_main_document",
+                                                            "complaint_judgement_main_document",
+                                                            "attachment"
+                                                        ]
                                                     }
                                                 }
                                             ]
@@ -642,7 +739,13 @@
                                                             {
                                                                 "terms": {
                                                                     "type": [
-                                                                        "document"
+                                                                        "document",
+                                                                        "covenant_main_document",
+                                                                        "annual_report_main_document",
+                                                                        "investigation_report_main_document",
+                                                                        "disposition_main_document",
+                                                                        "complaint_judgement_main_document",
+                                                                        "attachment"
                                                                     ]
                                                                 }
                                                             },
@@ -699,7 +802,13 @@
                                                         {
                                                             "terms": {
                                                                 "type": [
-                                                                    "document"
+                                                                    "document",
+                                                                    "covenant_main_document",
+                                                                    "annual_report_main_document",
+                                                                    "investigation_report_main_document",
+                                                                    "disposition_main_document",
+                                                                    "complaint_judgement_main_document",
+                                                                    "attachment"
                                                                 ]
                                                             }
                                                         },
@@ -708,6 +817,73 @@
                                                                 "judgement": [
                                                                     "public",
                                                                     "partial_public"
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "bool": {
+                                                    "filter": [
+                                                        {
+                                                            "bool": {
+                                                                "minimum_should_match": 1,
+                                                                "should": [
+                                                                    {
+                                                                        "bool": {
+                                                                            "filter": [
+                                                                                {
+                                                                                    "terms": {
+                                                                                        "type": [
+                                                                                            "document",
+                                                                                            "covenant_main_document",
+                                                                                            "annual_report_main_document",
+                                                                                            "investigation_report_main_document",
+                                                                                            "disposition_main_document",
+                                                                                            "complaint_judgement_main_document",
+                                                                                            "attachment"
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "range": {
+                                                                                        "date": {
+                                                                                            "gte": "2020-01-12",
+                                                                                            "lte": "2024-06-20"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "bool": {
+                                                                            "filter": [
+                                                                                {
+                                                                                    "terms": {
+                                                                                        "type": [
+                                                                                            "dossier",
+                                                                                            "covenant",
+                                                                                            "annual_report",
+                                                                                            "investigation_report",
+                                                                                            "disposition",
+                                                                                            "complaint_judgement"
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "range": {
+                                                                                        "date_range": {
+                                                                                            "relation": "intersects",
+                                                                                            "gte": "2020-01-12",
+                                                                                            "lte": "2024-06-20"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
                                                                 ]
                                                             }
                                                         }
@@ -769,7 +945,13 @@
                                                                                 {
                                                                                     "terms": {
                                                                                         "type": [
-                                                                                            "document"
+                                                                                            "document",
+                                                                                            "covenant_main_document",
+                                                                                            "annual_report_main_document",
+                                                                                            "investigation_report_main_document",
+                                                                                            "disposition_main_document",
+                                                                                            "complaint_judgement_main_document",
+                                                                                            "attachment"
                                                                                         ]
                                                                                     }
                                                                                 },
@@ -830,6 +1012,73 @@
                                                         }
                                                     ]
                                                 }
+                                            },
+                                            {
+                                                "bool": {
+                                                    "filter": [
+                                                        {
+                                                            "bool": {
+                                                                "minimum_should_match": 1,
+                                                                "should": [
+                                                                    {
+                                                                        "bool": {
+                                                                            "filter": [
+                                                                                {
+                                                                                    "terms": {
+                                                                                        "type": [
+                                                                                            "document",
+                                                                                            "covenant_main_document",
+                                                                                            "annual_report_main_document",
+                                                                                            "investigation_report_main_document",
+                                                                                            "disposition_main_document",
+                                                                                            "complaint_judgement_main_document",
+                                                                                            "attachment"
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "range": {
+                                                                                        "date": {
+                                                                                            "gte": "2020-01-12",
+                                                                                            "lte": "2024-06-20"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "bool": {
+                                                                            "filter": [
+                                                                                {
+                                                                                    "terms": {
+                                                                                        "type": [
+                                                                                            "dossier",
+                                                                                            "covenant",
+                                                                                            "annual_report",
+                                                                                            "investigation_report",
+                                                                                            "disposition",
+                                                                                            "complaint_judgement"
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "range": {
+                                                                                        "date_range": {
+                                                                                            "relation": "intersects",
+                                                                                            "gte": "2020-01-12",
+                                                                                            "lte": "2024-06-20"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
                                             }
                                         ]
                                     }
@@ -846,6 +1095,189 @@
                                         }
                                     }
                                 }
+                            },
+                            "facet-filter-date": {
+                                "filter": {
+                                    "bool": {
+                                        "filter": [
+                                            {
+                                                "bool": {
+                                                    "filter": [
+                                                        {
+                                                            "bool": {
+                                                                "minimum_should_match": 1,
+                                                                "should": [
+                                                                    {
+                                                                        "bool": {
+                                                                            "filter": [
+                                                                                {
+                                                                                    "terms": {
+                                                                                        "type": [
+                                                                                            "document",
+                                                                                            "covenant_main_document",
+                                                                                            "annual_report_main_document",
+                                                                                            "investigation_report_main_document",
+                                                                                            "disposition_main_document",
+                                                                                            "complaint_judgement_main_document",
+                                                                                            "attachment"
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "nested": {
+                                                                                        "path": "dossiers",
+                                                                                        "query": {
+                                                                                            "bool": {
+                                                                                                "filter": [
+                                                                                                    {
+                                                                                                        "terms": {
+                                                                                                            "dossiers.type": [
+                                                                                                                "dossier"
+                                                                                                            ]
+                                                                                                        }
+                                                                                                    }
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "bool": {
+                                                                            "filter": [
+                                                                                {
+                                                                                    "terms": {
+                                                                                        "type": [
+                                                                                            "dossier",
+                                                                                            "covenant",
+                                                                                            "annual_report",
+                                                                                            "investigation_report",
+                                                                                            "disposition",
+                                                                                            "complaint_judgement"
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "bool": {
+                                                                                        "filter": [
+                                                                                            {
+                                                                                                "terms": {
+                                                                                                    "type": [
+                                                                                                        "dossier"
+                                                                                                    ]
+                                                                                                }
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "bool": {
+                                                    "filter": [
+                                                        {
+                                                            "terms": {
+                                                                "type": [
+                                                                    "document",
+                                                                    "covenant_main_document",
+                                                                    "annual_report_main_document",
+                                                                    "investigation_report_main_document",
+                                                                    "disposition_main_document",
+                                                                    "complaint_judgement_main_document",
+                                                                    "attachment"
+                                                                ]
+                                                            }
+                                                        },
+                                                        {
+                                                            "terms": {
+                                                                "judgement": [
+                                                                    "public",
+                                                                    "partial_public"
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "aggs": {
+                                    "date_filter": {
+                                        "filter": {
+                                            "bool": {
+                                                "minimum_should_match": 1,
+                                                "should": [
+                                                    {
+                                                        "bool": {
+                                                            "filter": [
+                                                                {
+                                                                    "terms": {
+                                                                        "type": [
+                                                                            "document",
+                                                                            "covenant_main_document",
+                                                                            "annual_report_main_document",
+                                                                            "investigation_report_main_document",
+                                                                            "disposition_main_document",
+                                                                            "complaint_judgement_main_document",
+                                                                            "attachment"
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            ],
+                                                            "must_not": [
+                                                                {
+                                                                    "exists": {
+                                                                        "field": "date"
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "bool": {
+                                                            "filter": [
+                                                                {
+                                                                    "terms": {
+                                                                        "type": [
+                                                                            "dossier",
+                                                                            "covenant",
+                                                                            "annual_report",
+                                                                            "investigation_report",
+                                                                            "disposition",
+                                                                            "complaint_judgement"
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            ],
+                                                            "must_not": [
+                                                                {
+                                                                    "exists": {
+                                                                        "field": "date_to"
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "exists": {
+                                                                        "field": "date_from"
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -854,12 +1286,6 @@
             "unique_dossiers": {
                 "cardinality": {
                     "field": "dossier_nr",
-                    "precision_threshold": 40000
-                }
-            },
-            "unique_documents": {
-                "cardinality": {
-                    "field": "document_nr",
                     "precision_threshold": 40000
                 }
             }

@@ -18,7 +18,7 @@ api_platform:
             standard_put: true
             rfc_7807_compliant_errors: true
         collectDenormalizationErrors: true
-    event_listeners_backward_compatibility_layer: false
+    use_symfony_listeners: false
     keep_legacy_inflector: false
     exception_to_status:
         Doctrine\ORM\NoResultException: 404

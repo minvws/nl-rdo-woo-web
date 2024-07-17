@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Domain\Ingest\IngestOptions;
+use App\Domain\Ingest\SubType\SubTypeIngester;
+use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Exception\DocumentReplaceException;
 use App\Message\ReplaceDocumentMessage;
 use App\Message\UpdateDossierArchivesMessage;
-use App\Service\Elastic\ElasticService;
-use App\Service\Ingest\IngestService;
-use App\Service\Ingest\Options;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
 use App\Utils;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,10 +29,10 @@ class DocumentService
 {
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
-        private readonly IngestService $ingester,
-        private readonly DocumentStorageService $documentStorage,
+        private readonly SubTypeIngester $ingester,
+        private readonly EntityStorageService $entityStorageService,
         private readonly ThumbnailStorageService $thumbStorage,
-        private readonly ElasticService $elasticService,
+        private readonly SubTypeIndexer $subTypeIndexer,
         private readonly MessageBusInterface $messageBus,
         private readonly FileProcessService $fileProcessService,
         private readonly HistoryService $historyService,
@@ -53,9 +53,9 @@ class DocumentService
             $this->removeAllFilesForDocument($document);
             $this->doctrine->remove($document);
 
-            $this->elasticService->removeDocument($document->getDocumentNr());
+            $this->subTypeIndexer->remove($document);
         } else {
-            $this->elasticService->updateDocument($document);
+            $this->subTypeIndexer->index($document);
         }
 
         $this->historyService->addDocumentEntry(
@@ -76,7 +76,7 @@ class DocumentService
         $this->doctrine->persist($document);
         $this->doctrine->flush();
 
-        $this->ingester->ingest($document, new Options());
+        $this->ingester->ingest($document, new IngestOptions());
 
         foreach ($document->getDossiers() as $dossier) {
             $this->messageBus->dispatch(
@@ -87,9 +87,9 @@ class DocumentService
 
     private function removeAllFilesForDocument(Document $document): void
     {
-        $this->documentStorage->deleteAllFilesForDocument($document);
+        $this->entityStorageService->deleteAllFilesForEntity($document);
 
-        $this->thumbStorage->deleteAllThumbsForDocument($document);
+        $this->thumbStorage->deleteAllThumbsForEntity($document);
     }
 
     public function replace(Dossier $dossier, Document $document, UploadedFile $uploadedFile): void
@@ -105,7 +105,7 @@ class DocumentService
         }
 
         $remotePath = '/uploads/' . $dossier->getId() . '/' . $uploadedFile->getClientOriginalName();
-        if (! $this->documentStorage->store($uploadedFile, $remotePath)) {
+        if (! $this->entityStorageService->store($uploadedFile, $remotePath)) {
             throw new \RuntimeException('Document file replacements failed, could not store uploadedfile');
         }
 

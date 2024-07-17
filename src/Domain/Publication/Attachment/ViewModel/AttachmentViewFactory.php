@@ -21,7 +21,7 @@ use Symfony\Component\Uid\Uuid;
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-final readonly class AttachmentViewFactory
+readonly class AttachmentViewFactory
 {
     public function __construct(private UrlGeneratorInterface $urlGenerator)
     {
@@ -171,6 +171,7 @@ final readonly class AttachmentViewFactory
             grounds: Citation::sortWooCitations($attachment->getGrounds()),
             downloadUrl: $this->generateUrl($downloadRouteName, $parameters),
             detailsUrl: $this->generateUrl($detailRouteName, $parameters),
+            pageCount: $attachment->getFileInfo()->getPageCount() ?? 0,
         );
     }
 

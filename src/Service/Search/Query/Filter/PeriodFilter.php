@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query\Filter;
 
+use App\Domain\Search\Index\ElasticDocumentType;
 use App\Service\Search\Model\Config;
 use App\Service\Search\Query\Facet\Facet;
 use App\Service\Search\Query\Facet\Input\DateFacetInputInterface;
@@ -42,33 +43,36 @@ class PeriodFilter implements FilterInterface
 
     private function handleWithoutDate(BoolQuery $query): void
     {
-        $query->addFilter(
-            Query::bool(should: [
-                Query::bool(
-                    filter: [
-                        Query::term(
-                            field: 'type',
-                            value: Config::TYPE_DOCUMENT,
-                        ),
-                    ],
-                    mustNot: [
-                        Query::exists(field: 'date'),
-                    ],
-                ),
-                Query::bool(
-                    filter: [
-                        Query::term(
-                            field: 'type',
-                            value: Config::TYPE_DOSSIER,
-                        ),
-                    ],
-                    mustNot: [
-                        Query::exists(field: 'date_to'),
-                        Query::exists(field: 'date_from'),
-                    ],
-                ),
-            ])->setParams(['minimum_should_match' => 1]),
-        );
+        $query->addFilter(self::getWithoutDateQuery());
+    }
+
+    public static function getWithoutDateQuery(): BoolQuery
+    {
+        return Query::bool(should: [
+            Query::bool(
+                mustNot: [
+                    Query::exists(field: 'date'),
+                ],
+                filter: [
+                    Query::terms(
+                        field: 'type',
+                        values: ElasticDocumentType::getSubTypeValues(),
+                    ),
+                ],
+            ),
+            Query::bool(
+                mustNot: [
+                    Query::exists(field: 'date_to'),
+                    Query::exists(field: 'date_from'),
+                ],
+                filter: [
+                    Query::terms(
+                        field: 'type',
+                        values: ElasticDocumentType::getMainTypeValues(),
+                    ),
+                ],
+            ),
+        ])->setParams(['minimum_should_match' => 1]);
     }
 
     private function handleWithDate(BoolQuery $query, DateFacetInputInterface $input): void
@@ -78,18 +82,18 @@ class PeriodFilter implements FilterInterface
                 should: [
                     Query::bool(
                         filter: [
-                            Query::term(
+                            Query::terms(
                                 field: 'type',
-                                value: Config::TYPE_DOCUMENT,
+                                values: ElasticDocumentType::getSubTypeValues(),
                             ),
                             $this->getDocumentDateQuery($input),
                         ]
                     ),
                     Query::bool(
                         filter: [
-                            Query::term(
+                            Query::terms(
                                 field: 'type',
-                                value: Config::TYPE_DOSSIER,
+                                values: ElasticDocumentType::getMainTypeValues(),
                             ),
                             $this->getDossierDateQuery($input),
                         ]

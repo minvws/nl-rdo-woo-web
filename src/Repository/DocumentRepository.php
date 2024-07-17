@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Search\Result\WooDecision\DocumentSearchResult;
+use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
@@ -305,7 +305,7 @@ class DocumentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getDocumentSearchEntry(string $documentNr): ?DocumentSearchResult
+    public function getDocumentSearchEntry(string $documentNr): ?DocumentViewModel
     {
         $qb = $this->createQueryBuilder('doc')
             ->select(sprintf(
@@ -320,7 +320,7 @@ class DocumentRepository extends ServiceEntityRepository
                     doc.judgement,
                     doc.documentDate
                 )',
-                DocumentSearchResult::class,
+                DocumentViewModel::class,
             ))
             ->where('doc.documentNr = :documentNr')
             ->andWhere('dos.status IN (:statuses)')
@@ -330,7 +330,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
         ;
 
-        /** @var ?DocumentSearchResult $result */
+        /** @var ?DocumentViewModel $result */
         $result = $qb->getQuery()->getOneOrNullResult();
 
         return $result;

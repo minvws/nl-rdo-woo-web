@@ -22,7 +22,7 @@
             {% if result.type == constant('App\\Service\\Search\\Model\\Config::TYPE_DOSSIER') %}
                 {{ "global.number_of_dossiers" | trans({'count': result.dossierCount}) }}
             {% else %}
-                {{ "global.number_of_documents" | trans({'count': result.documentCount}) }}
+                {{ "global.number_of_results" | trans({'count': result.resultCount}) }}
                 <span class="font-normal">{{ "public.results.in_dossiers" | trans({'count': result.dossierCount}) }}</span>
             {% endif %}
         </h2>

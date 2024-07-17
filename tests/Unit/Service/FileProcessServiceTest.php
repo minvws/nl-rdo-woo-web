@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
+use App\Domain\Ingest\SubType\SubTypeIngester;
 use App\Entity\Dossier;
 use App\Service\FileProcessService;
 use App\Service\HistoryService;
-use App\Service\Ingest\IngestService;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -19,24 +19,24 @@ use Symfony\Component\Uid\Uuid;
 class FileProcessServiceTest extends MockeryTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
-    private MockInterface&DocumentStorageService $documentStorage;
+    private MockInterface&EntityStorageService $entityStorageService;
     private LoggerInterface&MockInterface $logger;
-    private IngestService&MockInterface $ingestService;
+    private SubTypeIngester&MockInterface $ingestService;
     private FileProcessService $service;
     private HistoryService&MockInterface $historyService;
 
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->documentStorage = \Mockery::mock(DocumentStorageService::class);
+        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->logger->shouldReceive('error');
-        $this->ingestService = \Mockery::mock(IngestService::class);
+        $this->ingestService = \Mockery::mock(SubTypeIngester::class);
         $this->historyService = \Mockery::mock(HistoryService::class);
 
         $this->service = new FileProcessService(
             $this->entityManager,
-            $this->documentStorage,
+            $this->entityStorageService,
             $this->logger,
             $this->ingestService,
             $this->historyService,

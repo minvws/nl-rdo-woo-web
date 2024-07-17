@@ -6,12 +6,12 @@ namespace App\Domain\Publication\Dossier;
 
 use App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
 use App\Entity\EntityWithFileInfo;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 
 abstract readonly class AbstractEntityWithFileInfoDeleteStrategy implements DossierDeleteStrategyInterface
 {
     public function __construct(
-        private DocumentStorageService $storageService,
+        private EntityStorageService $entityStorageService,
     ) {
     }
 
@@ -21,7 +21,7 @@ abstract readonly class AbstractEntityWithFileInfoDeleteStrategy implements Doss
             return;
         }
 
-        $this->storageService->removeFileForEntity($entity);
+        $this->entityStorageService->removeFileForEntity($entity);
     }
 
     abstract public function delete(AbstractDossier $dossier): void;
