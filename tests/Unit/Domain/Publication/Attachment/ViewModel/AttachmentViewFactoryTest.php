@@ -46,6 +46,7 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         $fileInfo->shouldReceive('getMimetype')->andReturn($expectedMimeType = 'file mime type');
         $fileInfo->shouldReceive('getSize')->andReturn($expectedSize = 101);
         $fileInfo->shouldReceive('getSourceType')->andReturn($expectedSourceType = 'pdf');
+        $fileInfo->shouldReceive('getPageCount')->andReturn($expectedPageCount = 2);
 
         $uuid = \Mockery::mock(UuidV6::class);
         $uuid->shouldReceive('toRfc4122')->andReturn($expectedUuid = 'my-uuid');
@@ -99,6 +100,7 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedGrounds, $result[0]->grounds);
         $this->assertSame($expectedDownloadUrl, $result[0]->downloadUrl);
         $this->assertSame($expectedDetailsUrl, $result[0]->detailsUrl);
+        $this->assertSame($expectedPageCount, $result[0]->pageCount);
     }
 
     /**

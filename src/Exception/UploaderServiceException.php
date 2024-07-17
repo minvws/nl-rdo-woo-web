@@ -13,7 +13,7 @@ class UploaderServiceException extends \RuntimeException
         return new self(sprintf(
             'Could not store uploaded file for entity #%s of type %s',
             $entity->getId()->toRfc4122(),
-            get_class($entity),
+            $entity::class,
         ));
     }
 

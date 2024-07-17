@@ -6,49 +6,51 @@ use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Tests\Factory\OrganisationFactory;
 use Carbon\CarbonImmutable;
-use Doctrine\ORM\EntityRepository;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
 
 /**
- * @extends ModelFactory<Covenant>
+ * @method        \App\Domain\Publication\Dossier\Type\Covenant\Covenant|\Zenstruck\Foundry\Persistence\Proxy                                                                                       create(array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant|\Zenstruck\Foundry\Persistence\Proxy                                                                                       createOne(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant|\Zenstruck\Foundry\Persistence\Proxy                                                                                       find(object|array|mixed $criteria)
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant|\Zenstruck\Foundry\Persistence\Proxy                                                                                       findOrCreate(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant|\Zenstruck\Foundry\Persistence\Proxy                                                                                       first(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant|\Zenstruck\Foundry\Persistence\Proxy                                                                                       last(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant|\Zenstruck\Foundry\Persistence\Proxy                                                                                       random(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant|\Zenstruck\Foundry\Persistence\Proxy                                                                                       randomOrCreate(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                   all()
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                   createMany(int $number, array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                   createSequence(iterable|callable $sequence)
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                   findBy(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                   randomRange(int $min, int $max, array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                   randomSet(int $number, array $attributes = [])
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Covenant\Covenant|\Zenstruck\Foundry\Persistence\Proxy>                                                 many(int $min, int|null $max = null)
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Covenant\Covenant|\Zenstruck\Foundry\Persistence\Proxy>                                                 sequence(iterable|callable $sequence)
+ * @method static \Zenstruck\Foundry\Persistence\ProxyRepositoryDecorator<\App\Domain\Publication\Dossier\Type\Covenant\Covenant, \App\Domain\Publication\Dossier\Type\Covenant\CovenantRepository> repository()
  *
- * @method        Covenant|Proxy                   create(array|callable $attributes = [])
- * @method static Covenant|Proxy                   createOne(array $attributes = [])
- * @method static Covenant|Proxy                   find(object|array|mixed $criteria)
- * @method static Covenant|Proxy                   findOrCreate(array $attributes)
- * @method static Covenant|Proxy                   first(string $sortedField = 'id')
- * @method static Covenant|Proxy                   last(string $sortedField = 'id')
- * @method static Covenant|Proxy                   random(array $attributes = [])
- * @method static Covenant|Proxy                   randomOrCreate(array $attributes = [])
- * @method static EntityRepository|RepositoryProxy repository()
- * @method static Covenant[]|Proxy[]               all()
- * @method static Covenant[]|Proxy[]               createMany(int $number, array|callable $attributes = [])
- * @method static Covenant[]|Proxy[]               createSequence(iterable|callable $sequence)
- * @method static Covenant[]|Proxy[]               findBy(array $attributes)
- * @method static Covenant[]|Proxy[]               randomRange(int $min, int $max, array $attributes = [])
- * @method static Covenant[]|Proxy[]               randomSet(int $number, array $attributes = [])
+ * @phpstan-method \App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant> create(array|callable $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant> createOne(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant> find(object|array|mixed $criteria)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant> findOrCreate(array $attributes)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant> first(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant> last(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant> random(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant> randomOrCreate(array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant>> all()
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant>> createMany(int $number, array|callable $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant>> createSequence(iterable|callable $sequence)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant>> findBy(array $attributes)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant>> randomRange(int $min, int $max, array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant>> randomSet(int $number, array $attributes = [])
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant>> many(int $min, int|null $max = null)
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Covenant\Covenant&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Covenant\Covenant>> sequence(iterable|callable $sequence)
  *
- * @phpstan-method        Proxy<Covenant> create(array|callable $attributes = [])
- * @phpstan-method static Proxy<Covenant> createOne(array $attributes = [])
- * @phpstan-method static Proxy<Covenant> find(object|array|mixed $criteria)
- * @phpstan-method static Proxy<Covenant> findOrCreate(array $attributes)
- * @phpstan-method static Proxy<Covenant> first(string $sortedField = 'id')
- * @phpstan-method static Proxy<Covenant> last(string $sortedField = 'id')
- * @phpstan-method static Proxy<Covenant> random(array $attributes = [])
- * @phpstan-method static Proxy<Covenant> randomOrCreate(array $attributes = [])
- * @phpstan-method static RepositoryProxy<Covenant> repository()
- * @phpstan-method static list<Proxy<Covenant>> all()
- * @phpstan-method static list<Proxy<Covenant>> createMany(int $number, array|callable $attributes = [])
- * @phpstan-method static list<Proxy<Covenant>> createSequence(iterable|callable $sequence)
- * @phpstan-method static list<Proxy<Covenant>> findBy(array $attributes)
- * @phpstan-method static list<Proxy<Covenant>> randomRange(int $min, int $max, array $attributes = [])
- * @phpstan-method static list<Proxy<Covenant>> randomSet(int $number, array $attributes = [])
+ * @extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory<\App\Domain\Publication\Dossier\Type\Covenant\Covenant>
  */
-final class CovenantFactory extends ModelFactory
+final class CovenantFactory extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory
 {
-    protected function getDefaults(): array
+    /**
+     * @return array<string, mixed>
+     */
+    protected function defaults(): array
     {
         $publicationDate = CarbonImmutable::createFromMutable(self::faker()->dateTimeBetween('01-01-2010', '01-01-2023'));
 
@@ -63,7 +65,7 @@ final class CovenantFactory extends ModelFactory
         ];
     }
 
-    protected static function getClass(): string
+    public static function class(): string
     {
         return Covenant::class;
     }

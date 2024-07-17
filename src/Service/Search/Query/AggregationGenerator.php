@@ -78,19 +78,12 @@ class AggregationGenerator
         }
     }
 
-    public function addDocTypeAggregations(QueryBuilder $queryBuilder): void
+    public function addUniqueDossierCountAggregation(QueryBuilder $queryBuilder): void
     {
         $queryBuilder->addAggregation(
             Aggregation::cardinality(
                 nameAndField: 'unique_dossiers',
                 fieldOrSource: 'dossier_nr',
-            )->setPrecisionThreshold(40_000),
-        );
-
-        $queryBuilder->addAggregation(
-            Aggregation::cardinality(
-                nameAndField: 'unique_documents',
-                fieldOrSource: 'document_nr',
             )->setPrecisionThreshold(40_000),
         );
     }

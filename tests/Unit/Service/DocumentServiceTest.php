@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
+use App\Domain\Ingest\SubType\SubTypeIngester;
+use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Service\DocumentService;
-use App\Service\Elastic\ElasticService;
 use App\Service\FileProcessService;
 use App\Service\HistoryService;
-use App\Service\Ingest\IngestService;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -21,23 +21,23 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class DocumentServiceTest extends MockeryTestCase
 {
     private DocumentService $documentService;
-    private EntityManagerInterface|MockInterface $entityManager;
-    private IngestService|MockInterface $ingester;
-    private MockInterface|DocumentStorageService $documentStorageService;
-    private ThumbnailStorageService|MockInterface $thumbnailStorageService;
-    private ElasticService|MockInterface $elasticService;
-    private MessageBusInterface|MockInterface $messageBus;
-    private FileProcessService|MockInterface $fileProcessService;
-    private HistoryService|MockInterface $historyService;
+    private EntityManagerInterface&MockInterface $entityManager;
+    private SubTypeIngester&MockInterface $ingester;
+    private MockInterface&EntityStorageService $entityStorageService;
+    private ThumbnailStorageService&MockInterface $thumbnailStorageService;
+    private SubTypeIndexer&MockInterface $subTypeIndexer;
+    private MessageBusInterface&MockInterface $messageBus;
+    private FileProcessService&MockInterface $fileProcessService;
+    private HistoryService&MockInterface $historyService;
 
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->ingester = \Mockery::mock(IngestService::class);
-        $this->documentStorageService = \Mockery::mock(DocumentStorageService::class);
+        $this->ingester = \Mockery::mock(SubTypeIngester::class);
+        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->thumbnailStorageService = \Mockery::mock(ThumbnailStorageService::class);
-        $this->ingester = \Mockery::mock(IngestService::class);
-        $this->elasticService = \Mockery::mock(ElasticService::class);
+        $this->ingester = \Mockery::mock(SubTypeIngester::class);
+        $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->fileProcessService = \Mockery::mock(FileProcessService::class);
         $this->historyService = \Mockery::mock(HistoryService::class);
@@ -47,9 +47,9 @@ class DocumentServiceTest extends MockeryTestCase
         $this->documentService = new DocumentService(
             $this->entityManager,
             $this->ingester,
-            $this->documentStorageService,
+            $this->entityStorageService,
             $this->thumbnailStorageService,
-            $this->elasticService,
+            $this->subTypeIndexer,
             $this->messageBus,
             $this->fileProcessService,
             $this->historyService
@@ -63,17 +63,16 @@ class DocumentServiceTest extends MockeryTestCase
         $dossier = \Mockery::mock(Dossier::class);
         $document = \Mockery::mock(Document::class);
 
-        $document->expects('getDossiers->contains')->with($dossier)->andReturnFalse();
-        $document->expects('getDocumentNr')->andReturns('abc-123');
-        $document->expects('getDossiers->count')->andReturn(0);
+        $document->shouldReceive('getDossiers->contains')->with($dossier)->andReturnFalse();
+        $document->shouldReceive('getDossiers->count')->andReturn(0);
 
         $this->entityManager->expects('remove')->with($document);
         $this->entityManager->expects('flush');
 
-        $this->elasticService->expects('removeDocument')->with('abc-123');
+        $this->subTypeIndexer->expects('remove')->with($document);
 
-        $this->documentStorageService->expects('deleteAllFilesForDocument')->with($document);
-        $this->thumbnailStorageService->expects('deleteAllThumbsForDocument')->with($document);
+        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($document);
+        $this->thumbnailStorageService->expects('deleteAllThumbsForEntity')->with($document);
 
         $this->documentService->removeDocumentFromDossier($dossier, $document);
     }
@@ -84,14 +83,14 @@ class DocumentServiceTest extends MockeryTestCase
         $document = \Mockery::mock(Document::class);
 
         $document->expects('getDossiers->contains')->with($dossier)->andReturnTrue();
-        $document->expects('getDossiers->count')->andReturn(5);
+        $document->shouldReceive('getDossiers->count')->andReturn(5);
 
         $dossier->expects('removeDocument')->with($document);
 
         $this->entityManager->expects('persist')->with($dossier);
         $this->entityManager->expects('flush');
 
-        $this->elasticService->expects('updateDocument')->with($document);
+        $this->subTypeIndexer->expects('index')->with($document);
 
         $this->documentService->removeDocumentFromDossier($dossier, $document);
     }
@@ -103,18 +102,17 @@ class DocumentServiceTest extends MockeryTestCase
 
         $dossier->expects('removeDocument')->with($document);
 
-        $document->expects('getDossiers->contains')->with($dossier)->andReturnTrue();
-        $document->expects('getDocumentNr')->andReturns('abc-123');
-        $document->expects('getDossiers->count')->andReturn(0);
+        $document->shouldReceive('getDossiers->contains')->with($dossier)->andReturnTrue();
+        $document->shouldReceive('getDossiers->count')->andReturn(0);
 
         $this->entityManager->expects('remove')->with($document);
         $this->entityManager->expects('persist')->with($dossier);
         $this->entityManager->expects('flush');
 
-        $this->elasticService->expects('removeDocument')->with('abc-123');
+        $this->subTypeIndexer->expects('remove')->with($document);
 
-        $this->documentStorageService->expects('deleteAllFilesForDocument')->with($document);
-        $this->thumbnailStorageService->expects('deleteAllThumbsForDocument')->with($document);
+        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($document);
+        $this->thumbnailStorageService->expects('deleteAllThumbsForEntity')->with($document);
 
         $this->documentService->removeDocumentFromDossier($dossier, $document);
     }

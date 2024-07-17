@@ -58,7 +58,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
         ]);
 
         $response = static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/investigation-report-attachments', $dossier->getId()),
@@ -88,7 +88,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
         ]);
 
         static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
@@ -115,7 +115,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
         ]);
 
         static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
@@ -140,7 +140,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
             'organisation' => $user->getOrganisation(),
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         vfsStream::newFile('test_file.pdf')
             ->withContent('This is a test file.')
@@ -224,7 +224,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
             'organisation' => $user->getOrganisation(),
         ]);
 
-        $client = static::createClient()->loginUser($user->object(), 'balie');
+        $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         vfsStream::newFile('test_file.pdf')
             ->withContent('This is a test file.')
@@ -458,7 +458,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
         ]);
 
         static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
@@ -484,7 +484,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
         ]);
 
         static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
@@ -515,7 +515,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
         ]);
 
         $response = static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_PUT,
                 sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
@@ -539,7 +539,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
         self::assertMatchesResourceItemJsonSchema(InvestigationReportAttachmentDto::class);
 
         $response2 = static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
@@ -568,7 +568,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
         ]);
 
         static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
@@ -604,7 +604,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
         ]);
 
         static::createClient()
-            ->loginUser($user->object(), 'balie')
+            ->loginUser($user->_real(), 'balie')
             ->request(
                 Request::METHOD_PUT,
                 sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),

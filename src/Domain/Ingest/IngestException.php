@@ -15,4 +15,12 @@ class IngestException extends \RuntimeException
             $id->toRfc4122(),
         ));
     }
+
+    public static function forNoMatchingSubTypeIngester(object $entity): self
+    {
+        return new self(sprintf(
+            'No matching subtype ingester found for entity of class %s',
+            $entity::class,
+        ));
+    }
 }

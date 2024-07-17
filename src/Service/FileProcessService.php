@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Domain\Ingest\IngestOptions;
+use App\Domain\Ingest\SubType\SubTypeIngester;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Repository\DocumentRepository;
-use App\Service\Ingest\IngestService;
-use App\Service\Ingest\Options;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use App\Utils;
 use Archive7z\Archive7z;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,9 +27,9 @@ class FileProcessService
 {
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
-        private readonly DocumentStorageService $storage,
+        private readonly EntityStorageService $entityStorageService,
         private readonly LoggerInterface $logger,
-        private readonly IngestService $ingestService,
+        private readonly SubTypeIngester $ingestService,
         private readonly HistoryService $historyService,
     ) {
     }
@@ -112,7 +112,7 @@ class FileProcessService
 
         $this->storeFileForDocument($file, $document, $documentId, $type);
 
-        $options = new Options();
+        $options = new IngestOptions();
         $options->setForceRefresh(true);
         $this->ingestService->ingest($document, $options);
 
@@ -216,7 +216,7 @@ class FileProcessService
 
     private function storeFileForDocument(\SplFileInfo $file, Document $document, string $documentId, string $type): void
     {
-        if (! $this->storage->storeDocument($file, $document)) {
+        if (! $this->entityStorageService->storeEntity($file, $document)) {
             $this->logger->error('Failed to store document', [
                 'documentId' => $documentId,
                 'path' => $file->getRealPath(),

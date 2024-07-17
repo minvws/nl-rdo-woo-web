@@ -4,122 +4,76 @@ declare(strict_types=1);
 
 namespace App\Service\Worker\Pdf\Extractor;
 
-use App\Entity\Document;
+use App\Entity\EntityWithFileInfo;
 use App\Service\Stats\WorkerStatsService;
-use App\Service\Storage\DocumentStorageService;
-use App\Service\Worker\Pdf\Tools\FileUtils;
-use Predis\Client;
+use App\Service\Storage\EntityStorageService;
+use App\Service\Worker\Pdf\Tools\Pdftk\PdftkPageCountResult;
+use App\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Process\Process;
 
 /**
- * Extractor that will extract the page count of a PDF document.
+ * Extractor that will extract the page count of a PDF entity.
+ *
+ * @implements OutputExtractorInterface<PdftkPageCountResult>
  */
-class PagecountExtractor implements DocumentExtractorInterface, OutputExtractorInterface
+class PagecountExtractor implements EntityExtractorInterface, OutputExtractorInterface
 {
-    protected LoggerInterface $logger;
-    protected DocumentStorageService $documentStorage;
-    protected FileUtils $fileUtils;
-    protected Client $redis;
-    protected WorkerStatsService $statsService;
-
-    /** @var array<string, int> */
-    protected array $output = [];
+    protected ?PdftkPageCountResult $output = null;
 
     public function __construct(
-        LoggerInterface $logger,
-        DocumentStorageService $documentStorage,
-        Client $redis,
-        WorkerStatsService $statsService,
+        protected readonly LoggerInterface $logger,
+        protected readonly PdftkService $pdftkService,
+        protected readonly EntityStorageService $entityStorageService,
+        protected readonly WorkerStatsService $statsService,
     ) {
-        $this->logger = $logger;
-        $this->documentStorage = $documentStorage;
-
-        $this->fileUtils = new FileUtils();
-        $this->redis = $redis;
-        $this->statsService = $statsService;
     }
 
-    public function extract(Document $document, bool $forceRefresh): void
+    public function extract(EntityWithFileInfo $entity, bool $forceRefresh): void
     {
-        // TODO: Cache is temporarily disabled for #2142, to be improved and restored in #2144
-        //
-        // if ($forceRefresh || ! $this->isCached($document)) {
-        //     $this->output['count'] = $this->extractPageCountFromPdf($document);
-        //     $this->setCachedPageCount($document, $this->output['count']);
-        // }
-        //
-        // $this->output['count'] = $this->getCachedPageCount($document);
+        // TODO: Cache was removed for #2142, to be improved and restored in #2144
         unset($forceRefresh);
-        $this->output['count'] = $this->extractPageCountFromPdf($document);
+
+        $this->output = $this->extractPageCountFromPdf($entity);
     }
 
-    protected function getCachedPageCount(Document $document): int
+    protected function extractPageCountFromPdf(EntityWithFileInfo $entity): ?PdftkPageCountResult
     {
-        $key = $document->getDocumentNr() . '_pagecount';
-
-        return intval($this->redis->get($key));
-    }
-
-    protected function setCachedPageCount(Document $document, int $count): void
-    {
-        $key = $document->getDocumentNr() . '_pagecount';
-
-        $this->redis->set($key, $count);
-    }
-
-    protected function extractPageCountFromPdf(Document $document): int
-    {
-        /** @var string $localPdfPath */
-        $localPdfPath = $this->statsService->measure('download.document', function ($document) {
-            return $this->documentStorage->downloadDocument($document);
-        }, [$document]);
-        if (! $localPdfPath) {
-            $this->logger->error('Failed to download document for page count extraction', [
-                'document' => $document->getDocumentNr(),
+        /** @var string|false $localPdfPath */
+        $localPdfPath = $this->statsService->measure(
+            'download.entity',
+            fn (): string|false => $this->entityStorageService->downloadEntity($entity),
+        );
+        if ($localPdfPath === false) {
+            $this->logger->error('Failed to download entity for page count extraction', [
+                'id' => $entity->getId(),
+                'class' => $entity::class,
             ]);
 
-            return 0;
+            return null;
         }
 
-        /** @var Process $process */
-        $process = $this->statsService->measure('download.document', function ($localPdfPath) {
-            $params = ['/usr/bin/pdftk', $localPdfPath, 'dump_data'];
-            $process = new Process($params);
-            $process->run();
+        /** @var PdftkPageCountResult $pdftkPageCountResult */
+        $pdftkPageCountResult = $this->statsService->measure(
+            'pdftk.extractNumberOfPages',
+            fn (): PdftkPageCountResult => $this->pdftkService->extractNumberOfPages($localPdfPath),
+        );
 
-            return $process;
-        }, [$localPdfPath]);
+        $this->entityStorageService->removeDownload($localPdfPath);
 
-        $this->documentStorage->removeDownload($localPdfPath);
-
-        if (! $process->isSuccessful()) {
-            $this->logger->error('Failed to get page count: ', [
-                'sourcePath' => $localPdfPath,
-                'error_output' => $process->getErrorOutput(),
+        if ($pdftkPageCountResult->isFailed()) {
+            $this->logger->error('Failed to get number of pages', [
+                'id' => $entity->getId(),
+                'class' => $entity::class,
+                'sourcePdf' => $pdftkPageCountResult->sourcePdf,
+                'errorOutput' => $pdftkPageCountResult->errorMessage,
             ]);
-
-            return 0;
         }
 
-        $output = $process->getOutput();
-        preg_match('/NumberOfPages: (\d+)/', $output, $matches);
-
-        return isset($matches[1]) ? (int) $matches[1] : 0;
+        return $pdftkPageCountResult;
     }
 
-    /**
-     * @return array<string, int>
-     */
-    public function getOutput(Document $document, int $pageNr): array
+    public function getOutput(): ?PdftkPageCountResult
     {
         return $this->output;
-    }
-
-    protected function isCached(Document $document): bool
-    {
-        $key = $document->getDocumentNr() . '_pagecount';
-
-        return $this->redis->exists($key) == 1;
     }
 }

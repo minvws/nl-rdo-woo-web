@@ -61,12 +61,6 @@
                     "field": "dossier_nr",
                     "precision_threshold": 40000
                 }
-            },
-            "unique_documents": {
-                "cardinality": {
-                    "field": "document_nr",
-                    "precision_threshold": 40000
-                }
             }
         }
     },

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
+use App\Domain\Ingest\IngestOptions;
+use App\Domain\Ingest\SubType\SubTypeIngester;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Message\ReplaceDocumentMessage;
 use App\Service\FileProcessService;
-use App\Service\Ingest\IngestService;
-use App\Service\Ingest\Options;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -23,10 +23,10 @@ class ReplaceDocumentHandler
 {
     public function __construct(
         private readonly FileProcessService $fileProcessService,
-        private readonly DocumentStorageService $storageService,
+        private readonly EntityStorageService $entityStorageService,
         private readonly EntityManagerInterface $doctrine,
         private readonly LoggerInterface $logger,
-        private readonly IngestService $ingester,
+        private readonly SubTypeIngester $ingester,
     ) {
     }
 
@@ -72,7 +72,7 @@ class ReplaceDocumentHandler
         }
 
         // Unchunked file handling
-        $localFilePath = $this->storageService->download($message->getRemotePath());
+        $localFilePath = $this->entityStorageService->download($message->getRemotePath());
         if (! $localFilePath) {
             $this->logger->error('File could not be downloaded', [
                 'dossier_uuid' => $message->getDossierUuid(),
@@ -89,7 +89,7 @@ class ReplaceDocumentHandler
         } catch (\Throwable $e) {
             throw $e;
         } finally {
-            $this->storageService->removeDownload($localFilePath, true);
+            $this->entityStorageService->removeDownload($localFilePath, true);
         }
     }
 
@@ -102,7 +102,7 @@ class ReplaceDocumentHandler
             // Check if the chunk exists
             $remoteChunkPath = '/uploads/chunks/' . $chunkUuid . '/' . $i;
 
-            $localChunkFile = $this->storageService->download($remoteChunkPath);
+            $localChunkFile = $this->entityStorageService->download($remoteChunkPath);
             if (! $localChunkFile) {
                 $this->logger->error('Chunk is not readable', [
                     'uuid' => $chunkUuid,
@@ -124,7 +124,7 @@ class ReplaceDocumentHandler
             }
 
             // Unlink chunk, as we don't need it anymore
-            $this->storageService->removeDownload($localChunkFile);
+            $this->entityStorageService->removeDownload($localChunkFile);
             $chunk = null;
         }
 
@@ -137,7 +137,7 @@ class ReplaceDocumentHandler
             return;
         }
 
-        $options = new Options();
+        $options = new IngestOptions();
         $options->setForceRefresh(true);
 
         $this->ingester->ingest($document, $options);

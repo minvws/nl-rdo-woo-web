@@ -6,7 +6,7 @@ namespace App\Service\Uploader;
 
 use App\Entity\EntityWithFileInfo;
 use App\Exception\UploaderServiceException;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use App\SourceType;
 use Oneup\UploaderBundle\Event\PostUploadEvent;
 use Oneup\UploaderBundle\Uploader\Storage\FilesystemOrphanageStorage;
@@ -20,7 +20,7 @@ readonly class UploaderService
     public function __construct(
         private RequestStack $requestStack,
         private FilesystemOrphanageStorage $orphanageStorage,
-        private DocumentStorageService $documentStorage,
+        private EntityStorageService $entityStorageService,
     ) {
     }
 
@@ -87,14 +87,14 @@ readonly class UploaderService
         $fileInfo = $entity->getFileInfo();
 
         if ($fileInfo->isUploaded()) {
-            $this->documentStorage->removeFileForEntity($entity);
+            $this->entityStorageService->removeFileForEntity($entity);
             $fileInfo->removeFileProperties();
         }
 
         $fileInfo->setSourceType(SourceType::SOURCE_PDF);
         $fileInfo->setType('pdf');
 
-        if (! $this->documentStorage->storeDocument($file, $entity)) {
+        if (! $this->entityStorageService->storeEntity($file, $entity)) {
             throw UploaderServiceException::forCouldNotAttachFileToEntity($entity);
         }
 

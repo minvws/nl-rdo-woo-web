@@ -42,7 +42,7 @@ class PageCheck extends Command
         foreach ($dossiers as $dossier) {
             foreach ($dossier->getDocuments() as $document) {
                 // Get the count from elastic
-                $esDocument = $this->elasticService->getDocument($document);
+                $esDocument = $this->elasticService->getDocument($document->getDocumentNr());
 
                 for ($i = 1; $i <= $document->getpageCount(); $i++) {
                     if (! $this->pageExists($esDocument, $i)) {

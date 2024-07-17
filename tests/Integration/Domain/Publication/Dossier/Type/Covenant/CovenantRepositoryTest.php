@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Domain\Publication\Dossier\Type\Covenant;
 
+use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantRepository;
-use App\Domain\Search\Result\Covenant\CovenantSearchResult;
+use App\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use App\Tests\Integration\IntegrationTestTrait;
@@ -29,21 +30,19 @@ final class CovenantRepositoryTest extends KernelTestCase
 
     public function testSaveAndRemove(): void
     {
-        CovenantFactory::configuration()->disablePersist();
-        $dossier = CovenantFactory::createOne();
-        CovenantFactory::configuration()->enablePersist();
+        $dossier = new Covenant();
 
         $repository = $this->getRepository();
 
         $this->expectException(NoResultException::class);
         $this->getRepository()->findOneByDossierId($dossier->getId());
 
-        $repository->save($dossier->object(), true);
+        $repository->save($dossier, true);
 
         $result = $this->getRepository()->findOneByDossierId($dossier->getId());
         self::assertEquals($dossier, $result);
 
-        $repository->remove($dossier->object(), true);
+        $repository->remove($dossier, true);
 
         $this->expectException(NoResultException::class);
         $this->getRepository()->findOneByDossierId($dossier->getId());

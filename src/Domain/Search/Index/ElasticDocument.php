@@ -10,9 +10,15 @@ readonly class ElasticDocument
      * @param array<array-key, mixed> $fields
      */
     public function __construct(
+        private string $id,
         private ElasticDocumentType $type,
         private array $fields,
     ) {
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     /**

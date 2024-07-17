@@ -12,7 +12,7 @@ use App\Exception\ProcessInventoryException;
 use App\Service\Inventory\InventoryService;
 use App\Service\Inventory\Reader\InventoryReaderFactory;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -20,7 +20,7 @@ use Mockery\MockInterface;
 class InventoryServiceTest extends MockeryTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
-    private DocumentStorageService&MockInterface $documentStorage;
+    private EntityStorageService&MockInterface $entityStorageService;
     private InventoryReaderFactory&MockInterface $readerFactory;
     private InventoryService $inventoryService;
     private InventoryProcessRun&MockInterface $run;
@@ -28,13 +28,13 @@ class InventoryServiceTest extends MockeryTestCase
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->documentStorage = \Mockery::mock(DocumentStorageService::class);
+        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->readerFactory = \Mockery::mock(InventoryReaderFactory::class);
         $this->run = \Mockery::mock(InventoryProcessRun::class);
 
         $this->inventoryService = new InventoryService(
             $this->entityManager,
-            $this->documentStorage,
+            $this->entityStorageService,
             $this->readerFactory,
         );
 
@@ -54,7 +54,7 @@ class InventoryServiceTest extends MockeryTestCase
     {
         $this->run->shouldReceive('getFileInfo->isUploaded')->andReturnTrue();
 
-        $this->documentStorage->expects('downloadDocument')->with($this->run)->andReturnFalse();
+        $this->entityStorageService->expects('downloadEntity')->with($this->run)->andReturnFalse();
 
         $this->expectExceptionObject(ProcessInventoryException::forInventoryCannotBeLoadedFromStorage());
 
@@ -67,7 +67,7 @@ class InventoryServiceTest extends MockeryTestCase
         $this->run->shouldReceive('getFileInfo->getMimetype')->andReturn('text/csv');
 
         $filename = 'tst/123.csv';
-        $this->documentStorage->expects('downloadDocument')->with($this->run)->andReturn($filename);
+        $this->entityStorageService->expects('downloadEntity')->with($this->run)->andReturn($filename);
 
         $this->run->expects('setTmpFilename')->with($filename);
 
@@ -94,7 +94,7 @@ class InventoryServiceTest extends MockeryTestCase
         $this->run->shouldReceive('getTmpFilename')->andReturn($filename);
         $this->run->expects('setTmpFilename')->with(null);
 
-        $this->documentStorage->expects('removeDownload')->with($filename);
+        $this->entityStorageService->expects('removeDownload')->with($filename);
 
         $this->inventoryService->cleanupTmpFile($this->run);
     }
@@ -121,8 +121,8 @@ class InventoryServiceTest extends MockeryTestCase
         $dossier->expects('setInventory')->with(null);
         $dossier->expects('setRawInventory')->with(null);
 
-        $this->documentStorage->expects('removeFileForEntity')->with($inventory);
-        $this->documentStorage->expects('removeFileForEntity')->with($rawInventory);
+        $this->entityStorageService->expects('removeFileForEntity')->with($inventory);
+        $this->entityStorageService->expects('removeFileForEntity')->with($rawInventory);
 
         $this->entityManager->expects('remove')->with($inventory);
         $this->entityManager->expects('remove')->with($rawInventory);

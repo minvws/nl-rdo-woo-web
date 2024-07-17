@@ -2,32 +2,43 @@
 Documentation       Resource file with generic keywords.
 Library             OperatingSystem
 Library             String
+Library             DateTime
 Library             Browser
 Library             DebugLibrary
-Library             DateTime
 
 
 *** Variables ***
-${CURRENT_TIME}     ${EMPTY}
-${CURRENT_EPOCH}    ${EMPTY}
-${RUN_LOCALLY}      ${EMPTY}
+${CURRENT_TIME}         ${EMPTY}
+${CURRENT_EPOCH}        ${EMPTY}
+${RUN_LOCALLY}          ${EMPTY}
+${ATTACHMENT_FILENAME}  ${EMPTY}
+${ATTACHMENT_LOCATION}  ${EMPTY}
 
 
 *** Keywords ***
-Fill Out Basic Details
-  [Documentation]  Stores the reference number in suite var $DOSSIER_REFERENCE
-  [Arguments]  ${date_from}=2021-12-01T00:00:00+00:00  ${date_to}=2023-01-31T00:00:00+00:00
-  Fill Text  id=details_title  Robot ${CURRENT_TIME}
-  Select Options By  id=details_date_from  value  ${date_from}
-  Select Options By  id=details_date_to  value  ${date_to}
-  Select Options By  id=details_departments  index  0
-  Check Checkbox  text=Woo-verzoek
-  Select Options By  id=details_default_subjects  label  Opstart Corona
-  Select Options By  id=details_documentPrefix_documentPrefix  index  1
-  ${reference_number} =  Generate Random String  3  [NUMBERS][UPPER]
-  Fill Text  id=details_dossierNr  ${reference_number}
-  Set Suite Variable  $DOSSIER_REFERENCE  ${reference_number}
+Fill Out Decision Details
+  [Arguments]  ${decision}  ${has_attachment}=${FALSE}
+  Check Checkbox  text="${decision}"
+  Fill Text  id=decision_summary  Samenvatting voor het besluitdossier Robot ${CURRENT_TIME}
+  Upload File By Selector  id=decision_decision_document  tests/robot_framework/files/besluitbrief.pdf
+  IF  ${has_attachment}  Upload Attachment
   Click  "Opslaan en verder"
+
+Upload Attachment
+  Click  " + Bijlage toevoegen... "
+  Upload File By Selector  //*[@name="uploadUuid"]  ${ATTACHMENT_LOCATION}
+  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${ATTACHMENT_FILENAME}  timeout=5s
+  Select Options By  //*[@name="type"]  text  staatscourant
+  Type Text  //*[@name="formalDate"]  01012022
+  Click  //dialog//button[@type="submit"]
+  Wait For Condition  Text  //*[@id="inhoud"]  contains  Bijlage '${ATTACHMENT_FILENAME}' is toegevoegd.
+
+Upload Documents Step
+  Upload Inventory  ${INVENTORY}
+  Verify Document Upload Remaining  Nog te uploaden: ${NUMBER_OF_DOCUMENTS} van ${NUMBER_OF_DOCUMENTS} documenten.
+  Upload Document Zip  ${DOCUMENTS}
+  Verify Document Upload Completed
+  Click Continue To Publish
 
 Upload Inventory
   [Arguments]  ${inventory_file_location}  ${expect_error}=${FALSE}
@@ -43,15 +54,17 @@ Verify Inventory Error
 
 Verify Document Upload Remaining
   [Arguments]  ${expected_result}
-  Wait For Condition  Text  //*[@data-e2e-name="missingDocuments"]  contains  ${expected_result}
+  Wait For Condition  Text  //*[@data-e2e-name="missingDocuments"]  contains  ${expected_result}  timeout=10s
 
 Upload Document Zip
   [Arguments]  ${zip_file_location}
+  Sleep  30ms  # sometimes the upload doesn't seem to select anything, so let's try a tiny wait here before we click
   Upload File By Selector  id=upload-area-dossier-files  ${zip_file_location}
   Sleep  7s
 
 Verify Document Upload Completed
-  Wait For Elements State  //*[@id="js-dossier-documents-completed"]  visible  timeout=10s
+  Scroll To Element  //*[@id="inhoud"]/div/div[2]
+  Wait For Elements State  //*[@id="js-dossier-documents-completed"]  visible  timeout=40s
 
 Click Continue To Publish
   Click  //*[@data-e2e-name="to-next-step-link"]
@@ -83,8 +96,9 @@ Retract Document
   Click  //*[@id="withdraw_form_submit"]
   Get Text  //*[@id="inhoud"]  contains  Het document is ingetrokken.
 
-Click Breadcrumb Element 3
-  Click  //*[@id="inhoud"]/div/nav/ol/li[3]
+Click Breadcrumb Element
+  [Arguments]  ${element_nr}
+  Click  //*[@id="inhoud"]/div/nav/ol/li[${element_nr}]
 
 Click Public URL
   Click  //*[@data-e2e-name="public-url"]

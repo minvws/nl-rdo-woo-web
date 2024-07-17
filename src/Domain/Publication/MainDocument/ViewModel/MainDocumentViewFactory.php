@@ -21,7 +21,7 @@ use Symfony\Component\Uid\Uuid;
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-final readonly class MainDocumentViewFactory
+readonly class MainDocumentViewFactory
 {
     public function __construct(private UrlGeneratorInterface $urlGenerator)
     {
@@ -149,6 +149,7 @@ final readonly class MainDocumentViewFactory
             grounds: Citation::sortWooCitations($mainDocument->getGrounds()),
             downloadUrl: $this->generateUrl($downloadRouteName, $parameters),
             detailsUrl: $this->generateUrl($detailRouteName, $parameters),
+            pageCount: $mainDocument->getFileInfo()->getPageCount() ?? 0,
         );
     }
 

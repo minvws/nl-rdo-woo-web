@@ -1,0 +1,168 @@
+{
+    "body": {
+        "docvalue_fields": [
+            "type",
+            "document_nr",
+            "document_prefix",
+            "dossier_nr"
+        ],
+        "_source": false,
+        "sort": [
+            "_score"
+        ],
+        "query": {
+            "bool": {
+                "should": [
+                    {
+                        "match_all": {}
+                    }
+                ],
+                "filter": [
+                    {
+                        "bool": {
+                            "minimum_should_match": 1,
+                            "should": [
+                                {
+                                    "bool": {
+                                        "filter": [
+                                            {
+                                                "terms": {
+                                                    "type": [
+                                                        "dossier",
+                                                        "covenant",
+                                                        "annual_report",
+                                                        "investigation_report",
+                                                        "disposition",
+                                                        "complaint_judgement"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "terms": {
+                                                    "status": [
+                                                        "published"
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "bool": {
+                                        "filter": [
+                                            {
+                                                "terms": {
+                                                    "type": [
+                                                        "document",
+                                                        "covenant_main_document",
+                                                        "annual_report_main_document",
+                                                        "investigation_report_main_document",
+                                                        "disposition_main_document",
+                                                        "complaint_judgement_main_document",
+                                                        "attachment"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "nested": {
+                                                    "path": "dossiers",
+                                                    "query": {
+                                                        "terms": {
+                                                            "dossiers.status": [
+                                                                "published"
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "bool": {
+                            "filter": [
+                                {
+                                    "bool": {
+                                        "minimum_should_match": 1,
+                                        "should": [
+                                            {
+                                                "bool": {
+                                                    "filter": [
+                                                        {
+                                                            "terms": {
+                                                                "type": [
+                                                                    "document",
+                                                                    "covenant_main_document",
+                                                                    "annual_report_main_document",
+                                                                    "investigation_report_main_document",
+                                                                    "disposition_main_document",
+                                                                    "complaint_judgement_main_document",
+                                                                    "attachment"
+                                                                ]
+                                                            }
+                                                        }
+                                                    ],
+                                                    "must_not": [
+                                                        {
+                                                            "exists": {
+                                                                "field": "date"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "bool": {
+                                                    "filter": [
+                                                        {
+                                                            "terms": {
+                                                                "type": [
+                                                                    "dossier",
+                                                                    "covenant",
+                                                                    "annual_report",
+                                                                    "investigation_report",
+                                                                    "disposition",
+                                                                    "complaint_judgement"
+                                                                ]
+                                                            }
+                                                        }
+                                                    ],
+                                                    "must_not": [
+                                                        {
+                                                            "exists": {
+                                                                "field": "date_to"
+                                                            }
+                                                        },
+                                                        {
+                                                            "exists": {
+                                                                "field": "date_from"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "aggs": {
+            "unique_dossiers": {
+                "cardinality": {
+                    "field": "dossier_nr",
+                    "precision_threshold": 40000
+                }
+            }
+        }
+    },
+    "index": "woopie-read",
+    "from": 0,
+    "size": 0
+}

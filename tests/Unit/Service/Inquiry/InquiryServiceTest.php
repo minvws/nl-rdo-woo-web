@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inquiry;
 
-use App\Domain\Ingest\IngestMetadataOnlyMessage;
+use App\Domain\Ingest\MetadataOnly\IngestMetadataOnlyCommand;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\IndexDossierMessage;
+use App\Domain\Search\Index\Dossier\IndexDossierCommand;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
@@ -23,7 +23,7 @@ use App\Service\BatchDownloadService;
 use App\Service\HistoryService;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Inventory\InquiryChangeset;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -38,7 +38,7 @@ class InquiryServiceTest extends MockeryTestCase
     private EntityManagerInterface&MockInterface $entityManager;
     private MessageBusInterface&MockInterface $messageBus;
     private BatchDownloadService&MockInterface $batchDownloads;
-    private MockInterface&DocumentStorageService $documentStorage;
+    private MockInterface&EntityStorageService $entityStorageService;
     private HistoryService&MockInterface $historyService;
     private InquiryService $inquiryService;
     private Organisation&MockInterface $organisation;
@@ -52,14 +52,14 @@ class InquiryServiceTest extends MockeryTestCase
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->batchDownloads = \Mockery::mock(BatchDownloadService::class);
-        $this->documentStorage = \Mockery::mock(DocumentStorageService::class);
+        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->historyService = \Mockery::mock(HistoryService::class);
 
         $this->inquiryService = new InquiryService(
             $this->entityManager,
             $this->messageBus,
             $this->batchDownloads,
-            $this->documentStorage,
+            $this->entityStorageService,
             $this->historyService,
         );
 
@@ -124,7 +124,7 @@ class InquiryServiceTest extends MockeryTestCase
                 self::assertEquals($caseNr, $inquiry->getCasenr());
 
                 // Set fake ID on doctrine entity
-                $reflectionClass = new \ReflectionClass(get_class($inquiry));
+                $reflectionClass = new \ReflectionClass($inquiry::class);
                 $idProperty = $reflectionClass->getProperty('id');
                 $idProperty->setAccessible(true);
                 $idProperty->setValue($inquiry, $inquiryId);
@@ -157,7 +157,7 @@ class InquiryServiceTest extends MockeryTestCase
         ))->andReturns(new Envelope(new \stdClass()));
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IngestMetadataOnlyMessage $message) use ($addDoc1Id) {
+            function (IngestMetadataOnlyCommand $message) use ($addDoc1Id) {
                 self::assertEquals($addDoc1Id, $message->getEntityId());
 
                 return true;
@@ -165,7 +165,7 @@ class InquiryServiceTest extends MockeryTestCase
         ))->andReturns(new Envelope(new \stdClass()));
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IngestMetadataOnlyMessage $message) use ($addDoc2Id) {
+            function (IngestMetadataOnlyCommand $message) use ($addDoc2Id) {
                 self::assertEquals($addDoc2Id, $message->getEntityId());
 
                 return true;
@@ -173,7 +173,7 @@ class InquiryServiceTest extends MockeryTestCase
         ))->andReturns(new Envelope(new \stdClass()));
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IngestMetadataOnlyMessage $message) use ($removeDocId) {
+            function (IngestMetadataOnlyCommand $message) use ($removeDocId) {
                 self::assertEquals($removeDocId, $message->getEntityId());
 
                 return true;
@@ -181,7 +181,7 @@ class InquiryServiceTest extends MockeryTestCase
         ))->andReturns(new Envelope(new \stdClass()));
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IndexDossierMessage $message) {
+            function (IndexDossierCommand $message) {
                 self::assertEquals($this->dossierId, $message->getUuid());
 
                 return true;
@@ -189,7 +189,7 @@ class InquiryServiceTest extends MockeryTestCase
         ))->andReturns(new Envelope(new \stdClass()));
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IndexDossierMessage $message) use ($newDossierId) {
+            function (IndexDossierCommand $message) use ($newDossierId) {
                 self::assertEquals($newDossierId, $message->getUuid());
 
                 return true;
@@ -264,7 +264,7 @@ class InquiryServiceTest extends MockeryTestCase
         ))->andReturns(new Envelope(new \stdClass()));
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IngestMetadataOnlyMessage $message) use ($addDoc1Id) {
+            function (IngestMetadataOnlyCommand $message) use ($addDoc1Id) {
                 self::assertEquals($addDoc1Id, $message->getEntityId());
 
                 return true;
@@ -272,7 +272,7 @@ class InquiryServiceTest extends MockeryTestCase
         ))->andReturns(new Envelope(new \stdClass()));
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IngestMetadataOnlyMessage $message) use ($addDoc2Id) {
+            function (IngestMetadataOnlyCommand $message) use ($addDoc2Id) {
                 self::assertEquals($addDoc2Id, $message->getEntityId());
 
                 return true;
@@ -280,7 +280,7 @@ class InquiryServiceTest extends MockeryTestCase
         ))->andReturns(new Envelope(new \stdClass()));
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IngestMetadataOnlyMessage $message) use ($removeDocId) {
+            function (IngestMetadataOnlyCommand $message) use ($removeDocId) {
                 self::assertEquals($removeDocId, $message->getEntityId());
 
                 return true;
@@ -288,7 +288,7 @@ class InquiryServiceTest extends MockeryTestCase
         ))->andReturns(new Envelope(new \stdClass()));
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IndexDossierMessage $message) use ($newDossierId) {
+            function (IndexDossierCommand $message) use ($newDossierId) {
                 self::assertEquals($newDossierId, $message->getUuid());
 
                 return true;

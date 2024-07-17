@@ -15,14 +15,14 @@ use App\Entity\RawInventory;
 use App\Service\BatchDownloadService;
 use App\Service\DocumentService;
 use App\Service\Inquiry\InquiryService;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 
 class WooDecisionDeleteStrategyTest extends MockeryTestCase
 {
-    private DocumentStorageService&MockInterface $storageService;
+    private EntityStorageService&MockInterface $entityStorageService;
     private DocumentService&MockInterface $documentService;
     private BatchDownloadService&MockInterface $batchDownloadService;
     private InquiryService&MockInterface $inquiryService;
@@ -30,13 +30,13 @@ class WooDecisionDeleteStrategyTest extends MockeryTestCase
 
     public function setUp(): void
     {
-        $this->storageService = \Mockery::mock(DocumentStorageService::class);
+        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->documentService = \Mockery::mock(DocumentService::class);
         $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
         $this->inquiryService = \Mockery::mock(InquiryService::class);
 
         $this->strategy = new WooDecisionDeleteStrategy(
-            $this->storageService,
+            $this->entityStorageService,
             $this->documentService,
             $this->batchDownloadService,
             $this->inquiryService,
@@ -47,7 +47,7 @@ class WooDecisionDeleteStrategyTest extends MockeryTestCase
     {
         $dossier = \Mockery::mock(Covenant::class);
 
-        $this->storageService->shouldNotHaveBeenCalled();
+        $this->entityStorageService->shouldNotHaveBeenCalled();
         $this->documentService->shouldNotHaveBeenCalled();
         $this->batchDownloadService->shouldNotHaveBeenCalled();
         $this->inquiryService->shouldNotHaveBeenCalled();
@@ -76,9 +76,9 @@ class WooDecisionDeleteStrategyTest extends MockeryTestCase
 
         $this->documentService->expects('removeDocumentFromDossier')->with($dossier, $document, false);
 
-        $this->storageService->expects('removeFileForEntity')->with($inventory);
-        $this->storageService->expects('removeFileForEntity')->with($rawInventory);
-        $this->storageService->expects('removeFileForEntity')->with($decisionDocument);
+        $this->entityStorageService->expects('removeFileForEntity')->with($inventory);
+        $this->entityStorageService->expects('removeFileForEntity')->with($rawInventory);
+        $this->entityStorageService->expects('removeFileForEntity')->with($decisionDocument);
 
         $this->batchDownloadService->expects('removeAllDownloadsForEntity')->with($dossier);
         $this->inquiryService->expects('removeDossierFromInquiries')->with($dossier);

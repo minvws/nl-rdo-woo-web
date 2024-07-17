@@ -57,18 +57,25 @@ framework:
             App\Message\RemoveInventoryAndDocumentsMessage: high
 
             App\Message\IngestDossiersMessage: ingestor                # Ingests all dossiers
-            App\Domain\Ingest\IngestDossierMessage: ingestor           # Ingests a single dossier
-            App\Domain\Ingest\IngestPdfMessage: ingestor               # Ingests a complete PDF document and fires a message for each page
-            App\Domain\Ingest\IngestPdfPageMessage: ingestor           # Ingests a single PDF page from a PDF document
+            App\Domain\Ingest\Dossier\IngestDossierCommand: ingestor   # Ingests a single dossier
+            App\Domain\Ingest\Pdf\IngestPdfCommand: ingestor           # Ingests a complete PDF document and fires a message for each page
+            App\Domain\Ingest\PdfPage\IngestPdfPageCommand: ingestor   # Ingests a single PDF page from a PDF document
             App\Message\IngestDecisionMessage: ingestor
-            App\Domain\Ingest\IngestMetadataOnlyMessage: ingestor
+            App\Domain\Ingest\MetadataOnly\IngestMetadataOnlyCommand: ingestor
             App\Message\GenerateInquiryInventoryMessage: ingestor
             App\Message\GenerateInquiryArchivesMessage: ingestor
 
-            App\Domain\Search\Index\IndexDossierMessage: esupdater     # Updates the dossier in the elastic index
+            App\Domain\Search\Index\Dossier\IndexDossierCommand: esupdater     # Updates the dossier in the elastic index
             App\Message\UpdateDepartmentMessage: esupdater             # Updates the dossier in the elastic index
             App\Domain\Publication\Dossier\Command\DeleteDossierCommand: esupdater
             App\Message\RemoveDocumentMessage: esupdater
+            App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent: esupdater
+            App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent: esupdater
+            App\Domain\Publication\Attachment\Event\AttachmentDeletedEvent: esupdater
+            App\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent: esupdater
+            App\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent: esupdater
+            App\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent: esupdater
+            App\Domain\Search\Index\DeleteElasticDocumentCommand: esupdater
 
             App\Message\GenerateArchiveMessage: global                 # Generates a ZIP archive of the dossier
             App\Message\UpdateDossierArchivesMessage: global           # Removes existing archives for a dossier and generates a new complete archive

@@ -4,260 +4,78 @@ declare(strict_types=1);
 
 namespace App\Service\Storage;
 
-use App\Entity\Document;
-use League\Flysystem\FilesystemException;
-use League\Flysystem\FilesystemOperator;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\File\File;
+use App\Entity\EntityWithFileInfo;
 
 /**
- * This class is responsible for storing and retrieving thumbnails. See DocumentStorageService for more information.
+ * This class is responsible for storing and retrieving thumbnails attach to entities using FileInfo. See StorageService
+ * for more information.
  */
-class ThumbnailStorageService implements StorageAliveInterface
+class ThumbnailStorageService extends StorageService
 {
-    protected FilesystemOperator $storage;
-    protected LoggerInterface $logger;
-
-    public function __construct(FilesystemOperator $storage, LoggerInterface $logger)
-    {
-        $this->storage = $storage;
-        $this->logger = $logger;
-    }
-
-    /**
-     * This will read in-memory. You probably do not want to do this for large files and use retrieveResource() instead.
-     */
-    public function retrieve(Document $document, ?int $pageNr = null): ?string
-    {
-        if ($pageNr) {
-            $path = $this->generatePagePath($document, $pageNr);
-        } else {
-            $path = $this->generateDocumentPath($document);
-        }
-
-        try {
-            return $this->storage->read($path);
-        } catch (\Throwable $e) {
-            $this->logger->error('Could not read thumbnail from storage', [
-                'exception' => $e->getMessage(),
-                'path' => $path,
-            ]);
-
-            return null;
-        }
-    }
-
     /**
      * Reads from the storage adapter and returns a resource. Returns NULL when we cannot read the file.
      *
      * @return resource|null
      */
-    public function retrieveResource(Document $document, ?int $pageNr = null)
+    public function retrieveResource(EntityWithFileInfo $entity, int $pageNr)
     {
-        if ($pageNr) {
-            $path = $this->generatePagePath($document, $pageNr);
-        } else {
-            $path = $this->generateDocumentPath($document);
-        }
+        $remotePath = $this->generatePagePath($entity, $pageNr);
 
-        try {
-            return $this->storage->readStream($path);
-        } catch (\Throwable $e) {
-            $this->logger->error('Could not read thumbnail from storage', [
-                'exception' => $e->getMessage(),
-                'path' => $path,
-            ]);
-
-            return null;
-        }
+        return $this->remoteFilesystem->readStream($remotePath);
     }
 
     /**
-     * Store a file in the storage adapter and update the document record with the file information.
+     * Store a file in the storage adapter.
      */
-    public function store(Document $document, File $file, ?int $pageNr = null): bool
+    public function store(EntityWithFileInfo $entity, \SplFileInfo $localFile, int $pageNr): bool
     {
-        if ($pageNr) {
-            $path = $this->generatePagePath($document, $pageNr);
-        } else {
-            $path = $this->generateDocumentPath($document);
-        }
+        $remotePath = $this->generatePagePath($entity, $pageNr);
 
-        // Create path if not exists
-        try {
-            if ($this->storage->directoryExists(dirname($path)) === false) {
-                // Visibility of the directory is taken care of by the adapter configuration settings
-                $this->storage->createDirectory(dirname($path));
-            }
-        } catch (FilesystemException $e) {
-            // Could not create directory
-            $this->logger->error('Could not create directory in storage', [
-                'document' => $document->getId(),
-                'path' => $path,
-                'exception' => $e->getMessage(),
-            ]);
-
+        if (! $this->remoteFilesystem->createDirectoryIfNotExist(dirname($remotePath))) {
             return false;
         }
 
-        // Open the file as a SplFileObject, so we can stream it to the storage adapter
-        $stream = fopen($file->getRealPath(), 'r');
-        if (! is_resource($stream)) {
-            $this->logger->error('Could not open file stream', [
-                'document' => $document->getId(),
-                'path' => $path,
-                'file' => $file->getFilename(),
-            ]);
-        }
-
-        // File permissions is taken case of by the adapter configuration settings
-        try {
-            $this->storage->writeStream($path, $stream);
-        } catch (\Throwable $e) {
-            // An exception occurred when trying to store the file.
-
-            $this->logger->error('Could not write thumbnail to storage', [
-                'document' => $document->getId(),
-                'file' => $file->getPathname(),
-                'path' => $path,
-                'exception' => $e->getMessage(),
-            ]);
-
-            return false;
-        } finally {
-            if (is_resource($stream)) {
-                fclose($stream);
-            }
-        }
-
-        return true;
+        return $this->doStore($localFile, $remotePath);
     }
 
     /**
-     * Returns true if the document thumbnail or pageNr exists.
+     * Returns true if the entity's thumbnail for the pageNr exists.
      */
-    public function exists(Document $document, ?int $pageNr = null): bool
+    public function exists(EntityWithFileInfo $entity, int $pageNr): bool
     {
-        if ($pageNr) {
-            $path = $this->generatePagePath($document, $pageNr);
-        } else {
-            $path = $this->generateDocumentPath($document);
-        }
+        $remotePath = $this->generatePagePath($entity, $pageNr);
 
-        $this->logger->info('Path: ' . $path);
-
-        // Create path if not exists
-        try {
-            return $this->storage->fileExists($path);
-        } catch (FilesystemException $e) {
-            // Could not create directory
-            $this->logger->error('Could not check if file exists', [
-                'document' => $document->getId(),
-                'path' => $path,
-                'exception' => $e->getMessage(),
-            ]);
-        }
-
-        return false;
+        return $this->remoteFilesystem->fileExists($remotePath);
     }
 
     /**
      * Returns the filesize in bytes, or 0 when file is not found (or empty, not readable etc).
      */
-    public function fileSize(Document $document, ?int $pageNr = null): int
+    public function fileSize(EntityWithFileInfo $entity, int $pageNr): int
     {
-        if ($pageNr) {
-            $path = $this->generatePagePath($document, $pageNr);
-        } else {
-            $path = $this->generateDocumentPath($document);
-        }
+        $path = $this->generatePagePath($entity, $pageNr);
 
-        $this->logger->info('Path: ' . $path);
-
-        // Create path if not exists
-        try {
-            return $this->storage->fileSize($path);
-        } catch (FilesystemException $e) {
-            // Could not create directory
-            $this->logger->error('Could not check file size', [
-                'document' => $document->getId(),
-                'path' => $path,
-                'exception' => $e->getMessage(),
-            ]);
-        }
-
-        return 0;
+        return $this->remoteFilesystem->fileSize($path);
     }
 
-    public function deleteAllThumbsForDocument(Document $document): bool
+    public function deleteAllThumbsForEntity(EntityWithFileInfo $entity): bool
     {
-        try {
-            $path = $this->generateDocumentPath($document);
-            $this->storage->delete($path);
+        $path = $this->generateEntityPath($entity);
 
-            for ($pageNr = 1; $pageNr <= $document->getPageCount(); $pageNr++) {
-                $path = $this->generatePagePath($document, $pageNr);
-                $this->storage->delete($path);
-            }
-        } catch (\Throwable $e) {
-            $this->logger->error('Could not delete thumbnails from storage', [
-                'exception' => $e->getMessage(),
-                'path' => $path ?? '',
-            ]);
-
-            return false;
-        }
-
-        return true;
+        return $this->doDeleteAllFilesForEntity($entity, $path);
     }
 
-    /**
-     * Returns the root path of a document. Normally, this is /{prefix}/{suffix}, where prefix are the first two characters of the
-     * SHA256 hash, and suffix is the rest of the SHA256 hash.
-     */
-    protected function getRootPathForDocument(Document $document): string
+    protected function generatePagePath(EntityWithFileInfo $entity, int $pageNr): string
     {
-        $documentId = (string) $document->getId();
-        $hash = hash('sha256', $documentId);
-
-        $prefix = substr($hash, 0, 2);
-        $suffix = substr($hash, 2);
-
-        return "/$prefix/$suffix";
-    }
-
-    /**
-     * Generates the path to a specific page of a document.
-     */
-    protected function generatePagePath(Document $document, int $pageNr): string
-    {
-        $rootPath = $this->getRootPathForDocument($document);
+        $rootPath = $this->getRootPathForEntity($entity);
 
         return sprintf('%s/thumbs/thumb-page-%d.png', $rootPath, $pageNr);
     }
 
-    /**
-     * Generates the path to a document.
-     */
-    protected function generateDocumentPath(Document $document): string
+    protected function generateEntityPath(EntityWithFileInfo $entity): string
     {
-        $rootPath = $this->getRootPathForDocument($document);
+        $rootPath = $this->getRootPathForEntity($entity);
 
         return sprintf('%s/thumbs/thumb.png', $rootPath);
-    }
-
-    public function isAlive(): bool
-    {
-        $suffix = hash('sha256', random_bytes(32));
-
-        try {
-            $this->storage->write("healthcheck.{$suffix}", $suffix);
-            $content = $this->storage->read("healthcheck.{$suffix}");
-            $this->storage->delete("healthcheck.{$suffix}");
-        } catch (\Exception) {
-            return false;
-        }
-
-        return $content == $suffix;
     }
 }

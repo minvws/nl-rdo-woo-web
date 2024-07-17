@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command\Ingest;
 
-use App\Domain\Ingest\IngestDossierMessage;
+use App\Domain\Ingest\Dossier\IngestDossierCommand;
+use App\Domain\Ingest\IngestOptions;
 use App\Domain\Publication\Dossier\AbstractDossierRepository;
-use App\Service\Ingest\Options;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -40,7 +40,7 @@ class IngestDossier extends Command
         $prefix = strval($input->getArgument('prefix'));
         $dossierNr = strval($input->getArgument('dossierNr'));
 
-        $options = new Options();
+        $options = new IngestOptions();
         $options->setForceRefresh($input->getOption('force-refresh') == true);
 
         $dossier = $this->repository->findOneBy(['documentPrefix' => $prefix, 'dossierNr' => $dossierNr]);
@@ -51,7 +51,7 @@ class IngestDossier extends Command
         }
 
         $this->messageBus->dispatch(
-            new IngestDossierMessage(
+            new IngestDossierCommand(
                 $dossier->getId(),
                 boolval($input->getOption('force-refresh'))
             )

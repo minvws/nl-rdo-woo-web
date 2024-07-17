@@ -4,159 +4,87 @@ declare(strict_types=1);
 
 namespace App\Service\Worker\Pdf\Extractor;
 
-use App\Entity\Document;
-use App\Service\Elastic\ElasticService;
+use App\Domain\Search\Index\SubType\SubTypeIndexer;
+use App\Entity\EntityWithFileInfo;
 use App\Service\Stats\WorkerStatsService;
-use App\Service\Storage\DocumentStorageService;
-use App\Service\Worker\Pdf\Tools\FileUtils;
-use App\Service\Worker\Pdf\Tools\Tesseract;
-use App\Service\Worker\Pdf\Tools\Tika;
-use Predis\Client;
+use App\Service\Storage\EntityStorageService;
+use App\Service\Worker\Pdf\Tools\TesseractService;
+use App\Service\Worker\Pdf\Tools\TikaService;
 use Psr\Log\LoggerInterface;
+use Webmozart\Assert\Assert;
 
 /**
- * Extractor that will extract content from a single page from a given document.
+ * Extractor that will extract content from a single page from a given entity.
  */
-class PageContentExtractor implements PageExtractorInterface
+readonly class PageContentExtractor implements PageExtractorInterface
 {
-    protected LoggerInterface $logger;
-    protected DocumentStorageService $documentStorage;
-    protected FileUtils $fileUtils;
-    protected Client $redis;
-    protected ElasticService $elasticService;
-    protected Tesseract $tesseract;
-    protected Tika $tika;
-    protected WorkerStatsService $statsService;
-
     public function __construct(
-        LoggerInterface $logger,
-        DocumentStorageService $documentStorage,
-        Client $redis,
-        ElasticService $elasticService,
-        Tesseract $tesseract,
-        Tika $tika,
-        WorkerStatsService $statsService,
+        private LoggerInterface $logger,
+        private EntityStorageService $entityStorageService,
+        private SubTypeIndexer $subTypeIndexer,
+        private TesseractService $tesseract,
+        private TikaService $tika,
+        private WorkerStatsService $statsService,
     ) {
-        $this->logger = $logger;
-        $this->documentStorage = $documentStorage;
-        $this->redis = $redis;
-        $this->elasticService = $elasticService;
-        $this->tesseract = $tesseract;
-        $this->tika = $tika;
-
-        $this->fileUtils = new FileUtils();
-        $this->statsService = $statsService;
     }
 
-    public function extract(Document $document, int $pageNr, bool $forceRefresh): void
+    public function extract(EntityWithFileInfo $entity, int $pageNr, bool $forceRefresh): void
     {
-        // TODO: Cache is temporarily disabled for #2142, to be improved and restored in #2144
-        //
-        // if ($forceRefresh || ! $this->isCached($document, $pageNr)) {
-        //     list($content, $tikaData) = $this->extractContentFromPdf($document, $pageNr);
-        //
-        //     $this->setCachedContent($document, $pageNr, $content, $tikaData);
-        // }
-        //
-        // list($content, $tikaData) = $this->getCachedContent($document, $pageNr);
+        Assert::true($entity->getFileInfo()->isPaginatable(), 'Entity is not paginatable');
+
+        // TODO: Cache is removed for #2142, to be improved and restored in #2144
         unset($forceRefresh);
-        list($content, $tikaData) = $this->extractContentFromPdf($document, $pageNr);
+        $content = $this->extractContentFromPdf($entity, $pageNr);
 
-        $this->statsService->measure('index.full.document', function ($document, $pageNr, $content, $tikaData) {
-            $this->indexPage($document, $pageNr, $content, $tikaData);
-        }, [$document, $pageNr, $content, $tikaData]);
+        $this->statsService->measure(
+            'index.full.entity',
+            fn () => $this->indexPage($entity, $pageNr, $content),
+        );
     }
 
-    /**
-     * @return array{string, array<string,string>}
-     */
-    protected function extractContentFromPdf(Document $document, int $pageNr): array
+    private function extractContentFromPdf(EntityWithFileInfo $entity, int $pageNr): string
     {
-        /** @var string $localPdfPath */
-        $localPdfPath = $this->statsService->measure('download.document', function ($document, $pageNr) {
-            return $this->documentStorage->downloadPage($document, $pageNr);
-        }, [$document, $pageNr]);
+        /** @var string|false $localPdfPath */
+        $localPdfPath = $this->statsService->measure(
+            'download.entity',
+            fn () => $this->entityStorageService->downloadPage($entity, $pageNr),
+        );
 
-        if (! $localPdfPath) {
-            $this->logger->error('Failed to save document to local storage: ' . $document->getDocumentNr() . ' - ' . $pageNr);
+        if ($localPdfPath === false) {
+            $this->logger->error('Failed to save entity to local storage', [
+                'id' => $entity->getId(),
+                'class' => $entity::class,
+                'pageNr' => $pageNr,
+            ]);
 
-            return ['', []];
+            return '';
         }
 
-        /** @var string[] $tikaData */
-        $tikaData = $this->statsService->measure('tika', function ($localPdfPath) {
-            return $this->tika->extract($localPdfPath);
-        }, [$localPdfPath]);
+        /** @var array<array-key,string> $tikaData */
+        $tikaData = $this->statsService->measure('tika', fn (): array => $this->tika->extract($localPdfPath));
+
         /** @var string $tesseractContent */
-        $tesseractContent = $this->statsService->measure('tesseract', function ($localPdfPath) {
-            return $this->tesseract->extract($localPdfPath);
-        }, [$localPdfPath]);
+        $tesseractContent = $this->statsService->measure(
+            'tesseract',
+            fn (): string => $this->tesseract->extract($localPdfPath),
+        );
 
-        $pageContent = [
-            $tikaData['X-TIKA:content'] ?? '',
-            $tesseractContent,
-        ];
+        $this->entityStorageService->removeDownload($localPdfPath);
 
-        $this->documentStorage->removeDownload($localPdfPath);
-
-        return [join("\n", $pageContent), $tikaData];
+        return join("\n", [$tikaData['X-TIKA:content'] ?? '', $tesseractContent]);
     }
 
-    protected function getCacheKey(Document $document, int $pageNr, string $suffix): string
+    private function indexPage(EntityWithFileInfo $entity, int $pageNr, string $content): void
     {
-        return $document->getDocumentNr() . '-' . $pageNr . '-' . $suffix;
-    }
-
-    /**
-     * @param array<string,string> $tikaData
-     */
-    protected function indexPage(Document $document, int $pageNr, string $content, array $tikaData): void
-    {
-        // Unset the content from the tika data, as we already store that separately
-        unset($tikaData['X-TIKA:content']);
-
         try {
-            $this->elasticService->updatePage($document, $pageNr, $content);
+            $this->subTypeIndexer->updatePage($entity, $pageNr, $content);
         } catch (\Exception $e) {
             $this->logger->error('Failed to index page', [
-                'document' => $document->getDocumentNr(),
-                'page' => $pageNr,
+                'id' => $entity->getId(),
+                'class' => $entity::class,
+                'pageNr' => $pageNr,
                 'exception' => $e->getMessage(),
             ]);
         }
-    }
-
-    /**
-     * @return array{string, array<string,string>}
-     */
-    protected function getCachedContent(Document $document, int $pageNr): array
-    {
-        $key = $this->getCacheKey($document, $pageNr, 'content');
-        $content = $this->redis->get($key);
-
-        $key = $this->getCacheKey($document, $pageNr, 'tikadata');
-        $tikadata = json_decode(strval($this->redis->get($key)), true);
-
-        /** @var array<string,string> $tikadata */
-        return [$content ?? '', $tikadata];
-    }
-
-    /**
-     * @param string[] $tikaData
-     */
-    protected function setCachedContent(Document $document, int $pageNr, string $content, array $tikaData): void
-    {
-        $key = $this->getCacheKey($document, $pageNr, 'content');
-        $this->redis->set($key, $content);
-        $key = $this->getCacheKey($document, $pageNr, 'tikadata');
-        $this->redis->set($key, json_encode($tikaData));
-    }
-
-    protected function isCached(Document $document, int $pageNr): bool
-    {
-        $key1 = $this->getCacheKey($document, $pageNr, 'content');
-        $key2 = $this->getCacheKey($document, $pageNr, 'tikadata');
-
-        return $this->redis->exists($key1) == 1 && $this->redis->exists($key2) == 1;
     }
 }

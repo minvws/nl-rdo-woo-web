@@ -25,7 +25,6 @@ These commands are used solely in a development environment, and are not meant t
 | command                     | description                                                                                |
 |-----------------------------|--------------------------------------------------------------------------------------------|
 | `woopie:sql:dump`           | Generates migrations SQL files based on the doctrine migrations php files                  |
-| `woopie:load:fixture`       | Loads a fixture file into the system. This can be used for testing specific scenarios.     |
 | `woopie:generate:documents` | Generates dossiers / documents / page content that can be used for testing and development |
 | `woopie:dev:clean-sheet`    | Removes all dossier/document data from the database, elasticsearch and message queue.      |
 

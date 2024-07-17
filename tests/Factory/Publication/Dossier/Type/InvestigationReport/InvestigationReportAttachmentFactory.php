@@ -6,49 +6,48 @@ namespace App\Tests\Factory\Publication\Dossier\Type\InvestigationReport;
 
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachmentRepository;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
 
 /**
- * @extends ModelFactory<InvestigationReportAttachment>
+ * @method        \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                                       create(array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                                       createOne(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                                       find(object|array|mixed $criteria)
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                                       findOrCreate(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                                       first(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                                       last(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                                       random(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment|\Zenstruck\Foundry\Persistence\Proxy                                                                                                                       randomOrCreate(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                                   all()
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                                   createMany(int $number, array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                                   createSequence(iterable|callable $sequence)
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                                   findBy(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                                   randomRange(int $min, int $max, array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                                                   randomSet(int $number, array $attributes = [])
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment|\Zenstruck\Foundry\Persistence\Proxy>                                                                                 many(int $min, int|null $max = null)
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment|\Zenstruck\Foundry\Persistence\Proxy>                                                                                 sequence(iterable|callable $sequence)
+ * @method static \Zenstruck\Foundry\Persistence\ProxyRepositoryDecorator<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment, \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachmentRepository> repository()
  *
- * @method        InvestigationReportAttachment|Proxy                     create(array|callable $attributes = [])
- * @method static InvestigationReportAttachment|Proxy                     createOne(array $attributes = [])
- * @method static InvestigationReportAttachment|Proxy                     find(object|array|mixed $criteria)
- * @method static InvestigationReportAttachment|Proxy                     findOrCreate(array $attributes)
- * @method static InvestigationReportAttachment|Proxy                     first(string $sortedField = 'id')
- * @method static InvestigationReportAttachment|Proxy                     last(string $sortedField = 'id')
- * @method static InvestigationReportAttachment|Proxy                     random(array $attributes = [])
- * @method static InvestigationReportAttachment|Proxy                     randomOrCreate(array $attributes = [])
- * @method static InvestigationReportAttachmentRepository|RepositoryProxy repository()
- * @method static InvestigationReportAttachment[]|Proxy[]                 all()
- * @method static InvestigationReportAttachment[]|Proxy[]                 createMany(int $number, array|callable $attributes = [])
- * @method static InvestigationReportAttachment[]|Proxy[]                 createSequence(iterable|callable $sequence)
- * @method static InvestigationReportAttachment[]|Proxy[]                 findBy(array $attributes)
- * @method static InvestigationReportAttachment[]|Proxy[]                 randomRange(int $min, int $max, array $attributes = [])
- * @method static InvestigationReportAttachment[]|Proxy[]                 randomSet(int $number, array $attributes = [])
+ * @phpstan-method \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment> create(array|callable $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment> createOne(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment> find(object|array|mixed $criteria)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment> findOrCreate(array $attributes)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment> first(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment> last(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment> random(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment> randomOrCreate(array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment>> all()
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment>> createMany(int $number, array|callable $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment>> createSequence(iterable|callable $sequence)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment>> findBy(array $attributes)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment>> randomRange(int $min, int $max, array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment>> randomSet(int $number, array $attributes = [])
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment>> many(int $min, int|null $max = null)
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment>> sequence(iterable|callable $sequence)
  *
- * @phpstan-method        Proxy<InvestigationReportAttachment> create(array|callable $attributes = [])
- * @phpstan-method static Proxy<InvestigationReportAttachment> createOne(array $attributes = [])
- * @phpstan-method static Proxy<InvestigationReportAttachment> find(object|array|mixed $criteria)
- * @phpstan-method static Proxy<InvestigationReportAttachment> findOrCreate(array $attributes)
- * @phpstan-method static Proxy<InvestigationReportAttachment> first(string $sortedField = 'id')
- * @phpstan-method static Proxy<InvestigationReportAttachment> last(string $sortedField = 'id')
- * @phpstan-method static Proxy<InvestigationReportAttachment> random(array $attributes = [])
- * @phpstan-method static Proxy<InvestigationReportAttachment> randomOrCreate(array $attributes = [])
- * @phpstan-method static RepositoryProxy<InvestigationReportAttachment> repository()
- * @phpstan-method static list<Proxy<InvestigationReportAttachment>> all()
- * @phpstan-method static list<Proxy<InvestigationReportAttachment>> createMany(int $number, array|callable $attributes = [])
- * @phpstan-method static list<Proxy<InvestigationReportAttachment>> createSequence(iterable|callable $sequence)
- * @phpstan-method static list<Proxy<InvestigationReportAttachment>> findBy(array $attributes)
- * @phpstan-method static list<Proxy<InvestigationReportAttachment>> randomRange(int $min, int $max, array $attributes = [])
- * @phpstan-method static list<Proxy<InvestigationReportAttachment>> randomSet(int $number, array $attributes = [])
+ * @extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory<\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment>
  */
-final class InvestigationReportAttachmentFactory extends ModelFactory
+final class InvestigationReportAttachmentFactory extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -63,9 +62,9 @@ final class InvestigationReportAttachmentFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
-     * @todo add your default values here
+     * @return array<string, mixed>
      */
-    protected function getDefaults(): array
+    protected function defaults(): array
     {
         return [
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
@@ -83,12 +82,12 @@ final class InvestigationReportAttachmentFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    protected function initialize(): self
+    protected function initialize(): static
     {
         return $this;
     }
 
-    protected static function getClass(): string
+    public static function class(): string
     {
         return InvestigationReportAttachment::class;
     }

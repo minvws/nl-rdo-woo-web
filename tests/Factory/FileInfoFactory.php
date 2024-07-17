@@ -4,23 +4,11 @@ namespace App\Tests\Factory;
 
 use App\Entity\FileInfo;
 use App\SourceType;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
 
 /**
- * @extends ModelFactory<FileInfo>
- *
- * @method        FileInfo|Proxy     create(array|callable $attributes = [])
- * @method static FileInfo|Proxy     createOne(array $attributes = [])
- * @method static FileInfo[]|Proxy[] createMany(int $number, array|callable $attributes = [])
- * @method static FileInfo[]|Proxy[] createSequence(iterable|callable $sequence)
- *
- * @phpstan-method        Proxy<FileInfo> create(array|callable $attributes = [])
- * @phpstan-method static Proxy<FileInfo> createOne(array $attributes = [])
- * @phpstan-method static list<Proxy<FileInfo>> createMany(int $number, array|callable $attributes = [])
- * @phpstan-method static list<Proxy<FileInfo>> createSequence(iterable|callable $sequence)
+ * @extends \Zenstruck\Foundry\ObjectFactory<\App\Entity\FileInfo>
  */
-final class FileInfoFactory extends ModelFactory
+final class FileInfoFactory extends \Zenstruck\Foundry\ObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -35,9 +23,9 @@ final class FileInfoFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
-     * @todo add your default values here
+     * @return array<string, mixed>
      */
-    protected function getDefaults(): array
+    protected function defaults(): array
     {
         $fileName = 'file_name.pdf';
         $documentIdHash = hash('sha256', self::faker()->uuid());
@@ -57,15 +45,14 @@ final class FileInfoFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    protected function initialize(): self
+    protected function initialize(): static
     {
         return $this
-            ->withoutPersisting()
             // ->afterInstantiate(function(FileInfo $fileInfo): void {})
         ;
     }
 
-    protected static function getClass(): string
+    public static function class(): string
     {
         return FileInfo::class;
     }

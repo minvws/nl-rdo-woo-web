@@ -71,9 +71,9 @@ class SearchTermConditions implements QueryConditions
                     ->setBoost(4),
             ],
             filter: [
-                Query::term(
+                Query::terms(
                     field: 'type',
-                    value: Config::TYPE_DOCUMENT
+                    values: ElasticDocumentType::getSubTypeValues(),
                 ),
             ],
         )->setParams(['minimum_should_match' => 1]);
@@ -105,10 +105,7 @@ class SearchTermConditions implements QueryConditions
             filter: [
                 Query::terms(
                     field: 'type',
-                    values: array_map(
-                        static fn (ElasticDocumentType $type) => $type->value,
-                        ElasticDocumentType::getMainTypes(),
-                    ),
+                    values: ElasticDocumentType::getMainTypeValues(),
                 ),
             ],
         )->setParams(['minimum_should_match' => 1]);

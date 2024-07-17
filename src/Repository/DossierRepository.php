@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierReference;
+use App\Domain\Publication\Dossier\Type\DossierReference;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\RecentDossier;
-use App\Domain\Search\Result\ProvidesDossierTypeSearchResultInterface;
-use App\Domain\Search\Result\WooDecision\WooDecisionSearchResult;
+use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
+use App\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
 use App\Entity\Dossier;
 use App\Entity\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

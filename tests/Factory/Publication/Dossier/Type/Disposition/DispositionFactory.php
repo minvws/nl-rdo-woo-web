@@ -8,49 +8,51 @@ use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use App\Tests\Factory\OrganisationFactory;
 use Carbon\CarbonImmutable;
-use Doctrine\ORM\EntityRepository;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
 
 /**
- * @extends ModelFactory<Disposition>
+ * @method        \App\Domain\Publication\Dossier\Type\Disposition\Disposition|\Zenstruck\Foundry\Persistence\Proxy                                                                                             create(array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition|\Zenstruck\Foundry\Persistence\Proxy                                                                                             createOne(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition|\Zenstruck\Foundry\Persistence\Proxy                                                                                             find(object|array|mixed $criteria)
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition|\Zenstruck\Foundry\Persistence\Proxy                                                                                             findOrCreate(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition|\Zenstruck\Foundry\Persistence\Proxy                                                                                             first(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition|\Zenstruck\Foundry\Persistence\Proxy                                                                                             last(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition|\Zenstruck\Foundry\Persistence\Proxy                                                                                             random(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition|\Zenstruck\Foundry\Persistence\Proxy                                                                                             randomOrCreate(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                         all()
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                         createMany(int $number, array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                         createSequence(iterable|callable $sequence)
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                         findBy(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                         randomRange(int $min, int $max, array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                                                         randomSet(int $number, array $attributes = [])
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Disposition\Disposition|\Zenstruck\Foundry\Persistence\Proxy>                                                       many(int $min, int|null $max = null)
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Disposition\Disposition|\Zenstruck\Foundry\Persistence\Proxy>                                                       sequence(iterable|callable $sequence)
+ * @method static \Zenstruck\Foundry\Persistence\ProxyRepositoryDecorator<\App\Domain\Publication\Dossier\Type\Disposition\Disposition, \App\Domain\Publication\Dossier\Type\Disposition\DispositionRepository> repository()
  *
- * @method        Disposition|Proxy                create(array|callable $attributes = [])
- * @method static Disposition|Proxy                createOne(array $attributes = [])
- * @method static Disposition|Proxy                find(object|array|mixed $criteria)
- * @method static Disposition|Proxy                findOrCreate(array $attributes)
- * @method static Disposition|Proxy                first(string $sortedField = 'id')
- * @method static Disposition|Proxy                last(string $sortedField = 'id')
- * @method static Disposition|Proxy                random(array $attributes = [])
- * @method static Disposition|Proxy                randomOrCreate(array $attributes = [])
- * @method static EntityRepository|RepositoryProxy repository()
- * @method static Disposition[]|Proxy[]            all()
- * @method static Disposition[]|Proxy[]            createMany(int $number, array|callable $attributes = [])
- * @method static Disposition[]|Proxy[]            createSequence(iterable|callable $sequence)
- * @method static Disposition[]|Proxy[]            findBy(array $attributes)
- * @method static Disposition[]|Proxy[]            randomRange(int $min, int $max, array $attributes = [])
- * @method static Disposition[]|Proxy[]            randomSet(int $number, array $attributes = [])
+ * @phpstan-method \App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition> create(array|callable $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition> createOne(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition> find(object|array|mixed $criteria)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition> findOrCreate(array $attributes)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition> first(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition> last(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition> random(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition> randomOrCreate(array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition>> all()
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition>> createMany(int $number, array|callable $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition>> createSequence(iterable|callable $sequence)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition>> findBy(array $attributes)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition>> randomRange(int $min, int $max, array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition>> randomSet(int $number, array $attributes = [])
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition>> many(int $min, int|null $max = null)
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\Disposition\Disposition&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\Disposition\Disposition>> sequence(iterable|callable $sequence)
  *
- * @phpstan-method        Proxy<Disposition> create(array|callable $attributes = [])
- * @phpstan-method static Proxy<Disposition> createOne(array $attributes = [])
- * @phpstan-method static Proxy<Disposition> find(object|array|mixed $criteria)
- * @phpstan-method static Proxy<Disposition> findOrCreate(array $attributes)
- * @phpstan-method static Proxy<Disposition> first(string $sortedField = 'id')
- * @phpstan-method static Proxy<Disposition> last(string $sortedField = 'id')
- * @phpstan-method static Proxy<Disposition> random(array $attributes = [])
- * @phpstan-method static Proxy<Disposition> randomOrCreate(array $attributes = [])
- * @phpstan-method static RepositoryProxy<Disposition> repository()
- * @phpstan-method static list<Proxy<Disposition>> all()
- * @phpstan-method static list<Proxy<Disposition>> createMany(int $number, array|callable $attributes = [])
- * @phpstan-method static list<Proxy<Disposition>> createSequence(iterable|callable $sequence)
- * @phpstan-method static list<Proxy<Disposition>> findBy(array $attributes)
- * @phpstan-method static list<Proxy<Disposition>> randomRange(int $min, int $max, array $attributes = [])
- * @phpstan-method static list<Proxy<Disposition>> randomSet(int $number, array $attributes = [])
+ * @extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory<\App\Domain\Publication\Dossier\Type\Disposition\Disposition>
  */
-final class DispositionFactory extends ModelFactory
+final class DispositionFactory extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory
 {
-    protected function getDefaults(): array
+    /**
+     * @return array<string, mixed>
+     */
+    protected function defaults(): array
     {
         $publicationDate = CarbonImmutable::createFromMutable(self::faker()->dateTimeBetween('01-01-2010', '01-01-2023'));
 
@@ -65,7 +67,7 @@ final class DispositionFactory extends ModelFactory
         ];
     }
 
-    protected static function getClass(): string
+    public static function class(): string
     {
         return Disposition::class;
     }

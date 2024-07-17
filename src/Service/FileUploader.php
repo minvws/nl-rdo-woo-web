@@ -7,7 +7,7 @@ namespace App\Service;
 use App\Entity\Dossier;
 use App\Form\Dossier\WooDecision\DocumentUploadType;
 use App\Message\ProcessDocumentMessage;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Predis\Client;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -32,7 +32,7 @@ class FileUploader
     public function __construct(
         private readonly MessageBusInterface $messageBus,
         private readonly FormFactoryInterface $formFactory,
-        private readonly DocumentStorageService $documentStorage,
+        private readonly EntityStorageService $entityStorageService,
         private readonly LoggerInterface $logger,
         private readonly DocumentUploadQueue $uploadQueue,
         private readonly Client $redis,
@@ -73,7 +73,7 @@ class FileUploader
             ]);
 
             $remotePath = '/uploads/' . (string) $dossier->getId() . '/' . $uploadedFile->getClientOriginalName();
-            if (! $this->documentStorage->store($uploadedFile, $remotePath)) {
+            if (! $this->entityStorageService->store($uploadedFile, $remotePath)) {
                 continue;
             }
 
@@ -130,7 +130,7 @@ class FileUploader
             'file_hash' => hash_file('sha256', $uploadedFile->getRealPath()),
         ]);
 
-        $this->documentStorage->store($uploadedFile, $remoteChunkFile);
+        $this->entityStorageService->store($uploadedFile, $remoteChunkFile);
 
         // We use redis to store the number of chunks uploaded for a given uuid so we can check if
         // all the chunks have been uploaded. We cannot use the file system to count chunks because

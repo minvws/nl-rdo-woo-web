@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
+use App\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,18 +15,18 @@ class Check extends Command
 {
     protected OutputInterface $output;
 
-    protected DocumentStorageService $docStoreService;
+    protected EntityStorageService $entityStoreService;
     protected ThumbnailStorageService $thumbStoreService;
 
     protected int $returnCode = 0;
 
     public function __construct(
-        DocumentStorageService $docStoreService,
+        EntityStorageService $entityStoreService,
         ThumbnailStorageService $thumbStoreService,
     ) {
         parent::__construct();
 
-        $this->docStoreService = $docStoreService;
+        $this->entityStoreService = $entityStoreService;
         $this->thumbStoreService = $thumbStoreService;
     }
 
@@ -52,11 +53,11 @@ class Check extends Command
         $this->checkExtension('intl', 'INTL');
         $this->checkExtension('zip', 'ZIP');
 
-        $this->checkAlive('document store', $this->docStoreService->isAlive());
+        $this->checkAlive('document store', $this->entityStoreService->isAlive());
         $this->checkAlive('thumbnail store', $this->thumbStoreService->isAlive());
 
         $this->checkFile('/usr/bin/tesseract');
-        $this->checkFile('/usr/bin/pdftk');
+        $this->checkFile(PdftkService::PDFTK_PATH);
         $this->checkFile('/usr/bin/pdfseparate');
         $this->checkFile('/usr/bin/pdftoppm');
         $this->checkFile('/usr/bin/7za');

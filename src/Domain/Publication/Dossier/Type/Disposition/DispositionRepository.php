@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Type\Disposition;
 
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Search\Result\Disposition\DispositionSearchResult;
-use App\Domain\Search\Result\ProvidesDossierTypeSearchResultInterface;
+use App\Domain\Search\Result\Dossier\Disposition\DispositionSearchResult;
+use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;

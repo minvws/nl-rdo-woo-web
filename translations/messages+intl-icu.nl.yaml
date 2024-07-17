@@ -135,6 +135,12 @@ global.number_of_dossiers: >-
     =1{# besluit}
     other{# besluiten}
   }
+global.number_of_results: >-
+  { count, plural,
+    =0{# resultaten}
+    =1{# resultaat}
+    other{# resultaten}
+  }
 global.accessibility.page_title: "Toegankelijkheid"
 global.accessibility.sub_title-1: "Wat is een toegankelijke website?"
 global.accessibility.sub_title-2: "Borging van toegankelijkheid"
@@ -365,7 +371,7 @@ admin.publications.search_within: 'Zoeken in publicaties'
 admin.publications.status.concept: 'Concept'
 admin.publications.status.deleted: 'Verwijderd'
 admin.publications.status.new: 'Nieuw'
-admin.publications.status.preview: 'Preview'
+admin.publications.status.preview: 'Online voor verzoekers'
 admin.publications.status.published: 'Openbaar'
 admin.publications.status.scheduled: 'Publicatie gepland'
 admin.publications.status.suspended: "Opgeschort"

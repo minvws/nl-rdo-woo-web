@@ -8,26 +8,26 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocument;
 use App\Domain\Publication\MainDocument\MainDocumentDeleteStrategy;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 
 final class MainDocumentDeleteStrategyTest extends MockeryTestCase
 {
-    private DocumentStorageService&MockInterface $documentStorage;
+    private EntityStorageService&MockInterface $entityStorageService;
     private MainDocumentDeleteStrategy $strategy;
 
     public function setUp(): void
     {
-        $this->documentStorage = \Mockery::mock(DocumentStorageService::class);
-        $this->strategy = new MainDocumentDeleteStrategy($this->documentStorage);
+        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
+        $this->strategy = new MainDocumentDeleteStrategy($this->entityStorageService);
 
         parent::setUp();
     }
 
     public function testDeleteReturnsEarlyWhenDossierHasNoMainDocument(): void
     {
-        $this->documentStorage->shouldNotHaveBeenCalled();
+        $this->entityStorageService->shouldNotHaveBeenCalled();
         $dossier = \Mockery::mock(AbstractDossier::class);
 
         $this->strategy->delete($dossier);
@@ -40,7 +40,7 @@ final class MainDocumentDeleteStrategyTest extends MockeryTestCase
         $dossier = \Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getDocument')->andReturn($document);
 
-        $this->documentStorage->expects('removeFileForEntity')->with($document);
+        $this->entityStorageService->expects('removeFileForEntity')->with($document);
 
         $this->strategy->delete($dossier);
     }

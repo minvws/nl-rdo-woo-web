@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
-use App\Domain\Ingest\IngestMetadataOnlyMessage;
+use App\Domain\Ingest\MetadataOnly\IngestMetadataOnlyCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentWithDrawnEvent;
 use App\Domain\Publication\Dossier\Type\WooDecision\Handler\WithDrawDocumentHandler;
@@ -16,7 +16,7 @@ use App\Entity\WithdrawReason;
 use App\Exception\DocumentWorkflowException;
 use App\Message\UpdateDossierArchivesMessage;
 use App\Repository\DocumentRepository;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -28,7 +28,7 @@ use Symfony\Component\Uid\Uuid;
 class WithDrawDocumentHandlerTest extends MockeryTestCase
 {
     private DocumentRepository&MockInterface $documentRepository;
-    private MockInterface&DocumentStorageService $documentStorageService;
+    private MockInterface&EntityStorageService $entityStorageService;
     private ThumbnailStorageService&MockInterface $thumbnailStorageService;
     private MessageBusInterface&MockInterface $messageBus;
     private DossierWorkflowManager&MockInterface $dossierWorkflowManager;
@@ -37,14 +37,14 @@ class WithDrawDocumentHandlerTest extends MockeryTestCase
     public function setUp(): void
     {
         $this->documentRepository = \Mockery::mock(DocumentRepository::class);
-        $this->documentStorageService = \Mockery::mock(DocumentStorageService::class);
+        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->thumbnailStorageService = \Mockery::mock(ThumbnailStorageService::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
 
         $this->handler = new WithDrawDocumentHandler(
             $this->documentRepository,
-            $this->documentStorageService,
+            $this->entityStorageService,
             $this->thumbnailStorageService,
             $this->messageBus,
             $this->dossierWorkflowManager,
@@ -67,8 +67,8 @@ class WithDrawDocumentHandlerTest extends MockeryTestCase
         $explanation = 'foo bar';
         $document = \Mockery::mock(Document::class);
 
-        $this->documentStorageService->expects('deleteAllFilesForDocument')->with($document);
-        $this->thumbnailStorageService->expects('deleteAllThumbsForDocument')->with($document);
+        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($document);
+        $this->thumbnailStorageService->expects('deleteAllThumbsForEntity')->with($document);
 
         $uuid = Uuid::v6();
         $document->expects('withdraw')->with($reason, $explanation);
@@ -78,7 +78,7 @@ class WithDrawDocumentHandlerTest extends MockeryTestCase
         $document->shouldReceive('isWithdrawn')->andReturnFalse();
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            static function (IngestMetadataOnlyMessage $message) use ($uuid) {
+            static function (IngestMetadataOnlyCommand $message) use ($uuid) {
                 return $message->getEntityId() === $uuid;
             }
         ))->andReturns(new Envelope(new \stdClass()));

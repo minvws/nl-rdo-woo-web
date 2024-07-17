@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Domain\Search\Index\Dossier\DossierIndexer;
+use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Organisation;
-use App\Service\Elastic\ElasticService;
 use App\Service\FakeDataGenerator;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Logging\LoggingHelper;
@@ -17,31 +18,24 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
+#[When('dev')]
 class GenerateDocuments extends Command
 {
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
-        private readonly ElasticService $elasticService,
         private readonly FakeDataGenerator $fakeDataGenerator,
         private readonly LoggingHelper $loggingHelper,
         private readonly InquiryService $inquiryService,
-        private readonly string $appEnvironment,
+        private readonly DossierIndexer $dossierIndexer,
+        private readonly SubTypeIndexer $subTypeIndexer,
     ) {
         parent::__construct();
-    }
-
-    public function isEnabled(): bool
-    {
-        if ($this->appEnvironment === 'prod') {
-            return false;
-        }
-
-        return true;
     }
 
     protected function configure(): void
@@ -150,7 +144,7 @@ class GenerateDocuments extends Command
         }
         $this->doctrine->persist($dossier);
 
-        $this->elasticService->updateDossier($dossier, false);
+        $this->dossierIndexer->index($dossier, false);
 
         return $dossier;
     }
@@ -184,7 +178,7 @@ class GenerateDocuments extends Command
         }
 
         // Index document and pages
-        $this->elasticService->updateDocument($document, [], $pages);
+        $this->subTypeIndexer->index($document, [], $pages);
 
         return $document;
     }

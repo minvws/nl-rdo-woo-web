@@ -8,7 +8,7 @@ use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Service\Search\ConfigFactory;
 use App\Service\Search\SearchService;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Predis\Client;
@@ -28,7 +28,7 @@ class StatsController extends AbstractController
         private readonly Client $redis,
         private readonly SearchService $searchService,
         private readonly string $rabbitMqStatUrl,
-        private readonly DocumentStorageService $documentStorageService,
+        private readonly EntityStorageService $entityStorageService,
         private readonly ThumbnailStorageService $thumbnailStorageService,
         private readonly ConfigFactory $configFactory
     ) {
@@ -59,7 +59,7 @@ class StatsController extends AbstractController
             'elastic' => $this->isElasticAlive(),
             'rabbitmq' => $this->isRabbitMqAlive(),
             'storage' => [
-                'document' => $this->documentStorageService->isAlive(),
+                'document' => $this->entityStorageService->isAlive(),
                 'thumbnail' => $this->thumbnailStorageService->isAlive(),
             ],
         ];

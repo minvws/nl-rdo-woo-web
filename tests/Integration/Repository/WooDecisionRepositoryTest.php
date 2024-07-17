@@ -52,7 +52,7 @@ final class WooDecisionRepositoryTest extends KernelTestCase
         /** @var WooDecisionRepository $wooDecisionRepository */
         $wooDecisionRepository = self::getContainer()->get(WooDecisionRepository::class);
 
-        $result = $wooDecisionRepository->getDossierCounts($wooDecision->object());
+        $result = $wooDecisionRepository->getDossierCounts($wooDecision->_real());
 
         $this->assertSame(3, $result->getDocumentCount());
         $this->assertTrue($result->hasDocuments());

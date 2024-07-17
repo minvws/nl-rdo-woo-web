@@ -8,47 +8,46 @@ use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Tests\Factory\OrganisationFactory;
 use Carbon\CarbonImmutable;
-use Doctrine\ORM\EntityRepository;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
 
 /**
- * @extends ModelFactory<WooDecision>
+ * @method        \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision|\Zenstruck\Foundry\Persistence\Proxy                                                     create(array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision|\Zenstruck\Foundry\Persistence\Proxy                                                     createOne(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision|\Zenstruck\Foundry\Persistence\Proxy                                                     find(object|array|mixed $criteria)
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision|\Zenstruck\Foundry\Persistence\Proxy                                                     findOrCreate(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision|\Zenstruck\Foundry\Persistence\Proxy                                                     first(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision|\Zenstruck\Foundry\Persistence\Proxy                                                     last(string $sortedField = 'id')
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision|\Zenstruck\Foundry\Persistence\Proxy                                                     random(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision|\Zenstruck\Foundry\Persistence\Proxy                                                     randomOrCreate(array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                 all()
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                 createMany(int $number, array|callable $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                 createSequence(iterable|callable $sequence)
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                 findBy(array $attributes)
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                 randomRange(int $min, int $max, array $attributes = [])
+ * @method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision[]|\Zenstruck\Foundry\Persistence\Proxy[]                                                 randomSet(int $number, array $attributes = [])
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision|\Zenstruck\Foundry\Persistence\Proxy>               many(int $min, int|null $max = null)
+ * @method        \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision|\Zenstruck\Foundry\Persistence\Proxy>               sequence(iterable|callable $sequence)
+ * @method static \Zenstruck\Foundry\Persistence\ProxyRepositoryDecorator<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision, \Doctrine\ORM\EntityRepository> repository()
  *
- * @method        WooDecision|Proxy                create(array|callable $attributes = [])
- * @method static WooDecision|Proxy                createOne(array $attributes = [])
- * @method static WooDecision|Proxy                find(object|array|mixed $criteria)
- * @method static WooDecision|Proxy                findOrCreate(array $attributes)
- * @method static WooDecision|Proxy                first(string $sortedField = 'id')
- * @method static WooDecision|Proxy                last(string $sortedField = 'id')
- * @method static WooDecision|Proxy                random(array $attributes = [])
- * @method static WooDecision|Proxy                randomOrCreate(array $attributes = [])
- * @method static EntityRepository|RepositoryProxy repository()
- * @method static WooDecision[]|Proxy[]            all()
- * @method static WooDecision[]|Proxy[]            createMany(int $number, array|callable $attributes = [])
- * @method static WooDecision[]|Proxy[]            createSequence(iterable|callable $sequence)
- * @method static WooDecision[]|Proxy[]            findBy(array $attributes)
- * @method static WooDecision[]|Proxy[]            randomRange(int $min, int $max, array $attributes = [])
- * @method static WooDecision[]|Proxy[]            randomSet(int $number, array $attributes = [])
+ * @phpstan-method \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision> create(array|callable $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision> createOne(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision> find(object|array|mixed $criteria)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision> findOrCreate(array $attributes)
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision> first(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision> last(string $sortedField = 'id')
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision> random(array $attributes = [])
+ * @phpstan-method static \App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision> randomOrCreate(array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision>> all()
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision>> createMany(int $number, array|callable $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision>> createSequence(iterable|callable $sequence)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision>> findBy(array $attributes)
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision>> randomRange(int $min, int $max, array $attributes = [])
+ * @phpstan-method static list<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision>> randomSet(int $number, array $attributes = [])
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision>> many(int $min, int|null $max = null)
+ * @phpstan-method \Zenstruck\Foundry\FactoryCollection<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision&\Zenstruck\Foundry\Persistence\Proxy<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision>> sequence(iterable|callable $sequence)
  *
- * @phpstan-method        Proxy<WooDecision> create(array|callable $attributes = [])
- * @phpstan-method static Proxy<WooDecision> createOne(array $attributes = [])
- * @phpstan-method static Proxy<WooDecision> find(object|array|mixed $criteria)
- * @phpstan-method static Proxy<WooDecision> findOrCreate(array $attributes)
- * @phpstan-method static Proxy<WooDecision> first(string $sortedField = 'id')
- * @phpstan-method static Proxy<WooDecision> last(string $sortedField = 'id')
- * @phpstan-method static Proxy<WooDecision> random(array $attributes = [])
- * @phpstan-method static Proxy<WooDecision> randomOrCreate(array $attributes = [])
- * @phpstan-method static RepositoryProxy<WooDecision> repository()
- * @phpstan-method static list<Proxy<WooDecision>> all()
- * @phpstan-method static list<Proxy<WooDecision>> createMany(int $number, array|callable $attributes = [])
- * @phpstan-method static list<Proxy<WooDecision>> createSequence(iterable|callable $sequence)
- * @phpstan-method static list<Proxy<WooDecision>> findBy(array $attributes)
- * @phpstan-method static list<Proxy<WooDecision>> randomRange(int $min, int $max, array $attributes = [])
- * @phpstan-method static list<Proxy<WooDecision>> randomSet(int $number, array $attributes = [])
+ * @extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory<\App\Domain\Publication\Dossier\Type\WooDecision\WooDecision>
  */
-final class WooDecisionFactory extends ModelFactory
+final class WooDecisionFactory extends \Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -63,9 +62,9 @@ final class WooDecisionFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
-     * @todo add your default values here
+     * @return array<string, mixed>
      */
-    protected function getDefaults(): array
+    protected function defaults(): array
     {
         /** @var CarbonImmutable $dateOne */
         $dateOne = CarbonImmutable::createFromMutable(self::faker()->dateTimeBetween('01-01-2010', '01-01-2023'));
@@ -110,14 +109,14 @@ final class WooDecisionFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    protected function initialize(): self
+    protected function initialize(): static
     {
         return $this
             // ->afterInstantiate(function(WooDecision $wooDecision): void {})
         ;
     }
 
-    protected static function getClass(): string
+    public static function class(): string
     {
         return WooDecision::class;
     }

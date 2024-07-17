@@ -47,7 +47,7 @@ tasks:
     desc: Create virtual environment
     dir: ../../
     cmds:
-      - python3.11 -m venv .venv --clear --upgrade-deps
+      - python3 -m venv .venv --clear --upgrade-deps
       - source .venv/bin/activate && pip install -r tests/robot_framework/requirements.txt
       - source .venv/bin/activate && rfbrowser init
 

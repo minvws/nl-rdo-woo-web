@@ -9,7 +9,7 @@ use App\Message\ProcessDocumentMessage;
 use App\Service\DocumentUploadQueue;
 use App\Service\DossierService;
 use App\Service\FileProcessService;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -22,7 +22,7 @@ class ProcessDocumentHandler
 {
     public function __construct(
         private readonly FileProcessService $fileProcessService,
-        private readonly DocumentStorageService $storageService,
+        private readonly EntityStorageService $entityStorageService,
         private readonly EntityManagerInterface $doctrine,
         private readonly LoggerInterface $logger,
         private readonly DocumentUploadQueue $uploadQueue,
@@ -66,7 +66,7 @@ class ProcessDocumentHandler
         }
 
         // Unchunked file handling
-        $localFilePath = $this->storageService->download($message->getRemotePath());
+        $localFilePath = $this->entityStorageService->download($message->getRemotePath());
         if (! $localFilePath) {
             $this->logger->error('File could not be downloaded', [
                 'dossier_uuid' => $message->getDossierUuid(),
@@ -84,7 +84,7 @@ class ProcessDocumentHandler
         } catch (\Throwable $e) {
             throw $e;
         } finally {
-            $this->storageService->removeDownload($localFilePath, true);
+            $this->entityStorageService->removeDownload($localFilePath, true);
 
             $this->updateUploadQueueAndDossierCompletion($dossier, $message);
         }
@@ -99,7 +99,7 @@ class ProcessDocumentHandler
             // Check if the chunk exists
             $remoteChunkPath = '/uploads/chunks/' . $chunkUuid . '/' . $i;
 
-            $localChunkFile = $this->storageService->download($remoteChunkPath);
+            $localChunkFile = $this->entityStorageService->download($remoteChunkPath);
             if (! $localChunkFile) {
                 $this->logger->error('Chunk is not readable', [
                     'uuid' => $chunkUuid,
@@ -121,7 +121,7 @@ class ProcessDocumentHandler
             }
 
             // Unlink chunk, as we don't need it anymore
-            $this->storageService->removeDownload($localChunkFile);
+            $this->entityStorageService->removeDownload($localChunkFile);
             $chunk = null;
         }
 

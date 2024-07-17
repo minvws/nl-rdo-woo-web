@@ -1,0 +1,54 @@
+<header class="woo-search-result__header">
+    <h3 class="woo-search-result__title">
+        <a
+            class="woo-search-result__main-link"
+            data-e2e-name="main-link"
+            href="{{ entry.viewmodel.detailsUrl }}"
+        >{{ entry.viewmodel.name }}</a>
+    </h3>
+
+     <ul class="woo-search-result__spec-list">
+        <li class="woo-search-result__spec">
+            <twig:Public:Icon name="{{ entry.viewmodel.sourceType }}" class="mr-1" size="20" />
+            {{ ("public.documents.file_type." ~ entry.viewmodel.sourceType) | trans }}
+        </li>
+        {% if entry.viewmodel.pageCount > 0 %}
+        <li class="woo-search-result__spec">{{ "global.number_of_pages" | trans({"count": entry.viewmodel.pageCount})}}</li>
+        {% endif %}
+    </ul>
+</header>
+
+{% if entry.highlights | length > 0 %}
+<p class="mt-1">
+    {% for hl in entry.highlights %}
+        ... {{ hl | highlights }} {% if loop.last %}...{% endif %}
+    {% endfor %}
+</p>
+{% endif %}
+
+<ul class="woo-search-result__spec-list">
+    <li class="woo-search-result__spec">
+        {% if entry.viewmodel.formalDate is not empty %}
+            <time datetime="{{ entry.viewmodel.formalDate | date("Y-m-d") }}">
+                {{ entry.viewmodel.formalDate | format_date('long') }}
+            </time>
+        {% else %}
+            {{ 'global.date_not_available' | trans }}
+        {% endif %}
+    </li>
+    <li class="woo-search-result__spec">
+        {{ entry.viewmodel.size | size}}
+    </li>
+</ul>
+
+{% if entry.dossiers | length > 0 %}
+<ul class="mt-1 woo-muted">
+    {% for dossier in entry.dossiers %}
+    <li>
+        <twig:Public:Icon name="part-of" size="20" />
+        <span>{{ 'global.part_of' | trans | capitalize }}</span> <a class="woo-a woo-a--search-result" href="{{ path('app_woodecision_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ dossier.title }}</a>
+        {{dossier.dossierNr}}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}

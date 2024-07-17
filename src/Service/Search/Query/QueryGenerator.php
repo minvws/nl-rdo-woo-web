@@ -100,7 +100,7 @@ final readonly class QueryGenerator
 
         $this->addQuery($facetList, $queryBuilder, $config);
         $this->aggregationGenerator->addAggregations($facetList, $queryBuilder, $config, 25);
-        $this->aggregationGenerator->addDocTypeAggregations($queryBuilder);
+        $this->aggregationGenerator->addUniqueDossierCountAggregation($queryBuilder);
         $this->addHighlight($queryBuilder, $config);
 
         return $queryBuilder;

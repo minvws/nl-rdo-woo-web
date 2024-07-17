@@ -97,7 +97,6 @@ class ResultTransformer
 
         $result->setResultCount($typedResponse->getInt('[hits][total][value]', 0));
         $result->setDossierCount($typedResponse->getInt('[aggregations][unique_dossiers][value]', 0));
-        $result->setDocumentCount($typedResponse->getInt('[aggregations][unique_documents][value]', 0));
 
         $documentCountWithoutDate = $typedResponse->getIntOrNull('[aggregations][all][facet-base-filter][date_filter][doc_count]')
             ?? $typedResponse->getIntOrNull('[aggregations][all][facet-base-filter][facet-filter-date][date_filter][doc_count]');

@@ -11,9 +11,9 @@ use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use App\Domain\Publication\MainDocument\EntityWithMainDocument;
 use App\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent;
+use App\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface;
 use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
-use App\Service\Storage\DocumentStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -22,13 +22,22 @@ use Webmozart\Assert\Assert;
 #[AsMessageHandler]
 readonly class DeleteMainDocumentHandler
 {
+    /**
+     * @var iterable<MainDocumentDeleteStrategyInterface>
+     */
+    private iterable $deleteStrategies;
+
+    /**
+     * @param iterable<MainDocumentDeleteStrategyInterface> $deleteStrategies
+     */
     public function __construct(
         private MessageBusInterface $messageBus,
         private DossierWorkflowManager $dossierWorkflowManager,
         private EntityManagerInterface $entityManager,
         private AbstractDossierRepository $dossierRepository,
-        private DocumentStorageService $documentStorage,
+        iterable $deleteStrategies,
     ) {
+        $this->deleteStrategies = $deleteStrategies;
     }
 
     public function __invoke(DeleteMainDocumentCommand $command): void
@@ -42,18 +51,20 @@ readonly class DeleteMainDocumentHandler
         $documentRepository = $this->entityManager->getRepository($dossier->getMainDocumentEntityClass());
         Assert::isInstanceOf($documentRepository, MainDocumentRepositoryInterface::class);
 
-        $annualReportDocument = $documentRepository->findOneByDossierId($dossier->getId());
-        if ($annualReportDocument === null) {
+        $mainDocument = $documentRepository->findOneByDossierId($dossier->getId());
+        if ($mainDocument === null) {
             throw new MainDocumentNotFoundException();
         }
 
         $this->dossierWorkflowManager->applyTransition($dossier, DossierStatusTransition::DELETE_MAIN_DOCUMENT);
 
-        $this->documentStorage->removeFileForEntity($annualReportDocument);
+        foreach ($this->deleteStrategies as $strategy) {
+            $strategy->delete($mainDocument);
+        }
 
-        $event = MainDocumentDeletedEvent::forDocument($annualReportDocument);
+        $event = MainDocumentDeletedEvent::forDocument($mainDocument);
 
-        $documentRepository->remove($annualReportDocument, true);
+        $documentRepository->remove($mainDocument, true);
         $dossier->setDocument(null);
 
         $this->messageBus->dispatch($event);

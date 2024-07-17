@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Inquiry;
 
-use App\Domain\Ingest\IngestMetadataOnlyMessage;
+use App\Domain\Ingest\MetadataOnly\IngestMetadataOnlyCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\IndexDossierMessage;
+use App\Domain\Search\Index\Dossier\IndexDossierCommand;
 use App\Entity\BatchDownload;
 use App\Entity\Document;
 use App\Entity\Dossier;
@@ -19,7 +19,7 @@ use App\Message\UpdateInquiryLinksMessage;
 use App\Service\BatchDownloadService;
 use App\Service\HistoryService;
 use App\Service\Inventory\InquiryChangeset;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -36,7 +36,7 @@ class InquiryService
         private readonly EntityManagerInterface $doctrine,
         private readonly MessageBusInterface $messageBus,
         private readonly BatchDownloadService $batchDownloadService,
-        private readonly DocumentStorageService $storageService,
+        private readonly EntityStorageService $entityStorageService,
         private readonly HistoryService $historyService,
     ) {
     }
@@ -70,7 +70,7 @@ class InquiryService
             if ($inquiry->getDossiers()->isEmpty()) {
                 $inventory = $inquiry->getInventory();
                 if ($inventory instanceof InquiryInventory) {
-                    $this->storageService->removeFileForEntity($inventory);
+                    $this->entityStorageService->removeFileForEntity($inventory);
                     $this->doctrine->remove($inventory);
                 }
                 $this->batchDownloadService->removeAllDownloadsForEntity($dossier);
@@ -230,7 +230,7 @@ class InquiryService
     private function updateDocuments(array $ids): void
     {
         foreach ($ids as $id) {
-            $this->messageBus->dispatch(new IngestMetadataOnlyMessage($id, Document::class));
+            $this->messageBus->dispatch(new IngestMetadataOnlyCommand($id, Document::class, false));
         }
     }
 
@@ -240,7 +240,7 @@ class InquiryService
     private function updateDossiers(array $ids): void
     {
         foreach ($ids as $id) {
-            $this->messageBus->dispatch(new IndexDossierMessage($id));
+            $this->messageBus->dispatch(new IndexDossierCommand($id));
         }
     }
 }

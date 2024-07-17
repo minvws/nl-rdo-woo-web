@@ -2,6 +2,8 @@
 parameters:
     oneup_uploader.path.prefix: ''
     oneup_uploader.chunks.storage.directory: '%oneup_uploader.path.prefix%%kernel.cache_dir%/uploads/chunks'
+    oneup_uploader.orphanage.storage.directory: '%oneup_uploader.path.prefix%%kernel.cache_dir%/uploads/orphans'
+    oneup_uploader.storage.directory: '%oneup_uploader.path.prefix%%kernel.project_dir%/var/uploads'
 
 oneup_uploader:
     chunks:
@@ -10,7 +12,7 @@ oneup_uploader:
             directory: '%oneup_uploader.chunks.storage.directory%'
     orphanage:
         maxage: 604800 # = 1 week
-        directory: '%oneup_uploader.path.prefix%%kernel.cache_dir%/uploads/orphans'
+        directory: '%oneup_uploader.orphanage.storage.directory%'
 
     mappings:
         general:
@@ -19,8 +21,8 @@ oneup_uploader:
                 class: App\Controller\Admin\CustomDropzoneController
                 name: general
             storage:
-                directory: '%oneup_uploader.path.prefix%%kernel.project_dir%/var/uploads'
-            use_orphanage: true
+                directory: '%oneup_uploader.storage.directory%'
+            use_orphanage: true 
             namer: App\Service\Uploader\UploaderNamer
 
 when@test:

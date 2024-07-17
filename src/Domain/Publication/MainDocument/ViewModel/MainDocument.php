@@ -6,8 +6,9 @@ namespace App\Domain\Publication\MainDocument\ViewModel;
 
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Attachment\AttachmentType;
+use App\Domain\Search\Result\SubType\SubTypeViewModelInterface;
 
-final readonly class MainDocument
+readonly class MainDocument implements SubTypeViewModelInterface
 {
     /**
      * @param list<string> $grounds
@@ -27,6 +28,7 @@ final readonly class MainDocument
         public array $grounds,
         public string $downloadUrl,
         public string $detailsUrl,
+        public int $pageCount,
     ) {
     }
 }

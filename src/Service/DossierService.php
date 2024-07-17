@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Domain\Ingest\IngestDossierMessage;
+use App\Domain\Ingest\Dossier\IngestDossierCommand;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\DossierTypeWithPreview;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\IndexDossierMessage;
+use App\Domain\Search\Index\Dossier\IndexDossierCommand;
 use App\Entity\DecisionDocument;
 use App\Entity\Document;
 use App\Entity\Dossier;
@@ -23,7 +23,7 @@ use App\Message\RemoveInventoryAndDocumentsMessage;
 use App\Message\UpdateDossierArchivesMessage;
 use App\Service\DossierWizard\WizardStatusFactory;
 use App\Service\Inquiry\InquirySessionService;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use App\SourceType;
 use App\Utils;
 use Doctrine\ORM\EntityManagerInterface;
@@ -45,7 +45,7 @@ readonly class DossierService
         private MessageBusInterface $messageBus,
         private LoggerInterface $logger,
         private InquirySessionService $inquirySession,
-        private DocumentStorageService $documentStorage,
+        private EntityStorageService $entityStorageService,
         private WizardStatusFactory $statusFactory,
         private HistoryService $historyService,
     ) {
@@ -121,7 +121,7 @@ readonly class DossierService
 
     public function ingest(AbstractDossier $dossier): void
     {
-        $this->messageBus->dispatch(new IngestDossierMessage($dossier->getId()));
+        $this->messageBus->dispatch(new IngestDossierCommand($dossier->getId()));
     }
 
     public function update(Dossier $dossier): void
@@ -130,7 +130,7 @@ readonly class DossierService
             return;
         }
 
-        $this->messageBus->dispatch(IndexDossierMessage::forDossier($dossier));
+        $this->messageBus->dispatch(IndexDossierCommand::forDossier($dossier));
     }
 
     public function generateSanitizedInventory(Dossier $dossier): void
@@ -173,7 +173,7 @@ readonly class DossierService
 
         // If there was already a decision file: clean it up
         if ($fileInfo->isUploaded()) {
-            $this->documentStorage->removeFileForEntity($decisionDocument);
+            $this->entityStorageService->removeFileForEntity($decisionDocument);
             $fileInfo->removeFileProperties();
         }
 
@@ -183,7 +183,7 @@ readonly class DossierService
 
         $this->doctrine->persist($decisionDocument);
 
-        if (! $this->documentStorage->storeDocument($upload, $decisionDocument)) {
+        if (! $this->entityStorageService->storeEntity($upload, $decisionDocument)) {
             throw new \RuntimeException('Could not store decision document');
         }
 
@@ -255,7 +255,7 @@ readonly class DossierService
                 throw new \RuntimeException();
             }
 
-            $this->documentStorage->removeFileForEntity($processRun);
+            $this->entityStorageService->removeFileForEntity($processRun);
             $this->doctrine->remove($processRun);
             $this->doctrine->flush();
         }
@@ -271,7 +271,7 @@ readonly class DossierService
         $this->doctrine->persist($run);
         $this->doctrine->flush();
 
-        if (! $this->documentStorage->storeDocument($upload, $run)) {
+        if (! $this->entityStorageService->storeEntity($upload, $run)) {
             $this->logger->error('Could not store the inventory spreadsheet.', [
                 'dossier' => $dossier->getId()->toRfc4122(),
                 'filename' => $upload->getClientOriginalName(),
@@ -362,7 +362,7 @@ readonly class DossierService
         $this->validateCompletion($dossier);
 
         $this->messageBus->dispatch(
-            IndexDossierMessage::forDossier($dossier)
+            IndexDossierCommand::forDossier($dossier)
         );
     }
 }

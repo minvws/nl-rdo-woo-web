@@ -18,18 +18,19 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
+#[When('dev')]
 class CleanSheet extends Command
 {
     /**
      * @param string[] $queueDsns
      */
     public function __construct(
-        private readonly string $appEnvironment,
         private readonly array $queueDsns,
         private readonly EntityManagerInterface $entityManager,
         private readonly IndexService $indexService,
@@ -50,15 +51,6 @@ class CleanSheet extends Command
                 new InputOption('index', 'i', InputOption::VALUE_REQUIRED, 'ES index name', 'woopie'),
             ])
         ;
-    }
-
-    public function isEnabled(): bool
-    {
-        if ($this->appEnvironment === 'prod') {
-            return false;
-        }
-
-        return true;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -39,6 +39,7 @@ Make sure WOO is running locally. Read the [install](install.md) instructions fi
 
 - Download and install Python 3.12.x <https://www.python.org/downloads/>
 - Download and install pip <https://pypi.org/project/pip/>
+- Download and install npm
 
 ## Step 2: Install Robot Framework
 
@@ -50,21 +51,20 @@ task rf:venv
 
 ## Step 3: Initialize the application
 
-To run CI tests locally you need to create a initial user with 'super admin'-rights, username `email@example.org` and password `IkLoopNooitVastVandaag`.
-This can be done as described in the [install](install.md) instructions, or you can run the following testcase:
+To run CI tests locally you need to create a user with 'super admin'-rights, username `email@example.org` and password `IkLoopNooitVastVandaag`.
+To prepare for this, you should create an environment variable named `SECRET_WOO_LOCAL` in your  `~/zshrc` file, for which the value will be automatically replaced later on:
+
+```shell
+export SECRET_WOO_LOCAL=REPLACEABLE
+```
+
+Then create the aforementioned admin user by either follow the instructions in [install](install.md) or running the following testcase:
 
 ```shell
 task rf:test tag=init
 ```
 
-This will create the user with username `email@example.org`, password `IkLoopNooitVastVandaag` and stores the OTP secret in your `~/zshrc` as environment variable `SECRET_WOO_LOCAL`.
-You only have to do once.
-
 Note that you have to restart your shell for any following `task rf:test` calls, otherwise it won't know the new secret.
-
-```shell
-export SECRET_WOO_LOCAL=<otp secret here>
-```
 
 If you ever need an OTP code to login manually, use the following testcase:
 
@@ -79,8 +79,11 @@ task rf:test tag=otp
 To execute the CI tests use the following command:
 
 ```shell
-task rf:test
-task rf:test-headless
+# with visible browser
+task rf:test tag=ci
+
+# or without; headless
+task rf:test-headless tag=ci
 ```
 
 ### Test and Acceptance tests
@@ -100,13 +103,13 @@ TST and ACC requires basic authentication to access it. To run this tests locall
 To execute the TST tests use the following command:
 
 ```shell
-task rf:test TAG=tst
-task rf:test-headless TAG=acc
+task rf:test tag=tst
+task rf:test-headless tag=tst
 ```
 
 To execute the ACC tests use the following command:
 
 ```shell
-task rf:test TAG=E2E_ACC
-task rf:test-headless TAG=E2E_ACC
+task rf:test tag=acc
+task rf:test-headless tag=acc
 ```

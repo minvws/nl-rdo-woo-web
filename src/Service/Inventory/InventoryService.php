@@ -10,7 +10,7 @@ use App\Entity\RawInventory;
 use App\Exception\ProcessInventoryException;
 use App\Service\Inventory\Reader\InventoryReaderFactory;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
-use App\Service\Storage\DocumentStorageService;
+use App\Service\Storage\EntityStorageService;
 use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -22,7 +22,7 @@ class InventoryService
 {
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
-        private readonly DocumentStorageService $documentStorage,
+        private readonly EntityStorageService $entityStorageService,
         private readonly InventoryReaderFactory $readerFactory,
     ) {
     }
@@ -33,7 +33,7 @@ class InventoryService
             throw new \RuntimeException('Input file missing, cannot process inventory');
         }
 
-        $tmpFilename = $this->documentStorage->downloadDocument($run);
+        $tmpFilename = $this->entityStorageService->downloadEntity($run);
         if (! $tmpFilename) {
             throw ProcessInventoryException::forInventoryCannotBeLoadedFromStorage();
         }
@@ -49,7 +49,7 @@ class InventoryService
     public function cleanupTmpFile(InventoryProcessRun $run): void
     {
         if ($run->getTmpFilename()) {
-            $this->documentStorage->removeDownload($run->getTmpFilename());
+            $this->entityStorageService->removeDownload($run->getTmpFilename());
             $run->setTmpFilename(null);
         }
     }
@@ -64,13 +64,13 @@ class InventoryService
         }
 
         if ($inventory) {
-            $this->documentStorage->removeFileForEntity($inventory);
+            $this->entityStorageService->removeFileForEntity($inventory);
             $this->doctrine->remove($inventory);
             $dossier->setInventory(null);
         }
 
         if ($rawInventory) {
-            $this->documentStorage->removeFileForEntity($rawInventory);
+            $this->entityStorageService->removeFileForEntity($rawInventory);
             $this->doctrine->remove($rawInventory);
             $dossier->setRawInventory(null);
         }
@@ -103,7 +103,7 @@ class InventoryService
         }
 
         $fileInfo = new \SplFileInfo($tmpFilename);
-        if (! $this->documentStorage->storeDocument($fileInfo, $inventory, false)) {
+        if (! $this->entityStorageService->storeEntity($fileInfo, $inventory, false)) {
             throw new \RuntimeException('Cannot store raw inventory');
         }
     }

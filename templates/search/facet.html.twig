@@ -26,7 +26,102 @@
         </div>
     </fieldset>
 
-{#    {{ macro.facet_select('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}#}
+    {# <fieldset class="mt-4 js-filters-group" data-key="search-in">
+        <legend class="w-full">
+            <button
+                class="woo-legend w-full text-left relative border-b border-woo-chinese-silver py-2 js-toggle-filters-group-button"
+                type="button"
+            >
+                <span class="absolute left-0 -mt-0.5">
+                    <twig:Public:IconBackground>
+                        <twig:Public:Icon name="topic" size="16" />
+                    </twig:Public:IconBackground>
+                </span>
+                <span class="pl-8">Zoeken in ...</span>
+                <twig:Public:Icon class="absolute right-0 js-toggle-filters-group-button-icon" name="chevron-up-thin" />
+            </button>
+        </legend>
+
+        <div class="js-filters-group-collapsible" id="filters-group-search-in">
+            <div class="pb-2">
+                <div class="woo-choice-row py-1">
+                    <span>
+                        <input
+                            class="woo-choice-input"
+                            type="checkbox"
+                        >
+                    </span>
+                    <label class="grow cursor-pointer">
+                        <span class="flex">
+                            <span class="grow mr-2 text-base leading-tight">Beschikkingen</span>
+                            <span class="woo-muted text-sm">(208)</span>
+                        </span>
+                    </label>
+                </div>
+                <div class="text-base text-woo-dim-gray leading-snug">
+                    Schriftelijke beslissing over specifieke gevallen, niet van algemene strekking
+                </div>
+
+                <div class="pl-5 pt-1">
+                    <fieldset>
+                        <legend class="sr-only">Subcategorieën van "Beschikkingen"</legend>
+
+                        <div class="woo-choice-row py-1">
+                            <span>
+                                <input
+                                    class="woo-choice-input"
+                                    type="checkbox"
+                                >
+                            </span>
+                            <label class="grow cursor-pointer">
+                                <span class="flex">
+                                    <span class="grow mr-2 text-base leading-tight">Hoofddocumenten</span>
+                                    <span class="woo-muted text-sm">(100)</span>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="woo-choice-row py-1">
+                            <span>
+                                <input
+                                    class="woo-choice-input"
+                                    type="checkbox"
+                                >
+                            </span>
+                            <label class="grow cursor-pointer">
+                                <span class="flex">
+                                    <span class="grow mr-2 text-base leading-tight">Bijlagen</span>
+                                    <span class="woo-muted text-sm">(108)</span>
+                                </span>
+                            </label>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="pb-2">
+                <div class="woo-choice-row py-1">
+                    <span>
+                        <input
+                            class="woo-choice-input"
+                            type="checkbox"
+                        >
+                    </span>
+                    <label class="grow cursor-pointer">
+                        <span class="flex">
+                            <span class="grow mr-2 text-base leading-tight">Beschikkingen</span>
+                            <span class="woo-muted text-sm">(208)</span>
+                        </span>
+                    </label>
+                </div>
+                <div class="text-base text-woo-dim-gray leading-snug">
+                    Schriftelijke beslissing over specifieke gevallen, niet van algemene strekking
+                </div>
+            </div>
+        </div>
+    </fieldset> #}
+
+
+    {# {{ macro.facet_select('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }} #}
     {{ macro.facet_select('categories.category.type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::TYPE').value, result) }}
     {{ macro.facet_select('categories.category.subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
     {{ macro.facet_select('categories.category.source_file' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}

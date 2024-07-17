@@ -29,10 +29,7 @@ class SubTypesOnlyFilter implements FilterInterface
         $query->addFilter(
             Query::Terms(
                 field: 'type',
-                values: array_map(
-                    static fn (ElasticDocumentType $type) => $type->value,
-                    ElasticDocumentType::getSubTypes(),
-                ),
+                values: ElasticDocumentType::getSubTypeValues(),
             ),
         );
 
