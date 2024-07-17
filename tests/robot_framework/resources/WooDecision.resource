@@ -1,10 +1,11 @@
 *** Settings ***
 Documentation       Resource file with generic keywords.
+Library             DateTime
 Library             OperatingSystem
 Library             String
-Library             DateTime
 Library             Browser
 Library             DebugLibrary
+Resource            Admin.resource
 
 
 *** Variables ***
@@ -21,17 +22,8 @@ Fill Out Decision Details
   Check Checkbox  text="${decision}"
   Fill Text  id=decision_summary  Samenvatting voor het besluitdossier Robot ${CURRENT_TIME}
   Upload File By Selector  id=decision_decision_document  tests/robot_framework/files/besluitbrief.pdf
-  IF  ${has_attachment}  Upload Attachment
+  IF  ${has_attachment}  Upload Attachment  staatscourant
   Click  "Opslaan en verder"
-
-Upload Attachment
-  Click  " + Bijlage toevoegen... "
-  Upload File By Selector  //*[@name="uploadUuid"]  ${ATTACHMENT_LOCATION}
-  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${ATTACHMENT_FILENAME}  timeout=5s
-  Select Options By  //*[@name="type"]  text  staatscourant
-  Type Text  //*[@name="formalDate"]  01012022
-  Click  //dialog//button[@type="submit"]
-  Wait For Condition  Text  //*[@id="inhoud"]  contains  Bijlage '${ATTACHMENT_FILENAME}' is toegevoegd.
 
 Upload Documents Step
   Upload Inventory  ${INVENTORY}
@@ -54,7 +46,7 @@ Verify Inventory Error
 
 Verify Document Upload Remaining
   [Arguments]  ${expected_result}
-  Wait For Condition  Text  //*[@data-e2e-name="missingDocuments"]  contains  ${expected_result}  timeout=10s
+  Wait For Condition  Text  //*[@data-e2e-name="missingDocuments"]  contains  ${expected_result}  timeout=20s
 
 Upload Document Zip
   [Arguments]  ${zip_file_location}
@@ -77,7 +69,7 @@ Click Replace Report
 
 Verify Inventory Replace
   [Arguments]  ${expected_result}
-  Wait For Condition  Text  id=js-inventory-status  contains  ${expected_result}  timeout=20s
+  Wait For Condition  Text  id=js-inventory-status  contains  ${expected_result}  timeout=30s
 
 Click Confirm Inventory Replacement
   Click  //*[@data-e2e-name="confirm-replacement"]
@@ -88,6 +80,7 @@ Click Continue To Documents
 Open Document In Dossier
   [Arguments]  ${document_id}
   Click  "${document_id}"
+  Wait For Condition  Text  //*[@data-e2e-name="document-nr"]  contains  ${document_id}
 
 Retract Document
   Click  //*[@data-e2e-name="retract"]

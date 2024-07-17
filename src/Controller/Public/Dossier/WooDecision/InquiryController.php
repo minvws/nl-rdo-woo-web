@@ -89,6 +89,13 @@ class InquiryController extends AbstractController
             ['pageParameterName' => 'pu'],
         );
 
+        $alreadyPublicPagination = $this->paginator->paginate(
+            DocumentConditions::onlyAlreadyPublic($docQuery),
+            $request->query->getInt('pa', 1),
+            self::MAX_ITEMS_PER_PAGE,
+            ['pageParameterName' => 'pa'],
+        );
+
         $notPublicPagination = $this->paginator->paginate(
             DocumentConditions::notPubliclyAvailable($docQuery),
             $request->query->getInt('pn', 1),
@@ -108,6 +115,7 @@ class InquiryController extends AbstractController
             'dossiers' => $inquiry->getPubliclyAvailableDossiers(),
             'scheduledDossiers' => $inquiry->getScheduledDossiers(),
             'public_docs' => $publicPagination,
+            'already_public_docs' => $alreadyPublicPagination,
             'not_public_docs' => $notPublicPagination,
             'not_online_docs' => $notOnlinePagination,
             'form' => $form,

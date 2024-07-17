@@ -80,6 +80,7 @@
                                 </td>
                                 <td>
                                     {% if document.withdrawn %}{{ "global.withdrawn" | trans }} {% endif %}
+                                    {% if document.suspended %}{{ "global.suspended" | trans }} {% endif %}
                                 </td>
                                 <td class="text-right">
                                     <a class="js-clickable-row__focusable" href="{{ path('app_admin_dossier_woodecision_document', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">

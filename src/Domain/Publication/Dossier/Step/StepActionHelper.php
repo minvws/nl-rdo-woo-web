@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Step;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
 use App\Service\DossierWizard\DossierWizardHelper;
 use App\Service\DossierWizard\DossierWizardStatus;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -21,6 +22,7 @@ readonly class StepActionHelper
         private RouterInterface $router,
         private DossierWizardHelper $dossierWizardHelper,
         private PaginatorInterface $paginator,
+        private DossierViewParamsBuilder $paramsBuilder,
     ) {
     }
 
@@ -145,5 +147,10 @@ readonly class StepActionHelper
             $wizardStatus->getDossier(),
             $wizardStatus->getCurrentStep()->getStepName(),
         );
+    }
+
+    public function getParamsBuilder(AbstractDossier $dossier): DossierViewParamsBuilder
+    {
+        return $this->paramsBuilder->forDossier($dossier);
     }
 }

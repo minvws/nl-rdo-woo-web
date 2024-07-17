@@ -76,6 +76,14 @@ class WooDecisionController extends AbstractController
             ['pageParameterName' => 'pu'],
         );
 
+        /** @var PaginationInterface<array-key,Dossier> $alreadyPublicPagination */
+        $alreadyPublicPagination = $this->paginator->paginate(
+            DocumentConditions::onlyAlreadyPublic($docQuery),
+            $request->query->getInt('pa', 1),
+            self::MAX_ITEMS_PER_PAGE,
+            ['pageParameterName' => 'pa'],
+        );
+
         /** @var PaginationInterface<array-key,Dossier> $notPublicPagination */
         $notPublicPagination = $this->paginator->paginate(
             DocumentConditions::notPubliclyAvailable($docQuery),
@@ -94,6 +102,7 @@ class WooDecisionController extends AbstractController
 
         return $this->render('dossier/details.html.twig', [
             'publicDocs' => $publicPagination,
+            'alreadyPublicDocs' => $alreadyPublicPagination,
             'notPublicDocs' => $notPublicPagination,
             'notOnlineDocs' => $notOnlinePagination,
             'dossier' => $this->wooDecisionViewFactory->make($dossier),

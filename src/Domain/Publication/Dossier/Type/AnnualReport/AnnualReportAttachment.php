@@ -33,7 +33,7 @@ class AnnualReportAttachment extends AbstractAttachment
         $this->fileInfo->setPaginatable(true);
     }
 
-    public function getUploadGroupId(): UploadGroupId
+    public static function getUploadGroupId(): UploadGroupId
     {
         return UploadGroupId::ANNUAL_REPORT_ATTACHMENTS;
     }

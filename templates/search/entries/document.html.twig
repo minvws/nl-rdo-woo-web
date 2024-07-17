@@ -9,7 +9,7 @@
 
      <ul class="woo-search-result__spec-list">
         <li class="woo-search-result__spec">
-            <twig:Public:Icon name="{{ entry.viewmodel.fileInfo.sourceType }}" class="mr-1" size="20" />
+            <twig:Public:FileIcon type="{{ entry.viewmodel.fileInfo.sourceType }}" class="mr-1" size="20" />
             {{ ("public.documents.file_type." ~ entry.viewmodel.fileInfo.sourceType) | trans }}
         </li>
         {% if entry.viewmodel.fileInfo.isUploaded %}

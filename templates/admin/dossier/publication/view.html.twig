@@ -77,9 +77,9 @@
 
                     <twig:Admin:Definition term="{{ documentLabel }}">
                         {% if dossier.document.fileInfo.name is defined %}
-                            <twig:Admin:IconLink
+                            <twig:Admin:DownloadFile
                                 href="{{ downloadDocumentPath }}"
-                                icon="file-pdf"
+                                mimeType="{{ dossier.document.fileInfo.mimetype }}"
                                 text="{{ dossier.document.fileInfo.name }}"
                             />
                         {% else %}

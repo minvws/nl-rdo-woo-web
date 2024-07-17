@@ -12,7 +12,7 @@
     </p>
 
     <div class="mt-8">
-        <twig:Public:DownloadFileButton href="{{ document.downloadUrl }}">{{ 'global.download_document' | trans }} ({{ document.sourceType | upper }}, {{ document.size | size }})</twig:Public:DownloadFileButton>
+        <twig:Public:DownloadFileButton href="{{ document.downloadUrl }}">{{ 'global.download_document' | trans }} ({{ ('public.documents.file_type.' ~ document.sourceType) | trans }}, {{ document.size | size }})</twig:Public:DownloadFileButton>
     </div>
 
     <div class="mt-16">
@@ -42,13 +42,13 @@
                     <tr>
                         <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.type' | trans }}</th>
                         <td>
-                            <twig:Public:Icon name="{{ document.sourceType }}" color="fill-woo-dim-gray" size="16" />
-                            {{ document.sourceType | upper }}
+                            <twig:Public:FileIcon type="{{ document.sourceType }}" />
+                            {{ ('public.documents.file_type.' ~ document.sourceType) | trans }}
                         </td>
                     </tr>
                     <tr>
                         <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.download_type' | trans }}</th>
-                        <td>{{ document.sourceType | upper }}, {{ document.size | size }}</td>
+                        <td>{{ ('public.documents.file_type.' ~ document.sourceType) | trans }}, {{ document.size | size }}</td>
                     </tr>
                     {% if document.grounds is defined and document.grounds|length > 0 %}
                     <tr>
@@ -85,7 +85,7 @@
                         {% for attachment in attachments %}
                         <tr>
                             <td>
-                                <twig:Public:Icon name="{{ attachment.sourceType }}" color="fill-woo-dim-gray" size="16" />
+                                <twig:Public:FileIcon type="{{ attachment.sourceType }}" size="16" />
                                 <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a>
                             </td>
                             <td class="w-48 min-w-48 text-right">

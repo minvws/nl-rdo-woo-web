@@ -62,48 +62,35 @@
     {% for call in collector.calls %}
 
         <table>
-
             <tr>
-                <td nowrap>
+                <th scope="row">
+                    <p class="tab-title"><strong>{{ call.name }}</strong></p>
+                </th>
+                <td>
+                    <div class="sf-tabs">
+                        <div class="tab">
+                            <p class="tab-title">Info</p>
+                            <p class="tab-content">No info yet available.</p>
+                        </div>
 
-        <h3 class="tab-title"><strong>{{ call.name }}</strong></h3>
+                        <div class="tab">
+                            <h3 class="tab-title">{{ 'global.request' | trans }}</h3>
+                            <div class="tab-content">
+                                <div id="formatted-query-{{ loop.index0 }}" class="sql-runnable">
+                                    <pre>{{ call.arguments|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_UNICODE')) }}</pre>
+                                </div>
+                            </div>
+                        </div>
 
-                </td>
-                <td width="100%">
-
-        <div class="sf-tabs">
-            <div class="tab">
-                <h3 class="tab-title">Info</h3>
-                <div class="tab-content">
-                    No info yet available.
-                </div>
-            </div>
-
-            <div class="tab">
-                <h3 class="tab-title">{{ 'global.request' | trans }}</h3>
-
-                <div class="tab-content">
-                    <div id="formatted-query-{{ loop.index0 }}" class="sql-runnable">
-                        <code>
-                            <pre>{{ call.arguments|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_UNICODE')) }}</pre>
-                        </code>
+                        <div class="tab">
+                            <h3 class="tab-title">Response</h3>
+                            <div class="tab-content">
+                                <div id="formatted-query-{{ loop.index0 }}" class="sql-runnable">
+                                    <pre>{{ call.response|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_UNICODE')) }}</pre>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="tab">
-                <h3 class="tab-title">Response</h3>
-
-                <div class="tab-content">
-                    <div id="formatted-query-{{ loop.index0 }}" class="sql-runnable">
-                        <code>
-                            <pre>{{ call.response|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_UNICODE')) }}</pre>
-                        </code>
-                    </div>
-                </div>
-            </div>
-        </div>
-
                 </td>
             </tr>
         </table>

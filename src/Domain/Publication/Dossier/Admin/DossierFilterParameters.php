@@ -12,11 +12,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 class DossierFilterParameters
 {
     /** @var DossierStatus[] */
-    public array $statuses;
+    public array $statuses = [];
 
     /** @var DossierType[] */
-    public array $types;
+    public array $types = [];
 
     /** @var ArrayCollection<Department>|null */
-    public ?ArrayCollection $departments;
+    public ?ArrayCollection $departments = null;
 }

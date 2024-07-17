@@ -10,7 +10,7 @@ use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\SearchResultMapperInterface;
 use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
 use App\Repository\DocumentRepository;
-use App\Repository\DossierRepository;
+use App\Repository\WooDecisionRepository;
 use Jaytaph\TypeArray\TypeArray;
 
 readonly class DocumentSearchResultMapper implements SearchResultMapperInterface
@@ -19,7 +19,7 @@ readonly class DocumentSearchResultMapper implements SearchResultMapperInterface
 
     public function __construct(
         private DocumentRepository $documentRepository,
-        private DossierRepository $dossierRepository,
+        private WooDecisionRepository $dossierRepository,
     ) {
     }
 

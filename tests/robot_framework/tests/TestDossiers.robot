@@ -2,7 +2,6 @@
 Resource            ../resources/Setup.resource
 Resource            ../resources/Dossier.resource
 Resource            ../resources/Document.resource
-Resource            ../resources/WooDecision.resource
 Resource            ../resources/Covenant.resource
 Resource            ../resources/Disposition.resource
 Resource            ../resources/AnnualReport.resource

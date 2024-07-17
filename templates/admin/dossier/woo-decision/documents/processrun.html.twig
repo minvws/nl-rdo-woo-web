@@ -27,7 +27,7 @@
 
     <div class="flex items-center">
         <span class="mr-3"><twig:Admin:MimeTypeIcon mimeType="{{ processRun.fileInfo.mimetype }}" /></span>
-        <label class="grow text-lg pt-1 truncate">{{ processRun.fileInfo.name }}</label>
+        <label class="grow text-lg pt-1 truncate" for="{{ id }}">{{ processRun.fileInfo.name }}</label>
     </div>
 {% elseif inventoryStatus.canUpload and (ajax|default(false) == false or inventoryStatus.hasErrors) %}
     {# the ajax=false condition is used to not inifinitely re-show the form when replacing the inventory, unless there are errors #}

@@ -38,7 +38,7 @@ class InvestigationReportDocument extends AbstractMainDocument
         return $this->dossier;
     }
 
-    public function getUploadGroupId(): UploadGroupId
+    public static function getUploadGroupId(): UploadGroupId
     {
         return UploadGroupId::INVESTIGATION_REPORT_DOCUMENTS;
     }

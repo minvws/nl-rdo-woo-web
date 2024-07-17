@@ -8,6 +8,16 @@
   import { computed, ref } from 'vue';
 
   const props = defineProps({
+    allowedExtensions: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
+    allowedMimeTypes: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
     canDelete: {
       type: Boolean,
       default: false,
@@ -133,6 +143,7 @@
     :endpoint="props.endpoint"
     :file-name="document.name"
     :file-size="document.size"
+    :id="document.id"
     :mimeType="document.mimeType"
   />
 
@@ -158,6 +169,8 @@
       <PublicationDocumentForm
         @cancel="onCancel"
         @saved="onSaved"
+        :allowed-extensions="props.allowedExtensions"
+        :allowed-mime-types="props.allowedMimeTypes"
         :document="currentDocument"
         :document-language-options="props.documentLanguageOptions"
         :document-type-options="props.documentTypeOptions"

@@ -1,4 +1,4 @@
-import { collapseElement, expandElement, hideElement, showElement } from '@js/utils';
+import { collapseElement, expandElement, hideElement, showElement } from '../utils';
 
 export const mainNav = () => {
   let abortController: AbortController;

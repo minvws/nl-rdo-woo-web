@@ -23,6 +23,7 @@ readonly class DefaultDossierMapper implements ElasticDossierMapperInterface
         return new ElasticDocument(
             $dossier->getDossierNr(),
             ElasticDocumentType::fromEntity($dossier),
+            null,
             [
                 'dossier_nr' => $dossier->getDossierNr(),
                 'title' => $dossier->getTitle(),

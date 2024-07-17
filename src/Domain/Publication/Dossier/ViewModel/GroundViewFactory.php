@@ -6,7 +6,7 @@ namespace App\Domain\Publication\Dossier\ViewModel;
 
 use App\Citation;
 
-final readonly class GroundViewFactory
+readonly class GroundViewFactory
 {
     /**
      * @return list<array{citation:string,label:string}>

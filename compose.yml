@@ -126,3 +126,14 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - woopie
+
+  clamav:
+    image: clamav/clamav:latest
+    platform: linux/amd64
+    labels:
+      com.symfony.server.service-ignore: true
+    ports:
+      - target: 3310
+        published: 3310
+    networks:
+      - woopie

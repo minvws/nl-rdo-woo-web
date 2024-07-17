@@ -91,6 +91,46 @@ class DossierListingServiceTest extends MockeryTestCase
         );
     }
 
+    public function testGetFilteredListingQueryReturnsBaseQueryFilterParamsAreEmpty(): void
+    {
+        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+
+        $this->authorizationMatrix
+            ->expects('hasFilter')
+            ->with(AuthorizationMatrixFilter::PUBLISHED_DOSSIERS)
+            ->andReturnTrue();
+
+        $this->authorizationMatrix
+            ->expects('hasFilter')
+            ->with(AuthorizationMatrixFilter::UNPUBLISHED_DOSSIERS)
+            ->andReturnTrue();
+
+        $config = \Mockery::mock(DossierTypeConfigInterface::class);
+        $config->shouldReceive('getDossierType')->andReturn(DossierType::COVENANT);
+
+        $this->dossierTypeManager->expects('getAvailableConfigs')->andReturn([$config]);
+
+        $this->dossierRepository
+            ->expects('getDossiersForOrganisationQueryBuilder')
+            ->with(
+                $this->organisation,
+                [
+                    DossierStatus::SCHEDULED,
+                    DossierStatus::PREVIEW,
+                    DossierStatus::PUBLISHED,
+                    DossierStatus::NEW,
+                    DossierStatus::CONCEPT,
+                ],
+                [DossierType::COVENANT],
+            )
+            ->andReturn($queryBuilder);
+
+        self::assertEquals(
+            $queryBuilder,
+            $this->listingService->getFilteredListingQuery(new DossierFilterParameters()),
+        );
+    }
+
     public function testGetFilteredListingQueryAppliesAllFilterParameters(): void
     {
         $queryBuilder = \Mockery::mock(QueryBuilder::class);

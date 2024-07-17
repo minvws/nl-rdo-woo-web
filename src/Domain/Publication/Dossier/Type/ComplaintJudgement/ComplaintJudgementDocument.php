@@ -38,7 +38,7 @@ class ComplaintJudgementDocument extends AbstractMainDocument
         return $this->dossier;
     }
 
-    public function getUploadGroupId(): UploadGroupId
+    public static function getUploadGroupId(): UploadGroupId
     {
         return UploadGroupId::COMPLAINT_JUDGEMENT_DOCUMENTS;
     }

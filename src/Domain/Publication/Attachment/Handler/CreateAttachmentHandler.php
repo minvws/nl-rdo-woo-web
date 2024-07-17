@@ -63,7 +63,7 @@ readonly class CreateAttachmentHandler
         $this->uploaderService->attachFileToEntity(
             $command->uploadFileReference,
             $entity,
-            $entity->getUploadGroupId(),
+            $entity::getUploadGroupId(),
         );
 
         $attachmentRepository->save($entity, true);

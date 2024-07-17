@@ -9,8 +9,8 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Admin\DossierFilterParameters;
 use App\Domain\Publication\Dossier\Admin\DossierListingService;
 use App\Domain\Publication\Dossier\Admin\DossierSearchService;
-use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
+use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use App\Enum\ApplicationMode;
 use App\Form\Dossier\SearchFormType;
 use App\Service\DossierWizard\DossierWizardHelper;
@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
@@ -38,8 +37,7 @@ class DossierController extends AbstractController
         private readonly DossierWizardHelper $wizardHelper,
         private readonly DossierTypeManager $dossierTypeManager,
         private readonly AttachmentViewFactory $attachmentViewFactory,
-        private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly string $publicBaseUrl,
+        private readonly DossierPathHelper $dossierPathHelper,
     ) {
     }
 
@@ -122,21 +120,6 @@ class DossierController extends AbstractController
         )]
         AbstractDossier $dossier,
     ): Response {
-        /** @TODO move to ViewModel */
-        $detailsEndpointName = match ($dossier->getType()) {
-            DossierType::WOO_DECISION => 'app_woodecision_detail',
-            DossierType::COVENANT => 'app_covenant_detail',
-            DossierType::ANNUAL_REPORT => 'app_annualreport_detail',
-            DossierType::INVESTIGATION_REPORT => 'app_investigationreport_detail',
-            DossierType::DISPOSITION => 'app_disposition_detail',
-            DossierType::COMPLAINT_JUDGEMENT => 'app_complaintjudgement_detail',
-        };
-
-        $publicDossierUrl = $this->urlGenerator->generate(
-            $detailsEndpointName,
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
-        );
-
         return $this->render(
             'admin/dossier/' . $dossier->getType()->value . '/view.html.twig',
             [
@@ -146,7 +129,7 @@ class DossierController extends AbstractController
                 ),
                 'dossier' => $dossier,
                 'workflowStatus' => $this->wizardHelper->getStatus($dossier),
-                'publicDossierUrl' => sprintf('%s%s', $this->publicBaseUrl, $publicDossierUrl),
+                'publicDossierUrl' => $this->dossierPathHelper->getAbsoluteDetailsPath($dossier),
             ]
         );
     }
@@ -160,24 +143,9 @@ class DossierController extends AbstractController
     public function publicationConfirmation(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] AbstractDossier $dossier,
     ): Response {
-        /** @TODO move to ViewModel */
-        $detailsEndpointName = match ($dossier->getType()) {
-            DossierType::WOO_DECISION => 'app_woodecision_detail',
-            DossierType::COVENANT => 'app_covenant_detail',
-            DossierType::ANNUAL_REPORT => 'app_annualreport_detail',
-            DossierType::INVESTIGATION_REPORT => 'app_investigationreport_detail',
-            DossierType::DISPOSITION => 'app_disposition_detail',
-            DossierType::COMPLAINT_JUDGEMENT => 'app_complaintjudgement_detail',
-        };
-
-        $detailsEndpointPath = $this->urlGenerator->generate(
-            $detailsEndpointName,
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
-        );
-
         return $this->render('admin/dossier/' . $dossier->getType()->value . '/publication-confirmation.html.twig', [
             'dossier' => $dossier,
-            'publicDossierUrl' => sprintf('%s%s', $this->publicBaseUrl, $detailsEndpointPath),
+            'publicDossierUrl' => $this->dossierPathHelper->getAbsoluteDetailsPath($dossier),
         ]);
     }
 

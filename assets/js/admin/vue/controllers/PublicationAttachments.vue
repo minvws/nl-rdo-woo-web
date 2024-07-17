@@ -6,6 +6,16 @@
   import { computed, ref } from 'vue';
 
   const props = defineProps({
+    allowedExtensions: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
+    allowedMimeTypes: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
     canDelete: {
       type: Boolean,
       required: true,
@@ -74,7 +84,7 @@
     isDialogOpen.value = true;
   };
 
-  const onAddAttachment = (attachment) => {
+  const onAddAttachment = () => {
     resetUpdatedAttachment();
     currentAttachment.value = createEmptyAttachment();
     isDialogOpen.value = true;
@@ -132,6 +142,8 @@
       <PublicationAttachmentsForm
         @cancel="onCancel"
         @saved="onSaved"
+        :allowed-extensions="props.allowedExtensions"
+        :allowed-mime-types="props.allowedMimeTypes"
         :attachment="currentAttachment"
         :document-language-options="props.documentLanguageOptions"
         :document-type-options="props.documentTypeOptions"

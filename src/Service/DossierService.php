@@ -246,7 +246,7 @@ readonly class DossierService
         return false;
     }
 
-    public function processInventory(UploadedFile $upload, Dossier $dossier): InventoryProcessRun
+    public function processInventory(UploadedFile $upload, WooDecision $dossier): InventoryProcessRun
     {
         // First cleanup any old process run
         $processRun = $dossier->getProcessRun();
@@ -335,7 +335,7 @@ readonly class DossierService
      */
     public function validateCompletion(AbstractDossier $dossier, bool $flush = true): bool
     {
-        $completed = $this->statusFactory->getWizardStatus($dossier, StepName::DETAILS)->isCompleted();
+        $completed = $this->statusFactory->getWizardStatus($dossier, StepName::DETAILS, false)->isCompleted();
 
         $dossier->setCompleted($completed);
         $this->doctrine->persist($dossier);

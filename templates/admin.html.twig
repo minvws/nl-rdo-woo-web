@@ -56,7 +56,7 @@
                         {% if organisationSwitcher.isSwitchAllowed(app.user) %}
                             {% set activeOrganisation = organisationSwitcher.activeOrganisation(app.user) %}
                             <li>
-                                <details class="js-details">
+                                <details class="js-details" data-e2e-name="organisations">
                                     <summary
                                         class="bhr-site-header-nav-item bhr-site-header-nav-item--divider max-h-20 flex items-center"
                                     >
@@ -74,6 +74,7 @@
                                         <a
                                             class="font-bold text-bhr-davys-grey text-right border-b border-bhr-platinum px-4 py-3"
                                             href="{{ path('app_admin_user_organisation') }}"
+                                            data-e2e-name="manage-organisations"
                                         >
                                             {{ 'admin.organisations.manage' | trans }}
                                             <twig:Admin:Icon name="manage" class="ml-1" />

@@ -59,6 +59,7 @@ framework:
             App\Message\IngestDossiersMessage: ingestor                # Ingests all dossiers
             App\Domain\Ingest\Dossier\IngestDossierCommand: ingestor   # Ingests a single dossier
             App\Domain\Ingest\Pdf\IngestPdfCommand: ingestor           # Ingests a complete PDF document and fires a message for each page
+            App\Domain\Ingest\TikaOnly\IngestTikaOnlyCommand: ingestor
             App\Domain\Ingest\PdfPage\IngestPdfPageCommand: ingestor   # Ingests a single PDF page from a PDF document
             App\Message\IngestDecisionMessage: ingestor
             App\Domain\Ingest\MetadataOnly\IngestMetadataOnlyCommand: ingestor

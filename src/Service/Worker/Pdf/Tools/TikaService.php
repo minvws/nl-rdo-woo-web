@@ -22,7 +22,7 @@ class TikaService
     /**
      * @return array<string,string>
      */
-    public function extract(string $sourcePath): array
+    public function extract(string $sourcePath, string $contentType = 'application/pdf'): array
     {
         try {
             $result = $this->tika
@@ -31,7 +31,7 @@ class TikaService
                     [
                         'headers' => [
                             'Accept' => 'application/json',
-                            'Content-Type' => 'application/pdf',
+                            'Content-Type' => $contentType,
                         ],
                         'body' => fopen($sourcePath, 'r'),
                     ],

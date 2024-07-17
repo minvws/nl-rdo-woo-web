@@ -12,6 +12,8 @@ ${BASE_URL_BALIE}       ${EMPTY}
 ${OTP_CODE}             ${EMPTY}
 ${TST_BALIE_USER}       ${EMPTY}
 ${TST_BALIE_PASSWORD}   ${EMPTY}
+${ATTACHMENT_FILENAME}  ${EMPTY}
+${ATTACHMENT_LOCATION}  ${EMPTY}
 
 
 *** Keywords ***
@@ -32,3 +34,29 @@ Login Admin
 
 Logout Admin
   Click  xpath=//*[@data-e2e-name="logout-link"]
+
+Click Organisation Selector
+  Click  //*[@data-e2e-name="organisations"]
+
+Click Manage Organisations
+  Click  //*[@data-e2e-name="manage-organisations"]
+
+Add A New Organisation Prefix
+  [Arguments]  ${prefix}
+  Click  //*[@id="js-add-widget"]
+  ${element_count} =  Get Element Count
+  ...  //div[@id="js-widgets-container"]//input[starts-with(@id,'organisation_form_documentPrefixes')]
+  Fill Text  //input[starts-with(@id,'organisation_form_documentPrefixes_${element_count-1}')]  ${prefix}
+
+Click Save Prefixes
+  Click  //*[@id="organisation_form_submit"]
+
+Upload Attachment
+  [Arguments]  ${type}  ${date}=01012022
+  Click  " + Bijlage toevoegen... "
+  Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${ATTACHMENT_LOCATION}
+  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${ATTACHMENT_FILENAME}  timeout=10s
+  Select Options By  //dialog[@open]//select[@name="type"]  text  ${type}
+  Type Text  //dialog[@open]//input[@name="formalDate"]  ${date}
+  Click  //dialog[@open]//button[@type="submit"]
+  Wait For Condition  Text  //*[@id="inhoud"]  contains  Bijlage '${ATTACHMENT_FILENAME}' is toegevoegd.

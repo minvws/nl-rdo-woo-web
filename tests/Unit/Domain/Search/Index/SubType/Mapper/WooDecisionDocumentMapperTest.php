@@ -73,6 +73,8 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
         self::assertEquals(
             [
                 'type' => ElasticDocumentType::WOO_DECISION_DOCUMENT,
+                'toplevel_type' => ElasticDocumentType::WOO_DECISION,
+                'sublevel_type' => ElasticDocumentType::WOO_DECISION_DOCUMENT,
                 'document_nr' => 'doc-123',
                 'dossier_nr' => [
                     0 => 'dos-123',

@@ -23,7 +23,7 @@
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'categories.category.source_file' | trans }}</th>
                     <td>
-                        <twig:Public:Icon name="{{ document.entity.fileInfo.sourceType }}" color="fill-woo-dim-gray" class="mr-1 -mt-0.5" />
+                        <twig:Public:FileIcon type="{{ document.entity.fileInfo.sourceType }}" class="mr-1 -mt-0.5" />
                         {{ ('public.documents.file_type.' ~ document.entity.fileInfo.sourceType) | trans }}{% if document.entity.isUploaded %}, {{ document.entity.pageCount }} pagina's{% endif %}
                     </td>
                 </tr>

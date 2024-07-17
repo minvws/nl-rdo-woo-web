@@ -16,19 +16,39 @@ export interface Chunk {
   uploadUuid: string | undefined;
 }
 
-interface Response {
-  groupId: string | null;
-  mimeType: string;
-  originalName: string;
-  size: number;
-  uploadUuid: string;
+type Response = ResponseSuccess | ResponseError;
+
+interface ResponseSuccess {
+  data: {
+    groupId: string | null;
+    mimeType: string;
+    originalName: string;
+    size: number;
+    uploadUuid: string;
+  }
+}
+
+enum UploadError {
+  Techinal = 'error.technical',
+  Unsafe = 'error.unsafe',
+  WhiteList = 'error.whiteList',
+}
+
+interface ResponseError {
+  error: UploadError;
+}
+
+interface OnUploadError {
+  isTechnialError: boolean;
+  isUnsafeError: boolean;
+  isWhiteListError: boolean;
 }
 
 interface Options {
   endpoint?: string;
   file: File;
   groupId?: string;
-  onError?: () => void;
+  onError?: (error: OnUploadError) => void;
   onProgress?: (progress: number) => void;
   onSuccess?: (uploadUuid: string | undefined) => void;
   uploadName?: string;
@@ -106,7 +126,7 @@ export const uploadFile = (options: Options) => {
     }, { signal: abortController.signal });
 
     request.addEventListener('load', () => {
-      updateChunkUploadResult(chunk.id, isSuccessStatusCode(request.status), request.response?.data);
+      updateChunkUploadResult(chunk.id, isSuccessStatusCode(request.status), request.response);
     }, { signal: abortController.signal });
 
     request.addEventListener('readystatechange', () => {
@@ -120,18 +140,25 @@ export const uploadFile = (options: Options) => {
     };
   };
 
-  const updateChunkUploadResult = (chunkId: number, isUploadSuccess: boolean, response?: Response) => {
+  const isErrorResponse = (response: Response): response is ResponseError => (response as ResponseError).error !== undefined;
+  const isSuccessResponse = (response: Response): response is ResponseSuccess => !isErrorResponse(response);
+
+  const updateChunkUploadResult = (chunkId: number, isUploadSuccess: boolean, response: Response) => {
     const chunk = getChunk(chunkId);
     chunk.isUploaded = true;
     chunk.isUploadSuccess = isUploadSuccess;
-    chunk.uploadUuid = response?.uploadUuid;
+    chunk.uploadUuid = isSuccessResponse(response) ? response.data.uploadUuid : undefined;
     store.set(chunkId, chunk);
 
     cleanupUpload();
 
     const haveChunksFailed = getChunks().some((chunkItem) => chunkItem.isUploadSuccess === false);
-    if (haveChunksFailed) {
-      onError();
+    if (haveChunksFailed && isErrorResponse(response)) {
+      onError({
+        isTechnialError: response.error === UploadError.Techinal,
+        isUnsafeError: response.error === UploadError.Unsafe,
+        isWhiteListError: response.error === UploadError.WhiteList,
+      });
       return;
     }
 

@@ -107,7 +107,7 @@ readonly class UpdateMainDocumentHandler
             $this->uploaderService->attachFileToEntity(
                 $command->uploadFileReference,
                 $mainDocument,
-                $mainDocument->getUploadGroupId(),
+                $mainDocument::getUploadGroupId(),
             );
         }
     }

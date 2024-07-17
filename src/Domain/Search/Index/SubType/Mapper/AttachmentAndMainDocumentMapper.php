@@ -57,6 +57,7 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
 
         return new ElasticDocument(
             $this->getId($entity),
+            ElasticDocumentType::fromEntity($entity->getDossier()),
             ElasticDocumentType::fromEntity($entity),
             $fields,
         );

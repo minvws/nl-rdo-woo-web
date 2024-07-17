@@ -29,6 +29,8 @@
 {{ form_row(form.decision_date) }}
 
 <twig:Admin:Publication:ManageAttachments
+    allowedExtensions="{{ attachmentExtensions }}"
+    allowedMimeTypes="{{ attachmentMimeTypes }}"
     canDelete="{{ canDeleteAttachments }}"
     documentTypes="{{ attachmentTypes }}"
     endpoint="{{'/balie/api/dossiers/' ~ dossier.id ~ '/decision-attachments'}}"

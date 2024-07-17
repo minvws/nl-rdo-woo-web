@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Search\Result\SubType\MainDocument;
 
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
@@ -71,6 +72,7 @@ class MainDocumentSearchResultMapperTest extends MockeryTestCase
         $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr = '123');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($documentPrefix = 'foo');
         $dossier->shouldReceive('getTitle')->andReturn($title = 'bar');
+        $dossier->shouldReceive('getType')->andReturn($dossierType = DossierType::INVESTIGATION_REPORT);
 
         $mainDocument = \Mockery::mock(AbstractMainDocument::class);
         $mainDocument->shouldReceive('getDossier')->andReturn($dossier);
@@ -91,6 +93,7 @@ class MainDocumentSearchResultMapperTest extends MockeryTestCase
         $this->assertSame($viewModel, $entry->getViewModel());
         $this->assertSame($dossierNr, $dossierReference->getDossierNr());
         $this->assertSame($documentPrefix, $dossierReference->getDocumentPrefix());
+        $this->assertSame($dossierType, $dossierReference->getType());
         $this->assertSame($title, $dossierReference->getTitle());
         $this->assertSame(['x', 'y'], $entry->getHighlights());
         $this->assertSame(ElasticDocumentType::DISPOSITION_MAIN_DOCUMENT, $entry->getType());

@@ -7,7 +7,6 @@ Resource            ../resources/Public.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
-Test Teardown       Cleansheet
 Test Tags           ci  woodecision
 
 
@@ -22,7 +21,7 @@ ${DOSSIER_REFERENCE}    ${EMPTY}
 *** Test Cases ***
 Upload a production report with N public files and a zip with N-1 files
   Create New Dossier  woo-decision
-  Fill Out Basic Details
+  Fill Out Basic Details  prefix=MINVWS1
   Fill Out Decision Details  Openbaarmaking
   Upload Inventory  tests/robot_framework/files/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
@@ -31,7 +30,7 @@ Upload a production report with N public files and a zip with N-1 files
 
 Upload a production report with N public files and a zip with N+1 files
   Create New Dossier  woo-decision
-  Fill Out Basic Details
+  Fill Out Basic Details  prefix=MINVWS2
   Fill Out Decision Details  Openbaarmaking
   Upload Inventory  tests/robot_framework/files/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
@@ -43,7 +42,7 @@ Upload a production report with N public files and a zip with N+1 files
 
 Upload a production report with N public files and a zip with N other files
   Create New Dossier  woo-decision
-  Fill Out Basic Details
+  Fill Out Basic Details  prefix=MINVWS3
   Fill Out Decision Details  Openbaarmaking
   Upload Inventory  tests/robot_framework/files/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
@@ -52,7 +51,7 @@ Upload a production report with N public files and a zip with N other files
 
 Upload a production report with N public files, M non-public files, and a zip with N + M files
   Create New Dossier  woo-decision
-  Fill Out Basic Details
+  Fill Out Basic Details  prefix=MINVWS4
   Fill Out Decision Details  Openbaarmaking
   Upload Inventory  tests/robot_framework/files/productierapport - 8 openbaar 2 niet openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 8 van 8 documenten.
@@ -68,8 +67,9 @@ Upload a production report with N public files, M already public files, and a zi
   ...  inventory=tests/robot_framework/files/productierapport - 2 openbaar.xlsx
   ...  documents=tests/robot_framework/files/documenten - 2.zip
   ...  number_of_documents=2
+  ...  prefix=MINVWS5
   Create New Dossier  woo-decision
-  Fill Out Basic Details
+  Fill Out Basic Details  prefix=MINVWS5
   Fill Out Decision Details  Openbaarmaking
   Upload Inventory  tests/robot_framework/files/productierapport - 8 openbaar 2 niet openbaar.xlsx  ${TRUE}
   Verify Inventory Error  Regel 1: documentnummer 1001 bestaat al in een ander dossier
@@ -80,6 +80,7 @@ In a public dossier with N public and M non-public documents, replace the produc
   ...  inventory=tests/robot_framework/files/productierapport - 8 openbaar 2 niet openbaar.xlsx
   ...  documents=tests/robot_framework/files/documenten - 8.zip
   ...  number_of_documents=8
+  ...  prefix=MINVWS6
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
@@ -96,6 +97,7 @@ In a public dossier with N public and M non-public documents, replace the produc
   ...  inventory=tests/robot_framework/files/productierapport - 8 openbaar 2 niet openbaar.xlsx
   ...  documents=tests/robot_framework/files/documenten - 8.zip
   ...  number_of_documents=8
+  ...  prefix=MINVWS7
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
@@ -119,6 +121,7 @@ In a public dossier with N public files, retract one of the documents
   ...  inventory=tests/robot_framework/files/productierapport - 8 openbaar 2 niet openbaar.xlsx
   ...  documents=tests/robot_framework/files/documenten - 8.zip
   ...  number_of_documents=8
+  ...  prefix=MINVWS8
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Open Document In Dossier  1001
@@ -134,6 +137,7 @@ In a public dossier with N public files, replace the production report with one 
   ...  inventory=tests/robot_framework/files/productierapport - 10 openbaar.xlsx
   ...  documents=tests/robot_framework/files/documenten - 10.zip
   ...  number_of_documents=10
+  ...  prefix=MINVWS9
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
@@ -159,6 +163,7 @@ In a public dossier with N public files, retract all documents via the Danger Zo
   ...  inventory=tests/robot_framework/files/productierapport - 10 openbaar.xlsx
   ...  documents=tests/robot_framework/files/documenten - 10.zip
   ...  number_of_documents=10
+  ...  prefix=MINVWS10
   Search For A Publication  ${DOSSIER_REFERENCE}
   Danger Zone Withdraw All Documents
   Verify Document Retraction  1001
@@ -167,7 +172,7 @@ In a public dossier with N public files, retract all documents via the Danger Zo
 
 Create a publication that becomes public in the future
   Create New Dossier  woo-decision
-  Fill Out Basic Details
+  Fill Out Basic Details  prefix=MINVWS11
   Fill Out Decision Details  Openbaarmaking
   Upload Inventory  tests/robot_framework/files/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
@@ -184,11 +189,11 @@ Create a publication that becomes public in the future
   # TODO: Click the Public URL without getting a 404?
 
 In a public dossier with N public files, replace the production report with a copy where one document is replaced with a new document
-  [Tags]  deze
   Publish Test Dossier
   ...  inventory=tests/robot_framework/files/productierapport - 10 openbaar.xlsx
   ...  documents=tests/robot_framework/files/documenten - 10.zip
   ...  number_of_documents=10
+  ...  prefix=MINVWS12
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
@@ -200,6 +205,7 @@ Retract a document that has already been published
   ...  inventory=tests/robot_framework/files/productierapport - 10 openbaar.xlsx
   ...  documents=tests/robot_framework/files/documenten - 10.zip
   ...  number_of_documents=10
+  ...  prefix=MINVWS13
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Open Document In Dossier  1001
@@ -210,17 +216,18 @@ Retract a document that has already been published
 
 *** Keywords ***
 Suite Setup
-  Suite Setup - CI
+  Suite Setup - CI  include_prefixes=${TRUE}
   Login Admin
+  Create Additional Prefixes
 
 Suite Teardown
   Go To Admin
   Logout Admin
 
 Publish Test Dossier
-  [Arguments]  ${inventory}  ${documents}  ${number_of_documents}
+  [Arguments]  ${inventory}  ${documents}  ${number_of_documents}  ${prefix}
   Create New Dossier  woo-decision
-  Fill Out Basic Details
+  Fill Out Basic Details  prefix=${prefix}
   Fill Out Decision Details  Openbaarmaking
   Upload Inventory  ${inventory}
   Verify Document Upload Remaining  Nog te uploaden: ${number_of_documents} van ${number_of_documents} documenten.
@@ -240,3 +247,24 @@ Verify Document Retraction
   Verify Document History  Ingetrokken met reden
   Go Back
   Go Back
+
+Create Additional Prefixes
+  [Documentation]  Creates new prefixes for testing purposes, including the default one because we assume a cleansheet -p was ran before.
+  Click Organisation Selector
+  Click Manage Organisations
+  Click  "VWS"
+  Add A New Organisation Prefix  MINVWS
+  Add A New Organisation Prefix  MINVWS1
+  Add A New Organisation Prefix  MINVWS2
+  Add A New Organisation Prefix  MINVWS3
+  Add A New Organisation Prefix  MINVWS4
+  Add A New Organisation Prefix  MINVWS5
+  Add A New Organisation Prefix  MINVWS6
+  Add A New Organisation Prefix  MINVWS7
+  Add A New Organisation Prefix  MINVWS8
+  Add A New Organisation Prefix  MINVWS9
+  Add A New Organisation Prefix  MINVWS10
+  Add A New Organisation Prefix  MINVWS11
+  Add A New Organisation Prefix  MINVWS12
+  Add A New Organisation Prefix  MINVWS13
+  Click Save Prefixes

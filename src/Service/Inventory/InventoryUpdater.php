@@ -4,32 +4,33 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentUpdateEvent;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Repository\DocumentRepository;
 use App\Service\DossierService;
-use App\Service\HistoryService;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Inventory\Progress\RunProgress;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  * @SuppressWarnings(PHPMD.NPathComplexity)
- * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
-class InventoryUpdater
+readonly class InventoryUpdater
 {
     public function __construct(
-        private readonly EntityManagerInterface $doctrine,
-        private readonly DocumentUpdater $documentUpdater,
-        private readonly DocumentComparator $documentComparator,
-        private readonly DocumentRepository $documentRepository,
-        private readonly DossierService $dossierService,
-        private readonly HistoryService $historyService,
-        private readonly InquiryService $inquiryService,
+        private EntityManagerInterface $doctrine,
+        private DocumentUpdater $documentUpdater,
+        private DocumentComparator $documentComparator,
+        private DocumentRepository $documentRepository,
+        private DossierService $dossierService,
+        private InquiryService $inquiryService,
+        private MessageBusInterface $messageBus,
     ) {
     }
 
@@ -37,7 +38,7 @@ class InventoryUpdater
      * @throws \Exception
      */
     public function applyChangesetToDatabase(
-        Dossier $dossier,
+        WooDecision $dossier,
         InventoryReaderInterface $reader,
         InventoryChangeset $changeset,
         RunProgress $runProgress,
@@ -89,36 +90,10 @@ class InventoryUpdater
                 continue;
             }
 
-            // Get diffs
-            $changes = [];
-            $this->doctrine->getUnitOfWork()->computeChangeSets();
-            if ($document) {
-                foreach ($this->doctrine->getUnitOfWork()->getEntityChangeSet($document) as $key => $entry) {
-                    /** @var array<string, mixed> $entry */
-                    $data = $entry[$key];
-                    /** @var array<int, string> $data */
-                    $changes[$key] = $data[1] ?? '';
-                }
-            }
-
             if ($documentChangeStatus === InventoryChangeset::UPDATED && $document instanceof Document) {
-                if ($documentMetadata->getJudgement() != $document->getJudgement()) {
-                    $this->historyService->addDocumentEntry($document, 'document_judgement_' . $documentMetadata->getJudgement()->value, [
-                        'old' => '%' . ($document->getJudgement()->value ?? '') . '%',
-                        'new' => '%' . $documentMetadata->getJudgement()->value . '%',
-                    ], flush: false);
-                }
-
-                if ($changes) {
-                    // All changes are translated
-                    foreach ($changes as $key => $value) {
-                        $changes[$key] = '%' . $value . '%';
-                    }
-
-                    $this->historyService->addDocumentEntry($document, 'document_inventory_updated', [
-                        'changes' => $changes,
-                    ], flush: false);
-                }
+                $this->messageBus->dispatch(
+                    new DocumentUpdateEvent($dossier, $documentMetadata, $document)
+                );
 
                 $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
                 $inquiryChangeset->updateCaseNrsForDocument($document, $documentMetadata->getCaseNumbers());

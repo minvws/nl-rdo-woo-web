@@ -10,7 +10,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * @phpstan-import-type AttachmentLanguageArray from AttachmentLanguage
  */
-final readonly class AttachmentLanguageFactory
+readonly class AttachmentLanguageFactory
 {
     public function __construct(private TranslatorInterface $translator)
     {

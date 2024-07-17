@@ -40,6 +40,7 @@ readonly class WooDecisionMapper
         return new ElasticDocument(
             $defaultDocument->getId(),
             ElasticDocumentType::WOO_DECISION,
+            null,
             $fields,
         );
     }

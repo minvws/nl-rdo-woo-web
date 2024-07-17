@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Exception\TranslatableException;
 use App\Repository\InventoryProcessRunRepository;
 use App\Service\Inventory\InventoryChangeset;
@@ -34,9 +35,9 @@ class InventoryProcessRun implements EntityWithFileInfo
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\OneToOne(inversedBy: 'processRun', targetEntity: Dossier::class)]
+    #[ORM\OneToOne(inversedBy: 'processRun', targetEntity: WooDecision::class)]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private Dossier $dossier;
+    private WooDecision $dossier;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: false)]
     private \DateTimeImmutable $createdAt;
@@ -70,7 +71,7 @@ class InventoryProcessRun implements EntityWithFileInfo
 
     private ?string $tmpFilename = null;
 
-    public function __construct(Dossier $dossier)
+    public function __construct(WooDecision $dossier)
     {
         $this->dossier = $dossier;
         $this->createdAt = new \DateTimeImmutable();
@@ -163,7 +164,7 @@ class InventoryProcessRun implements EntityWithFileInfo
         return $this->id;
     }
 
-    public function getDossier(): Dossier
+    public function getDossier(): WooDecision
     {
         return $this->dossier;
     }

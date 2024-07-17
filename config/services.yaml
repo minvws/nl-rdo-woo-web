@@ -87,6 +87,8 @@ services:
             tags: [ 'domain.publication.main_document_delete_strategy' ]
         App\Domain\Search\Result\SearchResultMapperInterface:
             tags: [ 'domain.search.result_mapper' ]
+        App\Service\PlatformCheck\PlatformCheckerInterface:
+            tags: [ 'app.platform_checker' ]
 
     # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
     App\Service\Encryption\EncryptionService:
@@ -234,6 +236,10 @@ services:
         arguments:
             $mappers: !tagged_iterator domain.search.result_mapper
 
+    App\Command\PlatformCheck:
+        arguments:
+            $checkers: !tagged_iterator app.platform_checker
+
     App\Service\Uploader\UploaderNamer:
         public: true
 
@@ -252,6 +258,12 @@ services:
             - 'get'
         arguments:
             $key: 'general'
+
+    Xenolope\Quahog\Client:
+        lazy: true
+        factory: [ 'App\Domain\Upload\AntiVirus\ClamAvClientFactory', 'create' ]
+        arguments:
+            $address: '%env(CLAM_AV_ADDRESS)%'
 
 when@dev:
     services: &services_dev

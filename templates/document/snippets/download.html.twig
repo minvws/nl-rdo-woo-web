@@ -2,6 +2,6 @@
 <div class="mt-10">
     <twig:Public:DownloadFileButton
         href="{{ path('app_document_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.entity.documentNr}) }}"
-    >{{ 'public.global.download' | trans }} ({{ document.entity.fileInfo.type|upper }} {{ document.entity.fileInfo.size | size }})</twig:Public:DownloadFileButton>
+    >{{ 'public.global.download' | trans }} ({{ ('public.documents.file_type.' ~ document.entity.fileInfo.type) | trans }}, {{ document.entity.fileInfo.size | size }})</twig:Public:DownloadFileButton>
 </div>
 {% endif %}

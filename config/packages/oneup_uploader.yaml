@@ -22,7 +22,7 @@ oneup_uploader:
                 name: general
             storage:
                 directory: '%oneup_uploader.storage.directory%'
-            use_orphanage: true 
+            use_orphanage: true
             namer: App\Service\Uploader\UploaderNamer
 
 when@test:

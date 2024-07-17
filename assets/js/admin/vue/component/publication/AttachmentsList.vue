@@ -6,7 +6,7 @@
   const emit = defineEmits(['deleted', 'deleteError', 'edit']);
   const props = defineProps({
     attachments: {
-      type: Array,
+      type: Map,
       required: true,
       default: () => [],
     },

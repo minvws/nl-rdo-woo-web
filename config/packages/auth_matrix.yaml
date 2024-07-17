@@ -53,15 +53,6 @@ auth_matrix:
       # -- Department ----------------------------------------------------------------------------
         {
             prefix: "department",
-            roles: [ "ROLE_GLOBAL_ADMIN" ],
-            permissions: {
-                create: false,
-                read: true,
-                update: true,
-            }
-        },
-        {
-            prefix: "department",
             roles: [ "ROLE_SUPER_ADMIN" ],
             permissions: {
                 create: true,

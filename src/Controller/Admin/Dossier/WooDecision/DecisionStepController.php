@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\WooDecision;
 
-use App\Domain\Publication\Attachment\AttachmentLanguageFactory;
-use App\Domain\Publication\Attachment\AttachmentTypeFactory;
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Enum\ApplicationMode;
 use App\Form\Dossier\WooDecision\DecisionType;
 use App\Service\DossierWizard\DossierWizardHelper;
@@ -34,10 +29,6 @@ class DecisionStepController extends AbstractController
         private readonly DossierWizardHelper $wizardHelper,
         private readonly StepActionHelper $stepHelper,
         private readonly AttachmentViewFactory $attachmentViewFactory,
-        private readonly AttachmentTypeFactory $attachmentTypeFactory,
-        private readonly AttachmentLanguageFactory $attachmentLanguageFactory,
-        private readonly DossierWorkflowManager $dossierWorkflowManager,
-        private readonly GroundViewFactory $groundViewFactory,
     ) {
     }
 
@@ -89,22 +80,19 @@ class DecisionStepController extends AbstractController
             }
         }
 
-        return $this->render('admin/dossier/woo-decision/decision/concept.html.twig', [
-            'dossier' => $dossier,
-            'workflowStatus' => $wizardStatus,
-            'form' => $form,
-            'attachmentTypes' => $this->attachmentTypeFactory->makeAsArray(),
-            'attachmentLanguages' => $this->attachmentLanguageFactory->makeAsArray(),
-            'grounds' => $this->groundViewFactory->makeAsArray(),
-            'attachments' => $this->attachmentViewFactory->makeCollection(
-                $dossier,
-                ApplicationMode::ADMIN
-            ),
-            'canDeleteAttachments' => $this->dossierWorkflowManager->isTransitionAllowed(
-                $dossier,
-                DossierStatusTransition::DELETE_ATTACHMENT,
-            ),
-        ]);
+        return $this->render(
+            'admin/dossier/woo-decision/decision/concept.html.twig',
+            $this->stepHelper->getParamsBuilder($dossier)
+                ->withAttachmentsParams($dossier)
+                ->withForm($form)
+                ->withWizardStatus($wizardStatus)
+                ->withDepartments()
+                ->with('attachments', $this->attachmentViewFactory->makeCollection(
+                    $dossier,
+                    ApplicationMode::ADMIN
+                ))
+                ->getParams()
+        );
     }
 
     #[Route(
@@ -161,22 +149,18 @@ class DecisionStepController extends AbstractController
 
         $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossiers.woo-decision.step.decision');
 
-        return $this->render('admin/dossier/woo-decision/decision/edit.html.twig', [
-            'breadcrumbs' => $breadcrumbs,
-            'dossier' => $dossier,
-            'workflowStatus' => $wizardStatus,
-            'form' => $form,
-            'attachmentTypes' => $this->attachmentTypeFactory->makeAsArray(),
-            'attachmentLanguages' => $this->attachmentLanguageFactory->makeAsArray(),
-            'grounds' => $this->groundViewFactory->makeAsArray(),
-            'attachments' => $this->attachmentViewFactory->makeCollection(
-                $dossier,
-                ApplicationMode::ADMIN
-            ),
-            'canDeleteAttachments' => $this->dossierWorkflowManager->isTransitionAllowed(
-                $dossier,
-                DossierStatusTransition::DELETE_ATTACHMENT,
-            ),
-        ]);
+        return $this->render(
+            'admin/dossier/woo-decision/decision/edit.html.twig',
+            $this->stepHelper->getParamsBuilder($dossier)
+                ->withAttachmentsParams($dossier)
+                ->withForm($form)
+                ->withWizardStatus($wizardStatus)
+                ->withDepartments()
+                ->with('attachments', $this->attachmentViewFactory->makeCollection(
+                    $dossier,
+                    ApplicationMode::ADMIN
+                ))
+                ->getParams()
+        );
     }
 }

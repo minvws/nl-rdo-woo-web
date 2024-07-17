@@ -1,14 +1,15 @@
 <script setup>
   import Icon from '@admin-fe/component/Icon.vue';
-import UploadedFile from '@admin-fe/component/file/UploadedFile.vue';
-import { areFilesEqual, filterDataTransferFiles, formatFileSize, formatList, getExtenstionsByMimeTypes, isValidMaxFileSize, validateFiles } from '@js/admin/utils';
-import { uniqueId } from '@utils';
-import { useElementVisibility } from '@vueuse/core';
-import { onBeforeUnmount, provide, ref, watch } from 'vue';
-import AlreadyUploadedFiles from './AlreadyUploadedFiles.vue';
-import InvalidFiles from './InvalidFiles.vue';
-import SelectedFiles from './SelectedFiles.vue';
-import UploadVisual from './UploadVisual.vue';
+  import UploadedFile from '@admin-fe/component/file/UploadedFile.vue';
+  import { areFilesEqual, filterDataTransferFiles, formatExtensions, formatFileSize, isValidMaxFileSize, MimeTypes, validateFiles } from '@js/admin/utils';
+  import { uniqueId } from '@utils';
+  import { useElementVisibility } from '@vueuse/core';
+  import { onBeforeUnmount, provide, ref, watch } from 'vue';
+  import AlreadyUploadedFiles from './AlreadyUploadedFiles.vue';
+  import DangerousFiles from './DangerousFiles.vue';
+  import InvalidFiles from './InvalidFiles.vue';
+  import SelectedFiles from './SelectedFiles.vue';
+  import UploadVisual from './UploadVisual.vue';
 
   const uploadAreaElement = ref(null);
   const isUploadAreaVisible = useElementVisibility(uploadAreaElement);
@@ -17,14 +18,16 @@ import UploadVisual from './UploadVisual.vue';
   const emit = defineEmits(['selected', 'uploaded', 'uploadError', 'uploading']);
 
   const props = defineProps({
+    allowedExtensions: {
+      type: Array,
+      default: () => ['pdf'],
+    },
     allowedMimeTypes: {
       type: Array,
-      required: false,
-      default: () => [],
+      default: () => [...MimeTypes.Pdf],
     },
     allowMultiple: {
       type: Boolean,
-      required: false,
       default: false,
     },
     enableAutoUpload: {
@@ -33,27 +36,21 @@ import UploadVisual from './UploadVisual.vue';
     },
     groupId: {
       type: String,
-      required: false,
     },
     id: {
       type: String,
-      required: false,
     },
     maxFileSize: {
       type: Number,
-      required: false,
     },
     name: {
       type: String,
-      required: false,
     },
     tip: {
       type: String,
-      required: false,
     },
     uploadedFileInfo: {
       type: [Object, null],
-      required: false,
       default: null,
     },
   });
@@ -68,18 +65,18 @@ import UploadVisual from './UploadVisual.vue';
     return { name: props.uploadedFileInfo.name, size: props.uploadedFileInfo.size, type: props.uploadedFileInfo.type };
   }
 
-  const allowedMimeTypes = [...new Set(props.allowedMimeTypes).values()];
   const id = props.id || uniqueId('upload-area');
   const idOfFileLimitationsElement = `${id}-file-limitations`;
   const idOfTipElement = `${id}-tip`;
   const idOfSelectFilesElement = `${id}-select-files`;
   const hasMaxFileSize = isValidMaxFileSize(props.maxFileSize);
-  const hasAllowedMimeTypes = allowedMimeTypes.length > 0;
+  const hasAllowedMimeTypes = props.allowedMimeTypes.length > 0;
   const hasFileLimitations = hasMaxFileSize || hasAllowedMimeTypes;
   const formattedFileSize = formatFileSize(props.maxFileSize);
-  const formattedValidExtensions = formatList(getExtenstionsByMimeTypes(allowedMimeTypes), 'of');
+  const formattedValidExtensions = formatExtensions(props.allowedExtensions, 'of');
   const formattedFileOrFiles = props.allowMultiple ? 'Bestanden' : 'Bestand';
   const invalidFiles = ref([]);
+  const dangerousFiles = ref([]);
   const selectedFiles = ref(new Map());
   const uploadedFile = ref(createUploadedFileInfo());
   const uploadedFiles = ref([]);
@@ -179,7 +176,8 @@ import UploadVisual from './UploadVisual.vue';
   };
 
   const addFiles = (files) => {
-    const { invalidFiles: invalid, validFiles } = validateFiles(files, allowedMimeTypes, props.maxFileSize);
+    console.log(files);
+    const { invalidFiles: invalid, validFiles } = validateFiles(files, props.allowedMimeTypes, props.maxFileSize);
     invalidFiles.value = [...invalid.values()];
 
     const limitedFiles = limitFiles(validFiles);
@@ -192,6 +190,10 @@ import UploadVisual from './UploadVisual.vue';
       if (alreadyHasFile(file, [...uploadedFiles.value])) {
         alreadyUploadedFiles.value.push(file);
         return;
+      }
+
+      if (!props.allowMultiple) {
+        selectedFiles.value.clear();
       }
 
       const id = uniqueId('file', 32);
@@ -231,15 +233,25 @@ import UploadVisual from './UploadVisual.vue';
     uploadedFiles.value.push(file);
     uploadedFile.value = file;
     emit('uploaded', file, uploadId);
+
+    if (!props.allowMultiple) {
+      dangerousFiles.value = [];
+    }
   };
 
   const onUploading = (fileId, file) => {
     emit('uploading', fileId, file);
   };
 
-  const onUploadError = (fileId, file) => {
+  const onUploadError = (fileId, file, error) => {
     selectedFiles.value.delete(fileId);
     updateInputValue();
+
+    if (error.isUnsafeError) {
+      dangerousFiles.value.push(file);
+      emit('uploadError', fileId, file);
+      return;
+    }
 
     failedFiles.value.push(fileId);
     emit('uploadError', fileId, file);
@@ -274,9 +286,16 @@ import UploadVisual from './UploadVisual.vue';
   <div>
     <div role="status">
       <InvalidFiles
-        :allowed-mime-types="allowedMimeTypes"
+        :allowed-extensions="props.allowedExtensions"
+        :allowed-mime-types="props.allowedMimeTypes"
         :files="invalidFiles"
         :max-file-size="props.maxFileSize"
+        class="mb-4"
+      />
+
+      <DangerousFiles
+        :allow-multiple="props.allowMultiple"
+        :files="dangerousFiles"
         class="mb-4"
       />
 
@@ -331,7 +350,7 @@ import UploadVisual from './UploadVisual.vue';
 
       <input
         @change="onFilesSelected"
-        :accept="hasAllowedMimeTypes ? allowedMimeTypes.join(',') : undefined"
+        :accept="hasAllowedMimeTypes ? props.allowedMimeTypes.join(',') : undefined"
         :id="id"
         :multiple="props.allowMultiple ? 'multiple' : undefined"
         :name="props.name"

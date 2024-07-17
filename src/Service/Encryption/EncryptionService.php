@@ -22,9 +22,8 @@ class EncryptionService implements EncryptionServiceInterface
     {
         $this->logger = $logger;
 
-        if ($encryptionKey == '') {
-            $this->logger->warning('Encryption key not set');
-
+        if ($encryptionKey === '') {
+            $this->logger->warning('Encryption key input empty');
             $this->encryptionKey = null;
 
             return;
@@ -39,7 +38,6 @@ class EncryptionService implements EncryptionServiceInterface
 
             throw new \RuntimeException('Failed to import encryption key', 0, $e);
         }
-        $this->logger = $logger;
     }
 
     /**
@@ -47,14 +45,10 @@ class EncryptionService implements EncryptionServiceInterface
      */
     public function encrypt(string $data): string
     {
-        if ($this->encryptionKey === null) {
-            $this->logger->error('Encryption key not set');
-
-            throw new \RuntimeException('Encryption key not set');
-        }
+        $encryptionKey = $this->getEncryptionKey();
 
         try {
-            return Crypto::encrypt(new HiddenString($data), $this->encryptionKey);
+            return Crypto::encrypt(new HiddenString($data), $encryptionKey);
         } catch (\Throwable $e) {
             $this->logger->error('Failed to encrypt data', [
                 'exception' => $e->getMessage(),
@@ -69,14 +63,10 @@ class EncryptionService implements EncryptionServiceInterface
      */
     public function decrypt(string $data): string
     {
-        if ($this->encryptionKey === null) {
-            $this->logger->error('Encryption key not set');
-
-            throw new \RuntimeException('Encryption key not set');
-        }
+        $encryptionKey = $this->getEncryptionKey();
 
         try {
-            return Crypto::decrypt($data, $this->encryptionKey)->getString();
+            return Crypto::decrypt($data, $encryptionKey)->getString();
         } catch (\Throwable $e) {
             $this->logger->error('Failed to decrypt data', [
                 'exception' => $e->getMessage(),
@@ -84,5 +74,16 @@ class EncryptionService implements EncryptionServiceInterface
 
             throw new \RuntimeException('Failed to decrypt data', 0, $e);
         }
+    }
+
+    private function getEncryptionKey(): EncryptionKey
+    {
+        if ($this->encryptionKey === null) {
+            $this->logger->error('Encryption key not set');
+
+            throw new \RuntimeException('Encryption key not set');
+        }
+
+        return $this->encryptionKey;
     }
 }

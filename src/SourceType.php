@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Domain\Upload\FileType\FileType;
+
 /**
  * Returns human-readable document source types or "unknown" when not known.
  */
@@ -96,21 +98,24 @@ class SourceType
 
     public static function getIcon(string $value): string
     {
-        switch ($value) {
-            case self::SOURCE_PDF:
-                return 'fas fa-file-pdf';
-            case self::SOURCE_DOCUMENT:
-                return 'fas fa-file-word';
-            case self::SOURCE_SPREADSHEET:
-                return 'fas fa-file-excel';
-            case self::SOURCE_EMAIL:
-                return 'fas fa-envelope';
-            case self::SOURCE_PRESENTATION:
-                return 'fas fa-file-powerpoint';
-            case self::SOURCE_UNKNOWN:
-                return 'fas fa-file';
-        }
+        return match ($value) {
+            self::SOURCE_PDF => 'fas fa-file-pdf',
+            self::SOURCE_DOCUMENT => 'fas fa-file-word',
+            self::SOURCE_SPREADSHEET => 'fas fa-file-excel',
+            self::SOURCE_EMAIL => 'fas fa-envelope',
+            self::SOURCE_PRESENTATION => 'fas fa-file-powerpoint',
+            default => 'fas fa-file',
+        };
+    }
 
-        return 'fas fa-file';
+    public static function fromFileType(FileType $fileType): string
+    {
+        return match ($fileType) {
+            FileType::PDF => self::SOURCE_PDF,
+            FileType::DOC, FileType::TXT => self::SOURCE_DOCUMENT,
+            FileType::XLS => self::SOURCE_SPREADSHEET,
+            FileType::PPT => self::SOURCE_PRESENTATION,
+            FileType::ZIP => self::SOURCE_UNKNOWN,
+        };
     }
 }

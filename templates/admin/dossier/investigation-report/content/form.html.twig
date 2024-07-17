@@ -2,6 +2,8 @@
     {{ form_row(form.summary) }}
 
     <twig:Admin:Publication:ManageDocument
+        allowedExtensions="{{ documentExtensions }}"
+        allowedMimeTypes="{{ documentMimeTypes }}"
         canDelete="{{ canDeleteDocument }}"
         documentType="{{ 'admin.dossiers.investigation-report.document' | trans }}"
         documentTypes="{{ documentTypes }}"
@@ -15,6 +17,8 @@
     />
 
     <twig:Admin:Publication:ManageAttachments
+        allowedExtensions="{{ attachmentExtensions }}"
+        allowedMimeTypes="{{ attachmentMimeTypes }}"
         canDelete="{{ canDeleteAttachments }}"
         documentTypes="{{ attachmentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/investigation-report-attachments' }}"

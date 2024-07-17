@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query\Facet;
 
+use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Facet\Input\FacetInput;
 use App\Service\Search\Query\Facet\Input\FacetInputInterface;
 use App\Service\Search\Query\Facet\Input\ParameterBagFactoryInterface;
@@ -18,7 +19,7 @@ final readonly class FacetListFactory implements FacetDefinitionsInterface
     public function fromParameterBag(ParameterBag $parameterBag = new ParameterBag()): FacetList
     {
         $facets = [];
-        foreach (self::getDefinitions() as $definition) {
+        foreach ($this->getDefinitions() as $definition) {
             /** @var class-string<FacetInputInterface&ParameterBagFactoryInterface> */
             $inputClass = $definition->getFacetKey()->getInputClass();
 
@@ -39,15 +40,10 @@ final readonly class FacetListFactory implements FacetDefinitionsInterface
     public function fromFacetInputs(array $facetInputs): FacetList
     {
         $facets = [];
-        foreach (self::getDefinitions() as $definition) {
+        foreach ($this->getDefinitions() as $definition) {
             Assert::keyExists($facetInputs, $definition->getFacetKey()->name);
 
             $input = $facetInputs[$definition->getFacetKey()->name];
-
-            /** @var class-string<FacetInputInterface&ParameterBagFactoryInterface> */
-            $inputClass = $definition->getFacetKey()->getInputClass();
-
-            Assert::isInstanceOf($input, $inputClass);
 
             $facets[] = new Facet(
                 definition: $definition,

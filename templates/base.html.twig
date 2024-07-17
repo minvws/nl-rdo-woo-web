@@ -11,7 +11,7 @@
             {% if page_title is defined %} {{ page_title }} | {% endif %}
             {{ 'global.domain_title' | trans() }}
         </title>
-
+        <meta name="description" content="{{ 'global.meta_description' | trans() }}">
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
         {{ encore_entry_link_tags('public') }}

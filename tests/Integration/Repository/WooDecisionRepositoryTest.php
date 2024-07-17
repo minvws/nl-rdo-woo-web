@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Repository;
 
+use App\Domain\Publication\Dossier\Type\DossierReference;
 use App\Entity\Judgement;
 use App\Repository\WooDecisionRepository;
 use App\Tests\Factory\DocumentFactory;
@@ -60,5 +61,26 @@ final class WooDecisionRepositoryTest extends KernelTestCase
         $this->assertTrue($result->hasPages());
         $this->assertSame(3, $result->getUploadCount());
         $this->assertTrue($result->hasUploads());
+    }
+
+    public function testGetDossierReferencesForDocument(): void
+    {
+        $wooDecision = WooDecisionFactory::createOne();
+
+        $doc = DocumentFactory::createone([
+            'dossiers' => [$wooDecision],
+        ]);
+
+        /** @var WooDecisionRepository $wooDecisionRepository */
+        $wooDecisionRepository = self::getContainer()->get(WooDecisionRepository::class);
+
+        $result = $wooDecisionRepository->getDossierReferencesForDocument($doc->getDocumentNr());
+        $dossierReference = reset($result);
+
+        self::assertInstanceOf(DossierReference::class, $dossierReference);
+        self::assertEquals($wooDecision->getType(), $dossierReference->getType());
+        self::assertEquals($wooDecision->getDossierNr(), $dossierReference->getDossierNr());
+        self::assertEquals($wooDecision->getTitle(), $dossierReference->getTitle());
+        self::assertEquals($wooDecision->getDocumentPrefix(), $dossierReference->getDocumentPrefix());
     }
 }
