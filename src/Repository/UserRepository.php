@@ -8,6 +8,7 @@ use App\Entity\Organisation;
 use App\Entity\User;
 use App\Roles;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -60,10 +61,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->save($user, true);
     }
 
-    /**
-     * @return array<User>
-     */
-    public function findAllForOrganisation(Organisation $organisation, bool $includeSuperAdmins): array
+    public function findAllForOrganisationQuery(Organisation $organisation, bool $includeSuperAdmins): Query
     {
         $qb = $this->createQueryBuilder('u')
             ->join('u.organisation', 'o')
@@ -77,6 +75,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             $qb->andWhere("CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = false");
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 }

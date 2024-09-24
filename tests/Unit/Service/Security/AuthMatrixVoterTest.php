@@ -30,7 +30,7 @@ class AuthMatrixVoterTest extends MockeryTestCase
         int $expectedResult,
         ?string $prefix = null,
         ?string $permission = null,
-        ?array $entries = null
+        ?array $entries = null,
     ): void {
         $entryStore = \Mockery::mock(AuthorizationEntryRequestStore::class);
         if ($entries) {

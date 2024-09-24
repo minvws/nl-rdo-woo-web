@@ -14,6 +14,7 @@ use App\Domain\Publication\Dossier\ViewModel\Department;
 use App\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
 use App\Domain\Publication\Dossier\ViewModel\PublicationItem;
 use App\Domain\Publication\Dossier\ViewModel\PublicationItemViewFactory;
+use App\Domain\Publication\Subject\Subject;
 use App\Entity\DecisionDocument;
 use App\Entity\Department as DepartmentEntity;
 use App\Enum\Department as DepartmentEnum;
@@ -99,6 +100,8 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedDateTo, $result->dateTo);
         $this->assertSame(PublicationReason::WOO_REQUEST, $result->publicationReason);
         $this->assertTrue($result->isVwsResponsible());
+        $this->assertTrue($result->hasSubject());
+        $this->assertSame('my subject', $result->subject);
     }
 
     public function testMakeWithWooDecisionInPreviewWithNonVwsDepartment(): void
@@ -148,6 +151,8 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedDateTo, $result->dateTo);
         $this->assertSame(PublicationReason::WOO_REQUEST, $result->publicationReason);
         $this->assertFalse($result->isVwsResponsible());
+        $this->assertTrue($result->hasSubject());
+        $this->assertSame('my subject', $result->subject);
     }
 
     /**
@@ -166,6 +171,10 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $uuid = \Mockery::mock(Uuid::class);
         $uuid->shouldReceive('toRfc4122')->andReturn('my uuid');
 
+        /** @var Subject&MockInterface $subject */
+        $subject = \Mockery::mock(Subject::class);
+        $subject->shouldReceive('getName')->andReturn('my subject');
+
         $dossier = \Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn($uuid);
         $dossier->shouldReceive('getDossierNr')->andReturn('my dossier nr');
@@ -182,6 +191,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $dossier->shouldReceive('getDateFrom')->andReturn($dateFrom);
         $dossier->shouldReceive('getDateTo')->andReturn($dateTo);
         $dossier->shouldReceive('getPublicationReason')->andReturn(PublicationReason::WOO_REQUEST);
+        $dossier->shouldReceive('getSubject')->andReturn($subject);
 
         return $dossier;
     }

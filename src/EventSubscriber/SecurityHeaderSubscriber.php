@@ -8,16 +8,18 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Webmozart\Assert\Assert;
 
 /**
  * This listener will add security headers to the response.
  */
 class SecurityHeaderSubscriber implements EventSubscriberInterface
 {
-    protected string $appMode;
+    private string $appMode;
 
-    protected const CSP_SELF = "'self'";
-    protected const CSP_DATA = 'data:';
+    private const CSP_SELF = "'self'";
+    private const CSP_DATA = 'data:';
+    private const CSP_STATS = 'https://statistiek.rijksoverheid.nl';
 
     /** @var array|string[] */
     protected array $fields = [
@@ -44,10 +46,10 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
             'frame-ancestors' => [self::CSP_SELF],
             'form-action' => [self::CSP_SELF],
             'base-uri' => [self::CSP_SELF],
-            'connect-src' => [self::CSP_SELF, 'https://statistiek.rijksoverheid.nl'],
-            'script-src' => [self::CSP_SELF, 'https://statistiek.rijksoverheid.nl'],
+            'connect-src' => [self::CSP_SELF, self::CSP_STATS],
+            'script-src' => [self::CSP_SELF, self::CSP_STATS],
             'style-src' => [self::CSP_SELF],
-            'img-src' => [self::CSP_SELF, self::CSP_DATA, 'https://statistiek.rijksoverheid.nl'],
+            'img-src' => [self::CSP_SELF, self::CSP_DATA, self::CSP_STATS],
             'font-src' => [self::CSP_SELF],
         ],
         'BALIE' => [
@@ -55,10 +57,10 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
             'frame-ancestors' => [self::CSP_SELF],
             'form-action' => [self::CSP_SELF],
             'base-uri' => [self::CSP_SELF],
-            'connect-src' => [self::CSP_SELF, 'https://statistiek.rijksoverheid.nl'],
-            'script-src' => [self::CSP_SELF, 'https://statistiek.rijksoverheid.nl'],
+            'connect-src' => [self::CSP_SELF, self::CSP_STATS],
+            'script-src' => [self::CSP_SELF, self::CSP_STATS],
             'style-src' => [self::CSP_SELF],
-            'img-src' => [self::CSP_SELF, self::CSP_DATA, 'https://statistiek.rijksoverheid.nl'],
+            'img-src' => [self::CSP_SELF, self::CSP_DATA, self::CSP_STATS],
             'font-src' => [self::CSP_SELF],
         ],
         'BOTH' => [
@@ -66,8 +68,8 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
             'frame-ancestors' => [self::CSP_SELF],
             'form-action' => [self::CSP_SELF],
             'base-uri' => [self::CSP_SELF],
-            'connect-src' => [self::CSP_SELF, 'https://statistiek.rijksoverheid.nl'],
-            'script-src' => [self::CSP_SELF, 'https://statistiek.rijksoverheid.nl'],
+            'connect-src' => [self::CSP_SELF, self::CSP_STATS],
+            'script-src' => [self::CSP_SELF, self::CSP_STATS],
             'style-src' => [self::CSP_SELF],
             'img-src' => [self::CSP_SELF, self::CSP_DATA],
             'font-src' => [self::CSP_SELF],
@@ -99,6 +101,7 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
 
         // Add nonce to CSP
         $nonce = $event->getRequest()->attributes->get('csp_nonce');
+        Assert::nullOrString($nonce);
 
         $csp = $this->csp[$this->appMode] ?? $this->csp['BOTH'];
         $csp['script-src'][] = "'nonce-" . $nonce . "'";

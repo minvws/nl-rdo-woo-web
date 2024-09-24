@@ -39,12 +39,10 @@
     },
     options: {
       type: Array,
-      required: true,
       default: () => [],
     },
     optGroups: {
       type: Array,
-      required: true,
       default: () => [],
     },
     value: {
@@ -72,10 +70,22 @@
     return options.value.filter((option) => !props.forbiddenValues.includes(option.value));
   });
 
+  const getDefaultvalue = () => {
+    if (props.value) {
+      return props.value;
+    }
+
+    if (filteredOptions.value.length === 1) {
+      return filteredOptions.value[0].value;
+    }
+
+    return props.value;
+  };
+
   const errors = ref([]);
   const inputElement = ref(null);
   const inputId = `${uniqueId('input')}`;
-  const value = ref(props.value);
+  const value = ref(getDefaultvalue());
 
   const onDelete = () => {
     emit('delete', inputStore);
@@ -90,6 +100,18 @@
     value.value = newValue;
   });
 
+  watch(filteredOptions, () => {
+    if (value.value) {
+      return;
+    }
+
+    if (filteredOptions.value.length !== 1) {
+      return;
+    }
+
+    value.value = filteredOptions.value[0].value;
+  });
+
   const inputStore = useInputStore(props.name, props.label, value, [validators.required()]);
   const ariaDescribedBy = computed(() => useInputAriaDescribedBy(inputId, undefined, inputStore.hasVisibleErrors));
 
@@ -98,6 +120,10 @@
       inputElement.value.focus();
     }
     emit('mounted', inputStore);
+
+    if (filteredOptions.value.length === 1) {
+      emit('update', value.value);
+    }
   });
 </script>
 
@@ -105,7 +131,7 @@
   <RemovableInput
     @delete="onDelete"
     :are-errors-visible="inputStore.hasVisibleErrors || errors.length > 0"
-    :can-delete="canDelete"
+    :can-delete="props.canDelete"
     :errors="[...inputStore.errors, ...errors]"
     :id="inputId"
     :label="label"
@@ -130,7 +156,7 @@
           {{ option.label }}
         </option>
         <optgroup
-          v-for="optgroup in props.optgroups"
+          v-for="optgroup in props.optGroups"
           :key="optgroup.label"
           :label="optgroup.label"
         >

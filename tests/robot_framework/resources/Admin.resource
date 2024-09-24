@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation       Resource file containing custom keywords for the Balue.
+Documentation       Resource file containing custom keywords for the Admin section, or Balie in Dutch.
 Library             String
 Library             Browser
 Library             DebugLibrary
@@ -60,3 +60,26 @@ Upload Attachment
   Type Text  //dialog[@open]//input[@name="formalDate"]  ${date}
   Click  //dialog[@open]//button[@type="submit"]
   Wait For Condition  Text  //*[@id="inhoud"]  contains  Bijlage '${ATTACHMENT_FILENAME}' is toegevoegd.
+
+Wait For Queue To Empty
+  New Page  http://localhost:8000/balie/stats
+  Wait Until Keyword Succeeds  5min  15s  Is Queue Empty
+  Close Page
+
+Is Queue Empty
+  Reload
+  Take Screenshot
+  VAR  @{elements}
+  ...  //*[@data-e2e-name="rabbitmq-stats"]//tr[contains(.,'es_updates')]/td[3]
+  ...  //*[@data-e2e-name="rabbitmq-stats"]//tr[contains(.,'global')]/td[3]
+  ...  //*[@data-e2e-name="rabbitmq-stats"]//tr[contains(.,'high')]/td[3]
+  ...  //*[@data-e2e-name="rabbitmq-stats"]//tr[contains(.,'ingestor')]/td[3]
+  FOR  ${element}  IN  @{elements}
+    ${value} =  Get Text  ${element}
+    IF  '${value}' != '0'  Fail
+  END
+
+Select Organisation
+  [Arguments]  ${organisation}=Programmadirectie Openbaarheid
+  Click  //*[@data-e2e-name="organisations"]
+  Click  //*[@data-e2e-name="organisations"]//li[contains(.,'${organisation}')]

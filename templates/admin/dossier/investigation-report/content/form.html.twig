@@ -2,7 +2,7 @@
     {{ form_row(form.summary) }}
 
     <twig:Admin:Publication:ManageDocument
-        allowedExtensions="{{ documentExtensions }}"
+        allowedFileTypes="{{ documentTypeNames }}"
         allowedMimeTypes="{{ documentMimeTypes }}"
         canDelete="{{ canDeleteDocument }}"
         documentType="{{ 'admin.dossiers.investigation-report.document' | trans }}"
@@ -17,7 +17,7 @@
     />
 
     <twig:Admin:Publication:ManageAttachments
-        allowedExtensions="{{ attachmentExtensions }}"
+        allowedFileTypes="{{ attachmentTypeNames }}"
         allowedMimeTypes="{{ attachmentMimeTypes }}"
         canDelete="{{ canDeleteAttachments }}"
         documentTypes="{{ attachmentTypes }}"

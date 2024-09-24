@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Storage;
 
+use App\Domain\Ingest\Content\Event\EntityFileUpdateEvent;
 use App\Entity\EntityWithFileInfo;
 use App\Entity\FileInfo;
 use App\Service\Storage\EntityStorageService;
@@ -16,6 +17,9 @@ use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
 class EntityStorageServiceTest extends UnitTestCase
@@ -24,6 +28,7 @@ class EntityStorageServiceTest extends UnitTestCase
     private LocalFilesystem&MockInterface $localFilesystem;
     private LoggerInterface&MockInterface $logger;
     private StorageRootPathGenerator&MockInterface $rootPathGenerator;
+    private MessageBusInterface&MockInterface $messageBus;
     private EntityManagerInterface&MockInterface $doctrine;
 
     public function setUp(): void
@@ -34,6 +39,7 @@ class EntityStorageServiceTest extends UnitTestCase
         $this->localFilesystem = \Mockery::mock(LocalFilesystem::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->rootPathGenerator = \Mockery::mock(StorageRootPathGenerator::class);
+        $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
     }
 
@@ -150,7 +156,7 @@ class EntityStorageServiceTest extends UnitTestCase
 
     public function testStoreEntity(): void
     {
-        $root = vfsStream::setup('root');
+        $root = vfsStream::setup();
         vfsStream::create(['someDir' => ['clientName.pdf' => '']], $root);
 
         $splFileInfo = \Mockery::mock(UploadedFile::class);
@@ -162,10 +168,13 @@ class EntityStorageServiceTest extends UnitTestCase
         $fileInfo->shouldReceive('setPath')->with($remotePath = 'vfs://root/remotePath/clientName.pdf');
         $fileInfo->shouldReceive('setSize')->with($size);
         $fileInfo->shouldReceive('setMimetype')->with('application/x-empty');
+        $fileInfo->shouldReceive('getHash')->andReturn('old-hash');
+        $fileInfo->shouldReceive('setHash')->with('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
         $fileInfo->shouldReceive('setUploaded')->with(true);
 
         $entity = \Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
+        $entity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
 
         $this->doctrine->shouldReceive('persist')->with($entity);
         $this->doctrine->shouldReceive('flush');
@@ -185,6 +194,14 @@ class EntityStorageServiceTest extends UnitTestCase
             ->with($remotePath, $stream)
             ->andReturnTrue();
 
+        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+            static function (EntityFileUpdateEvent $message) use ($entityId) {
+                self::assertEquals($entityId, $message->entityId);
+
+                return true;
+            }
+        ))->andReturns(new Envelope(new \stdClass()));
+
         $result = $this->getStorageService()->storeEntity($splFileInfo, $entity);
 
         $this->assertTrue($result);
@@ -197,6 +214,7 @@ class EntityStorageServiceTest extends UnitTestCase
         $splFileInfo->shouldReceive('getPathname')->andReturn($pathName = 'vfs://root/someDir/clientName.pdf');
 
         $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity->shouldReceive('getFileInfo->getHash')->andReturnNull();
 
         $this->rootPathGenerator
             ->shouldReceive('__invoke')
@@ -365,6 +383,7 @@ class EntityStorageServiceTest extends UnitTestCase
 
         $entity = \Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->twice()->andReturn($fileInfo);
+        $entity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
 
         $service = $this->getStorageService();
         $service
@@ -377,6 +396,14 @@ class EntityStorageServiceTest extends UnitTestCase
             ->once()
             ->with($entity, $remotePath)
             ->andReturnTrue();
+
+        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+            static function (EntityFileUpdateEvent $message) use ($entityId) {
+                self::assertEquals($entityId, $message->entityId);
+
+                return true;
+            }
+        ))->andReturns(new Envelope(new \stdClass()));
 
         $result = $service->deleteAllFilesForEntity($entity);
 
@@ -404,9 +431,11 @@ class EntityStorageServiceTest extends UnitTestCase
     {
         $fileInfo = \Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getPath')->once()->andReturn('aPath/myFilename.pdf');
+        $fileInfo->shouldReceive('getHash')->andReturnNull();
 
         $entity = \Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->once()->andReturn($fileInfo);
+        $entity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
 
         $service = $this->getStorageService();
         $service
@@ -421,9 +450,42 @@ class EntityStorageServiceTest extends UnitTestCase
             ->with($remotePath)
             ->andReturnTrue();
 
+        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+            static function (EntityFileUpdateEvent $message) use ($entityId) {
+                self::assertEquals($entityId, $message->entityId);
+
+                return true;
+            }
+        ))->andReturns(new Envelope(new \stdClass()));
+
         $result = $service->removeFileForEntity($entity);
 
         $this->assertTrue($result);
+    }
+
+    public function testSetHashSuccessFul(): void
+    {
+        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo->expects('setHash');
+
+        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
+
+        $service = $this->getStorageService();
+
+        $this->doctrine->expects('persist');
+        $this->doctrine->expects('flush');
+
+        $service->setHash($entity, __FILE__);
+    }
+
+    public function testSetHashThrowsExceptionWhenFileIsNotReadable(): void
+    {
+        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $service = $this->getStorageService();
+
+        $this->expectException(\RuntimeException::class);
+        $service->setHash($entity, 'foo/bar.txt');
     }
 
     private function getStorageService(
@@ -436,6 +498,7 @@ class EntityStorageServiceTest extends UnitTestCase
             $this->localFilesystem,
             $this->logger,
             $this->rootPathGenerator,
+            $this->messageBus,
             $this->doctrine,
             $isLocal,
             $documentRoot,

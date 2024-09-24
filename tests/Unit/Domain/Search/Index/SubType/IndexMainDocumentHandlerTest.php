@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\SubType;
 
-use App\Domain\Ingest\IngestOptions;
-use App\Domain\Ingest\SubType\SubTypeIngester;
+use App\Domain\Ingest\Process\IngestProcessOptions;
+use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
 use App\Domain\Search\Index\SubType\IndexMainDocumentCommand;
@@ -74,7 +74,7 @@ class IndexMainDocumentHandlerTest extends MockeryTestCase
 
         $this->repository->expects('find')->with($id)->andReturn($mainDocument);
         $this->subTypeIndexer->expects('index')->with($mainDocument);
-        $this->subTypeIngester->expects('ingest')->with($mainDocument, \Mockery::type(IngestOptions::class));
+        $this->subTypeIngester->expects('ingest')->with($mainDocument, \Mockery::type(IngestProcessOptions::class));
 
         $this->handler->__invoke($command);
     }

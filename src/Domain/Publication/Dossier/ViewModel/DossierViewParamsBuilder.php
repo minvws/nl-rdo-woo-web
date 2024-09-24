@@ -65,6 +65,10 @@ class DossierViewParamsBuilder
             $dossier->getMainDocumentEntityClass()::getUploadGroupId()
         );
 
+        $this->params['documentTypeNames'] = $this->fileTypeHelper->getTypeNamesByUploadGroup(
+            $dossier->getMainDocumentEntityClass()::getUploadGroupId()
+        );
+
         $this->params['grounds'] = $this->groundViewFactory->makeAsArray();
 
         return $this;
@@ -86,6 +90,10 @@ class DossierViewParamsBuilder
         );
 
         $this->params['attachmentExtensions'] = $this->fileTypeHelper->getExtensionsByUploadGroup(
+            $dossier->getAttachmentEntityClass()::getUploadGroupId()
+        );
+
+        $this->params['attachmentTypeNames'] = $this->fileTypeHelper->getTypeNamesByUploadGroup(
             $dossier->getAttachmentEntityClass()::getUploadGroupId()
         );
 

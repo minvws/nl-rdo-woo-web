@@ -30,7 +30,7 @@ readonly class AnnualReportConfig implements DossierTypeConfigInterface
 
     public function getSecurityExpression(): ?Expression
     {
-        return new Expression('is_granted("ROLE_SUPER_ADMIN")');
+        return null;
     }
 
     public function getStatusWorkflow(): WorkflowInterface

@@ -8,6 +8,7 @@ use App\Exception\FileReaderException;
 use App\Service\Inventory\InventoryDataHelper;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Webmozart\Assert\Assert;
 
 /**
  * Wraps Worksheet to provide some helper methods to make it easier to use.
@@ -39,9 +40,12 @@ class ExcelReader implements \IteratorAggregate, FileReaderInterface
 
     public function getCell(int $rowIndex, string $columnName): mixed
     {
-        return $this->worksheet->getCell(
-            $this->headerMapping->getCellCoordinate($columnName) . $rowIndex
-        )->getValue();
+        $cellCoord = $this->headerMapping->getCellCoordinate($columnName);
+        Assert::scalar($cellCoord);
+
+        $cellCoord = (string) $cellCoord;
+
+        return $this->worksheet->getCell($cellCoord . $rowIndex)->getValue();
     }
 
     public function getString(int $rowIndex, string $columnName): string

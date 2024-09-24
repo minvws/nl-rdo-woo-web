@@ -2,7 +2,7 @@
     {{ form_row(form.summary) }}
 
     <twig:Admin:Publication:ManageDocument
-        allowedExtensions="{{ documentExtensions }}"
+        allowedFileTypes="{{ documentTypeNames }}"
         allowedMimeTypes="{{ documentMimeTypes }}"
         canDelete="{{ canDeleteDocument }}"
         documentType="{{ 'admin.dossiers.complaint-judgement.document' | trans | trans }}"

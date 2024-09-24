@@ -10,7 +10,7 @@ class ConfigFactory
      * @param array{entries: mixed[]} $config
      */
     public function __construct(
-        private readonly array $config
+        private readonly array $config,
     ) {
     }
 

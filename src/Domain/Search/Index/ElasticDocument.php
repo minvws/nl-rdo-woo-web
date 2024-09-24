@@ -38,9 +38,9 @@ readonly class ElasticDocument
         return array_merge(
             $this->fields,
             [
-                'type' => $this->subLevelType ?? $this->topLevelType,
-                'toplevel_type' => $this->topLevelType,
-                'sublevel_type' => $this->subLevelType,
+                ElasticField::TYPE->value => $this->subLevelType ?? $this->topLevelType,
+                ElasticField::TOPLEVEL_TYPE->value => $this->topLevelType,
+                ElasticField::SUBLEVEL_TYPE->value => $this->subLevelType,
             ],
         );
     }

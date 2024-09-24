@@ -73,7 +73,7 @@ class InventorySanitizer
             $document->getDocumentId() ?: '',
             $document->getDocumentNr(),
             $document->getFileInfo()->getName() ?: '',
-            $document->getJudgement() ? $this->translator->trans($document->getJudgement()->value) : '',
+            $document->getJudgement() ? $this->translator->trans('public.documents.judgment.short.' . $document->getJudgement()->value) : '',
             $document->getGrounds(),
             $document->getRemark() ?: '',
             implode("\n", $document->getLinks()),

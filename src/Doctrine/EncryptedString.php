@@ -23,7 +23,7 @@ class EncryptedString extends Type
 
     public static function injectServices(
         EncryptionServiceInterface $encryptionService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ): void {
         static::$encryptionService = $encryptionService;
         static::$logger = $logger;

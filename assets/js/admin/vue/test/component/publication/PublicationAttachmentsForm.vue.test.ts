@@ -4,7 +4,7 @@ import { describe, expect, test } from 'vitest';
 
 describe('The "PublicationAttachmentsForm" component', () => {
   interface CreateComponentOptions {
-    allowedExtensions: string[];
+    allowedFileTypes: string[];
     allowedMimeTypes: string[];
     documentLanguageOptions: string[];
     documentTypeOptions: string[];
@@ -13,12 +13,12 @@ describe('The "PublicationAttachmentsForm" component', () => {
 
   const createComponent = (options: Partial<CreateComponentOptions> = {}) => {
     const {
-      allowedExtensions = [], allowedMimeTypes = [], documentLanguageOptions = [], documentTypeOptions = [], groundOptions = [],
+      allowedFileTypes = [], allowedMimeTypes = [], documentLanguageOptions = [], documentTypeOptions = [], groundOptions = [],
     } = options;
 
     return mount(PublicationAttachmentsForm, {
       props: {
-        allowedExtensions,
+        allowedFileTypes,
         allowedMimeTypes,
         attachment: {
           id: 'mocked-id',

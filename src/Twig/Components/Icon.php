@@ -13,7 +13,7 @@ class Icon
     public string $color = 'fill-woo-dim-gray';
     public ?int $height = 0;
     public string $name = '';
-    public string $path = 'build/img/public/icons.svg';
+    public string $path = 'assets/img/public/icons.svg';
     public ?int $size = 24;
     public ?int $width = 0;
 

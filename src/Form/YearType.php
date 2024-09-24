@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form;
 
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Carbon\CarbonPeriod;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeImmutableToDateTimeTransformer;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
@@ -47,7 +48,8 @@ class YearType extends ChoiceType
             Carbon::now()->addYears($plusYears),
         );
 
-        foreach ($period as $date) {
+        /** @var CarbonImmutable $date */
+        foreach ($period->getIterator() as $date) {
             Assert::notNull($date);
 
             $date = $date->firstOfYear();

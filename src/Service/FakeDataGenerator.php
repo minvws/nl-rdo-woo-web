@@ -75,6 +75,7 @@ class FakeDataGenerator
         $dossier->setDecision($decision);
         $dossier->setStatus(DossierStatus::PUBLISHED);
         $dossier->setOrganisation($organisation);
+        $dossier->setSubject(null);
         foreach ($deps as $dep) {
             $dossier->addDepartment($dep);
         }

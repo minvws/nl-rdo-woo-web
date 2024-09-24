@@ -1,4 +1,4 @@
-import { getSearchParamsAndAppendOrDelete, updateUrl } from './helpers';
+import { getCheckboxFilterElements, updateUrl, getUpdatedParamsFromCheckboxFilter } from './helpers';
 
 export const checkboxFilters = () => {
   let abortController: AbortController;
@@ -7,19 +7,14 @@ export const checkboxFilters = () => {
     cleanup();
 
     abortController = new AbortController();
-    const checkboxElements = document.querySelectorAll('.js-search-filter-checkbox');
-
-    checkboxElements.forEach((checkboxElement) => {
+    getCheckboxFilterElements().forEach((checkboxElement) => {
       checkboxElement.addEventListener('change', (event) => {
         const { target } = event;
         if (!(target instanceof HTMLInputElement)) {
           return;
         }
 
-        const { checked, name, value } = target;
-        const params = getSearchParamsAndAppendOrDelete(checked, name, value);
-
-        updateUrl(params, fetchAndUpdateResultsFunction);
+        updateUrl(getUpdatedParamsFromCheckboxFilter(target, target.checked), fetchAndUpdateResultsFunction);
       }, { signal: abortController.signal });
     });
   };

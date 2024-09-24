@@ -42,4 +42,26 @@ final class FileInfoTest extends UnitTestCase
 
         $this->assertNull($fileInfo->getPageCount());
     }
+
+    public function testSettingHash(): void
+    {
+        $fileInfo = new FileInfo();
+
+        $fileInfo->setHash($hash = 'foo');
+        $this->assertEquals($hash, $fileInfo->getHash());
+
+        $fileInfo->setHash(null);
+        $this->assertNull($fileInfo->getHash());
+    }
+
+    public function testGetNormalizedMimeType(): void
+    {
+        $fileInfo = new FileInfo();
+
+        $fileInfo->setMimetype(' foo/bar  ');
+        $this->assertEquals('foo/bar', $fileInfo->getNormalizedMimeType());
+
+        $fileInfo->setMimetype(null);
+        $this->assertEquals('', $fileInfo->getNormalizedMimeType());
+    }
 }

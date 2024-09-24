@@ -1,0 +1,6 @@
+-
+    name: foo
+    arguments:
+        - bar
+    response:
+        foo: bar

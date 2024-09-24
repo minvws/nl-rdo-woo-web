@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query\Facet;
 
-use App\Service\Search\Model\Config;
+use App\Domain\Search\Query\SearchParameters;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Aggregation\AggregationStrategyInterface;
 use App\Service\Search\Query\Filter\FilterInterface;
@@ -50,9 +50,9 @@ final readonly class FacetDefinition
         return $this->key->getParamName();
     }
 
-    public function optionallyAddQueryToFilter(Facet $facet, BoolQuery $query, Config $config): void
+    public function optionallyAddQueryToFilter(Facet $facet, BoolQuery $query, SearchParameters $searchParameters): void
     {
-        $this->filter?->addToQuery($facet, $query, $config);
+        $this->filter?->addToQuery($facet, $query, $searchParameters);
     }
 
     public function shouldExcludeOwnFilter(): bool
@@ -60,8 +60,8 @@ final readonly class FacetDefinition
         return $this->aggregationStrategy?->excludeOwnFilters() === true;
     }
 
-    public function getOptionalAggregation(Facet $facet, Config $config, int $maxCount): ?AbstractAggregation
+    public function getOptionalAggregation(Facet $facet, SearchParameters $searchParameters, int $maxCount): ?AbstractAggregation
     {
-        return $this->aggregationStrategy?->getAggregation($facet, $config, $maxCount);
+        return $this->aggregationStrategy?->getAggregation($facet, $searchParameters, $maxCount);
     }
 }

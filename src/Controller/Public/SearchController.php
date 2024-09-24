@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Public;
 
-use App\Service\Search\ConfigFactory;
-use App\Service\Search\Model\Config;
+use App\Domain\Search\Query\SearchParametersFactory;
 use App\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,13 +17,10 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class SearchController extends AbstractController
 {
-    protected SearchService $searchService;
-    protected ConfigFactory $configFactory;
-
-    public function __construct(SearchService $searchService, ConfigFactory $configFactory)
-    {
-        $this->searchService = $searchService;
-        $this->configFactory = $configFactory;
+    public function __construct(
+        private readonly SearchService $searchService,
+        private readonly SearchParametersFactory $searchParametersFactory,
+    ) {
     }
 
     /**
@@ -34,8 +30,8 @@ class SearchController extends AbstractController
     public function ajaxResult(Request $request): JsonResponse
     {
         // Do the search
-        $config = $this->configFactory->createFromRequest($request);
-        $result = $this->searchService->search($config);
+        $searchParameters = $this->searchParametersFactory->createFromRequest($request);
+        $result = $this->searchService->search($searchParameters);
 
         // We return an json with 2 html blobs: facets and result. These are loaded in the correct spots in the frontend.
         $ret = [];
@@ -45,7 +41,7 @@ class SearchController extends AbstractController
 
         // If the search failed, we show a different template
         if ($result->hasFailed()) {
-            $template = 'search/result-failure.html.twig';
+            $template = 'search/result-failure-without-base.html.twig';
         } else {
             $template = 'search/entries.html.twig';
         }
@@ -64,12 +60,12 @@ class SearchController extends AbstractController
     public function ajaxResultMinimalistic(Request $request): Response
     {
         // Do the search
-        $config = $this->configFactory->createFromRequest(
+        $searchParameters = $this->searchParametersFactory->createFromRequest(
             $request,
             pagination: false,
             aggregations: false,
         );
-        $result = $this->searchService->search($config);
+        $result = $this->searchService->search($searchParameters);
 
         // If the search failed, we show a different template
         // @todo: this was copied from the normal search, but should not we just throw an error?
@@ -99,16 +95,16 @@ class SearchController extends AbstractController
             ));
         }
 
-        $config = $this->configFactory->createFromRequest($request);
+        $searchParameters = $this->searchParametersFactory->createFromRequest($request);
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        if ($config->searchType === Config::TYPE_DOSSIER) {
+        if ($searchParameters->searchType->isDossier()) {
             $breadcrumbs->addItem('public.global.label.overview_publications');
         } else {
             $breadcrumbs->addItem('public.search.label');
         }
 
-        $result = $this->searchService->search($config);
+        $result = $this->searchService->search($searchParameters);
         if ($result->hasFailed()) {
             return $this->render('search/result-failure.html.twig', [
                 'result' => $result,

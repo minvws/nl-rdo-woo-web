@@ -4,7 +4,6 @@ set -eo pipefail
 
 BASE_PATH=$(dirname "$0")/..
 AUTH_COMPOSER_JSON=$BASE_PATH/auth.json
-AUTH_NPM_FILE=$BASE_PATH/.npmrc.auth
 
 echo "Running auth-package-managers"
 echo ""
@@ -15,15 +14,8 @@ if test -d "$AUTH_COMPOSER_JSON"; then
     rmdir "$AUTH_COMPOSER_JSON"
 fi
 
-if test -d "$AUTH_NPM_FILE"; then
-    # We will try to delete it, but only if it's empty
-    # NOTE: rmdir does not delete directories which contain files or dirs without -f flag (so this is safe to do)
-    rmdir "$AUTH_NPM_FILE"
-fi
-
-if test -f "$AUTH_COMPOSER_JSON" && test -f "$AUTH_NPM_FILE"; then
+if test -f "$AUTH_COMPOSER_JSON"; then
   echo "> auth.json already exists!"
-  echo "> .npmrc.auth already exists!"
   exit
 fi
 
@@ -48,12 +40,4 @@ else
     echo "{\"github-oauth\":{\"github.com\":\"$CR_PAT\"}}" > "$AUTH_COMPOSER_JSON"
 
     echo "> auth.json created!"
-fi
-
-if test -f "$AUTH_NPM_FILE"; then
-    echo "> .npmrc.auth already exists!"
-else
-    echo "//npm.pkg.github.com/:_authToken=$CR_PAT" > "$AUTH_NPM_FILE"
-
-    echo "> .npmrc.auth created!"
 fi

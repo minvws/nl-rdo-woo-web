@@ -52,7 +52,7 @@ class WithdrawFormType extends AbstractType
                 ],
             ])
             ->add('cancel', SubmitType::class, [
-                'label' => 'Cancel',
+                'label' => 'global.cancel',
                 'attr' => [
                     'class' => 'bhr-button--secondary',
                     'data-last-button' => true,

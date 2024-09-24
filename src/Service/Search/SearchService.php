@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service\Search;
 
+use App\Domain\Search\Query\SearchParameters;
+use App\Domain\Search\Query\SearchParametersFactory;
 use App\Entity\Document;
 use App\Service\Elastic\ElasticClientInterface;
-use App\Service\Search\Model\Config;
 use App\Service\Search\Object\ObjectHandler;
 use App\Service\Search\Query\QueryGenerator;
 use App\Service\Search\Result\Result;
@@ -22,22 +23,22 @@ class SearchService
         protected QueryGenerator $queryGenerator,
         protected ObjectHandler $objectHandler,
         protected ResultTransformer $resultTransformer,
-        protected ConfigFactory $configFactory,
+        protected SearchParametersFactory $searchParametersFactory,
     ) {
     }
 
-    public function searchFacets(Config $config): Result
+    public function searchFacets(SearchParameters $searchParameters): Result
     {
-        $query = $this->queryGenerator->createFacetsQuery($config);
+        $query = $this->queryGenerator->createFacetsQuery($searchParameters);
 
-        return $this->doSearch($query->build(), $config);
+        return $this->doSearch($query->build(), $searchParameters);
     }
 
-    public function search(Config $config): Result
+    public function search(SearchParameters $searchParameters): Result
     {
-        $query = $this->queryGenerator->createQuery($config);
+        $query = $this->queryGenerator->createQuery($searchParameters);
 
-        return $this->doSearch($query->build(), $config);
+        return $this->doSearch($query->build(), $searchParameters);
     }
 
     public function isIngested(Document $document): bool
@@ -52,16 +53,16 @@ class SearchService
 
     public function retrieveExtendedFacets(): Result
     {
-        $config = $this->configFactory->create(limit: 0);
-        $query = $this->queryGenerator->createExtendedFacetsQuery($config);
+        $searchParameters = $this->searchParametersFactory->createDefault();
+        $query = $this->queryGenerator->createExtendedFacetsQuery($searchParameters);
 
-        return $this->doSearch($query->build(), $config);
+        return $this->doSearch($query->build(), $searchParameters);
     }
 
     /**
      * @param array<string, mixed> $query
      */
-    protected function doSearch(array $query, Config $config): Result
+    protected function doSearch(array $query, SearchParameters $searchParameters): Result
     {
         try {
             /** @var Elasticsearch $response */
@@ -78,7 +79,7 @@ class SearchService
                 ->setQuery($query);
         }
 
-        $result = $this->resultTransformer->transform($query, $config, $response);
+        $result = $this->resultTransformer->transform($query, $searchParameters, $response);
 
         return $result;
     }

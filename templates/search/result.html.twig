@@ -1,16 +1,18 @@
 {% extends 'base.html.twig' %}
 
+{% set isDossierTypeResult = result.type == constant('App\\Domain\\Search\\Index\\ElasticDocumentType::WOO_DECISION').value %}
+
 {% set page_title =
-    result.type == constant('App\\Service\\Search\\Model\\Config::TYPE_DOSSIER')
-        ? 'public.global.label.overview_publications' | trans()
-        : 'public.global.label.search_publications' | trans()
+    isDossierTypeResult
+        ? 'public.global.label.overview_publications' | trans
+        : 'public.global.label.search_publications' | trans
 %}
 
 {% block search_form_top %}<twig:Public:SearchForm />{% endblock %}
 
 {% block body %}
 <div class="woo-container">
-    {% if result.type == constant('App\\Service\\Search\\Model\\Config::TYPE_DOSSIER') %}
+    {% if isDossierTypeResult %}
         <section class="pb-16 woo-rich-text woo-readable-width">
             <h1>{{ 'public.results.title' | trans }}</h1>
             <p>{{ 'public.results.description' | trans }}</p>

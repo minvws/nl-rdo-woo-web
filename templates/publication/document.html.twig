@@ -50,6 +50,14 @@
                         <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.download_type' | trans }}</th>
                         <td>{{ ('public.documents.file_type.' ~ document.sourceType) | trans }}, {{ document.size | size }}</td>
                     </tr>
+                    {% if dossier.hasSubject %}
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.subject' | trans }}</th>
+                        <td>
+                            {{ dossier.subject }}
+                        </td>
+                    </tr>
+                    {% endif %}
                     {% if document.grounds is defined and document.grounds|length > 0 %}
                     <tr>
                         <th class="woo-table-cell-light" scope="row">

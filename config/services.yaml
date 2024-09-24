@@ -45,13 +45,16 @@ services:
     Elastic\Elasticsearch\ClientInterface:
         alias: 'App\Service\Elastic\CollectorClient'
 
-    tika.service:
+    tika.client:
         class: GuzzleHttp\Client
-        factory: ['App\Service\TikaServiceFactory', 'create']
+        factory: ['App\Domain\Ingest\Content\Extractor\Tika\TikaGuzzleClientFactory', 'create']
         arguments:
             $tikaHost: '%env(TIKA_HOST)%'
 
-    App\Domain\Ingest\SubType\SubTypeIngester:
+    App\Domain\Ingest\Content\Extractor\Tika\TikaService:
+        $client: '@tika.client'
+
+    App\Domain\Ingest\Process\SubType\SubTypeIngester:
         arguments:
             - !tagged_iterator domain.ingest.subtype.strategy
 
@@ -67,7 +70,7 @@ services:
                 - '@App\Service\Stats\Handler\DoctrineHandler'
 
     _instanceof:
-        App\Domain\Ingest\SubType\SubTypeIngestStrategyInterface:
+        App\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface:
             tags: ['domain.ingest.subtype.strategy']
         App\Service\Logging\LoggingTypeInterface:
             tags: [ 'app.logging.type' ]
@@ -87,8 +90,16 @@ services:
             tags: [ 'domain.publication.main_document_delete_strategy' ]
         App\Domain\Search\Result\SearchResultMapperInterface:
             tags: [ 'domain.search.result_mapper' ]
+        App\Domain\Ingest\Content\Extractor\ContentExtractorInterface:
+            tags: [ 'domain.ingest.content_extractor' ]
         App\Service\PlatformCheck\PlatformCheckerInterface:
             tags: [ 'app.platform_checker' ]
+        App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionInterface:
+            tags: [ 'domain.publication.dossier.admin.action' ]
+        App\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface:
+            tags: [ 'domain.upload.preprocessor.strategy' ]
+        App\Domain\Upload\Postprocessor\FilePostprocessorStrategyInterface:
+            tags: [ 'domain.upload.postprocessor.strategy' ]
 
     # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
     App\Service\Encryption\EncryptionService:
@@ -111,10 +122,6 @@ services:
     App\Twig\Runtime\AppExtensionRuntime:
         arguments:
             $projectPath: '%kernel.project_dir%'
-
-    App\Service\Worker\Pdf\Tools\TikaService:
-        arguments:
-            $tika: '@tika.service'
 
     App\Service\ArchiveService:
         arguments:
@@ -236,9 +243,22 @@ services:
         arguments:
             $mappers: !tagged_iterator domain.search.result_mapper
 
+    App\Domain\Ingest\Content\ContentExtractService:
+        arguments:
+            $cache: '@content_extract_cache'
+            $extractors: !tagged_iterator domain.ingest.content_extractor
+
+    App\Domain\Ingest\Content\Event\ContentExtractCacheInvalidator:
+        arguments:
+            $cache: '@content_extract_cache'
+
     App\Command\PlatformCheck:
         arguments:
             $checkers: !tagged_iterator app.platform_checker
+
+    App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionService:
+        arguments:
+            $actions: !tagged_iterator domain.publication.dossier.admin.action
 
     App\Service\Uploader\UploaderNamer:
         public: true
@@ -264,6 +284,29 @@ services:
         factory: [ 'App\Domain\Upload\AntiVirus\ClamAvClientFactory', 'create' ]
         arguments:
             $address: '%env(CLAM_AV_ADDRESS)%'
+
+    App\Domain\Upload\Preprocessor\FilePreprocessor:
+        arguments:
+            $strategies: !tagged_iterator domain.upload.preprocessor.strategy
+
+    App\Domain\Upload\Postprocessor\FilePostprocessor:
+        arguments:
+            $strategies: !tagged_iterator domain.upload.postprocessor.strategy
+
+    extractor.zip:
+        class: App\Domain\Upload\Extractor\Extractor
+        public: true
+        arguments:
+            $archive: '@App\Domain\ArchiveExtractor\ZipArchive'
+
+    extractor.7z:
+        class: App\Domain\Upload\Extractor\Extractor
+        public: true
+        arguments:
+            $archive: '@App\Domain\ArchiveExtractor\SevenZipArchive'
+
+    App\Domain\Upload\Extractor\Extractor $zipExtractor: '@extractor.zip'
+    App\Domain\Upload\Extractor\Extractor $sevenZipExtractor: '@extractor.7z'
 
 when@dev:
     services: &services_dev

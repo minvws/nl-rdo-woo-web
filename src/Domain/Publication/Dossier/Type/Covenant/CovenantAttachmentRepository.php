@@ -100,7 +100,7 @@ class CovenantAttachmentRepository extends ServiceEntityRepository implements At
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findForDossierPrefixAndNr(string $prefix, string $dossierNr, string $id): ?CovenantAttachment
+    public function findForDossierByPrefixAndNr(string $prefix, string $dossierNr, string $id): ?CovenantAttachment
     {
         $qb = $this->createQueryBuilder('a')
             ->where('a.id = :id')

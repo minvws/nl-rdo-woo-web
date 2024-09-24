@@ -3,13 +3,13 @@ import { VueWrapper, mount } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 
 describe('The "UploadArea" component', () => {
-  const mockedAllowedExtensions = ['mocked-extension-1', 'mocked-extension-2'];
+  const mockedAllowedFileTypes = ['mocked-extension-1', 'mocked-extension-2'];
   const mockedMaxFileSize = 1000;
   const mockedAllowedMimeTypes = ['mocked-mime-type-1', 'mocked-mime-type-2'];
 
   const createComponent = () => mount(UploadArea, {
     props: {
-      allowedExtensions: mockedAllowedExtensions,
+      allowedFileTypes: mockedAllowedFileTypes,
       allowedMimeTypes: mockedAllowedMimeTypes,
       allowMultiple: true,
       enableAutoUpload: false,
@@ -42,7 +42,7 @@ describe('The "UploadArea" component', () => {
     const childComponent = component.findComponent({ name: 'InvalidFiles' });
 
     expect(childComponent.exists()).toBe(true);
-    expect(childComponent.props('allowedExtensions')).toEqual(mockedAllowedExtensions);
+    expect(childComponent.props('allowedFileTypes')).toEqual(mockedAllowedFileTypes);
     expect(childComponent.props('allowedMimeTypes')).toEqual(mockedAllowedMimeTypes);
   });
 

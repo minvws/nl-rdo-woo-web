@@ -1,0 +1,42 @@
+{% set hasRoundedIcon = hasRoundedIcon ?? true %}
+
+<header class="woo-search-result__header">
+    <h3 class="woo-search-result__title">
+        <a
+            class="woo-search-result__main-link"
+            data-e2e-name="main-link"
+            href="{{ resultUrl }}"
+        >{{ resultTitle | default(entry.dossier.title | default) }}</a>
+    </h3>
+    <ul class="woo-search-result__spec-list">
+        <li class="woo-search-result__spec">
+            {% if hasRoundedIcon %}<span class="bg-gray-100 rounded-full inline-grid place-content-center align-bottom aspect-square w-6">{% endif %}
+                <twig:Public:Icon name="{{ resultIconName | default('map') }}" class="{{ hasRoundedIcon ? '' : 'mr-1' }}" size="20" />
+            {% if hasRoundedIcon %}</span>{% endif %}
+            {% block resultType %}<span class="font-bold text-gray-700">{{ resultType }}</span>{% endblock %}
+        </li>
+        {% block resultTypeSpecs %}
+            <li class="woo-search-result__spec">{{ 'global.number_of_documents' | trans({ 'count': entry.dossier.documentCount })}}</li>
+        {% endblock %}
+    </ul>
+</header>
+
+{% block resultSummary %}
+    {% if entry.highlights | length > 0 %}
+    <p class="mt-1">
+        {% for hl in entry.highlights %}
+            ... {{ hl | highlights }} {% if loop.last %}...{% endif %}
+        {% endfor %}
+    </p>
+    {% elseif entry.dossier.summary %}
+        <p class="mt-1">{{ entry.dossier.summary | u.truncate(200, '...', false) }}</p>
+    {% endif %}
+{% endblock %}
+
+{% if block('resultSpecsBottom') is not empty %}
+<ul class="woo-search-result__spec-list">
+    {% block resultSpecsBottom %}{% endblock %}
+</ul>
+{% endif %}
+
+{% block resultRelated %}{% endblock %}

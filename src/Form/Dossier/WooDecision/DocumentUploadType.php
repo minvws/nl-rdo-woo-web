@@ -43,8 +43,8 @@ class DocumentUploadType extends AbstractType
                 ],
                 'attr' => [
                     'accept' => self::VALID_MIMETYPES,
+                    'typeNames' => ['PDF', 'Zip'],
                 ],
-            ])
-        ;
+            ]);
     }
 }

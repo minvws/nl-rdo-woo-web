@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Subject\Subject;
 use App\Entity\BatchDownload;
 use App\Entity\Document;
 use App\Entity\DocumentPrefix;
@@ -14,6 +15,7 @@ use App\Entity\User;
 use App\Service\Elastic\IndexService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -74,6 +76,7 @@ class CleanSheet extends Command
         $this->deleteAllEntities(Document::class, $output);
         $this->deleteAllEntities(Inquiry::class, $output);
         $this->deleteAllEntities(History::class, $output);
+        $this->deleteAllEntities(Subject::class, $output);
 
         if ($input->getOption('users')) {
             $this->deleteAllEntities(User::class, $output);
@@ -82,6 +85,8 @@ class CleanSheet extends Command
         if ($input->getOption('prefixes')) {
             $this->deleteAllEntities(DocumentPrefix::class, $output);
         }
+
+        $this->clearContentExtractCache($output);
 
         return 0;
     }
@@ -147,5 +152,15 @@ class CleanSheet extends Command
         }
 
         $output->writeln('👍 RabbitMQ queues purged');
+    }
+
+    private function clearContentExtractCache(OutputInterface $output): void
+    {
+        $greetInput = new ArrayInput([
+            'command' => 'cache:pool:clear',
+            'pools' => ['content_extract_cache'],
+        ]);
+
+        $this->getApplication()?->doRun($greetInput, $output);
     }
 }

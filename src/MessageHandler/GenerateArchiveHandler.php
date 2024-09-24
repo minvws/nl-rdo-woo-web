@@ -24,7 +24,7 @@ class GenerateArchiveHandler
     public function __construct(
         EntityManagerInterface $doctrine,
         LoggerInterface $logger,
-        ArchiveService $archiveService
+        ArchiveService $archiveService,
     ) {
         $this->doctrine = $doctrine;
         $this->logger = $logger;

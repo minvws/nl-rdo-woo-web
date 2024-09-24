@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Public;
 
-use App\Repository\DossierRepository;
-use App\Service\Search\ConfigFactory;
-use App\Service\Search\Model\Config;
+use App\Domain\Publication\Dossier\ViewModel\DossierViewFactory;
+use App\Domain\Search\Query\SearchParametersFactory;
 use App\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -20,12 +19,12 @@ class HomeController extends AbstractController
 {
     public function __construct(
         private readonly SearchService $searchService,
-        private readonly DossierRepository $dossierRepository,
-        private readonly ConfigFactory $configFactory,
+        private readonly DossierViewFactory $dossierViewFactory,
+        private readonly SearchParametersFactory $searchParametersFactory,
     ) {
     }
 
-    #[Cache(public: true, maxage: 600, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route('/', name: 'app_home')]
     public function index(Request $request, Breadcrumbs $breadcrumbs): Response
     {
@@ -47,11 +46,11 @@ class HomeController extends AbstractController
             return new RedirectResponse($this->generateUrl('app_search', ['q' => $q]));
         }
 
-        $config = $this->configFactory->create(searchType: Config::TYPE_DOCUMENT);
-        $facetResult = $this->searchService->searchFacets($config);
+        $searchParameters = $this->searchParametersFactory->createDefault();
+        $facetResult = $this->searchService->searchFacets($searchParameters);
 
         return $this->render('home/index.html.twig', [
-            'recents' => $this->dossierRepository->getRecentDossiers(5),
+            'recents' => $this->dossierViewFactory->getRecentDossiers(5),
             'facets' => $facetResult,
         ]);
     }

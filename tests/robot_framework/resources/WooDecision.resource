@@ -6,6 +6,7 @@ Library             String
 Library             Browser
 Library             DebugLibrary
 Resource            Admin.resource
+Resource            Dossier.resource
 
 
 *** Variables ***
@@ -14,14 +15,29 @@ ${CURRENT_EPOCH}        ${EMPTY}
 ${RUN_LOCALLY}          ${EMPTY}
 ${ATTACHMENT_FILENAME}  ${EMPTY}
 ${ATTACHMENT_LOCATION}  ${EMPTY}
+${INVENTORY}            ${EMPTY}
+${DOCUMENTS}            ${EMPTY}
+${NUMBER_OF_DOCUMENTS}  ${EMPTY}
 
 
 *** Keywords ***
+Publish Test Dossier
+  [Arguments]  ${inventory}  ${documents}  ${number_of_documents}  ${prefix}=MINVWS  ${publication_status}=Gepubliceerd
+  Create New Dossier  woo-decision
+  Fill Out Basic Details  prefix=${prefix}
+  Fill Out Decision Details  Openbaarmaking
+  Upload Inventory  ${inventory}
+  Verify Document Upload Remaining  Nog te uploaden: ${number_of_documents} van ${number_of_documents} documenten.
+  Upload Document Zip  ${documents}
+  Verify Document Upload Completed
+  Click Continue To Publish
+  Publish Dossier And Return To Admin Home  ${publication_status}
+
 Fill Out Decision Details
   [Arguments]  ${decision}  ${has_attachment}=${FALSE}
   Check Checkbox  text="${decision}"
   Fill Text  id=decision_summary  Samenvatting voor het besluitdossier Robot ${CURRENT_TIME}
-  Upload File By Selector  id=decision_decision_document  tests/robot_framework/files/besluitbrief.pdf
+  Upload File By Selector  id=decision_decision_document  tests/robot_framework/files/woodecision/besluitbrief.pdf
   IF  ${has_attachment}  Upload Attachment  staatscourant
   Click  "Opslaan en verder"
 
@@ -36,12 +52,13 @@ Upload Inventory
   [Arguments]  ${inventory_file_location}  ${expect_error}=${FALSE}
   Upload File By Selector  id=inventory_inventory  ${inventory_file_location}
   Click  //*[@id="inventory_submit"]
-  IF  ${expect_error} == ${FALSE}
+  IF  not ${expect_error}
     Wait For Elements State  //*[@id="upload-area-dossier-files"]  visible  timeout=30s
   END
 
 Verify Inventory Error
   [Arguments]  ${expected_result}
+  Wait For Elements State  //*[@id="inventory-error"]  visible  timeout=30s
   Get Text  //*[@id="inventory-error"]  contains  ${expected_result}
 
 Verify Document Upload Remaining

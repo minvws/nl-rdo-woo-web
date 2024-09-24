@@ -26,3 +26,10 @@ Get Local OTP Code
   [Tags]  otp
   ${otp} =  Get Otp  %{SECRET_WOO_LOCAL}
   Log To Console  OTP code: ${otp}
+
+Login
+  [Tags]  login
+  Set Global Variable  ${OTP_CODE}  %{SECRET_WOO_LOCAL}
+  Open Browser And BaseUrl
+  Login Admin
+  Debug

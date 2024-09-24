@@ -7,11 +7,15 @@ const cryptoMock = {
 
 const documentMock: DocumentMock = {
   addEventListener: vi.fn(),
+  documentElement: {
+    getAttribute: vi.fn().mockReturnValue('nl'),
+  },
   readyState: 'loading',
 };
 
 const locationMock = {
   assign: vi.fn(),
+  origin: 'https://mocked-origin.com',
 };
 
 const windowMock = {

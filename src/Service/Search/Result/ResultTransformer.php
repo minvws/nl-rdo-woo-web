@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Result;
 
+use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\ResultFactory;
 use App\Entity\Inquiry;
 use App\Service\Search\Model\Aggregation;
-use App\Service\Search\Model\Config;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Model\Suggestion;
 use App\Service\Search\Model\SuggestionEntry;
@@ -31,9 +31,9 @@ use Webmozart\Assert\Assert;
 class ResultTransformer
 {
     public function __construct(
-        protected EntityManagerInterface $doctrine,
-        protected LoggerInterface $logger,
-        protected PaginatorInterface $paginator,
+        private readonly EntityManagerInterface $doctrine,
+        private readonly LoggerInterface $logger,
+        private readonly PaginatorInterface $paginator,
         private readonly AggregationMapper $aggregationMapper,
         private readonly ResultFactory $resultFactory,
     ) {
@@ -42,7 +42,7 @@ class ResultTransformer
     /**
      * @param array<string,mixed> $query
      */
-    public function transform(array $query, Config $config, ?Elasticsearch $response): Result
+    public function transform(array $query, SearchParameters $searchParameters, ?Elasticsearch $response): Result
     {
         if (! $response) {
             $this->logger->error('ElasticSearch did not return a response', [
@@ -55,26 +55,26 @@ class ResultTransformer
                 ->setQuery($query);
         }
 
-        // Populate result object with search and config data
-        $result = $this->transformResults($config, $response);
+        // Populate result object with search and search parameters data
+        $result = $this->transformResults($searchParameters, $response);
         $result->setQuery($query);
-        $result->setType($config->searchType);
+        $result->setType($searchParameters->searchType->value);
 
         // Copy limit/offset to the result, so we can create pagination
-        $result->setOffset($config->offset);
-        $result->setLimit($config->limit);
+        $result->setOffset($searchParameters->offset);
+        $result->setLimit($searchParameters->limit);
 
-        if ($config->pagination && $result->getLimit() > 0) {
+        if ($searchParameters->pagination && $result->getLimit() > 0) {
             /** @var PaginationInterface<int,AbstractPagination> $pagination */
             $pagination = $this->paginator->paginate(
                 target: $result,
-                page: $config->limit > 0 ? ($config->offset / $config->limit + 1) : 1,
-                limit: $config->limit
+                page: $searchParameters->limit > 0 ? ($searchParameters->offset / $searchParameters->limit + 1) : 1,
+                limit: $searchParameters->limit
             );
             $result->setPagination($pagination);
         }
 
-        $result->setFilterDetails($this->getFilterDetails($config));
+        $result->setFilterDetails($this->getFilterDetails($searchParameters));
 
         return $result;
     }
@@ -82,7 +82,7 @@ class ResultTransformer
     /**
      * Transforms the elasticsearch result array into a result object.
      */
-    protected function transformResults(Config $config, Elasticsearch $response): Result
+    protected function transformResults(SearchParameters $searchParameters, Elasticsearch $response): Result
     {
         $typedResponse = new TypeArray($response->asArray());
         $result = new Result();
@@ -101,15 +101,18 @@ class ResultTransformer
         $documentCountWithoutDate = $typedResponse->getIntOrNull('[aggregations][all][facet-base-filter][date_filter][doc_count]')
             ?? $typedResponse->getIntOrNull('[aggregations][all][facet-base-filter][facet-filter-date][date_filter][doc_count]');
         $result->setDocumentCountWithoutDate($documentCountWithoutDate);
-        $result->setDisplayWithoutDateMessage($this->displayWithoutDateMessage($config, $documentCountWithoutDate));
+        $result->setDisplayWithoutDateMessage($this->displayWithoutDateMessage($searchParameters, $documentCountWithoutDate));
 
         $suggestions = $this->transformSuggestions($typedResponse);
         if ($suggestions) {
             $result->setSuggestions($suggestions);
         }
 
-        if ($config->aggregations) {
-            $aggregations = $this->transformAggregations($typedResponse->getTypeArray('[aggregations]'));
+        if ($searchParameters->aggregations) {
+            $aggregations = $this->transformAggregations(
+                $searchParameters,
+                $typedResponse->getTypeArray('[aggregations]'),
+            );
             if ($aggregations) {
                 $result->setAggregations($aggregations);
             }
@@ -160,7 +163,7 @@ class ResultTransformer
     /**
      * @return Aggregation[]
      */
-    protected function transformAggregations(TypeArray $response): array
+    protected function transformAggregations(SearchParameters $searchParameters, TypeArray $response): array
     {
         // Note: only does bucket aggregations!
         $ret = [];
@@ -177,13 +180,18 @@ class ResultTransformer
             // Check if we have buckets, if not, we might have a nested aggregation
             if (! $aggregation->exists('[buckets]')) {
                 // No buckets, we might need to go deeper as this is a nested aggregation
-                $ret = array_merge($ret, $this->transformAggregations($aggregation));
+                $ret = array_merge(
+                    $ret,
+                    $this->transformAggregations($searchParameters, $aggregation),
+                );
+
                 continue;
             }
 
             $ret[] = $this->aggregationMapper->map(
                 strval($name),
-                $aggregation->getIterable('[buckets]')
+                $aggregation->getIterable('[buckets]'),
+                $searchParameters,
             );
         }
 
@@ -207,29 +215,25 @@ class ResultTransformer
         );
     }
 
-    private function getFilterDetails(Config $config): FilterDetails
+    private function getFilterDetails(SearchParameters $searchParameters): FilterDetails
     {
-        Assert::keyExists($config->facetInputs, FacetKey::DOSSIER_NR->name);
-
         /** @var StringValuesFacetInput $facetInput */
-        $facetInput = $config->facetInputs[FacetKey::DOSSIER_NR->name];
+        $facetInput = $searchParameters->facetInputs->getByFacetKey(FacetKey::DOSSIER_NR);
 
         $inputClass = FacetKey::DOSSIER_NR->getInputClass();
         Assert::isInstanceOf($facetInput, $inputClass);
 
         return new FilterDetails(
-            $this->getInquiryDescriptions($config->dossierInquiries),
-            $this->getInquiryDescriptions($config->documentInquiries),
+            $this->getInquiryDescriptions($searchParameters->dossierInquiries),
+            $this->getInquiryDescriptions($searchParameters->documentInquiries),
             $facetInput->getStringValues(),
         );
     }
 
-    private function displayWithoutDateMessage(Config $config, ?int $documentCountWithoutDate): bool
+    private function displayWithoutDateMessage(SearchParameters $searchParameters, ?int $documentCountWithoutDate): bool
     {
-        Assert::keyExists($config->facetInputs, FacetKey::DATE->name);
-
         /** @var DateFacetInput $facetInput */
-        $facetInput = $config->facetInputs[FacetKey::DATE->name];
+        $facetInput = $searchParameters->facetInputs->getByFacetKey(FacetKey::DATE);
 
         $inputClass = FacetKey::DATE->getInputClass();
         Assert::isInstanceOf($facetInput, $inputClass);

@@ -13,11 +13,32 @@
         <div class="pb-8 lg:pb-16">
             {% include "home/snippets/intro.html.twig" %}
 
-            {% include "home/snippets/recent-documents.html.twig" %}
+            {% if recents | length > 0 %}
+                <section class="pt-10">
+                    {% include "snippets/recent-publications.html.twig" %}
+                </section>
+            {% endif %}
         </div>
     </div>
 
-    {% include "home/snippets/browse.html.twig" %}
+    {% import "facet_macros.html.twig" as macro %}
+    <section class="bg-woo-anti-flash-white py-8 lg:py-16">
+        <div class="woo-container woo-container--sm pb-10">
+            <h2 class="woo-h2 woo-readable-width">{{ 'public.browse.title' | trans | raw }}</h2>
+        </div>
+
+        <div class="woo-container">
+            <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+                {{ macro.facet_preview('categories.category.type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::TYPE').value, facets) }}
+                {{ macro.facet_preview('categories.category.department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, facets) }}
+                {{ macro.facet_preview('categories.category.grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS').value, facets) }}
+            </div>
+
+            <p class="text-center mt-9">
+                <twig:Public:ArrowedBoldLink to="{{ path('app_browse') }}">{{ 'categories.label.all-categories' | trans }}</twig:Public:ArrowedBoldLink>
+            </p>
+        </div>
+    </section>
 
     {% include "home/snippets/info.html.twig" %}
 {% endblock %}

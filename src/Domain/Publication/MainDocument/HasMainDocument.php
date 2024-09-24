@@ -14,7 +14,7 @@ use App\Domain\Publication\MainDocument\AbstractMainDocument as TDocument;
 trait HasMainDocument
 {
     /**
-     * @return ?TDocument
+     * @phpstan-return ?TDocument
      */
     public function getDocument(): ?AbstractMainDocument
     {
@@ -23,7 +23,7 @@ trait HasMainDocument
     }
 
     /**
-     * @param ?TDocument $document
+     * @phpstan-param ?TDocument $document
      */
     public function setDocument(?AbstractMainDocument $document): void
     {

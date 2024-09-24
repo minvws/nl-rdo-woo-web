@@ -73,7 +73,7 @@ final class Result
     protected string $message = '';
 
     /**
-     * Type of documents that have been found (all, dossier, document, Config::TYPE_*).
+     * Type of documents that have been found (see SearchType enum).
      */
     protected string $type;
 

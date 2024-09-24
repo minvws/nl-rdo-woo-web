@@ -89,10 +89,14 @@ class Inquiry implements EntityWithBatchDownload
         return $this;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function removeDocument(Document $document): self
     {
-        $this->documents->removeElement($document);
-        $document->removeInquiry($this);
+        // Document removal for inquiries is disabled as part of #2868:
+        // $this->documents->removeElement($document);
+        // $document->removeInquiry($this);
 
         return $this;
     }

@@ -7,8 +7,10 @@ namespace App\Tests\Integration\Domain\Publication\Dossier;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\AbstractDossierRepository;
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Tests\Factory\DepartmentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
+use App\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use App\Tests\Integration\IntegrationTestTrait;
 use Doctrine\ORM\NoResultException;
@@ -26,6 +28,8 @@ final class AbstractDossierRepositoryTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         self::bootKernel();
     }
 
@@ -77,5 +81,41 @@ final class AbstractDossierRepositoryTest extends KernelTestCase
         self::assertContains($annualReport->getId()->toRfc4122(), $ids);
         self::assertNotContains($published->getId()->toRfc4122(), $ids);
         self::assertNotContains($uncompleted->getId()->toRfc4122(), $ids);
+    }
+
+    public function testGetRecentDossiersWithoutDepartmentFiltersUnpublishedAndLimitsResults(): void
+    {
+        $unpublished = AnnualReportFactory::createOne(['status' => DossierStatus::CONCEPT]);
+        CovenantFactory::createOne(['status' => DossierStatus::PUBLISHED]);
+        WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED]);
+        AnnualReportFactory::createOne(['status' => DossierStatus::PUBLISHED]);
+        AnnualReportFactory::createOne(['status' => DossierStatus::PUBLISHED]);
+        InvestigationReportFactory::createOne(['status' => DossierStatus::PUBLISHED]);
+
+        $result = $this->getRepository()->getRecentDossiers(4, null);
+        $ids = array_map(
+            static fn (AbstractDossier $dossier) => $dossier->getId()->toRfc4122(),
+            $result,
+        );
+
+        self::assertCount(4, $result);
+        self::assertNotContains($unpublished->getId()->toRfc4122(), $ids);
+    }
+
+    public function testGetRecentDossiersWithDepartmentFilter(): void
+    {
+        $department = DepartmentFactory::random();
+
+        AnnualReportFactory::createOne(['status' => DossierStatus::CONCEPT, 'departments' => [$department]]);
+        $publishedForDepartment = CovenantFactory::createOne(['status' => DossierStatus::PUBLISHED, 'departments' => [$department]]);
+        CovenantFactory::createOne(['status' => DossierStatus::PUBLISHED, 'departments' => []]);
+
+        $result = $this->getRepository()->getRecentDossiers(4, $department->_real());
+        $ids = array_map(
+            static fn (AbstractDossier $dossier) => $dossier->getId()->toRfc4122(),
+            $result,
+        );
+
+        self::assertEquals([$publishedForDepartment->getId()->toRfc4122()], $ids);
     }
 }

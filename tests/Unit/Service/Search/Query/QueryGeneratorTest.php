@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Search\Query;
 
 use App\Domain\Search\Index\ElasticDocumentType;
+use App\Domain\Search\Query\SearchParameters;
+use App\Domain\Search\Query\SearchType;
 use App\ElasticConfig;
 use App\Entity\Judgement;
-use App\Service\Search\Model\Config;
 use App\Service\Search\Query\AggregationGenerator;
 use App\Service\Search\Query\Condition\ContentAccessConditions;
 use App\Service\Search\Query\Condition\FacetConditions;
@@ -52,7 +53,7 @@ class QueryGeneratorTest extends UnitTestCase
     public function testCreateQueryWithMinimalConfig(): void
     {
         $result = $this->queryGenerator->createQuery(
-            new Config(
+            new SearchParameters(
                 facetInputs: $this->facetInputFactory->create(),
                 pagination: false,
                 aggregations: false,
@@ -67,11 +68,11 @@ class QueryGeneratorTest extends UnitTestCase
     public function testCreateQueryWithDossierOnlyConfig(): void
     {
         $result = $this->queryGenerator->createQuery(
-            new Config(
+            new SearchParameters(
                 facetInputs: $this->facetInputFactory->create(),
                 pagination: false,
                 aggregations: false,
-                searchType: Config::TYPE_DOSSIER,
+                searchType: SearchType::DOSSIER,
             )
         );
 
@@ -83,10 +84,13 @@ class QueryGeneratorTest extends UnitTestCase
     public function testCreateQueryWithComplexConfig(): void
     {
         $result = $this->queryGenerator->createQuery(
-            new Config(
+            new SearchParameters(
                 facetInputs: $this->facetInputFactory->fromParameterBag(
                     new ParameterBag([
-                        'doctype' => [ElasticDocumentType::WOO_DECISION->value],
+                        'doctype' => [
+                            ElasticDocumentType::WOO_DECISION->value,
+                            ElasticDocumentType::WOO_DECISION->value . '.publication',
+                        ],
                         'jdg' => [Judgement::PUBLIC->value, Judgement::PARTIAL_PUBLIC->value],
                         'dt' => ['from' => '2020-01-12', 'to' => '2024-06-20'],
                     ])
@@ -109,7 +113,7 @@ class QueryGeneratorTest extends UnitTestCase
     public function testCreateQueryWithInquiryDocumentsFilter(): void
     {
         $result = $this->queryGenerator->createQuery(
-            new Config(
+            new SearchParameters(
                 facetInputs: $this->facetInputFactory->create(),
                 pagination: false,
                 aggregations: false,
@@ -125,7 +129,7 @@ class QueryGeneratorTest extends UnitTestCase
     public function testCreateQueryWithOutDateFilter(): void
     {
         $result = $this->queryGenerator->createQuery(
-            new Config(
+            new SearchParameters(
                 facetInputs: $this->facetInputFactory->fromParameterBag(
                     new ParameterBag([
                         'dt' => ['without_date' => '1'],

@@ -17,7 +17,7 @@
     <div class="bhr-card">
         {% set alerts = app.flashes('backend') %}
         {% if alerts | length > 0 %}
-            <div class="mb-8">
+            <div class="mb-8" data-e2e-name="alerts">
                 {% for messages in alerts %}
                     {% for label, message in messages %}
                         <twig:Admin:Alert type="{{ label }}">
@@ -30,21 +30,30 @@
         <table class="bhr-table">
             <thead>
                 <tr>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.publications.department' | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ 'global.acronym' | trans() }}</th>
+                    {{ knp_pagination_sortable(pagination, 'admin.publications.department' | trans, 'd.name', {}, {}, 'pagination/sort.admin.html.twig') }}
+                    {{ knp_pagination_sortable(pagination, 'global.acronym' | trans, 'd.shortTag', { thClassName: 'border-r-0' }, {}, 'pagination/sort.admin.html.twig') }}
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                        <span class="sr-only">{{ 'admin.department.edit' | trans() }}</span>
+                        <span class="sr-only">{{ 'global.details' | trans }}</span>
                     </th>
                 </tr>
             </thead>
             <tbody>
-                {% for department in departments %}
-                    <tr>
-                        <td>{{ department.name }}</td>
-                        <td>{{ department.shortTag | default('-') }}</td>
+                {% for department in pagination %}
+                    {% set url = path('app_admin_department_edit', { id: department.id.toBase58 }) %}
+                    <tr class="bhr-clickable-row">
+                        <td>
+                            <a class="bhr-fill-cell" href="{{ url }}">
+                                {{ department.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <a class="bhr-fill-cell" href="{{ url }}">
+                                {{ department.shortTag | default('-') }}
+                            </a>
+                        </td>
                         <td class="text-right">
-                            <a class="js-clickable-row__focusable" href="{{ path('app_admin_department_edit', { id: department.id.toBase58 }) }}">
-                                <span class="sr-only">{{ 'global.details' | trans() }} {{ department.name }}</span>
+                            <a class="bhr-fill-cell" href="{{ url }}">
+                                <span class="sr-only">{{ 'global.details' | trans }} {{ department.name }}</span>
                                 <twig:Admin:Icon name="chevron-right" />
                             </a>
                         </td>
@@ -52,6 +61,8 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
     </div>
 </div>
 {% endblock %}

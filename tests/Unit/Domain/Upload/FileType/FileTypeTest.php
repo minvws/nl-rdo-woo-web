@@ -24,4 +24,12 @@ final class FileTypeTest extends UnitTestCase
             FileType::getExtensionsForTypes(FileType::DOC, FileType::TXT),
         );
     }
+
+    public function testGetTypeNamesForTypes(): void
+    {
+        self::assertEquals(
+            ['Excel', 'PDF', 'PowerPoint', 'Word', 'Zip'],
+            FileType::getTypeNamesForTypes(FileType::PDF, FileType::XLS, FileType::DOC, FileType::TXT, FileType::PPT, FileType::ZIP),
+        );
+    }
 }

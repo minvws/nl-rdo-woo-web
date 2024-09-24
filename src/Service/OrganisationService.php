@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Department;
 use App\Entity\Organisation;
 use Doctrine\ORM\EntityManagerInterface;
 use MinVWS\AuditLogger\AuditLogger;
@@ -19,6 +20,8 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class OrganisationService
 {
+    private const UNCHANGED = '[unchanged]';
+
     protected EntityManagerInterface $doctrine;
     protected LoggerInterface $logger;
     protected AuditLogger $auditLogger;
@@ -28,7 +31,7 @@ class OrganisationService
         EntityManagerInterface $doctrine,
         LoggerInterface $logger,
         AuditLogger $auditLogger,
-        TokenStorageInterface $tokenStorage
+        TokenStorageInterface $tokenStorage,
     ) {
         $this->doctrine = $doctrine;
         $this->logger = $logger;
@@ -58,7 +61,9 @@ class OrganisationService
             ->withData([
                 'organisation_id' => $organisation->getId(),
                 'name' => $organisation->getName(),
-                'department' => $organisation->getDepartment(),
+                'departments' => $organisation->getDepartments()->map(
+                    static fn (Department $department) => $department->getName(),
+                ),
             ]));
     }
 
@@ -90,12 +95,12 @@ class OrganisationService
             ])
             ->withPiiData([
                 'old' => [
-                    'name' => $changes['name'][0] ?? $organisation->getName(),
-                    'department' => $changes['department'][0] ?? $organisation->getDepartment(),
+                    'name' => $changes['name'][0] ?? self::UNCHANGED,
+                    'departments' => $changes['departments'][0] ?? self::UNCHANGED,
                 ],
                 'new' => [
-                    'name' => $changes['name'][1] ?? $organisation->getName(),
-                    'department' => $changes['department'][1] ?? $organisation->getDepartment(),
+                    'name' => $changes['name'][1] ?? self::UNCHANGED,
+                    'departments' => $changes['departments'][1] ?? self::UNCHANGED,
                 ],
             ]));
 

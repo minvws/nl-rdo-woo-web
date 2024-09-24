@@ -11,12 +11,13 @@ use PHPUnit\Framework\TestCase;
 class InventoryDataHelperTest extends TestCase
 {
     /**
-     * @param string[] $expectedResult
+     * @param non-empty-string|array<non-empty-string> $separators
+     * @param array<string>                            $expectedResult
      */
     #[DataProvider('separateValuesProvider')]
-    public function testSeparateValues(string $input, string $separator, array $expectedResult): void
+    public function testSeparateValues(mixed $input, string|array $separators, array $expectedResult): void
     {
-        self::assertEquals($expectedResult, array_values(InventoryDataHelper::separateValues($input, $separator)));
+        self::assertEquals($expectedResult, array_values(InventoryDataHelper::separateValues($input, $separators)));
     }
 
     /**
@@ -27,23 +28,43 @@ class InventoryDataHelperTest extends TestCase
         return [
             'semicolon-separated' => [
                 'input' => 'test;123',
-                'separator' => ';',
+                'separators' => ';',
                 'expectedResult' => ['test', '123'],
             ],
             'semicolon-separated-with-whitespace' => [
                 'input' => ' test ;   123;x   ',
-                'separator' => ';',
+                'separators' => ';',
                 'expectedResult' => ['test', '123', 'x'],
             ],
             'pipe-separated' => [
                 'input' => ' test|123; x   ',
-                'separator' => '|',
+                'separators' => '|',
                 'expectedResult' => ['test', '123; x'],
             ],
             'empty-values-and-adjacent-separators-are-ignored' => [
                 'input' => ' test|| | 123',
-                'separator' => '|',
+                'separators' => '|',
                 'expectedResult' => ['test', '123'],
+            ],
+            'multiple-separators' => [
+                'input' => ' test,123;456',
+                'separators' => [';', ','],
+                'expectedResult' => ['test', '123', '456'],
+            ],
+            'multiple-separators-and-whitespace' => [
+                'input' => ' test  ,  123  ;  456,;, ',
+                'separators' => [';', ','],
+                'expectedResult' => ['test', '123', '456'],
+            ],
+            'empty-input' => [
+                'input' => '   ',
+                'separators' => [';', ','],
+                'expectedResult' => [],
+            ],
+            'null-input' => [
+                'input' => null,
+                'separators' => [';', ','],
+                'expectedResult' => [],
             ],
         ];
     }

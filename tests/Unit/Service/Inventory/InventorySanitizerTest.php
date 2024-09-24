@@ -73,7 +73,7 @@ class InventorySanitizerTest extends MockeryTestCase
         $this->writer->expects('close');
         $this->writer->expects('getFileExtension')->twice()->andReturn('csv');
 
-        $this->translator->expects('trans')->with(Judgement::PARTIAL_PUBLIC->value)->andReturn('deels openbaar');
+        $this->translator->expects('trans')->with('public.documents.judgment.short.' . Judgement::PARTIAL_PUBLIC->value)->andReturn('deels openbaar');
 
         $dossier = \Mockery::mock(Dossier::class);
         $dossier->expects('getDossierNr')->andReturn('tst-123');

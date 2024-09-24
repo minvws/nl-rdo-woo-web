@@ -31,7 +31,7 @@ readonly class LocalFilesystem
                     break;
                 }
 
-                if (! fwrite($target, $data)) {
+                if (fwrite($target, $data) === false) {
                     throw new StorageRuntimeException('Could not write data to target stream');
                 }
             }
@@ -51,10 +51,12 @@ readonly class LocalFilesystem
 
     public function createTempFile(): string|false
     {
-        $path = tempnam(sys_get_temp_dir(), 'woopie');
+        $tempDir = $this->sysGetTempDir();
+        $path = $this->tempname($tempDir);
+
         if ($path === false) {
             $this->logger->error('Could not create temporary file', [
-                'tempDir' => sys_get_temp_dir(),
+                'tempDir' => $tempDir,
             ]);
 
             return false;
@@ -65,7 +67,7 @@ readonly class LocalFilesystem
 
     public function createTempDir(): string|false
     {
-        $path = sys_get_temp_dir() . '/' . uniqid('woopie_', true);
+        $path = sprintf('%s/%s', $this->sysGetTempDir(), $this->uniqid());
         if (! mkdir($path)) {
             $this->logger->error('Could not create temporary dir', [
                 'tempDir' => $path,
@@ -97,7 +99,7 @@ readonly class LocalFilesystem
 
         if (! rmdir($dirPath)) {
             $this->logger->error('Could not delete directory', [
-                'dirPath' => $dirPath,
+                'dirPath' => rtrim($dirPath, '/'),
             ]);
 
             return false;
@@ -135,7 +137,7 @@ readonly class LocalFilesystem
     public function createStream(string $localPath, string $mode)
     {
         $stream = @fopen($localPath, $mode);
-        if (! is_resource($stream)) {
+        if ($stream === false || ! is_resource($stream)) {
             $this->logger->error('Could not open local file file', [
                 'local_path' => $localPath,
                 'mode' => $mode,
@@ -157,7 +159,7 @@ readonly class LocalFilesystem
         $found = [];
         $files = scandir($directory);
 
-        Assert::notFalse($files, 'Could not scan directory');
+        Assert::notFalse($files, sprintf('Could not scan directory: "%s"', $directory));
 
         foreach ($files as $filename) {
             if (in_array($filename, ['.', '..'])) {
@@ -165,10 +167,27 @@ readonly class LocalFilesystem
             }
 
             if (fnmatch($filePattern, $filename)) {
-                $found[] = sprintf('%s/%s', $directory, $filename);
+                $found[] = $directory . $filename;
             }
         }
 
         return $found;
     }
+
+    // @codeCoverageIgnoreStart
+    protected function sysGetTempDir(): string
+    {
+        return sys_get_temp_dir();
+    }
+
+    protected function tempname(string $directory): string|false
+    {
+        return tempnam($directory, 'woopie_');
+    }
+
+    protected function uniqid(): string
+    {
+        return uniqid('woopie_', true);
+    }
+    // @codeCoverageIgnoreEnd
 }

@@ -37,6 +37,8 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->root = vfsStream::setup();
 
         self::bootKernel();
@@ -45,7 +47,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     public function testGetAllInvestigationReportAttachments(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -77,7 +79,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     public function testGetSingleInvestigationReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -106,7 +108,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     public function testGetSingleNonExistingInvestigationReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -132,7 +134,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     public function testCreateInvestigationReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -216,7 +218,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     public function testCreateInvestigationReportAttachmentWithInvalidRequestData(array $input, array $expectedViolations): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -446,7 +448,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     public function testDeleteInvestigationReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -475,7 +477,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     public function testDeleteNonExistingInvestigationReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -501,7 +503,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     public function testUpdateInvestigationReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -559,7 +561,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     public function testUpdateNonExistingInvestigationReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -590,7 +592,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     public function testUpdateInvestigationReportAttachmentWithInvalidRequestData(array $input, array $expectedViolations): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 

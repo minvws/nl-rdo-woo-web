@@ -35,7 +35,7 @@ class InvestigationReport extends AbstractDossier implements EntityWithAttachmen
     private ?InvestigationReportDocument $document;
 
     /** @var Collection<array-key,InvestigationReportAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: InvestigationReportAttachment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: InvestigationReportAttachment::class)]
     private Collection $attachments;
 
     public function __construct()

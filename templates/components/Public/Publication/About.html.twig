@@ -20,7 +20,6 @@
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'global.responsible_parties' | trans }}</th>
                     <td data-e2e-name="dossier-metadata-responsible">
-                        {# Only display the first entries #}
                         {{ dossier.mainDepartment.name }}
                     </td>
                 </tr>
@@ -29,9 +28,19 @@
                         {{ 'public.dossiers.type' | trans }}
                     </th>
                     <td>
-                        <p>{{ dossier.type | trans | capitalize}}</p>
+                        <p>{{ dossier.type | trans | capitalize }}</p>
                     </td>
                 </tr>
+                {% if dossier.hasSubject %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">
+                        {{ 'public.dossiers.subject' | trans }}
+                    </th>
+                    <td>
+                        <p>{{ dossier.subject }}</p>
+                    </td>
+                </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>

@@ -59,6 +59,7 @@ Klachtoordeel, Gepland                                complaint-judgement   Gepl
 Suite Setup
   Suite Setup - CI
   Login Admin
+  Select Organisation
 
 Create Test Dossier
   [Arguments]  ${type}  ${publication_status}  ${has_attachment}  ${dataset}  ${decision}=NotApplicable

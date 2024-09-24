@@ -20,7 +20,7 @@ class DossierTypeManager
      */
     public function __construct(
         private readonly AuthorizationCheckerInterface $authorizationChecker,
-        iterable $configs
+        iterable $configs,
     ) {
         $this->configs = [];
         foreach ($configs as $config) {

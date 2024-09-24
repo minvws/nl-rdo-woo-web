@@ -3,12 +3,12 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 
 describe('The "InputDocumentFile" component', () => {
-  const allowedExtensions = ['mocked-extension-1', 'mocked-extension-2'];
+  const allowedFileTypes = ['mocked-extension-1', 'mocked-extension-2'];
   const allowedMimeTypes = ['mocked/mime-type-1', 'mocked/mime-type-2'];
 
   const createComponent = (displayMaxOneFileMessage = false) => mount(InputDocumentFile, {
     props: {
-      allowedExtensions,
+      allowedFileTypes,
       allowedMimeTypes,
       displayMaxOneFileMessage,
       fileInfo: null,
@@ -39,6 +39,6 @@ describe('The "InputDocumentFile" component', () => {
   });
 
   test('should pass the provided allowed extensions', () => {
-    expect(getInputFileComponent().props('allowedExtensions')).toEqual(allowedExtensions);
+    expect(getInputFileComponent().props('allowedFileTypes')).toEqual(allowedFileTypes);
   });
 });

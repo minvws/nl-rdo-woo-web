@@ -1,45 +1,23 @@
-<header class="woo-search-result__header">
-    <h3 class="woo-search-result__title">
-        <a
-            class="woo-search-result__main-link"
-            data-e2e-name="main-link"
-            href="{{ path('app_woodecision_detail', { prefix: entry.dossier.documentPrefix, dossierId: entry.dossier.dossierNr }) }}"
-        >{{ entry.dossier.title }}</a>
-    </h3>
-    <ul class="woo-search-result__spec-list">
-        <li class="woo-search-result__spec">
-            <span class="bg-gray-100 rounded-full inline-grid place-content-center align-bottom aspect-square w-6">
-                <twig:Public:Icon name="map" size="20" />
-            </span>
-            <span class="font-bold text-gray-700">{{ 'public.global.woo_dossier' | trans }}</span>
-        </li>
-        <li class="woo-search-result__spec">
-            {{ "global.number_of_documents" | trans({"count": entry.dossier.documentCount})}}</span>
-        </li>
-        <li class="woo-search-result__spec">
-            {{ entry.dossier.decision | trans }}</span>
-        </li>
-    </ul>
-</header>
+{% extends 'search/entries/base.html.twig' %}
 
-{% if entry.dossier.summary %}
-<p class="mt-1">{{ entry.dossier.summary | u.truncate(200, '...', false) }}</p>
-{% endif %}
+{% set resultUrl = path('app_woodecision_detail', { prefix: entry.dossier.documentPrefix, dossierId: entry.dossier.dossierNr }) %}
+{% set resultType = 'public.global.woo_dossier' | trans %}
 
-{% if entry.highlights | length > 0 %}
-<p class="mt-1">
-    {% for hl in entry.highlights %}
-        ... {{ hl | highlights }} {% if loop.last %}...{% endif %}
-    {% endfor %}
-</p>
-{% endif %}
-
-<ul class="woo-search-result__spec-list">
+{% block resultTypeSpecs %}
     <li class="woo-search-result__spec">
-        {{ 'global.decision_made' | trans }}&nbsp;<time datetime="{{ entry.dossier.decisionDate | date('Y-m-d') }}">{{ entry.dossier.decisionDate | format_date('long') }}</time>,
-        {{ 'global.published_on' | trans | lower }}&nbsp;<time datetime="{{ entry.dossier.publicationDate | date("Y-m-d") }}">{{ entry.dossier.publicationDate | format_date('long') }}</time>
+        {{ "global.number_of_documents" | trans({ 'count': entry.dossier.documentCount})}}</span>
     </li>
     <li class="woo-search-result__spec">
-        {{ entry.dossier.dossierNr}}
+        {{ entry.dossier.decision | trans }}</span>
     </li>
-</ul>
+{% endblock %}
+
+{% block resultSpecsBottom %}
+    <li class="woo-search-result__spec">
+        {{ 'global.decision_made' | trans }}&nbsp;<twig:Date date="{{ entry.dossier.decisionDate }}" />,
+        {{ 'global.published_on' | trans | lower }}&nbsp;<twig:Date date="{{ entry.dossier.publicationDate }}" />
+    </li>
+    <li class="woo-search-result__spec">
+        {{ entry.dossier.dossierNr }}
+    </li>
+{% endblock %}

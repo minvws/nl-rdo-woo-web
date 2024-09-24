@@ -9,6 +9,7 @@ use App\Domain\Publication\Dossier\Command\DeleteDossierCommand;
 use App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -27,6 +28,7 @@ class DeleteDossierHandler
         private readonly AbstractDossierRepository $repository,
         private readonly LoggerInterface $logger,
         private readonly DossierWorkflowManager $dossierWorkflowManager,
+        private readonly EntityManagerInterface $entityManager,
         iterable $deleteStrategies,
     ) {
         $this->deleteStrategies = $deleteStrategies;
@@ -43,12 +45,20 @@ class DeleteDossierHandler
             return;
         }
 
-        $this->dossierWorkflowManager->applyTransition($dossier, DossierStatusTransition::DELETE);
+        $this->entityManager->beginTransaction();
+        try {
+            $this->dossierWorkflowManager->applyTransition($dossier, DossierStatusTransition::DELETE);
 
-        foreach ($this->deleteStrategies as $strategy) {
-            $strategy->delete($dossier);
+            foreach ($this->deleteStrategies as $strategy) {
+                $strategy->delete($dossier);
+            }
+
+            $this->repository->remove($dossier);
+            $this->entityManager->commit();
+        } catch (\Exception $exception) {
+            $this->entityManager->rollback();
+
+            throw $exception;
         }
-
-        $this->repository->remove($dossier);
     }
 }

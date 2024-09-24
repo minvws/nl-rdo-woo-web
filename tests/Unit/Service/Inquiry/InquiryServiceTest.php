@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inquiry;
 
-use App\Domain\Ingest\MetadataOnly\IngestMetadataOnlyCommand;
+use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\Dossier\IndexDossierCommand;
@@ -104,7 +104,7 @@ class InquiryServiceTest extends MockeryTestCase
         $addDoc2->shouldReceive('getId')->andReturn($addDoc2Id);
 
         $removeDoc = \Mockery::mock(Document::class);
-        $removeDoc->expects('removeInquiry');
+        // Disabled as part of #2868: $removeDoc->expects('removeInquiry');
         $removeDoc->shouldReceive('getId')->andReturn($removeDocId);
 
         $caseNr = 'case-123';

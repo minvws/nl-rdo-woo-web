@@ -8,14 +8,14 @@ use App\Doctrine\DocumentConditions;
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Search\Query\SearchType;
 use App\Entity\BatchDownload;
 use App\Entity\DecisionAttachment;
 use App\Entity\Dossier;
+use App\Exception\ViewingNotAllowedException;
 use App\Repository\DocumentRepository;
 use App\Service\BatchDownloadService;
-use App\Service\DossierService;
 use App\Service\DownloadResponseHelper;
-use App\Service\Search\Model\Config;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
+use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Annotation\Route;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
@@ -35,7 +36,6 @@ class WooDecisionController extends AbstractController
     protected const MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
-        private readonly DossierService $dossierService,
         private readonly PaginatorInterface $paginator,
         private readonly DownloadResponseHelper $downloadHelper,
         private readonly BatchDownloadService $batchDownloadService,
@@ -49,22 +49,18 @@ class WooDecisionController extends AbstractController
     #[Route('/dossiers', name: 'app_woodecision_index', methods: ['GET'])]
     public function index(): Response
     {
-        return $this->redirectToRoute('app_search', ['type' => Config::TYPE_DOSSIER]);
+        return $this->redirectToRoute('app_search', ['type' => SearchType::DOSSIER->value]);
     }
 
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     #[Route('/dossier/{prefix}/{dossierId}', name: 'app_woodecision_detail', methods: ['GET'])]
     public function detail(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
         Breadcrumbs $breadcrumbs,
         Request $request,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem('global.decision');
-
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
-        }
 
         $docQuery = $this->documentRepository->getDossierDocumentsQueryBuilder($dossier);
 
@@ -113,12 +109,8 @@ class WooDecisionController extends AbstractController
     #[Route('/dossier/{prefix}/{dossierId}/batch', name: 'app_woodecision_batch', methods: ['POST'])]
     public function createBatch(
         Request $request,
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
     ): Response {
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
-        }
-
         $docs = $request->request->all()['doc'] ?? [];
         if (! is_array($docs)) {
             $docs = [$docs];
@@ -145,9 +137,9 @@ class WooDecisionController extends AbstractController
 
     #[Route('/dossier/{prefix}/{dossierId}/batch/{batchId}', name: 'app_woodecision_batch_detail', methods: ['GET'])]
     public function batch(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
-        Breadcrumbs $breadcrumbs
+        Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('global.decision', 'app_woodecision_detail', [
@@ -156,8 +148,8 @@ class WooDecisionController extends AbstractController
         ]);
         $breadcrumbs->addItem('public.global.download');
 
-        if (! $this->dossierService->isViewingAllowed($dossier) || $batch->getEntity() !== $dossier) {
-            throw $this->createNotFoundException('Dossier not found');
+        if ($batch->getEntity() !== $dossier) {
+            throw ViewingNotAllowedException::forDossier();
         }
 
         return $this->render('batchdownload/batch.html.twig', [
@@ -177,11 +169,11 @@ class WooDecisionController extends AbstractController
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
     #[Route('/dossier/{prefix}/{dossierId}/batch/{batchId}/download', name: 'app_woodecision_batch_download', methods: ['GET'])]
     public function batchDownload(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
     ): Response {
-        if (! $this->dossierService->isViewingAllowed($dossier) || $batch->getEntity() !== $dossier) {
-            throw $this->createNotFoundException('Dossier not found');
+        if ($batch->getEntity() !== $dossier) {
+            throw ViewingNotAllowedException::forDossier();
         }
 
         if ($batch->getStatus() !== BatchDownload::STATUS_COMPLETED) {
@@ -198,24 +190,16 @@ class WooDecisionController extends AbstractController
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
     #[Route('/dossier/{prefix}/{dossierId}/inventory/download', name: 'app_woodecision_inventory_download', methods: ['GET'])]
     public function downloadInventory(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
     ): StreamedResponse {
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
-        }
-
         return $this->downloadHelper->getResponseForEntityWithFileInfo($dossier->getInventory());
     }
 
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
     #[Route('/dossier/{prefix}/{dossierId}/decision/download', name: 'app_woodecision_decision_download', methods: ['GET'])]
     public function downloadDecision(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
     ): StreamedResponse {
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
-        }
-
         $decisionDocument = $dossier->getDecisionDocument();
         if (! $decisionDocument) {
             throw $this->createNotFoundException('Dossier decision not found');
@@ -235,14 +219,11 @@ class WooDecisionController extends AbstractController
         methods: ['GET'],
     )]
     public function decisionAttachmentDownload(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
-        Dossier $dossier,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
         DecisionAttachment $attachment,
     ): Response {
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
-        }
+        unset($dossier);
 
         return $this->downloadHelper->getResponseForEntityWithFileInfo($attachment);
     }
@@ -254,16 +235,11 @@ class WooDecisionController extends AbstractController
         methods: ['GET'],
     )]
     public function decisionAttachmentDetail(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
-        WooDecision $dossier,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
         DecisionAttachment $attachment,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
-        }
-
         $attachmentView = $this->attachmentViewFactory->make($dossier, $attachment);
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');

@@ -2,7 +2,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { onKeyDown } from './key-down';
 
 describe('the "onKeyDown" function', () => {
-  const pressKey = (key: string) => {
+  const pressKey = (key?: string) => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key }));
   };
 
@@ -17,5 +17,21 @@ describe('the "onKeyDown" function', () => {
 
     pressKey('Escape');
     expect(someFunction).toHaveBeenCalledTimes(1);
+  });
+
+  test('should invoke the provided function on every key press when no key is provided', () => {
+    const someFunction = vi.fn();
+
+    onKeyDown(null, someFunction);
+    expect(someFunction).not.toHaveBeenCalled();
+
+    pressKey('Tab');
+    expect(someFunction).toHaveBeenCalledTimes(1);
+
+    pressKey('Escape');
+    expect(someFunction).toHaveBeenCalledTimes(2);
+
+    pressKey('Enter');
+    expect(someFunction).toHaveBeenCalledTimes(3);
   });
 });

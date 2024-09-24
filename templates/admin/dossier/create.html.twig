@@ -8,13 +8,12 @@
         <h2 class="font-bold text-lg mb-4">{{ 'admin.publication.pick_a_type' | trans }}</h2>
 
         <ul class="bhr-link-list">
-            {% for typeConfig in typeConfigs | sort((a, b) => (('dossier.type.' ~ a.dossierType.value) | trans) <=> (('dossier.type.' ~ b.dossierType.value) | trans)) %}
-                {% set type = typeConfig.dossierType.value %}
+            {% for dossierType in dossierTypes %}
                 <li class="bhr-link-list__item">
-                    <a href="{{ path(typeConfig.createRouteName) }}" data-e2e-name="create-dossier-type-{{ type }}" class="bhr-link-list__link">
+                    <a href="{{ dossierType.createUrl }}" data-e2e-name="create-dossier-type-{{ dossierType.type }}" class="bhr-link-list__link">
                         <span class="block leading-tight">
-                            <span class="font-bold block mb-1">{{ ('dossier.type.' ~ type) | trans }}</span>
-                            {{ ('dossier.type.' ~ type ~ '_description') | trans }}
+                            <span class="font-bold block mb-1">{{ ('dossier.type.' ~ dossierType.type) | trans }}</span>
+                            {{ ('dossier.type.' ~ dossierType.type ~ '_description') | trans }}
                         </span>
                         <twig:Admin:Icon name="chevron-right" />
                     </a>

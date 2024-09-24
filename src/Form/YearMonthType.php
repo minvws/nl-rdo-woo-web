@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Domain\Publication\Dossier\AbstractDossier;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Carbon\CarbonPeriod;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeImmutableToDateTimeTransformer;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
@@ -22,6 +24,7 @@ class YearMonthType extends ChoiceType
     public const PLUS_YEARS = 'plus_years';
     public const DAY_MODE = 'day_mode';
     public const REVERSE = 'reverse';
+    public const DOSSIER = 'dossier';
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -41,17 +44,18 @@ class YearMonthType extends ChoiceType
     /**
      * @return array<int, array<string, string>>
      */
-    public function getChoices(string $mode, int $minYears, int $plusYears, bool $reverse): array
+    public function getChoices(string $mode, Carbon $minDate, int $plusYears, bool $reverse): array
     {
         $options = [];
 
         $period = CarbonPeriod::create(
-            Carbon::now()->addMonth()->startOfMonth()->subYears($minYears),
+            $minDate->addMonth()->startOfMonth(),
             '1 month',
             Carbon::now()->subMonth()->startOfMonth()->addYears($plusYears),
         );
 
-        foreach ($period as $date) {
+        /** @var CarbonImmutable $date */
+        foreach ($period->getIterator() as $date) {
             Assert::notNull($date);
 
             $year = $date->format('Y');
@@ -93,24 +97,36 @@ class YearMonthType extends ChoiceType
         $resolver->setDefined(self::REVERSE);
         $resolver->setDefault(self::REVERSE, false);
         $resolver->setAllowedTypes(self::REVERSE, 'bool');
+
+        $resolver->setDefined(self::DOSSIER);
+        $resolver->setDefault(self::DOSSIER, null);
+        $resolver->setAllowedTypes(self::DOSSIER, ['null', AbstractDossier::class]);
     }
 
     /**
      * @param array<array-key,mixed> $options
      *
-     * @return array{mode:string,minYears:int,plusYears:int,reverse:bool}
+     * @return array{mode:string,minDate:Carbon,plusYears:int,reverse:bool}
      */
     private function getChoicesArgsFromOptions(array $options): array
     {
+        /** @var int $minYears */
+        $minYears = $options[self::MIN_YEARS];
+
         $choiceOptions = [
             'mode' => $options[self::DAY_MODE],
-            'minYears' => $options[self::MIN_YEARS],
+            'minDate' => Carbon::now()->subYears($minYears),
             'plusYears' => $options[self::PLUS_YEARS],
             'reverse' => $options[self::REVERSE],
         ];
 
+        if (isset($options['dossier']) && $options['dossier'] instanceof AbstractDossier && $options['dossier']->hasCreatedAt()) {
+            $createdAt = Carbon::createFromImmutable($options['dossier']->getCreatedAt());
+            $choiceOptions['minDate'] = $createdAt->modify('- ' . $minYears . ' years');
+        }
+
         Assert::string($choiceOptions['mode']);
-        Assert::integer($choiceOptions['minYears']);
+        Assert::isInstanceOf($choiceOptions['minDate'], Carbon::class);
         Assert::integer($choiceOptions['plusYears']);
         Assert::boolean($choiceOptions['reverse']);
 

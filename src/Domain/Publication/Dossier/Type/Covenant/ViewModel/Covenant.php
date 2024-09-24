@@ -4,28 +4,18 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\Covenant\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\ViewModel\Department;
+use App\Domain\Publication\Dossier\Type\CommonDossierPropertiesAccessors;
+use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierProperties;
 
-/**
- * @SuppressWarnings(PHPMD.ExcessiveParameterList)
- */
 final readonly class Covenant
 {
+    use CommonDossierPropertiesAccessors;
+
     /**
      * @param non-empty-list<string> $parties
      */
     public function __construct(
-        public string $dossierId,
-        public string $dossierNr,
-        public string $documentPrefix,
-        public bool $isPreview,
-        public string $title,
-        public string $pageTitle,
-        public \DateTimeImmutable $publicationDate,
-        public Department $mainDepartment,
-        public string $summary,
-        public DossierType $type,
+        private CommonDossierProperties $commonDossier,
         public ?\DateTimeImmutable $dateFrom,
         public ?\DateTimeImmutable $dateTo,
         public string $previousVersionLink,

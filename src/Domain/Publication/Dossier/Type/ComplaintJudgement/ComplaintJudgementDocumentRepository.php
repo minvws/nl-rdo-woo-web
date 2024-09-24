@@ -58,7 +58,7 @@ class ComplaintJudgementDocumentRepository extends ServiceEntityRepository imple
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findForDossierPrefixAndNr(string $prefix, string $dossierNr): ?ComplaintJudgementDocument
+    public function findForDossierByPrefixAndNr(string $prefix, string $dossierNr): ?ComplaintJudgementDocument
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossier', 'dos')

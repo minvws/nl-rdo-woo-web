@@ -14,9 +14,9 @@
         <meta name="description" content="{{ 'global.meta_description' | trans() }}">
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-        {{ encore_entry_link_tags('public') }}
+        {{ vite_entry_link_tags('public') }}
 
-        {{ encore_entry_script_tags('public') }}
+        {{ vite_entry_script_tags('public') }}
 
         {% include "piwik-script.html.twig" %}
     </head>
@@ -32,7 +32,7 @@
                     <twig:Icon
                         class="woo-icon woo-logo__img"
                         name="ro-logo"
-                        path="build/img/public/non-free/icons.svg"
+                        path="assets/img/public/non-free/icons.svg"
                         height="100"
                         width="50"
                     />
@@ -85,6 +85,14 @@
                                     'public.global.label.overview_publications' | trans
                                 )
                             }}
+                            {% if DEPARTMENTS.hasAny %}
+                            {{ _self.main_nav_item(
+                                    path('app_departments_index'),
+                                    app.request.get('_route') == 'app_departments_index',
+                                    'public.global.label.departments' | trans
+                                )
+                            }}
+                            {% endif %}
                         </ul>
                     </div>
                 </div>

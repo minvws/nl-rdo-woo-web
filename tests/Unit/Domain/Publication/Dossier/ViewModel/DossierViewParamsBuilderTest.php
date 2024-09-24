@@ -100,6 +100,11 @@ final class DossierViewParamsBuilderTest extends MockeryTestCase
             ->with(CovenantDocument::getUploadGroupId())
             ->andReturn(['extensions' => 'foo']);
 
+        $this->fileTypeHelper
+            ->expects('getTypeNamesByUploadGroup')
+            ->with(CovenantDocument::getUploadGroupId())
+            ->andReturn(['labels' => 'foo']);
+
         $this->groundViewFactory
             ->expects('makeAsArray')
             ->andReturn(['grounds' => 'foo']);
@@ -114,6 +119,7 @@ final class DossierViewParamsBuilderTest extends MockeryTestCase
                 'documentLanguages' => ['languages' => 'foo'],
                 'documentMimeTypes' => ['mimetypes' => 'foo'],
                 'documentExtensions' => ['extensions' => 'foo'],
+                'documentTypeNames' => ['labels' => 'foo'],
                 'grounds' => ['grounds' => 'foo'],
             ],
             $this->builder->getParams(),
@@ -148,6 +154,11 @@ final class DossierViewParamsBuilderTest extends MockeryTestCase
             ->with(CovenantAttachment::getUploadGroupId())
             ->andReturn(['extensions' => 'foo']);
 
+        $this->fileTypeHelper
+            ->expects('getTypeNamesByUploadGroup')
+            ->with(CovenantAttachment::getUploadGroupId())
+            ->andReturn(['labels' => 'foo']);
+
         $this->groundViewFactory
             ->expects('makeAsArray')
             ->andReturn(['grounds' => 'foo']);
@@ -162,6 +173,7 @@ final class DossierViewParamsBuilderTest extends MockeryTestCase
                 'attachmentLanguages' => ['languages' => 'foo'],
                 'attachmentMimeTypes' => ['mimetypes' => 'foo'],
                 'attachmentExtensions' => ['extensions' => 'foo'],
+                'attachmentTypeNames' => ['labels' => 'foo'],
                 'grounds' => ['grounds' => 'foo'],
             ],
             $this->builder->getParams(),

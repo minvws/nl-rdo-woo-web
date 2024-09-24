@@ -13,6 +13,18 @@
             "src/ApiResource/.gitignore"
         ]
     },
+    "dama/doctrine-test-bundle": {
+        "version": "8.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "7.2",
+            "ref": "896306d79d4ee143af9eadf9b09fd34a8c391b70"
+        },
+        "files": [
+            "config/packages/dama_doctrine_test_bundle.yaml"
+        ]
+    },
     "doctrine/annotations": {
         "version": "2.0",
         "recipe": {
@@ -107,6 +119,15 @@
             "config/packages/oneup_uploader.yaml",
             "config/routes/oneup_uploader.yaml"
         ]
+    },
+    "pentatrion/vite-bundle": {
+        "version": "7.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "6.5",
+            "ref": "3a6673f248f8fc1dd364dadfef4c5b381d1efab6"
+        }
     },
     "php-amqplib/rabbitmq-bundle": {
         "version": "2.11",
@@ -308,21 +329,6 @@
             "config/packages/notifier.yaml"
         ]
     },
-    "symfony/phpunit-bridge": {
-        "version": "6.4",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "6.3",
-            "ref": "a411a0480041243d97382cac7984f7dce7813c08"
-        },
-        "files": [
-            ".env.test",
-            "bin/phpunit",
-            "phpunit.xml.dist",
-            "tests/bootstrap.php"
-        ]
-    },
     "symfony/routing": {
         "version": "6.2",
         "recipe": {
@@ -460,22 +466,6 @@
         },
         "files": [
             "config/packages/messenger.yaml"
-        ]
-    },
-    "symfony/webpack-encore-bundle": {
-        "version": "2.1",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "2.0",
-            "ref": "082d754b3bd54b3fc669f278f1eea955cfd23cf5"
-        },
-        "files": [
-            "assets/app.js",
-            "assets/styles/app.css",
-            "config/packages/webpack_encore.yaml",
-            "package.json",
-            "webpack.config.js"
         ]
     },
     "symfony/workflow": {

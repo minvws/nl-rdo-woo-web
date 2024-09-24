@@ -12,9 +12,10 @@
 
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-        {{ encore_entry_link_tags('admin') }}
+        {{ vite_entry_link_tags('admin') }}
 
-        {{ encore_entry_script_tags('admin') }}
+        {{ vite_entry_script_tags('admin') }}
+
         {% block extra_scripts %}{% endblock %}
 
         {% block inline_style %}{% endblock %}
@@ -106,6 +107,10 @@
                             {{ _self.nav_item('app_admin_departments', 'admin.global.label.departments', '/^app_admin_department/') }}
                         {% endif %}
 
+                        {% if matrix_has_permission('subject.read') %}
+                            {{ _self.nav_item('app_admin_subjects', 'admin.global.label.subjects', '/^app_admin_subject/') }}
+                        {% endif %}
+
                         {% if matrix_has_permission('user.read') %}
                             {{ _self.nav_item('app_admin_users', 'admin.global.label.access_control', '/^app_admin_user/') }}
                         {% endif %}
@@ -141,7 +146,7 @@
                 <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_privacy') }}">{{ 'global.footer.label.privacy' | trans() }}</a></li>
                 <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_contact') }}">{{ 'global.footer.label.contact' | trans()}}</a></li>
                 <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_accessibility') }}">{{ 'global.footer.label.accessibility' | trans() }}</a></li>
-                <li><a class="bhr-site-footer-nav-item" href="https://open.minvws.nl/">Publieke website</a></li>
+                <li><a class="bhr-site-footer-nav-item" href="{{ PUBLIC_BASE_URL }}/">Publieke website</a></li>
             </ul>
         </footer>
 

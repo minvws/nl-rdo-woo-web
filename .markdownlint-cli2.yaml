@@ -1,0 +1,27 @@
+# CLI config: https://github.com/DavidAnson/markdownlint-cli2?tab=readme-ov-file#markdownlint-cli2jsonc
+# Lint rules: https://github.com/DavidAnson/markdownlint?tab=readme-ov-file#rules--aliases
+
+config:
+  line-length:
+    strict: false
+    code_blocks: false
+    line_length: 256
+  no-inline-html:
+    allowed_elements:
+      - dl
+      - dt
+      - dd
+      - details
+      - summary
+      - code
+  ul-style:
+    style: dash
+
+globs:
+  - '**/*.md'
+  - '!node_modules'
+  - '!vendor'
+  - '!assets/vendor'
+
+gitignore: true
+showFound: true

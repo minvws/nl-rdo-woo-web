@@ -5,7 +5,7 @@
     <p class="bhr-form-help text-lg pb-2">{{ helpText }}</p>
 
     <div {{ vue_component('PublicationDocument', {
-        allowedExtensions: allowedExtensions | default([]),
+        allowedFileTypes: allowedFileTypes | default([]),
         allowedMimeTypes: allowedMimeTypes | default([]),
         canDelete: canDelete,
         endpoint: endpoint,

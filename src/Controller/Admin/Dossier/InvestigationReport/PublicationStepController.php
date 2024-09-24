@@ -69,7 +69,7 @@ class PublicationStepController extends AbstractController
     public function edit(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] InvestigationReport $dossier,
         Request $request,
-        Breadcrumbs $breadcrumbs
+        Breadcrumbs $breadcrumbs,
     ): Response {
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME);
         if (! $wizardStatus->isCurrentStepAccessibleInEditMode()) {

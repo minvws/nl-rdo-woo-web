@@ -21,7 +21,7 @@ class ProcessDocumentMessage
         string $originalFilename,
         bool $chunked = false,
         string $chunkUuid = '',
-        int $chunkCount = 0
+        int $chunkCount = 0,
     ) {
         $this->dossierUuid = $dossierUuid;
         $this->remotePath = $remotePath;

@@ -7,6 +7,7 @@ namespace App\Controller\Public\Dossier\WooDecision;
 use App\Doctrine\DocumentConditions;
 use App\Entity\BatchDownload;
 use App\Entity\Inquiry;
+use App\Exception\ViewingNotAllowedException;
 use App\Form\Inquiry\InquiryFilterFormType;
 use App\Repository\DossierRepository;
 use App\Repository\InquiryRepository;
@@ -63,7 +64,7 @@ class InquiryController extends AbstractController
         } else {
             $dossier = $this->dossierRepository->findOneBy(['dossierNr' => $filter]);
             if (! $dossier || ! $this->dossierService->isViewingAllowed($dossier)) {
-                throw $this->createNotFoundException('Dossier not found');
+                throw ViewingNotAllowedException::forDossier();
             }
             $docQuery = $this->inquiryRepository->getDocsForInquiryDossierQueryBuilder($inquiry, $dossier);
             $searchUrlParams = [
@@ -139,7 +140,7 @@ class InquiryController extends AbstractController
         } else {
             $dossier = $this->dossierRepository->findOneBy(['dossierNr' => $filter]);
             if (! $dossier || ! $this->dossierService->isViewingAllowed($dossier)) {
-                throw $this->createNotFoundException('Dossier not found');
+                throw ViewingNotAllowedException::forDossier();
             }
             $docQuery = $this->inquiryRepository->getDocsForInquiryDossierQueryBuilder($inquiry, $dossier);
         }
@@ -159,7 +160,7 @@ class InquiryController extends AbstractController
     public function batch(
         Inquiry $inquiry,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
-        Breadcrumbs $breadcrumbs
+        Breadcrumbs $breadcrumbs,
     ): Response {
         if ($batch->getEntity() !== $inquiry) {
             throw $this->createNotFoundException('Inquiry download not found');

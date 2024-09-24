@@ -22,16 +22,16 @@
         // "useDefineForClassFields": true,                  /* Emit ECMAScript-standard-compliant class fields. */
         // "moduleDetection": "auto",                        /* Control what method is used to detect module-format JS files. */
         /* Modules */
-        "module": "commonjs", /* Specify what module code is generated. */
+        "module": "ES2022", /* Specify what module code is generated. */
         // "rootDir": "./",                                  /* Specify the root folder within your source files. */
-        // "moduleResolution": "bundler", /* Specify how TypeScript looks up a file from a given module specifier. */
+        "moduleResolution": "bundler", /* Specify how TypeScript looks up a file from a given module specifier. */
         "baseUrl": "./", /* Specify the base directory to resolve non-relative module names. */
         "paths": {
             /**
              * The import aliases below are defined in multiple files. So remember to update them all if you change one.
              * - tsconfig.json
              * - vitest.config.ts
-             * - webpack.config.js
+             * - vite.config.js
              */
             "@js/*": [
                 "assets/js/*"

@@ -117,7 +117,7 @@ class InventoryComparator
         array $tobeRemovedDocs,
         Dossier $dossier,
         InventoryProcessRun $run,
-        InventoryChangeset $changeset
+        InventoryChangeset $changeset,
     ): void {
         foreach (array_keys($tobeRemovedDocs) as $documentNr) {
             if (! $dossier->getStatus()->isConcept()) {

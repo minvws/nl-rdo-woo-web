@@ -13,6 +13,8 @@ use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Validator as DossierValidator;
+use App\Domain\Publication\Subject\Subject;
 use App\Entity\Department;
 use App\Entity\Organisation;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -73,14 +75,18 @@ abstract class AbstractDossier
     #[ORM\ManyToMany(targetEntity: Department::class)]
     #[ORM\JoinTable(name: 'dossier_department')]
     #[ORM\JoinColumn(name: 'dossier_id', onDelete: 'cascade')]
-    #[Assert\Count(min: 1, groups: [DossierValidationGroup::DETAILS->value])]
+    #[Assert\Count(
+        min: 1,
+        minMessage: 'at_least_one_department_required',
+        groups: [DossierValidationGroup::DETAILS->value]
+    )]
     protected Collection $departments;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
-    #[Assert\GreaterThanOrEqual(
-        value: 'today -10 years',
-        message: 'date_max_10_year_old',
-        groups: [DossierValidationGroup::DETAILS->value]
+    #[DossierValidator\DateFromConstraint(
+        groups: [
+            DossierValidationGroup::COVENANT_DETAILS->value,
+        ],
     )]
     #[Assert\NotNull(
         message: 'annual_report_year_mandatory',
@@ -140,6 +146,10 @@ abstract class AbstractDossier
 
     #[ORM\Column(length: 255)]
     protected string $internalReference = '';
+
+    #[ORM\ManyToOne(inversedBy: 'dossiers')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    protected ?Subject $subject;
 
     public function __construct()
     {
@@ -326,6 +336,18 @@ abstract class AbstractDossier
     public function setInternalReference(string $internalReference): void
     {
         $this->internalReference = $internalReference;
+    }
+
+    public function getSubject(): ?Subject
+    {
+        return $this->subject;
+    }
+
+    public function setSubject(?Subject $subject): static
+    {
+        $this->subject = $subject;
+
+        return $this;
     }
 
     abstract public function getType(): DossierType;

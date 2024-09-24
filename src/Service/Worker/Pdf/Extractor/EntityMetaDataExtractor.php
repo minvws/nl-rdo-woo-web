@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Service\Worker\Pdf\Extractor;
 
+use App\Domain\Ingest\Content\Extractor\Tika\TikaService;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use App\Entity\EntityWithFileInfo;
 use App\Service\Stats\WorkerStatsService;
 use App\Service\Storage\EntityStorageService;
-use App\Service\Worker\Pdf\Tools\TikaService;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -21,7 +21,7 @@ readonly class EntityMetaDataExtractor implements EntityExtractorInterface
         private EntityStorageService $entityStorageService,
         private SubTypeIndexer $subTypeIndexer,
         private TikaService $tika,
-        private WorkerStatsService $statsService
+        private WorkerStatsService $statsService,
     ) {
     }
 

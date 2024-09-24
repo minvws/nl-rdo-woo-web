@@ -22,14 +22,12 @@ class WorkerStatsService
      */
     public function measure(string $section, callable $f, array $args = []): mixed
     {
-        $date = new CarbonImmutable();
-        $hostname = gethostname();
+        $date = CarbonImmutable::now();
+        $hostname = $this->getHostname();
 
-        Assert::notFalse($hostname, 'Failed to get hostname');
-
-        $timeStart = microtime(true) * 1000;
+        $timeStart = $this->getMicrotime($date);
         $result = call_user_func_array($f, $args);
-        $duration = (int) ((microtime(true) * 1000) - $timeStart);
+        $duration = (int) ($this->getMicrotime() - $timeStart);
 
         foreach ($this->handlers as $handler) {
             $handler->store($date, $hostname, $section, $duration);
@@ -37,4 +35,20 @@ class WorkerStatsService
 
         return $result;
     }
+
+    // @codeCoverageIgnoreStart
+    protected function getHostname(): string
+    {
+        $hostname = gethostname();
+
+        Assert::notFalse($hostname, 'Failed to get hostname');
+
+        return $hostname;
+    }
+
+    protected function getMicrotime(CarbonImmutable $carbon = new CarbonImmutable()): float
+    {
+        return (float) $carbon->rawFormat('U.u') * 1000;
+    }
+    // @codeCoverageIgnoreEnd
 }

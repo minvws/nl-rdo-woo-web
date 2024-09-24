@@ -46,11 +46,11 @@ enum FacetKey: string
     {
         return match ($this) {
             self::TYPE => 'type',
-            self::SUBJECT => 'subjects',
+            self::SUBJECT => 'subject_names',
             self::SOURCE => 'source_type',
             self::GROUNDS => 'grounds',
             self::JUDGEMENT => 'judgement',
-            self::DEPARTMENT => 'departments.name',
+            self::DEPARTMENT => 'department_names',
             self::PERIOD => 'date_period',
             self::DATE => 'date_filter',
             self::DOSSIER_NR => 'dossier_nr',
@@ -63,7 +63,7 @@ enum FacetKey: string
     {
         return match ($this) {
             self::TYPE => 'doctype',
-            self::SUBJECT => 'sub',
+            self::SUBJECT => 'subject',
             self::SOURCE => 'src',
             self::GROUNDS => 'gnd',
             self::JUDGEMENT => 'jdg',

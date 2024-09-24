@@ -11,7 +11,7 @@
   const emit = defineEmits(['uploaded', 'uploadError', 'uploading']);
 
   const props = defineProps({
-    allowedExtensions: {
+    allowedFileTypes: {
       type: Array,
       required: true,
       default: () => [],
@@ -151,7 +151,7 @@
       @uploading="onUploading"
       @uploadError="onUploadError"
       :allow-multiple="props.allowMultiple"
-      :allowed-extensions="props.allowedExtensions"
+      :allowed-file-types="props.allowedFileTypes"
       :allowed-mime-types="props.allowedMimeTypes"
       :enable-auto-upload="props.enableAutoUpload"
       :group-id="props.groupId"

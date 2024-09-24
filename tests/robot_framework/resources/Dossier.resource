@@ -33,10 +33,10 @@ Fill Out Basic Details
     Select Options By  id=details_date_from  value  ${date_from}
     Select Options By  id=details_date_to  value  ${date_to}
   END
-  Select Options By  id=details_departments  index  0
+  Select Options By  //select[@name="details[departments][0]"]  index  1
   IF  '${type}' == 'woo-decision'
     Check Checkbox  text=Woo-verzoek
-    Select Options By  id=details_default_subjects  label  Opstart Corona
+    Select Options By  id=details_subject  label  Geen onderwerp
   END
   Select Options By  id=details_documentPrefix_documentPrefix  text  ${prefix}
   Fill Text  id=details_dossierNr  ${DOSSIER_REFERENCE}
@@ -234,6 +234,10 @@ Publish Dossier And Return To Admin Home
 
 Click Publications
   Click  "Publicaties"
+
+Click Publication By Value
+  [Arguments]  ${value}
+  Click  //*[@id="resultaten"]/tbody/tr[td//text()[contains(., '${value}')]]
 
 Verify Publication Confirmation
   [Arguments]  ${preview_date}  ${publication_date}

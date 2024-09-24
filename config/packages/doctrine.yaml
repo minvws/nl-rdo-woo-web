@@ -40,8 +40,13 @@ doctrine:
 when@test:
     doctrine:
         dbal:
-            # "TEST_TOKEN" is typically set by ParaTest
-            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+            connections:
+                default:
+                    # "TEST_TOKEN" is typically set by ParaTest
+                    dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+                    # Added for doctrine-test-bundle. Only needed when using DBAL < 4
+                    # See https://github.com/dmaicher/doctrine-test-bundle/blob/1f81a280ea63f049d24e9c8ce00e557b18e0ff2f/README.md#how-to-install-and-use-this-bundle
+                    use_savepoints: true
 
 when@prod:
     doctrine:

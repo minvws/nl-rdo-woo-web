@@ -119,4 +119,14 @@ enum DossierStatus: string implements TranslatableInterface
     {
         return $translator->trans('admin.publications.status.' . $this->value, locale: $locale);
     }
+
+    public function isDeleted(): bool
+    {
+        return $this === self::DELETED;
+    }
+
+    public function isNotDeleted(): bool
+    {
+        return ! $this->isDeleted();
+    }
 }

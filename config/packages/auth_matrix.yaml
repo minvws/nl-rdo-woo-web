@@ -61,6 +61,26 @@ auth_matrix:
             }
         },
 
+      # -- Subject ----------------------------------------------------------------------------
+        {
+            prefix: "subject",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+            }
+        },
+        {
+            prefix: "subject",
+            roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+            }
+        },
+
       # -- Dossier ----------------------------------------------------------------------------
         {
             prefix: "dossier",

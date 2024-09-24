@@ -7,6 +7,7 @@ namespace App\Service\Search\Query;
 use App\Service\Search\Query\Dsl\GlobalAggregation;
 use App\Service\Search\Query\Dsl\MissingAggregation;
 use App\Service\Search\Query\Dsl\TermsAggregationWithMinDocCount;
+use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
 use Erichard\ElasticQueryBuilder\Aggregation\Aggregation as ErichardAggregation;
 use Erichard\ElasticQueryBuilder\Options\Field;
 use Erichard\ElasticQueryBuilder\Options\InlineScript;
@@ -18,12 +19,16 @@ final class Aggregation extends ErichardAggregation
         return new GlobalAggregation($name);
     }
 
+    /**
+     * @param array<AbstractAggregation> $aggregations
+     */
     public static function termsWithMinDocCount(
         string $name,
         string|Field|InlineScript $fieldOrSource,
         int $minDocCount,
+        array $aggregations = [],
     ): TermsAggregationWithMinDocCount {
-        return new TermsAggregationWithMinDocCount($name, $fieldOrSource, $minDocCount);
+        return new TermsAggregationWithMinDocCount($name, $fieldOrSource, $minDocCount, $aggregations);
     }
 
     public static function missing(string $name, string $field): MissingAggregation

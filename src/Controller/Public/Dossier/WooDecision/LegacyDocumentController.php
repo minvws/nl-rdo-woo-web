@@ -6,6 +6,7 @@ namespace App\Controller\Public\Dossier\WooDecision;
 
 use App\Entity\Document;
 use App\Entity\Dossier;
+use App\Exception\ViewingNotAllowedException;
 use App\Service\DossierService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -66,7 +67,7 @@ class LegacyDocumentController extends AbstractController
     public function downloadPage(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
         #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document,
-        string $pageNr
+        string $pageNr,
     ): RedirectResponse {
         $this->validateAccess($dossier, $document);
 
@@ -92,7 +93,7 @@ class LegacyDocumentController extends AbstractController
     public function thumbnailPage(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
         #[MapEntity(mapping: ['documentId' => 'documentNr'])] Document $document,
-        string $pageNr
+        string $pageNr,
     ): RedirectResponse {
         $this->validateAccess($dossier, $document);
 
@@ -111,7 +112,7 @@ class LegacyDocumentController extends AbstractController
     private function validateAccess(Dossier $dossier, Document $document): void
     {
         if (! $this->dossierService->isViewingAllowed($dossier, $document) || ! $document->getDossiers()->contains($dossier)) {
-            throw $this->createNotFoundException('Document or dossier not found');
+            throw ViewingNotAllowedException::forDossierOrDocument();
         }
     }
 }

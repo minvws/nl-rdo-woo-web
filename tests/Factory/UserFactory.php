@@ -56,10 +56,31 @@ final class UserFactory extends \Zenstruck\Foundry\Persistence\PersistentProxyOb
         parent::__construct();
     }
 
-    public function asAdmin(): self
+    public function asSuperAdmin(): self
     {
         return $this->with([
             'roles' => [Roles::ROLE_SUPER_ADMIN],
+        ]);
+    }
+
+    public function asOrganisationAdmin(): self
+    {
+        return $this->with([
+            'roles' => [Roles::ROLE_ORGANISATION_ADMIN],
+        ]);
+    }
+
+    public function asDossierAdmin(): self
+    {
+        return $this->with([
+            'roles' => [Roles::ROLE_DOSSIER_ADMIN],
+        ]);
+    }
+
+    public function asViewAccess(): self
+    {
+        return $this->with([
+            'roles' => [Roles::ROLE_VIEW_ACCESS],
         ]);
     }
 

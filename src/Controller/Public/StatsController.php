@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Public;
 
+use App\Domain\Search\Query\SearchParametersFactory;
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Service\Search\ConfigFactory;
 use App\Service\Search\SearchService;
 use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
@@ -30,7 +30,7 @@ class StatsController extends AbstractController
         private readonly string $rabbitMqStatUrl,
         private readonly EntityStorageService $entityStorageService,
         private readonly ThumbnailStorageService $thumbnailStorageService,
-        private readonly ConfigFactory $configFactory
+        private readonly SearchParametersFactory $searchParametersFactory,
     ) {
     }
 
@@ -121,7 +121,9 @@ class StatsController extends AbstractController
     protected function isElasticAlive(): bool
     {
         try {
-            $result = $this->searchService->search($this->configFactory->create());
+            $result = $this->searchService->search(
+                $this->searchParametersFactory->createDefault()
+            );
 
             return $result->hasFailed() === false;
         } catch (\Throwable) {

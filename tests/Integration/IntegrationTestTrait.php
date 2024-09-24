@@ -7,12 +7,18 @@ namespace App\Tests\Integration;
 use App\Tests\Faker\FakerFactory;
 use Faker\Generator;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webmozart\Assert\Assert;
+use Zenstruck\Foundry\Test\Factories;
+use Zenstruck\Foundry\Test\ResetDatabase;
 
 trait IntegrationTestTrait
 {
     use MockeryPHPUnitIntegration;
+    use MatchesSnapshots;
+    use ResetDatabase;
+    use Factories;
 
     protected Generator $faker;
 

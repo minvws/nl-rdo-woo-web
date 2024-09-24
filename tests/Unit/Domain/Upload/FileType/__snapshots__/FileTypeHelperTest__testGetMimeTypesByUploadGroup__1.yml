@@ -10,6 +10,10 @@
 - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 - application/vnd.oasis.opendocument.spreadsheet
 - application/vnd.oasis.opendocument.formula
+- text/csv
+- application/csv
+- text/x-comma-separated-values
+- text/x-csv
 - application/msword
 - application/vnd.ms-word
 - application/x-msword

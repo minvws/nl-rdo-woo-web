@@ -44,6 +44,7 @@ class InventoryType extends AbstractType
                 ],
                 'attr' => [
                     'accept' => self::SPREADSHEET_MIMETYPES,
+                    'typeNames' => ['Excel'],
                 ],
             ])
             ->add('submit', SubmitType::class, [

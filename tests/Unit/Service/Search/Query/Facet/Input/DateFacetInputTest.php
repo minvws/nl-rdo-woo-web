@@ -7,7 +7,6 @@ namespace App\Tests\Unit\Service\Search\Query\Facet\Input;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Facet\Input\DateFacetInput;
 use App\Service\Search\Query\Facet\Input\DateFacetInputInterface;
-use App\Service\Search\Query\Facet\Input\ParameterBagFactoryInterface;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -34,7 +33,6 @@ final class DateFacetInputTest extends UnitTestCase
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
 
         self::assertInstanceOf(DateFacetInput::class, $input);
-        self::assertInstanceOf(ParameterBagFactoryInterface::class, $input);
         self::assertInstanceOf(DateFacetInputInterface::class, $input);
     }
 
@@ -269,5 +267,29 @@ final class DateFacetInputTest extends UnitTestCase
                 'expected' => false,
             ],
         ];
+    }
+
+    public function testGetRequestParameters(): void
+    {
+        $this->bag->shouldReceive('all')->with($this->key->getParamName())->once()->andReturn(['without_date' => '1']);
+
+        $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
+
+        self::assertEquals(
+            ['without_date' => 1],
+            $input->getRequestParameters(),
+        );
+
+        $this->bag->shouldReceive('all')->with($this->key->getParamName())->once()->andReturn([
+            'from' => '2022-03-12',
+            'to' => '2024-12-01',
+        ]);
+
+        $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
+
+        self::assertEquals(
+            ['from' => '2022-03-12', 'to' => '2024-12-01'],
+            $input->getRequestParameters(),
+        );
     }
 }

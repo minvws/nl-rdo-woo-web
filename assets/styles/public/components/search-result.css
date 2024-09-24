@@ -14,6 +14,7 @@
     .woo-search-result__main-link {
         @apply block text-woo-sea-blue hover-focus:underline hover-focus:text-woo-ateneo-blue;
         @apply visited:text-woo-plum visited:hover-focus:no-underline;
+        overflow-wrap: anywhere;
     }
 
     .woo-search-result__spec-list {

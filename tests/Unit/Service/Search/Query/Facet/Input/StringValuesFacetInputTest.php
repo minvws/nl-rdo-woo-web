@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Search\Query\Facet\Input;
 
 use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Facet\Input\ParameterBagFactoryInterface;
 use App\Service\Search\Query\Facet\Input\StringValuesFacetInput;
 use App\Service\Search\Query\Facet\Input\StringValuesFacetInputInterface;
 use App\Tests\Unit\UnitTestCase;
@@ -34,7 +33,6 @@ final class StringValuesFacetInputTest extends UnitTestCase
         $input = StringValuesFacetInput::fromParameterBag($this->key, $this->bag);
 
         self::assertInstanceOf(StringValuesFacetInput::class, $input);
-        self::assertInstanceOf(ParameterBagFactoryInterface::class, $input);
         self::assertInstanceOf(StringValuesFacetInputInterface::class, $input);
     }
 
@@ -86,5 +84,14 @@ final class StringValuesFacetInputTest extends UnitTestCase
         $this->bag->shouldReceive('all')->with($this->key->getParamName())->once()->andReturn(['one' => 1]);
 
         StringValuesFacetInput::fromParameterBag($this->key, $this->bag);
+    }
+
+    public function testGetRequestParameters(): void
+    {
+        $this->bag->shouldReceive('all')->with($this->key->getParamName())->once()->andReturn(['one' => 'foo', 'two' => 'bar']);
+
+        $input = StringValuesFacetInput::fromParameterBag($this->key, $this->bag);
+
+        self::assertSame(['foo', 'bar'], $input->getRequestParameters());
     }
 }

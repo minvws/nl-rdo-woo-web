@@ -45,6 +45,10 @@
                 <twig:Admin:Definition term="{{ 'admin.global.responsible_department' | trans() }}">
                     <span data-e2e-name="dossier-department">{{ dossier.departments[0].name | default('admin.global.no_record' | trans()) }}</span>
                 </twig:Admin:Definition>
+
+                <twig:Admin:Definition term="{{ 'admin.global.subject' | trans }}">
+                    {{ dossier.subject.name | default('admin.global.no_record' | trans) }}
+                </twig:Admin:Definition>
             </dl>
         </section>
 
@@ -222,7 +226,7 @@
                                         {% include 'pagination/sort.admin.html.twig' with {'title': 'Zaaknummer', 'sorted': sorted, 'options': case_options, 'sortClassName': sortClassName} %}
                                         <th class="bhr-column-head" scope="col">Link voor verzoeker</th>
                                     </thead>
-                                    <tbody>
+                                    <tbody data-e2e-name="linked-inquiries">
                                         {% for inquiry in dossier.inquiries|sort((a, b) => a.casenr <=> b.casenr) %}
                                         <tr>
                                             <td>{{ inquiry.casenr }}</td>

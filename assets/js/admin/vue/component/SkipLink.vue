@@ -1,14 +1,11 @@
-<script setup>
-  const props = defineProps({
-    href: {
-      type: String,
-      required: true,
-      default: '',
-    },
-    id: {
-      type: String,
-      required: true,
-    },
+<script setup lang="ts">
+  interface Props {
+    href: string;
+    id: string;
+  }
+
+  const props = withDefaults(defineProps<Props>(), {
+    href: '',
   });
 
   const href = props.href.startsWith('#') ? props.href : `#${props.href}`;

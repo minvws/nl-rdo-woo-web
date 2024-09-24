@@ -17,7 +17,7 @@
     <div class="bhr-card">
         {% set alerts = app.flashes('backend') %}
         {% if alerts | length > 0 %}
-            <div class="mb-8">
+            <div class="mb-8" data-e2e-name="inquiry-alerts">
                 {% for messages in alerts %}
                     {% for label, message in messages %}
                         <twig:Admin:Alert type="{{ label }}">
@@ -40,15 +40,32 @@
                     </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody data-e2e-name="inquiry-list">
                 {% for row in pagination %}
-                    <tr>
-                        <td><strong>{{ row.inquiry.casenr }}</strong></td>
-                        <td>{{ row.dossierCount }}</td>
-                        <td>{{ row.documentCount }}</td>
-                        <td>{{ row.inquiry.updatedAt | format_datetime('medium') }}</td>
+                    {% set url = PUBLIC_BASE_URL ~ path('app_inquiry_detail', { token: row.inquiry.token }) %}
+                    <tr class="bhr-clickable-row">
+                        <td class="font-bold">
+                            <a class="bhr-fill-cell" href="{{ url }}">
+                                {{ row.inquiry.casenr }}
+                            </a>
+                        </td>
+                        <td>
+                            <a class="bhr-fill-cell" href="{{ url }}">
+                                {{ row.dossierCount }}
+                            </a>
+                        </td>
+                        <td>
+                            <a class="bhr-fill-cell" href="{{ url }}">
+                                {{ row.documentCount }}
+                            </a>
+                        </td>
+                        <td>
+                            <a class="bhr-fill-cell" href="{{ url }}">
+                                {{ row.inquiry.updatedAt | format_datetime('medium') }}
+                            </a>
+                        </td>
                         <td class="text-right">
-                            <a class="js-clickable-row__focusable" href="{{ PUBLIC_BASE_URL }}{{ path('app_inquiry_detail', { token: row.inquiry.token }) }}">
+                            <a class="bhr-fill-cell" href="{{ url }}">
                                 <span class="sr-only">{{ 'global.details' | trans() }} {{ row.inquiry.casenr }}</span>
                                 <twig:Admin:Icon name="chevron-right"/>
                             </a>

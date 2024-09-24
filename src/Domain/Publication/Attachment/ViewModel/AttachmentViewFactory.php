@@ -32,7 +32,7 @@ readonly class AttachmentViewFactory
      */
     public function makeCollection(
         AbstractDossier $dossier,
-        ApplicationMode $mode = ApplicationMode::PUBLIC
+        ApplicationMode $mode = ApplicationMode::PUBLIC,
     ): array {
         if (! $dossier instanceof EntityWithAttachments) {
             return [];

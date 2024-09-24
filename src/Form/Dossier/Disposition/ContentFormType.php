@@ -6,13 +6,13 @@ namespace App\Form\Dossier\Disposition;
 
 use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use App\Form\Dossier\AbstractDossierStepType;
-use App\Form\Dossier\DocumentType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use App\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class ContentFormType extends AbstractDossierStepType
 {
+    use DossierFormBuilderTrait;
+
     public function getDataClass(): string
     {
         return Disposition::class;
@@ -23,54 +23,8 @@ class ContentFormType extends AbstractDossierStepType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var Disposition $dossier */
-        $dossier = $builder->getData();
-
-        $builder
-            ->add('summary', TextareaType::class, [
-                'label' => 'admin.dossiers.disposition.summary',
-                'required' => true,
-                'attr' => ['rows' => 5],
-                'empty_data' => '',
-            ])
-            ->add('document', DocumentType::class);
-
-        $this->addSubmits($dossier, $builder);
-    }
-
-    public function addSubmits(Disposition $dossier, FormBuilderInterface $builder): void
-    {
-        if ($dossier->getStatus()->isConcept()) {
-            $builder
-                ->add('next', SubmitType::class, [
-                    'label' => 'global.save_and_continue',
-                    'attr' => [
-                        'data-first-button' => true,
-                    ],
-                ])
-                ->add('save', SubmitType::class, [
-                    'label' => 'global.save_draft',
-                    'attr' => [
-                        'class' => 'bhr-button--secondary',
-                        'data-last-button' => true,
-                    ],
-                ]);
-        } else {
-            $builder
-                ->add('save', SubmitType::class, [
-                    'label' => 'global.save_edit',
-                    'attr' => [
-                        'data-first-button' => true,
-                    ],
-                ])
-                ->add('cancel', SubmitType::class, [
-                    'label' => 'global.cancel',
-                    'attr' => [
-                        'class' => 'bhr-button--secondary',
-                        'data-last-button' => true,
-                    ],
-                    'validate' => false,
-                ]);
-        }
+        $this->addSummaryField($builder);
+        $this->addDocumentField($builder);
+        $this->addSubmits($builder);
     }
 }

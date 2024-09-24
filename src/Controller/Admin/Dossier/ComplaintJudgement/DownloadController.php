@@ -29,7 +29,7 @@ class DownloadController extends AbstractController
     public function downloadDocument(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
         ComplaintJudgement $dossier,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
         ComplaintJudgementDocument $document,
     ): StreamedResponse {
         unset($dossier); // Only used for isGranted check

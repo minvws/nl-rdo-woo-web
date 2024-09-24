@@ -9,11 +9,11 @@ tasks:
     desc: Lint documentation
     cmds:
       - docker run -it --rm
-        --volume $(pwd):/workdir/docs
-        --volume $(pwd)/../.markdownlint.json:/workdir/.markdownlint.json:ro
+        --volume "{{.BASE_PATH}}":/workdir
         davidanson/markdownlint-cli2:{{.MARKDOWNLINT_VERSION}}
-        "**/*.md"
         {{.CLI_ARGS}}
+    requires:
+      vars: [ BASE_PATH ]
 
   lint:fix:
     desc: Auto fix lint errors in documentation

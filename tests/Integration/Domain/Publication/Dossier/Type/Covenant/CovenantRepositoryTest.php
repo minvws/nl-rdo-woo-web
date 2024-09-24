@@ -25,6 +25,8 @@ final class CovenantRepositoryTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         self::bootKernel();
     }
 

@@ -36,6 +36,8 @@ final class CovenantAttachmentTest extends ApiTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->root = vfsStream::setup();
 
         self::bootKernel();
@@ -44,7 +46,7 @@ final class CovenantAttachmentTest extends ApiTestCase
     public function testGetAllCovenantAttachments(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -76,7 +78,7 @@ final class CovenantAttachmentTest extends ApiTestCase
     public function testGetSingleCovenantAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -105,7 +107,7 @@ final class CovenantAttachmentTest extends ApiTestCase
     public function testGetSingleNonExistingCovenantAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -131,7 +133,7 @@ final class CovenantAttachmentTest extends ApiTestCase
     public function testCreateCovenantAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -215,7 +217,7 @@ final class CovenantAttachmentTest extends ApiTestCase
     public function testCreateCovenantAttachmentWithInvalidRequestData(array $input, array $expectedViolations): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -430,7 +432,7 @@ final class CovenantAttachmentTest extends ApiTestCase
     public function testDeleteCovenantAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -459,7 +461,7 @@ final class CovenantAttachmentTest extends ApiTestCase
     public function testDeleteNonExistingCovenantAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -485,7 +487,7 @@ final class CovenantAttachmentTest extends ApiTestCase
     public function testUpdateCovenantAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -543,7 +545,7 @@ final class CovenantAttachmentTest extends ApiTestCase
     public function testUpdateNonExistingCovenantAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -574,7 +576,7 @@ final class CovenantAttachmentTest extends ApiTestCase
     public function testUpdateCovenantAttachmentWithInvalidRequestData(array $input, array $expectedViolations): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 

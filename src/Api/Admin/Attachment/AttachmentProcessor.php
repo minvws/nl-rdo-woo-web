@@ -49,7 +49,7 @@ abstract class AttachmentProcessor implements ProcessorInterface
         mixed $data,
         Operation $operation,
         array $uriVariables = [],
-        array $context = []
+        array $context = [],
     ): ?AttachmentDto {
         unset($context);
 

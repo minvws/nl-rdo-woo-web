@@ -1,5 +1,6 @@
 *** Settings ***
 Documentation       Resource file containing custom keywords for inquiries in the admin console.
+Library             String
 Library             Browser
 Library             DebugLibrary
 Resource            Generic.resource
@@ -26,3 +27,115 @@ Verify Document Listed In Inquiry Overview
 Verify Decision Listed In Inquiry Overview
   [Arguments]  ${decision_name}
   Get Text  //body  *=  ${decision_name}
+
+Click Inquiries
+  Click  " Zaken "
+
+Open Inquiry
+  [Arguments]  ${inquiry_id}
+  VAR  ${count}  0
+  WHILE  ${count} < 1  limit=40 seconds
+    Sleep  5s
+    Reload
+    ${count} =  Get Element Count  //*[@data-e2e-name="inquiry-list"]//td[contains(.,'${inquiry_id}')]
+  END
+  Click  '${inquiry_id}'
+
+Verify Inquiry Dossiers
+  [Arguments]  ${dossier_ids}
+  FOR  ${dossier_id}  IN  @{dossier_ids}
+    Get Text  //*[@data-e2e-name="inquiry-dossiers"]  contains  ${dossier_id}
+  END
+
+Verify Inquiry Info
+  [Arguments]  ${nr_of_published_docs}=0  ${nr_of_partially_published_docs}=0  ${nr_of_unpublished_docs}=0
+  IF  ${nr_of_published_docs} == 1
+    Get Text
+    ...  //*[@data-e2e-name="inquiry-info"]
+    ...  contains
+    ...  ${nr_of_published_docs} document is hierna openbaar gemaakt
+  ELSE IF  ${nr_of_published_docs} > 1
+    Get Text
+    ...  //*[@data-e2e-name="inquiry-info"]
+    ...  contains
+    ...  ${nr_of_published_docs} documenten zijn hierna openbaar gemaakt
+  END
+  IF  ${nr_of_partially_published_docs} == 1
+    Get Text
+    ...  //*[@data-e2e-name="inquiry-info"]
+    ...  contains
+    ...  ${nr_of_partially_published_docs} document is hierna gedeeltelijk openbaar gemaakt.
+  ELSE IF  ${nr_of_partially_published_docs} > 1
+    Get Text
+    ...  //*[@data-e2e-name="inquiry-info"]
+    ...  contains
+    ...  ${nr_of_partially_published_docs} documenten zijn hierna gedeeltelijk openbaar gemaakt.
+  END
+  IF  ${nr_of_unpublished_docs} == 1
+    Get Text
+    ...  //*[@data-e2e-name="inquiry-info"]
+    ...  contains
+    ...  ${nr_of_unpublished_docs} document wordt niet openbaar gemaakt.
+  ELSE IF  ${nr_of_unpublished_docs} > 1
+    Get Text
+    ...  //*[@data-e2e-name="inquiry-info"]
+    ...  contains
+    ...  ${nr_of_unpublished_docs} documenten wordt niet openbaar gemaakt.
+  END
+
+Verify Inquiry Documents
+  [Arguments]  ${document_ids}
+  FOR  ${document_id}  IN  @{document_ids}
+    Get Text  //*[@data-e2e-name="inquiry-documents"]  contains  ${document_id}
+  END
+
+Click Manual Inquiry Linking
+  Click  //*[@data-e2e-name="go-to-link-inquires-link"]
+
+Click Manual Woo Document Linking
+  Click  //*[@data-e2e-name="go-to-link-documents-link"]
+
+Click Manual Woo Decision Linking
+  Click  //*[@data-e2e-name="go-to-link-dossiers-link"]
+
+Link Inquiry To Decision
+  [Arguments]  ${inquiry}  ${decision}
+  Fill Text  //*[@id="inquiry_link_dossier_form_map"]  ${inquiry}
+  Click  //*[@data-e2e-name="inquiry-decision-selector"]
+  Fill Text  //*[@data-e2e-name="inquiry-decision-search-field"]  ${decision}
+  Click  //*[@id="link-dossiers-search-results"]/ul/li[1]
+  Click  //button[@id="js-link-dossier"]
+  Click  //button[@id="inquiry_link_dossier_form_link"]
+
+Link Inquiry To Documents
+  [Arguments]  ${linking_excel}
+  Upload File By Selector  id=inquiry_link_documents_form_upload  ${linking_excel}
+  ${filename} =  Fetch From Right  ${linking_excel}  /
+  Wait For Condition  Text  //div[@class="bhr-upload-area__files-area"]  contains  ${filename}  timeout=10s
+  Select Prefix When Linking Inquiries  MINVWS
+  Click  id=inquiry_link_documents_form_link
+  Wait For Condition
+  ...  Text
+  ...  //*[@data-e2e-name="inquiry-alerts"]
+  ...  contains
+  ...  De zaaknummers worden gekoppeld
+  ...  timeout=10s
+  Sleep  5s
+  Reload
+
+Select Prefix When Linking Inquiries
+  [Arguments]  ${prefix}
+  ${old_timeout} =  Set Browser Timeout  1
+  ${present} =  Run Keyword And Return Status
+  ...  Get Element States
+  ...  id=inquiry_link_documents_form_prefix
+  ...  contains
+  ...  visible
+  IF  ${present}
+    Select Options By  id=inquiry_link_documents_form_prefix  text  ${prefix}
+  END
+  Set Browser Timeout  ${old_timeout}
+
+Verify Inquiry Document Count
+  [Arguments]  ${inquiry}  ${count}
+  Get Text  //*[@data-e2e-name="inquiry-list"]//tr[contains(.,'${inquiry}')]/td[3]  equals  ${count}

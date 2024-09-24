@@ -40,6 +40,10 @@
                     {{ dossier.departments[0].name | default('admin.global.no_record' | trans) }}
                 </twig:Admin:Definition>
 
+                <twig:Admin:Definition term="{{ 'admin.global.subject' | trans }}">
+                    {{ dossier.subject.name | default('admin.global.no_record' | trans) }}
+                </twig:Admin:Definition>
+
                 <twig:Admin:Definition term="{{ internalReferenceLabel }}">
                     {% if dossier.internalReference %}
                         {{ dossier.internalReference }}

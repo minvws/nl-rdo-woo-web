@@ -23,7 +23,7 @@ final class YearMonthTypeTest extends TestCase
 
     public function testGetChoicesModeFrom(): void
     {
-        $choices = $this->yearMonthType->getChoices(YearMonthType::MODE_FROM, 1, 1, false);
+        $choices = $this->yearMonthType->getChoices(YearMonthType::MODE_FROM, Carbon::now()->subYear(), 1, false);
 
         $this->assertEquals(
             [
@@ -63,7 +63,7 @@ final class YearMonthTypeTest extends TestCase
 
     public function testGetChoicesModeFromReversed(): void
     {
-        $choices = $this->yearMonthType->getChoices(YearMonthType::MODE_FROM, 1, 1, true);
+        $choices = $this->yearMonthType->getChoices(YearMonthType::MODE_FROM, Carbon::now()->subYear(), 1, true);
 
         $this->assertEquals(
             [
@@ -103,7 +103,7 @@ final class YearMonthTypeTest extends TestCase
 
     public function testGetChoicesModeTo(): void
     {
-        $choices = $this->yearMonthType->getChoices(YearMonthType::MODE_TO, 1, 1, false);
+        $choices = $this->yearMonthType->getChoices(YearMonthType::MODE_TO, Carbon::now()->subYear(), 1, false);
 
         $this->assertEquals(
             [

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\MessageHandler;
 
 use App\Message\IngestDecisionMessage;
-use App\Repository\DossierRepository;
+use App\Repository\WooDecisionRepository;
 use App\Service\Worker\Pdf\Extractor\DecisionContentExtractor;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -16,7 +16,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 class IngestDecisionHandler
 {
     public function __construct(
-        private readonly DossierRepository $dossierRepository,
+        private readonly WooDecisionRepository $dossierRepository,
         private readonly DecisionContentExtractor $contentExtractor,
     ) {
     }

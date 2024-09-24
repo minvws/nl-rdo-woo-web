@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
+use App\Domain\Upload\Process\FileProcessor;
+use App\Domain\Upload\UploadedFile;
 use App\Entity\Dossier;
 use App\Message\ProcessDocumentMessage;
 use App\Service\DocumentUploadQueue;
 use App\Service\DossierService;
-use App\Service\FileProcessService;
 use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -21,12 +22,12 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 class ProcessDocumentHandler
 {
     public function __construct(
-        private readonly FileProcessService $fileProcessService,
         private readonly EntityStorageService $entityStorageService,
         private readonly EntityManagerInterface $doctrine,
         private readonly LoggerInterface $logger,
         private readonly DocumentUploadQueue $uploadQueue,
         private readonly DossierService $dossierService,
+        private readonly FileProcessor $fileProcessor,
     ) {
     }
 
@@ -44,7 +45,11 @@ class ProcessDocumentHandler
 
         if ($message->isChunked()) {
             // Stitch file together first if needed
-            $localFile = $this->assembleChunks($message->getChunkUuid(), $message->getChunkCount());
+            $localFile = $this->assembleChunks(
+                $message->getChunkUuid(),
+                $message->getChunkCount(),
+                $message->getOriginalFilename(),
+            );
             if (! $localFile) {
                 $this->logger->error('Could not assemble chunks', [
                     'dossier_uuid' => $message->getDossierUuid(),
@@ -57,7 +62,7 @@ class ProcessDocumentHandler
                 return;
             }
 
-            $this->fileProcessService->processFile($localFile, $dossier, $message->getOriginalFilename());
+            $this->fileProcessor->process($localFile, $dossier);
             unlink($localFile->getPathname());
 
             $this->updateUploadQueueAndDossierCompletion($dossier, $message);
@@ -78,9 +83,9 @@ class ProcessDocumentHandler
             return;
         }
 
-        $localFile = new \SplFileObject($localFilePath);
+        $localFile = new UploadedFile($localFilePath, $message->getOriginalFilename());
         try {
-            $this->fileProcessService->processFile($localFile, $dossier, $message->getOriginalFilename());
+            $this->fileProcessor->process($localFile, $dossier);
         } catch (\Throwable $e) {
             throw $e;
         } finally {
@@ -90,7 +95,7 @@ class ProcessDocumentHandler
         }
     }
 
-    protected function assembleChunks(string $chunkUuid, int $chunkCount): ?\SplFileInfo
+    protected function assembleChunks(string $chunkUuid, int $chunkCount, string $originalFilename): ?UploadedFile
     {
         $path = sprintf('%s/assembled-%s', sys_get_temp_dir(), $chunkUuid);
         $stitchedFile = new \SplFileObject($path, 'w');
@@ -125,7 +130,7 @@ class ProcessDocumentHandler
             $chunk = null;
         }
 
-        return $stitchedFile->getFileInfo();
+        return UploadedFile::fromSplFile($stitchedFile->getFileInfo(), $originalFilename);
     }
 
     public function updateUploadQueueAndDossierCompletion(Dossier $dossier, ProcessDocumentMessage $message): void

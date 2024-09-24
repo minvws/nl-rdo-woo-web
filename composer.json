@@ -32,10 +32,11 @@
         "minvws/audit-logger": "^0.4.0",
         "minvws/audit-logger-bundle": "^0.4.0",
         "minvws/horsebattery": "^1.1",
-        "nesbot/carbon": "^2.66",
+        "nesbot/carbon": "^3.7",
         "nikic/php-parser": "^5.0",
         "oneup/uploader-bundle": "^5.0.1",
         "paragonie/halite": "^5.1",
+        "pentatrion/vite-bundle": "^7.0",
         "php-amqplib/rabbitmq-bundle": "^2.11",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpoffice/phpspreadsheet": "^2.0.0",
@@ -90,10 +91,9 @@
         "symfony/twig-bundle": "6.4.*",
         "symfony/uid": "6.4.*",
         "symfony/ux-twig-component": "^2.11",
-        "symfony/ux-vue": "^2.13",
+        "symfony/ux-vue": "2.19.3",
         "symfony/validator": "6.4.*",
         "symfony/web-link": "6.4.*",
-        "symfony/webpack-encore-bundle": "^2.0",
         "symfony/workflow": "6.4.*",
         "symfony/yaml": "6.4.*",
         "twig/extra-bundle": "^2.12|^3.0",
@@ -170,13 +170,13 @@
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=off bin/phpunit -d --without-creating-snapshots"
+            "XDEBUG_MODE=off phpunit -d --without-creating-snapshots"
         ],
         "test-report": [
             "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=off php -dpcov.enabled=1 -dpcov.directory=. bin/phpunit -d --without-creating-snapshots --coverage-text --coverage-html coverage/html"
+            "XDEBUG_MODE=off php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit -d --without-creating-snapshots --coverage-text --coverage-html coverage/html"
         ],
-        "update-test-snapshots": "XDEBUG_MODE=off bin/phpunit -d --update-snapshots"
+        "update-test-snapshots": "XDEBUG_MODE=off phpunit -d --update-snapshots"
     },
     "scripts-descriptions": {
         "syncdotenv": "Synchronize .env.development with .env.local",
@@ -212,6 +212,7 @@
         }
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^8.2",
         "deployer/deployer": "^7.3",
         "dg/bypass-finals": "^1.5",
         "friendsofphp/php-cs-fixer": "^3.48",
@@ -220,7 +221,6 @@
         "mikey179/vfsstream": "^1.6",
         "mockery/mockery": "^1.6.12",
         "nunomaduro/phpinsights": "^2.8",
-        "php-mock/php-mock-mockery": "^1.4",
         "phpcompatibility/php-compatibility": "^9.3",
         "phpmd/phpmd": "^2.13",
         "phpstan/phpstan": "^1.10",
@@ -238,7 +238,6 @@
         "symfony/css-selector": "6.4.*",
         "symfony/debug-bundle": "6.4.*",
         "symfony/maker-bundle": "^1.0",
-        "symfony/phpunit-bridge": "6.4.*",
         "symfony/web-profiler-bundle": "6.4.*",
         "zenstruck/foundry": "^2.0"
     }

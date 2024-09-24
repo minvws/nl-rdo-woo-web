@@ -46,10 +46,10 @@ class DocumentPrefixType extends AbstractType
 
             $options = [
                 'class' => DocumentPrefix::class,
-                'label' => 'admin.dossiers.convenant.form.details.prefix',
+                'label' => 'admin.dossiers.covenant.form.details.prefix',
                 'choice_label' => 'prefix',
                 'required' => true,
-                'help' => 'admin.dossiers.convenant.form.details.prefix_help',
+                'help' => 'admin.dossiers.covenant.form.details.prefix_help',
                 'help_html' => true,
                 'placeholder' => 'admin.global.dossiers.prefix_placeholder',
                 'choices' => $prefixes,

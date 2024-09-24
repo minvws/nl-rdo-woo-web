@@ -43,7 +43,7 @@ class UserService
         TotpAuthenticatorInterface $totp,
         LoggerInterface $logger,
         AuditLogger $auditLogger,
-        TokenStorageInterface $tokenStorage
+        TokenStorageInterface $tokenStorage,
     ) {
         $this->doctrine = $doctrine;
         $this->passwordHasher = $passwordHasher;

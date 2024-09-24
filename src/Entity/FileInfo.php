@@ -16,6 +16,9 @@ class FileInfo
     #[ORM\Column(length: 1024, nullable: true)]
     private ?string $path;
 
+    #[ORM\Column(length: 128, nullable: true)]
+    private ?string $hash = null;
+
     #[ORM\Column(nullable: false)]
     private int $size = 0;
 
@@ -45,6 +48,11 @@ class FileInfo
         return $this->mimetype;
     }
 
+    public function getNormalizedMimeType(): string
+    {
+        return trim($this->getMimetype() ?? '');
+    }
+
     public function setMimetype(?string $mimetype): self
     {
         $this->mimetype = $mimetype;
@@ -60,6 +68,18 @@ class FileInfo
     public function setPath(?string $path): self
     {
         $this->path = $path;
+
+        return $this;
+    }
+
+    public function getHash(): ?string
+    {
+        return $this->hash;
+    }
+
+    public function setHash(?string $hash): self
+    {
+        $this->hash = $hash;
 
         return $this;
     }

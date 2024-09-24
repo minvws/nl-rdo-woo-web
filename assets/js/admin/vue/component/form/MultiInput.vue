@@ -32,9 +32,13 @@
       required: true,
     },
     minLength: {
-      type: Boolean,
+      type: Number,
       required: false,
       default: 0,
+    },
+    maxLength: {
+      type: Number,
+      required: false,
     },
     options: {
       type: Array,
@@ -85,6 +89,18 @@
   };
 
   const canDeleteItem = computed(() => items.value.length > props.minLength);
+  const canAddItem = computed(() => {
+    if (items.value.length === props.options.length) {
+      return false;
+    }
+
+    if (props.maxLength) {
+      return items.value.length < props.maxLength;
+    }
+
+    return true;
+
+  });
   const getOtherValues = (itemId) => items.value.filter((item) => item.id !== itemId).map((item) => item.value);
 
   const emitUpdate = () => {
@@ -129,6 +145,7 @@
     </fieldset>
 
     <button
+      v-if="canAddItem"
       @click="addItem"
       class="font-bold text-bhr-davys-grey text-lg mt-2"
       ref="addItemElement"

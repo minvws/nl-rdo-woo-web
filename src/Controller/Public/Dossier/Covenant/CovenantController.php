@@ -10,19 +10,18 @@ use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocument;
 use App\Domain\Publication\Dossier\Type\Covenant\ViewModel\CovenantViewFactory;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Service\DossierService;
 use App\Service\DownloadResponseHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
+use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Annotation\Route;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class CovenantController extends AbstractController
 {
     public function __construct(
-        private readonly DossierService $dossierService,
         private readonly CovenantViewFactory $covenantViewFactory,
         private readonly AttachmentViewFactory $attachmentViewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
@@ -30,21 +29,16 @@ class CovenantController extends AbstractController
     ) {
     }
 
-    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
+    #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
     #[Route('/covenant/{prefix}/{dossierId}', name: 'app_covenant_detail', methods: ['GET'])]
     public function detail(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
-        Covenant $covenant,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId)')]
+        #[ValueResolver('dossierWithAccessCheck')] Covenant $covenant,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
         CovenantDocument $covenantDocument,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem('global.covenant');
-
-        if (! $this->dossierService->isViewingAllowed($covenant)) {
-            throw $this->createNotFoundException('Covenant not found');
-        }
 
         return $this->render('covenant/details.html.twig', [
             'dossier' => $this->covenantViewFactory->make($covenant),
@@ -53,23 +47,18 @@ class CovenantController extends AbstractController
         ]);
     }
 
-    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
+    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
         '/covenant/{prefix}/{dossierId}/covenant-document',
         name: 'app_covenant_covenantdocument_detail',
         methods: ['GET'],
     )]
     public function covenantDocumentDetail(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
-        Covenant $covenant,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId)')]
+        #[ValueResolver('dossierWithAccessCheck')] Covenant $covenant,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
         CovenantDocument $covenantDocument,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        if (! $this->dossierService->isViewingAllowed($covenant)) {
-            throw $this->createNotFoundException('Covenant not found');
-        }
-
         $mainDocumentViewModel = $this->mainDocumentViewFactory->make($covenant, $covenantDocument);
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
@@ -86,44 +75,36 @@ class CovenantController extends AbstractController
         ]);
     }
 
-    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
+    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
         '/covenant/{prefix}/{dossierId}/covenant-document/download',
         name: 'app_covenant_covenantdocument_download',
         methods: ['GET'],
     )]
     public function covenantDocumentDownload(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
-        Covenant $covenant,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId)')]
+        #[ValueResolver('dossierWithAccessCheck')] Covenant $covenant,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
         CovenantDocument $covenantDocument,
     ): Response {
-        if (! $this->dossierService->isViewingAllowed($covenant)) {
-            throw $this->createNotFoundException('Covenant not found');
-        }
+        unset($covenant);
 
         return $this->downloadHelper->getResponseForEntityWithFileInfo($covenantDocument);
     }
 
-    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
+    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
         '/covenant/{prefix}/{dossierId}/covenant-attachment/{attachmentId}',
         name: 'app_covenant_covenantattachment_detail',
         methods: ['GET'],
     )]
     public function covenantAttachmentDetail(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
-        Covenant $covenant,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[ValueResolver('dossierWithAccessCheck')] Covenant $covenant,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
         CovenantAttachment $covenantAttachment,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
         CovenantDocument $covenantDocument,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        if (! $this->dossierService->isViewingAllowed($covenant)) {
-            throw $this->createNotFoundException('Covenant not found');
-        }
-
         $covenantAttachmentView = $this->attachmentViewFactory->make($covenant, $covenantAttachment);
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
@@ -141,21 +122,18 @@ class CovenantController extends AbstractController
         ]);
     }
 
-    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
+    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
         '/covenant/{prefix}/{dossierId}/covenant-attachment/{attachmentId}/download',
         name: 'app_covenant_covenantattachment_download',
         methods: ['GET'],
     )]
     public function covenantAttachmentDownload(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
-        Covenant $covenant,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[ValueResolver('dossierWithAccessCheck')] Covenant $covenant,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
         CovenantAttachment $covenantAttachment,
     ): Response {
-        if (! $this->dossierService->isViewingAllowed($covenant)) {
-            throw $this->createNotFoundException('Covenant not found');
-        }
+        unset($covenant);
 
         return $this->downloadHelper->getResponseForEntityWithFileInfo($covenantAttachment);
     }

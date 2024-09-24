@@ -26,7 +26,7 @@ Create a new Decision Dossier, filter it and delete it afterwards
   Login Admin
   Create New Dossier  woo-decision
   Fill Out Basic Details
-  Fill Out Decision Details  Openbaarmaking  tests/robot_framework/files/besluitbrief.pdf
+  Fill Out Decision Details  Openbaarmaking  tests/robot_framework/files/woodecision/besluitbrief.pdf
   Upload Inventory  tests/Fixtures/000-inventory-001.xlsx
   Verify Inventory Error  documentnummer 5034 bestaat al in een ander dossier
   Verify Inventory Error  documentnummer 5036 bestaat al in een ander dossier

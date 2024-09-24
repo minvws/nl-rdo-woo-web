@@ -3,7 +3,7 @@
   import { validators } from '@admin-fe/form';
 
   const props = defineProps({
-    allowedExtensions: {
+    allowedFileTypes: {
       type: Array,
       required: true,
       default: () => [],
@@ -37,7 +37,7 @@
     @uploaded="(file) => emit('uploaded', file)"
     @uploadError="() => emit('uploadError')"
     @uploading="() => emit('uploading')"
-    :allowed-extensions="props.allowedExtensions"
+    :allowed-file-types="props.allowedFileTypes"
     :allowed-mime-types="props.allowedMimeTypes"
     :enable-auto-upload="true"
     :help-text="helpText"

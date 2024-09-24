@@ -9,6 +9,7 @@ use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\ViewModel\DossierFormParamBuilder;
 use App\Form\Dossier\WooDecision\DetailsType;
 use App\Service\DossierWizard\DossierWizardHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -26,6 +27,7 @@ class DetailsStepController extends AbstractController
         private readonly DossierWizardHelper $wizardHelper,
         private readonly DossierFactory $dossierFactory,
         private readonly StepActionHelper $stepHelper,
+        private readonly DossierFormParamBuilder $formParamBuilder,
     ) {
     }
 
@@ -55,6 +57,7 @@ class DetailsStepController extends AbstractController
             'dossier' => $dossier,
             'workflowStatus' => $this->wizardHelper->getStatus($dossier),
             'form' => $form,
+            'departments' => $this->formParamBuilder->getDepartmentsFieldParams($dossier, $form),
         ]);
     }
 
@@ -88,6 +91,7 @@ class DetailsStepController extends AbstractController
             'dossier' => $dossier,
             'workflowStatus' => $wizardStatus,
             'form' => $form,
+            'departments' => $this->formParamBuilder->getDepartmentsFieldParams($dossier, $form),
         ]);
     }
 
@@ -100,7 +104,7 @@ class DetailsStepController extends AbstractController
     public function edit(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
         Request $request,
-        Breadcrumbs $breadcrumbs
+        Breadcrumbs $breadcrumbs,
     ): Response {
         $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossiers.woo-decision.step.details');
 
@@ -129,6 +133,7 @@ class DetailsStepController extends AbstractController
             'dossier' => $dossier,
             'workflowStatus' => $wizardStatus,
             'form' => $form,
+            'departments' => $this->formParamBuilder->getDepartmentsFieldParams($dossier, $form),
         ]);
     }
 

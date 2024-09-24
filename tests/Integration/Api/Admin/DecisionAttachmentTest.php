@@ -36,6 +36,8 @@ final class DecisionAttachmentTest extends ApiTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->root = vfsStream::setup();
 
         self::bootKernel();
@@ -44,7 +46,7 @@ final class DecisionAttachmentTest extends ApiTestCase
     public function testGetAllDecisionAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -76,7 +78,7 @@ final class DecisionAttachmentTest extends ApiTestCase
     public function testGetSingleDecisionAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -105,7 +107,7 @@ final class DecisionAttachmentTest extends ApiTestCase
     public function testGetSingleNonExistingDecisionAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -131,7 +133,7 @@ final class DecisionAttachmentTest extends ApiTestCase
     public function testCreateDecisionAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -215,7 +217,7 @@ final class DecisionAttachmentTest extends ApiTestCase
     public function testCreateDecisionAttachmentWithInvalidRequestData(array $input, array $expectedViolations): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -430,7 +432,7 @@ final class DecisionAttachmentTest extends ApiTestCase
     public function testDeleteDecisionAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -459,7 +461,7 @@ final class DecisionAttachmentTest extends ApiTestCase
     public function testDeleteNonExistingDecisionAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -485,7 +487,7 @@ final class DecisionAttachmentTest extends ApiTestCase
     public function testUpdateDecisionAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -543,7 +545,7 @@ final class DecisionAttachmentTest extends ApiTestCase
     public function testUpdateNonExistingDecisionAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -574,7 +576,7 @@ final class DecisionAttachmentTest extends ApiTestCase
     public function testUpdateDecisionAttachmentWithInvalidRequestData(array $input, array $expectedViolations): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 

@@ -11,11 +11,14 @@ Resource            Admin.resource
 
 
 *** Variables ***
-${RUN_LOCALLY}  ${FALSE}
-${BASE_URL}     ${EMPTY}
-${HEADLESS}     ${EMPTY}
-${WW}           ${EMPTY}
-${OTP_CODE}     ${EMPTY}
+${RUN_LOCALLY}          ${FALSE}
+${HEADLESS}             ${EMPTY}
+${WW}                   ${EMPTY}
+${OTP_CODE}             ${EMPTY}
+${BASE_URL}             localhost:8000
+${BASE_URL_BALIE}       localhost:8000/balie/dossiers
+${TST_BALIE_USER}       email@example.org
+${TST_BALIE_PASSWORD}   IkLoopNooitVastVandaag
 
 
 *** Keywords ***
@@ -97,7 +100,8 @@ First Time Login With Admin
   Close Page  CURRENT
 
 Close Symfony Dev Bar
-  Click  //body/div/div[3]/button
+  ${c} =  Get Element Count  //body/div/div[3]/button
+  IF  ${c}>0  Click  //body/div/div[3]/button
 
 Create MINVWS Prefix
   [Documentation]  When cleansheet -p is ran, the default prefix is also removed. This keyword can bring it back.

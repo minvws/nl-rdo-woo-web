@@ -10,6 +10,7 @@ use App\Domain\Publication\Dossier\Admin\DossierFilterParameters;
 use App\Domain\Publication\Dossier\Admin\DossierListingService;
 use App\Domain\Publication\Dossier\Admin\DossierSearchService;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
+use App\Domain\Publication\Dossier\Type\ViewModel\DossierTypeViewFactory;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use App\Enum\ApplicationMode;
 use App\Form\Dossier\SearchFormType;
@@ -38,6 +39,7 @@ class DossierController extends AbstractController
         private readonly DossierTypeManager $dossierTypeManager,
         private readonly AttachmentViewFactory $attachmentViewFactory,
         private readonly DossierPathHelper $dossierPathHelper,
+        private readonly DossierTypeViewFactory $dossierTypeViewFactory,
     ) {
     }
 
@@ -161,7 +163,7 @@ class DossierController extends AbstractController
         }
 
         return $this->render('admin/dossier/create.html.twig', [
-            'typeConfigs' => $typeConfigs,
+            'dossierTypes' => $this->dossierTypeViewFactory->makeCollection($typeConfigs),
         ]);
     }
 }

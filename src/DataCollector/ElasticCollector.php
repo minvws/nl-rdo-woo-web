@@ -45,18 +45,11 @@ class ElasticCollector extends AbstractDataCollector
             return;
         }
 
-        switch ($type) {
-            case 'bool':
-                $response = $response->asBool();
-                break;
-            case 'array':
-            default:
-                $response = $response->asArray();
-                break;
-            case 'string':
-                $response = $response->asString();
-                break;
-        }
+        $response = match ($type) {
+            'bool' => $response->asBool(),
+            'string' => $response->asString(),
+            default => $response->asArray(),
+        };
 
         $this->data['calls'][] = [
             'name' => $name,

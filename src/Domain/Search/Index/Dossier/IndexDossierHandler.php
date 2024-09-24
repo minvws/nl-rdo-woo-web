@@ -17,7 +17,7 @@ class IndexDossierHandler
     public function __construct(
         private readonly AbstractDossierRepository $dossierRepository,
         private readonly DossierIndexer $dossierIndexer,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
     }
 

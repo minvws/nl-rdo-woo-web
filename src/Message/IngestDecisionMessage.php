@@ -11,7 +11,7 @@ class IngestDecisionMessage
 {
     public function __construct(
         private readonly Uuid $uuid,
-        private readonly bool $refresh = false
+        private readonly bool $refresh = false,
     ) {
     }
 

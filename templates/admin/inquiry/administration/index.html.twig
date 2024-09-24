@@ -6,7 +6,8 @@
 <div class="bhr-container">
     {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.admin.html.twig' }) }}
 
-    <h1 class="bhr-title">{{ page_title }}</h1>
+    <h1 class="bhr-title pb-6">{{ page_title }}</h1>
+
     <div class="bhr-card">
         {% set alerts = app.flashes('backend') %}
         {% if alerts | length > 0 %}
@@ -26,22 +27,33 @@
                 <thead>
                     <tr>
                         <th class="bhr-column-head bhr-column-head--gray" scope="col">Case nr</th>
-                        <th class="bhr-column-head bhr-column-head--gray" scope="col">Database ID</th>
-                        <th class="bhr-column-head bhr-column-head--gray" scope="col"></th>
+                        <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">Database ID</th>
+                        <th class="bhr-column-head bhr-column-head--gray" scope="col">
+                            <span class="sr-only">{{ 'global.details'| trans }}</span>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for inquiry in inquiries %}
-                    <tr>
-                        <td>{{ inquiry.casenr }}</td>
-                        <td>{{ inquiry.id }}</td>
-                        <td>
-                            <a class="js-clickable-row__focusable" href="{{ path('app_admin_inquiry_administration_details', {casenr: inquiry.casenr}) }}">
-                                <span class="sr-only">{{ 'global.details' | trans() }} {{ inquiry.casenr }}</span>
-                                <twig:Admin:Icon name="chevron-right" />
-                            </a>
-                        </td>
-                    </tr>
+                        {% set url = path('app_admin_inquiry_administration_details', {casenr: inquiry.casenr}) %}
+                        <tr class="bhr-clickable-row">
+                            <td>
+                                <a class="bhr-fill-cell" href="{{ url }}">
+                                    {{ inquiry.casenr }}
+                                </a>
+                            </td>
+                            <td>
+                                <a class="bhr-fill-cell" href="{{ url }}">
+                                    {{ inquiry.id }}
+                                </a>
+                            </td>
+                            <td class="text-right">
+                                <a class="bhr-fill-cell" href="{{ url }}">
+                                    <span class="sr-only">{{ 'global.details' | trans }} {{ inquiry.casenr }}</span>
+                                    <twig:Admin:Icon name="chevron-right" />
+                                </a>
+                            </td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>

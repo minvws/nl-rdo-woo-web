@@ -19,8 +19,8 @@
             <thead>
                 <tr>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.organisation' | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.acronym' | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.prefixes' | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.departments' | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ 'global.prefixes' | trans() }}</th>
                     <th class="bhr-column-head bhr-column-head--gray" scope="col">
                         <span class="sr-only">{{ 'admin.organisation.edit' | trans() }}</span>
                     </th>
@@ -28,16 +28,25 @@
             </thead>
             <tbody>
                 {% for organisation in organisations %}
-                    <tr>
-                        <td><span class="font-bold">{{ organisation.name }}</span></td>
-                        <td>{{ organisation.department.shortTag }}</td>
+                    {% set url = path('app_admin_user_organisation_edit', { id: organisation.id }) %}
+                    <tr class="bhr-clickable-row">
+                        <td class="font-bold"><a class="bhr-fill-cell" href="{{ url }}">{{ organisation.name }}</a></td>
                         <td>
-                            {% for prefix in organisation.documentPrefixes %}
-                                {{ prefix.prefix }}{% if not loop.last %},{% endif %}
-                            {% endfor %}
+                            <a class="bhr-fill-cell" href="{{ url }}">
+                                {% for department in organisation.departments %}
+                                    {{ department.shortTag }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </a>
+                        </td>
+                        <td>
+                            <a class="bhr-fill-cell" href="{{ url }}">
+                                {% for prefix in organisation.documentPrefixes %}
+                                    {{ prefix.prefix }}{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            </a>
                         </td>
                         <td class="text-right">
-                            <a class="js-clickable-row__focusable" href="{{ path('app_admin_user_organisation_edit', { id: organisation.id }) }}">
+                            <a class="bhr-fill-cell" href="{{ url }}">
                                 <span class="sr-only">{{ 'global.details' | trans() }} {{ organisation.name }}</span>
                                 <twig:Admin:Icon name="chevron-right" />
                             </a>

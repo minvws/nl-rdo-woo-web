@@ -14,3 +14,9 @@ scheb_two_factor:
     email:
         enabled: false
         digits: 6
+
+when@test:
+    scheb_two_factor:
+        ip_whitelist:
+            - localhost
+            - 127.0.0.1

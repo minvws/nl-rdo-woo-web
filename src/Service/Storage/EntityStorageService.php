@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Service\Storage;
 
+use App\Domain\Ingest\Content\Event\EntityFileUpdateEvent;
 use App\Entity\EntityWithFileInfo;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * This class is responsible for storing and retrieving files attached to entities using FileInfo. See StorageService
@@ -25,6 +27,7 @@ class EntityStorageService extends StorageService
         LocalFilesystem $localFilesystem,
         LoggerInterface $logger,
         StorageRootPathGenerator $rootPathGenerator,
+        private MessageBusInterface $messageBus,
         private EntityManagerInterface $doctrine,
         private bool $isLocal = false,
         ?string $documentRoot = null,
@@ -75,6 +78,12 @@ class EntityStorageService extends StorageService
 
     public function storeEntity(\SplFileInfo $localFile, EntityWithFileInfo $entity, bool $flush = true): bool
     {
+        if ($entity->getFileInfo()->getHash() !== null) {
+            $this->messageBus->dispatch(
+                EntityFileUpdateEvent::forEntity($entity)
+            );
+        }
+
         $remotePath = $this->generateEntityPath($entity, $localFile);
 
         $result = $this->doStore($localFile, $remotePath);
@@ -85,6 +94,8 @@ class EntityStorageService extends StorageService
         $file = $entity->getFileInfo();
         $file->setPath($remotePath);
         $file->setSize($localFile->getSize());
+
+        $this->setHash($entity, $localFile->getPathname(), false);
 
         $foundationFile = new File($localFile->getPathname());
         $file->setMimetype($foundationFile->getMimeType() ?? '');
@@ -97,6 +108,26 @@ class EntityStorageService extends StorageService
         }
 
         return true;
+    }
+
+    public function setHash(EntityWithFileInfo $entity, string $path, bool $flush = true): void
+    {
+        if (! is_readable($path)) {
+            throw new \RuntimeException('Cannot read file for hash generation: ' . $path);
+        }
+
+        $hash = hash_file('sha256', $path);
+        if ($hash === false) {
+            throw new \RuntimeException('Cannot generate hash for file: ' . $path);
+        }
+
+        $fileInfo = $entity->getFileInfo();
+        $fileInfo->setHash($hash);
+
+        $this->doctrine->persist($entity);
+        if ($flush) {
+            $this->doctrine->flush();
+        }
     }
 
     /**
@@ -161,6 +192,10 @@ class EntityStorageService extends StorageService
             return true;
         }
 
+        $this->messageBus->dispatch(
+            EntityFileUpdateEvent::forEntity($entity)
+        );
+
         $path = $this->generateEntityPath($entity, new \SplFileInfo($entity->getFileInfo()->getPath() ?? ''));
 
         return $this->doDeleteAllFilesForEntity($entity, $path);
@@ -168,6 +203,10 @@ class EntityStorageService extends StorageService
 
     public function removeFileForEntity(EntityWithFileInfo $entity): bool
     {
+        $this->messageBus->dispatch(
+            EntityFileUpdateEvent::forEntity($entity)
+        );
+
         $path = $this->generateEntityPath($entity, new \SplFileInfo($entity->getFileInfo()->getPath() ?? ''));
 
         return $this->remoteFilesystem->delete($path);

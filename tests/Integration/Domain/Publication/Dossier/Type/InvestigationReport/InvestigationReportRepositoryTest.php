@@ -22,6 +22,8 @@ final class InvestigationReportRepositoryTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         self::bootKernel();
     }
 

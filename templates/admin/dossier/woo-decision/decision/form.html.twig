@@ -29,7 +29,7 @@
 {{ form_row(form.decision_date) }}
 
 <twig:Admin:Publication:ManageAttachments
-    allowedExtensions="{{ attachmentExtensions }}"
+    allowedFileTypes="{{ attachmentTypeNames }}"
     allowedMimeTypes="{{ attachmentMimeTypes }}"
     canDelete="{{ canDeleteAttachments }}"
     documentTypes="{{ attachmentTypes }}"

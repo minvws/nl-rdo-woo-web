@@ -104,7 +104,7 @@ class DecisionStepController extends AbstractController
     public function edit(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
         Request $request,
-        Breadcrumbs $breadcrumbs
+        Breadcrumbs $breadcrumbs,
     ): Response {
         $stepName = StepName::DECISION;
 

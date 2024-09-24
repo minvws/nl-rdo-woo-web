@@ -22,6 +22,8 @@ final class AnnualReportRepositoryTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         self::bootKernel();
     }
 

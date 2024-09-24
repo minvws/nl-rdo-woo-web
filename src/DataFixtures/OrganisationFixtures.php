@@ -25,7 +25,7 @@ class OrganisationFixtures extends Fixture
 
         $entity = new Organisation();
         $entity->setName('Programmadirectie Openbaarheid');
-        $entity->setDepartment($department);
+        $entity->addDepartment($department);
         $entity->addDocumentPrefix($documentPrefix);
         $manager->persist($entity);
         $manager->flush();

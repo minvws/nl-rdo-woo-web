@@ -124,9 +124,13 @@ class WooDecisionWorkflow
             ->from([DossierStatus::CONCEPT->value, DossierStatus::SCHEDULED->value, DossierStatus::PREVIEW->value])
             ->to(DossierStatus::PUBLISHED->value);
 
-        $workflow->transition()
-            ->name(DossierStatusTransition::DELETE_ATTACHMENT->value)
-            ->from(DossierStatus::CONCEPT->value)
-            ->to(DossierStatus::CONCEPT->value);
+        WorkflowConfigHelper::defineNonMovingTransitions(
+            $workflow,
+            DossierStatusTransition::DELETE_ATTACHMENT,
+            [
+                DossierStatus::CONCEPT,
+                DossierStatus::DELETED,
+            ],
+        );
     }
 }

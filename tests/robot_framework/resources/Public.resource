@@ -13,13 +13,19 @@ Go To Public
   Go To  ${BASE_URL}
 
 Search On Public For
-  [Arguments]
-  ...  ${search_term}=
-  ...  ${search_results}=
+  [Arguments]  ${search_term}  ${search_results}
   Go To Public
+  Initiate Search  ${search_term}
+  Get Text  //*[@id="main-content"]  *=  ${search_results}
+
+Initiate Search
+  [Arguments]  ${search_term}
   Fill Text  id=search-field  ${search_term}
   Keyboard Key  press  Enter
-  Get Text  //*[@id="main-content"]  *=  ${search_results}
+
+Verify Search Result Count
+  [Arguments]  ${result_string}
+  Get Text  //*[@id="js-number-of-search-results"]  contains  ${result_string}
 
 Verify Listed Document In Dossier
   [Arguments]  ${document_number}  ${name}  ${date}
@@ -58,3 +64,14 @@ Verify Notification
 Verify Document History
   [Arguments]  ${history}
   Get Text  //*[@data-e2e-name="document-history"]  contains  ${history}
+
+Click Search Through Documents In Inquiry
+  Click  //a[@data-e2e-name="search-through-documents"]
+
+Verify Symfony Error
+  [Arguments]  ${error_message}
+  Get Text  //div[@class="exception-summary "]  contains  ${error_message}
+
+Click Dossier In Inquiry
+  [Arguments]  ${dossier_text}
+  Click  //*[@data-e2e-name="inquiry-dossiers"]//a[contains(., ${dossier_text})]

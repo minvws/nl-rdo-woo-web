@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
-use App\Domain\Ingest\MetadataOnly\IngestMetadataOnlyCommand;
+use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentWithDrawnEvent;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;

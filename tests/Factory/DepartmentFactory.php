@@ -61,9 +61,14 @@ final class DepartmentFactory extends \Zenstruck\Foundry\Persistence\PersistentP
      */
     protected function defaults(): array
     {
+        /** @var string $name */
+        $name = self::faker()->unique()->words(nb: 6, asText: true);
+
         return [
-            'name' => self::faker()->unique()->words(nb: 6, asText: true),
-            'shortTag' => self::faker()->optional()->word(),
+            'name' => sprintf('%s %s', $name, 'Department'),
+            'shortTag' => self::faker()->word(),
+            'slug' => self::faker()->word(),
+            'public' => true,
         ];
     }
 

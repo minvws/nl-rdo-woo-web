@@ -63,7 +63,7 @@ final class OrganisationFactory extends \Zenstruck\Foundry\Persistence\Persisten
     {
         return [
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'department' => DepartmentFactory::new(),
+            'departments' => [DepartmentFactory::random()],
             'name' => self::faker()->text(255),
             'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];

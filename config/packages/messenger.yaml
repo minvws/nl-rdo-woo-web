@@ -57,12 +57,12 @@ framework:
             App\Message\RemoveInventoryAndDocumentsMessage: high
 
             App\Message\IngestDossiersMessage: ingestor                # Ingests all dossiers
-            App\Domain\Ingest\Dossier\IngestDossierCommand: ingestor   # Ingests a single dossier
-            App\Domain\Ingest\Pdf\IngestPdfCommand: ingestor           # Ingests a complete PDF document and fires a message for each page
-            App\Domain\Ingest\TikaOnly\IngestTikaOnlyCommand: ingestor
-            App\Domain\Ingest\PdfPage\IngestPdfPageCommand: ingestor   # Ingests a single PDF page from a PDF document
+            App\Domain\Ingest\Process\Dossier\IngestDossierCommand: ingestor   # Ingests a single dossier
+            App\Domain\Ingest\Process\Pdf\IngestPdfCommand: ingestor           # Ingests a complete PDF document and fires a message for each page
+            App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand: ingestor
+            App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand: ingestor   # Ingests a single PDF page from a PDF document
             App\Message\IngestDecisionMessage: ingestor
-            App\Domain\Ingest\MetadataOnly\IngestMetadataOnlyCommand: ingestor
+            App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand: ingestor
             App\Message\GenerateInquiryInventoryMessage: ingestor
             App\Message\GenerateInquiryArchivesMessage: ingestor
 
@@ -77,6 +77,7 @@ framework:
             App\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent: esupdater
             App\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent: esupdater
             App\Domain\Search\Index\DeleteElasticDocumentCommand: esupdater
+            App\Domain\Publication\Subject\Event\SubjectUpdatedEvent: esupdater
 
             App\Message\GenerateArchiveMessage: global                 # Generates a ZIP archive of the dossier
             App\Message\UpdateDossierArchivesMessage: global           # Removes existing archives for a dossier and generates a new complete archive
