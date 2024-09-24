@@ -39,6 +39,7 @@ final readonly class WooDecision
         public ?\DateTimeImmutable $dateFrom,
         public ?\DateTimeImmutable $dateTo,
         public PublicationReason $publicationReason,
+        public ?string $subject,
     ) {
     }
 
@@ -54,5 +55,13 @@ final readonly class WooDecision
         }
 
         return false;
+    }
+
+    /**
+     * @phpstan-assert-if-true !null $this->subject
+     */
+    public function hasSubject(): bool
+    {
+        return $this->subject !== null;
     }
 }

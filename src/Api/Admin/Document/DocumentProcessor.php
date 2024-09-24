@@ -51,7 +51,7 @@ abstract class DocumentProcessor implements ProcessorInterface
         mixed $data,
         Operation $operation,
         array $uriVariables = [],
-        array $context = []
+        array $context = [],
     ): ?DocumentDto {
         unset($context);
 

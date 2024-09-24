@@ -8,7 +8,7 @@ use App\Service\Search\Model\FacetKey;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Webmozart\Assert\Assert;
 
-final readonly class StringValuesFacetInput extends FacetInput implements ParameterBagFactoryInterface, StringValuesFacetInputInterface
+final readonly class StringValuesFacetInput extends FacetInput implements StringValuesFacetInputInterface
 {
     public static function fromParameterBag(FacetKey $facetKey, ParameterBag $bag): self
     {
@@ -38,6 +38,11 @@ final readonly class StringValuesFacetInput extends FacetInput implements Parame
      * @return list<string>
      */
     public function getStringValues(): array
+    {
+        return $this->values;
+    }
+
+    public function getRequestParameters(): array
     {
         return $this->values;
     }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\SubType;
 
-use App\Domain\Ingest\IngestOptions;
-use App\Domain\Ingest\SubType\SubTypeIngester;
+use App\Domain\Ingest\Process\IngestProcessOptions;
+use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
 use Psr\Log\LoggerInterface;
@@ -35,7 +35,7 @@ readonly class IndexMainDocumentHandler
             }
 
             $this->subTypeIndexer->index($mainDocument);
-            $this->subTypeIngester->ingest($mainDocument, new IngestOptions());
+            $this->subTypeIngester->ingest($mainDocument, new IngestProcessOptions());
         } catch (\Exception $e) {
             $this->logger->error('Failed to update main document in elasticsearch', [
                 'uuid' => $command->uuid,

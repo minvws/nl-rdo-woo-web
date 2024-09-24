@@ -26,103 +26,70 @@
         </div>
     </fieldset>
 
-    {# <fieldset class="mt-4 js-filters-group" data-key="search-in">
-        <legend class="w-full">
-            <button
-                class="woo-legend w-full text-left relative border-b border-woo-chinese-silver py-2 js-toggle-filters-group-button"
-                type="button"
-            >
-                <span class="absolute left-0 -mt-0.5">
-                    <twig:Public:IconBackground>
-                        <twig:Public:Icon name="topic" size="16" />
-                    </twig:Public:IconBackground>
-                </span>
-                <span class="pl-8">Zoeken in ...</span>
-                <twig:Public:Icon class="absolute right-0 js-toggle-filters-group-button-icon" name="chevron-up-thin" />
-            </button>
-        </legend>
-
-        <div class="js-filters-group-collapsible" id="filters-group-search-in">
-            <div class="pb-2">
-                <div class="woo-choice-row py-1">
-                    <span>
-                        <input
-                            class="woo-choice-input"
-                            type="checkbox"
-                        >
+    {% set facetKey = constant('App\\Service\\Search\\Model\\FacetKey::TYPE').value %}
+    {% set entries = result.aggregation(facetKey).entries|default([]) %}
+    {% if entries|length > 0 %}
+        {% set queryKey = facet2query(facetKey) %}
+        <fieldset class="mt-4 js-filters-group" data-key="{{ facetKey }}">
+            <legend class="w-full">
+                <button
+                    class="woo-legend w-full text-left relative border-b border-woo-chinese-silver py-2 leading-5 js-toggle-filters-group-button"
+                    type="button"
+                >
+                    <span class="absolute left-0 -mt-0.5">
+                        <twig:Public:IconBackground>
+                            <twig:Public:Icon name="topic" size="16" />
+                        </twig:Public:IconBackground>
                     </span>
-                    <label class="grow cursor-pointer">
-                        <span class="flex">
-                            <span class="grow mr-2 text-base leading-tight">Beschikkingen</span>
-                            <span class="woo-muted text-sm">(208)</span>
-                        </span>
-                    </label>
-                </div>
-                <div class="text-base text-woo-dim-gray leading-snug">
-                    Schriftelijke beslissing over specifieke gevallen, niet van algemene strekking
-                </div>
+                    <span class="pl-8">Zoeken in ...</span>
+                    <twig:Public:Icon class="absolute right-0 js-toggle-filters-group-button-icon" name="chevron-up-thin" />
+                </button>
+            </legend>
 
-                <div class="pl-5 pt-1">
-                    <fieldset>
-                        <legend class="sr-only">Subcategorieën van "Beschikkingen"</legend>
-
-                        <div class="woo-choice-row py-1">
-                            <span>
-                                <input
-                                    class="woo-choice-input"
-                                    type="checkbox"
-                                >
-                            </span>
-                            <label class="grow cursor-pointer">
-                                <span class="flex">
-                                    <span class="grow mr-2 text-base leading-tight">Hoofddocumenten</span>
-                                    <span class="woo-muted text-sm">(100)</span>
-                                </span>
-                            </label>
+            <div class="js-filters-group-collapsible" id="filters-group-{{ facetKey }}">
+                {% for entry in entries %}
+                    <div class="pb-2 js-search-filter-checkbox-group">
+                        {{ macro.facet_entry(entry, queryKey, facetKey) }}
+                        <div class="text-base text-woo-dim-gray leading-snug">
+                            {{ ('public.search.type_description.' ~ entry.key) | trans }}
                         </div>
-                        <div class="woo-choice-row py-1">
-                            <span>
-                                <input
-                                    class="woo-choice-input"
-                                    type="checkbox"
-                                >
-                            </span>
-                            <label class="grow cursor-pointer">
-                                <span class="flex">
-                                    <span class="grow mr-2 text-base leading-tight">Bijlagen</span>
-                                    <span class="woo-muted text-sm">(108)</span>
-                                </span>
-                            </label>
-                        </div>
-                    </fieldset>
-                </div>
+
+                        {% if entry.subEntries|length > 0 %}
+                            <div class="pl-5 pt-1 {% if not facet_checked(queryKey, entry.key) %} hidden{% endif %}">
+                                <fieldset>
+                                    <legend class="sr-only">Subcategorieën van "{{ entry.displayValue }}"</legend>
+                                    {% for subentry in entry.subEntries %}
+                                        {% set inputKey = 'subtype_' ~ subentry.key %}
+                                        {% set inputValue = entry.key ~ '.' ~ subentry.key %}
+                                        <div class="woo-choice-row py-1">
+                                            <span>
+                                                <input
+                                                    class="woo-choice-input js-search-filter-checkbox"
+                                                    id="input_{{ subentry.key|url_encode }}"
+                                                    name="{{ queryKey }}[]"
+                                                    type="checkbox"
+                                                    value="{{ inputValue }}"
+                                                    {% if facet_checked(queryKey, inputValue) %}checked{% endif %}
+                                                >
+                                            </span>
+                                            <label class="grow cursor-pointer" for="input_{{ subentry.key|url_encode }}">
+                                                <span class="flex">
+                                                    <span class="grow mr-2 text-base leading-tight">{{ subentry.displayValue | trans }}</span>
+                                                    <span class="woo-muted text-sm">({{ subentry.count }})</span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </fieldset>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
             </div>
+        </fieldset>
+    {% endif %}
 
-            <div class="pb-2">
-                <div class="woo-choice-row py-1">
-                    <span>
-                        <input
-                            class="woo-choice-input"
-                            type="checkbox"
-                        >
-                    </span>
-                    <label class="grow cursor-pointer">
-                        <span class="flex">
-                            <span class="grow mr-2 text-base leading-tight">Beschikkingen</span>
-                            <span class="woo-muted text-sm">(208)</span>
-                        </span>
-                    </label>
-                </div>
-                <div class="text-base text-woo-dim-gray leading-snug">
-                    Schriftelijke beslissing over specifieke gevallen, niet van algemene strekking
-                </div>
-            </div>
-        </div>
-    </fieldset> #}
-
-
-    {# {{ macro.facet_select('Department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }} #}
-    {{ macro.facet_select('categories.category.type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::TYPE').value, result) }}
+    {{ macro.facet_select('categories.category.department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}
     {{ macro.facet_select('categories.category.subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
     {{ macro.facet_select('categories.category.source_file' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
     {{ macro.facet_select('categories.category.judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}

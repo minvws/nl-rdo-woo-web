@@ -28,7 +28,7 @@ class DownloadController extends AbstractController
     )]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function downloadDecision(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
     ): StreamedResponse {
         return $this->downloadHelper->getResponseForEntityWithFileInfo($dossier->getDecisionDocument());
     }
@@ -40,7 +40,7 @@ class DownloadController extends AbstractController
     )]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function downloadInventory(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
     ): StreamedResponse {
         return $this->downloadHelper->getResponseForEntityWithFileInfo($dossier->getInventory());
     }
@@ -52,7 +52,7 @@ class DownloadController extends AbstractController
     )]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function downloadRawInventory(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
     ): StreamedResponse {
         return $this->downloadHelper->getResponseForEntityWithFileInfo($dossier->getRawInventory());
     }

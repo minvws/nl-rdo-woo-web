@@ -2,25 +2,25 @@
 
 {% set aboutTitle = 'admin.global.convenant_on' | trans %}
 
-{% set descriptionLabel = 'admin.dossiers.convenant.description' | trans %}
-{% set internalReferenceLabel = 'admin.dossiers.convenant.form.details.ref_int' | trans %}
+{% set descriptionLabel = 'admin.dossiers.covenant.description' | trans %}
+{% set internalReferenceLabel = 'admin.dossiers.covenant.form.details.ref_int' | trans %}
 
 {% set dossierTypeTitle = 'global.covenant' | trans %}
-{% set periodLabel = 'admin.dossiers.convenant.period' | trans %}
-{% set summaryLabel = 'admin.dossiers.convenant.summary' | trans %}
-{% set documentLabel = 'admin.dossiers.convenant.document' | trans %}
+{% set periodLabel = 'admin.dossiers.covenant.period' | trans %}
+{% set summaryLabel = 'admin.dossiers.covenant.summary' | trans %}
+{% set documentLabel = 'admin.dossiers.covenant.document' | trans %}
 {% set downloadDocumentPath = path('app_admin_covenant_covenantdocument_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) %}
 {% set completeFirstOpenStepTitle = ('admin.dossiers.covenant.complete_step.' ~ workflowStatus.firstOpenStep.stepName.value | default) | trans %}
 
-{% set deleteTitle = 'admin.dossiers.convenant.delete' | trans %}
+{% set deleteTitle = 'admin.dossiers.covenant.delete' | trans %}
 {% set deleteBullets = [
-    'admin.dossiers.convenant.delete_bullet-1' | trans,
-    'admin.dossiers.convenant.delete_bullet-2' | trans,
-    'admin.dossiers.convenant.delete_bullet-3' | trans,
+    'admin.dossiers.covenant.delete_bullet-1' | trans,
+    'admin.dossiers.covenant.delete_bullet-2' | trans,
+    'admin.dossiers.covenant.delete_bullet-3' | trans,
 ] %}
 
 {% block dossier_period %}
-<twig:Admin:Definition term="{{ 'admin.dossiers.convenant.period' | trans }}">
+<twig:Admin:Definition term="{{ 'admin.dossiers.covenant.period' | trans }}">
     {% if dossier.dateFrom is not empty %}
         <twig:Date date="{{ dossier.dateFrom }}" />
     {% else %}
@@ -36,7 +36,7 @@
 {% endblock %}
 
 {% block dossier_parties %}
-<twig:Admin:Definition term="{{ 'admin.dossiers.convenant.parties' | trans }}">
+<twig:Admin:Definition term="{{ 'admin.dossiers.covenant.parties' | trans }}">
     {% if dossier.parties | length > 0 %}
         <ul>
         {% for party in dossier.parties %}
@@ -51,7 +51,7 @@
 
 {% block dossier_previous_link %}
     {% if dossier.previousVersionLink is not empty %}
-        <twig:Admin:Definition term="{{ 'admin.dossiers.convenant.previous_version_link' | trans }}">
+        <twig:Admin:Definition term="{{ 'admin.dossiers.covenant.previous_version_link' | trans }}">
             <a class="text-bhr-sea-blue underline" href="{{ dossier.previousVersionLink }}">{{ dossier.previousVersionLink }}</a>
         </twig:Admin:Definition>
     {% endif %}

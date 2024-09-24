@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Inventory;
 
 use App\Entity\Judgement;
+use Webmozart\Assert\Assert;
 
 class InventoryDataHelper
 {
@@ -62,17 +63,33 @@ class InventoryDataHelper
     /**
      * Splits a string by separators, trims all values and removes any empty values.
      *
-     * @param non-empty-string $separator
+     * @param non-empty-string|array<non-empty-string> $separators
      *
      * @return string[]
      */
-    public static function separateValues(mixed $value, string $separator = ';'): array
+    public static function separateValues(mixed $value, string|array $separators = ';'): array
     {
         if ($value === null) {
             return [];
         }
 
-        $values = explode($separator, strval($value));
+        $value = trim(strval($value));
+        if ($value === '') {
+            return [];
+        }
+
+        if (! is_array($separators)) {
+            $separators = [$separators];
+        }
+
+        $separators = array_map(
+            static fn (string $separator) => preg_quote($separator, '/'),
+            $separators
+        );
+
+        $values = preg_split('/(' . implode('|', $separators) . ')/', $value, -1);
+        Assert::isArray($values);
+
         $values = array_map('trim', $values);
 
         return array_filter($values);

@@ -12,6 +12,7 @@ use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
+use App\Domain\Publication\Dossier\ViewModel\DossierFormParamBuilder;
 use App\Form\Dossier\InvestigationReport\DetailsType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,6 +35,7 @@ class DetailsStepController extends AbstractController
         private readonly DossierFactory $dossierFactory,
         private readonly StepActionHelper $stepHelper,
         private readonly MessageBusInterface $messageBus,
+        private readonly DossierFormParamBuilder $formParamBuilder,
     ) {
     }
 
@@ -64,6 +66,7 @@ class DetailsStepController extends AbstractController
             'dossier' => $dossier,
             'workflowStatus' => $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME),
             'form' => $form,
+            'departments' => $this->formParamBuilder->getDepartmentsFieldParams($dossier, $form),
         ]);
     }
 
@@ -104,6 +107,7 @@ class DetailsStepController extends AbstractController
             'dossier' => $dossier,
             'workflowStatus' => $wizardStatus,
             'form' => $form,
+            'departments' => $this->formParamBuilder->getDepartmentsFieldParams($dossier, $form),
         ]);
     }
 
@@ -116,7 +120,7 @@ class DetailsStepController extends AbstractController
     public function edit(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] InvestigationReport $dossier,
         Request $request,
-        Breadcrumbs $breadcrumbs
+        Breadcrumbs $breadcrumbs,
     ): Response {
         $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossiers.investigation-report.step.details');
 
@@ -145,6 +149,7 @@ class DetailsStepController extends AbstractController
             'dossier' => $dossier,
             'workflowStatus' => $wizardStatus,
             'form' => $form,
+            'departments' => $this->formParamBuilder->getDepartmentsFieldParams($dossier, $form),
         ]);
     }
 

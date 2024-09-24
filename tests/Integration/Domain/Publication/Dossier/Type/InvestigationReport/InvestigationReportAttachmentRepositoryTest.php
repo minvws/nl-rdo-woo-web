@@ -24,6 +24,8 @@ final class InvestigationReportAttachmentRepositoryTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         self::bootKernel();
     }
 
@@ -36,7 +38,7 @@ final class InvestigationReportAttachmentRepositoryTest extends KernelTestCase
 
         $repository = $this->getRepository();
 
-        $result = $this->getRepository()->findForDossierPrefixAndNr(
+        $result = $this->getRepository()->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
             $attachment->getId()->toRfc4122(),
@@ -45,7 +47,7 @@ final class InvestigationReportAttachmentRepositoryTest extends KernelTestCase
 
         $repository->remove($result, true);
 
-        $result = $this->getRepository()->findForDossierPrefixAndNr(
+        $result = $this->getRepository()->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
             $attachment->getId()->toRfc4122(),
@@ -53,14 +55,14 @@ final class InvestigationReportAttachmentRepositoryTest extends KernelTestCase
         self::assertNull($result);
     }
 
-    public function testFindForDossierPrefixAndNrFindsMatch(): void
+    public function testFindForDossierByPrefixAndNrFindsMatch(): void
     {
         $dossier = InvestigationReportFactory::createOne();
         $attachment = InvestigationReportAttachmentFactory::createOne([
             'dossier' => $dossier,
         ]);
 
-        $result = $this->getRepository()->findForDossierPrefixAndNr(
+        $result = $this->getRepository()->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
             $attachment->getId()->toRfc4122(),
@@ -70,9 +72,9 @@ final class InvestigationReportAttachmentRepositoryTest extends KernelTestCase
         self::assertEquals($attachment->getId(), $result->getId());
     }
 
-    public function testFindForDossierPrefixAndNrMismatch(): void
+    public function testFindForDossierByPrefixAndNrMismatch(): void
     {
-        $result = $this->getRepository()->findForDossierPrefixAndNr(
+        $result = $this->getRepository()->findForDossierByPrefixAndNr(
             'a non-existing document prefix',
             'a non-existing dossier number',
             $this->getFaker()->uuid(),

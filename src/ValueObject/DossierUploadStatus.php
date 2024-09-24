@@ -11,7 +11,7 @@ use Doctrine\Common\Collections\ReadableCollection;
 class DossierUploadStatus
 {
     public function __construct(
-        private readonly Dossier $dossier
+        private readonly Dossier $dossier,
     ) {
     }
 

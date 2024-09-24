@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
-use App\Domain\Ingest\MetadataOnly\IngestMetadataOnlyCommand;
+use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Entity\Document;
 use App\Entity\Dossier;

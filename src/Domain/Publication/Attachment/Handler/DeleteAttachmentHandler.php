@@ -62,6 +62,8 @@ readonly class DeleteAttachmentHandler
 
         $this->attachmentRepository->remove($entity, true);
 
-        $this->messageBus->dispatch($event);
+        if ($dossier->getStatus()->isNotDeleted()) {
+            $this->messageBus->dispatch($event);
+        }
     }
 }

@@ -8,6 +8,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentUpdateEvent;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
 use App\Entity\Dossier;
+use App\Exception\InventoryUpdaterException;
 use App\Repository\DocumentRepository;
 use App\Service\DossierService;
 use App\Service\Inquiry\InquiryService;
@@ -107,7 +108,7 @@ readonly class InventoryUpdater
                 continue;
             }
 
-            throw new \RuntimeException('State mismatch between database and changeset');
+            throw InventoryUpdaterException::forStateMismatch();
         }
 
         $this->doctrine->flush();
@@ -129,7 +130,7 @@ readonly class InventoryUpdater
         foreach ($changeset->getDeleted() as $documentNr) {
             $document = $this->getDocument($documentNr);
             if (! $document instanceof Document || ! $dossier->getStatus()->isConcept()) {
-                throw new \RuntimeException('State mismatch between database and changeset');
+                throw InventoryUpdaterException::forStateMismatch();
             }
 
             // Remove the dossier-document relationship immediately, if needed the document and related files removed asynchronously
@@ -155,7 +156,7 @@ readonly class InventoryUpdater
 
             $document = $this->getDocument($documentNr);
             if (! $document instanceof Document) {
-                throw new \RuntimeException('State mismatch between database and changeset');
+                throw InventoryUpdaterException::forStateMismatch();
             }
 
             if ($action === InventoryChangeset::DELETED) {

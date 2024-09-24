@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\SubType;
 
-use App\Domain\Ingest\IngestOptions;
-use App\Domain\Ingest\SubType\SubTypeIngester;
+use App\Domain\Ingest\Process\IngestProcessOptions;
+use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
 use Psr\Log\LoggerInterface;
@@ -35,7 +35,7 @@ readonly class IndexAttachmentHandler
             }
 
             $this->subTypeIndexer->index($attachment);
-            $this->subTypeIngester->ingest($attachment, new IngestOptions());
+            $this->subTypeIngester->ingest($attachment, new IngestProcessOptions());
         } catch (\Exception $e) {
             $this->logger->error('Failed to update attachment in elasticsearch', [
                 'uuid' => $command->uuid,

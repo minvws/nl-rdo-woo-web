@@ -1,6 +1,6 @@
 import { createTestFile } from '@js/test';
 import { describe, expect, test } from 'vitest';
-import { areFilesEqual, formatExtensions, formatFileSize, getFileTypeByMimeType, getIconNameByMimeType, isValidMaxFileSize } from './file';
+import { areFilesEqual, formatFileSize, getFileTypeByMimeType, getIconNameByMimeType, isValidMaxFileSize } from './file';
 
 describe('The file utility functions', () => {
   describe('the "formatFileSize" function', () => {
@@ -83,12 +83,6 @@ describe('The file utility functions', () => {
       expect(areFilesEqual(file1, file3)).toBe(false);
       expect(areFilesEqual(file1, file4)).toBe(false);
       expect(areFilesEqual(file2, file4)).toBe(false);
-    });
-  });
-
-  describe('the "formatExtensions" function', () => {
-    test('should order the provided extensions, add a dot and correctly format then', () => {
-      expect(formatExtensions(['z-exténsion', '.a-extension', 'b-extension'], 'and')).toBe('.a-extension, .b-extension and .z-exténsion');
     });
   });
 

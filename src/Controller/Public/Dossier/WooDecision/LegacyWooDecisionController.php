@@ -6,6 +6,7 @@ namespace App\Controller\Public\Dossier\WooDecision;
 
 use App\Entity\BatchDownload;
 use App\Entity\Dossier;
+use App\Exception\ViewingNotAllowedException;
 use App\Service\DossierService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -40,7 +41,7 @@ class LegacyWooDecisionController extends AbstractController
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
     ): RedirectResponse {
         if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
+            throw ViewingNotAllowedException::forDossier();
         }
 
         return $this->redirectToRoute(
@@ -59,7 +60,7 @@ class LegacyWooDecisionController extends AbstractController
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
     ): RedirectResponse {
         if (! $this->dossierService->isViewingAllowed($dossier) || $batch->getEntity() !== $dossier) {
-            throw $this->createNotFoundException('Dossier not found');
+            throw ViewingNotAllowedException::forDossier();
         }
 
         return $this->redirectToRoute(
@@ -80,7 +81,7 @@ class LegacyWooDecisionController extends AbstractController
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
     ): RedirectResponse {
         if (! $this->dossierService->isViewingAllowed($dossier) || $batch->getEntity() !== $dossier) {
-            throw $this->createNotFoundException('Dossier not found');
+            throw ViewingNotAllowedException::forDossier();
         }
 
         return $this->redirectToRoute(
@@ -96,10 +97,10 @@ class LegacyWooDecisionController extends AbstractController
 
     #[Route('/dossier/{dossierId}/inventory/download', name: 'app_legacy_dossier_inventory_download', methods: ['GET'], priority: -1)]
     public function downloadInventory(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
     ): RedirectResponse {
         if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
+            throw ViewingNotAllowedException::forDossier();
         }
 
         return $this->redirectToRoute(
@@ -114,10 +115,10 @@ class LegacyWooDecisionController extends AbstractController
 
     #[Route('/dossier/{dossierId}/decision/download', name: 'app_legacy_dossier_decision_download', methods: ['GET'], priority: -1)]
     public function downloadDecision(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
     ): RedirectResponse {
         if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
+            throw ViewingNotAllowedException::forDossier();
         }
 
         return $this->redirectToRoute(

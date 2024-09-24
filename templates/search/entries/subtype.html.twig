@@ -1,37 +1,34 @@
-<header class="woo-search-result__header">
-    <h3 class="woo-search-result__title">
-        <a
-            class="woo-search-result__main-link"
-            data-e2e-name="main-link"
-            href="{{ entry.viewmodel.detailsUrl }}"
-        >{{ entry.viewmodel.name }}</a>
-    </h3>
+{% extends 'search/entries/base.html.twig' %}
 
-     <ul class="woo-search-result__spec-list">
-        <li class="woo-search-result__spec">
-            <twig:Public:FileIcon type="{{ entry.viewmodel.sourceType }}" class="mr-1" size="20" />
-            {{ ("public.documents.file_type." ~ entry.viewmodel.sourceType) | trans }}
-        </li>
-        {% if entry.viewmodel.pageCount > 0 %}
-        <li class="woo-search-result__spec">{{ "global.number_of_pages" | trans({"count": entry.viewmodel.pageCount})}}</li>
-        {% endif %}
-    </ul>
-</header>
+{% set resultUrl = entry.viewmodel.detailsUrl %}
+{% set resultTitle = entry.viewmodel.name %}
+{% set hasRoundedIcon = false %}
+{% set resultIconName = entry.viewmodel.sourceType %}
 
-{% if entry.highlights | length > 0 %}
-<p class="mt-1">
-    {% for hl in entry.highlights %}
-        ... {{ hl | highlights }} {% if loop.last %}...{% endif %}
-    {% endfor %}
-</p>
-{% endif %}
+{% block resultType %}
+    {{ ('public.documents.file_type.' ~ entry.viewmodel.sourceType) | trans }}
+{% endblock %}
 
-<ul class="woo-search-result__spec-list">
+{% block resultTypeSpecs %}
+    {% if entry.viewmodel.pageCount > 0 %}
+        <li class="woo-search-result__spec">{{ 'global.number_of_pages' | trans({ 'count': entry.viewmodel.pageCount })}}</li>
+    {% endif %}
+{% endblock %}
+
+{% block resultSummary %}
+    {% if entry.highlights | length > 0 %}
+        <p class="mt-1">
+            {% for hl in entry.highlights %}
+                ... {{ hl | highlights }} {% if loop.last %}...{% endif %}
+            {% endfor %}
+        </p>
+    {% endif %}
+{% endblock %}
+
+{% block resultSpecsBottom %}
     <li class="woo-search-result__spec">
         {% if entry.viewmodel.formalDate is not empty %}
-            <time datetime="{{ entry.viewmodel.formalDate | date("Y-m-d") }}">
-                {{ entry.viewmodel.formalDate | format_date('long') }}
-            </time>
+            <twig:Date date="{{ entry.viewmodel.formalDate }}" />
         {% else %}
             {{ 'global.date_not_available' | trans }}
         {% endif %}
@@ -39,16 +36,18 @@
     <li class="woo-search-result__spec">
         {{ entry.viewmodel.size | size}}
     </li>
-</ul>
+{% endblock %}
 
-{% if entry.dossiers | length > 0 %}
-<ul class="mt-1 woo-muted">
-    {% for dossier in entry.dossiers %}
-    <li>
-        <twig:Public:Icon name="part-of" size="20" />
-        <span>{{ 'global.part_of' | trans | capitalize }}</span> <a class="woo-a woo-a--search-result" href="{{ dossier_details_path(dossier) }}">{{ dossier.title }}</a>
-        {{dossier.dossierNr}}
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
+{% block resultRelated %}
+    {% if entry.dossiers | length > 0 %}
+        <ul class="mt-1 woo-muted">
+            {% for dossier in entry.dossiers %}
+            <li>
+                <twig:Public:Icon name="part-of" size="20" />
+                <span>{{ 'global.part_of' | trans | capitalize }}</span> <a class="woo-a woo-a--search-result" href="{{ dossier_details_path(dossier) }}">{{ dossier.title }}</a>
+                {{dossier.dossierNr}}
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

@@ -15,7 +15,7 @@ class ReplaceDocumentMessage
         private readonly string $originalFilename,
         private readonly bool $chunked = false,
         private readonly string $chunkUuid = '',
-        private readonly int $chunkCount = 0
+        private readonly int $chunkCount = 0,
     ) {
     }
 

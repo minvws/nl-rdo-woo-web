@@ -21,7 +21,7 @@
     }
 
     .woo-a-email::after {
-        mask: url('@img/envelope.svg');
+        mask: url('@img/public/envelope.svg');
         content: ' via e-mail';
     }
 

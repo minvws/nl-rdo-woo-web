@@ -29,7 +29,7 @@ class DownloadController extends AbstractController
     public function downloadDecisionAttachment(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
         WooDecision $dossier,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
         DecisionAttachment $decisionAttachment,
     ): StreamedResponse {
         unset($dossier); // Only used for isGranted check

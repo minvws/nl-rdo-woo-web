@@ -27,9 +27,6 @@ final readonly class WooDecisionViewFactory
         $publicationDate = $dossier->getPublicationDate();
         Assert::notNull($publicationDate);
 
-        $mainDepartment = $dossier->getDepartments()->first();
-        Assert::notFalse($mainDepartment);
-
         $decisionDate = $dossier->getDecisionDate();
         Assert::notNull($decisionDate);
 
@@ -67,6 +64,7 @@ final readonly class WooDecisionViewFactory
             dateFrom: $dossier->getDateFrom(),
             dateTo: $dossier->getDateTo(),
             publicationReason: $publicationReason,
+            subject: $dossier->getSubject()?->getName(),
         );
     }
 }

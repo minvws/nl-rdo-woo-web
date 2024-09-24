@@ -58,7 +58,7 @@ class DispositionDocumentRepository extends ServiceEntityRepository implements M
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findForDossierPrefixAndNr(string $prefix, string $dossierNr): ?DispositionDocument
+    public function findForDossierByPrefixAndNr(string $prefix, string $dossierNr): ?DispositionDocument
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossier', 'dos')

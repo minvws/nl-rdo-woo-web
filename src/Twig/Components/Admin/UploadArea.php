@@ -28,7 +28,7 @@ class UploadArea
         ?array $accept = [],
         ?string $endpoint = '',
         ?string $id = '',
-        ?int $maxFileSize = null
+        ?int $maxFileSize = null,
     ): void {
         $this->accept = $accept;
         $this->endpoint = $endpoint;

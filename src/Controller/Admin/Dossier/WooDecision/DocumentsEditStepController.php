@@ -39,7 +39,7 @@ class DocumentsEditStepController extends AbstractController
     public function edit(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
         Request $request,
-        Breadcrumbs $breadcrumbs
+        Breadcrumbs $breadcrumbs,
     ): Response {
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, StepName::DOCUMENTS);
         if (! $wizardStatus->isCurrentStepAccessibleInEditMode()) {
@@ -95,7 +95,7 @@ class DocumentsEditStepController extends AbstractController
     public function replaceInventory(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
         Request $request,
-        Breadcrumbs $breadcrumbs
+        Breadcrumbs $breadcrumbs,
     ): Response {
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, StepName::DOCUMENTS);
         if (! $wizardStatus->isCurrentStepAccessibleInEditMode()) {
@@ -155,7 +155,7 @@ class DocumentsEditStepController extends AbstractController
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function documentSearch(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
-        Request $request
+        Request $request,
     ): Response {
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, StepName::DOCUMENTS);
         if (! $wizardStatus->isCurrentStepAccessibleInEditMode()) {

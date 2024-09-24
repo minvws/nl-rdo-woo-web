@@ -19,6 +19,8 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class AppModeListener implements EventSubscriberInterface
 {
+    private const BALIE_PATH = '/balie';
+
     protected string $appMode;
     protected const APP_MODES = ['BALIE', 'FRONTEND', 'BOTH'];
 
@@ -52,12 +54,12 @@ class AppModeListener implements EventSubscriberInterface
         }
 
         // Only /balie urls are allowed in the balie mode
-        if ($this->appMode === 'BALIE' && ! str_starts_with($event->getRequest()->getPathInfo(), '/balie')) {
-            $event->setResponse(new RedirectResponse('/balie'));
+        if ($this->appMode === 'BALIE' && ! str_starts_with($event->getRequest()->getPathInfo(), self::BALIE_PATH)) {
+            $event->setResponse(new RedirectResponse(self::BALIE_PATH));
         }
 
         // Only non-balie urls are allowed in the frontend mode
-        if ($this->appMode === 'FRONTEND' && str_starts_with($event->getRequest()->getPathInfo(), '/balie')) {
+        if ($this->appMode === 'FRONTEND' && str_starts_with($event->getRequest()->getPathInfo(), self::BALIE_PATH)) {
             $event->setResponse(new RedirectResponse('/'));
         }
 

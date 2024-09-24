@@ -9,6 +9,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFac
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
 use App\Entity\Dossier;
+use App\Exception\ViewingNotAllowedException;
 use App\Repository\DocumentRepository;
 use App\Service\DossierService;
 use App\Service\DownloadResponseHelper;
@@ -23,6 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
+use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
@@ -48,7 +50,7 @@ class DocumentController extends AbstractController
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     #[Route('/dossier/{prefix}/{dossierId}/document/{documentId}', name: 'app_document_detail', methods: ['GET'])]
     public function detail(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
         #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
         Breadcrumbs $breadcrumbs,
         Request $request,
@@ -61,7 +63,7 @@ class DocumentController extends AbstractController
         $breadcrumbs->addItem('global.document');
 
         if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
-            throw $this->createNotFoundException('Document or dossier not found');
+            throw ViewingNotAllowedException::forDossierOrDocument();
         }
 
         /** @var PaginationInterface<array-key,Document> $threadDocPaginator */
@@ -99,11 +101,11 @@ class DocumentController extends AbstractController
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     #[Route('/dossier/{prefix}/{dossierId}/download/{documentId}', name: 'app_document_download', methods: ['GET'])]
     public function download(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
         #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
     ): StreamedResponse {
         if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
-            throw $this->createNotFoundException('Document or dossier not found');
+            throw ViewingNotAllowedException::forDossierOrDocument();
         }
 
         if (! $document->shouldBeUploaded()) {
@@ -120,12 +122,12 @@ class DocumentController extends AbstractController
         methods: ['GET']
     )]
     public function debugPage(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
         #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
-        string $pageNr
+        string $pageNr,
     ): Response {
         if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
-            throw $this->createNotFoundException('Document or dossier not found');
+            throw ViewingNotAllowedException::forDossierOrDocument();
         }
 
         $content = $this->searchService->getPageContent($document, intval($pageNr));
@@ -144,12 +146,12 @@ class DocumentController extends AbstractController
         methods: ['GET']
     )]
     public function downloadPage(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
         #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
-        string $pageNr
+        string $pageNr,
     ): StreamedResponse {
         if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
-            throw $this->createNotFoundException('Document or dossier not found');
+            throw ViewingNotAllowedException::forDossierOrDocument();
         }
 
         if (! $document->shouldBeUploaded()) {
@@ -186,12 +188,12 @@ class DocumentController extends AbstractController
         methods: ['GET']
     )]
     public function thumbnailPage(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
         #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
-        string $pageNr
+        string $pageNr,
     ): StreamedResponse {
         if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
-            throw $this->createNotFoundException('Document or dossier not found');
+            throw ViewingNotAllowedException::forDossierOrDocument();
         }
 
         if (! $document->shouldBeUploaded()) {

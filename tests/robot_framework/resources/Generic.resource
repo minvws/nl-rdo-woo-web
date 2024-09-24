@@ -21,3 +21,7 @@ Download File
 Click Download File Link
   ${filename} =  Get Text  xpath=//*[@data-e2e-name="file-name"]
   Download File  ${filename}  xpath=//*[@data-e2e-name="download-file-link"]
+
+Verify Page Error
+  [Arguments]  ${error_code}
+  Get Text  //h2[@class="exception-http"]  contains  404

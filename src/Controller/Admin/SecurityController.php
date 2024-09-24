@@ -25,7 +25,7 @@ class SecurityController extends AbstractController
     public function __construct(
         EntityManagerInterface $doctrine,
         UserPasswordHasherInterface $passwordEncoder,
-        private readonly TranslatorInterface $translator
+        private readonly TranslatorInterface $translator,
     ) {
         $this->doctrine = $doctrine;
         $this->passwordEncoder = $passwordEncoder;

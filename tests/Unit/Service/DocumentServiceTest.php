@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
-use App\Domain\Ingest\SubType\SubTypeIngester;
+use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
+use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Service\DocumentService;
-use App\Service\FileProcessService;
 use App\Service\HistoryService;
 use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
@@ -27,8 +27,8 @@ class DocumentServiceTest extends MockeryTestCase
     private ThumbnailStorageService&MockInterface $thumbnailStorageService;
     private SubTypeIndexer&MockInterface $subTypeIndexer;
     private MessageBusInterface&MockInterface $messageBus;
-    private FileProcessService&MockInterface $fileProcessService;
     private HistoryService&MockInterface $historyService;
+    private DocumentNumberExtractor&MockInterface $documentNumberExtractor;
 
     public function setUp(): void
     {
@@ -39,8 +39,8 @@ class DocumentServiceTest extends MockeryTestCase
         $this->ingester = \Mockery::mock(SubTypeIngester::class);
         $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
-        $this->fileProcessService = \Mockery::mock(FileProcessService::class);
         $this->historyService = \Mockery::mock(HistoryService::class);
+        $this->documentNumberExtractor = \Mockery::mock(DocumentNumberExtractor::class);
 
         $this->historyService->shouldReceive('addDocumentEntry');
 
@@ -51,8 +51,8 @@ class DocumentServiceTest extends MockeryTestCase
             $this->thumbnailStorageService,
             $this->subTypeIndexer,
             $this->messageBus,
-            $this->fileProcessService,
-            $this->historyService
+            $this->historyService,
+            $this->documentNumberExtractor,
         );
 
         parent::setUp();

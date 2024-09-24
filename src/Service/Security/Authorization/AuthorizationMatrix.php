@@ -22,7 +22,7 @@ class AuthorizationMatrix
         private readonly AuthorizationCheckerInterface $authorizationChecker,
         private readonly OrganisationSwitcher $organisationSwitcher,
         private readonly AuthorizationEntryRequestStore $entryStore,
-        private readonly array $entries
+        private readonly array $entries,
     ) {
     }
 

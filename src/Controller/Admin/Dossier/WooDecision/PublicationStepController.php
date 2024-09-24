@@ -64,7 +64,7 @@ class PublicationStepController extends AbstractController
     public function edit(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
         Request $request,
-        Breadcrumbs $breadcrumbs
+        Breadcrumbs $breadcrumbs,
     ): Response {
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, StepName::PUBLICATION);
         if (! $wizardStatus->isCurrentStepAccessibleInEditMode()) {

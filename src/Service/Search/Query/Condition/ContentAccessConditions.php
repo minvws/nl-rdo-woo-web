@@ -6,34 +6,35 @@ namespace App\Service\Search\Query\Condition;
 
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Search\Index\ElasticDocumentType;
-use App\Service\Search\Model\Config;
+use App\Domain\Search\Query\SearchParameters;
+use App\Domain\Search\Query\SearchType;
 use App\Service\Search\Query\Facet\FacetList;
 use App\Service\Search\Query\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 
 class ContentAccessConditions implements QueryConditions
 {
-    public function applyToQuery(FacetList $facetList, Config $config, BoolQuery $query): void
+    public function applyToQuery(FacetList $facetList, SearchParameters $searchParameters, BoolQuery $query): void
     {
-        if (empty($config->dossierInquiries) && ! empty($config->documentInquiries)) {
+        if (empty($searchParameters->dossierInquiries) && ! empty($searchParameters->documentInquiries)) {
             // If a documentInquiries filter is active but no dossierInquiries filter: limit results to documents.
             // Otherwise all dossiers will match as there are no dossier conditions for documentInquiries.
-            $searchType = Config::TYPE_DOCUMENT;
+            $searchType = SearchType::DOCUMENT;
         } else {
-            $searchType = $config->searchType;
+            $searchType = $searchParameters->searchType;
         }
 
         switch ($searchType) {
-            case Config::TYPE_DOCUMENT:
-                $query->addFilter($this->createSubTypesQuery($config, [ElasticDocumentType::WOO_DECISION_DOCUMENT]));
+            case SearchType::DOCUMENT:
+                $query->addFilter($this->createSubTypesQuery($searchParameters, [ElasticDocumentType::WOO_DECISION_DOCUMENT]));
                 break;
-            case Config::TYPE_DOSSIER:
-                $query->addFilter($this->createTypesQuery($config, [ElasticDocumentType::WOO_DECISION]));
+            case SearchType::DOSSIER:
+                $query->addFilter($this->createTypesQuery($searchParameters, [ElasticDocumentType::WOO_DECISION]));
                 break;
             default:
                 $query->addFilter(
                     Query::bool(
-                        should: $this->getFiltersForAllTypes($config),
+                        should: $this->getFiltersForAllTypes($searchParameters),
                     )->setParams(['minimum_should_match' => 1])
                 );
                 break;
@@ -43,7 +44,7 @@ class ContentAccessConditions implements QueryConditions
     /**
      * @param ElasticDocumentType[] $subTypes
      */
-    private function createSubTypesQuery(Config $config, array $subTypes): BoolQuery
+    private function createSubTypesQuery(SearchParameters $searchParameters, array $subTypes): BoolQuery
     {
         $query = Query::bool(
             filter: [
@@ -54,28 +55,28 @@ class ContentAccessConditions implements QueryConditions
             ],
         );
 
-        if (! empty($config->dossierInquiries) || ! empty($config->documentInquiries)) {
+        if (! empty($searchParameters->dossierInquiries) || ! empty($searchParameters->documentInquiries)) {
             $statuses = [
                 DossierStatus::PUBLISHED->value,
                 DossierStatus::PREVIEW->value,
             ];
 
-            if (! empty($config->documentInquiries)) {
+            if (! empty($searchParameters->documentInquiries)) {
                 $query->addFilter(
                     Query::terms(
                         field: 'inquiry_ids',
-                        values: $config->documentInquiries
+                        values: $searchParameters->documentInquiries
                     )
                 );
             }
 
-            if (! empty($config->dossierInquiries)) {
+            if (! empty($searchParameters->dossierInquiries)) {
                 $query->addFilter(
                     Query::nested(
                         path: 'dossiers',
                         query: Query::terms(
                             field: 'dossiers.inquiry_ids',
-                            values: $config->dossierInquiries
+                            values: $searchParameters->dossierInquiries
                         ),
                     )
                 );
@@ -102,7 +103,7 @@ class ContentAccessConditions implements QueryConditions
     /**
      * @param ElasticDocumentType[] $types
      */
-    private function createTypesQuery(Config $config, array $types): BoolQuery
+    private function createTypesQuery(SearchParameters $searchParameters, array $types): BoolQuery
     {
         $query = Query::bool(
             filter: [
@@ -113,7 +114,7 @@ class ContentAccessConditions implements QueryConditions
             ],
         );
 
-        if (! empty($config->dossierInquiries)) {
+        if (! empty($searchParameters->dossierInquiries)) {
             $statuses = [
                 DossierStatus::PUBLISHED->value,
                 DossierStatus::PREVIEW->value,
@@ -121,7 +122,7 @@ class ContentAccessConditions implements QueryConditions
             $query->addFilter(
                 Query::terms(
                     field: 'inquiry_ids',
-                    values: $config->dossierInquiries
+                    values: $searchParameters->dossierInquiries
                 ),
             );
         } else {
@@ -143,11 +144,11 @@ class ContentAccessConditions implements QueryConditions
     /**
      * @return BoolQuery[]
      */
-    private function getFiltersForAllTypes(Config $config): array
+    private function getFiltersForAllTypes(SearchParameters $searchParameters): array
     {
         return [
-            $this->createTypesQuery($config, ElasticDocumentType::getMainTypes()),
-            $this->createSubTypesQuery($config, ElasticDocumentType::getSubTypes()),
+            $this->createTypesQuery($searchParameters, ElasticDocumentType::getMainTypes()),
+            $this->createSubTypesQuery($searchParameters, ElasticDocumentType::getSubTypes()),
         ];
     }
 

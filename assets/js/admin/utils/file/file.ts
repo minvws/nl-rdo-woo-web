@@ -1,5 +1,4 @@
 import { formatNumber, isNumber } from '@utils';
-import { formatList } from '../list';
 
 const enum MimeType {
   Csv = 'application/csv',
@@ -13,12 +12,6 @@ const enum MimeType {
   Word = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   Zip = 'application/zip',
 }
-
-export const formatExtensions = (extensions: string[], glue: string): string => {
-  const sorted = extensions.slice().sort((a, b) => a.localeCompare(b));
-  const withDot = sorted.map((extension) => (extension.startsWith('.') ? extension : `.${extension}`));
-  return formatList(withDot, glue);
-};
 
 export const MimeTypes: Readonly<Record<string, string[]>> = {
   Csv: [

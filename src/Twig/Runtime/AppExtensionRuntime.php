@@ -60,14 +60,6 @@ class AppExtensionRuntime implements RuntimeExtensionInterface
         return is_array($version) ? $version : [];
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.ExitExpression)
-     */
-    public function dieTwig(): void
-    {
-        exit;
-    }
-
     public function isInstanceOf(mixed $var, string $instance): bool
     {
         return $var instanceof $instance;

@@ -1,40 +1,13 @@
-<header class="woo-search-result__header">
-    <h3 class="woo-search-result__title">
-        <a
-            class="woo-search-result__main-link"
-            data-e2e-name="main-link"
-            href="{{ path('app_disposition_detail', { prefix: entry.dossier.documentPrefix, dossierId: entry.dossier.dossierNr }) }}"
-        >{{ entry.dossier.title }}</a>
-    </h3>
+{% extends 'search/entries/base.html.twig' %}
 
-    <ul class="woo-search-result__spec-list">
-        <li class="woo-search-result__spec">
-            <span class="bg-gray-100 rounded-full inline-grid place-content-center align-bottom aspect-square w-6">
-                <twig:Public:Icon name="map" size="20" />
-            </span>
-            <span class="font-bold text-gray-700">{{ 'dossier.type.disposition' | trans }}</span>
-        </li>
-        <li class="woo-search-result__spec">{{ "global.number_of_documents" | trans({"count": entry.dossier.documentCount })}}</li>
-    </ul>
-</header>
+{% set resultUrl = path('app_disposition_detail', { prefix: entry.dossier.documentPrefix, dossierId: entry.dossier.dossierNr }) %}
+{% set resultType = 'dossier.type.disposition' | trans %}
 
-{% if entry.dossier.summary %}
-<p class="mt-1">{{ entry.dossier.summary | u.truncate(200, '...', false) }}</p>
-{% endif %}
-
-{% if entry.highlights | length > 0 %}
-<p class="mt-1">
-    {% for hl in entry.highlights %}
-        ... {{ hl | highlights }} {% if loop.last %}...{% endif %}
-    {% endfor %}
-</p>
-{% endif %}
-
-<ul class="woo-search-result__spec-list">
+{% block resultSpecsBottom %}
     <li class="woo-search-result__spec">
         {{ 'public.dossiers.disposition.date' | trans }} <twig:Date date="{{ entry.dossier.date }}" />
     </li>
     <li class="woo-search-result__spec">
         {{ 'global.published_on' | trans | capitalize }} <twig:Date date="{{ entry.dossier.publicationDate }}" />
     </li>
-</ul>
+{% endblock %}

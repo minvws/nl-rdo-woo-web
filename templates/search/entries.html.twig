@@ -1,5 +1,6 @@
 {% import "facet_macros.html.twig" as macro %}
 
+{% set searchQuery = app.request.query.get('q') %}
 {% set numberOfResults = result.entries | length %}
 {% set numberOfPages = result.pagination.pageCount %}
 {% set sortBy = app.request.query.get('sort') %}
@@ -17,15 +18,24 @@
 {% endif %}
 
 <div class="md:flex pb-3">
-    <div class="grow">
-        <h2 class="font-bold mt-2" aria-live="polite" id="js-number-of-search-results" tabindex="-1">
-            {% if result.type == constant('App\\Service\\Search\\Model\\Config::TYPE_DOSSIER') %}
-                {{ "global.number_of_dossiers" | trans({'count': result.dossierCount}) }}
+    <div class="grow pb-3 md:pb-0">
+        {% set isDossierTypeResult = result.type == constant('App\\Domain\\Search\\Index\\ElasticDocumentType::WOO_DECISION').value %}
+        {% set tooManyResultsMinimum = 10000 %}
+        {% set hasTooManyNonDossierTypeResults = not isDossierTypeResult and result.resultCount >= tooManyResultsMinimum %}
+        <h2 class="leading-tight {% if not hasTooManyNonDossierTypeResults %}mt-3{% endif %}" aria-live="polite" id="js-number-of-search-results" tabindex="-1">
+            {% if isDossierTypeResult %}
+                <span class="font-bold">{{ "global.number_of_dossiers" | trans({'count': result.dossierCount}) }}</span>
+            {% elseif hasTooManyNonDossierTypeResults %}
+                {{ 'public.search.only_first_set_displayed' | trans({ display_count: tooManyResultsMinimum | format_number(locale=('lang' | trans)) }) | raw }}
             {% else %}
-                {{ "global.number_of_results" | trans({'count': result.resultCount}) }}
-                <span class="font-normal">{{ "public.results.in_dossiers" | trans({'count': result.dossierCount}) }}</span>
+                <span class="font-bold">{{ "global.number_of_results" | trans({'count': result.resultCount}) }}</span>
+                {{ "public.results.in_dossiers" | trans({'count': result.dossierCount}) }}
             {% endif %}
         </h2>
+
+        {% if hasTooManyNonDossierTypeResults %}
+            <p class="leading-tight">{{ 'public.search.refine_results' | trans }}</p>
+        {% endif %}
 
         {# Suggestions #}
         {% set suggestionsId = constant('App\\ElasticConfig::SUGGESTIONS_SEARCH_INPUT') %}
@@ -97,6 +107,8 @@
     <ul class="flex flex-wrap pb-1 gap-x-2">
         {{  macro.inquiry_facets(result) }}
 
+        {{ macro.facet_pills('', constant('App\\Service\\Search\\Model\\FacetKey::TYPE').value, result) }}
+
         {% if is_valid_date(app.request.get('dt').from | default) %}
             {{ macro.facet_pill('Datum vanaf: ' ~ app.request.get('dt').from | default | format_date('long'), 'dt[from]', '') }}
         {% endif %}
@@ -107,7 +119,7 @@
             {{ macro.facet_pill('Datum: niet beschikbaar', 'dt[without_date]', '') }}
         {% endif %}
 
-        {# {{ macro.facet_pills('Department' | trans, constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }} #}
+        {{ macro.facet_pills('categories.category.department' | trans, constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT').value, result) }}
         {{ macro.facet_pills('categories.category.subject' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value, result) }}
         {{ macro.facet_pills('categories.category.source_file' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SOURCE').value, result) }}
         {{ macro.facet_pills('categories.category.judgement' | trans, constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT').value, result) }}
@@ -124,14 +136,14 @@
         </li>
         {% endfor %}
     </ul>
-{% elseif app.request.query.get('q') %}
+{% elseif searchQuery %}
     <div class="pt-2 woo-rich-text">
         <h3 class="!font-normal">
             <twig:Public:Icon name="magnifier" color="fill-dim-gray" />
             {{ 'public.search.no_search_results.title' | trans }}
         </h3>
 
-        <p>{{ 'public.search.no_search_results.description' | trans({ 'query': app.request.query.get('q') }) }}.</p>
+        <p>{{ 'public.search.no_search_results.description' | trans({ 'query': searchQuery }) }}.</p>
 
         <h4>{{ 'public.search.suggestions' | trans }}:</h4>
         <ul>

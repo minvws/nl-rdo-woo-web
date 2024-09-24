@@ -82,10 +82,14 @@ class DispositionWorkflow
             ],
         );
 
-        $workflow->transition()
-            ->name(DossierStatusTransition::DELETE_ATTACHMENT->value)
-            ->from(DossierStatus::CONCEPT->value)
-            ->to(DossierStatus::CONCEPT->value);
+        WorkflowConfigHelper::defineNonMovingTransitions(
+            $workflow,
+            DossierStatusTransition::DELETE_ATTACHMENT,
+            [
+                DossierStatus::CONCEPT,
+                DossierStatus::DELETED,
+            ],
+        );
 
         $workflow->transition()
             ->name(DossierStatusTransition::DELETE->value)

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Object;
 
+use App\Domain\Search\Query\SearchType;
 use App\ElasticConfig;
 use App\Entity\Document;
 use App\Service\Elastic\ElasticClientInterface;
-use App\Service\Search\Model\Config;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Jaytaph\TypeArray\TypeArray;
 
@@ -65,7 +65,7 @@ class ObjectHandler
             'body' => [
                 'query' => [
                     'term' => [
-                        'type' => Config::TYPE_DOCUMENT,
+                        'type' => SearchType::DOCUMENT->value,
                     ],
                 ],
                 'aggs' => [

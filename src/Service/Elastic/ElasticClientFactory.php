@@ -19,7 +19,7 @@ class ElasticClientFactory
         ?string $password = null,
         ?string $mtlsCertPath = null,
         ?string $mtlsKeyPath = null,
-        ?string $mtlsCAPath = null
+        ?string $mtlsCAPath = null,
     ): ClientInterface {
         $builder = new ClientBuilder();
         $builder->setHttpClient(new Client([

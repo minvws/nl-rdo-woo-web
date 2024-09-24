@@ -37,6 +37,8 @@ final class AnnualReportAttachmentTest extends ApiTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->root = vfsStream::setup();
 
         self::bootKernel();
@@ -45,7 +47,7 @@ final class AnnualReportAttachmentTest extends ApiTestCase
     public function testGetAllAnnualReportAttachments(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -77,7 +79,7 @@ final class AnnualReportAttachmentTest extends ApiTestCase
     public function testGetSingleAnnualReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -106,7 +108,7 @@ final class AnnualReportAttachmentTest extends ApiTestCase
     public function testGetSingleNonExistingAnnualReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -132,7 +134,7 @@ final class AnnualReportAttachmentTest extends ApiTestCase
     public function testCreateAnnualReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -216,7 +218,7 @@ final class AnnualReportAttachmentTest extends ApiTestCase
     public function testCreateAnnualReportAttachmentWithInvalidRequestData(array $input, array $expectedViolations): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -461,7 +463,7 @@ final class AnnualReportAttachmentTest extends ApiTestCase
     public function testDeleteAnnualReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -490,7 +492,7 @@ final class AnnualReportAttachmentTest extends ApiTestCase
     public function testDeleteNonExistingAnnualReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -516,7 +518,7 @@ final class AnnualReportAttachmentTest extends ApiTestCase
     public function testUpdateAnnualReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -574,7 +576,7 @@ final class AnnualReportAttachmentTest extends ApiTestCase
     public function testUpdateNonExistingAnnualReportAttachment(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -605,7 +607,7 @@ final class AnnualReportAttachmentTest extends ApiTestCase
     public function testUpdateAnnualReportAttachmentWithInvalidRequestData(array $input, array $expectedViolations): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 

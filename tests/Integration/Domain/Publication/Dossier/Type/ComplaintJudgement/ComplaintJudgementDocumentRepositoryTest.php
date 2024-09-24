@@ -23,6 +23,8 @@ final class ComplaintJudgementDocumentRepositoryTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         self::bootKernel();
     }
 
@@ -35,7 +37,7 @@ final class ComplaintJudgementDocumentRepositoryTest extends KernelTestCase
 
         $repository = $this->getRepository();
 
-        $result = $this->getRepository()->findForDossierPrefixAndNr(
+        $result = $this->getRepository()->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
         );
@@ -43,14 +45,14 @@ final class ComplaintJudgementDocumentRepositoryTest extends KernelTestCase
 
         $repository->remove($result, true);
 
-        $result = $this->getRepository()->findForDossierPrefixAndNr(
+        $result = $this->getRepository()->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
         );
         self::assertNull($result);
     }
 
-    public function testFindForDossierPrefixAndNrFindsMatch(): void
+    public function testFindForDossierByPrefixAndNrFindsMatch(): void
     {
         $dossier = ComplaintJudgementFactory::createOne();
 
@@ -58,7 +60,7 @@ final class ComplaintJudgementDocumentRepositoryTest extends KernelTestCase
             'dossier' => $dossier,
         ]);
 
-        $result = $this->getRepository()->findForDossierPrefixAndNr(
+        $result = $this->getRepository()->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
         );
@@ -67,9 +69,9 @@ final class ComplaintJudgementDocumentRepositoryTest extends KernelTestCase
         self::assertEquals($document->getId(), $result->getId());
     }
 
-    public function testFindForDossierPrefixAndNrMismatch(): void
+    public function testFindForDossierByPrefixAndNrMismatch(): void
     {
-        $result = $this->getRepository()->findForDossierPrefixAndNr(
+        $result = $this->getRepository()->findForDossierByPrefixAndNr(
             'a non-existing document prefix',
             'a non-existing dossier number',
         );

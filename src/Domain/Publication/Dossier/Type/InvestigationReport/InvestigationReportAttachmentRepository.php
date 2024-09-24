@@ -88,7 +88,7 @@ class InvestigationReportAttachmentRepository extends ServiceEntityRepository im
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findForDossierPrefixAndNr(string $prefix, string $dossierNr, string $id): ?InvestigationReportAttachment
+    public function findForDossierByPrefixAndNr(string $prefix, string $dossierNr, string $id): ?InvestigationReportAttachment
     {
         $qb = $this->createQueryBuilder('a')
             ->where('a.id = :id')

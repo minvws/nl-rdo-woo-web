@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query\Facet;
 
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Facet\Input\FacetInput;
+use App\Service\Search\Query\Facet\Input\FacetInputCollection;
 use App\Service\Search\Query\Facet\Input\FacetInputInterface;
-use App\Service\Search\Query\Facet\Input\ParameterBagFactoryInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use Webmozart\Assert\Assert;
 
 final readonly class FacetListFactory implements FacetDefinitionsInterface
 {
@@ -20,10 +16,8 @@ final readonly class FacetListFactory implements FacetDefinitionsInterface
     {
         $facets = [];
         foreach ($this->getDefinitions() as $definition) {
-            /** @var class-string<FacetInputInterface&ParameterBagFactoryInterface> */
+            /** @var class-string<FacetInputInterface> */
             $inputClass = $definition->getFacetKey()->getInputClass();
-
-            Assert::implementsInterface($inputClass, ParameterBagInterface::class);
 
             $facets[] = new Facet(
                 definition: $definition,
@@ -34,16 +28,11 @@ final readonly class FacetListFactory implements FacetDefinitionsInterface
         return new FacetList($facets);
     }
 
-    /**
-     * @param array<key-of<FacetKey>,FacetInput> $facetInputs
-     */
-    public function fromFacetInputs(array $facetInputs): FacetList
+    public function fromFacetInputs(FacetInputCollection $facetInputs): FacetList
     {
         $facets = [];
         foreach ($this->getDefinitions() as $definition) {
-            Assert::keyExists($facetInputs, $definition->getFacetKey()->name);
-
-            $input = $facetInputs[$definition->getFacetKey()->name];
+            $input = $facetInputs->getByFacetDefinition($definition);
 
             $facets[] = new Facet(
                 definition: $definition,

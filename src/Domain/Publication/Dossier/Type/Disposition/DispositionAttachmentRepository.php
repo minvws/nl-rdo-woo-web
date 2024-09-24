@@ -88,7 +88,7 @@ class DispositionAttachmentRepository extends ServiceEntityRepository implements
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findForDossierPrefixAndNr(string $prefix, string $dossierNr, string $id): ?DispositionAttachment
+    public function findForDossierByPrefixAndNr(string $prefix, string $dossierNr, string $id): ?DispositionAttachment
     {
         $qb = $this->createQueryBuilder('a')
             ->where('a.id = :id')

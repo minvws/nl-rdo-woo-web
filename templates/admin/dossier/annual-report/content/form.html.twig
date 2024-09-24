@@ -2,22 +2,22 @@
     {{ form_row(form.summary) }}
 
     <twig:Admin:Publication:ManageDocument
-        allowedExtensions="{{ documentExtensions }}"
+        allowedFileTypes="{{ documentTypeNames }}"
         allowedMimeTypes="{{ documentMimeTypes }}"
         canDelete="{{ canDeleteDocument }}"
-        documentType="{{ 'admin.dossiers.annual_report.document' | trans }}"
+        documentType="{{ 'admin.dossiers.annual-report.document' | trans }}"
         documentTypes="{{ documentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/annual-report-document' }}"
         formField="{{ form.document }}"
         grounds="{{ grounds }}"
-        helpText="{{ 'admin.dossiers.annual_report.form.content.document_help' | trans }}"
+        helpText="{{ 'admin.dossiers.annual-report.form.content.document_help' | trans }}"
         languages="{{ attachmentLanguages }}"
-        title="{{ 'admin.dossiers.annual_report.form.content.document_label' | trans }}"
+        title="{{ 'admin.dossiers.annual-report.form.content.document_label' | trans }}"
         uploadGroupId="annual-report-documents"
     />
 
     <twig:Admin:Publication:ManageAttachments
-        allowedExtensions="{{ attachmentExtensions }}"
+        allowedFileTypes="{{ attachmentTypeNames }}"
         allowedMimeTypes="{{ attachmentMimeTypes }}"
         canDelete="{{ canDeleteAttachments }}"
         documentTypes="{{ attachmentTypes }}"

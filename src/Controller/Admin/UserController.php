@@ -16,6 +16,7 @@ use App\Roles;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use App\Service\UserService;
+use Knp\Component\Pager\PaginatorInterface;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
 use MinVWS\AuditLogger\Events\Logging\AccountChangeLogEvent;
@@ -33,6 +34,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class UserController extends AbstractController
 {
+    protected const MAX_ITEMS_PER_PAGE = 100;
+
     protected const RESET_USER_KEY = 'reset_user';
 
     public function __construct(
@@ -40,7 +43,8 @@ class UserController extends AbstractController
         private readonly UserService $userService,
         private readonly TranslatorInterface $translator,
         private readonly AuditLogger $auditLogger,
-        private readonly AuthorizationMatrix $authorizationMatrix
+        private readonly AuthorizationMatrix $authorizationMatrix,
+        private readonly PaginatorInterface $paginator,
     ) {
     }
 
@@ -57,9 +61,17 @@ class UserController extends AbstractController
 
         /** @var User $user */
         $user = $this->getUser();
-        $users = $this->repository->findAllForOrganisation(
-            $this->authorizationMatrix->getActiveOrganisation(),
-            $user->hasRole(Roles::ROLE_SUPER_ADMIN)
+
+        $pagination = $this->paginator->paginate(
+            $this->repository->findAllForOrganisationQuery(
+                $this->authorizationMatrix->getActiveOrganisation(),
+                $user->hasRole(Roles::ROLE_SUPER_ADMIN),
+            ),
+            $request->query->getInt('page', 1),
+            100,
+            [
+                PaginatorInterface::DEFAULT_SORT_FIELD_NAME => 'u.name',
+            ],
         );
 
         $roles = Roles::roleDetails();
@@ -69,7 +81,7 @@ class UserController extends AbstractController
         }
 
         return $this->render('admin/user/index.html.twig', [
-            'users' => $users,
+            'pagination' => $pagination,
             'role_details' => $roleDetails,
         ]);
     }

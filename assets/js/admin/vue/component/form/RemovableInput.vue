@@ -64,7 +64,7 @@
         <Icon
           color="fill-current"
           name="trash-bin"
-          size="18"
+          :size="18"
         />
       </button>
     </div>

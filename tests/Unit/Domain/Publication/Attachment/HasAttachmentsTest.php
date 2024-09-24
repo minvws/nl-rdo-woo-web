@@ -65,7 +65,7 @@ final class HasAttachmentsTest extends UnitTestCase
 
     private function getEntityWithAttachments(Collection $attachments): EntityWithAttachments
     {
-        $entity = new class() implements EntityWithAttachments {
+        $entity = new class implements EntityWithAttachments {
             use HasAttachments;
 
             public Collection $attachments;

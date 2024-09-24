@@ -5,5 +5,7 @@ when@dev: &dev
             default_namespace: 'App\Tests\Factory'
         faker:
             service: 'Faker\Generator'
+        global_state:
+            - App\Tests\Story\DepartmentStory
 
 when@test: *dev

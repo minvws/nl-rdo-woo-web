@@ -30,7 +30,7 @@ class DownloadController extends AbstractController
     public function downloadDocument(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
         Disposition $dossier,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
         DispositionDocument $document,
     ): StreamedResponse {
         unset($dossier); // Only used for isGranted check
@@ -47,7 +47,7 @@ class DownloadController extends AbstractController
     public function downloadAttachment(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
         Disposition $dossier,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
         DispositionAttachment $attachment,
     ): StreamedResponse {
         unset($dossier); // Only used for isGranted check

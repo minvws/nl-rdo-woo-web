@@ -114,6 +114,7 @@
 
     <div {{ vue_component('UploadAreaController', {
         allowedMimeTypes: attr.accept|default([]),
+        allowedFileTypes: attr.typeNames|default(['PDF']),
         allowMultiple: allowMultiple,
         id: id,
         name: full_name,

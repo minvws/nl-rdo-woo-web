@@ -1,7 +1,6 @@
 <script setup>
-  import { reactive, defineModel, nextTick, ref, watch } from 'vue';
+  import { reactive, ref, watch } from 'vue';
 
-  const classNames = ref([]);
   const element = ref(null);
   const isCollapsed = defineModel({ default: false });
   const style = reactive({});

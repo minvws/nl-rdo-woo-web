@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\SubType;
 
-use App\Domain\Ingest\IngestOptions;
-use App\Domain\Ingest\SubType\SubTypeIngester;
+use App\Domain\Ingest\Process\IngestProcessOptions;
+use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
 use App\Domain\Search\Index\SubType\IndexAttachmentCommand;
@@ -74,7 +74,7 @@ class IndexAttachmentHandlerTest extends MockeryTestCase
 
         $this->repository->expects('find')->with($id)->andReturn($attachment);
         $this->subTypeIndexer->expects('index')->with($attachment);
-        $this->subTypeIngester->expects('ingest')->with($attachment, \Mockery::type(IngestOptions::class));
+        $this->subTypeIngester->expects('ingest')->with($attachment, \Mockery::type(IngestProcessOptions::class));
 
         $this->handler->__invoke($command);
     }

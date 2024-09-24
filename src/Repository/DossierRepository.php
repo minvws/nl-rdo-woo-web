@@ -6,7 +6,6 @@ namespace App\Repository;
 
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\ViewModel\RecentDossier;
 use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use App\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
 use App\Entity\Dossier;
@@ -58,35 +57,6 @@ class DossierRepository extends ServiceEntityRepository implements ProvidesDossi
         $qb = $this->createQueryBuilder('d')
             ->where('d.organisation = :organisation')
             ->setParameter('organisation', $organisation)
-        ;
-
-        return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * @return RecentDossier[]
-     */
-    public function getRecentDossiers(int $limit): array
-    {
-        $qb = $this->createQueryBuilder('dos')
-            ->select(sprintf(
-                'new %s(
-                    dos.dossierNr,
-                    dos.documentPrefix,
-                    dos.title,
-                    dos.publicationDate,
-                    dos.decisionDate,
-                    COUNT(doc),
-                    COALESCE(SUM(doc.pageCount),0)
-                )',
-                RecentDossier::class,
-            ))
-            ->where('dos.status = :status')
-            ->leftJoin('dos.documents', 'doc')
-            ->groupBy('dos.id')
-            ->setParameter('status', DossierStatus::PUBLISHED)
-            ->orderBy('dos.decisionDate', 'DESC')
-            ->setMaxResults($limit)
         ;
 
         return $qb->getQuery()->getResult();

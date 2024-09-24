@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query\Filter;
 
-use App\Service\Search\Model\Config;
+use App\Domain\Search\Query\SearchParameters;
 use App\Service\Search\Query\Facet\Facet;
 use App\Service\Search\Query\Facet\Input\DateRangeInputInterface;
 use App\Service\Search\Query\Query;
@@ -13,11 +13,11 @@ use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 class DateRangeFilter implements FilterInterface
 {
     public function __construct(
-        private readonly string $comparisonOperator
+        private readonly string $comparisonOperator,
     ) {
     }
 
-    public function addToQuery(Facet $facet, BoolQuery $query, Config $config, string $prefix = ''): void
+    public function addToQuery(Facet $facet, BoolQuery $query, SearchParameters $searchParameters, string $prefix = ''): void
     {
         if ($facet->isNotActive()) {
             return;

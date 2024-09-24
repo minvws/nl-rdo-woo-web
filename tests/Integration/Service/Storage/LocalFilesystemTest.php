@@ -7,11 +7,12 @@ namespace App\Tests\Integration\Service\Storage;
 use App\Service\Storage\LocalFilesystem;
 use App\Service\Storage\StorageRuntimeException;
 use App\Tests\Integration\IntegrationTestTrait;
+use App\Tests\Integration\Service\Storage\Streams\FailingReadStreamWrapper;
+use App\Tests\Integration\Service\Storage\Streams\FailingWriteStreamWrapper;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamFile;
-use phpmock\mockery\PHPMockery;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webmozart\Assert\Assert;
@@ -20,25 +21,15 @@ final class LocalFilesystemTest extends KernelTestCase
 {
     use IntegrationTestTrait;
 
-    private const TEST_NAMESPACE = 'App\\Service\\Storage';
-
     private vfsStreamDirectory $root;
     private LoggerInterface&MockInterface $logger;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->root = vfsStream::setup();
         $this->logger = \Mockery::mock(LoggerInterface::class);
-
-        // If the actual function is called before the mock was defined, the test can fail:
-        PHPMockery::define(self::TEST_NAMESPACE, 'fwrite');
-        PHPMockery::define(self::TEST_NAMESPACE, 'fread');
-        PHPMockery::define(self::TEST_NAMESPACE, 'tempnam');
-        PHPMockery::define(self::TEST_NAMESPACE, 'sys_get_temp_dir');
-        PHPMockery::define(self::TEST_NAMESPACE, 'unlink');
-        PHPMockery::define(self::TEST_NAMESPACE, 'uniqid');
-        PHPMockery::define(self::TEST_NAMESPACE, 'mkdir');
-        PHPMockery::define(self::TEST_NAMESPACE, 'rmdir');
     }
 
     public function testCopy(): void
@@ -67,13 +58,9 @@ final class LocalFilesystemTest extends KernelTestCase
 
     public function testCopyWhenFreadReturnFalse(): void
     {
-        PHPMockery::mock(self::TEST_NAMESPACE, 'fread')->once()->andReturnFalse();
+        FailingReadStreamWrapper::register();
 
-        $contents = 'Hello World!';
-
-        vfsStream::create(['input.txt' => $contents], $this->root);
-
-        $source = fopen('vfs://root/input.txt', 'r');
+        $source = fopen(FailingReadStreamWrapper::getPath('input.txt'), 'r');
         Assert::resource($source, 'stream', 'The source should be a stream');
 
         $target = fopen('vfs://root/hello.txt', 'w');
@@ -88,8 +75,6 @@ final class LocalFilesystemTest extends KernelTestCase
 
     public function testCopyWhenFwriteReturnsFalse(): void
     {
-        PHPMockery::mock(self::TEST_NAMESPACE, 'fwrite')->once()->andReturnFalse();
-
         $this->logger->shouldReceive('error')->once()->with('Could not copy data between streams', [
             'exception' => 'Could not write data to target stream',
         ]);
@@ -101,7 +86,8 @@ final class LocalFilesystemTest extends KernelTestCase
         $source = fopen('vfs://root/input.txt', 'r');
         Assert::resource($source, 'stream', 'The source should be a stream');
 
-        $target = fopen('vfs://root/hello.txt', 'w');
+        FailingWriteStreamWrapper::register();
+        $target = fopen(FailingWriteStreamWrapper::getPath('hello.txt'), 'w');
         Assert::resource($target, 'stream', 'The target should be a stream');
 
         $fs = new LocalFilesystem($this->logger);
@@ -114,34 +100,31 @@ final class LocalFilesystemTest extends KernelTestCase
 
     public function testCreateTempFile(): void
     {
-        $path = 'vfs://root/tmp/tempfile';
-        PHPMockery::mock(self::TEST_NAMESPACE, 'sys_get_temp_dir')->once()->andReturn($tmpDir = '/foobar');
-        PHPMockery::mock(self::TEST_NAMESPACE, 'tempnam')
-            ->once()
-            ->with($tmpDir, 'woopie')
-            ->andReturnUsing(function () use ($path) {
-                vfsStream::create(['tmp' => ['tempfile' => '']], $this->root);
+        $tmpDir = vfsStream::newDirectory('tmp')->at($this->root);
+        $tmpFile = vfsStream::newFile('tempfile')->at($tmpDir);
 
-                return $path;
-            });
+        $fs = $this->getPartialLocalFilesystem();
+        $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
+        $fs->shouldReceive('tempname')->once()->with($tmpDir->url())->andReturn($tmpFile->url());
 
-        $fs = new LocalFilesystem($this->logger);
         $result = $fs->createTempFile();
 
-        $this->assertSame($path, $result);
+        $this->assertSame($tmpFile->url(), $result);
         $this->assertFileExists($result);
     }
 
     public function testCreateTempFileWhenTempnamFails(): void
     {
-        PHPMockery::mock(self::TEST_NAMESPACE, 'sys_get_temp_dir')->twice()->andReturn($tmpDir = '/foobar');
-        PHPMockery::mock(self::TEST_NAMESPACE, 'tempnam')->once()->with($tmpDir, 'woopie')->andReturnFalse();
+        $tmpDir = vfsStream::newDirectory('tmp')->at($this->root);
 
         $this->logger->shouldReceive('error')->once()->with('Could not create temporary file', [
-            'tempDir' => $tmpDir,
+            'tempDir' => $tmpDir->url(),
         ]);
 
-        $fs = new LocalFilesystem($this->logger);
+        $fs = $this->getPartialLocalFilesystem();
+        $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
+        $fs->shouldReceive('tempname')->once()->with($tmpDir->url())->andReturnFalse();
+
         $path = $fs->createTempFile();
 
         $this->assertFalse($path);
@@ -149,48 +132,41 @@ final class LocalFilesystemTest extends KernelTestCase
 
     public function testCreateTempDir(): void
     {
-        vfsStream::create(['foobar' => []]);
+        $tmpDir = vfsStream::newDirectory('tmp')->at($this->root);
+        $uniqueId = 'woopie_random';
+        $expectedPath = sprintf('%s/%s', $tmpDir->url(), $uniqueId);
 
-        PHPMockery::mock(self::TEST_NAMESPACE, 'sys_get_temp_dir')->once()->andReturn($tmpDir = 'vfs://root/foobar');
-        PHPMockery::mock(self::TEST_NAMESPACE, 'uniqid')
-            ->once()
-            ->with('woopie_', true)
-            ->andReturn($uniqueId = 'woopie_foobar');
-
-        $path = $tmpDir . '/' . $uniqueId;
-
-        $fs = new LocalFilesystem($this->logger);
+        $fs = $this->getPartialLocalFilesystem();
+        $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
+        $fs->shouldReceive('uniqid')->once()->andReturn($uniqueId);
         $result = $fs->createTempDir();
 
-        $this->assertSame($path, $result);
+        $this->assertSame($expectedPath, $result);
         $this->assertDirectoryExists($result);
     }
 
     public function testCreateTempDirWhenCreatingDirFails(): void
     {
-        vfsStream::create(['foobar' => []]);
+        // Note the tempDir's permissions are set to 0000 (no permissions)
+        $tmpDir = vfsStream::newDirectory('foobar')->chmod(0000)->at($this->root);
 
-        PHPMockery::mock(self::TEST_NAMESPACE, 'sys_get_temp_dir')->once()->andReturn($tmpDir = 'vfs://root/foobar');
-        PHPMockery::mock(self::TEST_NAMESPACE, 'uniqid')
-            ->once()
-            ->with('woopie_', true)
-            ->andReturn($uniqueId = 'woopie_foobar');
-        PHPMockery::mock(self::TEST_NAMESPACE, 'mkdir')->once()->andReturnFalse();
-
-        $path = $tmpDir . '/' . $uniqueId;
+        $uniqueId = 'woopie_random';
+        $expectedPath = sprintf('%s/%s', $tmpDir->url(), $uniqueId);
 
         $this->logger
             ->shouldReceive('error')
             ->once()
             ->with('Could not create temporary dir', [
-                'tempDir' => $path,
+                'tempDir' => $expectedPath,
             ]);
 
-        $fs = new LocalFilesystem($this->logger);
+        $fs = $this->getPartialLocalFilesystem();
+        $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
+        $fs->shouldReceive('uniqid')->once()->andReturn($uniqueId);
         $result = $fs->createTempDir();
 
         $this->assertFalse($result);
-        $this->assertDirectoryDoesNotExist($path);
+        $this->assertDirectoryDoesNotExist($expectedPath);
     }
 
     public function testDeleteDirectory(): void
@@ -232,35 +208,32 @@ final class LocalFilesystemTest extends KernelTestCase
     {
         vfsStream::create([
             'dir' => [
-                'file.txt' => '',
-                'subdir' => [
-                    'file.txt' => '',
-                ],
+                'subdir' => [],
             ],
         ], $this->root);
 
-        PHPMockery::mock(self::TEST_NAMESPACE, 'rmdir')->atLeast()->once()->andReturnFalse();
+        // Note the parentDir's permissions are set to 0500 (no permissions to delete inside the directory)
+        $parentDir = $this->root->getChild('dir')->chmod(0500);
+        $subDir = $this->root->getChild('dir/subdir');
+
         $this->logger
             ->shouldReceive('error')
             ->once()
-            ->with('Could not delete directory', \Mockery::on(function (array $context) {
-                if (! isset($context['dirPath']) || ! is_string($context['dirPath'])) {
-                    return false;
-                }
-
-                return str_starts_with($context['dirPath'], 'vfs://root/dir');
-            }));
+            ->with('Could not delete directory', [
+                'dirPath' => $subDir->url(),
+            ]);
 
         $fs = new LocalFilesystem($this->logger);
-        $result = $fs->deleteDirectory('vfs://root/dir');
+        $result = $fs->deleteDirectory($parentDir->url());
 
         $this->assertFalse($result, 'The delete operation should return false');
-        $this->assertDirectoryExists('vfs://root/dir');
+        $this->assertDirectoryExists($parentDir->url());
+        $this->assertDirectoryExists($subDir->url());
     }
 
     public function testDeleteFile(): void
     {
-        vfsStream::create(['file.txt' => ''], $this->root);
+        vfsStream::newFile('file.txt')->at($this->root);
 
         $fs = new LocalFilesystem($this->logger);
         $result = $fs->deleteFile('vfs://root/file.txt');
@@ -279,27 +252,27 @@ final class LocalFilesystemTest extends KernelTestCase
 
     public function testDeleteFileFails(): void
     {
-        PHPMockery::mock(self::TEST_NAMESPACE, 'unlink')->once()->andReturnFalse();
+        $parentDir = vfsStream::newDirectory('parentDir', 0400)->at($this->root);
+        $file = vfsStream::newFile('file.txt')->at($parentDir);
 
         $this->logger->shouldReceive('error')->once()->with('Could not delete local file', [
-            'local_path' => 'vfs://root/file.txt',
+            'local_path' => $file->url(),
         ]);
 
-        vfsStream::create(['file.txt' => ''], $this->root);
-
         $fs = new LocalFilesystem($this->logger);
-        $result = $fs->deleteFile('vfs://root/file.txt');
+        $result = $fs->deleteFile($file->url());
 
-        $this->assertFalse($result, 'The delete operation should return true');
-        $this->assertTrue($this->root->hasChild('file.txt'));
+        $this->assertFalse($result, 'The delete operation should return false');
+        $this->assertTrue($parentDir->hasChild('file.txt'), 'The file should still exist');
     }
 
     public function testCreateStream(): void
     {
-        vfsStream::create(['file.txt' => $content = 'my content'], $this->root);
+        $content = 'my content';
+        $file = vfsStream::newFile('file.txt')->withContent($content)->at($this->root);
 
         $fs = new LocalFilesystem($this->logger);
-        $result = $fs->createStream('vfs://root/file.txt', 'r');
+        $result = $fs->createStream($file->url(), 'r');
 
         $this->assertIsResource($result);
         $this->assertSame('stream', get_resource_type($result));
@@ -308,14 +281,23 @@ final class LocalFilesystemTest extends KernelTestCase
 
     public function testFailedCreateStream(): void
     {
+        $nonExistingFile = $this->root->url() . '/file.txt';
+
         $this->logger->shouldReceive('error')->once()->with('Could not open local file file', [
-            'local_path' => $path = 'vfs://root/file.txt', // file does not exist
+            'local_path' => $nonExistingFile,
             'mode' => $mode = 'r',
         ]);
 
         $fs = new LocalFilesystem($this->logger);
-        $result = $fs->createStream($path, $mode);
+        $result = $fs->createStream($nonExistingFile, $mode);
 
         $this->assertFalse($result);
+    }
+
+    private function getPartialLocalFilesystem(): LocalFilesystem&MockInterface
+    {
+        return \Mockery::mock(LocalFilesystem::class, [$this->logger])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
     }
 }

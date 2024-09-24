@@ -6,7 +6,6 @@ auth.json
 var
 vendor
 node_modules
-Taskfile.yml
-Taskfile.dist.yml
+Taskfile*.yml
 compose.yml
 compose.*.yml

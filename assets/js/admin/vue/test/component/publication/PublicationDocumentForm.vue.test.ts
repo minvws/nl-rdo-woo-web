@@ -5,6 +5,7 @@ import { describe, expect, test } from 'vitest';
 describe('The "PublicationDocumentForm" component', () => {
   const createComponent = () => mount(PublicationDocumentForm, {
     props: {
+      allowedFileTypes: [],
       allowedMimeTypes: [],
       document: {
         formalDate: 'mocked-formal-date',

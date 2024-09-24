@@ -49,7 +49,7 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
     private ?CovenantDocument $document;
 
     /** @var Collection<array-key,CovenantAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: CovenantAttachment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: CovenantAttachment::class)]
     private Collection $attachments;
 
     public function __construct()

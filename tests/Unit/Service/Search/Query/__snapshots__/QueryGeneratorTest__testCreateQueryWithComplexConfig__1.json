@@ -265,67 +265,19 @@
                                         "should": [
                                             {
                                                 "bool": {
-                                                    "filter": [
+                                                    "must_not": [
                                                         {
-                                                            "terms": {
-                                                                "type": [
-                                                                    "document",
-                                                                    "covenant_main_document",
-                                                                    "annual_report_main_document",
-                                                                    "investigation_report_main_document",
-                                                                    "disposition_main_document",
-                                                                    "complaint_judgement_main_document",
-                                                                    "attachment"
-                                                                ]
-                                                            }
-                                                        },
-                                                        {
-                                                            "nested": {
-                                                                "path": "dossiers",
-                                                                "query": {
-                                                                    "bool": {
-                                                                        "filter": [
-                                                                            {
-                                                                                "terms": {
-                                                                                    "dossiers.type": [
-                                                                                        "dossier"
-                                                                                    ]
-                                                                                }
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                }
+                                                            "exists": {
+                                                                "field": "sublevel_type"
                                                             }
                                                         }
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "bool": {
-                                                    "filter": [
+                                                    ],
+                                                    "must": [
                                                         {
-                                                            "terms": {
-                                                                "type": [
-                                                                    "dossier",
-                                                                    "covenant",
-                                                                    "annual_report",
-                                                                    "investigation_report",
-                                                                    "disposition",
-                                                                    "complaint_judgement"
-                                                                ]
-                                                            }
-                                                        },
-                                                        {
-                                                            "bool": {
-                                                                "filter": [
-                                                                    {
-                                                                        "terms": {
-                                                                            "type": [
-                                                                                "dossier"
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
+                                                            "term": {
+                                                                "toplevel_type": {
+                                                                    "value": "dossier"
+                                                                }
                                                             }
                                                         }
                                                     ]
@@ -493,7 +445,7 @@
         "aggs": {
             "subject": {
                 "terms": {
-                    "field": "subjects",
+                    "field": "subject_names",
                     "size": 25,
                     "order": {
                         "_count": "desc"
@@ -521,21 +473,14 @@
                     "min_doc_count": 1
                 }
             },
-            "dossiers-department": {
-                "nested": {
-                    "path": "dossiers"
-                },
-                "aggs": {
-                    "department": {
-                        "terms": {
-                            "field": "dossiers.departments.name",
-                            "size": 25,
-                            "order": {
-                                "_count": "desc"
-                            },
-                            "min_doc_count": 1
-                        }
-                    }
+            "department": {
+                "terms": {
+                    "field": "department_names",
+                    "size": 25,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
                 }
             },
             "dossiers-period": {
@@ -894,34 +839,26 @@
                                     }
                                 },
                                 "aggs": {
-                                    "type_name": {
-                                        "filter": {
-                                            "bool": {
-                                                "filter": [
-                                                    {
-                                                        "terms": {
-                                                            "type": [
-                                                                "dossier",
-                                                                "covenant",
-                                                                "annual_report",
-                                                                "investigation_report",
-                                                                "disposition",
-                                                                "complaint_judgement"
-                                                            ]
-                                                        }
-                                                    }
-                                                ]
-                                            }
+                                    "toplevel_type": {
+                                        "terms": {
+                                            "field": "toplevel_type",
+                                            "size": 10,
+                                            "min_doc_count": 1
                                         },
                                         "aggs": {
-                                            "type": {
+                                            "sublevel_type": {
                                                 "terms": {
-                                                    "field": "type",
+                                                    "field": "sublevel_type",
                                                     "size": 25,
                                                     "order": {
                                                         "_count": "desc"
                                                     },
                                                     "min_doc_count": 1
+                                                }
+                                            },
+                                            "publication": {
+                                                "missing": {
+                                                    "field": "sublevel_type"
                                                 }
                                             }
                                         }
@@ -941,67 +878,19 @@
                                                                 "should": [
                                                                     {
                                                                         "bool": {
-                                                                            "filter": [
+                                                                            "must_not": [
                                                                                 {
-                                                                                    "terms": {
-                                                                                        "type": [
-                                                                                            "document",
-                                                                                            "covenant_main_document",
-                                                                                            "annual_report_main_document",
-                                                                                            "investigation_report_main_document",
-                                                                                            "disposition_main_document",
-                                                                                            "complaint_judgement_main_document",
-                                                                                            "attachment"
-                                                                                        ]
-                                                                                    }
-                                                                                },
-                                                                                {
-                                                                                    "nested": {
-                                                                                        "path": "dossiers",
-                                                                                        "query": {
-                                                                                            "bool": {
-                                                                                                "filter": [
-                                                                                                    {
-                                                                                                        "terms": {
-                                                                                                            "dossiers.type": [
-                                                                                                                "dossier"
-                                                                                                            ]
-                                                                                                        }
-                                                                                                    }
-                                                                                                ]
-                                                                                            }
-                                                                                        }
+                                                                                    "exists": {
+                                                                                        "field": "sublevel_type"
                                                                                     }
                                                                                 }
-                                                                            ]
-                                                                        }
-                                                                    },
-                                                                    {
-                                                                        "bool": {
-                                                                            "filter": [
+                                                                            ],
+                                                                            "must": [
                                                                                 {
-                                                                                    "terms": {
-                                                                                        "type": [
-                                                                                            "dossier",
-                                                                                            "covenant",
-                                                                                            "annual_report",
-                                                                                            "investigation_report",
-                                                                                            "disposition",
-                                                                                            "complaint_judgement"
-                                                                                        ]
-                                                                                    }
-                                                                                },
-                                                                                {
-                                                                                    "bool": {
-                                                                                        "filter": [
-                                                                                            {
-                                                                                                "terms": {
-                                                                                                    "type": [
-                                                                                                        "dossier"
-                                                                                                    ]
-                                                                                                }
-                                                                                            }
-                                                                                        ]
+                                                                                    "term": {
+                                                                                        "toplevel_type": {
+                                                                                            "value": "dossier"
+                                                                                        }
                                                                                     }
                                                                                 }
                                                                             ]
@@ -1109,67 +998,19 @@
                                                                 "should": [
                                                                     {
                                                                         "bool": {
-                                                                            "filter": [
+                                                                            "must_not": [
                                                                                 {
-                                                                                    "terms": {
-                                                                                        "type": [
-                                                                                            "document",
-                                                                                            "covenant_main_document",
-                                                                                            "annual_report_main_document",
-                                                                                            "investigation_report_main_document",
-                                                                                            "disposition_main_document",
-                                                                                            "complaint_judgement_main_document",
-                                                                                            "attachment"
-                                                                                        ]
-                                                                                    }
-                                                                                },
-                                                                                {
-                                                                                    "nested": {
-                                                                                        "path": "dossiers",
-                                                                                        "query": {
-                                                                                            "bool": {
-                                                                                                "filter": [
-                                                                                                    {
-                                                                                                        "terms": {
-                                                                                                            "dossiers.type": [
-                                                                                                                "dossier"
-                                                                                                            ]
-                                                                                                        }
-                                                                                                    }
-                                                                                                ]
-                                                                                            }
-                                                                                        }
+                                                                                    "exists": {
+                                                                                        "field": "sublevel_type"
                                                                                     }
                                                                                 }
-                                                                            ]
-                                                                        }
-                                                                    },
-                                                                    {
-                                                                        "bool": {
-                                                                            "filter": [
+                                                                            ],
+                                                                            "must": [
                                                                                 {
-                                                                                    "terms": {
-                                                                                        "type": [
-                                                                                            "dossier",
-                                                                                            "covenant",
-                                                                                            "annual_report",
-                                                                                            "investigation_report",
-                                                                                            "disposition",
-                                                                                            "complaint_judgement"
-                                                                                        ]
-                                                                                    }
-                                                                                },
-                                                                                {
-                                                                                    "bool": {
-                                                                                        "filter": [
-                                                                                            {
-                                                                                                "terms": {
-                                                                                                    "type": [
-                                                                                                        "dossier"
-                                                                                                    ]
-                                                                                                }
-                                                                                            }
-                                                                                        ]
+                                                                                    "term": {
+                                                                                        "toplevel_type": {
+                                                                                            "value": "dossier"
+                                                                                        }
                                                                                     }
                                                                                 }
                                                                             ]

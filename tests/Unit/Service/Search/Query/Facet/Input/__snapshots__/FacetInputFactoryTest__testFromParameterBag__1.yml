@@ -1,49 +1,60 @@
-TYPE:
+type:
     active: false
     stringValues: {  }
+    requestParameters: {  }
     notActive: true
-SUBJECT:
+subject:
     active: false
     stringValues: {  }
+    requestParameters: {  }
     notActive: true
-SOURCE:
+source:
     active: false
     stringValues: {  }
+    requestParameters: {  }
     notActive: true
-GROUNDS:
+grounds:
     active: true
     stringValues: [three, four]
+    requestParameters: [three, four]
     notActive: false
-JUDGEMENT:
+judgement:
     active: true
     stringValues: [one, two]
+    requestParameters: [one, two]
     notActive: false
-DEPARTMENT:
+department:
     active: false
     stringValues: {  }
+    requestParameters: {  }
     notActive: true
-PERIOD:
+period:
     active: false
     stringValues: {  }
+    requestParameters: {  }
     notActive: true
-DATE:
+date:
     active: true
     notActive: false
     withoutDate: true
     anyPeriodFilterDates: false
     periodFilterFrom: null
     periodFilterTo: null
+    requestParameters: { without_date: 1 }
     from: null
     to: null
-DOSSIER_NR:
+dnr:
     active: false
     stringValues: {  }
+    requestParameters: {  }
     notActive: true
-INQUIRY_DOSSIERS:
+dsi:
     active: false
     stringValues: {  }
+    requestParameters: {  }
     notActive: true
-INQUIRY_DOCUMENTS:
+dci:
     active: false
     stringValues: {  }
+    requestParameters: {  }
     notActive: true

@@ -10,6 +10,7 @@ use App\Service\Search\Query\Aggregation\NestedTermsAggregationStrategy;
 use App\Service\Search\Query\Aggregation\TermsAggregationStrategy;
 use App\Service\Search\Query\Aggregation\TypeAggregationStrategy;
 use App\Service\Search\Query\Filter\AndTermFilter;
+use App\Service\Search\Query\Filter\DocTypeFilter;
 use App\Service\Search\Query\Filter\MainTypesAndNestedMainTypesFilter;
 use App\Service\Search\Query\Filter\OrTermFilter;
 use App\Service\Search\Query\Filter\PeriodFilter;
@@ -25,12 +26,12 @@ trait HasFacetDefinitions
         return [
             new FacetDefinition(
                 key: FacetKey::TYPE,
-                filter: new MainTypesAndNestedMainTypesFilter(new OrTermFilter()),
+                filter: new DocTypeFilter(),
                 aggregationStrategy: new TypeAggregationStrategy(),
             ),
             new FacetDefinition(
                 key: FacetKey::SUBJECT,
-                filter: new SubTypesOnlyFilter(new OrTermFilter()),
+                filter: new OrTermFilter(),
                 aggregationStrategy: new TermsAggregationStrategy(),
             ),
             new FacetDefinition(
@@ -50,8 +51,8 @@ trait HasFacetDefinitions
             ),
             new FacetDefinition(
                 key: FacetKey::DEPARTMENT,
-                filter: new MainTypesAndNestedMainTypesFilter(new OrTermFilter()),
-                aggregationStrategy: new NestedTermsAggregationStrategy('dossiers'),
+                filter: new OrTermFilter(),
+                aggregationStrategy: new TermsAggregationStrategy(),
             ),
             new FacetDefinition(
                 key: FacetKey::PERIOD,

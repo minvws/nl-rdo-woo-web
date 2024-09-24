@@ -79,7 +79,7 @@ abstract class Dossier extends AbstractDossier implements EntityWithBatchDownloa
     private ?DecisionDocument $decisionDocument = null;
 
     /** @var Collection<array-key,DecisionAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DecisionAttachment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DecisionAttachment::class)]
     private Collection $attachments;
 
     public function __construct()

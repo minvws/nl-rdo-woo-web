@@ -1,0 +1,26 @@
+<div class="woo-container woo-container--small">
+    <h1 class="woo-h1 woo-h1-spacing">{{ page_title | default('global.error_occured') | trans }}</h1>
+
+    <p>
+        {{ 'global.error_message' | trans }}
+    </p>
+
+    {% if app.debug %}
+        <div class="pt-6">
+            <table>
+                <tr>
+                    <th>{{ 'global.error_label' | trans }}</th>
+                    <td>{{ result.message }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'global.time' | trans }}</th>
+                    <td>{{ "now" | date('d-m-Y H:i:s') }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'global.query' | trans }}</th>
+                    <td><code><pre>{{ result.query | json_encode(128) }}</pre></code></td>
+                </tr>
+            </table>
+        </div>
+    {% endif %}
+</div>

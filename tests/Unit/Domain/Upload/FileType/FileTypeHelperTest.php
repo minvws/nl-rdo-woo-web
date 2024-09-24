@@ -63,4 +63,11 @@ final class FileTypeHelperTest extends UnitTestCase
             $this->helper->getExtensionsByUploadGroup(UploadGroupId::DISPOSITION_DOCUMENTS)
         );
     }
+
+    public function testGetTypeNamesByUploadGroup(): void
+    {
+        $this->assertMatchesObjectSnapshot(
+            $this->helper->getTypeNamesByUploadGroup(UploadGroupId::DISPOSITION_DOCUMENTS)
+        );
+    }
 }

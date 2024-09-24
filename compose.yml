@@ -25,7 +25,6 @@ services:
       - ./:/var/www/html
       - ./docker/php.ini:/usr/local/etc/php/custom.d/php.ini
       - ./auth.json:/home/woopie/.composer/auth.json:ro
-      - ./.npmrc.auth:/home/woopie/.npmrc:ro
       - woo_composer:/home/woopie/.composer
       - woo_npm:/home/woopie/.npm
     networks:

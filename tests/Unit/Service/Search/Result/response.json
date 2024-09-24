@@ -1,0 +1,398 @@
+{
+    "took": 3,
+    "timed_out": false,
+    "_shards": {
+        "total": 1,
+        "successful": 1,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 16,
+            "relation": "eq"
+        },
+        "max_score": 1,
+        "hits": [
+            {
+                "_index": "woopie",
+                "_id": "adsfafdsdfsa",
+                "_score": 1,
+                "fields": {
+                    "dossier_nr": [
+                        "adsfafdsdfsa"
+                    ],
+                    "type": [
+                        "disposition"
+                    ],
+                    "document_prefix": [
+                        "MINVWS"
+                    ]
+                }
+            },
+            {
+                "_index": "woopie",
+                "_id": "dasffdafdas",
+                "_score": 1,
+                "fields": {
+                    "dossier_nr": [
+                        "dasffdafdas"
+                    ],
+                    "type": [
+                        "covenant"
+                    ],
+                    "document_prefix": [
+                        "MINVWS"
+                    ]
+                }
+            },
+            {
+                "_index": "woopie",
+                "_id": "afdfdafda",
+                "_score": 1,
+                "fields": {
+                    "dossier_nr": [
+                        "afdfdafda"
+                    ],
+                    "type": [
+                        "annual_report"
+                    ],
+                    "document_prefix": [
+                        "MINVWS"
+                    ]
+                }
+            },
+            {
+                "_index": "woopie",
+                "_id": "dffadfdas",
+                "_score": 1,
+                "fields": {
+                    "dossier_nr": [
+                        "dffadfdas"
+                    ],
+                    "type": [
+                        "complaint_judgement"
+                    ],
+                    "document_prefix": [
+                        "MINVWS"
+                    ]
+                }
+            },
+            {
+                "_index": "woopie",
+                "_id": "dfasfdas",
+                "_score": 1,
+                "fields": {
+                    "dossier_nr": [
+                        "dfasfdas"
+                    ],
+                    "type": [
+                        "investigation_report"
+                    ],
+                    "document_prefix": [
+                        "MINVWS"
+                    ]
+                }
+            },
+            {
+                "_index": "woopie",
+                "_id": "TEST1-x-5033",
+                "_score": 1,
+                "fields": {
+                    "dossier_nr": [
+                        "afdsadsffdas"
+                    ],
+                    "document_nr": [
+                        "TEST1-x-5033"
+                    ],
+                    "type": [
+                        "document"
+                    ]
+                }
+            },
+            {
+                "_index": "woopie",
+                "_id": "TEST1-x-5044",
+                "_score": 1,
+                "fields": {
+                    "dossier_nr": [
+                        "afdsadsffdas"
+                    ],
+                    "document_nr": [
+                        "TEST1-x-5044"
+                    ],
+                    "type": [
+                        "document"
+                    ]
+                }
+            },
+            {
+                "_index": "woopie",
+                "_id": "TEST1-x-5034",
+                "_score": 1,
+                "fields": {
+                    "dossier_nr": [
+                        "afdsadsffdas"
+                    ],
+                    "document_nr": [
+                        "TEST1-x-5034"
+                    ],
+                    "type": [
+                        "document"
+                    ]
+                }
+            },
+            {
+                "_index": "woopie",
+                "_id": "TEST1-y-5036",
+                "_score": 1,
+                "fields": {
+                    "dossier_nr": [
+                        "afdsadsffdas"
+                    ],
+                    "document_nr": [
+                        "TEST1-y-5036"
+                    ],
+                    "type": [
+                        "document"
+                    ]
+                }
+            },
+            {
+                "_index": "woopie",
+                "_id": "TEST1-y-5061",
+                "_score": 1,
+                "fields": {
+                    "dossier_nr": [
+                        "afdsadsffdas"
+                    ],
+                    "document_nr": [
+                        "TEST1-y-5061"
+                    ],
+                    "type": [
+                        "document"
+                    ]
+                }
+            }
+        ]
+    },
+    "aggregations": {
+        "judgement": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 0,
+            "buckets": [
+                {
+                    "key": "public",
+                    "doc_count": 2
+                },
+                {
+                    "key": "already_public",
+                    "doc_count": 1
+                },
+                {
+                    "key": "not_public",
+                    "doc_count": 1
+                },
+                {
+                    "key": "partial_public",
+                    "doc_count": 1
+                }
+            ]
+        },
+        "grounds": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 0,
+            "buckets": [
+                {
+                    "key": "5.1.2e",
+                    "doc_count": 5
+                },
+                {
+                    "key": "5.1.1a",
+                    "doc_count": 1
+                },
+                {
+                    "key": "5.1.2a",
+                    "doc_count": 1
+                }
+            ]
+        },
+        "subject": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 0,
+            "buckets": [
+                {
+                    "key": "Opstart Corona",
+                    "doc_count": 1
+                }
+            ]
+        },
+        "toplevel_type": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 0,
+            "buckets": [
+                {
+                    "key": "dossier",
+                    "doc_count": 6,
+                    "sublevel_type": {
+                        "doc_count_error_upper_bound": 0,
+                        "sum_other_doc_count": 0,
+                        "buckets": [
+                            {
+                                "key": "document",
+                                "doc_count": 5
+                            }
+                        ]
+                    },
+                    "publication": {
+                        "doc_count": 1
+                    }
+                },
+                {
+                    "key": "annual_report",
+                    "doc_count": 2,
+                    "sublevel_type": {
+                        "doc_count_error_upper_bound": 0,
+                        "sum_other_doc_count": 0,
+                        "buckets": [
+                            {
+                                "key": "annual_report_main_document",
+                                "doc_count": 1
+                            }
+                        ]
+                    },
+                    "publication": {
+                        "doc_count": 1
+                    }
+                },
+                {
+                    "key": "complaint_judgement",
+                    "doc_count": 2,
+                    "sublevel_type": {
+                        "doc_count_error_upper_bound": 0,
+                        "sum_other_doc_count": 0,
+                        "buckets": [
+                            {
+                                "key": "complaint_judgement_main_document",
+                                "doc_count": 1
+                            }
+                        ]
+                    },
+                    "publication": {
+                        "doc_count": 1
+                    }
+                },
+                {
+                    "key": "covenant",
+                    "doc_count": 2,
+                    "sublevel_type": {
+                        "doc_count_error_upper_bound": 0,
+                        "sum_other_doc_count": 0,
+                        "buckets": [
+                            {
+                                "key": "covenant_main_document",
+                                "doc_count": 1
+                            }
+                        ]
+                    },
+                    "publication": {
+                        "doc_count": 1
+                    }
+                },
+                {
+                    "key": "disposition",
+                    "doc_count": 2,
+                    "sublevel_type": {
+                        "doc_count_error_upper_bound": 0,
+                        "sum_other_doc_count": 0,
+                        "buckets": [
+                            {
+                                "key": "disposition_main_document",
+                                "doc_count": 1
+                            }
+                        ]
+                    },
+                    "publication": {
+                        "doc_count": 1
+                    }
+                },
+                {
+                    "key": "investigation_report",
+                    "doc_count": 2,
+                    "sublevel_type": {
+                        "doc_count_error_upper_bound": 0,
+                        "sum_other_doc_count": 0,
+                        "buckets": [
+                            {
+                                "key": "investigation_report_main_document",
+                                "doc_count": 1
+                            }
+                        ]
+                    },
+                    "publication": {
+                        "doc_count": 1
+                    }
+                }
+            ]
+        },
+        "unique_dossiers": {
+            "value": 6
+        },
+        "dossiers-period": {
+            "doc_count": 10,
+            "period": {
+                "doc_count_error_upper_bound": 0,
+                "sum_other_doc_count": 0,
+                "buckets": [
+                    {
+                        "key": "Alles",
+                        "doc_count": 5
+                    },
+                    {
+                        "key": "Juli 2024",
+                        "doc_count": 3
+                    },
+                    {
+                        "key": "Augustus 2014 - februari 2029",
+                        "doc_count": 1
+                    },
+                    {
+                        "key": "Heel 2024",
+                        "doc_count": 1
+                    }
+                ]
+            }
+        },
+        "source": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 0,
+            "buckets": [
+                {
+                    "key": "doc",
+                    "doc_count": 3
+                },
+                {
+                    "key": "pdf",
+                    "doc_count": 2
+                }
+            ]
+        },
+        "dossiers-department": {
+            "doc_count": 10,
+            "department": {
+                "doc_count_error_upper_bound": 0,
+                "sum_other_doc_count": 0,
+                "buckets": [
+                    {
+                        "key": "AZ|Ministerie van Algemene Zaken",
+                        "doc_count": 8
+                    },
+                    {
+                        "key": "J&V|Ministerie van Justitie en Veiligheid",
+                        "doc_count": 2
+                    }
+                ]
+            }
+        }
+    }
+}

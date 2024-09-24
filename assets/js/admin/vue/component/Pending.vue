@@ -1,12 +1,12 @@
-<script setup>
+<script setup lang="ts">
   import Spinner from './Spinner.vue';
 
-  const props = defineProps({
-    isPending: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
+  interface Props {
+    isPending: boolean;
+  }
+
+  const props = withDefaults(defineProps<Props>(), {
+    isPending: false,
   });
 </script>
 

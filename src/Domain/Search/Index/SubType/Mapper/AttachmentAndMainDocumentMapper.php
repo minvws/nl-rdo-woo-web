@@ -32,7 +32,7 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
         /** @var AbstractAttachment|AbstractMainDocument $entity */
         Assert::isInstanceOfAny($entity, [AbstractAttachment::class, AbstractMainDocument::class]);
 
-        $dossier = $this->dossierIndexer->map($entity->getDossier())->getDocumentValues();
+        $dossierDocument = $this->dossierIndexer->map($entity->getDossier());
         $dossierNr = $entity->getDossier()->getDossierNr();
         $file = $entity->getFileInfo();
 
@@ -44,7 +44,9 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
             'filename' => $file->getName(),
             'grounds' => $entity->getGrounds(),
             'dossier_nr' => [$dossierNr],
-            'dossiers' => [$dossier],
+            'dossiers' => [
+                $dossierDocument->getDocumentValues(),
+            ],
         ];
 
         if ($metadata !== null) {

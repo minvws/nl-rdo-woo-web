@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
-use App\Domain\Ingest\IngestOptions;
-use App\Domain\Ingest\SubType\SubTypeIngester;
+use App\Domain\Ingest\Process\IngestProcessOptions;
+use App\Domain\Ingest\Process\SubType\SubTypeIngester;
+use App\Domain\Upload\Process\DocumentFileProcessor;
+use App\Domain\Upload\UploadedFile;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Message\ReplaceDocumentMessage;
-use App\Service\FileProcessService;
 use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -19,14 +20,14 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * Replace a file for a specific document.
  */
 #[AsMessageHandler]
-class ReplaceDocumentHandler
+readonly class ReplaceDocumentHandler
 {
     public function __construct(
-        private readonly FileProcessService $fileProcessService,
-        private readonly EntityStorageService $entityStorageService,
-        private readonly EntityManagerInterface $doctrine,
-        private readonly LoggerInterface $logger,
-        private readonly SubTypeIngester $ingester,
+        private EntityStorageService $entityStorageService,
+        private EntityManagerInterface $doctrine,
+        private LoggerInterface $logger,
+        private SubTypeIngester $ingester,
+        private DocumentFileProcessor $documentFileProcessor,
     ) {
     }
 
@@ -52,7 +53,11 @@ class ReplaceDocumentHandler
 
         if ($message->isChunked()) {
             // Stitch file together first if needed
-            $localFile = $this->assembleChunks($message->getChunkUuid(), $message->getChunkCount());
+            $localFile = $this->assembleChunks(
+                $message->getChunkUuid(),
+                $message->getChunkCount(),
+                $message->getOriginalFilename(),
+            );
             if (! $localFile) {
                 $this->logger->error('Could not assemble chunks', [
                     'dossier_uuid' => $message->getDossierUuid(),
@@ -63,7 +68,7 @@ class ReplaceDocumentHandler
                 return;
             }
 
-            $this->fileProcessService->processFileForDocument($localFile, $dossier, $document, $message->getOriginalFilename(), 'pdf');
+            $this->documentFileProcessor->process($localFile, $dossier, $document, 'pdf');
             unlink($localFile->getPathname());
 
             $this->handleIngest($document);
@@ -82,9 +87,9 @@ class ReplaceDocumentHandler
             return;
         }
 
-        $localFile = new \SplFileObject($localFilePath);
+        $localFile = new UploadedFile($localFilePath, $message->getOriginalFilename());
         try {
-            $this->fileProcessService->processFileForDocument($localFile, $dossier, $document, $message->getOriginalFilename(), 'pdf');
+            $this->documentFileProcessor->process($localFile, $dossier, $document, 'pdf');
             $this->handleIngest($document);
         } catch (\Throwable $e) {
             throw $e;
@@ -93,7 +98,7 @@ class ReplaceDocumentHandler
         }
     }
 
-    protected function assembleChunks(string $chunkUuid, int $chunkCount): ?\SplFileInfo
+    protected function assembleChunks(string $chunkUuid, int $chunkCount, string $originalFilename): ?UploadedFile
     {
         $path = sprintf('%s/assembled-%s', sys_get_temp_dir(), $chunkUuid);
         $stitchedFile = new \SplFileObject($path, 'w');
@@ -128,7 +133,7 @@ class ReplaceDocumentHandler
             $chunk = null;
         }
 
-        return $stitchedFile->getFileInfo();
+        return UploadedFile::fromSplFile($stitchedFile->getFileInfo(), $originalFilename);
     }
 
     private function handleIngest(Document $document): void
@@ -137,7 +142,7 @@ class ReplaceDocumentHandler
             return;
         }
 
-        $options = new IngestOptions();
+        $options = new IngestProcessOptions();
         $options->setForceRefresh(true);
 
         $this->ingester->ingest($document, $options);

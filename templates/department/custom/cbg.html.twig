@@ -1,0 +1,14 @@
+{% extends 'department/details_base.html.twig' %}
+
+{% block department_content %}
+    <img class="mb-4" src="{{ asset('assets/img/public/departments/cbg.svg') }}" alt="Logo CBG">
+
+    <div class="woo-readable-width">
+        <h1 class="woo-h1 woo-h1-spacing font-normal">{{ 'public.department.public_information_by_department' | trans({ department: 'het College ter Beoordeling van Geneesmiddelen' }) }}</h1>
+
+        <div class="woo-rich-text">
+            <p>Je vindt hier alle stukken die volgens de Wet Openbare Overheid openbaar gemaakt moeten worden door het College ter Beoordeling van Geneesmiddelen. Dat zijn vooral documenten die te maken hebben met de manier waarop het College ter Beoordeling van Geneesmiddelen werkt en hoe besluiten worden genomen.</p>
+            <p>Ben je op zoek naar de wetenschappelijke onderzoeken, data, richtlijnen en nieuwsberichten van het College ter Beoordeling van Geneesmiddelen? Bezoek dan <a href="https://cbg-meb.nl">cbg-meb.nl</a></p>
+        </div>
+    </div>
+{% endblock %}

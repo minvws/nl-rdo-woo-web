@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 describe('The "PublicationDocument" component', () => {
   interface CreateComponentOptions {
-    allowedExtensions: string[];
+    allowedFileTypes: string[];
     allowedMimeTypes: string[];
     documentLanguageOptions: string[];
     documentTypeOptions: string[];
@@ -48,12 +48,12 @@ describe('The "PublicationDocument" component', () => {
 
   const createComponent = (options: Partial<CreateComponentOptions> = {}) => {
     const {
-      allowedExtensions = [], allowedMimeTypes = [], documentLanguageOptions = [], documentTypeOptions = [], groundOptions = [],
+      allowedFileTypes = [], allowedMimeTypes = [], documentLanguageOptions = [], documentTypeOptions = [], groundOptions = [],
     } = options;
 
     return mount(PublicationDocument, {
       props: {
-        allowedExtensions,
+        allowedFileTypes,
         allowedMimeTypes,
         canDelete: false,
         documentLanguageOptions,

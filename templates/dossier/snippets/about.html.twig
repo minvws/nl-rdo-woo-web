@@ -73,6 +73,14 @@
                         {% endif %}
                     </td>
                 </tr>
+                {% if dossier.subject %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.subject' | trans }}</th>
+                    <td>
+                        <p>{{ dossier.subject }}</p>
+                    </td>
+                </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>

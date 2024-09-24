@@ -70,7 +70,7 @@
                         </tr>
                         <tr>
                             <th class="bhr-row-head" scope="row">Zaaknummers</th>
-                            <td>
+                            <td data-e2e-name="inquiries">
                                 {% for inquiry in document.inquiries %}
                                     {{ inquiry.caseNr }}{% if not loop.last %}, {% endif %}
                                 {% endfor %}

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
+use App\Domain\Search\Index\Updater\DepartmentIndexUpdater;
 use App\Message\UpdateDepartmentMessage;
 use App\Repository\DepartmentRepository;
-use App\Service\Elastic\ElasticService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -18,7 +18,7 @@ class UpdateDepartmentHandler
 {
     public function __construct(
         private readonly DepartmentRepository $repository,
-        private readonly ElasticService $elasticService,
+        private readonly DepartmentIndexUpdater $departmentIndexUpdater,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -31,7 +31,7 @@ class UpdateDepartmentHandler
         }
 
         try {
-            $this->elasticService->updateDepartment($department);
+            $this->departmentIndexUpdater->update($department);
         } catch (\Exception $e) {
             $this->logger->error('Failed to update department in elasticsearch', [
                 'id' => $message->getUuid()->toRfc4122(),

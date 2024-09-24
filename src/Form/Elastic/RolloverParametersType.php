@@ -21,7 +21,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class RolloverParametersType extends AbstractType
 {
     public function __construct(
-        protected MappingService $mappingService
+        protected MappingService $mappingService,
     ) {
     }
 

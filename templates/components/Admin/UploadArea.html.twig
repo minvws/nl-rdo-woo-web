@@ -4,7 +4,7 @@
             <twig:Admin:Alert type="danger">
                 <p>
                     De volgende bestanden werden genegeerd.
-                    {% if hasAllowedMimeTypes %}Alleen bestanden van het type {{ validExtensionsAnd }} zijn toegestaan.{% endif %}
+                    {% if hasAllowedMimeTypes %}Alleen bestanden van het type PDF en Zip zijn toegestaan.{% endif %}
                     {% if hasMaxFileSize %}De maximale bestandsgrootte per bestand is {{ maxFileSize | size }}.{% endif %}
                 </p>
 
@@ -43,7 +43,7 @@
 
             {% if shouldDisplayFileLimitations %}
             <span class="bhr-upload-area__file-limits" id="{{ this.filesLimitationsElementId }}">
-                {% if hasAllowedMimeTypes %}{{ multiple ? 'Bestanden' : 'Bestand' }} van het type {{ validExtensionsOr }}{% endif %}{%if hasMaxFileSize %} (max {{maxFileSize | size}} per bestand){% endif %}
+                {% if hasAllowedMimeTypes %}{{ multiple ? 'Bestanden' : 'Bestand' }} van het type PDF of Zip{% endif %}{%if hasMaxFileSize %} (max {{maxFileSize | size}} per bestand){% endif %}
             </span>
             {% endif %}
         </button>

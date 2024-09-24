@@ -88,7 +88,7 @@ class AnnualReportAttachmentRepository extends ServiceEntityRepository implement
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findForDossierPrefixAndNr(string $prefix, string $dossierNr, string $id): ?AnnualReportAttachment
+    public function findForDossierByPrefixAndNr(string $prefix, string $dossierNr, string $id): ?AnnualReportAttachment
     {
         $qb = $this->createQueryBuilder('a')
             ->where('a.id = :id')

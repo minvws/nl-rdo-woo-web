@@ -16,10 +16,12 @@ final class CovenantAttachmentRepositoryTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         self::bootKernel();
     }
 
-    public function testFindForDossierPrefixAndNrFindsMatch(): void
+    public function testFindForDossierByPrefixAndNrFindsMatch(): void
     {
         $covenant = CovenantFactory::createOne();
 
@@ -30,7 +32,7 @@ final class CovenantAttachmentRepositoryTest extends KernelTestCase
         /** @var CovenantAttachmentRepository $repository */
         $repository = self::getContainer()->get(CovenantAttachmentRepository::class);
 
-        $result = $repository->findForDossierPrefixAndNr(
+        $result = $repository->findForDossierByPrefixAndNr(
             $covenant->getDocumentPrefix(),
             $covenant->getDossierNr(),
             $covenantAttachment->getId()->toRfc4122(),
@@ -40,12 +42,12 @@ final class CovenantAttachmentRepositoryTest extends KernelTestCase
         self::assertEquals($covenantAttachment->getId(), $result->getId());
     }
 
-    public function testFindForDossierPrefixAndNrMismatch(): void
+    public function testFindForDossierByPrefixAndNrMismatch(): void
     {
         /** @var CovenantAttachmentRepository $repository */
         $repository = self::getContainer()->get(CovenantAttachmentRepository::class);
 
-        $result = $repository->findForDossierPrefixAndNr(
+        $result = $repository->findForDossierByPrefixAndNr(
             'a non-existing document prefix',
             'a non-existing dossier number',
             $this->getFaker()->uuid(),

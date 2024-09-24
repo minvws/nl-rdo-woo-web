@@ -23,9 +23,13 @@
       required: true,
     },
     minLength: {
-      type: Boolean,
+      type: Number,
       required: false,
       default: 0,
+    },
+    maxLength: {
+      type: Number,
+      required: false,
     },
     legend: {
       type: String,
@@ -83,6 +87,7 @@
     :help-text="props.helpText"
     :is-invalid="multiInputStore.hasVisibleErrors || props.submitErrors.length > 0"
     :legend="props.legend"
+    :max-length="props.maxLength"
     :min-length="props.minLength"
     :options="props.options"
     :values="props.values"
@@ -98,7 +103,6 @@
 
       :auto-focus="shouldAutoFocus(index, items, props.minLength)"
       :can-delete="canDeleteItem"
-      :errors="errors"
       :forbidden-values="getOtherValues(item.id, items)"
       :key="item.id"
       :label="`${props.label} ${index + 1}`"

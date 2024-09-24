@@ -47,7 +47,7 @@
 
     .bhr-select::after {
         @apply bg-bhr-dim-gray content-[''] pointer-events-none absolute -ml-8 mt-3 w-6 h-6;
-        mask-image: url(../../img/chevron-down.svg);
+        mask-image: url(@img/admin/chevron-down.svg);
     }
 
     .bhr-select__select {

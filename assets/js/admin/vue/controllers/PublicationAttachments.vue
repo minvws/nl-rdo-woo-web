@@ -6,7 +6,7 @@
   import { computed, ref } from 'vue';
 
   const props = defineProps({
-    allowedExtensions: {
+    allowedFileTypes: {
       type: Array,
       required: true,
       default: () => [],
@@ -142,7 +142,7 @@
       <PublicationAttachmentsForm
         @cancel="onCancel"
         @saved="onSaved"
-        :allowed-extensions="props.allowedExtensions"
+        :allowed-file-types="props.allowedFileTypes"
         :allowed-mime-types="props.allowedMimeTypes"
         :attachment="currentAttachment"
         :document-language-options="props.documentLanguageOptions"

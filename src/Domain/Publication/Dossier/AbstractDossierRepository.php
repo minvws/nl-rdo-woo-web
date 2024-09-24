@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier;
 
 use App\Domain\Publication\Dossier\Type\DossierType;
+use App\Entity\Department;
 use App\Entity\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -97,5 +98,26 @@ class AbstractDossierRepository extends ServiceEntityRepository
     {
         $this->getEntityManager()->remove($dossier);
         $this->getEntityManager()->flush();
+    }
+
+    /**
+     * @return AbstractDossier[]
+     */
+    public function getRecentDossiers(int $limit, ?Department $department): array
+    {
+        $qb = $this->createQueryBuilder('dos')
+            ->where('dos.status = :status')
+            ->setParameter('status', DossierStatus::PUBLISHED)
+            ->orderBy('dos.publicationDate', 'DESC')
+            ->setMaxResults($limit)
+        ;
+
+        if ($department !== null) {
+            $qb->innerJoin('dos.departments', 'dep')
+                ->andWhere('dep = :department')
+                ->setParameter('department', $department);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

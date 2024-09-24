@@ -9,6 +9,8 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 #[AsTwigComponent]
 class ArrowedLink
 {
+    public ?string $prefix = '';
+    public ?string $prefixSeparator = '|';
     public ?string $suffix = '';
     public string $to;
 }

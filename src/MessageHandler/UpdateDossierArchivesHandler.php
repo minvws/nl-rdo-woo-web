@@ -16,7 +16,7 @@ class UpdateDossierArchivesHandler
     public function __construct(
         private readonly BatchDownloadService $batchDownloadService,
         private readonly DossierRepository $dossierRepository,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
     }
 

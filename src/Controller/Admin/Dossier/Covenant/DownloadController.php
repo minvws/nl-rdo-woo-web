@@ -30,7 +30,7 @@ class DownloadController extends AbstractController
     public function downloadCovenantDocument(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
         Covenant $covenant,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
         CovenantDocument $covenantDocument,
     ): StreamedResponse {
         unset($covenant); // Only used for isGranted check
@@ -47,7 +47,7 @@ class DownloadController extends AbstractController
     public function downloadCovenantAttachment(
         #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
         Covenant $covenant,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
         CovenantAttachment $covenantAttachment,
     ): StreamedResponse {
         unset($covenant); // Only used for isGranted check

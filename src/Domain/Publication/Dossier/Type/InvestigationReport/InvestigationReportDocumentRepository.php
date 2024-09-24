@@ -58,7 +58,7 @@ class InvestigationReportDocumentRepository extends ServiceEntityRepository impl
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findForDossierPrefixAndNr(string $prefix, string $dossierNr): ?InvestigationReportDocument
+    public function findForDossierByPrefixAndNr(string $prefix, string $dossierNr): ?InvestigationReportDocument
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossier', 'dos')

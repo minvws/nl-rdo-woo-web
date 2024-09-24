@@ -89,7 +89,7 @@ class DecisionAttachmentRepository extends ServiceEntityRepository implements At
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findForDossierPrefixAndNr(string $prefix, string $dossierNr, string $id): ?DecisionAttachment
+    public function findForDossierByPrefixAndNr(string $prefix, string $dossierNr, string $id): ?DecisionAttachment
     {
         $qb = $this->createQueryBuilder('a')
             ->where('a.id = :id')

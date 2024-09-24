@@ -58,7 +58,7 @@ class CovenantDocumentRepository extends ServiceEntityRepository implements Main
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findForDossierPrefixAndNr(string $prefix, string $dossierNr): ?CovenantDocument
+    public function findForDossierByPrefixAndNr(string $prefix, string $dossierNr): ?CovenantDocument
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossier', 'dos')

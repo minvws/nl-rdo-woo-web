@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Domain\Ingest\IngestOptions;
-use App\Domain\Ingest\SubType\SubTypeIngester;
+use App\Domain\Ingest\Process\IngestProcessOptions;
+use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
+use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Exception\DocumentReplaceException;
@@ -25,17 +26,17 @@ use Symfony\Component\Messenger\MessageBusInterface;
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
-class DocumentService
+readonly class DocumentService
 {
     public function __construct(
-        private readonly EntityManagerInterface $doctrine,
-        private readonly SubTypeIngester $ingester,
-        private readonly EntityStorageService $entityStorageService,
-        private readonly ThumbnailStorageService $thumbStorage,
-        private readonly SubTypeIndexer $subTypeIndexer,
-        private readonly MessageBusInterface $messageBus,
-        private readonly FileProcessService $fileProcessService,
-        private readonly HistoryService $historyService,
+        private EntityManagerInterface $doctrine,
+        private SubTypeIngester $ingester,
+        private EntityStorageService $entityStorageService,
+        private ThumbnailStorageService $thumbStorage,
+        private SubTypeIndexer $subTypeIndexer,
+        private MessageBusInterface $messageBus,
+        private HistoryService $historyService,
+        private DocumentNumberExtractor $documentNumberExtractor,
     ) {
     }
 
@@ -76,7 +77,7 @@ class DocumentService
         $this->doctrine->persist($document);
         $this->doctrine->flush();
 
-        $this->ingester->ingest($document, new IngestOptions());
+        $this->ingester->ingest($document, new IngestProcessOptions());
 
         foreach ($document->getDossiers() as $dossier) {
             $this->messageBus->dispatch(
@@ -96,7 +97,7 @@ class DocumentService
     {
         $filename = $uploadedFile->getClientOriginalName();
         try {
-            $fileDocumentNr = $this->fileProcessService->getDocumentNumberFromFilename($filename, $dossier);
+            $fileDocumentNr = $this->documentNumberExtractor->extract($filename, $dossier);
             if ($fileDocumentNr !== $document->getDocumentId()) {
                 throw DocumentReplaceException::forFilenameMismatch($document, $filename);
             }

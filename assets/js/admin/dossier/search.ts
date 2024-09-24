@@ -1,16 +1,10 @@
-import { clickableRows } from '../clickable-row';
 import { searchPreviews } from './search-previews';
 
 export const dossierSearch = () => {
-  const { initialize: initializeClickableRows, cleanup: cleanupClickableRows } = clickableRows();
   const { initialize: initializeSearchPreviews, cleanup: cleanupSearchPreviews } = searchPreviews();
 
   const initialize = () => {
-    initializeSearchPreviews(
-      'js-dossier-search-previews',
-      initializeClickableRows,
-      cleanupClickableRows,
-    );
+    initializeSearchPreviews('js-dossier-search-previews');
   };
 
   const cleanup = () => {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Domain\Ingest\MetadataOnly\IngestMetadataOnlyCommand;
+use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Message\RemoveDocumentMessage;

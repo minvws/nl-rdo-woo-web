@@ -9,13 +9,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DepartmentRepository::class)]
-#[ORM\UniqueConstraint(
-    name: 'department_pk',
-    columns: ['name']
-)]
+#[UniqueEntity('name')]
+#[UniqueEntity('slug')]
+#[UniqueEntity('shortTag')]
 class Department
 {
     #[ORM\Id]
@@ -24,14 +25,26 @@ class Department
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
+    #[Assert\Length(min: 2, max: 100)]
     private string $name;
 
-    #[ORM\Column(length: 20, nullable: true)]
-    private ?string $shortTag = null;
+    #[ORM\Column(length: 20, unique: true)]
+    #[Assert\Length(min: 2, max: 10)]
+    private string $shortTag;
 
-    /** @var Collection|Organisation[] */
-    #[ORM\OneToMany(mappedBy: 'department', targetEntity: Organisation::class)]
+    #[ORM\Column(length: 20, unique: true)]
+    #[Assert\Sequentially([
+        new Assert\Length(min: 2, max: 20),
+        new Assert\Type(type: ['alnum'], message: 'use_only_letters_and_numbers'),
+    ])]
+    private string $slug;
+
+    #[ORM\Column]
+    private bool $public = false;
+
+    /** @var Collection<array-key, Organisation> */
+    #[ORM\ManyToMany(targetEntity: Organisation::class, mappedBy: 'departments', fetch: 'EXTRA_LAZY')]
     private Collection $organisations;
 
     public function __construct()
@@ -56,14 +69,38 @@ class Department
         return $this;
     }
 
-    public function getShortTag(): ?string
+    public function getShortTag(): string
     {
         return $this->shortTag;
     }
 
-    public function setShortTag(?string $shortTag): static
+    public function setShortTag(string $shortTag): static
     {
         $this->shortTag = $shortTag;
+
+        return $this;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = strtolower($slug);
+
+        return $this;
+    }
+
+    public function isPublic(): bool
+    {
+        return $this->public;
+    }
+
+    public function setPublic(bool $public): self
+    {
+        $this->public = $public;
 
         return $this;
     }
@@ -85,7 +122,7 @@ class Department
     {
         if (! $this->organisations->contains($organisation)) {
             $this->organisations->add($organisation);
-            $organisation->setDepartment($this);
+            $organisation->addDepartment($this);
         }
 
         return $this;

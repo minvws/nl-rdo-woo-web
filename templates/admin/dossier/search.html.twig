@@ -13,19 +13,25 @@
         </thead>
         <tbody>
             {% for dossier in dossiers %}
-            <tr data-e2e-name="search-previews-result">
-                <td class="w-48">{{ dossier.dossierNr }}</td>
-                <td>{{ dossier.title }}</td>
-                <td class="text-right">
-                    <a
-                        class="js-clickable-row__focusable"
-                        href="{{ path('app_admin_dossier', {'prefix': dossier.documentPrefix, 'dossierId': dossier.dossierNr}) }}"
-                    >
-                        <span class="sr-only">{{ 'global.details' | trans() }} {{ dossier.dossierNr }}</span>
-                        <twig:Admin:Icon name="chevron-right" />
-                    </a>
-                </td>
-            </tr>
+                {% set url = path('app_admin_dossier', {'prefix': dossier.documentPrefix, 'dossierId': dossier.dossierNr}) %}
+                <tr class="bhr-clickable-row" data-e2e-name="search-previews-result">
+                    <td class="w-48">
+                        <a class="bhr-fill-cell" href="{{ url }}">
+                            {{ dossier.dossierNr }}
+                        </a>
+                    </td>
+                    <td>
+                        <a class="bhr-fill-cell" href="{{ url }}">
+                            {{ dossier.title }}
+                        </a>
+                    </td>
+                    <td class="text-right">
+                        <a class="bhr-fill-cell" href="{{ url }}">
+                            <span class="sr-only">{{ 'global.details' | trans() }} {{ dossier.dossierNr }}</span>
+                            <twig:Admin:Icon name="chevron-right" />
+                        </a>
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
@@ -44,19 +50,25 @@
         </thead>
         <tbody>
             {% for document in documents %}
-            <tr data-e2e-name="search-previews-result">
-                <td class="w-48">{{ document.documentNr }}</td>
-                <td>{{ document.fileInfo.name }}</td>
-                <td class="text-right">
-                    <a
-                        class="js-clickable-row__focusable"
-                        href="{{ path('app_admin_dossier_woodecision_document', {prefix: document.dossiers.first.documentPrefix, dossierId: document.dossiers.first.dossierNr, documentId: document.documentNr}) }}"
-                    >
-                        <span class="sr-only">{{ 'global.details' | trans() }} {{ document.documentNr }}</span>
-                        <twig:Admin:Icon name="chevron-right" />
-                    </a>
-                </td>
-            </tr>
+                {% set url = path('app_admin_dossier_woodecision_document', {prefix: document.dossiers.first.documentPrefix, dossierId: document.dossiers.first.dossierNr, documentId: document.documentNr}) %}
+                <tr class="bhr-clickable-row" data-e2e-name="search-previews-result">
+                    <td class="w-48">
+                        <a class="bhr-fill-cell" href="{{ url }}">
+                            {{ document.documentNr }}
+                        </a>
+                    </td>
+                    <td>
+                        <a class="bhr-fill-cell" href="{{ url }}">
+                            {{ document.fileInfo.name }}
+                        </a>
+                    </td>
+                    <td class="text-right">
+                        <a class="bhr-fill-cell" href="{{ url }}">
+                            <span class="sr-only">{{ 'global.details' | trans() }} {{ document.documentNr }}</span>
+                            <twig:Admin:Icon name="chevron-right" />
+                        </a>
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>

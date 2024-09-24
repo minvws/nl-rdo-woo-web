@@ -17,30 +17,30 @@
     {{ form_row(form.summary) }}
 
     <twig:Admin:Publication:ManageDocument
-        allowedExtensions="{{ documentExtensions }}"
+        allowedFileTypes="{{ documentTypeNames }}"
         allowedMimeTypes="{{ documentMimeTypes }}"
         canDelete="{{ canDeleteDocument }}"
-        documentType="{{ 'admin.dossiers.convenant.document' | trans }}"
+        documentType="{{ 'admin.dossiers.covenant.document' | trans }}"
         documentTypes="{{ documentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-document' }}"
         formField="{{ form.document }}"
         grounds="{{ grounds }}"
-        helpText="{{ 'admin.dossiers.convenant.form.content.document_help' | trans }}"
+        helpText="{{ 'admin.dossiers.covenant.form.content.document_help' | trans }}"
         languages="{{ attachmentLanguages }}"
-        title="{{ 'admin.dossiers.convenant.form.content.document_label' | trans }}"
+        title="{{ 'admin.dossiers.covenant.form.content.document_label' | trans }}"
         uploadGroupId="covenant-documents"
     />
 
     {{ form_row(form.previous_version_link) }}
 
     <twig:Admin:Publication:ManageAttachments
-        allowedExtensions="{{ attachmentExtensions }}"
+        allowedFileTypes="{{ attachmentTypeNames }}"
         allowedMimeTypes="{{ attachmentMimeTypes }}"
         canDelete="{{ canDeleteAttachments }}"
         documentTypes="{{ attachmentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-attachments' }}"
         grounds="{{ grounds }}"
-        helpText="{{ 'admin.dossiers.convenant.form.content.attachments_help' | trans }}"
+        helpText="{{ 'admin.dossiers.covenant.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"
         uploadGroupId="covenant-attachments"
     />

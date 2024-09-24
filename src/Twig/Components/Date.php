@@ -9,5 +9,5 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 #[AsTwigComponent]
 class Date
 {
-    public \DateTimeImmutable $date;
+    public \DateTimeImmutable|string $date;
 }

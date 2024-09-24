@@ -36,7 +36,7 @@ class AnnualReport extends AbstractDossier implements EntityWithAttachments, Ent
     private ?AnnualReportDocument $document;
 
     /** @var Collection<array-key,AnnualReportAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: AnnualReportAttachment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: AnnualReportAttachment::class)]
     private Collection $attachments;
 
     public function __construct()

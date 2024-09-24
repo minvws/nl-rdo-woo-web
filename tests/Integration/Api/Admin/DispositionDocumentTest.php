@@ -31,6 +31,8 @@ final class DispositionDocumentTest extends ApiTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->root = vfsStream::setup();
 
         self::bootKernel();
@@ -39,7 +41,7 @@ final class DispositionDocumentTest extends ApiTestCase
     public function testGetDispositionDocumentReturns404UntilCreated(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -107,7 +109,7 @@ final class DispositionDocumentTest extends ApiTestCase
     public function testUpdateDispositionDocument(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -158,7 +160,7 @@ final class DispositionDocumentTest extends ApiTestCase
     public function testDispositionDocumentCanBeDeletedAfterCreation(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -224,7 +226,7 @@ final class DispositionDocumentTest extends ApiTestCase
     public function testDispositionDocumentCannotBeDeletedForAPublishedDossier(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -278,7 +280,7 @@ final class DispositionDocumentTest extends ApiTestCase
     public function testCreateDispositionDocumentOnlyAcceptsValidTypeValues(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -322,7 +324,7 @@ final class DispositionDocumentTest extends ApiTestCase
     public function testUpdateDispositionDocumentOnlyAcceptsValidTypeValues(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 

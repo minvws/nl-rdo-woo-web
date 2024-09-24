@@ -8,6 +8,7 @@ use App\Entity\Department;
 use App\Form\DepartmentType;
 use App\Message\UpdateDepartmentMessage;
 use App\Repository\DepartmentRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,25 +19,35 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DepartmentController extends AbstractController
 {
+    protected const MAX_ITEMS_PER_PAGE = 100;
+
     public function __construct(
         private readonly DepartmentRepository $repository,
         private readonly MessageBusInterface $messageBus,
         private readonly TranslatorInterface $translator,
+        private readonly PaginatorInterface $paginator,
     ) {
     }
 
-    #[Route('/balie/departementen', name: 'app_admin_departments', methods: ['GET'])]
+    #[Route('/balie/bestuursorganen', name: 'app_admin_departments', methods: ['GET'])]
     #[IsGranted('AuthMatrix.department.read')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $departments = $this->repository->findAll();
+        $pagination = $this->paginator->paginate(
+            $this->repository->createQueryBuilder('d')->getQuery(),
+            $request->query->getInt('page', 1),
+            self::MAX_ITEMS_PER_PAGE,
+            [
+                PaginatorInterface::DEFAULT_SORT_FIELD_NAME => 'd.name',
+            ],
+        );
 
         return $this->render('admin/departments/index.html.twig', [
-            'departments' => $departments,
+            'pagination' => $pagination,
         ]);
     }
 
-    #[Route('/balie/departementen/new', name: 'app_admin_department_create', methods: ['GET', 'POST'])]
+    #[Route('/balie/bestuursorganen/nieuw', name: 'app_admin_department_create', methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.department.create')]
     public function create(Request $request): Response
     {
@@ -57,7 +68,7 @@ class DepartmentController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/departementen/{id}', name: 'app_admin_department_edit', methods: ['GET', 'POST'])]
+    #[Route('/balie/bestuursorganen/{id}', name: 'app_admin_department_edit', methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.department.update')]
     public function modify(Request $request, Department $department): Response
     {

@@ -35,7 +35,7 @@ class Disposition extends AbstractDossier implements EntityWithAttachments, Enti
     private ?DispositionDocument $document;
 
     /** @var Collection<array-key,DispositionAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DispositionAttachment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DispositionAttachment::class)]
     private Collection $attachments;
 
     public function __construct()

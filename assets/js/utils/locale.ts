@@ -1,2 +1,4 @@
-export const getCurrentLanguage = () => document.documentElement.getAttribute('lang') || 'nl';
-export const getCurrentLocale = () => (getCurrentLanguage() === 'nl' ? 'nl-NL' : 'en-GB');
+import { getDocument } from './browser';
+
+export const getCurrentLanguage = () => getDocument().documentElement.getAttribute('lang') ?? 'nl';
+export const getCurrentLocale = () => (getCurrentLanguage() === 'en' ? 'en-GB' : 'nl-NL');

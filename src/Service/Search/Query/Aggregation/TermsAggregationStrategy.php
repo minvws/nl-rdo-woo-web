@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query\Aggregation;
 
-use App\Service\Search\Model\Config;
+use App\Domain\Search\Query\SearchParameters;
 use App\Service\Search\Query\Aggregation;
 use App\Service\Search\Query\Facet\Facet;
 use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
@@ -21,7 +21,7 @@ readonly class TermsAggregationStrategy implements AggregationStrategyInterface
     ) {
     }
 
-    public function getAggregation(Facet $facet, Config $config, int $maxCount): AbstractAggregation
+    public function getAggregation(Facet $facet, SearchParameters $searchParameters, int $maxCount): AbstractAggregation
     {
         $aggregation = Aggregation::termsWithMinDocCount(
             name: $facet->getFacetKey()->value,

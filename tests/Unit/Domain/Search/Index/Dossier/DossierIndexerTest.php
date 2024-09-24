@@ -10,6 +10,7 @@ use App\Domain\Search\Index\Dossier\DossierIndexer;
 use App\Domain\Search\Index\Dossier\Mapper\ElasticDossierMapperInterface;
 use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\IndexException;
+use App\Domain\Search\Index\Updater\NestedDossierIndexUpdater;
 use App\Service\Elastic\ElasticService;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -19,6 +20,7 @@ class DossierIndexerTest extends MockeryTestCase
     private ElasticDossierMapperInterface&MockInterface $firstMapper;
     private ElasticDossierMapperInterface&MockInterface $secondMapper;
     private ElasticService&MockInterface $elasticService;
+    private NestedDossierIndexUpdater&MockInterface $nestedDossierUpdater;
     private DossierIndexer $indexer;
 
     public function setUp(): void
@@ -27,9 +29,11 @@ class DossierIndexerTest extends MockeryTestCase
         $this->secondMapper = \Mockery::mock(ElasticDossierMapperInterface::class);
 
         $this->elasticService = \Mockery::mock(ElasticService::class);
+        $this->nestedDossierUpdater = \Mockery::mock(NestedDossierIndexUpdater::class);
 
         $this->indexer = new DossierIndexer(
             $this->elasticService,
+            $this->nestedDossierUpdater,
             new \ArrayIterator([$this->firstMapper, $this->secondMapper]),
         );
     }
@@ -50,7 +54,7 @@ class DossierIndexerTest extends MockeryTestCase
         $this->firstMapper->expects('map')->with($dossier)->andReturn($document);
 
         $this->elasticService->expects('updateDocument')->with($document);
-        $this->elasticService->expects('updateAllDocumentsForDossier')->with($dossier, $docValues);
+        $this->nestedDossierUpdater->expects('update')->with($dossier, $docValues);
 
         $this->indexer->index($dossier);
     }

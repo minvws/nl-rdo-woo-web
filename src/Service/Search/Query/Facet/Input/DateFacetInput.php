@@ -8,7 +8,7 @@ use App\Service\Search\Model\FacetKey;
 use App\Service\Utils\CastTypes;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-final readonly class DateFacetInput extends FacetInput implements ParameterBagFactoryInterface, DateFacetInputInterface
+final readonly class DateFacetInput extends FacetInput implements DateFacetInputInterface
 {
     private bool $isActive;
 
@@ -67,5 +67,19 @@ final readonly class DateFacetInput extends FacetInput implements ParameterBagFa
     public function getPeriodFilterTo(): ?string
     {
         return $this->to?->format(DateFacetInputInterface::DATE_FORMAT);
+    }
+
+    public function getRequestParameters(): array
+    {
+        $params = [];
+
+        if ($this->isWithoutDate()) {
+            $params['without_date'] = 1;
+        } else {
+            $params['from'] = $this->getPeriodFilterFrom();
+            $params['to'] = $this->getPeriodFilterTo();
+        }
+
+        return $params;
     }
 }

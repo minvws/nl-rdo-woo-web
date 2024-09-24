@@ -8,6 +8,7 @@ use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\IndexException;
 use App\Domain\Search\Index\SubType\Mapper\ElasticSubTypeMapperInterface;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
+use App\Domain\Search\Index\Updater\PageIndexUpdater;
 use App\Entity\Document;
 use App\Service\Elastic\ElasticService;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -19,6 +20,7 @@ class SubTypeIndexerTest extends MockeryTestCase
     private ElasticSubTypeMapperInterface&MockInterface $firstMapper;
     private ElasticSubTypeMapperInterface&MockInterface $secondMapper;
     private ElasticService&MockInterface $elasticService;
+    private PageIndexUpdater&MockInterface $pageIndexUpdater;
     private SubTypeIndexer $indexer;
 
     public function setUp(): void
@@ -27,9 +29,11 @@ class SubTypeIndexerTest extends MockeryTestCase
         $this->secondMapper = \Mockery::mock(ElasticSubTypeMapperInterface::class);
 
         $this->elasticService = \Mockery::mock(ElasticService::class);
+        $this->pageIndexUpdater = \Mockery::mock(PageIndexUpdater::class);
 
         $this->indexer = new SubTypeIndexer(
             $this->elasticService,
+            $this->pageIndexUpdater,
             new \ArrayIterator([$this->firstMapper, $this->secondMapper]),
         );
     }
@@ -108,7 +112,7 @@ class SubTypeIndexerTest extends MockeryTestCase
         $this->firstMapper->expects('supports')->with($entity)->andReturnTrue();
         $this->firstMapper->expects('getId')->with($entity)->andReturn($documentId);
 
-        $this->elasticService->expects('updatePage')->with($documentId, $pageNr, $content);
+        $this->pageIndexUpdater->expects('update')->with($documentId, $pageNr, $content);
 
         $this->indexer->updatePage($entity, $pageNr, $content);
     }

@@ -59,7 +59,7 @@ class InquiryLinkImporter
                 $matter = $reader->getString($rowIdx, self::COLUMN_MATTER);
                 $caseNrs = InventoryDataHelper::separateValues(
                     $reader->getString($rowIdx, self::COLUMN_CASE_NR),
-                    ','
+                    [',', ';']
                 );
 
                 $documentNr = sprintf('%s-%s-%s', $prefix->getPrefix(), $matter, $documentId);

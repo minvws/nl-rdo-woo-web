@@ -3,6 +3,10 @@ import { InputErrorId, type InputValueType, type Validator } from './interface';
 
 export const required = (): Validator => (value: InputValueType) => {
   const error = { id: InputErrorId.Required };
+  if (value === 0) {
+    return undefined;
+  }
+
   if (!value) {
     return error;
   }
@@ -11,11 +15,11 @@ export const required = (): Validator => (value: InputValueType) => {
     return error;
   }
 
-  if (typeof value === 'object' && Object.keys(value).length === 0) {
+  if (Array.isArray(value) && value.length === 0) {
     return error;
   }
 
-  if (Array.isArray(value) && value.length === 0) {
+  if (typeof value === 'object' && Object.keys(value).length === 0) {
     return error;
   }
 

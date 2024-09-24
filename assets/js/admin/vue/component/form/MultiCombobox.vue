@@ -23,7 +23,7 @@
       required: true,
     },
     minLength: {
-      type: Boolean,
+      type: Number,
       required: false,
       default: 0,
     },

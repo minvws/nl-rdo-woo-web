@@ -10,19 +10,18 @@ use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportDocument;
 use App\Domain\Publication\Dossier\Type\AnnualReport\ViewModel\AnnualReportViewFactory;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Service\DossierService;
 use App\Service\DownloadResponseHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
+use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Annotation\Route;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class AnnualReportController extends AbstractController
 {
     public function __construct(
-        private readonly DossierService $dossierService,
         private readonly AnnualReportViewFactory $viewFactory,
         private readonly AttachmentViewFactory $attachmentViewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
@@ -33,18 +32,13 @@ class AnnualReportController extends AbstractController
     #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
     #[Route('/annual-report/{prefix}/{dossierId}', name: 'app_annualreport_detail', methods: ['GET'])]
     public function detail(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
-        AnnualReport $annualReport,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId)')]
+        #[ValueResolver('dossierWithAccessCheck')] AnnualReport $annualReport,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
         AnnualReportDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem('public.dossiers.annual_report.breadcrumb');
-
-        if (! $this->dossierService->isViewingAllowed($annualReport)) {
-            throw $this->createNotFoundException('Annual report not found');
-        }
 
         return $this->render('annualreport/details.html.twig', [
             'dossier' => $this->viewFactory->make($annualReport),
@@ -60,16 +54,11 @@ class AnnualReportController extends AbstractController
         methods: ['GET'],
     )]
     public function documentDetail(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
-        AnnualReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId)')]
+        #[ValueResolver('dossierWithAccessCheck')] AnnualReport $dossier,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
         AnnualReportDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
-        }
-
         $mainDocumentViewModel = $this->mainDocumentViewFactory->make($dossier, $document);
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
@@ -93,14 +82,11 @@ class AnnualReportController extends AbstractController
         methods: ['GET'],
     )]
     public function documentDownload(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
-        AnnualReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId)')]
+        #[ValueResolver('dossierWithAccessCheck')] AnnualReport $dossier,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
         AnnualReportDocument $document,
     ): Response {
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
-        }
+        unset($dossier);
 
         return $this->downloadHelper->getResponseForEntityWithFileInfo($document);
     }
@@ -112,18 +98,13 @@ class AnnualReportController extends AbstractController
         methods: ['GET'],
     )]
     public function attachmentDetail(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
-        AnnualReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[ValueResolver('dossierWithAccessCheck')] AnnualReport $dossier,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
         AnnualReportAttachment $attachment,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
         AnnualReportDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
-        }
-
         $attachmentViewModel = $this->attachmentViewFactory->make($dossier, $attachment);
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
@@ -148,14 +129,11 @@ class AnnualReportController extends AbstractController
         methods: ['GET'],
     )]
     public function attachmentDownload(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])]
-        AnnualReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[ValueResolver('dossierWithAccessCheck')] AnnualReport $dossier,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
         AnnualReportAttachment $attachment,
     ): Response {
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw $this->createNotFoundException('Dossier not found');
-        }
+        unset($dossier);
 
         return $this->downloadHelper->getResponseForEntityWithFileInfo($attachment);
     }

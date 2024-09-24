@@ -1,18 +1,18 @@
 import InvalidFiles from '@admin-fe/component/file/upload/InvalidFiles.vue';
-import { formatExtensions, formatFileSize } from '@js/admin/utils';
+import { formatFileSize, formatList } from '@js/admin/utils';
 import { createTestFile } from '@js/test';
 import { VueWrapper, mount } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 
 describe('The "InvalidFiles" component', () => {
-  const mockedAllowedExtensions = ['mocked-extension-1', 'mocked-extension-2'];
+  const mockedAllowedFileTypes = ['mocked-extension-1', 'mocked-extension-2'];
   const mockedAllowedMimeTypes = ['mocked-mime-type-1', 'mocked-mime-type-2'];
   const mockedFiles = [createTestFile({ name: 'mocked-file-1' }), createTestFile({ name: 'mocked-file-2' })];
   const mockedMaxFileSize = 1000;
 
   const createComponent = (files: File[] = mockedFiles) => mount(InvalidFiles, {
     props: {
-      allowedExtensions: mockedAllowedExtensions,
+      allowedFileTypes: mockedAllowedFileTypes,
       allowedMimeTypes: mockedAllowedMimeTypes,
       files: files.map((file, index) => ({ file, index })),
       maxFileSize: mockedMaxFileSize,
@@ -55,9 +55,9 @@ describe('The "InvalidFiles" component', () => {
     });
   });
 
-  test('should display the allowed extensions', () => {
+  test('should display the allowed file types', () => {
     const component = createComponent();
-    expect(component.text()).toContain(`Alleen bestanden van het type ${formatExtensions(mockedAllowedExtensions, 'en')} zijn toegestaan.`);
+    expect(component.text()).toContain(`Alleen bestanden van het type ${formatList(mockedAllowedFileTypes, 'en')} zijn toegestaan.`);
   });
 
   test('should display the max allowed file size', () => {

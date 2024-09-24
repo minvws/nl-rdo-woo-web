@@ -8,51 +8,33 @@ use App\Service\Stats\Handler\StatsHandlerInterface;
 use App\Service\Stats\WorkerStatsService;
 use App\Tests\Unit\UnitTestCase;
 use Carbon\CarbonImmutable;
-use phpmock\mockery\PHPMockery;
+use Mockery\MockInterface;
+use Webmozart\Assert\Assert;
 
 final class WorkerStatsServiceTest extends UnitTestCase
 {
-    private const TEST_NAMESPACE = 'App\\Service\\Stats';
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // If the actual function is called before the mock was defined, the test can fail:
-        PHPMockery::define(self::TEST_NAMESPACE, 'gethostname');
-        PHPMockery::define(self::TEST_NAMESPACE, 'microtime');
-        PHPMockery::define(self::TEST_NAMESPACE, 'call_user_func_array');
-    }
-
     public function testMeasure(): void
     {
         $testNow = CarbonImmutable::make('2010-01-01 00:00 UTC');
+        Assert::notNull($testNow);
         CarbonImmutable::setTestNow($testNow);
 
-        $closureResult = 'test-result';
-        $closure = fn (): string => $closureResult;
         $args = ['a', 'b'];
 
-        PHPMockery::mock(self::TEST_NAMESPACE, 'gethostname')
-            ->once()
-            ->andReturn($hostname = 'test-hostname');
-        $microtime = PHPMockery::mock(self::TEST_NAMESPACE, 'microtime');
-        $microtime
-            ->once()
-            ->with(true)
-            ->andReturn(1000.0);
-        $microtime
-            ->once()
-            ->with(true)
-            ->andReturn(2500.0);
-        PHPMockery::mock(self::TEST_NAMESPACE, 'call_user_func_array')
-            ->once()
-            ->with($closure, $args)
-            ->andReturn($closureResult);
+        $durationSec = 35;
+        $duration = $durationSec * 1000;
 
-        $duration = 1500000;
+        $closureResult = 'test-result';
+        $closure = function () use ($closureResult, $testNow, $durationSec, $args): string {
+            CarbonImmutable::setTestNow($testNow->addSeconds($durationSec));
+
+            $this->assertSame($args, func_get_args());
+
+            return $closureResult;
+        };
+
+        $hostname = 'test-hostname';
         $section = 'test-section';
-
         $statsHandlerOne = \Mockery::mock(StatsHandlerInterface::class);
         $statsHandlerOne
             ->shouldReceive('store')
@@ -74,7 +56,16 @@ final class WorkerStatsServiceTest extends UnitTestCase
                 $duration,
             );
 
-        $statsService = new WorkerStatsService([$statsHandlerOne, $statsHandlerTwo]);
+        $handlers = [$statsHandlerOne, $statsHandlerTwo];
+
+        /** @var WorkerStatsService&MockInterface $statsService */
+        $statsService = \Mockery::mock(WorkerStatsService::class, [$handlers])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+        $statsService
+            ->shouldReceive('getHostname')
+            ->once()
+            ->andReturn($hostname);
         $result = $statsService->measure($section, $closure, $args);
 
         $this->assertSame($closureResult, $result);

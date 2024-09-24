@@ -16,10 +16,12 @@ final class DecisionAttachmentRepositoryTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         self::bootKernel();
     }
 
-    public function testFindForDossierPrefixAndNrFindsMatch(): void
+    public function testFindForDossierByPrefixAndNrFindsMatch(): void
     {
         $dossier = WooDecisionFactory::createOne();
 
@@ -30,7 +32,7 @@ final class DecisionAttachmentRepositoryTest extends KernelTestCase
         /** @var DecisionAttachmentRepository $repo */
         $repo = self::getContainer()->get(DecisionAttachmentRepository::class);
 
-        $result = $repo->findForDossierPrefixAndNr(
+        $result = $repo->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
             $attachment->getId()->toRfc4122()
@@ -40,7 +42,7 @@ final class DecisionAttachmentRepositoryTest extends KernelTestCase
         self::assertEquals($attachment->getId(), $result->getId());
     }
 
-    public function testFindForDossierPrefixAndNrResultsNullOnDossierMismatch(): void
+    public function testFindForDossierByPrefixAndNrResultsNullOnDossierMismatch(): void
     {
         $dossier = WooDecisionFactory::createOne();
 
@@ -51,7 +53,7 @@ final class DecisionAttachmentRepositoryTest extends KernelTestCase
         /** @var DecisionAttachmentRepository $repo */
         $repo = self::getContainer()->get(DecisionAttachmentRepository::class);
 
-        $result = $repo->findForDossierPrefixAndNr(
+        $result = $repo->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             'MISMATCH',
             $attachment->getId()->toRfc4122()

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Doctrine\TimestampableTrait;
+use App\Domain\Publication\Subject\Subject;
 use App\Repository\OrganisationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,9 +31,11 @@ class Organisation
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private string $name;
 
-    #[ORM\ManyToOne(inversedBy: 'organisations')]
+    /** @var Collection<array-key,Department> */
+    #[ORM\ManyToMany(targetEntity: Department::class, inversedBy: 'organisations')]
     #[ORM\JoinColumn(nullable: false)]
-    private Department $department;
+    #[Assert\Count(min: 1, minMessage: 'at_least_one_department_required')]
+    private Collection $departments;
 
     /** @var Collection<array-key,User> */
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: User::class)]
@@ -41,6 +44,7 @@ class Organisation
     /** @var Collection<array-key,DocumentPrefix> */
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: DocumentPrefix::class, cascade: ['persist'])]
     #[Assert\Valid]
+    #[Assert\Count(min: 1, minMessage: 'at_least_one_prefix_required')]
     private Collection $documentPrefixes;
 
     /** @var Collection<array-key,Inquiry> */
@@ -51,10 +55,19 @@ class Organisation
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Dossier::class)]
     private Collection $dossiers;
 
+    /** @var Collection<array-key,Subject> */
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Subject::class, cascade: ['persist'], orphanRemoval: true)]
+    private Collection $subjects;
+
     public function __construct()
     {
+        $this->id = Uuid::v6();
         $this->users = new ArrayCollection();
         $this->documentPrefixes = new ArrayCollection();
+        $this->departments = new ArrayCollection();
+        $this->inquiries = new ArrayCollection();
+        $this->dossiers = new ArrayCollection();
+        $this->subjects = new ArrayCollection();
     }
 
     public function getId(): Uuid
@@ -74,14 +87,26 @@ class Organisation
         return $this;
     }
 
-    public function getDepartment(): Department
+    /**
+     * @return Collection<array-key,Department>
+     */
+    public function getDepartments(): Collection
     {
-        return $this->department;
+        return $this->departments;
     }
 
-    public function setDepartment(Department $department): static
+    public function addDepartment(Department $department): self
     {
-        $this->department = $department;
+        if (! $this->departments->contains($department)) {
+            $this->departments->add($department);
+        }
+
+        return $this;
+    }
+
+    public function removeDepartment(Department $department): self
+    {
+        $this->departments->removeElement($department);
 
         return $this;
     }
@@ -184,5 +209,13 @@ class Organisation
     public function getDossiers(): Collection
     {
         return $this->dossiers;
+    }
+
+    /**
+     * @return Collection<Subject>
+     */
+    public function getSubjects(): Collection
+    {
+        return $this->subjects;
     }
 }

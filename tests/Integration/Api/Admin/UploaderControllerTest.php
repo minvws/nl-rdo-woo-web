@@ -20,6 +20,8 @@ final class UploaderControllerTest extends ApiTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->root = vfsStream::setup();
 
         self::bootKernel();
@@ -28,7 +30,7 @@ final class UploaderControllerTest extends ApiTestCase
     public function testUpload(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 

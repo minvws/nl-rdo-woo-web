@@ -8,16 +8,18 @@ use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType as DecisionTypeEnum;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Form\Dossier\AbstractDossierStepType;
+use App\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\File;
 
 class DecisionType extends AbstractDossierStepType
 {
+    use DossierFormBuilderTrait;
+
     protected const DOCUMENT_MIMETYPES = [
         'application/pdf',
     ];
@@ -93,42 +95,6 @@ class DecisionType extends AbstractDossierStepType
                 'property_path' => 'decisionDate',
             ]);
 
-        $this->addSubmits($dossier, $builder);
-    }
-
-    public function addSubmits(WooDecision $dossier, FormBuilderInterface $builder): void
-    {
-        if ($dossier->getStatus()->isConcept()) {
-            $builder
-                ->add('next', SubmitType::class, [
-                    'label' => 'Opslaan en verder',
-                    'attr' => [
-                        'data-first-button' => true,
-                    ],
-                ])
-                ->add('save', SubmitType::class, [
-                    'label' => 'Concept opslaan',
-                    'attr' => [
-                        'class' => 'bhr-button--secondary',
-                        'data-last-button' => true,
-                    ],
-                ]);
-        } else {
-            $builder
-                ->add('save', SubmitType::class, [
-                    'label' => 'Bewerken en opslaan',
-                    'attr' => [
-                        'data-first-button' => true,
-                    ],
-                ])
-                ->add('cancel', SubmitType::class, [
-                    'label' => 'Annuleren',
-                    'attr' => [
-                        'class' => 'bhr-button--secondary',
-                        'data-last-button' => true,
-                    ],
-                    'validate' => false,
-                ]);
-        }
+        $this->addSubmits($builder);
     }
 }

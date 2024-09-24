@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Form\Dossier\WooDecision;
 
 use App\Entity\Dossier;
+use App\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -17,6 +17,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class PublishType extends AbstractType
 {
+    use DossierFormBuilderTrait;
+
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -73,8 +75,6 @@ class PublishType extends AbstractType
             ]);
         }
 
-        $builder->add('submit', SubmitType::class, [
-            'label' => 'Opslaan en klaarzetten',
-        ]);
+        $this->addSaveAndPublishSubmit($builder);
     }
 }

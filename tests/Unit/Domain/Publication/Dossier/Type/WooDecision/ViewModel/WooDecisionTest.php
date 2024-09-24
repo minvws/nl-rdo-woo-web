@@ -25,7 +25,7 @@ final class WooDecisionTest extends UnitTestCase
         /** @var ArrayCollection<array-key,Department> $departments */
         $departments = new ArrayCollection([$department]);
 
-        $wooDecision = $this->getWooDecision($departments);
+        $wooDecision = $this->getWooDecision($departments, subject: null);
 
         $this->assertTrue($wooDecision->isVwsResponsible());
     }
@@ -38,7 +38,7 @@ final class WooDecisionTest extends UnitTestCase
         /** @var ArrayCollection<array-key,Department> $departments */
         $departments = new ArrayCollection([$department]);
 
-        $wooDecision = $this->getWooDecision($departments);
+        $wooDecision = $this->getWooDecision($departments, subject: null);
 
         $this->assertFalse($wooDecision->isVwsResponsible());
     }
@@ -51,15 +51,43 @@ final class WooDecisionTest extends UnitTestCase
         /** @var ArrayCollection<array-key,Department> $departments */
         $departments = new ArrayCollection([$departmentOne, $departmentTwo]);
 
-        $wooDecision = $this->getWooDecision($departments);
+        $wooDecision = $this->getWooDecision($departments, subject: null);
 
         $this->assertFalse($wooDecision->isVwsResponsible());
+    }
+
+    public function testHasSubjectReturnsTrue(): void
+    {
+        $department = \Mockery::mock(Department::class);
+        $department->shouldReceive('isDepartment')->with(DepartmentEnum::VWS)->andReturn(true);
+
+        /** @var ArrayCollection<array-key,Department> $departments */
+        $departments = new ArrayCollection([$department]);
+
+        $wooDecision = $this->getWooDecision($departments, $expectedSubject = 'my subject');
+
+        $this->assertTrue($wooDecision->hasSubject());
+        $this->assertSame($expectedSubject, $wooDecision->subject);
+    }
+
+    public function testHasSubjectReturnsFalse(): void
+    {
+        $department = \Mockery::mock(Department::class);
+        $department->shouldReceive('isDepartment')->with(DepartmentEnum::VWS)->andReturn(true);
+
+        /** @var ArrayCollection<array-key,Department> $departments */
+        $departments = new ArrayCollection([$department]);
+
+        $wooDecision = $this->getWooDecision($departments, subject: null);
+
+        $this->assertFalse($wooDecision->hasSubject());
+        $this->assertSame(null, $wooDecision->subject);
     }
 
     /**
      * @param ArrayCollection<array-key,Department> $departments
      */
-    private function getWooDecision(ArrayCollection $departments): WooDecision
+    private function getWooDecision(ArrayCollection $departments, ?string $subject): WooDecision
     {
         $dossierCounts = \Mockery::mock(DossierCounts::class);
         $decisionDocument = \Mockery::mock(PublicationItem::class);
@@ -86,6 +114,7 @@ final class WooDecisionTest extends UnitTestCase
             dateFrom: new \DateTimeImmutable(),
             dateTo: new \DateTimeImmutable(),
             publicationReason: PublicationReason::WOO_REQUEST,
+            subject: $subject,
         );
     }
 }

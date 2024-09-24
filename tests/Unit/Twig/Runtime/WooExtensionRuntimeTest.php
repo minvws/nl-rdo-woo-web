@@ -46,7 +46,7 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
         string $queryString,
         string $paramToRemove,
         string $valueToRemove,
-        string $expectedQuery
+        string $expectedQuery,
     ): void {
         $request = \Mockery::mock(Request::class);
         $request->shouldReceive('getQueryString')->andReturn($queryString);

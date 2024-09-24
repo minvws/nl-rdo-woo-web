@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Domain\Ingest\Dossier\IngestDossierCommand;
+use App\Domain\Ingest\Process\Dossier\IngestDossierCommand;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Step\StepName;
@@ -124,7 +124,7 @@ readonly class DossierService
         $this->messageBus->dispatch(new IngestDossierCommand($dossier->getId()));
     }
 
-    public function update(Dossier $dossier): void
+    public function update(AbstractDossier $dossier): void
     {
         if ($dossier->getStatus()->isNewOrConcept()) {
             return;

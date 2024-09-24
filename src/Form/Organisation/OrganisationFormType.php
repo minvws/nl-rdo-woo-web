@@ -8,7 +8,6 @@ use App\Entity\Department;
 use App\Entity\DocumentPrefix;
 use App\Entity\Organisation;
 use App\Form\DocumentPrefixType;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -17,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -52,29 +52,20 @@ class OrganisationFormType extends AbstractType
                 'help_attr' => [
                     'class' => 'text-sm mb-2',
                 ],
+                'empty_data' => '',
                 'constraints' => [
                     new NotBlank(),
                     new Length(['min' => 3, 'max' => 255]),
                 ],
             ])
-            ->add('department', EntityType::class, [
+            ->add('departments', EntityType::class, [
                 'class' => Department::class,
-                'label' => 'Department',
                 'attr' => [
-                    'after' => 'Organisation',
                     'class' => 'min-w-full',
                 ],
                 'required' => true,
-                'multiple' => false,
-                'choice_label' => 'name_and_short',
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('d')
-                        ->orderBy('d.name', 'ASC');
-                },
-                'placeholder' => 'admin.organisation.select',
-                'constraints' => [
-                    new NotBlank(),
-                ],
+                'multiple' => true,
+                'choice_label' => 'name',
             ])
             ->add('documentPrefixes', CollectionType::class, [
                 'entry_type' => DocumentPrefixType::class,
@@ -85,7 +76,7 @@ class OrganisationFormType extends AbstractType
                     ],
                 ],
                 'allow_add' => true,
-                'allow_delete' => true,
+                'allow_delete' => false,
                 'prototype' => true,
                 'prototype_options' => [
                     'attr' => [
@@ -98,6 +89,7 @@ class OrganisationFormType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                     new Callback([$this, 'validatePrefixes']),
+                    new Count(min: 1, minMessage: 'at_least_one_prefix_required'),
                 ],
             ])
             ->add('submit', SubmitType::class, [

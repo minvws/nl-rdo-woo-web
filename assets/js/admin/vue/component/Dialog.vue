@@ -1,13 +1,15 @@
-<script setup>
+<script setup lang="ts">
   import { uniqueId } from '@js/utils';
   import Icon from './Icon.vue';
   import { ref, watch } from 'vue';
 
-  const props = defineProps({
-    title: { type: String, required: true },
-  })
+  interface Props {
+    title: string;
+  }
 
-  const dialogElement = ref(null);
+  const props = defineProps<Props>();
+
+  const dialogElement = ref<HTMLDialogElement | null>(null);
   const isOpen = defineModel({ default: false });
   const titleId = `${uniqueId('dialog')}-title`;
 

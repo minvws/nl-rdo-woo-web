@@ -28,7 +28,7 @@ class InventoryReader implements InventoryReaderInterface
 
     public function __construct(
         ReaderFactoryInterface $readerFactory,
-        ColumnMapping ...$mappings
+        ColumnMapping ...$mappings,
     ) {
         $this->readerFactory = $readerFactory;
         $this->mappings = $mappings;

@@ -20,7 +20,6 @@ parameters:
         - src/
         - tests/
     excludePaths:
-        - src/Service/FixtureService.php
         - src/Domain/Publication/Dossier/Type/**/*Workflow.php
         - config/packages/workflow.php
         - src/Domain/Publication/Dossier/Type/WorkflowConfigHelper.php

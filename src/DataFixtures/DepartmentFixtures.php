@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Department;
-use App\Enum\Department as EnumDepartment;
+use App\Enum\Department as DepartmentEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -16,9 +16,10 @@ class DepartmentFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        foreach (EnumDepartment::cases() as $department) {
+        foreach (DepartmentEnum::cases() as $department) {
             $entity = new Department();
             $entity->setName($department->value);
+            $entity->setSlug($department->getShortTag());
             $entity->setShortTag($department->getShortTag());
             $manager->persist($entity);
         }

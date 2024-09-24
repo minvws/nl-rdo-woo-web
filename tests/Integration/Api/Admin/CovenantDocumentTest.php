@@ -30,6 +30,8 @@ final class CovenantDocumentTest extends ApiTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->root = vfsStream::setup();
 
         self::bootKernel();
@@ -38,7 +40,7 @@ final class CovenantDocumentTest extends ApiTestCase
     public function testGetCovenantDocumentReturns404UntilCreated(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -105,7 +107,7 @@ final class CovenantDocumentTest extends ApiTestCase
     public function testUpdateAnnualReportDocument(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -156,7 +158,7 @@ final class CovenantDocumentTest extends ApiTestCase
     public function testCovenantDocumentCanBeDeletedAfterCreation(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -221,7 +223,7 @@ final class CovenantDocumentTest extends ApiTestCase
     public function testCovenantDocumentCannotBeDeletedForAPublishedDossier(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 

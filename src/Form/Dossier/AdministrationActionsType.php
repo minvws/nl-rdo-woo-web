@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier;
 
+use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
+use App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionService;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -14,30 +17,28 @@ use Symfony\Component\Form\FormBuilderInterface;
  */
 class AdministrationActionsType extends AbstractType
 {
-    public const ACTION_REGENERATE_CLEAN_INVENTORY = 'regenerate_clean_inventory';
-    public const ACTION_REGENERATE_ARCHIVES = 'regenerate_archives';
-    public const ACTION_INGEST = 'ingest';
-    public const ACTION_UPDATE = 'update';
-    public const ACTION_VALIDATE_COMPLETION = 'validate_completion';
+    public function __construct(
+        private readonly DossierAdminActionService $adminActionService,
+    ) {
+    }
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /** @var AbstractDossier $dossier */
+        $dossier = $builder->getData();
+
         $builder
-            ->add('action', ChoiceType::class, [
-                'label' => 'Dossier action',
-                'choices' => [
-                    'Regenerate clean inventory' => self::ACTION_REGENERATE_CLEAN_INVENTORY,
-                    'Regenerate archives' => self::ACTION_REGENERATE_ARCHIVES,
-                    'Re-ingest into ElasticSearch (with docs)' => self::ACTION_INGEST,
-                    'Re-index dossier into ElasticSearch (no document ingest)' => self::ACTION_UPDATE,
-                    'Validate completion' => self::ACTION_VALIDATE_COMPLETION,
-                ],
+            ->add('action', EnumType::class, [
+                'label' => 'admin.dossiers.action.form.action',
+                'class' => DossierAdminAction::class,
+                'choices' => $this->adminActionService->getAvailableAdminActions($dossier),
+                'mapped' => false,
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Execute action (async)',
+                'label' => 'admin.dossiers.action.form.submit',
             ]);
     }
 }

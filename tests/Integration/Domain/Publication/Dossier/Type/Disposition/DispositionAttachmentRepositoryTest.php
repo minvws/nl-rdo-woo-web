@@ -24,6 +24,8 @@ final class DispositionAttachmentRepositoryTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         self::bootKernel();
     }
 
@@ -36,7 +38,7 @@ final class DispositionAttachmentRepositoryTest extends KernelTestCase
 
         $repository = $this->getRepository();
 
-        $result = $this->getRepository()->findForDossierPrefixAndNr(
+        $result = $this->getRepository()->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
             $attachment->getId()->toRfc4122(),
@@ -45,7 +47,7 @@ final class DispositionAttachmentRepositoryTest extends KernelTestCase
 
         $repository->remove($result, true);
 
-        $result = $this->getRepository()->findForDossierPrefixAndNr(
+        $result = $this->getRepository()->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
             $attachment->getId()->toRfc4122(),
@@ -53,14 +55,14 @@ final class DispositionAttachmentRepositoryTest extends KernelTestCase
         self::assertNull($result);
     }
 
-    public function testFindForDossierPrefixAndNrFindsMatch(): void
+    public function testFindForDossierByPrefixAndNrFindsMatch(): void
     {
         $dossier = DispositionFactory::createOne();
         $attachment = DispositionAttachmentFactory::createOne([
             'dossier' => $dossier,
         ]);
 
-        $result = $this->getRepository()->findForDossierPrefixAndNr(
+        $result = $this->getRepository()->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
             $attachment->getId()->toRfc4122(),
@@ -70,9 +72,9 @@ final class DispositionAttachmentRepositoryTest extends KernelTestCase
         self::assertEquals($attachment->getId(), $result->getId());
     }
 
-    public function testFindForDossierPrefixAndNrMismatch(): void
+    public function testFindForDossierByPrefixAndNrMismatch(): void
     {
-        $result = $this->getRepository()->findForDossierPrefixAndNr(
+        $result = $this->getRepository()->findForDossierByPrefixAndNr(
             'a non-existing document prefix',
             'a non-existing dossier number',
             $this->getFaker()->uuid(),

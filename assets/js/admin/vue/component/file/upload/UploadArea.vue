@@ -1,7 +1,7 @@
 <script setup>
   import Icon from '@admin-fe/component/Icon.vue';
   import UploadedFile from '@admin-fe/component/file/UploadedFile.vue';
-  import { areFilesEqual, filterDataTransferFiles, formatExtensions, formatFileSize, isValidMaxFileSize, MimeTypes, validateFiles } from '@js/admin/utils';
+  import { areFilesEqual, filterDataTransferFiles, formatFileSize, formatList, isValidMaxFileSize, MimeTypes, validateFiles } from '@js/admin/utils';
   import { uniqueId } from '@utils';
   import { useElementVisibility } from '@vueuse/core';
   import { onBeforeUnmount, provide, ref, watch } from 'vue';
@@ -18,9 +18,9 @@
   const emit = defineEmits(['selected', 'uploaded', 'uploadError', 'uploading']);
 
   const props = defineProps({
-    allowedExtensions: {
+    allowedFileTypes: {
       type: Array,
-      default: () => ['pdf'],
+      default: () => ['PDF'],
     },
     allowedMimeTypes: {
       type: Array,
@@ -73,7 +73,7 @@
   const hasAllowedMimeTypes = props.allowedMimeTypes.length > 0;
   const hasFileLimitations = hasMaxFileSize || hasAllowedMimeTypes;
   const formattedFileSize = formatFileSize(props.maxFileSize);
-  const formattedValidExtensions = formatExtensions(props.allowedExtensions, 'of');
+  const formattedAllowedFileTypes = formatList(props.allowedFileTypes, 'of');
   const formattedFileOrFiles = props.allowMultiple ? 'Bestanden' : 'Bestand';
   const invalidFiles = ref([]);
   const dangerousFiles = ref([]);
@@ -176,7 +176,6 @@
   };
 
   const addFiles = (files) => {
-    console.log(files);
     const { invalidFiles: invalid, validFiles } = validateFiles(files, props.allowedMimeTypes, props.maxFileSize);
     invalidFiles.value = [...invalid.values()];
 
@@ -284,9 +283,9 @@
 
 <template>
   <div>
-    <div role="status">
+    <output class="block">
       <InvalidFiles
-        :allowed-extensions="props.allowedExtensions"
+        :allowed-file-types="props.allowedFileTypes"
         :allowed-mime-types="props.allowedMimeTypes"
         :files="invalidFiles"
         :max-file-size="props.maxFileSize"
@@ -303,7 +302,7 @@
         :files="alreadyUploadedFiles"
         class="mb-4"
       />
-    </div>
+    </output>
 
     <div
       class="bhr-upload-area"
@@ -340,7 +339,7 @@
           class="bhr-upload-area__file-limits"
         >
           <span v-if="hasAllowedMimeTypes">
-            {{ formattedFileOrFiles }} van het type {{ formattedValidExtensions }}
+            {{ formattedFileOrFiles }} van het type {{ formattedAllowedFileTypes }}
           </span>
           <span v-if="hasMaxFileSize">
             (max {{ formattedFileSize }} per bestand)

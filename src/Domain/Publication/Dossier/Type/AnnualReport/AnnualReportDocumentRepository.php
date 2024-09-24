@@ -58,7 +58,7 @@ class AnnualReportDocumentRepository extends ServiceEntityRepository implements 
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findForDossierPrefixAndNr(string $prefix, string $dossierNr): ?AnnualReportDocument
+    public function findForDossierByPrefixAndNr(string $prefix, string $dossierNr): ?AnnualReportDocument
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossier', 'dos')

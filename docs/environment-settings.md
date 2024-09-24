@@ -150,8 +150,9 @@ The following settings are available:
 
 ### Miscellaneous settings
 
-| Variable             | Description                                                                                                            | Default value                        |
-|----------------------|------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| Variable           | Description                                                                                                  | Default value                        |
+|--------------------|--------------------------------------------------------------------------------------------------------------|--------------------------------------|
 | `RABBITMQ_STATS_URL` | Url to the RabbitMQ management interface for statistics. This needs to have the management plugin enabled on rabbitmq. | `http://guest:guest@127.0.0.1:15672` |
-| `TIKA_HOST`          | Url on which Tika is running. Used for the workers that extract content through tika                                   | `http://127.0.0.1:9998`              |
-| `RABBITMQ_URL`       | Default rabbitMQ entrypoint. This is used for the audit logger functionality.                                          | `amqp://guest:guest@localhost:5672`  |
+| `TIKA_HOST`        | Url on which Tika is running. Used for the workers that extract content through tika                         | `http://127.0.0.1:9998`              |
+| `RABBITMQ_URL`     | Default rabbitMQ entrypoint. This is used for the audit logger functionality.                                | `amqp://guest:guest@localhost:5672`  |
+| `CLAM_AV_ADDRESS`  | This is used for validating uploaded files.                                                                  | `tcp://clamav:3310`                  |

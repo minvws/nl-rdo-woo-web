@@ -29,32 +29,34 @@
             <tbody>
                 <tr>
                     <th class="bhr-row-head" scope="row">Status</th>
-                    <td>{{ dossier.status.value }}</td>
+                    <td><twig:Admin:DossierStatusBadge status="{{ dossier.status }}" /></td>
                 </tr>
                 <tr>
                     <th class="bhr-row-head" scope="row">{{ 'global.organisation' | trans()}}</th>
                     <td>{{ dossier.organisation.name }}</td>
                 </tr>
                 <tr>
-                    <th class="bhr-row-head" scope="row">Completed</th>
-                    <td>{{ dossier.completed ? 'true' : 'false' }}</td>
+                    <th class="bhr-row-head" scope="row">{{ 'admin.dossiers.action.row.dossier_completed' | trans }}</th>
+                    <td>{{ dossier.completed ? 'ja' : 'nee' }}</td>
                 </tr>
+                {% if dossier.uploadStatus is defined %}
                 <tr>
-                    <th class="bhr-row-head" scope="row">Expected upload count</th>
+                    <th class="bhr-row-head" scope="row">{{ 'admin.dossiers.action.row.expected_uploads' | trans }}</th>
                     <td>{{ dossier.uploadStatus.expectedUploadCount }}</td>
                 </tr>
                 <tr>
-                    <th class="bhr-row-head" scope="row">Actual upload count</th>
+                    <th class="bhr-row-head" scope="row">{{ 'admin.dossiers.action.row.actual_uploads' | trans }}</th>
                     <td>{{ dossier.uploadStatus.actualUploadCount }}</td>
                 </tr>
                 <tr>
-                    <th class="bhr-row-head" scope="row">Uploads completed</th>
-                    <td>{{ dossier.uploadStatus.complete  ? 'true' : 'false' }}</td>
+                    <th class="bhr-row-head" scope="row">{{ 'admin.dossiers.action.row.uploads_completed' | trans }}</th>
+                    <td>{{ dossier.uploadStatus.complete  ? 'ja' : 'nee' }}</td>
                 </tr>
+                {% endif %}
                 {% for step in workflowStatus.steps %}
                     <tr>
-                        <th class="bhr-row-head" scope="row">Step {{ step.stepName.value }} completed</th>
-                        <td>{{ step.completed ? 'true' : 'false' }}</td>
+                        <th class="bhr-row-head" scope="row">{{ 'admin.dossiers.action.row.step_completed' | trans({'step': step.stepName.value}) }}</th>
+                        <td>{{ step.completed ? 'ja' : 'nee' }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

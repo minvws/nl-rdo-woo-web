@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,6 +21,12 @@ class IndexController extends AbstractController
     #[Route('/balie/admin', name: 'app_admin', methods: ['GET'])]
     public function admin(Breadcrumbs $breadcrumbs): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (! $user->hasRole('ROLE_SUPER_ADMIN')) {
+            return $this->redirectToRoute('app_admin_dossiers');
+        }
+
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem('global.admin');
 

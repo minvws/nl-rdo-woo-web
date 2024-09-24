@@ -60,7 +60,7 @@ class InquiryLinkDocumentsFormType extends AbstractType
                 ],
             ])
             ->add('cancel', SubmitType::class, [
-                'label' => 'Cancel',
+                'label' => 'global.cancel',
                 'attr' => [
                     'class' => 'bhr-button--secondary',
                     'data-last-button' => true,
@@ -72,7 +72,6 @@ class InquiryLinkDocumentsFormType extends AbstractType
     {
         $resolver->setRequired('choice_loader');
 
-        $resolver->setDefaults([
-        ]);
+        $resolver->setDefaults([]);
     }
 }

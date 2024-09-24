@@ -31,6 +31,8 @@ final class InvestigationReportDocumentTest extends ApiTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->root = vfsStream::setup();
 
         self::bootKernel();
@@ -39,7 +41,7 @@ final class InvestigationReportDocumentTest extends ApiTestCase
     public function testGetInvestigationReportDocumentReturns404UntilCreated(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -107,7 +109,7 @@ final class InvestigationReportDocumentTest extends ApiTestCase
     public function testUpdateInvestigationReportDocument(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -158,7 +160,7 @@ final class InvestigationReportDocumentTest extends ApiTestCase
     public function testInvestigationReportDocumentCanBeDeletedAfterCreation(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -224,7 +226,7 @@ final class InvestigationReportDocumentTest extends ApiTestCase
     public function testInvestigationReportDocumentCannotBeDeletedForAPublishedDossier(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -278,7 +280,7 @@ final class InvestigationReportDocumentTest extends ApiTestCase
     public function testCreateInvestigationReportDocumentOnlyAcceptsValidTypeValues(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 
@@ -322,7 +324,7 @@ final class InvestigationReportDocumentTest extends ApiTestCase
     public function testUpdateInvestigationReportDocumentOnlyAcceptsValidTypeValues(): void
     {
         $user = UserFactory::new()
-            ->asAdmin()
+            ->asSuperAdmin()
             ->isEnabled()
             ->create();
 

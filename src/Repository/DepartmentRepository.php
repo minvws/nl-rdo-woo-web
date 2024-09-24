@@ -54,4 +54,38 @@ class DepartmentRepository extends ServiceEntityRepository
 
         return $names;
     }
+
+    public function findPublicDepartmentBySlug(string $slug): Department
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.slug = :slug')
+            ->andWhere('d.public = true')
+            ->setParameter('slug', $slug);
+
+        /** @var Department */
+        return $qb->getQuery()->getSingleResult();
+    }
+
+    /**
+     * @return array<array-key,Department>
+     */
+    public function getAllPublicDepartments(): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.public = true')
+            ->orderBy('d.name', 'ASC');
+
+        /** @var array<array-key,Department> */
+        return $qb->getQuery()->getResult();
+    }
+
+    public function countPublicDepartments(): int
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->select('COUNT(d.id)')
+            ->where('d.public = true');
+
+        /** @var int */
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

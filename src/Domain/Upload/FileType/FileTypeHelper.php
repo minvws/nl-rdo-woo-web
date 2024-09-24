@@ -64,6 +64,14 @@ class FileTypeHelper
         return $extensions;
     }
 
+    /**
+     * @return string[]
+     */
+    public function getTypeNamesByUploadGroup(UploadGroupId $uploadGroupId): array
+    {
+        return FileType::getTypeNamesForTypes(...$uploadGroupId->getFileTypes());
+    }
+
     private function createMapping(): void
     {
         $this->mapping = [];
