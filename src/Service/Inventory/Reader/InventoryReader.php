@@ -105,7 +105,7 @@ class InventoryReader implements InventoryReaderInterface
             date: $this->reader->getOptionalDateTime($rowIdx, MetadataField::DATE->value),
             filename: $filename,
             familyId: $this->reader->getOptionalInt($rowIdx, MetadataField::FAMILY->value),
-            sourceType: SourceType::getType($this->reader->getOptionalString($rowIdx, MetadataField::SOURCETYPE->value)),
+            sourceType: SourceType::create($this->reader->getOptionalString($rowIdx, MetadataField::SOURCETYPE->value)),
             grounds: InventoryDataHelper::getGrounds($this->reader->getString($rowIdx, MetadataField::GROUND->value)),
             id: $documentId,
             judgement: InventoryDataHelper::judgement($this->reader->getString($rowIdx, MetadataField::JUDGEMENT->value)),

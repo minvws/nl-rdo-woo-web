@@ -12,6 +12,9 @@ use Webmozart\Assert\Assert;
 class Citation
 {
     public const DUBBEL = 'dubbel';
+    public const TYPE_WOO = 'woo';
+    public const TYPE_WOB = 'wob';
+    public const TYPE_UNKNOWN = 'wob';
 
     /** @var array<string,string> */
     public static array $wooCitations = [
@@ -81,13 +84,13 @@ class Citation
         $citation = strtolower($citation);
 
         if (isset(self::$wooCitations[$citation])) {
-            return 'woo';
+            return self::TYPE_WOO;
         }
         if (isset(self::$wobCitations[$citation])) {
-            return 'wob';
+            return self::TYPE_WOB;
         }
 
-        return 'unknown';
+        return self::TYPE_UNKNOWN;
     }
 
     /**
@@ -108,7 +111,7 @@ class Citation
 
         $allCitations = array_flip($allCitations);
 
-        usort($citations, function (string $a, string $b) use ($allCitations): int {
+        usort($citations, static function (string $a, string $b) use ($allCitations): int {
             if (isset($allCitations[$a], $allCitations[$b])) {
                 return $allCitations[$a] <=> $allCitations[$b];
             }

@@ -3,7 +3,11 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 
 describe('The "MultiInput" component', () => {
-  const mockedOptions = ['mocked_option-1', 'mocked_option-2', 'mocked_option-3'];
+  const mockedOptions = [
+    'mocked_option-1',
+    'mocked_option-2',
+    'mocked_option-3',
+  ];
   const mockedErrors = ['mocked_submit-error'];
   const mockedValues = ['mocked_value-1', 'mocked_value-2'];
 
@@ -16,7 +20,13 @@ describe('The "MultiInput" component', () => {
   }
 
   const createComponent = (options: Partial<Options> = {}) => {
-    const { buttonTextMultiple, helpText, maxLength, minLength = 1, values = mockedValues } = options;
+    const {
+      buttonTextMultiple,
+      helpText,
+      maxLength,
+      minLength = 1,
+      values = mockedValues,
+    } = options;
 
     return mount(MultiInput, {
       props: {
@@ -44,20 +54,32 @@ describe('The "MultiInput" component', () => {
   };
 
   const getAddButton = (component: VueWrapper) => component.find('button');
-  const getLastEmittedUpdate = (component: VueWrapper) => ((component.emitted().update as unknown[][][]).at(-1) ?? [])[0];
-  const getFormHelpcomponent = (component: VueWrapper) => component.findComponent({ name: 'FormHelp' });
+  const getLastEmittedUpdate = (component: VueWrapper) =>
+    ((component.emitted().update as unknown[][][]).at(-1) ?? [])[0];
+  const getFormHelpcomponent = (component: VueWrapper) =>
+    component.findComponent({ name: 'FormHelp' });
 
   test('should render a fieldset with the provided legend', async () => {
-    expect(createComponent().find('fieldset legend').text()).toContain('mocked_legend');
+    expect(createComponent().find('fieldset legend').text()).toContain(
+      'mocked_legend',
+    );
   });
 
   test('should render the provided help text', async () => {
     expect(getFormHelpcomponent(createComponent()).exists()).toBe(false);
-    expect(getFormHelpcomponent(createComponent({ helpText: 'mocked_help_text' })).html()).toContain('mocked_help_text');
+    expect(
+      getFormHelpcomponent(
+        createComponent({ helpText: 'mocked_help_text' }),
+      ).html(),
+    ).toContain('mocked_help_text');
   });
 
   test('should render the provided error messages', async () => {
-    expect(createComponent().findComponent({ name: 'ErrorMessages' }).props('messages')).toEqual(mockedErrors);
+    expect(
+      createComponent()
+        .findComponent({ name: 'ErrorMessages' })
+        .props('messages'),
+    ).toEqual(mockedErrors);
   });
 
   test('should render the provided content', async () => {
@@ -88,9 +110,13 @@ describe('The "MultiInput" component', () => {
     });
 
     test('should contain the multi button text when there are already input fields', async () => {
-      const component = createComponent({ buttonTextMultiple: 'mocked_button_multiple_text' });
+      const component = createComponent({
+        buttonTextMultiple: 'mocked_button_multiple_text',
+      });
 
-      expect(getAddButton(component).text()).toContain('mocked_button_multiple_text');
+      expect(getAddButton(component).text()).toContain(
+        'mocked_button_multiple_text',
+      );
     });
 
     test('should contain the single button text when there are already input fields and no multi button text is provided', async () => {
@@ -113,7 +139,7 @@ describe('The "MultiInput" component', () => {
       const lastEmittedUpdate = getLastEmittedUpdate(component);
       expect(lastEmittedUpdate.length).toEqual(2);
 
-      const { id } = (lastEmittedUpdate[0] as any);
+      const { id } = lastEmittedUpdate[0] as any;
       await (component.vm as any).deleteItem(id);
       expect(getLastEmittedUpdate(component).length).toEqual(1);
     });
@@ -127,7 +153,9 @@ describe('The "MultiInput" component', () => {
       expect(firstItem.value).toEqual('mocked_value-1');
 
       await (component.vm as any).updateItem('new_mocked_value', firstItem.id);
-      expect((getLastEmittedUpdate(component)[0] as any).value).toEqual('new_mocked_value');
+      expect((getLastEmittedUpdate(component)[0] as any).value).toEqual(
+        'new_mocked_value',
+      );
     });
   });
 });

@@ -17,9 +17,14 @@ export const dossierDocumentsStatus = () => {
       return;
     }
 
-    canNotContinueYetErrorElement = document.getElementById('js-dossier-documents-can-not-continue');
-    uploadsRemainingElement = placeholderElement.querySelector('.js-uploads-remaining');
-    uploadsSectionElement = placeholderElement.querySelector('.js-upload-section');
+    canNotContinueYetErrorElement = document.getElementById(
+      'js-dossier-documents-can-not-continue',
+    );
+    uploadsRemainingElement = placeholderElement.querySelector(
+      '.js-uploads-remaining',
+    );
+    uploadsSectionElement =
+      placeholderElement.querySelector('.js-upload-section');
 
     abortController = new AbortController();
     updateStatus(placeholderElement.dataset.endpoint || '');
@@ -28,11 +33,14 @@ export const dossierDocumentsStatus = () => {
 
   const updateStatus = async (endpoint: string) => {
     const response = await fetch(endpoint, { signal: abortController?.signal });
-    const { completed, uploadsProcessingContent, uploadsRemainingContent } = await response.json();
+    const { completed, uploadsProcessingContent, uploadsRemainingContent } =
+      await response.json();
 
     areAllFilesUploaded = completed;
 
-    const uploadsProcessingElement = placeholderElement?.querySelector('.js-uploads-processing');
+    const uploadsProcessingElement = placeholderElement?.querySelector(
+      '.js-uploads-processing',
+    );
     if (uploadsProcessingElement) {
       uploadsProcessingElement.innerHTML = uploadsProcessingContent;
     }
@@ -61,7 +69,9 @@ export const dossierDocumentsStatus = () => {
       return;
     }
 
-    const toNextStepButton = document.getElementById('js-dossier-documents-next-step');
+    const toNextStepButton = document.getElementById(
+      'js-dossier-documents-next-step',
+    );
     if (!toNextStepButton) {
       return;
     }

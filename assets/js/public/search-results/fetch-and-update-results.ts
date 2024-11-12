@@ -1,4 +1,7 @@
-export const fetchAndUpdateResults = (params: URLSearchParams, callbackFunction: (previousActiveElement?: HTMLElement) => void) => {
+export const fetchAndUpdateResults = (
+  params: URLSearchParams,
+  callbackFunction: (previousActiveElement?: HTMLElement) => void,
+) => {
   const filtersElement = document.getElementById('js-search-filters');
   const resultsElement = document.getElementById('js-search-results');
 

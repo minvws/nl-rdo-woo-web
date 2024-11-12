@@ -72,7 +72,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     private Organisation $organisation;
 
     /** @var Collection|LoginActivity[] */
-    #[ORM\OneToMany(mappedBy: 'account', targetEntity: LoginActivity::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'account', targetEntity: LoginActivity::class)]
     private Collection $loginActivities;
 
     public function __construct()

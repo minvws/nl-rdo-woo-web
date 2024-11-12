@@ -10,11 +10,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<WorkerStats>
- *
- * @method WorkerStats|null find($id, $lockMode = null, $lockVersion = null)
- * @method WorkerStats|null findOneBy(array $criteria, array $orderBy = null)
- * @method WorkerStats[]    findAll()
- * @method WorkerStats[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class WorkerStatsRepository extends ServiceEntityRepository
 {

@@ -6,4 +6,5 @@ export * from './id';
 export * from './multi-input';
 export * as validators from './validator';
 
-export const validatorMessages: Record<string, ValidatorMessage> = validatorMessageFunctions;
+export const validatorMessages: Record<string, ValidatorMessage> =
+  validatorMessageFunctions;

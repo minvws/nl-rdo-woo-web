@@ -1,0 +1,241 @@
+legacy_browse:
+    path: /browse
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_browse'
+        permanent: true
+
+legacy_search:
+    path: /search
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_search'
+        permanent: true
+        keepQueryParams: true
+        keepRequestMethod: true
+
+legacy_investigationreport_detail:
+    path: /investigation-report/{prefix}/{dossierId}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_investigationreport_detail'
+        permanent: true
+
+legacy_investigationreport_document_detail:
+    path: /investigation-report/{prefix}/{dossierId}/document
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_investigationreport_document_detail'
+        permanent: true
+
+legacy_investigationreport_document_download:
+    path: /investigation-report/{prefix}/{dossierId}/document/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_investigationreport_document_download'
+        permanent: true
+
+legacy_investigationreport_attachment_detail:
+    path: /investigation-report/{prefix}/{dossierId}/attachment/{attachmentId}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_investigationreport_attachment_detail'
+        permanent: true
+
+legacy_investigationreport_attachment_download:
+    path: /investigation-report/{prefix}/{dossierId}/attachment/{attachmentId}/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_investigationreport_attachment_download'
+        permanent: true
+
+legacy_annualreport_detail:
+    path: /annual-report/{prefix}/{dossierId}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_annualreport_detail'
+        permanent: true
+
+legacy_annualreport_document_detail:
+    path: /annual-report/{prefix}/{dossierId}/document
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_annualreport_document_detail'
+        permanent: true
+
+legacy_annualreport_document_download:
+    path: /annual-report/{prefix}/{dossierId}/document/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_annualreport_document_download'
+        permanent: true
+
+legacy_annualreport_attachment_detail:
+    path: /annual-report/{prefix}/{dossierId}/attachment/{attachmentId}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_annualreport_attachment_detail'
+        permanent: true
+
+legacy_annualreport_attachment_download:
+    path: /annual-report/{prefix}/{dossierId}/attachment/{attachmentId}/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_annualreport_attachment_download'
+        permanent: true
+
+legacy_disposition_detail:
+    path: /disposition/{prefix}/{dossierId}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_disposition_detail'
+        permanent: true
+
+legacy_disposition_document_detail:
+    path: /disposition/{prefix}/{dossierId}/document
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_disposition_document_detail'
+        permanent: true
+
+legacy_disposition_document_download:
+    path: /disposition/{prefix}/{dossierId}/document/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_disposition_document_download'
+        permanent: true
+
+legacy_disposition_attachment_detail:
+    path: /disposition/{prefix}/{dossierId}/attachment/{attachmentId}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_disposition_attachment_detail'
+        permanent: true
+
+legacy_disposition_attachment_download:
+    path: /disposition/{prefix}/{dossierId}/attachment/{attachmentId}/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_disposition_attachment_download'
+        permanent: true
+
+legacy_complaintjudgement_detail:
+    path: /complaint-judgement/{prefix}/{dossierId}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_complaintjudgement_detail'
+        permanent: true
+
+legacy_complaintjudgement_document_detail:
+    path: /complaint-judgement/{prefix}/{dossierId}/document
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_complaintjudgement_document_detail'
+        permanent: true
+
+legacy_complaintjudgement_document_download:
+    path: /complaint-judgement/{prefix}/{dossierId}/document/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_complaintjudgement_document_download'
+        permanent: true
+
+legacy_woodecision_decisionattachment_download:
+    path: /dossier/{prefix}/{dossierId}/decision-attachments/{attachmentId}/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_woodecision_decisionattachment_download'
+        permanent: true
+
+legacy_woodecision_decisionattachment_detail:
+    path: /dossier/{prefix}/{dossierId}/decision-attachments/{attachmentId}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_woodecision_decisionattachment_detail'
+        permanent: true
+
+legacy_covenant_detail:
+    path: /covenant/{prefix}/{dossierId}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_covenant_detail'
+        permanent: true
+
+legacy_covenant_covenantdocument_detail:
+    path: /covenant/{prefix}/{dossierId}/covenant-document
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_covenant_covenantdocument_detail'
+        permanent: true
+
+legacy_covenant_covenantdocument_download:
+    path: /covenant/{prefix}/{dossierId}/covenant-document/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_covenant_covenantdocument_download'
+        permanent: true
+
+legacy_covenant_covenantattachment_detail:
+    path: /covenant/{prefix}/{dossierId}/covenant-attachment/{attachmentId}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_covenant_covenantattachment_detail'
+        permanent: true
+
+legacy_covenant_covenantattachment_download:
+    path: /covenant/{prefix}/{dossierId}/covenant-attachment/{attachmentId}/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_covenant_covenantattachment_download'
+        permanent: true
+
+legacy_inquiry_detail:
+    path: /inquiry/{token}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_inquiry_detail'
+        permanent: true
+        keepQueryParams: true
+
+legacy_inquiry_inventory_download:
+    path: /inquiry/{token}/inventory/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_inquiry_inventory_download'
+        permanent: true
+
+legacy_inquiry_batch:
+    path: /inquiry/{token}/batch/{filter}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_inquiry_batch'
+        permanent: true
+        keepRequestMethod: true
+
+legacy_inquiry_batch_detail:
+    path: /inquiry/{token}/batch/detail/{batchId}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_inquiry_batch_detail'
+        permanent: true
+
+legacy_inquiry_batch_download:
+    path: /inquiry/{token}/batch/{batchId}/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_inquiry_batch_download'
+        permanent: true
+
+legacy_woodecision_inventory_download:
+    path: /dossier/{prefix}/{dossierId}/inventory/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_woodecision_inventory_download'
+        permanent: true
+
+legacy_woodecision_decision_download:
+    path: /dossier/{prefix}/{dossierId}/decision/download
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'app_woodecision_decision_download'
+        permanent: true

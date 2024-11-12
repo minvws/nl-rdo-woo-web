@@ -45,10 +45,7 @@ export const MimeTypes: Readonly<Record<string, string[]>> = {
     'application/vnd.oasis.opendocument.spreadsheet',
     'application/vnd.oasis.opendocument.formula',
   ],
-  Text: [
-    'text/plain',
-    'text/rdf',
-  ],
+  Text: ['text/plain', 'text/rdf'],
   Video: [MimeType.VideoMp4],
   Word: [
     'application/msword',
@@ -58,9 +55,7 @@ export const MimeTypes: Readonly<Record<string, string[]>> = {
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/vnd.oasis.opendocument.text',
   ],
-  Xml: [
-    'application/rdf+xml',
-  ],
+  Xml: ['application/rdf+xml'],
   Zip: [MimeType.Zip, MimeType.SevenZip],
 };
 
@@ -89,7 +84,9 @@ export const getIconNameByMimeType = (mimeType: string) => {
     'file-zip': MimeTypes.Zip,
   };
 
-  const foundIconName = (Object.keys(mappings) as (keyof typeof mappings)[]).find((key) => mappings[key].includes(mimeType));
+  const foundIconName = (
+    Object.keys(mappings) as (keyof typeof mappings)[]
+  ).find((key) => mappings[key].includes(mimeType));
 
   return foundIconName || 'file-unknown';
 };
@@ -107,10 +104,15 @@ export const getFileTypeByMimeType = (mimeType: string) => {
     zip: MimeTypes.Zip,
   };
 
-  return (Object.keys(mappings) as (keyof typeof mappings)[]).find((key) => mappings[key].includes(mimeType)) ?? 'onbekend';
+  return (
+    (Object.keys(mappings) as (keyof typeof mappings)[]).find((key) =>
+      mappings[key].includes(mimeType),
+    ) ?? 'onbekend'
+  );
 };
 
-export const isValidMaxFileSize = (maxFileSize: unknown): boolean => isNumber(maxFileSize) && Number(maxFileSize) > 0;
+export const isValidMaxFileSize = (maxFileSize: unknown): boolean =>
+  isNumber(maxFileSize) && Number(maxFileSize) > 0;
 
 export const areFilesEqual = (file1: File, file2: File) => {
   const properties: (keyof File)[] = ['lastModified', 'name', 'size', 'type'];

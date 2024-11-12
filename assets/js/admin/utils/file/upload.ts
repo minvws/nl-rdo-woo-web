@@ -25,7 +25,7 @@ interface ResponseSuccess {
     originalName: string;
     size: number;
     uploadUuid: string;
-  }
+  };
 }
 
 enum UploadError {
@@ -120,17 +120,30 @@ export const uploadFile = (options: Options) => {
 
     const abortController = new AbortController();
 
-    request.upload.addEventListener('progress', (event) => {
-      const { loaded, total } = event;
-      updateChunkProgress(chunk.id, loaded, total);
-    }, { signal: abortController.signal });
+    request.upload.addEventListener(
+      'progress',
+      (event) => {
+        const { loaded, total } = event;
+        updateChunkProgress(chunk.id, loaded, total);
+      },
+      { signal: abortController.signal },
+    );
 
-    request.addEventListener('load', () => {
-      updateChunkUploadResult(chunk.id, isSuccessStatusCode(request.status), request.response);
-    }, { signal: abortController.signal });
+    request.addEventListener(
+      'load',
+      () => {
+        updateChunkUploadResult(
+          chunk.id,
+          isSuccessStatusCode(request.status),
+          request.response,
+        );
+      },
+      { signal: abortController.signal },
+    );
 
-    request.addEventListener('readystatechange', () => {
-    }, { signal: abortController.signal });
+    request.addEventListener('readystatechange', () => {}, {
+      signal: abortController.signal,
+    });
 
     sendRequest();
 
@@ -140,19 +153,29 @@ export const uploadFile = (options: Options) => {
     };
   };
 
-  const isErrorResponse = (response: Response): response is ResponseError => (response as ResponseError).error !== undefined;
-  const isSuccessResponse = (response: Response): response is ResponseSuccess => !isErrorResponse(response);
+  const isErrorResponse = (response: Response): response is ResponseError =>
+    (response as ResponseError).error !== undefined;
+  const isSuccessResponse = (response: Response): response is ResponseSuccess =>
+    !isErrorResponse(response);
 
-  const updateChunkUploadResult = (chunkId: number, isUploadSuccess: boolean, response: Response) => {
+  const updateChunkUploadResult = (
+    chunkId: number,
+    isUploadSuccess: boolean,
+    response: Response,
+  ) => {
     const chunk = getChunk(chunkId);
     chunk.isUploaded = true;
     chunk.isUploadSuccess = isUploadSuccess;
-    chunk.uploadUuid = isSuccessResponse(response) ? response.data.uploadUuid : undefined;
+    chunk.uploadUuid = isSuccessResponse(response)
+      ? response.data.uploadUuid
+      : undefined;
     store.set(chunkId, chunk);
 
     cleanupUpload();
 
-    const haveChunksFailed = getChunks().some((chunkItem) => chunkItem.isUploadSuccess === false);
+    const haveChunksFailed = getChunks().some(
+      (chunkItem) => chunkItem.isUploadSuccess === false,
+    );
     if (haveChunksFailed && isErrorResponse(response)) {
       onError({
         isTechnialError: response.error === UploadError.Techinal,
@@ -165,7 +188,11 @@ export const uploadFile = (options: Options) => {
     uploadNextChunk();
   };
 
-  const updateChunkProgress = (chunkId: number, bytesSent: number, bytesToSend: number) => {
+  const updateChunkProgress = (
+    chunkId: number,
+    bytesSent: number,
+    bytesToSend: number,
+  ) => {
     const chunk = getChunk(chunkId);
     chunk.bytesSent = bytesSent;
     chunk.bytesToSend = bytesToSend;
@@ -181,13 +208,20 @@ export const uploadFile = (options: Options) => {
   };
 
   const getFileProgress = () => {
-    const [totalBytesSent, totalBytesToSend] = getChunks().reduce(([cummulativeBytesSent, cummulativeBytesToSend], chunk) => [
-      cummulativeBytesSent + chunk.bytesSent, cummulativeBytesToSend + chunk.bytesToSend], [0, 0]);
+    const [totalBytesSent, totalBytesToSend] = getChunks().reduce(
+      ([cummulativeBytesSent, cummulativeBytesToSend], chunk) => [
+        cummulativeBytesSent + chunk.bytesSent,
+        cummulativeBytesToSend + chunk.bytesToSend,
+      ],
+      [0, 0],
+    );
 
     return Math.round((totalBytesSent / totalBytesToSend) * 100);
   };
 
-  const createChunkRequest = (chunk: Chunk): { request: XMLHttpRequest, sendRequest: () => void } => {
+  const createChunkRequest = (
+    chunk: Chunk,
+  ): { request: XMLHttpRequest; sendRequest: () => void } => {
     const formData = new FormData();
     formData.append(uploadName, chunk.content, file.name);
     formData.append('chunkindex', chunk.index.toString());

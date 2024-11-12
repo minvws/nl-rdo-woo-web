@@ -13,6 +13,7 @@ use App\Entity\Department;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class DossierListingService
 {
@@ -21,6 +22,7 @@ readonly class DossierListingService
         private AuthorizationMatrix $authorizationMatrix,
         private DossierTypeManager $dossierTypeManager,
         private DossierQueryConditions $queryConditions,
+        private TranslatorInterface $translator,
     ) {
     }
 
@@ -87,5 +89,22 @@ readonly class DossierListingService
             static fn (DossierTypeConfigInterface $config) => $config->getDossierType(),
             $this->dossierTypeManager->getAvailableConfigs()
         );
+    }
+
+    /**
+     * @return DossierType[]
+     */
+    public function getAvailableTypesOrderedByName(): array
+    {
+        $types = $this->getAvailableTypes();
+
+        usort(
+            $types,
+            function (DossierType $a, DossierType $b): int {
+                return strnatcmp($a->trans($this->translator), $b->trans($this->translator));
+            }
+        );
+
+        return $types;
     }
 }

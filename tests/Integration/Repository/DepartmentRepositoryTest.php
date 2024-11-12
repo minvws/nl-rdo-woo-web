@@ -7,6 +7,7 @@ namespace App\Tests\Integration\Repository;
 use App\Entity\Department;
 use App\Repository\DepartmentRepository;
 use App\Tests\Factory\DepartmentFactory;
+use App\Tests\Factory\OrganisationFactory;
 use App\Tests\Integration\IntegrationTestTrait;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -68,6 +69,28 @@ final class DepartmentRepositoryTest extends KernelTestCase
         $this->createDepartments();
 
         self::assertSame(3, $this->repository->countPublicDepartments());
+    }
+
+    public function testGetOrganisationDepartmentsSortedByName(): void
+    {
+        $this->deleteAllDepartments();
+        $departments = $this->createDepartments();
+        $organisation = OrganisationFactory::createOne([
+            'departments' => $departments,
+        ]);
+
+        $departments = $this->repository->getOrganisationDepartmentsSortedByName($organisation);
+
+        self::assertCount(4, $departments);
+
+        $departments = array_map(fn (Department $department): array => [
+            'name' => $department->getName(),
+            'shortTag' => $department->getShortTag(),
+            'slug' => $department->getSlug(),
+            'public' => $department->isPublic(),
+        ], $departments);
+
+        $this->assertMatchesYamlSnapshot($departments);
     }
 
     private function deleteAllDepartments(): void

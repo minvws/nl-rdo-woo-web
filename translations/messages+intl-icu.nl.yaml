@@ -73,6 +73,7 @@ global.pagination: "Paginering"
 global.period: "Periode"
 global.prefixes: "Prefixes"
 global.publication_date: "Publicatiedatum"
+global.created_at: "Aanmaakdatum"
 global.query: "Query"
 global.request: "Verzoek"
 global.results: "Resultaten"
@@ -156,6 +157,7 @@ global.decision.dossier_number: "Besluitnummer"
 global.footer.label.accessibility: "Toegankelijkheid"
 global.footer.label.privacy: "Privacy"
 global.footer.label.contact: "Contact"
+global.footer.label.report_vulnerability: "Kwetsbaarheid melden"
 
 auth.set_up.title: "Authenticator app instellen"
 auth.set_up.bullet-1: "Download en installeer de Google Authenticator of Authy app op je telefoon. Je vindt deze in de App Store of Play Store."
@@ -236,6 +238,7 @@ admin.global.input_delete: "Invoer verwijderen"
 admin.global.no_choices: "Nog niets gekozen"
 admin.global.dossiers.prefix_placeholder: "Kies een prefix"
 admin.global.statistics: "Statistieken"
+admin.global.yes: "Ja"
 
 admin.stats.last_updated: "Laatst bijgewerkt"
 admin.stats.msg_delivered_rate: "Msg Delivered Rate"
@@ -390,7 +393,7 @@ admin.publications.responsible_department: "Verantwoordelijk bestuursorgaan"
 admin.publications.responsible_department_placeholder: "Kies een bestuursorgaan"
 admin.publications.filters: "Filters"
 admin.publications.status: "Status"
-admin.publications.organisation_and_reference: 'Org & referentie'
+admin.publications.organisation_and_reference: 'Prefix & referentie'
 admin.publications.search_within: 'Zoeken in publicaties'
 admin.publications.status.concept: 'Concept'
 admin.publications.status.deleted: 'Verwijderd'
@@ -402,6 +405,8 @@ admin.publications.status.suspended: "Opgeschort"
 admin.publications.status.withdrawn: "Ingetrokken"
 admin.publications.type: "Categorie"
 admin.publications.submit.filter: "Filteren"
+admin.publications.has_landingpage: "Landingspagina"
+admin.publications.landingpage_url: "URL"
 admin.dossiers.public_date: "Documenten voor iedereen online op"
 admin.dossiers.public_link: "Publieke link"
 admin.dossiers.public_link_available: "De link is actief vanaf"
@@ -461,13 +466,13 @@ admin.dossiers.covenant.delete_bullet-2: "Een convenant kan niet meer verwijderd
 admin.dossiers.covenant.delete_bullet-3: "Je kan deze actie niet ongedaan maken."
 admin.dossiers.covenant.parties: "Partijen in het convenant"
 admin.dossiers.covenant.summary: "Toelichting op het convenant"
-admin.dossiers.covenant.period: "Periode waarover de overeenkomst gaat"
+admin.dossiers.covenant.period: "Periode waarover het convenant gaat"
 admin.dossiers.covenant.document: "Convenant"
 admin.dossiers.covenant.previous_version_link: "Opvolger van vorig convenant"
 
 admin.dossiers.annual-report.create_new: 'Nieuw jaarplan of jaarverslag publiceren'
 admin.dossiers.annual-report.form.details.title: "Omschrijving van het jaarplan of jaarverslag"
-admin.dossiers.annual-report.form.details.description: 'Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals convenant, aangaande, etc. <ul class="my-4"><li class="bhr-form-help__dont text-sm">Niet: Convenant tussen het ministerie en een aantal ziekenhuizen aangaande het aantal beschikbare IC-bedden.</li><li class="bhr-form-help__do text-sm">Wel: Overeenkomst tussen ministerie en ziekenhuizen over aantal IC-bedden.</li></ul>'
+admin.dossiers.annual-report.form.details.description: 'Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals jaarplan, jaarverslag, aangaande, etc. <ul class="my-4"><li class="bhr-form-help__dont text-sm">Niet: Jaarverslag van het ministerie Volksgezondheid, Welzijn en Sport in samenhang met de Slotwet aangaande het jaar 2022</li><li class="bhr-form-help__do text-sm">Wel: Jaarverslag en Slotwet ministerie VWS 2022</li></ul>'
 admin.dossiers.annual-report.form.details.date_legend: "Het jaar waarover het jaarplan of jaarverslag gaat"
 admin.dossiers.annual-report.form.details.ref_int: "Interne referentie"
 admin.dossiers.annual-report.form.details.prefix: "Prefix voor publicatie"
@@ -638,6 +643,7 @@ public.documents.file_type.vcard: "Visitekaartje"
 public.documents.file_type.video: "Video"
 public.documents.file_type.xml: "XML"
 public.documents.file_type.zip: "Zip-bestand"
+public.documents.file_type.chat: "Chatbericht"
 public.documents.type.dossier: "Woo-besluiten"
 public.documents.type.covenant: "Convenanten"
 public.documents.type.annual_report: "Jaarplannen en jaarverslagen"
@@ -738,6 +744,10 @@ public.privacy.paragraph-6: "Persoonsgegevens worden niet in alle situaties auto
 public.privacy.paragraph-7: "VWS neemt de bescherming van uw gegevens serieus en neemt passende maatregelen om misbruik, verlies, onbevoegde toegang, ongewenste openbaarmaking en ongeoorloofde wijziging tegen te gaan."
 public.privacy.paragraph-8: "U heeft het recht om uw persoonsgegevens in te zien, te wijzigen of te verwijderen. Daarnaast heeft u het recht om uw eventuele toestemming voor de gegevensverwerking in te trekken, of bezwaar te maken tegen de verwerking van uw persoonsgegevens door VWS."
 public.privacy.paragraph-9: "U kunt ook <a href='https://autoriteitpersoonsgegevens.nl/nl/zelf-doen/privacyrechten/klacht-indienen-bij-de-ap'>een melding doen bij de Autoriteit Persoonsgegevens.</a>"
+
+public.report_vulnerability.main_title: "Kwetsbaarheid melden"
+public.report_vulnerability.paragraph-1: "Ontdek je een zwakke plek of kwetsbaarheid op één van de websites, applicaties, of diensten van iRealisatie?"
+public.report_vulnerability.paragraph-2: "Dat willen we graag weten. Meld de kwetsbaarheid via <a href='mailto:security@irealisatie.nl'>security@irealisatie.nl</a>, dan bekijken wij het probleem en lossen we dit zo snel mogelijk op."
 
 public.cookies.paragraph-1: "Wij gebruiken het statistiekenprogramma Piwik om te analyseren welke pagina's het meest bezocht worden, hoe bezoekers op deze website zijn gekomen en welke zoektermen ze gebruiken in onze zoekmachine."
 public.cookies.paragraph-2: "Wij verzamelen, net als elke website, IP-adressen van onze bezoekers. Deze worden opgeslagen in zogeheten logfiles. De logfiles worden 5 dagen op de webserver bewaard, zodat ze beschikbaar zijn voor Piwik. Daarna blijven de logfiles 90 dagen bewaard voor uitsluitend beveiligingsredenen en worden ze ook alleen daarvoor bekeken."
@@ -870,11 +880,11 @@ public.dossiers.decision.all_decisions: "Bekijk alle besluiten"
 public.dossiers.decision.reason: "Besluitbrief"
 public.dossiers.decision.download_decision: "Download besluit"
 public.dossiers.annual_report.year: "Jaar"
-public.dossiers.annual_report.tagline: "Jaarplannen en jaarverslagen met omschrijving:"
+public.dossiers.annual_report.tagline: "Jaarplan of jaarverslag met omschrijving:"
 public.dossiers.annual_report.description: "Een jaarplan beschrijft concreet welke doelen een overheidsorganisatie dat jaar wil behalen, hoe de organisatie dat gaat doen en welke middelen (geld) de organisatie daarvoor inzet. Een jaarverslag beschrijft achteraf wat er in een jaar daadwerkelijk is gedaan, bereikt en uitgegeven/besteed door een overheidsorganisatie."
 public.dossiers.annual_report.about: "Over dit jaarplan of jaarverslag"
 public.dossiers.annual_report.attachments_for: "Bijlagen bij dit jaarplan of jaarverslag"
-public.dossiers.annual_report.breadcrumb: "Jaarplannen en jaarverslagen"
+public.dossiers.annual_report.breadcrumb: "Jaarplan of jaarverslag"
 public.dossiers.no_dossiers: "Geen besluiten"
 public.search_suggestion: "Bedoelde u misschien:"
 public.search_suggestion.terms: "Bedoelde u misschien een van de volgende zoektermen:"
@@ -1018,7 +1028,7 @@ admin.dossiers.decision.documents.withdraw_all.bullet_4: "Het besluit blijft ook
 
 #START investigation-report
 public.dossiers.investigation-report.tagline: "Onderzoeksrapport met omschrijving:"
-public.dossiers.investigation-report.description: "Omschrijving:"
+public.dossiers.investigation-report.description: "Overheidsorganisaties laten regelmatig onderzoek uitvoeren, door externe onderzoekers of door medewerkers binnen de eigen organisatie. Een onderzoeksrapport kenmerkt zich door een onderzoeksvraag, die wordt beantwoord op basis van een analyse van verzamelde informatie of gegevens."
 public.dossiers.investigation-report.date: "Datum:"
 public.documents.type.investigation_report: "Onderzoeksrapporten"
 public.dossiers.investigation-report.about: "Over dit onderzoeksrapport"
@@ -1042,7 +1052,7 @@ admin.dossiers.investigation-report.form.details.prefix: 'Prefix voor publicatie
 admin.dossiers.investigation-report.form.details.prefix_help: '<strong>Let op</strong>: je kan deze na het opslaan van de basisgegevens niet meer aanpassen.'
 admin.dossiers.investigation-report.form.content.document_label: 'Onderzoeksrapport'
 admin.dossiers.investigation-report.form.content.document_help: 'Upload minimaal het onderzoeksrapport'
-admin.dossiers.investigation-report.form.content.attachments_help: 'Voeg hier alleen bijlagen toe die te maken hebben met het onderzoeksrapport.'
+admin.dossiers.investigation-report.form.content.attachments_help: 'Voeg hier alleen bijlagen toe die te maken hebben met de totstandkoming van het onderzoeksrapport.'
 admin.dossiers.investigation-report.form.publication.publication_date_label: 'Datum openbare publicatie'
 admin.dossiers.investigation-report.form.publication.publication_date_help: 'Kies de datum waarop het onderzoeksrapport voor iedereen publiek toegankelijk wordt.'
 admin.dossiers.investigation-report.create.success: '<strong>Onderzoeksrapport klaarzetten gelukt:</strong> De publicatie wordt voorbereid.'
@@ -1064,7 +1074,7 @@ history.investigation-report.main_document_deleted.private: 'Onderzoeksrapport v
 
 #START complaint-judgement
 public.dossiers.complaint-judgement.tagline: "Klachtoordeel met omschrijving:"
-public.dossiers.complaint-judgement.description: "Omschrijving:"
+public.dossiers.complaint-judgement.description: "Een klachtoordeel is de formele brief die een overheidsorganisatie stuurt aan de klager, in reactie op een klacht."
 public.dossiers.complaint-judgement.date: "Datum:"
 public.documents.type.complaint_judgement: "Klachtoordelen"
 public.dossiers.complaint-judgement.about: "Over dit klachtoordeel"
@@ -1106,7 +1116,7 @@ history.complaint-judgement.main_document_deleted.private: 'Klachtoordeel verwij
 
 #START disposition
 public.dossiers.disposition.tagline: "Beschikking met omschrijving:"
-public.dossiers.dispositiont.description: "Omschrijving:"
+public.dossiers.disposition.description: "Een beschikking is een formele, schriftelijke beslissing van een overheidsorganisatie. Beschikkingen gaan over specifieke, individuele gevallen (bijvoorbeeld een bedrijf, een inwoner, een overtreding) - ze zijn niet op iedereen van toepassing."
 public.dossiers.disposition.date: "Datum:"
 public.documents.type.disposition: "Beschikkingen"
 public.dossiers.disposition.about: "Over deze beschikking"
@@ -1119,14 +1129,14 @@ admin.dossiers.disposition.step.content: 'Beschikking'
 admin.dossiers.disposition.complete_step.content: 'Maak eerst beschikking compleet'
 admin.dossiers.disposition.step.publication: 'Publicatie'
 admin.dossiers.disposition.complete_step.publication: 'De beschikking is compleet maar nog niet gepubliceerd'
-admin.dossiers.disposition.create_new: 'Nieuw beschikking publiceren'
+admin.dossiers.disposition.create_new: 'Nieuwe beschikking publiceren'
 admin.dossiers.disposition.form.details.title: 'Omschrijving van de beschikking'
 admin.dossiers.disposition.form.details.date_label: 'Datum van de beschikking'
 admin.dossiers.disposition.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals beschikking, aangaande, etc. <ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Beschikkingen van de Minister van Volksgezondheid, Welzijn en Sport van 21 april 2009, nr. PG/OGZ 2.926.977, houdende verlenging van de vergunning op grond van de Wet op het bevolkingsonderzoek voor het bevolkingsonderzoek naar tuberculose</li><li class='bhr-form-help__do text-sm'>Wel: Beschikking verlenging vergunning bevolkingsonderzoek tuberculose</li></ul>"
 admin.dossiers.disposition.form.details.ref_int: 'Interne referentie'
 admin.dossiers.disposition.form.content.document_label: 'Beschikking'
 admin.dossiers.disposition.form.content.document_help: 'Upload minimaal de beschikking'
-admin.dossiers.disposition.form.content.attachments_help: 'Voeg hier alleen bijlagen toe die te maken hebben met de beschikking.'
+admin.dossiers.disposition.form.content.attachments_help: 'Voeg hier alleen bijlagen toe die te maken hebben met de totstandkoming van de beschikking.'
 admin.dossiers.disposition.form.publication.publication_date_label: 'Datum openbare publicatie'
 admin.dossiers.disposition.form.publication.publication_date_help: 'Kies de datum waarop de beschikking voor iedereen publiek toegankelijk wordt.'
 admin.dossiers.disposition.create.success: '<strong>Beschikking klaarzetten gelukt:</strong> De publicatie wordt voorbereid.'

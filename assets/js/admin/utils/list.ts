@@ -1,4 +1,8 @@
-export const formatList = (list: string[], finalGlue: string, regularGlue = ', '): string => {
+export const formatList = (
+  list: string[],
+  finalGlue: string,
+  regularGlue = ', ',
+): string => {
   if (Array.isArray(list) === false) {
     return '';
   }

@@ -27,7 +27,7 @@ class ComplaintJudgementController extends AbstractController
     }
 
     #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
-    #[Route('/complaint-judgement/{prefix}/{dossierId}', name: 'app_complaintjudgement_detail', methods: ['GET'])]
+    #[Route('/klachtoordeel/{prefix}/{dossierId}', name: 'app_complaintjudgement_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] ComplaintJudgement $dossier,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
@@ -45,7 +45,7 @@ class ComplaintJudgementController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/complaint-judgement/{prefix}/{dossierId}/document',
+        '/klachtoordeel/{prefix}/{dossierId}/document',
         name: 'app_complaintjudgement_document_detail',
         methods: ['GET'],
     )]
@@ -72,7 +72,7 @@ class ComplaintJudgementController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/complaint-judgement/{prefix}/{dossierId}/document/download',
+        '/klachtoordeel/{prefix}/{dossierId}/document/download',
         name: 'app_complaintjudgement_document_download',
         methods: ['GET'],
     )]

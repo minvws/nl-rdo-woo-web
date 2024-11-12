@@ -22,6 +22,7 @@ const chartInit = (element) => {
   const data = JSON.parse(document.getElementById('chartdata').textContent);
   const groupedData = data.reduce((acc, entry) => {
     if (!acc[entry.section]) {
+      // eslint-disable-next-line no-param-reassign
       acc[entry.section] = { created_at: [], duration: [] };
     }
     acc[entry.section].created_at.push(entry.created_at);

@@ -20,4 +20,4 @@ Upload Complaint Judgement
   Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${COMPLAINT_JUDGEMENT_FILENAME}  timeout=10s
   Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
   Click  //dialog[@open]//button[@type="submit"]
-  Wait For Condition  Text  //*[@id="inhoud"]  contains  Klacht toegevoegd.
+  Wait For Condition  Text  //*[@id="inhoud"]  contains  Klachtoordeel toegevoegd.

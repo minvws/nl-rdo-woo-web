@@ -10,11 +10,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<InventoryProcessRun>
- *
- * @method InventoryProcessRun|null find($id, $lockMode = null, $lockVersion = null)
- * @method InventoryProcessRun|null findOneBy(array $criteria, array $orderBy = null)
- * @method InventoryProcessRun[]    findAll()
- * @method InventoryProcessRun[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class InventoryProcessRunRepository extends ServiceEntityRepository
 {

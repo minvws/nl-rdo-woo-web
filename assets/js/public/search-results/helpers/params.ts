@@ -65,7 +65,11 @@ const rewiteKey = (key: string) => {
   return key;
 };
 
-export const deleteFromParams = (params: URLSearchParams, key: string, value: string) => {
+export const deleteFromParams = (
+  params: URLSearchParams,
+  key: string,
+  value: string,
+) => {
   const paramValues = params.getAll(key);
 
   if (!paramValues.length) {
@@ -82,7 +86,11 @@ export const deleteFromParams = (params: URLSearchParams, key: string, value: st
   return params;
 };
 
-export const appendToParams = (params: URLSearchParams, key: string, value: string) => {
+export const appendToParams = (
+  params: URLSearchParams,
+  key: string,
+  value: string,
+) => {
   params.append(key, value);
   return params;
 };

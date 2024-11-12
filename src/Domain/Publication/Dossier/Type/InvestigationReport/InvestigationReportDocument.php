@@ -10,14 +10,13 @@ use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @extends AbstractMainDocument<InvestigationReport>
+ */
 #[ORM\Entity(repositoryClass: InvestigationReportDocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class InvestigationReportDocument extends AbstractMainDocument
 {
-    #[ORM\OneToOne(inversedBy: 'document', targetEntity: InvestigationReport::class)]
-    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private InvestigationReport $dossier;
-
     public function __construct(
         InvestigationReport $dossier,
         \DateTimeImmutable $formalDate,
@@ -31,11 +30,6 @@ class InvestigationReportDocument extends AbstractMainDocument
         $this->type = $type;
         $this->language = $language;
         $this->fileInfo->setPaginatable(true);
-    }
-
-    public function getDossier(): InvestigationReport
-    {
-        return $this->dossier;
     }
 
     public static function getUploadGroupId(): UploadGroupId

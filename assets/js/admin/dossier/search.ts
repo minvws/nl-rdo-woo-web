@@ -1,7 +1,10 @@
 import { searchPreviews } from './search-previews';
 
 export const dossierSearch = () => {
-  const { initialize: initializeSearchPreviews, cleanup: cleanupSearchPreviews } = searchPreviews();
+  const {
+    initialize: initializeSearchPreviews,
+    cleanup: cleanupSearchPreviews,
+  } = searchPreviews();
 
   const initialize = () => {
     initializeSearchPreviews('js-dossier-search-previews');

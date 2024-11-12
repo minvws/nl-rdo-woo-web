@@ -1,9 +1,15 @@
 {% extends 'base.html.twig' %}
 
+{% set page_title = department.name %}
+
 {% block search_form_top %}<twig:Public:SearchForm />{% endblock %}
 
 {% block body %}
     <section class="woo-container woo-container--sm pb-16">
+        {% if logoPath is defined %}
+            <img class="{{ logoClass | default('') }}" src="{{ logoPath }}" alt="Logo {{ department.name }}">
+        {% endif %}
+
         {% block department_content %}{% endblock %}
     </section>
 

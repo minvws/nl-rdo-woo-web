@@ -11,7 +11,9 @@ export interface UploadVisual {
 export const initializeUploadVisual = (element: HTMLElement): UploadVisual => {
   const TRANSITION_DURATION = 150;
 
-  const dotElement = element.querySelector('.js-upload-visual-dot') as HTMLElement;
+  const dotElement = element.querySelector(
+    '.js-upload-visual-dot',
+  ) as HTMLElement;
   let slideInTimeoutId: NodeJS.Timeout | undefined;
   let slideOutTimeoutId: NodeJS.Timeout | undefined;
 
@@ -37,7 +39,10 @@ export const initializeUploadVisual = (element: HTMLElement): UploadVisual => {
     element.classList.add('delay-100', 'opacity-0');
     element.classList.remove('backdrop-blur-sm');
 
-    const dotclassName = direction === 'up' ? 'bhr-upload-visual__dot--slide-out-up' : 'bhr-upload-visual__dot--slide-out-down';
+    const dotclassName =
+      direction === 'up'
+        ? 'bhr-upload-visual__dot--slide-out-up'
+        : 'bhr-upload-visual__dot--slide-out-down';
     dotElement.classList.remove('bhr-upload-visual__dot--slide-in-up');
     dotElement.classList.add(dotclassName);
 

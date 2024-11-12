@@ -11,11 +11,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<DocumentPrefix>
- *
- * @method DocumentPrefix|null find($id, $lockMode = null, $lockVersion = null)
- * @method DocumentPrefix|null findOneBy(array $criteria, array $orderBy = null)
- * @method DocumentPrefix[]    findAll()
- * @method DocumentPrefix[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class DocumentPrefixRepository extends ServiceEntityRepository
 {

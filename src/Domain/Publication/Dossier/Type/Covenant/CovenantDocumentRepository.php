@@ -15,11 +15,6 @@ use Webmozart\Assert\Assert;
 
 /**
  * @extends ServiceEntityRepository<CovenantDocument>
- *
- * @method CovenantDocument|null find($id, $lockMode = null, $lockVersion = null)
- * @method CovenantDocument|null findOneBy(array $criteria, array $orderBy = null)
- * @method CovenantDocument[]    findAll()
- * @method CovenantDocument[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class CovenantDocumentRepository extends ServiceEntityRepository implements MainDocumentRepositoryInterface
 {

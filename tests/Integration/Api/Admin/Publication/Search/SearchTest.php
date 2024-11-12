@@ -10,6 +10,8 @@ use App\Api\Admin\Publication\Search\SearchResultType;
 use App\Tests\Factory\DocumentFactory;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\OrganisationFactory;
+use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportAttachmentFactory;
+use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportDocumentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use App\Tests\Factory\UserFactory;
@@ -83,6 +85,26 @@ final class SearchTest extends ApiTestCase
             'documents' => $documents,
         ]);
 
+        // There is no match on the title of this dossier, but the mainDocument and Attachment should be found
+        $annualReport = AnnualReportFactory::createOne([
+            'title' => 'This dossier should not be found',
+            'organisation' => $organisation,
+        ]);
+
+        $annualReportDocument = AnnualReportDocumentFactory::createOne([
+            'dossier' => $annualReport,
+            'fileInfo' => FileInfoFactory::new()->createOne([
+                'name' => 'maindocument fancy document.pdf',
+            ]),
+        ]);
+
+        $annualReportAttachment = AnnualReportAttachmentFactory::createOne([
+            'dossier' => $annualReport,
+            'fileInfo' => FileInfoFactory::new()->createOne([
+                'name' => 'attachment FANCY document.pdf',
+            ]),
+        ]);
+
         $searchQuery = '  fancy document  ';
 
         $response = static::createClient()
@@ -99,7 +121,7 @@ final class SearchTest extends ApiTestCase
 
         self::assertResponseIsSuccessful();
         self::assertMatchesResourceCollectionJsonSchema(SearchResultDto::class);
-        self::assertCount(2, $response->toArray(false));
+        self::assertCount(4, $response->toArray(false));
         self::assertJsonContains([
             [
                 'id' => $dossiers[1]->getDossierNr(),
@@ -110,6 +132,16 @@ final class SearchTest extends ApiTestCase
                 'id' => $documents[0]->getDocumentNr(),
                 'type' => SearchResultType::DOCUMENT->value,
                 'title' => $documents[0]->getFileInfo()->getName(),
+            ],
+            [
+                'id' => $annualReportDocument->_real()->getId()->__toString(),
+                'type' => SearchResultType::MAIN_DOCUMENT->value,
+                'title' => 'maindocument fancy document.pdf',
+            ],
+            [
+                'id' => $annualReportAttachment->_real()->getId()->__toString(),
+                'type' => SearchResultType::ATTACHMENT->value,
+                'title' => 'attachment FANCY document.pdf',
             ],
         ]);
     }

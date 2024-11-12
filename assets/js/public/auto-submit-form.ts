@@ -28,13 +28,17 @@ export const autoSubmitForm = () => {
     const formInputs = form.querySelectorAll('input');
 
     formInputs.forEach((formInput) => {
-      formInput.addEventListener('change', () => {
-        if (form.id) {
-          window.location.hash = form.id;
-        }
+      formInput.addEventListener(
+        'change',
+        () => {
+          if (form.id) {
+            window.location.hash = form.id;
+          }
 
-        form.submit();
-      }, { signal: abortController?.signal });
+          form.submit();
+        },
+        { signal: abortController?.signal },
+      );
     });
   };
 

@@ -28,9 +28,10 @@ describe('The date utility functions', () => {
     test('should return the provided date in the provided format', () => {
       const date = '2022-01-02';
 
-      const getExpectedDate = (dateStyle: 'long' | 'medium' | 'short') => new Intl.DateTimeFormat('nl', {
-        dateStyle,
-      }).format(new Date(date));
+      const getExpectedDate = (dateStyle: 'long' | 'medium' | 'short') =>
+        new Intl.DateTimeFormat('nl', {
+          dateStyle,
+        }).format(new Date(date));
 
       expect(formatDate(date)).toBe(getExpectedDate('medium'));
       expect(formatDate(date, 'long')).toBe(getExpectedDate('long'));

@@ -72,8 +72,6 @@ readonly class AttachmentTypeFactory
                 attachmentTypes: [
                     AttachmentType::DESIGNATION_DECISION,
                     AttachmentType::APPOINTMENT_DECISION,
-                    AttachmentType::DECISION_ON_REQUEST_ART3_WOB,
-                    AttachmentType::DECISION_ON_REQUEST_ART4_1_WOO,
                     AttachmentType::CONCESSION,
                     AttachmentType::RECOGNITION_DECISION,
                     AttachmentType::CONSENT_DECISION,
@@ -84,7 +82,7 @@ readonly class AttachmentTypeFactory
             ),
 
             new AttachmentTypeBranch(
-                name: $this->trans('branch.letter'),
+                name: $this->trans('branch.communications'),
                 attachmentTypes: [
                     AttachmentType::LETTER,
                     AttachmentType::BROCHURE,
@@ -98,16 +96,16 @@ readonly class AttachmentTypeFactory
 
             AttachmentType::COVENANT,
 
+            AttachmentType::COMPLAINT_JUDGEMENT,
+
             new AttachmentTypeBranch(
                 name: $this->trans('branch.citizen_document'),
                 attachmentTypes: [
-                    AttachmentType::APPLICATION_ART_4_1_WOO,
                     AttachmentType::OBJECTION,
                     AttachmentType::COMPLAINT,
                     AttachmentType::EXEMPTION_REQUEST,
                     AttachmentType::SUBSIDY_APPLICATION,
                     AttachmentType::PERMIT_APPLICATION,
-                    AttachmentType::WOB_REQUEST,
                     AttachmentType::POINT_OF_VIEW,
                 ],
             ),
@@ -124,6 +122,7 @@ readonly class AttachmentTypeFactory
                 attachmentTypes: [
                     AttachmentType::ACTIONS,
                     AttachmentType::PARLIAMENTARY_DOCUMENT,
+                    AttachmentType::MOTION,
                     AttachmentType::NON_DOSSIER_DOCUMENT,
                 ],
             ),
@@ -151,6 +150,15 @@ readonly class AttachmentTypeFactory
                     AttachmentType::DECISION_LIST,
                     AttachmentType::INCOMING_DOCUMENT,
                     AttachmentType::MEETING_REPORT,
+                ],
+            ),
+
+            new AttachmentTypeBranch(
+                name: $this->trans('branch.woo_procedure'),
+                attachmentTypes: [
+                    AttachmentType::DECISION_ON_OBJECTION,
+                    AttachmentType::JUDEGEMENT_ON_WOB_WOO_REQUEST,
+                    AttachmentType::WOB_WOO_REQUEST,
                 ],
             ),
         ]);

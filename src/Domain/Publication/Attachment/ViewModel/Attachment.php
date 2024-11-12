@@ -7,6 +7,7 @@ namespace App\Domain\Publication\Attachment\ViewModel;
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Attachment\AttachmentType;
 use App\Domain\Search\Result\SubType\SubTypeViewModelInterface;
+use App\SourceType;
 
 readonly class Attachment implements SubTypeViewModelInterface
 {
@@ -21,7 +22,7 @@ readonly class Attachment implements SubTypeViewModelInterface
         public string $formalDate,
         public AttachmentType $type,
         public ?string $mimeType,
-        public ?string $sourceType,
+        public ?SourceType $sourceType,
         public int $size,
         public string $internalReference,
         public AttachmentLanguage $language,

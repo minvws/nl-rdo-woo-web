@@ -3,10 +3,10 @@
 {% set resultUrl = entry.viewmodel.detailsUrl %}
 {% set resultTitle = entry.viewmodel.name %}
 {% set hasRoundedIcon = false %}
-{% set resultIconName = entry.viewmodel.sourceType %}
+{% set resultIconName = entry.viewmodel.sourceType.value %}
 
 {% block resultType %}
-    {{ ('public.documents.file_type.' ~ entry.viewmodel.sourceType) | trans }}
+    {{ entry.viewmodel.sourceType | trans }}
 {% endblock %}
 
 {% block resultTypeSpecs %}

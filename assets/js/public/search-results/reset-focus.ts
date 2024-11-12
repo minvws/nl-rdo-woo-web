@@ -26,21 +26,35 @@ export const resetFocus = () => {
      * need to remove the aria-describedby attribute when the active element loses focus.
      */
 
-    const originalAriaDescribedBy = newActiveElement.getAttribute(ATTRIBUTE_ARIA_DESCRIBED_BY);
-    newActiveElement.setAttribute(ATTRIBUTE_ARIA_DESCRIBED_BY, 'js-number-of-search-results');
+    const originalAriaDescribedBy = newActiveElement.getAttribute(
+      ATTRIBUTE_ARIA_DESCRIBED_BY,
+    );
+    newActiveElement.setAttribute(
+      ATTRIBUTE_ARIA_DESCRIBED_BY,
+      'js-number-of-search-results',
+    );
 
-    newActiveElement.addEventListener('focusout', () => {
-      if (originalAriaDescribedBy) {
-        // Reset to original value.
-        newActiveElement.setAttribute(ATTRIBUTE_ARIA_DESCRIBED_BY, originalAriaDescribedBy);
-        return;
-      }
+    newActiveElement.addEventListener(
+      'focusout',
+      () => {
+        if (originalAriaDescribedBy) {
+          // Reset to original value.
+          newActiveElement.setAttribute(
+            ATTRIBUTE_ARIA_DESCRIBED_BY,
+            originalAriaDescribedBy,
+          );
+          return;
+        }
 
-      newActiveElement.removeAttribute(ATTRIBUTE_ARIA_DESCRIBED_BY);
-    }, { once: true, signal: abortController.signal });
+        newActiveElement.removeAttribute(ATTRIBUTE_ARIA_DESCRIBED_BY);
+      },
+      { once: true, signal: abortController.signal },
+    );
   };
 
-  const findElement = (previousActiveElement: HTMLElement): HTMLElement | null => {
+  const findElement = (
+    previousActiveElement: HTMLElement,
+  ): HTMLElement | null => {
     const { id } = previousActiveElement;
     if (id) {
       return document.getElementById(id) as HTMLElement | null;
@@ -53,9 +67,11 @@ export const resetFocus = () => {
 
     const { name, value } = previousActiveElement as HTMLInputElement;
     if (name && value) {
-      return Array.from(
-        document.getElementsByName(name) as NodeListOf<HTMLInputElement>,
-      ).find((element) => element.value === value) || null;
+      return (
+        Array.from(
+          document.getElementsByName(name) as NodeListOf<HTMLInputElement>,
+        ).find((element) => element.value === value) || null
+      );
     }
 
     return null;

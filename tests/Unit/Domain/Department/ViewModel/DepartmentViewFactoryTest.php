@@ -81,16 +81,16 @@ final class DepartmentViewFactoryTest extends UnitTestCase
         $actual = $factory->makeCollection([$departmentOne, $departmentTwo, $departmentThree]);
 
         $this->assertCount(3, $actual);
-        $this->assertSame('Department A', $actual[0]->name);
-        $this->assertSame($expectedShortA, $actual[0]->tag);
-        $this->assertSame($expectedUrlA, $actual[0]->url);
+        $this->assertSame('Department B', $actual[0]->name);
+        $this->assertSame($expectedShortB, $actual[0]->tag);
+        $this->assertSame($expectedUrlB, $actual[0]->url);
 
-        $this->assertSame('Department B', $actual[1]->name);
-        $this->assertSame($expectedShortB, $actual[1]->tag);
-        $this->assertSame($expectedUrlB, $actual[1]->url);
+        $this->assertSame('Department C', $actual[1]->name);
+        $this->assertSame($expectedShortC, $actual[1]->tag);
+        $this->assertSame($expectedUrlC, $actual[1]->url);
 
-        $this->assertSame('Department C', $actual[2]->name);
-        $this->assertSame($expectedShortC, $actual[2]->tag);
-        $this->assertSame($expectedUrlC, $actual[2]->url);
+        $this->assertSame('Department A', $actual[2]->name);
+        $this->assertSame($expectedShortA, $actual[2]->tag);
+        $this->assertSame($expectedUrlA, $actual[2]->url);
     }
 }

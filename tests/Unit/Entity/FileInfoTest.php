@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\FileInfo;
+use App\SourceType;
 use App\Tests\Unit\UnitTestCase;
 
 final class FileInfoTest extends UnitTestCase
@@ -63,5 +64,15 @@ final class FileInfoTest extends UnitTestCase
 
         $fileInfo->setMimetype(null);
         $this->assertEquals('', $fileInfo->getNormalizedMimeType());
+    }
+
+    public function testGetAndSetSourceType(): void
+    {
+        $fileInfo = new FileInfo();
+
+        self::assertNull($fileInfo->getSourceType());
+
+        $fileInfo->setSourceType(SourceType::PDF);
+        self::assertEquals(SourceType::PDF, $fileInfo->getSourceType());
     }
 }

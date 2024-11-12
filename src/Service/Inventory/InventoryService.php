@@ -89,7 +89,7 @@ class InventoryService
         $inventory->setDossier($run->getDossier());
 
         $file = $inventory->getFileInfo();
-        $file->setSourceType(SourceType::SOURCE_SPREADSHEET);
+        $file->setSourceType(SourceType::SPREADSHEET);
         $file->setType('xlsx');
 
         $defaultFilename = 'raw-inventory-' . $run->getDossier()->getDossierNr() . '.xlsx';

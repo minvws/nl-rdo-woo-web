@@ -12,11 +12,12 @@ use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\SubType\Mapper\AttachmentAndMainDocumentMapper;
 use App\Entity\FileInfo;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use App\SourceType;
+use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\Uid\Uuid;
 
-class AttachmentAndMainDocumentMapperTest extends MockeryTestCase
+class AttachmentAndMainDocumentMapperTest extends UnitTestCase
 {
     private AttachmentAndMainDocumentMapper $mapper;
     private DossierIndexer&MockInterface $dossierIndexer;
@@ -36,10 +37,10 @@ class AttachmentAndMainDocumentMapperTest extends MockeryTestCase
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
 
         $fileInfo = \Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getMimetype')->andReturn('application/pdf');
+        $fileInfo->shouldReceive('getMimetype')->andReturn('text/plain');
         $fileInfo->shouldReceive('getSize')->andReturn(1234);
-        $fileInfo->shouldReceive('getType')->andReturn('pdf');
-        $fileInfo->shouldReceive('getSourceType')->andReturn('doc');
+        $fileInfo->shouldReceive('getType')->andReturn('txt');
+        $fileInfo->shouldReceive('getSourceType')->andReturn(SourceType::DOC);
         $fileInfo->shouldReceive('getName')->andReturn('foo.bar');
 
         $attachmentId = Uuid::v6();
@@ -56,31 +57,6 @@ class AttachmentAndMainDocumentMapperTest extends MockeryTestCase
 
         $doc = $this->mapper->map($attachment);
 
-        self::assertEquals(
-            [
-                'type' => ElasticDocumentType::ATTACHMENT,
-                'toplevel_type' => ElasticDocumentType::COVENANT,
-                'sublevel_type' => ElasticDocumentType::ATTACHMENT,
-                'mime_type' => 'application/pdf',
-                'file_size' => 1234,
-                'file_type' => 'pdf',
-                'date' => '2024-06-18T19:31:12+00:00',
-                'filename' => 'foo.bar',
-                'grounds' => [
-                    0 => 'x',
-                    1 => 'y',
-                ],
-                'dossiers' => [
-                    0 => [
-                        'mapped-dossier-data' => 'dummy',
-                        'type' => ElasticDocumentType::COVENANT,
-                        'toplevel_type' => ElasticDocumentType::COVENANT,
-                        'sublevel_type' => null,
-                    ],
-                ],
-                'dossier_nr' => ['foo-123'],
-            ],
-            $doc->getDocumentValues(),
-        );
+        $this->assertMatchesJsonSnapshot($doc->getDocumentValues());
     }
 }

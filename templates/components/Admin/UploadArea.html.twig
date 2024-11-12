@@ -19,7 +19,7 @@
     {% set shouldDisplayTip = tip is not empty %}
     <div class="bhr-upload-area js-upload-area">
         <button
-            {% apply spaceless %}aria-labelledby="{{ this.selectFilesElementId }} {{ shouldDisplayFileLimitations ? this.filesLimitationsElementId : '' }} {{ shouldDisplayTip ? this.tipElementId : '' }}"{% endapply %}
+            aria-labelledby="{{ this.selectFilesElementId }} {{ shouldDisplayFileLimitations ? this.filesLimitationsElementId : '' }} {{ shouldDisplayTip ? this.tipElementId : '' }}"
             class="bhr-upload-area__button js-select-files"
             tabindex="-1"
             type="button"

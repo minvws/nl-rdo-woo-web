@@ -1,11 +1,7 @@
 <script setup>
-  import SearchPreviewsForm from '@admin-fe/component/publication/search/SearchPreviewsForm.vue';
+import SearchPreviewsForm from '@admin-fe/component/publication/search/SearchPreviewsForm.vue';
 
-  const props = defineProps([
-    'endpoint',
-    'id',
-    'label',
-  ]);
+const props = defineProps(['endpoint', 'id', 'label']);
 </script>
 
 <template>

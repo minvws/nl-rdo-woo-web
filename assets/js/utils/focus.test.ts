@@ -4,7 +4,8 @@ import { isFocusWithinElement } from './focus';
 vi.mock('./browser');
 
 describe('The "isFocusWithinElement" function', () => {
-  const getContainer = () => document.getElementById('container') as HTMLElement;
+  const getContainer = () =>
+    document.getElementById('container') as HTMLElement;
   const getButton = () => document.querySelector('button') as HTMLElement;
   const getAnchor = () => document.querySelector('a') as HTMLElement;
 

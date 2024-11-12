@@ -1,3 +1,9 @@
+{% set hasVisibleDepartmentFilters = form.departments | length > 1 %}
+{% set hasVisibleTypeFilters = (form.types | default([])) | length > 1 %}
+{% set hasVisibleStatusFilters = form.statuses | length > 1 %}
+{% set isFormUseful = [hasVisibleDepartmentFilters, hasVisibleTypeFilters, hasVisibleStatusFilters] | filter(hasVisibleFilters => hasVisibleFilters) | length > 0 %}
+
+{% if isFormUseful %}
 <details class="js-details">
     <summary class="bhr-button bhr-button--secondary bhr-button--with-icon-left">
         <span class="bhr-button__icon bhr-button__icon--left"><twig:Admin:Icon name="filter" size="20" /></span>
@@ -7,30 +13,40 @@
     <div class="bhr-overlay-card max-w-xs mt-20">
         {{ form_start(form) }}
 
+        {% if hasVisibleDepartmentFilters %}
         <div class="bhr-form-row">
             <fieldset>
                 <legend class="bhr-legend">{{ 'admin.publications.department' | trans() }}</legend>
                 {{ form_widget(form.departments) }}
             </fieldset>
         </div>
+        {% endif %}
+        {% do form.departments.setRendered %}
 
         {% if form.types is defined %}
-            <div class="bhr-form-row">
-                <fieldset>
-                    <legend class="bhr-legend">{{ 'admin.publications.type' | trans() }}</legend>
-                    {{ form_widget(form.types) }}
-                </fieldset>
-            </div>
+            {% if hasVisibleTypeFilters %}
+                <div class="bhr-form-row">
+                    <fieldset>
+                        <legend class="bhr-legend">{{ 'admin.publications.type' | trans() }}</legend>
+                        {{ form_widget(form.types) }}
+                    </fieldset>
+                </div>
+            {% endif %}
+            {% do form.types.setRendered %}
         {% endif %}
 
+        {% if hasVisibleStatusFilters %}
         <div class="bhr-form-row">
             <fieldset>
                 <legend class="bhr-legend">{{ 'admin.publications.status' | trans() }}</legend>
                 {{ form_widget(form.statuses) }}
             </fieldset>
         </div>
+        {% endif %}
+        {% do form.statuses.setRendered %}
 
         {{ form_widget(form.submit, { 'label': 'admin.publications.submit.filter'|trans }) }}
         {{ form_end(form) }}
     </div>
 </details>
+{% endif %}

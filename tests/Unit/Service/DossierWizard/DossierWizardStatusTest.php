@@ -41,4 +41,11 @@ class DossierWizardStatusTest extends MockeryTestCase
     {
         self::assertEquals($this->contentStep, $this->status->getContentStep());
     }
+
+    public function testGetContentPath(): void
+    {
+        $this->contentStep->shouldReceive('getRouteName')->once()->andReturn('content-path');
+
+        self::assertEquals('content-path', $this->status->getContentPath());
+    }
 }

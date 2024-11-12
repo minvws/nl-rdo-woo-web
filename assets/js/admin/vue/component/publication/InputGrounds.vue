@@ -1,23 +1,26 @@
 <script setup>
-  import MultiSelect from '@admin-fe/component/form/MultiSelect.vue';
+import MultiSelect from '@admin-fe/component/form/MultiSelect.vue';
 
-  const props = defineProps({
-    options: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-    values: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-  });
+const props = defineProps({
+  options: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
+  values: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
+});
 
-  const options = props.options.reduce((collected, option) => [
+const options = props.options.reduce(
+  (collected, option) => [
     ...collected,
-    { label: `${option.citation} ${option.label}`, value: option.citation }
-  ], []);
+    { label: `${option.citation} ${option.label}`, value: option.citation },
+  ],
+  [],
+);
 </script>
 
 <template>

@@ -15,11 +15,6 @@ use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<AnnualReportAttachment>
- *
- * @method AnnualReportAttachment|null find($id, $lockMode = null, $lockVersion = null)
- * @method AnnualReportAttachment|null findOneBy(array $criteria, array $orderBy = null)
- * @method AnnualReportAttachment[]    findAll()
- * @method AnnualReportAttachment[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class AnnualReportAttachmentRepository extends ServiceEntityRepository implements AttachmentRepositoryInterface
 {

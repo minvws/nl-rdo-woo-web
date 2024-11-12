@@ -1,5 +1,12 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { collapseElement, expandElement, hideElement, isElementHidden, isElementVisible, showElement } from './element';
+import {
+  collapseElement,
+  expandElement,
+  hideElement,
+  isElementHidden,
+  isElementVisible,
+  showElement,
+} from './element';
 
 let isAnimationDisabled: boolean;
 
@@ -95,7 +102,9 @@ describe('The element utility functions', () => {
 
           // (2)
           expect(element.classList.contains('transition-[height]')).toBe(true);
-          expect(element.classList.contains('motion-reduce:transition-none')).toBe(true);
+          expect(
+            element.classList.contains('motion-reduce:transition-none'),
+          ).toBe(true);
 
           // (3)
           expect(element.getAttribute('data-is-collapsing')).not.toBeNull();
@@ -165,7 +174,9 @@ describe('The element utility functions', () => {
 
           // (3)
           expect(element.classList.contains('transition-[height]')).toBe(true);
-          expect(element.classList.contains('motion-reduce:transition-none')).toBe(true);
+          expect(
+            element.classList.contains('motion-reduce:transition-none'),
+          ).toBe(true);
 
           // (4)
           expect(element.getAttribute('data-is-expanding')).not.toBeNull();

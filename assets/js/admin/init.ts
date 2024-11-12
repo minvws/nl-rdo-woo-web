@@ -3,7 +3,12 @@ import { jsEnabled, onBeforeUnload, onDomReady } from '@utils';
 import { clickOnSelector } from './click-on-selector';
 import { copyToClipboard } from './copy-to-clipboard';
 import { toggleDialog } from './dialog';
-import { dossierDocumentsStatus, dossierInventoryStatus, dossierLinkSearch, dossierSearch } from './dossier';
+import {
+  dossierDocumentsStatus,
+  dossierInventoryStatus,
+  dossierLinkSearch,
+  dossierSearch,
+} from './dossier';
 import { manageWidget } from './manage-widget';
 import { printPage } from './print';
 import { sortTables } from './sort-tables';

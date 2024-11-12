@@ -6,7 +6,7 @@
 {% set resultIconName = entry.viewmodel.fileInfo.sourceType %}
 
 {% block resultType %}
-    {{ ('public.documents.file_type.' ~ entry.viewmodel.fileInfo.sourceType) | trans }}
+    {{ entry.viewmodel.fileSourceType | trans }}
 {% endblock %}
 
 {% block resultTypeSpecs %}

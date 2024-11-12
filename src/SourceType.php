@@ -5,117 +5,75 @@ declare(strict_types=1);
 namespace App;
 
 use App\Domain\Upload\FileType\FileType;
+use Symfony\Contracts\Translation\TranslatableInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * Returns human-readable document source types or "unknown" when not known.
- */
-class SourceType
+enum SourceType: string implements TranslatableInterface
 {
-    public const SOURCE_PDF = 'pdf';
-    public const SOURCE_DOCUMENT = 'doc';
-    public const SOURCE_IMAGE = 'image';
-    public const SOURCE_PRESENTATION = 'presentation';
-    public const SOURCE_SPREADSHEET = 'spreadsheet';
-    public const SOURCE_EMAIL = 'email';
-    public const SOURCE_HTML = 'html';
-    public const SOURCE_NOTE = 'note';
-    public const SOURCE_DATABASE = 'database';
-    public const SOURCE_XML = 'xml';
-    public const SOURCE_VIDEO = 'video';
-    public const SOURCE_VCARD = 'vcard';
-    public const SOURCE_UNKNOWN = 'unknown';
-
-    /** @var array<string, string[]> */
-    public static array $types = [
-        self::SOURCE_PDF => [
-            'pdf',
-        ],
-        self::SOURCE_DOCUMENT => [
-            'word processing',
-            'application/vnd.openxmlformats-officedocument',
-            'application/rms.encrypted.ms-office',
-        ],
-        self::SOURCE_IMAGE => [
-            'image',
-        ],
-        self::SOURCE_PRESENTATION => [
-            'presentation',
-        ],
-        self::SOURCE_SPREADSHEET => [
-            'spreadsheet',
-        ],
-        self::SOURCE_EMAIL => [
-            'email',
-        ],
-        self::SOURCE_HTML => [
-            'html',
-        ],
-        self::SOURCE_NOTE => [
-            'application/msonenote',
-        ],
-        self::SOURCE_DATABASE => [
-            'database',
-            'application/x-sqlite3',
-        ],
-        self::SOURCE_XML => [
-            'xml',
-        ],
-        self::SOURCE_VIDEO => [
-            'video',
-        ],
-        self::SOURCE_VCARD => [
-            'vcard',
-        ],
-    ];
+    case PDF = 'pdf';
+    case DOC = 'doc';
+    case IMAGE = 'image';
+    case PRESENTATION = 'presentation';
+    case SPREADSHEET = 'spreadsheet';
+    case EMAIL = 'email';
+    case HTML = 'html';
+    case NOTE = 'note';
+    case DATABASE = 'database';
+    case XML = 'xml';
+    case VIDEO = 'video';
+    case VCARD = 'vcard';
+    case CHAT = 'chat';
+    case UNKNOWN = 'unknown';
 
     // Finds the given source type in the list of known types
-    public static function getType(?string $target): string
+    public static function create(?string $target): self
     {
         if ($target === null) {
-            return self::SOURCE_UNKNOWN;
+            return self::UNKNOWN;
         }
 
         $target = strtolower(trim($target));
 
-        foreach (self::$types as $type => $format) {
-            if (in_array($target, $format)) {
-                return $type;
-            }
-        }
-
-        return self::SOURCE_UNKNOWN;
-    }
-
-    /**
-     * Returns a list of all known source types.
-     *
-     * @return array|string[]
-     */
-    public static function getAllSourceTypes(): array
-    {
-        return array_keys(self::$types);
-    }
-
-    public static function getIcon(string $value): string
-    {
-        return match ($value) {
-            self::SOURCE_PDF => 'fas fa-file-pdf',
-            self::SOURCE_DOCUMENT => 'fas fa-file-word',
-            self::SOURCE_SPREADSHEET => 'fas fa-file-excel',
-            self::SOURCE_EMAIL => 'fas fa-envelope',
-            self::SOURCE_PRESENTATION => 'fas fa-file-powerpoint',
-            default => 'fas fa-file',
+        return match ($target) {
+            'pdf' => self::PDF,
+            'word processing',
+            'application/vnd.openxmlformats-officedocument',
+            'application/rms.encrypted.ms-office',
+            'doc' => self::DOC,
+            'image' => self::IMAGE,
+            'presentation' => self::PRESENTATION,
+            'spreadsheet' => self::SPREADSHEET,
+            'email' => self::EMAIL,
+            'html' => self::HTML,
+            'application/msonenote' => self::NOTE,
+            'database',
+            'application/x-sqlite3' => self::DATABASE,
+            'xml' => self::XML,
+            'video' => self::VIDEO,
+            'vcard' => self::VCARD,
+            'chat', 'chatbericht' => self::CHAT,
+            default => self::UNKNOWN,
         };
     }
 
-    public static function fromFileType(FileType $fileType): string
+    public static function fromFileType(FileType $fileType): self
     {
         return match ($fileType) {
-            FileType::PDF => self::SOURCE_PDF,
-            FileType::DOC, FileType::TXT => self::SOURCE_DOCUMENT,
-            FileType::XLS => self::SOURCE_SPREADSHEET,
-            FileType::PPT => self::SOURCE_PRESENTATION,
-            FileType::ZIP => self::SOURCE_UNKNOWN,
+            FileType::PDF => self::PDF,
+            FileType::DOC, FileType::TXT => self::DOC,
+            FileType::XLS => self::SPREADSHEET,
+            FileType::PPT => self::PRESENTATION,
+            FileType::ZIP => self::UNKNOWN,
         };
+    }
+
+    public function trans(TranslatorInterface $translator, ?string $locale = null): string
+    {
+        return $translator->trans('public.documents.file_type.' . $this->value, locale: $locale);
+    }
+
+    public function isEmail(): bool
+    {
+        return $this === self::EMAIL;
     }
 }

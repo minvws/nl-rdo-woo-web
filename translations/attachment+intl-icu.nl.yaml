@@ -23,8 +23,6 @@ decision_to_impose_an_order_subject_to_penalty: beschikking tot opleggen last on
 
 designation_decision: aanwijzingsbeschikking
 appointment_decision: benoemingsbeschikking
-decision_on_request_art3_wob: beslissing op verzoek art. 3 Wob
-decision_on_request_art4_1_woo: beslissing op verzoek art. 4.1 Woo
 concession: concessie
 recognition_decision: erkenningsbeschikking
 consent_decision: instemmingsbeschikking
@@ -42,13 +40,12 @@ speech: toespraak
 
 covenant: convenant
 
-application_art_4_1_woo: aanvraag ex art. 4.1 Woo
 objection: bezwaarschrift
 complaint: klacht
+complaint_judgement: klachtoordeel
 exemption_request: ontheffingsaanvraag
 subsidy_application: subsidieaanvraag
 permit_application: vergunningaanvraag
-wob_request: wob-verzoek
 point_of_view: zienswijze
 
 actions: handelingen
@@ -57,6 +54,7 @@ non_dossier_document: niet-dossierstuk
 
 parliamentary_question_with_answer: kamervraag met antwoord
 parliamentary_question_without_answer: kamervraag zonder antwoord
+motion: motie
 
 government_gazette: staatsblad
 staatscourant: staatscourant
@@ -69,6 +67,10 @@ decision_list: besluitenlijst
 incoming_document: ingekomen stuk
 meeting_report: vergaderverslag
 
+decision_on_objection: beslissing op bezwaar
+judegement_on_wob_woo_request: beslissing op Wob-/Woo-verzoek
+wob_woo_request: Wob-/Woo-verzoek
+
 dutch: Nederlands
 english: Engels
 
@@ -77,10 +79,11 @@ branch.policy_document: "beleidsdocument"
 branch.report: "rapport"
 branch.decision_to_impose: "beschikking"
 branch.decision_to_impose_enforcement: "forcementbeschikking tot handhaving"
-branch.letter: "brief"
+branch.communications: "communicatie-uiting"
 branch.citizen_document: "document van burger"
 branch.parliamentary_document: "parlementair document"
 branch.parliamentary_question: "kamervraag"
 branch.publication_sheet: "publicatieblad"
 branch.regulation: "regelgeving"
 branch.meeting_document: "vergaderstuk"
+branch.woo_procedure: "Woo-procedure"

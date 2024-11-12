@@ -39,7 +39,9 @@ export const listboxRole = (settings: Partial<Settings> = {}) => {
     resetActivatedOptionByPointerId();
     resetCurrentOptionIndex();
 
-    optionElements = Array.from(wrapperElement.querySelectorAll(Selector.Option));
+    optionElements = Array.from(
+      wrapperElement.querySelectorAll(Selector.Option),
+    );
 
     abortController = new AbortController();
     addNavigationFunctionality();
@@ -47,24 +49,36 @@ export const listboxRole = (settings: Partial<Settings> = {}) => {
   };
 
   const addNavigationFunctionality = () => {
-    const oneOfKeys = ['ArrowDown', 'ArrowUp', 'End', 'Enter', 'Home', 'PageDown', 'PageUp'];
-    onOneOfKeysDown(oneOfKeys, (event) => {
-      const { key } = event;
+    const oneOfKeys = [
+      'ArrowDown',
+      'ArrowUp',
+      'End',
+      'Enter',
+      'Home',
+      'PageDown',
+      'PageUp',
+    ];
+    onOneOfKeysDown(
+      oneOfKeys,
+      (event) => {
+        const { key } = event;
 
-      switch (key) {
-        case 'ArrowDown':
-          pressedArrowDown();
-          break;
-        case 'ArrowUp':
-          pressedArrowUp();
-          break;
-        case 'Enter':
-          pressedEnter(event);
-          break;
-        default:
-          break;
-      }
-    }, { signal: abortController?.signal });
+        switch (key) {
+          case 'ArrowDown':
+            pressedArrowDown();
+            break;
+          case 'ArrowUp':
+            pressedArrowUp();
+            break;
+          case 'Enter':
+            pressedEnter(event);
+            break;
+          default:
+            break;
+        }
+      },
+      { signal: abortController?.signal },
+    );
   };
 
   const addOptionsFunctionality = () => {
@@ -74,26 +88,38 @@ export const listboxRole = (settings: Partial<Settings> = {}) => {
         optionId = uniqueId('option');
         optionElement.setAttribute('id', optionId);
       }
-      optionElement.classList.add(...(getSettings().defaultOptionClassNames));
+      optionElement.classList.add(...getSettings().defaultOptionClassNames);
 
-      optionElement.addEventListener('click', () => {
-        selectOption(optionElement);
-      }, { signal: abortController?.signal });
+      optionElement.addEventListener(
+        'click',
+        () => {
+          selectOption(optionElement);
+        },
+        { signal: abortController?.signal },
+      );
 
-      optionElement.addEventListener('pointerover', () => {
-        activatedOptionByPointerId = optionId;
-        highlightOption(optionElement);
-      }, { signal: abortController?.signal });
+      optionElement.addEventListener(
+        'pointerover',
+        () => {
+          activatedOptionByPointerId = optionId;
+          highlightOption(optionElement);
+        },
+        { signal: abortController?.signal },
+      );
 
-      optionElement.addEventListener('pointerout', () => {
-        resetActivatedOptionByPointerId();
-        unhighlightOption(optionElement);
-      }, { signal: abortController?.signal });
+      optionElement.addEventListener(
+        'pointerout',
+        () => {
+          resetActivatedOptionByPointerId();
+          unhighlightOption(optionElement);
+        },
+        { signal: abortController?.signal },
+      );
     });
   };
 
   const highlightOption = (optionElement: HTMLElement | null) => {
-    optionElement?.classList.add(...(getSettings().highlightedOptionClassNames));
+    optionElement?.classList.add(...getSettings().highlightedOptionClassNames);
   };
 
   const unhighlightOption = (optionElement: HTMLElement | null) => {
@@ -101,7 +127,9 @@ export const listboxRole = (settings: Partial<Settings> = {}) => {
       return;
     }
 
-    optionElement?.classList.remove(...(getSettings().highlightedOptionClassNames));
+    optionElement?.classList.remove(
+      ...getSettings().highlightedOptionClassNames,
+    );
   };
 
   const activateOptionByIndex = (index: number) => {
@@ -114,7 +142,10 @@ export const listboxRole = (settings: Partial<Settings> = {}) => {
 
     highlightOption(optionElement);
     optionElement?.setAttribute('aria-selected', 'true');
-    controlledByElement.setAttribute('aria-activedescendant', optionElement?.id as string);
+    controlledByElement.setAttribute(
+      'aria-activedescendant',
+      optionElement?.id as string,
+    );
   };
 
   const deactivateOptionByIndex = (index: number) => {

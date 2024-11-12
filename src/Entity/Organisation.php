@@ -57,6 +57,7 @@ class Organisation
 
     /** @var Collection<array-key,Subject> */
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Subject::class, cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OrderBy(['name' => 'ASC'])]
     private Collection $subjects;
 
     public function __construct()

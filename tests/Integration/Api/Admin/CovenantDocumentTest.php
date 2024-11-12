@@ -62,7 +62,7 @@ final class CovenantDocumentTest extends ApiTestCase
         );
         self::assertResponseStatusCodeSame(404);
 
-        [$uploadUuid, $uploadName] = $this->uploadDocument($client);
+        $uploadUuid = $this->uploadDocument($client);
 
         // Now create the CovenantDocument
         $data = [
@@ -72,7 +72,6 @@ final class CovenantDocumentTest extends ApiTestCase
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $uploadUuid,
-            'name' => $uploadName,
         ];
         $client->request(
             Request::METHOD_POST,
@@ -181,7 +180,7 @@ final class CovenantDocumentTest extends ApiTestCase
         );
         self::assertResponseStatusCodeSame(404);
 
-        [$uploadUuid, $uploadName] = $this->uploadDocument($client);
+        $uploadUuid = $this->uploadDocument($client);
 
         // Now create the CovenantDocument
         $data = [
@@ -191,7 +190,6 @@ final class CovenantDocumentTest extends ApiTestCase
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $uploadUuid,
-            'name' => $uploadName,
         ];
         $client->request(
             Request::METHOD_POST,
@@ -234,7 +232,7 @@ final class CovenantDocumentTest extends ApiTestCase
 
         $client = static::createClient()->loginUser($user->_real(), 'balie');
 
-        [$uploadUuid, $uploadName] = $this->uploadDocument($client);
+        $uploadUuid = $this->uploadDocument($client);
 
         // Now create the CovenantDocument
         $data = [
@@ -244,7 +242,6 @@ final class CovenantDocumentTest extends ApiTestCase
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $uploadUuid,
-            'name' => $uploadName,
         ];
         $client->request(
             Request::METHOD_POST,
@@ -273,10 +270,7 @@ final class CovenantDocumentTest extends ApiTestCase
         self::assertResponseStatusCodeSame(405);
     }
 
-    /**
-     * @return string[]
-     */
-    private function uploadDocument(Client $client): array
+    private function uploadDocument(Client $client): string
     {
         vfsStream::newFile('test_file.pdf')
             ->withContent('This is a test file.')
@@ -288,7 +282,6 @@ final class CovenantDocumentTest extends ApiTestCase
         );
 
         $uploadUuid = 'file-' . $this->getFaker()->uuid();
-        $uploadName = 'test-123.pdf';
 
         // Upload the document first
         $client->request(
@@ -312,6 +305,6 @@ final class CovenantDocumentTest extends ApiTestCase
 
         self::assertResponseIsSuccessful();
 
-        return [$uploadUuid, $uploadName];
+        return $uploadUuid;
     }
 }

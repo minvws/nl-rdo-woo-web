@@ -1,4 +1,12 @@
-import { Mock, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import {
+  Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from 'vitest';
 import { getDocument } from '../browser';
 import type { DocumentMock } from '../mocks';
 import { onDomReady } from './dom-ready';
@@ -28,6 +36,9 @@ describe('the "onDomReady" function', () => {
 
     expect(someFunction).not.toHaveBeenCalled();
     expect(getDocument().addEventListener).toHaveBeenCalledTimes(1);
-    expect(getDocument().addEventListener).toHaveBeenCalledWith('DOMContentLoaded', someFunction);
+    expect(getDocument().addEventListener).toHaveBeenCalledWith(
+      'DOMContentLoaded',
+      someFunction,
+    );
   });
 });

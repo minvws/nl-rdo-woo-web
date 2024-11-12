@@ -87,7 +87,6 @@ abstract class AttachmentProcessor implements ProcessorInterface
                 language: $data->language,
                 grounds: $data->grounds,
                 uploadFileReference: $data->uploadUuid,
-                name: $data->name,
             )
         );
 
@@ -108,7 +107,6 @@ abstract class AttachmentProcessor implements ProcessorInterface
                 type: $data->type,
                 language: $data->language,
                 grounds: $data->grounds,
-                name: $data->name,
                 uploadFileReference: $data->uploadUuid,
             )
         );

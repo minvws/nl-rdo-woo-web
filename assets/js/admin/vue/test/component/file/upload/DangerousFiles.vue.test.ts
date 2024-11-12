@@ -4,16 +4,21 @@ import { VueWrapper, mount } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 
 describe('The "DangerousFiles" component', () => {
-  const createTestFiles = () => [createTestFile({ name: '1.txt' }), createTestFile({ name: '2.txt' })];
+  const createTestFiles = () => [
+    createTestFile({ name: '1.txt' }),
+    createTestFile({ name: '2.txt' }),
+  ];
 
-  const createComponent = (files = createTestFiles(), allowMultiple = false) => mount(DangerousFiles, {
-    props: {
-      allowMultiple,
-      files,
-    },
-  });
+  const createComponent = (files = createTestFiles(), allowMultiple = false) =>
+    mount(DangerousFiles, {
+      props: {
+        allowMultiple,
+        files,
+      },
+    });
 
-  const getFilesListComponent = (component: VueWrapper) => component.findComponent({ name: 'FilesList' });
+  const getFilesListComponent = (component: VueWrapper) =>
+    component.findComponent({ name: 'FilesList' });
 
   test('should display nothing when no files are provided', () => {
     expect(createComponent([]).text()).toBe('');
@@ -44,7 +49,9 @@ describe('The "DangerousFiles" component', () => {
     });
 
     test('should display the files list', () => {
-      expect(getFilesListComponent(component).props('files')).toEqual(testFiles);
+      expect(getFilesListComponent(component).props('files')).toEqual(
+        testFiles,
+      );
     });
   });
 });

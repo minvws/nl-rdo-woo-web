@@ -4,7 +4,8 @@ export const clickOnSelector = () => {
   const initialize = () => {
     cleanup();
 
-    const clickOnSelectorElements: NodeListOf<HTMLButtonElement> = document.querySelectorAll('.js-click-on-selector');
+    const clickOnSelectorElements: NodeListOf<HTMLButtonElement> =
+      document.querySelectorAll('.js-click-on-selector');
 
     if (clickOnSelectorElements.length === 0) {
       return;
@@ -13,14 +14,20 @@ export const clickOnSelector = () => {
     abortController = new AbortController();
     clickOnSelectorElements.forEach((triggeringElement) => {
       const { selector } = triggeringElement.dataset;
-      const selectorElement = document.getElementById(selector as string) as HTMLDialogElement;
+      const selectorElement = document.getElementById(
+        selector as string,
+      ) as HTMLDialogElement;
       if (!selectorElement) {
         return;
       }
 
-      triggeringElement.addEventListener('click', () => {
-        selectorElement.click();
-      }, { signal: abortController.signal! });
+      triggeringElement.addEventListener(
+        'click',
+        () => {
+          selectorElement.click();
+        },
+        { signal: abortController.signal! },
+      );
     });
   };
 

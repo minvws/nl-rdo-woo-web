@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { dateMaxUntilToday, email, forbidden, minLength, required } from './validator';
+import {
+  dateMaxUntilToday,
+  email,
+  forbidden,
+  minLength,
+  required,
+} from './validator';
 
 describe('the "required" validator', () => {
   test('should return a required error if the provided value is empty-like', () => {
@@ -45,7 +51,10 @@ describe('the "email" validator', () => {
 describe('the "forbidden" validator', () => {
   test('should return a forbidden error if the provided value equals one of the forbidden values', () => {
     const expectedError = { id: 'forbidden' };
-    const fn = forbidden(['mocked_forbidden_value', 'another_mocked_forbidden_value']);
+    const fn = forbidden([
+      'mocked_forbidden_value',
+      'another_mocked_forbidden_value',
+    ]);
 
     expect(fn('mocked_forbidden_value')).toEqual(expectedError);
     expect(fn('mocked_forbidden_valu')).toBeUndefined();
@@ -96,6 +105,8 @@ describe('the "dateMaxUntilToday" validator', () => {
   });
 
   test('should return a dateMaxUntilToday error if the provided date is somewhere after today', () => {
-    expect(dateMaxUntilToday()('2020-01-03')).toEqual({ id: 'dateMaxUntilToday' });
+    expect(dateMaxUntilToday()('2020-01-03')).toEqual({
+      id: 'dateMaxUntilToday',
+    });
   });
 });

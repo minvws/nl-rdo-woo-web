@@ -59,6 +59,10 @@ class DossierController extends AbstractController
             $query,
             $request->query->getInt('page', 1),
             self::MAX_ITEMS_PER_PAGE,
+            [
+                'defaultSortFieldName' => 'dos.createdAt',
+                'defaultSortDirection' => 'desc',
+            ]
         );
 
         return $this->render('admin/dossier/index.html.twig', [

@@ -1,12 +1,25 @@
-import { debounce, hideElement, isElementHidden, onFocusOut, onKeyDown, showElement } from '@utils';
+import {
+  debounce,
+  hideElement,
+  isElementHidden,
+  onFocusOut,
+  onKeyDown,
+  showElement,
+} from '@utils';
 
-export type AddExternalFunctionalityFunction = (searchResultsElement: HTMLElement, inputElement: HTMLInputElement) => void;
+export type AddExternalFunctionalityFunction = (
+  searchResultsElement: HTMLElement,
+  inputElement: HTMLInputElement,
+) => void;
 
 export const searchPreviews = () => {
   let abortControllerMain: AbortController | null = null;
   let abortControllerTemporary: AbortController | null = null;
 
-  let addExternalFunctionality: (searchResultsElement: HTMLElement, inputElement: HTMLInputElement) => void;
+  let addExternalFunctionality: (
+    searchResultsElement: HTMLElement,
+    inputElement: HTMLInputElement,
+  ) => void;
   let formElement: HTMLFormElement;
   let iconMagnifierElement: HTMLSpanElement | null = null;
   let iconCrossElement: HTMLButtonElement | null = null;
@@ -17,7 +30,10 @@ export const searchPreviews = () => {
 
   const initialize = (
     formElementId: string,
-    addExternalFunctionalityFn: (searchResultsElement: HTMLElement, inputElement: HTMLInputElement) => void = () => {},
+    addExternalFunctionalityFn: (
+      searchResultsElement: HTMLElement,
+      inputElement: HTMLInputElement,
+    ) => void = () => {},
     removeExternalFunctionalityFn: () => void = () => {},
   ) => {
     addExternalFunctionality = addExternalFunctionalityFn;
@@ -44,32 +60,46 @@ export const searchPreviews = () => {
 
     abortControllerMain = new AbortController();
 
-    inputElement.addEventListener('input', debounce((event) => {
-      const { value: query } = event.target;
+    inputElement.addEventListener(
+      'input',
+      debounce((event) => {
+        const { value: query } = event.target;
 
-      switchIconsVisibility(query);
+        switchIconsVisibility(query);
 
-      if (query.length < 3) {
+        if (query.length < 3) {
+          hide();
+          return;
+        }
+
+        fetchAndUpdateResults(query);
+      }, 250),
+      { signal: abortControllerMain.signal },
+    );
+
+    inputElement.addEventListener('focus', hideOrShow, {
+      signal: abortControllerMain.signal,
+    });
+
+    iconCrossElement?.addEventListener(
+      'click',
+      () => {
+        inputElement!.value = '';
+        inputElement!.focus();
+        switchIconsVisibility('');
         hide();
-        return;
-      }
+        setPlaceholderContent('');
+      },
+      { signal: abortControllerMain.signal },
+    );
 
-      fetchAndUpdateResults(query);
-    }, 250), { signal: abortControllerMain.signal });
-
-    inputElement.addEventListener('focus', hideOrShow, { signal: abortControllerMain.signal });
-
-    iconCrossElement?.addEventListener('click', () => {
-      inputElement!.value = '';
-      inputElement!.focus();
-      switchIconsVisibility('');
-      hide();
-      setPlaceholderContent('');
-    }, { signal: abortControllerMain.signal });
-
-    formElement.addEventListener('submit', (event) => {
-      event.preventDefault();
-    }, { signal: abortControllerMain.signal });
+    formElement.addEventListener(
+      'submit',
+      (event) => {
+        event.preventDefault();
+      },
+      { signal: abortControllerMain.signal },
+    );
   };
 
   const addTemporaryFunctionality = () => {
@@ -80,7 +110,10 @@ export const searchPreviews = () => {
 
     abortControllerTemporary = new AbortController();
 
-    addExternalFunctionality(placeholderElement as HTMLElement, inputElement as HTMLInputElement);
+    addExternalFunctionality(
+      placeholderElement as HTMLElement,
+      inputElement as HTMLInputElement,
+    );
     addTemporaryEventListeners();
   };
 
@@ -95,25 +128,37 @@ export const searchPreviews = () => {
   };
 
   const addTemporaryEventListeners = () => {
-    document.addEventListener('click', (event) => {
-      const { target } = event;
-      if (!(target instanceof HTMLElement)) {
-        return;
-      }
+    document.addEventListener(
+      'click',
+      (event) => {
+        const { target } = event;
+        if (!(target instanceof HTMLElement)) {
+          return;
+        }
 
-      if (!formElement!.contains(target)) {
+        if (!formElement!.contains(target)) {
+          hide();
+        }
+      },
+      { signal: abortControllerTemporary?.signal },
+    );
+
+    onFocusOut(
+      formElement!,
+      () => {
         hide();
-      }
-    }, { signal: abortControllerTemporary?.signal });
+      },
+      { signal: abortControllerTemporary?.signal },
+    );
 
-    onFocusOut(formElement!, () => {
-      hide();
-    }, { signal: abortControllerTemporary?.signal });
-
-    onKeyDown('Escape', () => {
-      inputElement?.focus();
-      hide();
-    }, { signal: abortControllerTemporary?.signal });
+    onKeyDown(
+      'Escape',
+      () => {
+        inputElement?.focus();
+        hide();
+      },
+      { signal: abortControllerTemporary?.signal },
+    );
   };
 
   const hide = () => {
@@ -135,7 +180,8 @@ export const searchPreviews = () => {
   };
 
   const hideOrShow = () => {
-    const hasSuggestions = (placeholderElement?.textContent || '').trim().length > 0;
+    const hasSuggestions =
+      (placeholderElement?.textContent || '').trim().length > 0;
     if (!hasSuggestions) {
       hide();
       return;

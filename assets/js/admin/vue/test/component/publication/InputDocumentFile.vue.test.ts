@@ -6,20 +6,23 @@ describe('The "InputDocumentFile" component', () => {
   const allowedFileTypes = ['mocked-extension-1', 'mocked-extension-2'];
   const allowedMimeTypes = ['mocked/mime-type-1', 'mocked/mime-type-2'];
 
-  const createComponent = (displayMaxOneFileMessage = false) => mount(InputDocumentFile, {
-    props: {
-      allowedFileTypes,
-      allowedMimeTypes,
-      displayMaxOneFileMessage,
-      fileInfo: null,
-      groupId: 'mocked-group-id',
-      value: 'mocked-value',
-    },
-    shallow: true,
-  });
+  const createComponent = (displayMaxOneFileMessage = false) =>
+    mount(InputDocumentFile, {
+      props: {
+        allowedFileTypes,
+        allowedMimeTypes,
+        displayMaxOneFileMessage,
+        fileInfo: null,
+        groupId: 'mocked-group-id',
+        value: 'mocked-value',
+      },
+      shallow: true,
+    });
 
-  const getInputFileComponent = (displayMaxOneFileMessage = false) => createComponent(displayMaxOneFileMessage)
-    .findComponent({ name: 'InputFile' });
+  const getInputFileComponent = (displayMaxOneFileMessage = false) =>
+    createComponent(displayMaxOneFileMessage).findComponent({
+      name: 'InputFile',
+    });
 
   test('should display a file upload field with a label being "Bestand"', () => {
     expect(getInputFileComponent().props('label')).toBe('Bestand');
@@ -27,7 +30,9 @@ describe('The "InputDocumentFile" component', () => {
 
   test('should display a message saying only one file can be uploaded when the property "displayMaxOneFileMessage" is true', () => {
     expect(getInputFileComponent().props('helpText')).toBe(undefined);
-    expect(getInputFileComponent(true).props('helpText')).toBe('Je kunt maximaal 1 bestand uploaden');
+    expect(getInputFileComponent(true).props('helpText')).toBe(
+      'Je kunt maximaal 1 bestand uploaden',
+    );
   });
 
   test('should pass the provided group id', () => {
@@ -35,10 +40,14 @@ describe('The "InputDocumentFile" component', () => {
   });
 
   test('should pass the provided allowed mime types', () => {
-    expect(getInputFileComponent().props('allowedMimeTypes')).toEqual(allowedMimeTypes);
+    expect(getInputFileComponent().props('allowedMimeTypes')).toEqual(
+      allowedMimeTypes,
+    );
   });
 
   test('should pass the provided allowed extensions', () => {
-    expect(getInputFileComponent().props('allowedFileTypes')).toEqual(allowedFileTypes);
+    expect(getInputFileComponent().props('allowedFileTypes')).toEqual(
+      allowedFileTypes,
+    );
   });
 });

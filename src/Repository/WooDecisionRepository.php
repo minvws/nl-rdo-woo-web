@@ -14,11 +14,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<WooDecision>
- *
- * @method WooDecision|null find($id, $lockMode = null, $lockVersion = null)
- * @method WooDecision|null findOneBy(array $criteria, array $orderBy = null)
- * @method WooDecision[]    findAll()
- * @method WooDecision[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class WooDecisionRepository extends ServiceEntityRepository
 {

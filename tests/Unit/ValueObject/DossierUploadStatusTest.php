@@ -125,4 +125,25 @@ class DossierUploadStatusTest extends MockeryTestCase
             $this->dossierUploadStatus->isComplete()
         );
     }
+
+    public function testGetDocumentsToUpload(): void
+    {
+        $this->dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([
+            $this->missingUpload,
+            $this->completedUpload,
+            $this->unwantedUpload,
+        ]));
+
+        $this->missingUpload->shouldReceive('getDocumentId')->andReturn(123);
+
+        self::assertEquals(
+            [$this->missingUpload],
+            $this->dossierUploadStatus->getDocumentsToUpload(['456'])->toArray(),
+        );
+
+        self::assertEquals(
+            [],
+            $this->dossierUploadStatus->getDocumentsToUpload(['123'])->toArray(),
+        );
+    }
 }

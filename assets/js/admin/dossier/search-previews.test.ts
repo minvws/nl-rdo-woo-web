@@ -1,5 +1,17 @@
-import { Mock, MockInstance, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { searchPreviews, type AddExternalFunctionalityFunction } from './search-previews';
+import {
+  Mock,
+  MockInstance,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from 'vitest';
+import {
+  searchPreviews,
+  type AddExternalFunctionalityFunction,
+} from './search-previews';
 
 describe('The search previews functionality', () => {
   let addFunctionalityFunctionMock: Mock;
@@ -11,14 +23,18 @@ describe('The search previews functionality', () => {
   let initialize: (
     formElementId: string,
     addFunctionalityFunction: AddExternalFunctionalityFunction,
-    removeFunctionalityFunction: () => void
+    removeFunctionalityFunction: () => void,
   ) => void;
 
-  const getCrossButtonElement = () => document.querySelector('.js-icon-cross') as HTMLButtonElement;
-  const getFormElement = () => document.querySelector('form') as HTMLFormElement;
-  const getInputElement = () => document.querySelector('.js-input') as HTMLInputElement;
+  const getCrossButtonElement = () =>
+    document.querySelector('.js-icon-cross') as HTMLButtonElement;
+  const getFormElement = () =>
+    document.querySelector('form') as HTMLFormElement;
+  const getInputElement = () =>
+    document.querySelector('.js-input') as HTMLInputElement;
   const getInputValue = () => getInputElement().value;
-  const getSearchResultsContainerContent = () => document.querySelector('.js-placeholder')?.textContent;
+  const getSearchResultsContainerContent = () =>
+    document.querySelector('.js-placeholder')?.textContent;
   const updateInputValue = (value: string) => {
     const inputElement = getInputElement();
     inputElement.value = value;
@@ -27,11 +43,14 @@ describe('The search previews functionality', () => {
   };
 
   beforeEach(() => {
-    global.fetch = vi.fn(() => Promise.resolve({
-      json: () => Promise.resolve({
-        results: JSON.stringify('mocked-search-result-1'),
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        json: () =>
+          Promise.resolve({
+            results: JSON.stringify('mocked-search-result-1'),
+          }),
       }),
-    })) as Mock;
+    ) as Mock;
 
     vi.useFakeTimers();
 
@@ -52,15 +71,22 @@ describe('The search previews functionality', () => {
     submitFormEventMock = {
       preventDefault: vi.fn(),
     };
-    formAddEventListenerSpy = vi.spyOn(getFormElement(), 'addEventListener')
-      .mockImplementation((type: string, callback: EventListenerOrEventListenerObject): void => {
-        if (type === 'submit') {
-          (callback as EventListener)(submitFormEventMock as any);
-        }
-      });
+    formAddEventListenerSpy = vi
+      .spyOn(getFormElement(), 'addEventListener')
+      .mockImplementation(
+        (type: string, callback: EventListenerOrEventListenerObject): void => {
+          if (type === 'submit') {
+            (callback as EventListener)(submitFormEventMock as any);
+          }
+        },
+      );
 
     ({ cleanup, initialize } = searchPreviews());
-    initialize('js-mocked-form', addFunctionalityFunctionMock, removeFunctionalityFunctionMock);
+    initialize(
+      'js-mocked-form',
+      addFunctionalityFunctionMock,
+      removeFunctionalityFunctionMock,
+    );
   });
 
   afterEach(() => {
@@ -122,16 +148,20 @@ describe('The search previews functionality', () => {
 
       updateInputValue('search query');
 
-      await vi.waitFor(
-        () => {
-          expect(getSearchResultsContainerContent()).toContain('mocked-search-result-1');
-        },
-      );
+      await vi.waitFor(() => {
+        expect(getSearchResultsContainerContent()).toContain(
+          'mocked-search-result-1',
+        );
+      });
     });
   });
 
   test('should prevent the form from being submitted', () => {
-    expect(formAddEventListenerSpy).toHaveBeenCalledWith('submit', expect.any(Function), { signal: expect.any(AbortSignal) });
+    expect(formAddEventListenerSpy).toHaveBeenCalledWith(
+      'submit',
+      expect.any(Function),
+      { signal: expect.any(AbortSignal) },
+    );
     expect(submitFormEventMock.preventDefault).toHaveBeenCalled();
   });
 });

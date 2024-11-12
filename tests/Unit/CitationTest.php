@@ -87,4 +87,66 @@ final class CitationTest extends UnitTestCase
             ],
         ];
     }
+
+    #[DataProvider('getCitationTypeData')]
+    public function testGetCitationType(string $input, string $expected): void
+    {
+        $this->assertSame($expected, Citation::getCitationType($input));
+    }
+
+    /**
+     * @return array<string,array{input:string,expected:string}>
+     */
+    public static function getCitationTypeData(): array
+    {
+        return [
+            'wob' => [
+                'input' => '10.1c',
+                'expected' => Citation::TYPE_WOB,
+            ],
+            'wob-with-whitespace-and-casing' => [
+                'input' => ' 10.1 C ',
+                'expected' => Citation::TYPE_WOB,
+            ],
+            'woo' => [
+                'input' => '5.1.2i',
+                'expected' => Citation::TYPE_WOO,
+            ],
+            'woo-with-whitespace-and-casing' => [
+                'input' => ' 5.1.2  I ',
+                'expected' => Citation::TYPE_WOO,
+            ],
+            'non-existing' => [
+                'input' => 'foo',
+                'expected' => Citation::TYPE_UNKNOWN,
+            ],
+        ];
+    }
+
+    #[DataProvider('toClassificationData')]
+    public function testToClassification(string $input, string $expected): void
+    {
+        self::assertEquals($expected, Citation::toClassification($input));
+    }
+
+    /**
+     * @return array<string,array{input:string,expected:string}>
+     */
+    public static function toClassificationData(): array
+    {
+        return [
+            'wob' => [
+                'input' => '10.1c',
+                'expected' => 'Vertrouwelijk verstrekte bedrijfs- en fabricagegegevens',
+            ],
+            'woo' => [
+                'input' => '5.1.2i',
+                'expected' => 'Het goed functioneren van de staat, andere publiekrechtelijke lichamen of bestuursorganen',
+            ],
+            'non-existing' => [
+                'input' => 'foo',
+                'expected' => '',
+            ],
+        ];
+    }
 }

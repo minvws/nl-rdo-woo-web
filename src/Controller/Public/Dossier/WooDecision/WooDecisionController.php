@@ -188,7 +188,7 @@ class WooDecisionController extends AbstractController
     }
 
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
-    #[Route('/dossier/{prefix}/{dossierId}/inventory/download', name: 'app_woodecision_inventory_download', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierId}/inventarislijst/download', name: 'app_woodecision_inventory_download', methods: ['GET'])]
     public function downloadInventory(
         #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
     ): StreamedResponse {
@@ -196,7 +196,7 @@ class WooDecisionController extends AbstractController
     }
 
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
-    #[Route('/dossier/{prefix}/{dossierId}/decision/download', name: 'app_woodecision_decision_download', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierId}/besluit/download', name: 'app_woodecision_decision_download', methods: ['GET'])]
     public function downloadDecision(
         #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
     ): StreamedResponse {
@@ -214,7 +214,7 @@ class WooDecisionController extends AbstractController
 
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
     #[Route(
-        '/dossier/{prefix}/{dossierId}/decision-attachments/{attachmentId}/download',
+        '/dossier/{prefix}/{dossierId}/bijlage/{attachmentId}/download',
         name: 'app_woodecision_decisionattachment_download',
         methods: ['GET'],
     )]
@@ -230,7 +230,7 @@ class WooDecisionController extends AbstractController
 
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
     #[Route(
-        '/dossier/{prefix}/{dossierId}/decision-attachments/{attachmentId}',
+        '/dossier/{prefix}/{dossierId}/bijlage/{attachmentId}',
         name: 'app_woodecision_decisionattachment_detail',
         methods: ['GET'],
     )]

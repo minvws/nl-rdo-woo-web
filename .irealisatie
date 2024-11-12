@@ -1,7 +1,0 @@
-GIT=GitHub
-REPO=minvws/nl-rdo-woo-web-private
-CLUSTER=Woo
-MAINTAINER=rdo-woo-codeowners
-COMPONENTS=audit-logger-bundle,horsebattery
-LANGUAGES=php,js,md
-DESCRIPTION=Woo-platform Ministry of VWS

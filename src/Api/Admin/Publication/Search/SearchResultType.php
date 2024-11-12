@@ -8,4 +8,6 @@ enum SearchResultType: string
 {
     case DOSSIER = 'dossier';
     case DOCUMENT = 'document';
+    case MAIN_DOCUMENT = 'main_document';
+    case ATTACHMENT = 'attachment';
 }

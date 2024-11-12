@@ -186,8 +186,7 @@ final class DecisionAttachmentTest extends ApiTestCase
                 ],
                 'json' => [
                     'uploadUuid' => $uploadUuid,
-                    'name' => 'foobar',
-                    'type' => AttachmentType::DECISION_ON_REQUEST_ART4_1_WOO->value,
+                    'type' => AttachmentType::ACTIONS->value,
                     'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
                     'language' => AttachmentLanguage::DUTCH->value,
                 ],
@@ -285,7 +284,6 @@ final class DecisionAttachmentTest extends ApiTestCase
         return [
             'invalid type error' => [
                 'input' => [
-                    'name' => '',
                     'type' => '',
                     'language' => '',
                     'grounds' => '',
@@ -308,15 +306,10 @@ final class DecisionAttachmentTest extends ApiTestCase
             'invalid input data' => [
                 'input' => [
                     'uploadUuid' => '55ae5de9-55f4-3420-b50b-5cde6e07fc5a',
-                    'name' => '',
                     'formalDate' => 'foobar',
                     'grounds' => [1, 2, 3],
                 ],
                 'expectedViolations' => [
-                    [
-                        'propertyPath' => 'name',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
                     [
                         'propertyPath' => 'formalDate',
                         'code' => Date::INVALID_FORMAT_ERROR,
@@ -338,14 +331,9 @@ final class DecisionAttachmentTest extends ApiTestCase
             'empty string input data' => [
                 'input' => [
                     'uploadUuid' => '',
-                    'name' => '',
                     'formalDate' => '',
                 ],
                 'expectedViolations' => [
-                    [
-                        'propertyPath' => 'name',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
                     [
                         'propertyPath' => 'formalDate',
                         'code' => NotBlank::IS_BLANK_ERROR,
@@ -363,14 +351,9 @@ final class DecisionAttachmentTest extends ApiTestCase
             'single space input data' => [
                 'input' => [
                     'uploadUuid' => ' ',
-                    'name' => ' ',
                     'formalDate' => ' ',
                 ],
                 'expectedViolations' => [
-                    [
-                        'propertyPath' => 'name',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
                     [
                         'propertyPath' => 'formalDate',
                         'code' => NotBlank::IS_BLANK_ERROR,
@@ -396,8 +379,7 @@ final class DecisionAttachmentTest extends ApiTestCase
             'invalid business logic data' => [
                 'input' => [
                     'uploadUuid' => '55ae5de9-55f4-3420-b50b-5cde6e07fc5a',
-                    'name' => 'foobar',
-                    'type' => AttachmentType::DECISION_ON_REQUEST_ART4_1_WOO->value,
+                    'type' => AttachmentType::ACTIONS->value,
                     'formalDate' => CarbonImmutable::now()->addYear()->format('Y-m-d'),
                     'internalReference' => str_repeat('a', 256),
                     'language' => AttachmentLanguage::DUTCH->value,
@@ -410,19 +392,6 @@ final class DecisionAttachmentTest extends ApiTestCase
                     [
                         'propertyPath' => 'internalReference',
                         'code' => Length::TOO_LONG_ERROR,
-                    ],
-                ],
-            ],
-            'missing name field' => [
-                'input' => [
-                    'uploadUuid' => '55ae5de9-55f4-3420-b50b-5cde6e07fc5a',
-                    'formalDate' => CarbonImmutable::now()->subYear()->format('Y-m-d'),
-                    'type' => AttachmentType::DECISION_ON_REQUEST_ART4_1_WOO->value,
-                ],
-                'expectedViolations' => [
-                    [
-                        'propertyPath' => 'name',
-                        'code' => NotBlank::IS_BLANK_ERROR,
                     ],
                 ],
             ],
@@ -511,7 +480,6 @@ final class DecisionAttachmentTest extends ApiTestCase
                         'Content-Type' => 'application/json',
                     ],
                     'json' => [
-                        'name' => 'foobar.pdf',
                         'formalDate' => $decision->getFormalDate()->format('Y-m-d'),
                         'type' => $decision->getType()->value,
                         'language' => $decision->getLanguage()->value,
@@ -613,17 +581,6 @@ final class DecisionAttachmentTest extends ApiTestCase
     public static function getInvalidUpdateRequestData(): array
     {
         return [
-            'invalid name input data' => [
-                'input' => [
-                    'name' => '',
-                ],
-                'expectedViolations' => [
-                    [
-                        'propertyPath' => 'name',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
-                ],
-            ],
             'invalid empty string for formalDate input data' => [
                 'input' => [
                     'formalDate' => '',
@@ -692,7 +649,7 @@ final class DecisionAttachmentTest extends ApiTestCase
             'invalid business logic data' => [
                 'input' => [
                     'formalDate' => CarbonImmutable::now()->addYear()->format('Y-m-d'),
-                    'type' => AttachmentType::DECISION_ON_REQUEST_ART4_1_WOO->value,
+                    'type' => AttachmentType::ACTIONS->value,
                     'internalReference' => str_repeat('a', 256),
                 ],
                 'expectedViolations' => [

@@ -1,79 +1,89 @@
 <script setup>
-  import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
-  import { uniqueId } from '@js/utils';
-  import { computed, inject, ref, watch } from 'vue';
-  import FormHelp from './FormHelp.vue';
-  import FormLabel from './FormLabel.vue';
-  import InputErrors from './InputErrors.vue';
-  import SubmitValidationErrors from './SubmitValidationErrors.vue';
+import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
+import { uniqueId } from '@js/utils';
+import { computed, inject, ref, watch } from 'vue';
+import ErrorMessages from './ErrorMessages.vue';
+import FormHelp from './FormHelp.vue';
+import FormLabel from './FormLabel.vue';
+import InputErrors from './InputErrors.vue';
 
-  const props = defineProps({
-    emptyLabel: {
-      type: String,
-      required: false,
-      default: 'Kies een optie',
-    },
-    hasFormRow: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    helpText: {
-      type: String,
-      required: false,
-    },
-    label: {
-      type: String,
-      required: false,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    options: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-    optgroups: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-    validators: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-    value: {
-      type: String,
-      required: false,
-      default: '',
-    },
-  });
+const props = defineProps({
+  emptyLabel: {
+    type: String,
+    required: false,
+    default: 'Kies een optie',
+  },
+  hasFormRow: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
+  helpText: {
+    type: String,
+    required: false,
+  },
+  label: {
+    type: String,
+    required: false,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  options: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
+  optgroups: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
+  validators: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
+  value: {
+    type: String,
+    required: false,
+    default: '',
+  },
+});
 
-  const inputId = `${uniqueId('input')}`;
-  const value = ref(props.value);
-  watch(() => props.value, (newValue) => {
+const inputId = `${uniqueId('input')}`;
+const value = ref(props.value);
+watch(
+  () => props.value,
+  (newValue) => {
     value.value = newValue;
-  });
-  const inputStore = useInputStore(props.name, props.label, value, props.validators);
-  const inputClass = computed(() => {
-    return {
-      'bhr-select__select': true,
-      'bhr-select__select--invalid': inputStore.hasVisibleErrors,
-      'w-full sm:w-auto sm:min-w-[50%]': true,
-    };
-  });
-  const formRowClass = computed(() => {
-    return {
-      'bhr-form-row': props.hasFormRow,
-      'bhr-form-row--invalid': props.hasFormRow && inputStore.hasVisibleErrors,
-    };
-  });
-  const ariaDescribedBy = computed(() => useInputAriaDescribedBy(inputId, props.helpText, inputStore.hasVisibleErrors));
+  },
+);
+const inputStore = useInputStore(
+  props.name,
+  props.label,
+  value,
+  props.validators,
+);
+const inputClass = computed(() => {
+  return {
+    'bhr-select__select': true,
+    'bhr-select__select--invalid': inputStore.hasVisibleErrors,
+    'w-full sm:w-auto sm:min-w-[50%]': true,
+  };
+});
+const formRowClass = computed(() => {
+  return {
+    'bhr-form-row': props.hasFormRow,
+    'bhr-form-row--invalid': props.hasFormRow && inputStore.hasVisibleErrors,
+  };
+});
+const ariaDescribedBy = computed(() =>
+  useInputAriaDescribedBy(inputId, props.helpText, inputStore.hasVisibleErrors),
+);
 
-  inject('form').addInput(inputStore);
+inject('form').addInput(inputStore);
 </script>
 
 <template>
@@ -82,10 +92,9 @@
       {{ props.label }}
     </FormLabel>
 
-    <FormHelp
-      :inputId="inputId"
-      v-if="props.helpText"
-    >{{ props.helpText }}</FormHelp>
+    <FormHelp :inputId="inputId" v-if="props.helpText">{{
+      props.helpText
+    }}</FormHelp>
 
     <InputErrors
       :errors="inputStore.errors"
@@ -94,7 +103,7 @@
       v-if="inputStore.hasVisibleErrors"
     />
 
-    <SubmitValidationErrors
+    <ErrorMessages
       :errors="inputStore.submitValidationErrors"
       v-if="inputStore.hasVisibleErrors"
     />

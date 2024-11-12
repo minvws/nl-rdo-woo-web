@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Inventory;
 
 use App\Entity\Judgement;
+use App\SourceType;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
@@ -15,7 +16,7 @@ class DocumentMetadata
         private readonly ?\DateTimeImmutable $date,
         private readonly string $filename,
         private readonly ?int $familyId,
-        private readonly string $sourceType,
+        private readonly SourceType $sourceType,
         /** @var string[] */
         private readonly array $grounds,
         private readonly string $id,
@@ -56,7 +57,7 @@ class DocumentMetadata
         return $this->familyId;
     }
 
-    public function getSourceType(): string
+    public function getSourceType(): SourceType
     {
         return $this->sourceType;
     }

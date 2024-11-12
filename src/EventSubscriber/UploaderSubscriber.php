@@ -20,7 +20,7 @@ class UploaderSubscriber implements EventSubscriberInterface
 
     public function postUploadEvent(PostUploadEvent $event): void
     {
-        $groupId = $this->getGroupdId($event);
+        $groupId = $this->getGroupId($event);
 
         $this->uploaderService->registerUpload($event, $groupId);
 
@@ -47,7 +47,7 @@ class UploaderSubscriber implements EventSubscriberInterface
         ];
     }
 
-    private function getGroupdId(PostUploadEvent $event): UploadGroupId
+    private function getGroupId(PostUploadEvent $event): UploadGroupId
     {
         $groupId = $event->getRequest()->get('groupId');
 

@@ -1,130 +1,138 @@
 <script setup>
-  import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
-  import { validators } from '@admin-fe/form';
-  import { uniqueId } from '@js/utils';
-  import { computed, onMounted, ref, watch } from 'vue';
-  import RemovableInput from './RemovableInput.vue';
+import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
+import { validators } from '@admin-fe/form';
+import { uniqueId } from '@js/utils';
+import { computed, onMounted, ref, watch } from 'vue';
+import RemovableInput from './RemovableInput.vue';
 
-  const emit = defineEmits(['delete', 'mounted', 'update']);
+const emit = defineEmits(['delete', 'mounted', 'update']);
 
-  const props = defineProps({
-    autoFocus: {
-      type: Boolean,
-      default: false,
-    },
-    canDelete: {
-      type: Boolean,
-      default: false,
-    },
-    emptyLabel: {
-      type: String,
-      required: false,
-      default: 'Kies een optie',
-    },
-    errors: {
-      type: Array,
-      default: () => [],
-    },
-    forbiddenValues: {
-      type: Array,
-      default: () => [],
-    },
-    label: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      default: '',
-    },
-    options: {
-      type: Array,
-      default: () => [],
-    },
-    optGroups: {
-      type: Array,
-      default: () => [],
-    },
-    value: {
-      type: String,
-      required: false,
-      default: '',
-    },
-  });
+const props = defineProps({
+  autoFocus: {
+    type: Boolean,
+    default: false,
+  },
+  canDelete: {
+    type: Boolean,
+    default: false,
+  },
+  emptyLabel: {
+    type: String,
+    required: false,
+    default: 'Kies een optie',
+  },
+  errors: {
+    type: Array,
+    default: () => [],
+  },
+  forbiddenValues: {
+    type: Array,
+    default: () => [],
+  },
+  label: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    default: '',
+  },
+  options: {
+    type: Array,
+    default: () => [],
+  },
+  optGroups: {
+    type: Array,
+    default: () => [],
+  },
+  value: {
+    type: String,
+    required: false,
+    default: '',
+  },
+});
 
-  const options = computed(() => {
-    return props.options.map((option) => {
-      if (typeof option === 'string') {
-        return { label: option, value: option };
-      }
-
-      return option;
-    });
-  });
-
-  const filteredOptions = computed(() => {
-    if (props.forbiddenValues.length === 0) {
-      return options.value;
+const options = computed(() => {
+  return props.options.map((option) => {
+    if (typeof option === 'string') {
+      return { label: option, value: option };
     }
 
-    return options.value.filter((option) => !props.forbiddenValues.includes(option.value));
+    return option;
   });
+});
 
-  const getDefaultvalue = () => {
-    if (props.value) {
-      return props.value;
-    }
+const filteredOptions = computed(() => {
+  if (props.forbiddenValues.length === 0) {
+    return options.value;
+  }
 
-    if (filteredOptions.value.length === 1) {
-      return filteredOptions.value[0].value;
-    }
+  return options.value.filter(
+    (option) => !props.forbiddenValues.includes(option.value),
+  );
+});
 
+const getDefaultvalue = () => {
+  if (props.value) {
     return props.value;
-  };
-
-  const errors = ref([]);
-  const inputElement = ref(null);
-  const inputId = `${uniqueId('input')}`;
-  const value = ref(getDefaultvalue());
-
-  const onDelete = () => {
-    emit('delete', inputStore);
   }
 
-  const onChange = () => {
-    emit('update', value.value);
-    inputStore.markAsTouched();
+  if (filteredOptions.value.length === 1) {
+    return filteredOptions.value[0].value;
   }
 
-  watch(() => props.value, (newValue) => {
-    value.value = newValue;
-  });
+  return props.value;
+};
 
-  watch(filteredOptions, () => {
-    if (value.value) {
-      return;
-    }
+const inputElement = ref(null);
+const inputId = `${uniqueId('input')}`;
+const valueRef = ref(getDefaultvalue());
 
-    if (filteredOptions.value.length !== 1) {
-      return;
-    }
+const onDelete = () => {
+  emit('delete', inputStore);
+};
 
-    value.value = filteredOptions.value[0].value;
-  });
+const onChange = () => {
+  emit('update', valueRef.value);
+  inputStore.markAsTouched();
+};
 
-  const inputStore = useInputStore(props.name, props.label, value, [validators.required()]);
-  const ariaDescribedBy = computed(() => useInputAriaDescribedBy(inputId, undefined, inputStore.hasVisibleErrors));
+watch(
+  () => props.value,
+  (newValue) => {
+    valueRef.value = newValue;
+  },
+);
 
-  onMounted(() => {
-    if (props.autoFocus) {
-      inputElement.value.focus();
-    }
-    emit('mounted', inputStore);
+watch(filteredOptions, () => {
+  if (valueRef.value) {
+    return;
+  }
 
-    if (filteredOptions.value.length === 1) {
-      emit('update', value.value);
-    }
-  });
+  if (filteredOptions.value.length !== 1) {
+    return;
+  }
+
+  valueRef.value = filteredOptions.value[0].value;
+});
+
+const inputStore = useInputStore(props.name, props.label, valueRef, [
+  validators.required(),
+]);
+const ariaDescribedBy = computed(() =>
+  useInputAriaDescribedBy(inputId, undefined, inputStore.hasVisibleErrors),
+);
+
+onMounted(() => {
+  if (props.autoFocus) {
+    inputElement.value.focus();
+  }
+  emit('mounted', inputStore);
+
+  if (filteredOptions.value.length === 1) {
+    emit('update', valueRef.value);
+  }
+});
 </script>
 
 <template>
@@ -145,7 +153,7 @@
         class="bhr-select__select w-full pr-12"
         :class="{ 'bhr-select__select--invalid': inputStore.hasVisibleErrors }"
         ref="inputElement"
-        v-model="value"
+        v-model="valueRef"
       >
         <option value="">{{ props.emptyLabel }}</option>
         <option

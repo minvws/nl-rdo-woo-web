@@ -13,9 +13,6 @@ use Webmozart\Assert\Assert as WebmozartAssert;
 abstract class AttachmentCreateDto
 {
     #[Assert\NotBlank(normalizer: 'trim')]
-    public string $name;
-
-    #[Assert\NotBlank(normalizer: 'trim')]
     #[Assert\Date()]
     #[ApiProperty(
         openapiContext: [

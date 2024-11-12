@@ -28,9 +28,11 @@ describe('The functionality regarding the main navigation', () => {
     vi.useRealTimers();
   });
 
-  const getButton = () => document.getElementById('js-main-nav-toggle') as HTMLButtonElement;
+  const getButton = () =>
+    document.getElementById('js-main-nav-toggle') as HTMLButtonElement;
   const toggleVisibility = () => getButton().click();
-  const getNavigation = () => document.getElementById('main-nav') as HTMLUListElement;
+  const getNavigation = () =>
+    document.getElementById('main-nav') as HTMLUListElement;
   const isNavigationVisible = () => isElementVisible(getNavigation());
 
   test('should display the navigation when the toggle button is clicked', () => {

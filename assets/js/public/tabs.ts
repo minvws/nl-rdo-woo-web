@@ -21,15 +21,19 @@ export const tabs = () => {
   const addClickHandler = () => {
     // Add a click event handler to each tab
     tabButtons.forEach((tabButton) => {
-      tabButton.addEventListener('click', (event) => {
-        const { currentTarget } = event;
-        if (!(currentTarget instanceof HTMLElement)) {
-          return;
-        }
+      tabButton.addEventListener(
+        'click',
+        (event) => {
+          const { currentTarget } = event;
+          if (!(currentTarget instanceof HTMLElement)) {
+            return;
+          }
 
-        window.location.hash = currentTarget.id;
-        changeTabs(currentTarget);
-      }, { signal: abortController.signal });
+          window.location.hash = currentTarget.id;
+          changeTabs(currentTarget);
+        },
+        { signal: abortController.signal },
+      );
     });
   };
 
@@ -38,31 +42,35 @@ export const tabs = () => {
     let tabFocus = 0;
 
     if (tabList) {
-      tabList.addEventListener('keydown', (event: Event) => {
-        const { key } = event as KeyboardEvent;
+      tabList.addEventListener(
+        'keydown',
+        (event: Event) => {
+          const { key } = event as KeyboardEvent;
 
-        // Move right
-        if (key === 'ArrowRight' || key === 'ArrowLeft') {
-          tabButtons[tabFocus].setAttribute('tabindex', '-1');
-          if (key === 'ArrowRight') {
-            tabFocus += 1;
-            // If we're at the end, go to the start
-            if (tabFocus >= tabButtons.length) {
-              tabFocus = 0;
+          // Move right
+          if (key === 'ArrowRight' || key === 'ArrowLeft') {
+            tabButtons[tabFocus].setAttribute('tabindex', '-1');
+            if (key === 'ArrowRight') {
+              tabFocus += 1;
+              // If we're at the end, go to the start
+              if (tabFocus >= tabButtons.length) {
+                tabFocus = 0;
+              }
+              // Move left
+            } else if (key === 'ArrowLeft') {
+              tabFocus -= 1;
+              // If we're at the start, move to the end
+              if (tabFocus < 0) {
+                tabFocus = tabButtons.length - 1;
+              }
             }
-          // Move left
-          } else if (key === 'ArrowLeft') {
-            tabFocus -= 1;
-            // If we're at the start, move to the end
-            if (tabFocus < 0) {
-              tabFocus = tabButtons.length - 1;
-            }
+
+            tabButtons[tabFocus].setAttribute('tabindex', '0');
+            tabButtons[tabFocus].focus();
           }
-
-          tabButtons[tabFocus].setAttribute('tabindex', '0');
-          tabButtons[tabFocus].focus();
-        }
-      }, { signal: abortController.signal });
+        },
+        { signal: abortController.signal },
+      );
     }
   };
 
@@ -72,7 +80,9 @@ export const tabs = () => {
       return;
     }
 
-    const tabButtonElement = document.querySelector(`[role="tab"][data-tab-target="${hash}"]`) as HTMLElement;
+    const tabButtonElement = document.querySelector(
+      `[role="tab"][data-tab-target="${hash}"]`,
+    ) as HTMLElement;
     if (!tabButtonElement) {
       return;
     }
@@ -98,14 +108,20 @@ export const tabs = () => {
     // Remove all current selected tabs
     parent
       .querySelectorAll('[aria-selected="true"]')
-      .forEach((tabElement) => tabElement.setAttribute('aria-selected', 'false'));
+      .forEach((tabElement) =>
+        tabElement.setAttribute('aria-selected', 'false'),
+      );
 
     // Set this tab as selected
     tabButtonElement.setAttribute('aria-selected', 'true');
 
     // Hide all tab panels
-    const tabPanelElements = grandparent.querySelectorAll('[role="tabpanel"]') as NodeListOf<HTMLElement>;
-    tabPanelElements.forEach((tabPanelElement: HTMLElement) => tabPanelElement.setAttribute('hidden', 'true'));
+    const tabPanelElements = grandparent.querySelectorAll(
+      '[role="tabpanel"]',
+    ) as NodeListOf<HTMLElement>;
+    tabPanelElements.forEach((tabPanelElement: HTMLElement) =>
+      tabPanelElement.setAttribute('hidden', 'true'),
+    );
 
     // Show the selected panel
     grandparent.parentNode

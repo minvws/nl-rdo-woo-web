@@ -1,47 +1,67 @@
 <script setup>
-  import { formatFileSize, formatList, isValidMaxFileSize } from '@js/admin/utils';
-  import { computed } from 'vue';
-  import Alert from '../../Alert.vue';
-  import FilesList from './FilesList.vue';
+import {
+  formatFileSize,
+  formatList,
+  isValidMaxFileSize,
+} from '@js/admin/utils';
+import { computed } from 'vue';
+import Alert from '../../Alert.vue';
+import FilesList from './FilesList.vue';
 
-  const props = defineProps({
-    allowedFileTypes: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-    allowedMimeTypes: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-    files: {
-      type: Array,
-      default: () => [],
-    },
-    maxFileSize: {
-      type: Number,
-      required: false,
-    },
-  });
+const props = defineProps({
+  allowedFileTypes: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
+  allowedMimeTypes: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
+  files: {
+    type: Array,
+    default: () => [],
+  },
+  maxFileSize: {
+    type: Number,
+    required: false,
+  },
+});
 
-  const hasAllowedMimeTypes = props.allowedMimeTypes.length > 0;
-  const formattedAllowedFileTypes = formatList(props.allowedFileTypes, 'en');
-  const hasMaxFileSize = isValidMaxFileSize(props.maxFileSize);
-  const numberOfFiles = computed(() => props.files.length);
-  const firstFile = computed(() => props.files[0].file);
+const hasAllowedMimeTypes = props.allowedMimeTypes.length > 0;
+const formattedAllowedFileTypes = formatList(props.allowedFileTypes, 'en');
+const hasMaxFileSize = isValidMaxFileSize(props.maxFileSize);
+const numberOfFiles = computed(() => props.files.length);
+const firstFile = computed(() => props.files[0].file);
 </script>
 
 <template>
   <div v-if="numberOfFiles > 0">
     <Alert type="danger">
       <p>
-        <template v-if="numberOfFiles === 1">Het bestand "{{ firstFile.name }}" ({{ formatFileSize(firstFile.size) }}) werd genegeerd omdat het invalide is.</template><template v-else>De volgende bestanden werden genegeerd omdat ze invalide zijn.</template>
-        <template v-if="hasAllowedMimeTypes"> Alleen bestanden van het type {{ formattedAllowedFileTypes }} zijn toegestaan.</template> <template v-if="hasMaxFileSize">De maximale bestandsgrootte per bestand is {{ formatFileSize(props.maxFileSize) }}.</template>
+        <template v-if="numberOfFiles === 1"
+          >Het bestand "{{ firstFile.name }}" ({{
+            formatFileSize(firstFile.size)
+          }}) werd genegeerd omdat het invalide is.</template
+        ><template v-else
+          >De volgende bestanden werden genegeerd omdat ze invalide
+          zijn.</template
+        >
+        <template v-if="hasAllowedMimeTypes">
+          Alleen bestanden van het type {{ formattedAllowedFileTypes }} zijn
+          toegestaan.</template
+        >
+        <template v-if="hasMaxFileSize"
+          >De maximale bestandsgrootte per bestand is
+          {{ formatFileSize(props.maxFileSize) }}.</template
+        >
       </p>
 
       <template v-if="numberOfFiles > 1" #extra>
-        <FilesList :files="props.files.map((invalidFile) => invalidFile.file)" />
+        <FilesList
+          :files="props.files.map((invalidFile) => invalidFile.file)"
+        />
       </template>
     </Alert>
   </div>

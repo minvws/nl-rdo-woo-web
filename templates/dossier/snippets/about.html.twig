@@ -25,7 +25,7 @@
                             {% for attachment in attachments %}
                             <li>
                                 <time datetime="{{ attachment.formalDate | date('Y-m-d') }}">{{ attachment.formalDate | format_date('long') }}</time>
-                                - <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a> ({{ attachment.mimeType }}, {{ attachment.size | size }})
+                                - <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a> ({{ attachment.sourceType | trans }}, {{ attachment.size | size }})
                             </li>
                             {% endfor %}
                         </ul>

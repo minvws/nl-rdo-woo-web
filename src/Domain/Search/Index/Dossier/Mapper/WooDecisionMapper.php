@@ -10,7 +10,7 @@ use App\Domain\Search\Index\ElasticDocumentType;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
 
-readonly class WooDecisionMapper
+readonly class WooDecisionMapper implements ElasticDossierMapperInterface
 {
     public function __construct(
         private DefaultDossierMapper $defaultMapper,

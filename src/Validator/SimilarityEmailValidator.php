@@ -30,7 +30,7 @@ class SimilarityEmailValidator extends ConstraintValidator
             return;
         }
 
-        if ($this->tokenStorage->getToken() == null) {
+        if ($this->tokenStorage->getToken() === null) {
             return;
         }
 

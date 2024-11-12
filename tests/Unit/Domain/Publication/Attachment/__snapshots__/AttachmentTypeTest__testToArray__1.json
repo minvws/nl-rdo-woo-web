@@ -101,16 +101,6 @@
     },
     {
         "type": "AttachmentType",
-        "value": "c_e0865e4d",
-        "label": "decision_on_request_art3_wob"
-    },
-    {
-        "type": "AttachmentType",
-        "value": "c_bcaddc61",
-        "label": "decision_on_request_art4_1_woo"
-    },
-    {
-        "type": "AttachmentType",
         "value": "c_30e8b503",
         "label": "concession"
     },
@@ -181,11 +171,6 @@
     },
     {
         "type": "AttachmentType",
-        "value": "c_8ec8e5e7",
-        "label": "application_art_4_1_woo"
-    },
-    {
-        "type": "AttachmentType",
         "value": "c_06a67c95",
         "label": "objection"
     },
@@ -193,6 +178,11 @@
         "type": "AttachmentType",
         "value": "c_ef935990",
         "label": "complaint"
+    },
+    {
+        "type": "AttachmentType",
+        "value": "ww_jc6woe9",
+        "label": "complaint_judgement"
     },
     {
         "type": "AttachmentType",
@@ -208,11 +198,6 @@
         "type": "AttachmentType",
         "value": "c_dad2a6ed",
         "label": "permit_application"
-    },
-    {
-        "type": "AttachmentType",
-        "value": "c_dd451365",
-        "label": "wob_request"
     },
     {
         "type": "AttachmentType",
@@ -243,6 +228,11 @@
         "type": "AttachmentType",
         "value": "c_03c52ba0",
         "label": "parliamentary_question_without_answer"
+    },
+    {
+        "type": "AttachmentType",
+        "value": "c_bf0f9c95",
+        "label": "motion"
     },
     {
         "type": "AttachmentType",
@@ -283,5 +273,20 @@
         "type": "AttachmentType",
         "value": "c_42e406dd",
         "label": "meeting_report"
+    },
+    {
+        "type": "AttachmentType",
+        "value": "ww_a2azo7q",
+        "label": "decision_on_objection"
+    },
+    {
+        "type": "AttachmentType",
+        "value": "c_4f50ca9c",
+        "label": "judegement_on_wob_woo_request"
+    },
+    {
+        "type": "AttachmentType",
+        "value": "c_1cf18f83",
+        "label": "wob_woo_request"
     }
 ]

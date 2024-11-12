@@ -32,7 +32,7 @@
 
     .woo-rich-text > ul,
     .woo-rich-text > ol {
-        @apply mb-6;
+        @apply mb-6 last:mb-0;
     }
 
     .woo-rich-text li {

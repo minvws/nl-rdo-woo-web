@@ -52,7 +52,7 @@ class DocumentComparatorTest extends MockeryTestCase
         $document->expects('getLinks')->twice()->andReturn([]);
         $document->expects('getRemark')->twice()->andReturnNull();
         $document->expects('getDocumentDate')->twice()->andReturnNull();
-        $document->expects('getFileInfo->getSourceType')->twice()->andReturn(SourceType::SOURCE_EMAIL);
+        $document->expects('getFileInfo->getSourceType')->twice()->andReturn(SourceType::EMAIL);
         $document->expects('getFileInfo->getName')->twice()->andReturn('foo.txt');
         $document->expects('getInquiries')->twice()->andReturn(new ArrayCollection());
         $document->expects('getRefersTo')->twice()->andReturn(new ArrayCollection());
@@ -69,7 +69,7 @@ class DocumentComparatorTest extends MockeryTestCase
         $metadata->expects('getLinks')->twice()->andReturn([]);
         $metadata->expects('getRemark')->twice()->andReturnNull();
         $metadata->expects('getDate')->twice()->andReturnNull();
-        $metadata->expects('getSourceType')->twice()->andReturn(SourceType::SOURCE_EMAIL);
+        $metadata->expects('getSourceType')->twice()->andReturn(SourceType::EMAIL);
         $metadata->expects('getFilename')->twice()->andReturn('foo.txt');
         $metadata->expects('getCaseNumbers')->twice()->andReturn([]);
         $metadata->expects('getRefersTo')->twice()->andReturn([]);

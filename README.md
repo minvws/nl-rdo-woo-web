@@ -12,28 +12,28 @@ Note: The published version does not include the Rijksoverheid theme used on Ope
 
 ## Technical information
 
-For technical info, see the [Technical](docs/technical.md) documentation.
+For technical info, see the [Technical](docs/technische-documentatie/technical.md) documentation.
 
 ## Installation
 
 The Woo platform is based on the Symfony framework and uses Elasticsearch as search engine.
 
-- For installing, see the [Install](docs/install.md) documentation
-- For updating or local setup troubleshooting, see the [Update](docs/update.md) documentation
-- For Elasticsearch, see the [Elasticsearch](docs/elastic_index.md) documentation.
-- For platform console commands, see the [Commands](docs/commands.md) documentation.
+- For installing, see the [Install](docs/technische-documentatie/install.md) documentation
+- For updating or local setup troubleshooting, see the [Update](docs/technische-documentatie/update.md) documentation
+- For Elasticsearch, see the [Elasticsearch](docs/technische-documentatie/elastic_index.md) documentation.
+- For platform console commands, see the [Commands](docs/technische-documentatie/commands.md) documentation.
 
 ## Roles and permissions
 
-For Roles and permissions see the [Access roles](docs/access-roles.md) documentation.
+For Roles and permissions see the [Access roles](docs/technische-documentatie/access-roles.md) documentation.
 
 ## Doctrine entities
 
-For Doctrine entities, see the [Doctrine](docs/doctrine.md) documentation.
+For Doctrine entities, see the [Doctrine](docs/technische-documentatie/doctrine.md) documentation.
 
 ## Terminology
 
-For terminology, see the [Terminology](docs/terminology.md) documentation.
+For terminology, see the [Terminology](docs/technische-documentatie/terminology.md) documentation.
 
 ## Licensing
 

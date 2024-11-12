@@ -5,16 +5,12 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Department;
+use App\Entity\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Department>
- *
- * @method Department|null find($id, $lockMode = null, $lockVersion = null)
- * @method Department|null findOneBy(array $criteria, array $orderBy = null)
- * @method Department[]    findAll()
- * @method Department[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class DepartmentRepository extends ServiceEntityRepository
 {
@@ -73,7 +69,7 @@ class DepartmentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('d')
             ->where('d.public = true')
-            ->orderBy('d.name', 'ASC');
+            ->orderBy('d.shortTag', 'ASC');
 
         /** @var array<array-key,Department> */
         return $qb->getQuery()->getResult();
@@ -87,5 +83,19 @@ class DepartmentRepository extends ServiceEntityRepository
 
         /** @var int */
         return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @return Department[]
+     */
+    public function getOrganisationDepartmentsSortedByName(Organisation $organisation): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->innerJoin('d.organisations', 'o')
+            ->where('o.id = :organisationId')
+            ->orderBy('d.name', 'asc')
+            ->setParameter('organisationId', $organisation->getId());
+
+        return $qb->getQuery()->getResult();
     }
 }

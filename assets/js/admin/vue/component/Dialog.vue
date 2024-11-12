@@ -1,38 +1,38 @@
 <script setup lang="ts">
-  import { uniqueId } from '@js/utils';
-  import Icon from './Icon.vue';
-  import { ref, watch } from 'vue';
+import { uniqueId } from '@js/utils';
+import Icon from './Icon.vue';
+import { ref, watch } from 'vue';
 
-  interface Props {
-    title: string;
+interface Props {
+  title: string;
+}
+
+const props = defineProps<Props>();
+
+const dialogElement = ref<HTMLDialogElement | null>(null);
+const isOpen = defineModel({ default: false });
+const titleId = `${uniqueId('dialog')}-title`;
+
+const onClose = () => {
+  isOpen.value = false;
+};
+
+const closeDialog = () => {
+  dialogElement.value?.close();
+};
+
+const showDialog = () => {
+  dialogElement.value?.showModal();
+};
+
+watch(isOpen, (value) => {
+  if (value) {
+    showDialog();
+    return;
   }
 
-  const props = defineProps<Props>();
-
-  const dialogElement = ref<HTMLDialogElement | null>(null);
-  const isOpen = defineModel({ default: false });
-  const titleId = `${uniqueId('dialog')}-title`;
-
-  const onClose = () => {
-    isOpen.value = false;
-  };
-
-  const closeDialog = () => {
-    dialogElement.value?.close();
-  };
-
-  const showDialog = () => {
-    dialogElement.value?.showModal();
-  };
-
-  watch(isOpen, (value) => {
-    if (value) {
-      showDialog();
-      return;
-    }
-
-    closeDialog();
-  });
+  closeDialog();
+});
 </script>
 
 <template>

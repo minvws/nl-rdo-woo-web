@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Search\Index\Rollover\DocumentCounts;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use App\Entity\Document;
 use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Organisation;
-use App\Service\Elastic\Model\DocumentCounts;
 use App\Service\Inventory\DocumentNumber;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,11 +22,6 @@ use Doctrine\Persistence\ManagerRegistry;
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  *
  * @extends ServiceEntityRepository<Document>
- *
- * @method Document|null find($id, $lockMode = null, $lockVersion = null)
- * @method Document|null findOneBy(array $criteria, array $orderBy = null)
- * @method Document[]    findAll()
- * @method Document[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class DocumentRepository extends ServiceEntityRepository
 {
@@ -334,5 +329,19 @@ class DocumentRepository extends ServiceEntityRepository
         $result = $qb->getQuery()->getOneOrNullResult();
 
         return $result;
+    }
+
+    /**
+     * @return Document[]
+     */
+    public function getRevokedDocumentsInPublicDossiers(): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->innerJoin('d.dossiers', 'ds')
+            ->where('ds.status = :status')
+            ->andWhere('d.withdrawn = true OR d.suspended = true')
+            ->setParameter('status', DossierStatus::PUBLISHED);
+
+        return $qb->getQuery()->getResult();
     }
 }

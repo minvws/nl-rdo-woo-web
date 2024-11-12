@@ -13,6 +13,7 @@ use App\Entity\Document;
 use App\Entity\FileInfo;
 use App\Entity\Inquiry;
 use App\Entity\Judgement;
+use App\SourceType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -50,7 +51,7 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
         $fileInfo->shouldReceive('getMimetype')->andReturn('application/pdf');
         $fileInfo->shouldReceive('getSize')->andReturn(1234);
         $fileInfo->shouldReceive('getType')->andReturn('pdf');
-        $fileInfo->shouldReceive('getSourceType')->andReturn('doc');
+        $fileInfo->shouldReceive('getSourceType')->andReturn(SourceType::DOC);
         $fileInfo->shouldReceive('getName')->andReturn('foo.bar');
 
         $document = \Mockery::mock(Document::class);
@@ -82,7 +83,7 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
                 'mime_type' => 'application/pdf',
                 'file_size' => 1234,
                 'file_type' => 'pdf',
-                'source_type' => 'doc',
+                'source_type' => SourceType::DOC,
                 'date' => '2024-04-16T10:54:15+00:00',
                 'filename' => 'foo.bar',
                 'family_id' => 789,

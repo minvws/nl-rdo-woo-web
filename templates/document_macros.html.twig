@@ -156,9 +156,9 @@
                 {{ doc.documentId }}
             </td>
             <td>
-                {% set documentType = doc.judgement is defined and doc.judgement.isAlreadyPublic ? 'web' : doc.fileInfo.sourceType %}
+                {% set documentType = doc.judgement is defined and doc.judgement.isAlreadyPublic ? 'web' : (doc.fileInfo.sourceType | trans) %}
                 <twig:Public:FileIcon type="{{ documentType }}" />
-                <span class="sr-only">{{ ("public.documents.file_type." ~ doc.fileInfo.sourceType) | trans }}</span>
+                <span class="sr-only">{{ doc.fileInfo.sourceType | trans }}</span>
             </td>
             <td>
                 <div class="woo-readable-width">

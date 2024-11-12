@@ -95,10 +95,6 @@ readonly class UpdateMainDocumentHandler
         if ($command->grounds !== null) {
             $mainDocument->setGrounds($command->grounds);
         }
-
-        if ($command->name !== null) {
-            $mainDocument->getFileInfo()->setName($command->name);
-        }
     }
 
     private function mapUpload(UpdateMainDocumentCommand $command, AbstractMainDocument $mainDocument): void

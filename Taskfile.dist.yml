@@ -3,7 +3,7 @@ version: "3"
 
 includes:
   docs:
-    taskfile: docs/Taskfile.dist.yml
+    taskfile: docs/technische-documentatie/Taskfile.dist.yml
     dir: docs
   rf:
     taskfile: tests/robot_framework/Taskfile.dist.yml

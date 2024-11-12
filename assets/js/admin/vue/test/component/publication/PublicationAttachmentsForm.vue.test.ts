@@ -13,7 +13,11 @@ describe('The "PublicationAttachmentsForm" component', () => {
 
   const createComponent = (options: Partial<CreateComponentOptions> = {}) => {
     const {
-      allowedFileTypes = [], allowedMimeTypes = [], documentLanguageOptions = [], documentTypeOptions = [], groundOptions = [],
+      allowedFileTypes = [],
+      allowedMimeTypes = [],
+      documentLanguageOptions = [],
+      documentTypeOptions = [],
+      groundOptions = [],
     } = options;
 
     return mount(PublicationAttachmentsForm, {
@@ -48,23 +52,25 @@ describe('The "PublicationAttachmentsForm" component', () => {
     });
   };
 
-  const getComponent = (componentName: string, createComponentOptions: Partial<CreateComponentOptions> = {}) => createComponent(
-    createComponentOptions,
-  ).findComponent({ name: componentName });
+  const getComponent = (
+    componentName: string,
+    createComponentOptions: Partial<CreateComponentOptions> = {},
+  ) =>
+    createComponent(createComponentOptions).findComponent({
+      name: componentName,
+    });
 
   test('should display a file upload field', () => {
     const allowedMimeTypes = ['mocked/mime-type-1', 'mocked/mime-type-2'];
     const component = getComponent('InputDocumentFile', { allowedMimeTypes });
     expect(component.props('allowedMimeTypes')).toEqual(allowedMimeTypes);
     expect(component.props('fileInfo')).toEqual(
-      expect.objectContaining({ name: 'mocked-name', size: 1024, type: 'mocked/mime-type' }),
+      expect.objectContaining({
+        name: 'mocked-name',
+        size: 1024,
+        type: 'mocked/mime-type',
+      }),
     );
-  });
-
-  test('should allow the user to provide the file name', () => {
-    const component = getComponent('InputDocumentName');
-
-    expect(component.props('value')).toBe('mocked-name');
   });
 
   test('should allow the user to provide the internal reference of the file', () => {
@@ -75,7 +81,9 @@ describe('The "PublicationAttachmentsForm" component', () => {
 
   test('should allow the user to provide the type of this file', () => {
     const documentTypeOptions = ['mocked-type-1', 'mocked-type-2'];
-    const component = getComponent('InputDocumentTypes', { documentTypeOptions });
+    const component = getComponent('InputDocumentTypes', {
+      documentTypeOptions,
+    });
 
     expect(component.props('options')).toEqual(documentTypeOptions);
     expect(component.props('value')).toBe('mocked-type');
@@ -83,7 +91,9 @@ describe('The "PublicationAttachmentsForm" component', () => {
 
   test('should allow the user to provide the language of this file', () => {
     const documentLanguageOptions = ['mocked-language-1', 'mocked-language-2'];
-    const component = getComponent('InputDocumentLanguages', { documentLanguageOptions });
+    const component = getComponent('InputDocumentLanguages', {
+      documentLanguageOptions,
+    });
 
     expect(component.props('options')).toEqual(documentLanguageOptions);
     expect(component.props('value')).toBe('mocked-language');
@@ -100,6 +110,9 @@ describe('The "PublicationAttachmentsForm" component', () => {
     const component = getComponent('InputGrounds', { groundOptions });
 
     expect(component.props('options')).toEqual(groundOptions);
-    expect(component.props('values')).toEqual(['mocked-ground-1', 'mocked-ground-2']);
+    expect(component.props('values')).toEqual([
+      'mocked-ground-1',
+      'mocked-ground-2',
+    ]);
   });
 });

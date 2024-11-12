@@ -10,14 +10,13 @@ use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @extends AbstractMainDocument<Covenant>
+ */
 #[ORM\Entity(repositoryClass: CovenantDocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class CovenantDocument extends AbstractMainDocument
 {
-    #[ORM\OneToOne(inversedBy: 'document', targetEntity: Covenant::class)]
-    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private Covenant $dossier;
-
     public function __construct(
         Covenant $dossier,
         \DateTimeImmutable $formalDate,
@@ -30,11 +29,6 @@ class CovenantDocument extends AbstractMainDocument
         $this->type = AttachmentType::COVENANT;
         $this->language = $language;
         $this->fileInfo->setPaginatable(true);
-    }
-
-    public function getDossier(): Covenant
-    {
-        return $this->dossier;
     }
 
     public static function getUploadGroupId(): UploadGroupId

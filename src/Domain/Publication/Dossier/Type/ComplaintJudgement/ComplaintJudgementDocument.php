@@ -10,14 +10,13 @@ use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @extends AbstractMainDocument<ComplaintJudgement>
+ */
 #[ORM\Entity(repositoryClass: ComplaintJudgementDocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class ComplaintJudgementDocument extends AbstractMainDocument
 {
-    #[ORM\OneToOne(inversedBy: 'document', targetEntity: ComplaintJudgement::class)]
-    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private ComplaintJudgement $dossier;
-
     public function __construct(
         ComplaintJudgement $dossier,
         \DateTimeImmutable $formalDate,
@@ -33,11 +32,6 @@ class ComplaintJudgementDocument extends AbstractMainDocument
         $this->fileInfo->setPaginatable(true);
     }
 
-    public function getDossier(): ComplaintJudgement
-    {
-        return $this->dossier;
-    }
-
     public static function getUploadGroupId(): UploadGroupId
     {
         return UploadGroupId::COMPLAINT_JUDGEMENT_DOCUMENTS;
@@ -49,7 +43,7 @@ class ComplaintJudgementDocument extends AbstractMainDocument
     public static function getAllowedTypes(): array
     {
         return [
-            AttachmentType::COMPLAINT,
+            AttachmentType::COMPLAINT_JUDGEMENT,
         ];
     }
 }

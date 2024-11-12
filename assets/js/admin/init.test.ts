@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, MockInstance, test, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  MockInstance,
+  test,
+  vi,
+} from 'vitest';
 import { jsEnabled } from '@utils';
 import { init } from './init';
 
@@ -31,39 +39,66 @@ describe('the main "init" function for the admin', () => {
   });
 
   vi.mock('@js/shared', () => ({
-    detailsComponents: () => ({ cleanup: detailsComponentsCleanupSpy, initialize: detailsComponentsInitializeSpy }),
+    detailsComponents: () => ({
+      cleanup: detailsComponentsCleanupSpy,
+      initialize: detailsComponentsInitializeSpy,
+    }),
   }));
 
   vi.mock('./click-on-selector', () => ({
-    clickOnSelector: () => ({ cleanup: clickOnSelectorCleanupSpy, initialize: clickOnSelectorInitializeSpy }),
+    clickOnSelector: () => ({
+      cleanup: clickOnSelectorCleanupSpy,
+      initialize: clickOnSelectorInitializeSpy,
+    }),
   }));
 
   vi.mock('./copy-to-clipboard', () => ({
-    copyToClipboard: () => ({ cleanup: copyToClipboardCleanupSpy, initialize: copyToClipboardInitializeSpy }),
+    copyToClipboard: () => ({
+      cleanup: copyToClipboardCleanupSpy,
+      initialize: copyToClipboardInitializeSpy,
+    }),
   }));
 
   vi.mock('./dialog', () => ({
-    toggleDialog: () => ({ cleanup: toggleDialogCleanupSpy, initialize: toggleDialogInitializeSpy }),
+    toggleDialog: () => ({
+      cleanup: toggleDialogCleanupSpy,
+      initialize: toggleDialogInitializeSpy,
+    }),
   }));
 
   vi.mock('./manage-widget', () => ({
-    manageWidget: () => ({ cleanup: manageWidgetCleanupSpy, initialize: manageWidgetInitializeSpy }),
+    manageWidget: () => ({
+      cleanup: manageWidgetCleanupSpy,
+      initialize: manageWidgetInitializeSpy,
+    }),
   }));
 
   vi.mock('./print', () => ({
-    printPage: () => ({ cleanup: printPageCleanupSpy, initialize: printPageInitializeSpy }),
+    printPage: () => ({
+      cleanup: printPageCleanupSpy,
+      initialize: printPageInitializeSpy,
+    }),
   }));
 
   vi.mock('./sort-tables', () => ({
-    sortTables: () => ({ cleanup: sortTablesCleanupSpy, initialize: sortTablesInitializeSpy }),
+    sortTables: () => ({
+      cleanup: sortTablesCleanupSpy,
+      initialize: sortTablesInitializeSpy,
+    }),
   }));
 
   vi.mock('./upload-areas', () => ({
-    uploadAreas: () => ({ cleanup: uploadAreasCleanupSpy, initialize: uploadAreasInitializeSpy }),
+    uploadAreas: () => ({
+      cleanup: uploadAreasCleanupSpy,
+      initialize: uploadAreasInitializeSpy,
+    }),
   }));
 
   vi.mock('./visibility-toggler', () => ({
-    visibilityToggler: () => ({ cleanup: visibilityTogglerCleanupSpy, initialize: visibilityTogglerInitializeSpy }),
+    visibilityToggler: () => ({
+      cleanup: visibilityTogglerCleanupSpy,
+      initialize: visibilityTogglerInitializeSpy,
+    }),
   }));
 
   beforeEach(() => {

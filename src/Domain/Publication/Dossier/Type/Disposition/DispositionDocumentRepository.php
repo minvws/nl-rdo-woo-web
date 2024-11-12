@@ -15,11 +15,6 @@ use Webmozart\Assert\Assert;
 
 /**
  * @extends ServiceEntityRepository<DispositionDocument>
- *
- * @method DispositionDocument|null find($id, $lockMode = null, $lockVersion = null)
- * @method DispositionDocument|null findOneBy(array $criteria, array $orderBy = null)
- * @method DispositionDocument[]    findAll()
- * @method DispositionDocument[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class DispositionDocumentRepository extends ServiceEntityRepository implements MainDocumentRepositoryInterface
 {

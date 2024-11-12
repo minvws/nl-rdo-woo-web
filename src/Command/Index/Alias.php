@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command\Index;
 
-use App\Service\Elastic\IndexService;
+use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,9 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Alias extends Command
 {
-    protected IndexService $indexService;
+    protected ElasticIndexManager $indexService;
 
-    public function __construct(IndexService $indexService)
+    public function __construct(ElasticIndexManager $indexService)
     {
         parent::__construct();
 

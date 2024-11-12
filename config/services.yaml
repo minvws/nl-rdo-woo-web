@@ -28,7 +28,7 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\Service\Elastic\MappingService:
+    App\Domain\Search\Index\Rollover\MappingService:
         arguments:
             $rootDir: '%kernel.project_dir%'
 
@@ -43,7 +43,7 @@ services:
             $mtlsCAPath: '%env(ELASTICSEARCH_MTLS_CA_PATH)%'
 
     Elastic\Elasticsearch\ClientInterface:
-        alias: 'App\Service\Elastic\CollectorClient'
+        alias: 'App\DataCollector\CollectorClient'
 
     tika.client:
         class: GuzzleHttp\Client
@@ -219,9 +219,9 @@ services:
         arguments:
             $mappers: !tagged_iterator domain.search.index.dossier_mapper
 
-    App\Domain\Search\Index\DefaultDossierMapper:
+    App\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper:
         tags:
-            - { name: 'tagged_iterator domain.search.index.dossier_mapper', priority: -100 }
+            - { name: 'domain.search.index.dossier_mapper', priority: 100 }
 
     App\Domain\Search\Index\SubType\SubTypeIndexer:
         arguments:

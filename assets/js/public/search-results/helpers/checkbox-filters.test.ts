@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
-  getCheckboxFilterElements, getNamesAndValues, getUpdatedParamsFromCheckboxFilter, queryCheckboxFilterElements,
+  getCheckboxFilterElements,
+  getNamesAndValues,
+  getUpdatedParamsFromCheckboxFilter,
+  queryCheckboxFilterElements,
 } from './checkbox-filters';
 
 let mockedSearchParams: URLSearchParams;
@@ -31,7 +34,8 @@ describe('The helper functions regarding checkbox filters', () => {
     mockedSearchParams = new URLSearchParams();
   });
 
-  const getCheckboxElementByName = (name: string) => document.querySelector(`input[name="${name}"]`) as HTMLInputElement;
+  const getCheckboxElementByName = (name: string) =>
+    document.querySelector(`input[name="${name}"]`) as HTMLInputElement;
 
   describe('the "getCheckboxFilterElements" function', () => {
     test('should retrieve all checkbox filter elements available', () => {
@@ -41,8 +45,13 @@ describe('The helper functions regarding checkbox filters', () => {
 
   describe('the "queryCheckboxFilterElements" function', () => {
     test('should retrieve all checkbox filter within the provided element', () => {
-      expect(queryCheckboxFilterElements(document.getElementById('none-existing-id')).length).toBe(0);
-      expect(queryCheckboxFilterElements(document.getElementById('some-id')).length).toBe(2);
+      expect(
+        queryCheckboxFilterElements(document.getElementById('none-existing-id'))
+          .length,
+      ).toBe(0);
+      expect(
+        queryCheckboxFilterElements(document.getElementById('some-id')).length,
+      ).toBe(2);
     });
   });
 
@@ -53,18 +62,26 @@ describe('The helper functions regarding checkbox filters', () => {
         { name: 'sublevel_item_1_name', value: 'sublevel_item_1_value' },
         { name: 'sublevel_item_2_name', value: 'sublevel_item_2_value' },
       ];
-      expect(getNamesAndValues(getCheckboxElementByName('with_sublevel_name'))).toEqual(expected);
+      expect(
+        getNamesAndValues(getCheckboxElementByName('with_sublevel_name')),
+      ).toEqual(expected);
     });
 
     test('should retrieve the name and value for the provided checkbox if it is not grouped', () => {
-      const expected = [{ name: 'sublevel_item_1_name', value: 'sublevel_item_1_value' }];
-      expect(getNamesAndValues(getCheckboxElementByName('sublevel_item_1_name'))).toEqual(expected);
+      const expected = [
+        { name: 'sublevel_item_1_name', value: 'sublevel_item_1_value' },
+      ];
+      expect(
+        getNamesAndValues(getCheckboxElementByName('sublevel_item_1_name')),
+      ).toEqual(expected);
     });
   });
 
   describe('the "getUpdatedParamsFromCheckboxFilter" function', () => {
     test('should return the current search params if no checkbox element is provided', () => {
-      expect(getUpdatedParamsFromCheckboxFilter(undefined)).toEqual(new URLSearchParams());
+      expect(getUpdatedParamsFromCheckboxFilter(undefined)).toEqual(
+        new URLSearchParams(),
+      );
     });
 
     test('should append the names and values for all checkboxes in a group to the current url', () => {
@@ -73,28 +90,48 @@ describe('The helper functions regarding checkbox filters', () => {
       expected.append('sublevel_item_1_name', 'sublevel_item_1_value');
       expected.append('sublevel_item_2_name', 'sublevel_item_2_value');
 
-      expect(getUpdatedParamsFromCheckboxFilter(getCheckboxElementByName('with_sublevel_name'), true)).toEqual(expected);
+      expect(
+        getUpdatedParamsFromCheckboxFilter(
+          getCheckboxElementByName('with_sublevel_name'),
+          true,
+        ),
+      ).toEqual(expected);
     });
 
     test('should remove the names and values for all checkboxes in a group to the current url', () => {
       mockedSearchParams = new URLSearchParams('?mocked=true');
       mockedSearchParams.append('with_sublevel_name', 'with_sublevel_value');
-      mockedSearchParams.append('sublevel_item_1_name', 'sublevel_item_1_value');
-      mockedSearchParams.append('sublevel_item_2_name', 'sublevel_item_2_value');
-
-      expect(getUpdatedParamsFromCheckboxFilter(getCheckboxElementByName('with_sublevel_name'), false).toString()).toEqual(
-        new URLSearchParams('?mocked=true').toString(),
+      mockedSearchParams.append(
+        'sublevel_item_1_name',
+        'sublevel_item_1_value',
       );
+      mockedSearchParams.append(
+        'sublevel_item_2_name',
+        'sublevel_item_2_value',
+      );
+
+      expect(
+        getUpdatedParamsFromCheckboxFilter(
+          getCheckboxElementByName('with_sublevel_name'),
+          false,
+        ).toString(),
+      ).toEqual(new URLSearchParams('?mocked=true').toString());
     });
 
     test('should remove the name and value from the top level checkbox if it is the only one in a group which is selected', () => {
       mockedSearchParams = new URLSearchParams('?mocked=true');
       mockedSearchParams.append('with_sublevel_name', 'with_sublevel_value');
-      mockedSearchParams.append('sublevel_item_1_name', 'sublevel_item_1_value');
-
-      expect(getUpdatedParamsFromCheckboxFilter(getCheckboxElementByName('sublevel_item_1_name'), false).toString()).toEqual(
-        new URLSearchParams('?mocked=true').toString(),
+      mockedSearchParams.append(
+        'sublevel_item_1_name',
+        'sublevel_item_1_value',
       );
+
+      expect(
+        getUpdatedParamsFromCheckboxFilter(
+          getCheckboxElementByName('sublevel_item_1_name'),
+          false,
+        ).toString(),
+      ).toEqual(new URLSearchParams('?mocked=true').toString());
     });
   });
 });

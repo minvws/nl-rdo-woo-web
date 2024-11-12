@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  import Icon from './Icon.vue';
+import Icon from './Icon.vue';
 
-  interface Props {
-    size?: number;
-  }
+interface Props {
+  size?: number;
+}
 
-  const props = defineProps<Props>();
+const props = defineProps<Props>();
 </script>
 
 <template>

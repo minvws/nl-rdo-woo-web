@@ -1,47 +1,56 @@
-<script setup>
-  import { reactive, ref, watch } from 'vue';
+<script setup lang="ts">
+import { onMounted, reactive, ref, watch } from 'vue';
 
-  const element = ref(null);
-  const isCollapsed = defineModel({ default: false });
-  const style = reactive({});
+const element = ref<HTMLDivElement | null>(null);
+const isCollapsed = defineModel({ default: false });
+const style = reactive<{ height: string; overflow: string }>({
+  height: '',
+  overflow: '',
+});
 
-  const emit = defineEmits('collapsed');
+const emit = defineEmits<{
+  collapsed: [];
+}>();
 
-  const onTransitionEnd = () => {
-    if (isCollapsed.value) {
-      emit('collapsed');
-      return;
-    }
+const onTransitionEnd = () => {
+  if (isCollapsed.value) {
+    emit('collapsed');
+    return;
+  }
 
-    style.height = null;
-    style.overflow = null;
-  };
+  style.height = '';
+  style.overflow = '';
+};
 
-  const collapse = async () => {
-    style.height = `${element.value.scrollHeight}px`;
-    style.overflow = `hidden`;
+const collapse = async () => {
+  style.height = `${element.value?.scrollHeight}px`;
+  style.overflow = 'hidden';
 
-    setTimeout(() => {
-      style.height = `0px`;
-    }, 100);
-  };
+  setTimeout(() => {
+    style.height = '0px';
+  }, 100);
+};
 
-  const expand = () => {
-    style.height = `${element.value.scrollHeight}px`;
-    style.overflow = `hidden`;
-  };
+const expand = () => {
+  style.height = `${element.value?.scrollHeight}px`;
+  style.overflow = 'hidden';
+};
 
-  watch(
-    isCollapsed,
-    (shouldCollapse) => {
-      if (shouldCollapse) {
-        collapse();
-        return;
-      }
+onMounted(async () => {
+  if (isCollapsed.value) {
+    await collapse();
+    onTransitionEnd();
+  }
+});
 
-      expand();
-    }
-  );
+watch(isCollapsed, (shouldCollapse) => {
+  if (shouldCollapse) {
+    collapse();
+    return;
+  }
+
+  expand();
+});
 </script>
 
 <template>

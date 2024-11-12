@@ -32,9 +32,12 @@ describe('the "copyToClipboard" function', () => {
     vi.clearAllMocks();
   });
 
-  const getCopyToClipboardElement = () => document.querySelector('.js-copy-to-clipboard') as HTMLElement;
-  const getCopyIcon = () => document.querySelector('.js-copy-icon') as HTMLElement;
-  const getCopiedIcon = () => document.querySelector('.js-success-icon') as HTMLElement;
+  const getCopyToClipboardElement = () =>
+    document.querySelector('.js-copy-to-clipboard') as HTMLElement;
+  const getCopyIcon = () =>
+    document.querySelector('.js-copy-icon') as HTMLElement;
+  const getCopiedIcon = () =>
+    document.querySelector('.js-success-icon') as HTMLElement;
 
   describe('when copying text', () => {
     test('should copy the text to the clipboard when the element is clicked', async () => {

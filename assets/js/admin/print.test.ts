@@ -5,7 +5,8 @@ import { printPage } from './print';
 vi.mock('../utils');
 
 describe('the "printPage" function', () => {
-  const getPrintPageButton = () => document.querySelector('.js-print-page') as HTMLElement;
+  const getPrintPageButton = () =>
+    document.querySelector('.js-print-page') as HTMLElement;
 
   let cleanup: () => void;
   let initialize: () => void;

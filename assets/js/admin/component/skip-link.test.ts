@@ -15,10 +15,20 @@ describe('The "skipLink" function', () => {
 
   test('should return an anchor element with some skip link class names and the provided class name', () => {
     const expectedClassNames = [
-      'sr-only', 'focus:not-sr-only', 'focus:bhr-a', 'focus:no-underline', 'focus:inline-block', 'focus:p-2', 'mocked-provided-class-name',
+      'sr-only',
+      'focus:not-sr-only',
+      'focus:bhr-a',
+      'focus:no-underline',
+      'focus:inline-block',
+      'focus:p-2',
+      'mocked-provided-class-name',
     ];
 
-    expect([...element.classList].every((className) => expectedClassNames.includes(className))).toBe(true);
+    expect(
+      [...element.classList].every((className) =>
+        expectedClassNames.includes(className),
+      ),
+    ).toBe(true);
   });
 
   test('should return an anchor element with the provided id', () => {

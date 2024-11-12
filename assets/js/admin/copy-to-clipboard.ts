@@ -7,7 +7,9 @@ export const copyToClipboard = () => {
   const initialize = () => {
     cleanup();
 
-    const copyToClipboardElements = document.getElementsByClassName('js-copy-to-clipboard') as HTMLCollectionOf<HTMLElement>;
+    const copyToClipboardElements = document.getElementsByClassName(
+      'js-copy-to-clipboard',
+    ) as HTMLCollectionOf<HTMLElement>;
     if (!copyToClipboardElements.length) {
       return;
     }
@@ -17,25 +19,31 @@ export const copyToClipboard = () => {
   };
 
   const addBehavior = (copyToClipboardElement: HTMLElement) => {
-    const copyIconElement = copyToClipboardElement.querySelector('.js-copy-icon');
-    const succesIconElement = copyToClipboardElement.querySelector('.js-success-icon');
+    const copyIconElement =
+      copyToClipboardElement.querySelector('.js-copy-icon');
+    const succesIconElement =
+      copyToClipboardElement.querySelector('.js-success-icon');
 
-    copyToClipboardElement.addEventListener('click', async () => {
-      const textToCopy = copyToClipboardElement.dataset.copyToClipboard;
+    copyToClipboardElement.addEventListener(
+      'click',
+      async () => {
+        const textToCopy = copyToClipboardElement.dataset.copyToClipboard;
 
-      await navigator.clipboard.writeText(textToCopy || '');
+        await navigator.clipboard.writeText(textToCopy || '');
 
-      hideElement(copyIconElement);
-      showElement(succesIconElement);
+        hideElement(copyIconElement);
+        showElement(succesIconElement);
 
-      const timeoutId = setTimeout(() => {
-        hideElement(succesIconElement);
-        showElement(copyIconElement);
-        cleanupTimeoutId(timeoutId);
-      }, 2000);
+        const timeoutId = setTimeout(() => {
+          hideElement(succesIconElement);
+          showElement(copyIconElement);
+          cleanupTimeoutId(timeoutId);
+        }, 2000);
 
-      timeoutIds.add(timeoutId);
-    }, { signal: abortController?.signal });
+        timeoutIds.add(timeoutId);
+      },
+      { signal: abortController?.signal },
+    );
   };
 
   const cleanup = () => {

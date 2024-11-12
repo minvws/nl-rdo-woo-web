@@ -1,4 +1,12 @@
-import { MockInstance, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import {
+  MockInstance,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from 'vitest';
 import { resetFocus } from './reset-focus';
 
 describe('The "resetFocus" function', () => {
@@ -10,8 +18,14 @@ describe('The "resetFocus" function', () => {
       withId: boolean;
       withNameAndValue: boolean;
     }
-    const createPreviousActiveElement = (options: Partial<CreateElementOptions> = {}) => {
-      const { withAriaControls = false, withId = false, withNameAndValue = false } = options;
+    const createPreviousActiveElement = (
+      options: Partial<CreateElementOptions> = {},
+    ) => {
+      const {
+        withAriaControls = false,
+        withId = false,
+        withNameAndValue = false,
+      } = options;
       const element = document.createElement('input');
       if (withAriaControls) {
         element.setAttribute('aria-controls', 'test');
@@ -37,10 +51,17 @@ describe('The "resetFocus" function', () => {
           <input id="test" aria-controls="test" name="test" value="test" />
         `;
 
-        const inputElement = document.querySelector('input') as HTMLInputElement;
-        const numberOfResultsElement = document.querySelector('h1') as HTMLHeadingElement;
+        const inputElement = document.querySelector(
+          'input',
+        ) as HTMLInputElement;
+        const numberOfResultsElement = document.querySelector(
+          'h1',
+        ) as HTMLHeadingElement;
         inputElementFocusSpy = vi.spyOn(inputElement, 'focus');
-        numberOfResultsElementFocusSpy = vi.spyOn(numberOfResultsElement, 'focus');
+        numberOfResultsElementFocusSpy = vi.spyOn(
+          numberOfResultsElement,
+          'focus',
+        );
       });
 
       afterEach(() => {

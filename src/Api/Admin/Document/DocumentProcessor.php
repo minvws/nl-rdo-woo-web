@@ -91,7 +91,6 @@ abstract class DocumentProcessor implements ProcessorInterface
                 language: $data->language,
                 grounds: $data->grounds,
                 uploadFileReference: $data->uploadUuid,
-                name: $data->name,
             )
         );
 
@@ -110,7 +109,6 @@ abstract class DocumentProcessor implements ProcessorInterface
                 language: $data->language,
                 grounds: $data->grounds,
                 uploadFileReference: $data->uploadUuid,
-                name: $data->name,
             )
         );
 

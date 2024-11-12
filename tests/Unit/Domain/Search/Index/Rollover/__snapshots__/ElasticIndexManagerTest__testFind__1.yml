@@ -1,0 +1,8 @@
+-
+    name: indexB
+    health: yellow
+    status: open
+    docsCount: '2085'
+    storeSize: 1.2mb
+    mappingVersion: '11'
+    aliases: [aliasC, aliasD]

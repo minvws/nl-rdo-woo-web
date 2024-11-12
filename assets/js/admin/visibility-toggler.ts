@@ -6,7 +6,8 @@ export const visibilityToggler = () => {
   const initialize = () => {
     cleanup();
 
-    const visibilityTogglerElements: NodeListOf<HTMLButtonElement> = document.querySelectorAll('.js-visibility-toggler');
+    const visibilityTogglerElements: NodeListOf<HTMLButtonElement> =
+      document.querySelectorAll('.js-visibility-toggler');
 
     if (visibilityTogglerElements.length === 0) {
       return;
@@ -14,22 +15,27 @@ export const visibilityToggler = () => {
 
     abortController = new AbortController();
     visibilityTogglerElements.forEach((visibilityTogglerElement) => {
-      const idOfElementToToggle = visibilityTogglerElement.getAttribute('aria-controls') || '';
+      const idOfElementToToggle =
+        visibilityTogglerElement.getAttribute('aria-controls') || '';
       const elementToToggle = document.getElementById(idOfElementToToggle);
       if (!elementToToggle) {
         return;
       }
 
-      visibilityTogglerElement.addEventListener('click', () => {
-        if (isElementHidden(elementToToggle)) {
-          showElement(elementToToggle);
-          visibilityTogglerElement.setAttribute('aria-expanded', 'true');
-          return;
-        }
+      visibilityTogglerElement.addEventListener(
+        'click',
+        () => {
+          if (isElementHidden(elementToToggle)) {
+            showElement(elementToToggle);
+            visibilityTogglerElement.setAttribute('aria-expanded', 'true');
+            return;
+          }
 
-        hideElement(elementToToggle);
-        visibilityTogglerElement.setAttribute('aria-expanded', 'false');
-      }, { signal: abortController.signal! });
+          hideElement(elementToToggle);
+          visibilityTogglerElement.setAttribute('aria-expanded', 'false');
+        },
+        { signal: abortController.signal! },
+      );
     });
   };
 

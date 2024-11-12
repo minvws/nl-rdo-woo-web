@@ -15,9 +15,13 @@ use App\Service\Search\Model\Aggregation;
 use App\Service\Search\Model\AggregationBucketEntry;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Facet\Input\FacetInputFactory;
+use App\SourceType;
 use Jaytaph\TypeArray\TypeArray;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 readonly class AggregationMapper
 {
     private const KEY = '[key]';
@@ -71,7 +75,7 @@ readonly class AggregationMapper
         return match ($facetKey) {
             FacetKey::TYPE->value => TranslatedFacetValue::create($this->translator, $facetKey, $value),
             FacetKey::GROUNDS->value => trim($value . ' ' . Citation::toClassification($value)),
-            FacetKey::SOURCE->value => $this->translator->trans('public.documents.file_type.' . $value),
+            FacetKey::SOURCE->value => SourceType::create($value)->trans($this->translator),
             FacetKey::JUDGEMENT->value => DecisionType::from($value)->trans($this->translator),
             FacetKey::DEPARTMENT->value => AbbreviatedValue::fromString($value),
             default => $value === '' ? 'none' : $value,
@@ -97,18 +101,20 @@ readonly class AggregationMapper
                 $key . '.publication',
             ];
 
-            $subEntries = [
-                new AggregationBucketEntry(
+            $subEntries = [];
+            $publicationCount = $bucket->getInt('[publication][doc_count]');
+            if ($publicationCount > 0) {
+                $subEntries[] = new AggregationBucketEntry(
                     'publication',
-                    $bucket->getInt('[publication][doc_count]'),
+                    $publicationCount,
                     'public.search.type.publication',
                     $searchParameters->withFacetInput(
                         FacetKey::TYPE,
                         $this->facetInputFactory->createStringFacetInputForValue(FacetKey::TYPE, $key)
                     ),
                     $searchParameters,
-                ),
-            ];
+                );
+            }
 
             foreach ($bucket->getIterable('[' . ElasticField::SUBLEVEL_TYPE->value . '][buckets]') as $subBucket) {
                 $subKey = $subBucket->getString(self::KEY);

@@ -1,14 +1,14 @@
 <script setup lang="ts">
-  interface Props {
-    href: string;
-    id: string;
-  }
+interface Props {
+  href: string;
+  id: string;
+}
 
-  const props = withDefaults(defineProps<Props>(), {
-    href: '',
-  });
+const props = withDefaults(defineProps<Props>(), {
+  href: '',
+});
 
-  const href = props.href.startsWith('#') ? props.href : `#${props.href}`;
+const href = props.href.startsWith('#') ? props.href : `#${props.href}`;
 </script>
 
 <template>

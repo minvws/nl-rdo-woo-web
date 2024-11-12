@@ -15,11 +15,6 @@ use Webmozart\Assert\Assert;
 
 /**
  * @extends ServiceEntityRepository<AnnualReportDocument>
- *
- * @method AnnualReportDocument|null find($id, $lockMode = null, $lockVersion = null)
- * @method AnnualReportDocument|null findOneBy(array $criteria, array $orderBy = null)
- * @method AnnualReportDocument[]    findAll()
- * @method AnnualReportDocument[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class AnnualReportDocumentRepository extends ServiceEntityRepository implements MainDocumentRepositoryInterface
 {

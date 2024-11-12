@@ -2,7 +2,9 @@ import { describe, expect, test } from 'vitest';
 import { icon, IconProperties } from './icon';
 
 describe('The "icon" component', () => {
-  const getIconElement = (iconProperties: Partial<IconProperties> = {}): SVGSVGElement => {
+  const getIconElement = (
+    iconProperties: Partial<IconProperties> = {},
+  ): SVGSVGElement => {
     const validIconProperties: IconProperties = { name: '', ...iconProperties };
     // document.createElement('svg') does not work: https://webhint.io/docs/user-guide/hints/hint-create-element-svg/
     const spanElement = document.createElement('span');

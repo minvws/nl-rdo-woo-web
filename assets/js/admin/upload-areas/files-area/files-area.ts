@@ -1,6 +1,11 @@
 import { icon, skipLink } from '@js/admin/component';
 import { areFilesEqual, getIconNameByMimeType } from '@js/admin/utils';
-import { hideElement, isFocusWithinElement, showElement, uniqueId } from '@utils';
+import {
+  hideElement,
+  isFocusWithinElement,
+  showElement,
+  uniqueId,
+} from '@utils';
 
 interface FilesAreaOptions {
   areaElement: HTMLElement | null;
@@ -34,7 +39,9 @@ export class FilesArea {
       returnFocusToElement,
     } = options;
 
-    this.#noFilesMessageElement = areaElement?.querySelector('.js-no-files-message') as HTMLElement;
+    this.#noFilesMessageElement = areaElement?.querySelector(
+      '.js-no-files-message',
+    ) as HTMLElement;
 
     this.areaElement = areaElement;
     this.canUploadMultipleFiles = canUploadMultipleFiles;
@@ -94,7 +101,9 @@ export class FilesArea {
 
   removeFile(fileId: string, shouldNotify = true) {
     const { file, remove } = this.getFromStore(fileId);
-    const isFocusWithinListItem = isFocusWithinElement(document.getElementById(fileId));
+    const isFocusWithinListItem = isFocusWithinElement(
+      document.getElementById(fileId),
+    );
 
     remove();
     this.removeFromStore(fileId);
@@ -168,8 +177,13 @@ export class FilesArea {
       </div>`;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  addElementFunctionality(listItemElement: HTMLElement, fileId: string, file: File) {
+  addElementFunctionality(
+    listItemElement: HTMLElement,
+    fileId: string,
+    // We need to pass the file argument to this function since it's necessary in places where this class is extended.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _file: File,
+  ) {
     return this.addRemoveElementFunctionality(listItemElement, fileId);
   }
 
@@ -178,9 +192,13 @@ export class FilesArea {
 
     const abortController = new AbortController();
 
-    this.getRemoveButton(listItemElement)?.addEventListener('click', () => {
-      this.removeFile(fileId);
-    }, { signal: abortController.signal });
+    this.getRemoveButton(listItemElement)?.addEventListener(
+      'click',
+      () => {
+        this.removeFile(fileId);
+      },
+      { signal: abortController.signal },
+    );
 
     return () => {
       abortController.abort();
@@ -188,7 +206,12 @@ export class FilesArea {
   }
 
   makeElementTransitionable(listItemElement: HTMLElement) {
-    listItemElement.classList.add('transition-all', 'delay-[3000ms]', 'duration-500', 'overflow-hidden');
+    listItemElement.classList.add(
+      'transition-all',
+      'delay-[3000ms]',
+      'duration-500',
+      'overflow-hidden',
+    );
     const height = listItemElement.offsetHeight;
     listItemElement.style.height = `${height}px`;
   }
@@ -209,8 +232,17 @@ export class FilesArea {
     this.#store.delete(fileId);
   }
 
-  saveInStore(fileId: string, file: File, cleanupFunction: () => void, removeFunction: () => void) {
-    this.#store.set(fileId, { file, cleanup: cleanupFunction, remove: removeFunction });
+  saveInStore(
+    fileId: string,
+    file: File,
+    cleanupFunction: () => void,
+    removeFunction: () => void,
+  ) {
+    this.#store.set(fileId, {
+      file,
+      cleanup: cleanupFunction,
+      remove: removeFunction,
+    });
   }
 
   #createListTitleElement = () => {
@@ -286,20 +318,26 @@ export class FilesArea {
   }
 
   isFocusOnOneOfSkipLinks(): boolean {
-    return this.getSkipLinks().some((skipLinkElement) => isFocusWithinElement(skipLinkElement)) ?? false;
+    return (
+      this.getSkipLinks().some((skipLinkElement) =>
+        isFocusWithinElement(skipLinkElement),
+      ) ?? false
+    );
   }
 
   getSkipLinks() {
-    const nodeList = this.areaElement?.querySelectorAll(`.${this.skipLinkClassName}`) as NodeListOf<HTMLElement> | null;
+    const nodeList = this.areaElement?.querySelectorAll(
+      `.${this.skipLinkClassName}`,
+    ) as NodeListOf<HTMLElement> | null;
     return Array.from(nodeList || []);
   }
 
   hideSkipLinks() {
-    this.getSkipLinks().forEach((hideElement));
+    this.getSkipLinks().forEach(hideElement);
   }
 
   showSkipLinks() {
-    this.getSkipLinks().forEach((showElement));
+    this.getSkipLinks().forEach(showElement);
   }
 
   hideList() {
@@ -351,6 +389,8 @@ export class FilesArea {
   }
 
   getRemoveButton(listItemElement: HTMLElement) {
-    return listItemElement.querySelector(`.${this.removeButtonClass}`) as HTMLElement | null;
+    return listItemElement.querySelector(
+      `.${this.removeButtonClass}`,
+    ) as HTMLElement | null;
   }
 }
