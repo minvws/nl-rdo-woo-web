@@ -18,11 +18,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Inquiry>
- *
- * @method Inquiry|null find($id, $lockMode = null, $lockVersion = null)
- * @method Inquiry|null findOneBy(array $criteria, array $orderBy = null)
- * @method Inquiry[]    findAll()
- * @method Inquiry[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class InquiryRepository extends ServiceEntityRepository
 {

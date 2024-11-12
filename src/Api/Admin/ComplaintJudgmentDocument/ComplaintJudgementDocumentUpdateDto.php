@@ -12,7 +12,7 @@ use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementDoc
 class ComplaintJudgementDocumentUpdateDto extends AttachmentUpdateDto
 {
     #[ApiProperty(writable: false)]
-    public ?AttachmentType $type = AttachmentType::COMPLAINT;
+    public ?AttachmentType $type = AttachmentType::COMPLAINT_JUDGEMENT;
 
     /**
      * @return array<array-key,AttachmentType>

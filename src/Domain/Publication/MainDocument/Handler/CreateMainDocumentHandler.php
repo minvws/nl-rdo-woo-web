@@ -59,7 +59,6 @@ readonly class CreateMainDocumentHandler
 
         $mainDocument->setInternalReference($command->internalReference);
         $mainDocument->setGrounds($command->grounds);
-        $mainDocument->getFileInfo()->setName($command->name);
 
         $violations = $this->validator->validate($mainDocument);
         if ($violations->count() > 0) {

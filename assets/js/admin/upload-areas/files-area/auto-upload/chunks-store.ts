@@ -51,7 +51,11 @@ export const chunksStore = (file: File, onFileUploadedFunction: () => void) => {
     }
   };
 
-  const updateChunkProgress = (chunkId: number, bytesSent: number, bytesToSend: number) => {
+  const updateChunkProgress = (
+    chunkId: number,
+    bytesSent: number,
+    bytesToSend: number,
+  ) => {
     const chunk = getChunk(chunkId);
     chunk.bytesSent = bytesSent;
     chunk.bytesToSend = bytesToSend;
@@ -59,19 +63,29 @@ export const chunksStore = (file: File, onFileUploadedFunction: () => void) => {
   };
 
   const getFileProgress = () => {
-    const [totalBytesSent, totalBytesToSend] = getChunks().reduce(([cummulativeBytesSent, cummulativeBytesToSend], chunk) => [
-      cummulativeBytesSent + chunk.bytesSent, cummulativeBytesToSend + chunk.bytesToSend], [0, 0]);
+    const [totalBytesSent, totalBytesToSend] = getChunks().reduce(
+      ([cummulativeBytesSent, cummulativeBytesToSend], chunk) => [
+        cummulativeBytesSent + chunk.bytesSent,
+        cummulativeBytesToSend + chunk.bytesToSend,
+      ],
+      [0, 0],
+    );
 
     return Math.round((totalBytesSent / totalBytesToSend) * 100);
   };
 
-  const updateChunkUploadResult = (chunkId: number, isUploadSuccess: boolean) => {
+  const updateChunkUploadResult = (
+    chunkId: number,
+    isUploadSuccess: boolean,
+  ) => {
     const chunk = getChunk(chunkId);
     chunk.isUploaded = true;
     chunk.isUploadSuccess = isUploadSuccess;
     store.set(chunkId, chunk);
 
-    const areAllChunksUploaded = getChunks().every((chunkItem) => chunkItem.isUploaded);
+    const areAllChunksUploaded = getChunks().every(
+      (chunkItem) => chunkItem.isUploaded,
+    );
     if (!areAllChunksUploaded) {
       return;
     }

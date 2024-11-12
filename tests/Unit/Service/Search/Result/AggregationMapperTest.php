@@ -168,7 +168,7 @@ class AggregationMapperTest extends MockeryTestCase
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
-            ->with(FacetKey::SOURCE, SourceType::SOURCE_EMAIL)
+            ->with(FacetKey::SOURCE, SourceType::EMAIL->value)
             ->andReturn($facetInputB = \Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
@@ -176,20 +176,19 @@ class AggregationMapperTest extends MockeryTestCase
             ->with(FacetKey::SOURCE, $facetInputB)
             ->andReturn(\Mockery::mock(SearchParameters::class));
 
-        $prefix = 'public.documents.file_type.';
-        $this->translator->expects('trans')->with($prefix . SourceType::SOURCE_EMAIL)->andReturn('foo-bar');
+        $this->translator->expects('trans')->with('public.documents.file_type.email', [], null, null)->andReturn('foo-bar');
 
         $result = $this->mapper->map(
             FacetKey::SOURCE->value,
             [
-                new TypeArray(['key' => SourceType::SOURCE_EMAIL, 'doc_count' => 123]),
+                new TypeArray(['key' => SourceType::EMAIL->value, 'doc_count' => 123]),
             ],
             $searchParameters,
         );
 
         self::assertCount(1, $result->getEntries());
 
-        self::assertEquals(SourceType::SOURCE_EMAIL, $result->getEntries()[0]->getKey());
+        self::assertEquals(SourceType::EMAIL->value, $result->getEntries()[0]->getKey());
         self::assertEquals(123, $result->getEntries()[0]->getCount());
     }
 
@@ -274,5 +273,76 @@ class AggregationMapperTest extends MockeryTestCase
         self::assertEquals(5, $subEntries[1]->getCount());
         self::assertEquals('attachment', $subEntries[2]->getKey());
         self::assertEquals(1, $subEntries[2]->getCount());
+    }
+
+    public function testMapToplevelTypeWithoutPublications(): void
+    {
+        $searchParameters = \Mockery::mock(SearchParameters::class);
+
+        $this->facetInputFactory
+            ->expects('createStringFacetInputForValue')
+            ->with(FacetKey::TYPE, 'dossier', 'dossier.publication', 'dossier.document', 'dossier.attachment')
+            ->andReturn($facetInputA = \Mockery::mock(StringValuesFacetInput::class));
+
+        $searchParameters
+            ->expects('withFacetInput')
+            ->with(FacetKey::TYPE, $facetInputA)
+            ->andReturn(\Mockery::mock(SearchParameters::class));
+
+        $this->facetInputFactory
+            ->expects('createStringFacetInputForValue')
+            ->with(FacetKey::TYPE, 'document')
+            ->andReturn($facetInputC = \Mockery::mock(StringValuesFacetInput::class));
+
+        $searchParameters
+            ->expects('withFacetInput')
+            ->with(FacetKey::TYPE, $facetInputC)
+            ->andReturn(\Mockery::mock(SearchParameters::class));
+
+        $this->facetInputFactory
+            ->expects('createStringFacetInputForValue')
+            ->with(FacetKey::TYPE, 'attachment')
+            ->andReturn($facetInputD = \Mockery::mock(StringValuesFacetInput::class));
+
+        $searchParameters
+            ->expects('withFacetInput')
+            ->with(FacetKey::TYPE, $facetInputD)
+            ->andReturn(\Mockery::mock(SearchParameters::class));
+
+        $result = $this->mapper->map(
+            ElasticField::TOPLEVEL_TYPE->value,
+            [
+                new TypeArray([
+                    'key' => ElasticDocumentType::WOO_DECISION->value,
+                    'doc_count' => 9,
+                    ElasticField::SUBLEVEL_TYPE->value => [
+                        'buckets' => [
+                            [
+                                'key' => ElasticDocumentType::WOO_DECISION_DOCUMENT->value,
+                                'doc_count' => 5,
+                            ],
+                            [
+                                'key' => ElasticDocumentType::ATTACHMENT->value,
+                                'doc_count' => 1,
+                            ],
+                        ],
+                    ],
+                    'publication' => [
+                        'doc_count' => 0,
+                    ],
+                ]),
+            ],
+            $searchParameters,
+        );
+
+        self::assertCount(1, $result->getEntries());
+        self::assertEquals('dossier', $result->getEntries()[0]->getKey());
+
+        $subEntries = $result->getEntries()[0]->getSubEntries();
+        self::assertCount(2, $subEntries);
+        self::assertEquals('document', $subEntries[0]->getKey());
+        self::assertEquals(5, $subEntries[0]->getCount());
+        self::assertEquals('attachment', $subEntries[1]->getKey());
+        self::assertEquals(1, $subEntries[1]->getCount());
     }
 }

@@ -1,25 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Factory;
 
 use App\Entity\FileInfo;
 use App\SourceType;
+use Zenstruck\Foundry\ObjectFactory;
 
 /**
- * @extends \Zenstruck\Foundry\ObjectFactory<\App\Entity\FileInfo>
+ * @extends ObjectFactory<FileInfo>
  */
-final class FileInfoFactory extends \Zenstruck\Foundry\ObjectFactory
+final class FileInfoFactory extends ObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
@@ -32,7 +25,7 @@ final class FileInfoFactory extends \Zenstruck\Foundry\ObjectFactory
         $path = sprintf('/%s/%s', substr($documentIdHash, 0, 2), substr($documentIdHash, 2));
 
         return [
-            'sourceType' => self::faker()->randomElement(SourceType::getAllSourceTypes()),
+            'sourceType' => self::faker()->randomElement(SourceType::cases()),
             'name' => $fileName,
             'mimetype' => 'application/pdf',
             'type' => 'pdf',
@@ -47,9 +40,7 @@ final class FileInfoFactory extends \Zenstruck\Foundry\ObjectFactory
      */
     protected function initialize(): static
     {
-        return $this
-            // ->afterInstantiate(function(FileInfo $fileInfo): void {})
-        ;
+        return $this;
     }
 
     public static function class(): string

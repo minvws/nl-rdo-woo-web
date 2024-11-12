@@ -19,7 +19,7 @@ class LoginActivity
     private Uuid $id;
 
     #[ORM\ManyToOne(inversedBy: 'loginActivities')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'cascade')]
     private User $account;
 
     #[ORM\Column]

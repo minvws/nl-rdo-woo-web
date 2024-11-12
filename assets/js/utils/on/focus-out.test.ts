@@ -2,9 +2,12 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { onFocusOut } from './focus-out';
 
 describe('the "onFocusOut" function', () => {
-  const getButtonElement = () => document.querySelector('button') as HTMLButtonElement;
-  const getInsideButtonElement = () => document.querySelector('#inside-the-button') as HTMLAnchorElement;
-  const getOutsideButtonElement = () => document.querySelector('#outside-the-button') as HTMLAnchorElement;
+  const getButtonElement = () =>
+    document.querySelector('button') as HTMLButtonElement;
+  const getInsideButtonElement = () =>
+    document.querySelector('#inside-the-button') as HTMLAnchorElement;
+  const getOutsideButtonElement = () =>
+    document.querySelector('#outside-the-button') as HTMLAnchorElement;
 
   beforeEach(() => {
     document.body.innerHTML = `

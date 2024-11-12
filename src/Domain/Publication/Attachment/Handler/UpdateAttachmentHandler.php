@@ -79,10 +79,6 @@ readonly class UpdateAttachmentHandler
             $entity->setType($command->type);
         }
 
-        if ($command->name !== null) {
-            $entity->getFileInfo()->setName($command->name);
-        }
-
         if ($command->language !== null) {
             $entity->setLanguage($command->language);
         }
@@ -93,10 +89,6 @@ readonly class UpdateAttachmentHandler
 
         if ($command->grounds !== null) {
             $entity->setGrounds($command->grounds);
-        }
-
-        if ($command->name !== null) {
-            $entity->getFileInfo()->setName($command->name);
         }
     }
 

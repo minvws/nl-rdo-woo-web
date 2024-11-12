@@ -30,7 +30,7 @@ class InvestigationReportController extends AbstractController
     }
 
     #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
-    #[Route('/investigation-report/{prefix}/{dossierId}', name: 'app_investigationreport_detail', methods: ['GET'])]
+    #[Route('/onderzoeksrapport/{prefix}/{dossierId}', name: 'app_investigationreport_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $investigationReport,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
@@ -49,7 +49,7 @@ class InvestigationReportController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/investigation-report/{prefix}/{dossierId}/document',
+        '/onderzoeksrapport/{prefix}/{dossierId}/document',
         name: 'app_investigationreport_document_detail',
         methods: ['GET'],
     )]
@@ -75,7 +75,7 @@ class InvestigationReportController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/investigation-report/{prefix}/{dossierId}/document/download',
+        '/onderzoeksrapport/{prefix}/{dossierId}/document/download',
         name: 'app_investigationreport_document_download',
         methods: ['GET'],
     )]
@@ -91,7 +91,7 @@ class InvestigationReportController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/investigation-report/{prefix}/{dossierId}/attachment/{attachmentId}',
+        '/onderzoeksrapport/{prefix}/{dossierId}/bijlage/{attachmentId}',
         name: 'app_investigationreport_attachment_detail',
         methods: ['GET'],
     )]
@@ -122,7 +122,7 @@ class InvestigationReportController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/investigation-report/{prefix}/{dossierId}/attachment/{attachmentId}/download',
+        '/onderzoeksrapport/{prefix}/{dossierId}/bijlage/{attachmentId}/download',
         name: 'app_investigationreport_attachment_download',
         methods: ['GET'],
     )]

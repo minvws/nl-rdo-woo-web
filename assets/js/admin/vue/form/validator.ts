@@ -32,8 +32,8 @@ export const email = (): Validator => (value: InputValueType) => {
     return error;
   }
 
-  // eslint-disable-next-line max-len
-  const regExp = /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  const regExp =
+    /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
   if (!regExp.test(value)) {
     return error;
   }
@@ -41,34 +41,38 @@ export const email = (): Validator => (value: InputValueType) => {
   return undefined;
 };
 
-export const forbidden = (forbiddenValues: InputValueType[]): Validator => (value: InputValueType) => {
-  if (!value) {
+export const forbidden =
+  (forbiddenValues: InputValueType[]): Validator =>
+  (value: InputValueType) => {
+    if (!value) {
+      return undefined;
+    }
+
+    if (forbiddenValues.includes(value)) {
+      return { id: InputErrorId.Forbidden };
+    }
+
     return undefined;
-  }
-
-  if (forbiddenValues.includes(value)) {
-    return { id: InputErrorId.Forbidden };
-  }
-
-  return undefined;
-};
-
-export const minLength = (min: number): Validator => (value: InputValueType) => {
-  if (typeof value !== 'string') {
-    return undefined;
-  }
-
-  if (value.length >= min) {
-    return undefined;
-  }
-
-  return {
-    actualLength: value.length,
-    id: InputErrorId.MinLength,
-    minLength: min,
-    tooLittleLength: min - value.length,
   };
-};
+
+export const minLength =
+  (min: number): Validator =>
+  (value: InputValueType) => {
+    if (typeof value !== 'string') {
+      return undefined;
+    }
+
+    if (value.length >= min) {
+      return undefined;
+    }
+
+    return {
+      actualLength: value.length,
+      id: InputErrorId.MinLength,
+      minLength: min,
+      tooLittleLength: min - value.length,
+    };
+  };
 
 export const dateMaxUntilToday = (): Validator => {
   const today = endOfDay(new Date());

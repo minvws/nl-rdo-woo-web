@@ -22,9 +22,13 @@ describe('the "clickOnSelector" function', () => {
     isTargetButtonClicked = false;
     abortController = new AbortController();
 
-    getTargetButton().addEventListener('click', () => {
-      isTargetButtonClicked = true;
-    }, { signal: abortController.signal });
+    getTargetButton().addEventListener(
+      'click',
+      () => {
+        isTargetButtonClicked = true;
+      },
+      { signal: abortController.signal },
+    );
   });
 
   afterEach(() => {
@@ -33,8 +37,10 @@ describe('the "clickOnSelector" function', () => {
     isTargetButtonClicked = false;
   });
 
-  const getSourceButton = () => document.querySelector('.js-click-on-selector') as HTMLButtonElement;
-  const getTargetButton = () => document.getElementById('submit-form-outside-dialog') as HTMLButtonElement;
+  const getSourceButton = () =>
+    document.querySelector('.js-click-on-selector') as HTMLButtonElement;
+  const getTargetButton = () =>
+    document.getElementById('submit-form-outside-dialog') as HTMLButtonElement;
 
   describe('clicking an element having the "js-click-on-selector" class name', () => {
     test('should trigger a click on the element it refers to', () => {

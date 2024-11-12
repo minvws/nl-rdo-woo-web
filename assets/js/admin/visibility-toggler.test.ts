@@ -6,7 +6,8 @@ describe('the "visibilityToggler" function', () => {
   let cleanup: () => void;
   let initialize: () => void;
 
-  const getToggleButton = () => document.querySelector('.js-visibility-toggler') as HTMLElement;
+  const getToggleButton = () =>
+    document.querySelector('.js-visibility-toggler') as HTMLElement;
 
   beforeEach(() => {
     document.body.innerHTML = `
@@ -24,7 +25,9 @@ describe('the "visibilityToggler" function', () => {
 
   test('should toggle the visibility of an element when clicking a button with the "js-visibility-toggler" class name', () => {
     const toggleButton = getToggleButton();
-    const elementToToggle = document.getElementById('id-of-element-to-toggle') as HTMLElement;
+    const elementToToggle = document.getElementById(
+      'id-of-element-to-toggle',
+    ) as HTMLElement;
 
     expect(isElementHidden(elementToToggle)).toBe(false);
 
@@ -37,7 +40,8 @@ describe('the "visibilityToggler" function', () => {
 
   test('should adjust the "aria-expanded" value based on the visibility of the target element', () => {
     const toggleButton = getToggleButton();
-    const getAriaExpandedValue = () => toggleButton?.getAttribute('aria-expanded');
+    const getAriaExpandedValue = () =>
+      toggleButton?.getAttribute('aria-expanded');
 
     expect(getAriaExpandedValue()).toBe('true');
 

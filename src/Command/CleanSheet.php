@@ -6,13 +6,13 @@ namespace App\Command;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Subject\Subject;
+use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use App\Entity\BatchDownload;
 use App\Entity\Document;
 use App\Entity\DocumentPrefix;
 use App\Entity\History;
 use App\Entity\Inquiry;
 use App\Entity\User;
-use App\Service\Elastic\IndexService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -35,7 +35,7 @@ class CleanSheet extends Command
     public function __construct(
         private readonly array $queueDsns,
         private readonly EntityManagerInterface $entityManager,
-        private readonly IndexService $indexService,
+        private readonly ElasticIndexManager $indexService,
         private readonly HttpClientInterface $httpClient,
     ) {
         parent::__construct();

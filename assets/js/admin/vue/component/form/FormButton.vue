@@ -1,15 +1,15 @@
 <script setup>
-  import { computed } from 'vue';
+import { computed } from 'vue';
 
-  const props = defineProps({
-    isSecondary: {
-      type: Boolean,
-      required: false,
-      default: false,
-    }
-  });
+const props = defineProps({
+  isSecondary: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+});
 
-  const buttonType = computed(() => props.isSecondary ? 'button' : 'submit');
+const buttonType = computed(() => (props.isSecondary ? 'button' : 'submit'));
 </script>
 
 <template>

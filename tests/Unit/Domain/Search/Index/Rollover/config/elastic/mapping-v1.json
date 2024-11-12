@@ -1,0 +1,10 @@
+{
+    "_meta" : {
+        "version": 1
+    },
+    "properties": {
+        "type": {
+            "type": "keyword"
+        }
+    }
+}

@@ -22,7 +22,8 @@ describe('The "detailsComponents" function', () => {
     cleanup();
   });
 
-  const getButtonElement = () => document.querySelector('button') as HTMLButtonElement;
+  const getButtonElement = () =>
+    document.querySelector('button') as HTMLButtonElement;
   const toggleDetailsElement = (isOpen = true) => {
     const detailsElement = getDetailsElement();
     if (isOpen) {
@@ -32,8 +33,10 @@ describe('The "detailsComponents" function', () => {
     }
     detailsElement.dispatchEvent(new Event('toggle'));
   };
-  const getDetailsElement = () => document.querySelector('.js-details') as HTMLDetailsElement;
-  const isDetailsElementOpen = () => getDetailsElement().getAttribute('open') === '';
+  const getDetailsElement = () =>
+    document.querySelector('.js-details') as HTMLDetailsElement;
+  const isDetailsElementOpen = () =>
+    getDetailsElement().getAttribute('open') === '';
 
   describe('when a details element is opened', () => {
     beforeEach(() => {

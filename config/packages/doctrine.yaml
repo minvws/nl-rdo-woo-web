@@ -35,7 +35,7 @@ doctrine:
                 CONTAINS: MartinGeorgiev\Doctrine\ORM\Query\AST\Functions\Contains
                 ILIKE: MartinGeorgiev\Doctrine\ORM\Query\AST\Functions\Ilike
         controller_resolver:
-            auto_mapping: true
+            auto_mapping: false
 
 when@test:
     doctrine:

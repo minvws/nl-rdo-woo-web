@@ -1,5 +1,12 @@
 import { isElementHidden } from '@js/utils';
-import { MockInstance, afterEach, beforeEach, describe, expect, test } from 'vitest';
+import {
+  MockInstance,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  test,
+} from 'vitest';
 import { dateFilters } from './date-filters';
 
 describe('The "dateFilters" function', () => {
@@ -18,10 +25,13 @@ describe('The "dateFilters" function', () => {
       cleanup();
     });
 
-    const getDateElement = (fromOrTo: 'from' | 'to') => document.getElementById(`date-${fromOrTo}`) as HTMLInputElement;
-    const errorMessageIsHidden = () => isElementHidden(document.getElementById('filter-dates-error'));
-    const initializeDateFilters = (fetchAndUpdateResultsFunction?: MockInstance) => initialize(fetchAndUpdateResultsFunction as any
-      || (() => {}));
+    const getDateElement = (fromOrTo: 'from' | 'to') =>
+      document.getElementById(`date-${fromOrTo}`) as HTMLInputElement;
+    const errorMessageIsHidden = () =>
+      isElementHidden(document.getElementById('filter-dates-error'));
+    const initializeDateFilters = (
+      fetchAndUpdateResultsFunction?: MockInstance,
+    ) => initialize((fetchAndUpdateResultsFunction as any) || (() => {}));
     const setDate = (fromOrTo: 'from' | 'to', date: string) => {
       const dateElement = getDateElement(fromOrTo);
       dateElement.value = date;
@@ -39,7 +49,9 @@ describe('The "dateFilters" function', () => {
         dateElement.classList.contains('woo-input-text--invalid'),
       ].every(Boolean);
     };
-    const dateElementsAreMarkedAsInvalid = (): boolean => dateElementIsMarkedAsInvalid('from') && dateElementIsMarkedAsInvalid('to');
+    const dateElementsAreMarkedAsInvalid = (): boolean =>
+      dateElementIsMarkedAsInvalid('from') &&
+      dateElementIsMarkedAsInvalid('to');
 
     describe('when an invalid date period is entered (the "to" date is earlier than the "from" date)', () => {
       const setInvalidDatePeriod = () => {
@@ -77,18 +89,15 @@ describe('The "dateFilters" function', () => {
         expect(dateElementsAreMarkedAsInvalid()).toBe(true);
       });
 
-      test(
-        'should mark the "from" and "to" date elements as valid again when the user adjusts the dates to make it a valid date period',
-        () => {
-          initializeDateFilters();
+      test('should mark the "from" and "to" date elements as valid again when the user adjusts the dates to make it a valid date period', () => {
+        initializeDateFilters();
 
-          setInvalidDatePeriod();
-          expect(dateElementsAreMarkedAsInvalid()).toBe(true);
+        setInvalidDatePeriod();
+        expect(dateElementsAreMarkedAsInvalid()).toBe(true);
 
-          setValidDatePeriod();
-          expect(dateElementsAreMarkedAsInvalid()).toBe(false);
-        },
-      );
+        setValidDatePeriod();
+        expect(dateElementsAreMarkedAsInvalid()).toBe(false);
+      });
     });
 
     describe('when entering a "from" date', () => {

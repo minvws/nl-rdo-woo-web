@@ -6,9 +6,9 @@
     <table class="bhr-table" aria-labelledby="search-results-dossiers">
         <thead class="sr-only">
             <tr>
-                <th scope="col">{{ 'global.decision.dossier_number' | trans() }}</th>
-                <th scope="col">{{ 'global.title' | trans() }}</th>
-                <th scope="col">{{ 'global.more' | trans() }}</th>
+                <th scope="col">{{ 'global.decision.dossier_number' | trans }}</th>
+                <th scope="col">{{ 'global.title' | trans }}</th>
+                <th scope="col">{{ 'global.more' | trans }}</th>
             </tr>
         </thead>
         <tbody>
@@ -27,7 +27,7 @@
                     </td>
                     <td class="text-right">
                         <a class="bhr-fill-cell" href="{{ url }}">
-                            <span class="sr-only">{{ 'global.details' | trans() }} {{ dossier.dossierNr }}</span>
+                            <span class="sr-only">{{ 'global.details' | trans }} {{ dossier.dossierNr }}</span>
                             <twig:Admin:Icon name="chevron-right" />
                         </a>
                     </td>
@@ -43,9 +43,9 @@
     <table class="bhr-table" aria-labelledby="search-results-documents">
         <thead class="sr-only">
             <tr>
-                <th scope="col">{{ 'global.document_number' | trans() }}</th>
-                <th scope="col">{{ 'global.title' | trans() }}</th>
-                <th scope="col">{{ 'global.more' | trans() }}</th>
+                <th scope="col">{{ 'global.document_number' | trans }}</th>
+                <th scope="col">{{ 'global.title' | trans }}</th>
+                <th scope="col">{{ 'global.more' | trans }}</th>
             </tr>
         </thead>
         <tbody>
@@ -64,7 +64,7 @@
                     </td>
                     <td class="text-right">
                         <a class="bhr-fill-cell" href="{{ url }}">
-                            <span class="sr-only">{{ 'global.details' | trans() }} {{ document.documentNr }}</span>
+                            <span class="sr-only">{{ 'global.details' | trans }} {{ document.documentNr }}</span>
                             <twig:Admin:Icon name="chevron-right" />
                         </a>
                     </td>

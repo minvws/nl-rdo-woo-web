@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Command;
 
 use App\Command\CleanSheet;
-use App\Service\Elastic\IndexService;
+use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -18,14 +18,14 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class CleanSheetTest extends MockeryTestCase
 {
     private Command $command;
-    private IndexService&MockInterface $indexService;
+    private ElasticIndexManager&MockInterface $indexService;
     private EntityManagerInterface&MockInterface $entityManager;
     private HttpClientInterface&MockInterface $client;
     private Command&MockInterface $cacheClearCommand;
 
     public function setUp(): void
     {
-        $this->indexService = \Mockery::mock(IndexService::class);
+        $this->indexService = \Mockery::mock(ElasticIndexManager::class);
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->client = \Mockery::mock(HttpClientInterface::class);
 

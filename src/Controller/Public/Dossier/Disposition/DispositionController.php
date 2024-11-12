@@ -30,7 +30,7 @@ class DispositionController extends AbstractController
     }
 
     #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
-    #[Route('/disposition/{prefix}/{dossierId}', name: 'app_disposition_detail', methods: ['GET'])]
+    #[Route('/beschikking/{prefix}/{dossierId}', name: 'app_disposition_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] Disposition $dossier,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
@@ -49,7 +49,7 @@ class DispositionController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/disposition/{prefix}/{dossierId}/document',
+        '/beschikking/{prefix}/{dossierId}/document',
         name: 'app_disposition_document_detail',
         methods: ['GET'],
     )]
@@ -77,7 +77,7 @@ class DispositionController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/disposition/{prefix}/{dossierId}/document/download',
+        '/beschikking/{prefix}/{dossierId}/document/download',
         name: 'app_disposition_document_download',
         methods: ['GET'],
     )]
@@ -93,7 +93,7 @@ class DispositionController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/disposition/{prefix}/{dossierId}/attachment/{attachmentId}',
+        '/beschikking/{prefix}/{dossierId}/bijlage/{attachmentId}',
         name: 'app_disposition_attachment_detail',
         methods: ['GET'],
     )]
@@ -124,7 +124,7 @@ class DispositionController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/disposition/{prefix}/{dossierId}/attachment/{attachmentId}/download',
+        '/beschikking/{prefix}/{dossierId}/bijlage/{attachmentId}/download',
         name: 'app_disposition_attachment_download',
         methods: ['GET'],
     )]

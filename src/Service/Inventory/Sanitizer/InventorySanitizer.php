@@ -93,7 +93,7 @@ class InventorySanitizer
     private function persistInventory(EntityWithFileInfo $inventoryEntity, string $filename): void
     {
         $fileInfo = new FileInfo();
-        $fileInfo->setSourceType(SourceType::SOURCE_SPREADSHEET);
+        $fileInfo->setSourceType(SourceType::SPREADSHEET);
         $fileInfo->setType($this->writer->getFileExtension());
         $fileInfo->setName($filename . '.' . $this->writer->getFileExtension());
         $inventoryEntity->setFileInfo($fileInfo);

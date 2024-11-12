@@ -96,11 +96,9 @@ class CreateMainDocumentHandlerTest extends MockeryTestCase
             $language,
             $grounds,
             $uploadFileReference,
-            $uploadName,
         );
 
         $fileInfo = \Mockery::mock(FileInfo::class);
-        $fileInfo->expects('setName')->with($uploadName);
         $fileInfo->shouldReceive('getName')->andReturn($uploadName);
 
         $mainDocument = \Mockery::mock(AnnualReportDocument::class);
@@ -140,7 +138,6 @@ class CreateMainDocumentHandlerTest extends MockeryTestCase
     public function testExceptionIsThrownWhenDocumentAlreadyExists(): void
     {
         $uploadFileReference = 'file-' . Uuid::v6();
-        $uploadName = 'test-123.pdf';
 
         $formalDate = new \DateTimeImmutable();
         $internalReference = 'foo bar';
@@ -174,7 +171,6 @@ class CreateMainDocumentHandlerTest extends MockeryTestCase
                 $language,
                 $grounds,
                 $uploadFileReference,
-                $uploadName,
             )
         );
     }
@@ -202,7 +198,6 @@ class CreateMainDocumentHandlerTest extends MockeryTestCase
             ->andReturn($this->annualReportDocumentRepository);
 
         $fileInfo = \Mockery::mock(FileInfo::class);
-        $fileInfo->expects('setName')->with($uploadName);
         $fileInfo->shouldReceive('getName')->andReturn($uploadName);
 
         $mainDocument = \Mockery::mock(AnnualReportDocument::class);
@@ -221,7 +216,6 @@ class CreateMainDocumentHandlerTest extends MockeryTestCase
             $language,
             $grounds,
             $uploadFileReference,
-            $uploadName,
         );
 
         $this->annualReportDocumentRepository->expects('create')->with($dossier, $command)->andReturn($mainDocument);

@@ -15,11 +15,6 @@ use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<DispositionAttachment>
- *
- * @method DispositionAttachment|null find($id, $lockMode = null, $lockVersion = null)
- * @method DispositionAttachment|null findOneBy(array $criteria, array $orderBy = null)
- * @method DispositionAttachment[]    findAll()
- * @method DispositionAttachment[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class DispositionAttachmentRepository extends ServiceEntityRepository implements AttachmentRepositoryInterface
 {

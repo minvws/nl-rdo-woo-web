@@ -22,36 +22,46 @@ vi.mock('@utils', async (importOriginal) => {
 });
 
 describe('The "SearchPreviewsForm" component', () => {
-  const createComponent = (id?: string) => mount(SearchPreviewsForm, {
-    props: {
-      endpoint: 'https://mocked-endpoint.com',
-      id,
-      label: 'Mocked label',
-    },
-    shallow: true,
-  });
+  const createComponent = (id?: string) =>
+    mount(SearchPreviewsForm, {
+      props: {
+        endpoint: 'https://mocked-endpoint.com',
+        id,
+        label: 'Mocked label',
+      },
+      shallow: true,
+    });
 
   const getInputElement = (component: VueWrapper) => component.find('input');
   const getLabelElement = (component: VueWrapper) => component.find('label');
-  const getResetButtonElement = (component: VueWrapper) => component.find('button');
+  const getResetButtonElement = (component: VueWrapper) =>
+    component.find('button');
   const getMagnifierIcon = (component: VueWrapper) => {
     const iconComponents = component.findAllComponents({ name: 'Icon' });
-    return iconComponents.find((iconComponent) => iconComponent.props('name') === 'magnifier');
+    return iconComponents.find(
+      (iconComponent) => iconComponent.props('name') === 'magnifier',
+    );
   };
   const updateInputValue = async (component: VueWrapper, value: string) => {
     await getInputElement(component).setValue(value);
     vi.advanceTimersByTime(251); // Make the debounce function execute
     await flushPromises();
   };
-  const getSearchResultsComponent = (component: VueWrapper) => component.findComponent({ name: 'SearchResults' });
-  const areSearchResultsVisible = (component: VueWrapper) => !component.find(
-    '#search-previews-results',
-  ).element.classList.contains('hidden');
+  const getSearchResultsComponent = (component: VueWrapper) =>
+    component.findComponent({ name: 'SearchResults' });
+  const areSearchResultsVisible = (component: VueWrapper) =>
+    !component
+      .find('#search-previews-results')
+      .element.classList.contains('hidden');
 
   const mockedSearchResults = [{ title: 'result-1' }, { title: 'result-2' }];
 
   const mockSearchResults = (results: any[]) => {
-    global.fetch = vi.fn().mockImplementation(() => Promise.resolve({ json: () => Promise.resolve(results) }));
+    global.fetch = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve({ json: () => Promise.resolve(results) }),
+      );
   };
 
   beforeEach(() => {
@@ -71,7 +81,9 @@ describe('The "SearchPreviewsForm" component', () => {
   describe('the label', () => {
     test('should be tied to the input field with the "for" and "id" attributes', () => {
       const component = createComponent();
-      expect(getInputElement(component).element.getAttribute('id')).toBe(getLabelElement(component).element.getAttribute('for'));
+      expect(getInputElement(component).element.getAttribute('id')).toBe(
+        getLabelElement(component).element.getAttribute('for'),
+      );
     });
 
     test('should have a text which equals the provided label text', () => {
@@ -113,7 +125,9 @@ describe('The "SearchPreviewsForm" component', () => {
       const component = createComponent();
 
       await updateInputValue(component, 'mocked search query');
-      expect(getInputElement(component).element.value).toBe('mocked search query');
+      expect(getInputElement(component).element.value).toBe(
+        'mocked search query',
+      );
 
       await getResetButtonElement(component).trigger('click');
       expect(getInputElement(component).element.value).toBe('');
@@ -132,7 +146,10 @@ describe('The "SearchPreviewsForm" component', () => {
       const component = createComponent();
 
       await updateInputValue(component, 'abc');
-      expect(global.fetch).toHaveBeenNthCalledWith(1, 'https://mocked-endpoint.com?q=abc');
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        1,
+        'https://mocked-endpoint.com?q=abc',
+      );
     });
 
     test('it should display the fetched search results', async () => {
@@ -143,7 +160,9 @@ describe('The "SearchPreviewsForm" component', () => {
 
       await updateInputValue(component, 'abc');
       expect(areSearchResultsVisible(component)).toBe(true);
-      expect(getSearchResultsComponent(component).props('results')).toEqual(mockedSearchResults);
+      expect(getSearchResultsComponent(component).props('results')).toEqual(
+        mockedSearchResults,
+      );
     });
   });
 

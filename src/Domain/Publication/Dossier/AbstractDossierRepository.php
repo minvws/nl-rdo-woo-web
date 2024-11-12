@@ -14,11 +14,6 @@ use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<AbstractDossier>
- *
- * @method AbstractDossier|null find($id, $lockMode = null, $lockVersion = null)
- * @method AbstractDossier|null findOneBy(array $criteria, array $orderBy = null)
- * @method AbstractDossier[]    findAll()
- * @method AbstractDossier[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class AbstractDossierRepository extends ServiceEntityRepository
 {

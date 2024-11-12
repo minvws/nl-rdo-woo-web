@@ -30,7 +30,7 @@ class AnnualReportController extends AbstractController
     }
 
     #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
-    #[Route('/annual-report/{prefix}/{dossierId}', name: 'app_annualreport_detail', methods: ['GET'])]
+    #[Route('/jaarplan-jaarverslag/{prefix}/{dossierId}', name: 'app_annualreport_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] AnnualReport $annualReport,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
@@ -49,7 +49,7 @@ class AnnualReportController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/annual-report/{prefix}/{dossierId}/document',
+        '/jaarplan-jaarverslag/{prefix}/{dossierId}/document',
         name: 'app_annualreport_document_detail',
         methods: ['GET'],
     )]
@@ -77,7 +77,7 @@ class AnnualReportController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/annual-report/{prefix}/{dossierId}/document/download',
+        '/jaarplan-jaarverslag/{prefix}/{dossierId}/document/download',
         name: 'app_annualreport_document_download',
         methods: ['GET'],
     )]
@@ -93,7 +93,7 @@ class AnnualReportController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/annual-report/{prefix}/{dossierId}/attachment/{attachmentId}',
+        '/jaarplan-jaarverslag/{prefix}/{dossierId}/bijlage/{attachmentId}',
         name: 'app_annualreport_attachment_detail',
         methods: ['GET'],
     )]
@@ -124,7 +124,7 @@ class AnnualReportController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/annual-report/{prefix}/{dossierId}/attachment/{attachmentId}/download',
+        '/jaarplan-jaarverslag/{prefix}/{dossierId}/bijlage/{attachmentId}/download',
         name: 'app_annualreport_attachment_download',
         methods: ['GET'],
     )]

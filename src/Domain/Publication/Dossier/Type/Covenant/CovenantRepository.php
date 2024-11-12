@@ -13,11 +13,6 @@ use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Covenant>
- *
- * @method Covenant|null find($id, $lockMode = null, $lockVersion = null)
- * @method Covenant|null findOneBy(array $criteria, array $orderBy = null)
- * @method Covenant[]    findAll()
- * @method Covenant[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class CovenantRepository extends ServiceEntityRepository implements ProvidesDossierTypeSearchResultInterface
 {

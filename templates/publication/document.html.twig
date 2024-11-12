@@ -12,7 +12,7 @@
     </p>
 
     <div class="mt-8">
-        <twig:Public:DownloadFileButton href="{{ document.downloadUrl }}">{{ 'global.download_document' | trans }} ({{ ('public.documents.file_type.' ~ document.sourceType) | trans }}, {{ document.size | size }})</twig:Public:DownloadFileButton>
+        <twig:Public:DownloadFileButton href="{{ document.downloadUrl }}">{{ 'global.download_document' | trans }} ({{ document.sourceType | trans }}, {{ document.size | size }})</twig:Public:DownloadFileButton>
     </div>
 
     <div class="mt-16">
@@ -42,13 +42,13 @@
                     <tr>
                         <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.type' | trans }}</th>
                         <td>
-                            <twig:Public:FileIcon type="{{ document.sourceType }}" />
-                            {{ ('public.documents.file_type.' ~ document.sourceType) | trans }}
+                            <twig:Public:FileIcon type="{{ document.sourceType.value }}" />
+                            {{ document.sourceType | trans }}
                         </td>
                     </tr>
                     <tr>
                         <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.download_type' | trans }}</th>
-                        <td>{{ ('public.documents.file_type.' ~ document.sourceType) | trans }}, {{ document.size | size }}</td>
+                        <td>{{ document.sourceType | trans }}, {{ document.size | size }}</td>
                     </tr>
                     {% if dossier.hasSubject %}
                     <tr>
@@ -93,7 +93,7 @@
                         {% for attachment in attachments %}
                         <tr>
                             <td>
-                                <twig:Public:FileIcon type="{{ attachment.sourceType }}" size="16" />
+                                <twig:Public:FileIcon type="{{ attachment.sourceType.value }}" size="16" />
                                 <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a>
                             </td>
                             <td class="w-48 min-w-48 text-right">
@@ -129,7 +129,7 @@
                         </tr>
                         <tr>
                             <th class="woo-table-cell-light w-64 min-w-64" scope="row">
-                                {{ 'admin.publications.department' | trans }}
+                                {{ 'global.responsible_parties' | trans }}
                             </th>
                             <td>{{ dossier.mainDepartment.name }}</td>
                         </tr>

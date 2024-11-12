@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
+use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use App\Message\SetElasticAliasMessage;
-use App\Service\Elastic\IndexService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -17,7 +17,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class SetElasticAliasHandler
 {
     public function __construct(
-        protected IndexService $indexService,
+        protected ElasticIndexManager $indexService,
         protected LoggerInterface $logger,
         protected MessageBusInterface $bus,
     ) {

@@ -95,8 +95,8 @@ class FakeDataGenerator
 
     public function generateDocument(): Document
     {
-        /** @var string $sourceType */
-        $sourceType = $this->faker->randomElement(SourceType::getAllSourceTypes());
+        /** @var SourceType $sourceType */
+        $sourceType = $this->faker->randomElement(SourceType::cases());
         $documentId = $this->faker->unique()->randomNumber(nbDigits: 6, strict: true);
         $documentNr = sprintf('PREF-%s', $documentId);
         $document = new Document();

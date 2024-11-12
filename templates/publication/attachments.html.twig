@@ -14,14 +14,14 @@
                         {{ documentType | default(dossier.type | trans | capitalize) }}
                     </th>
                     <td>
-                        <a class="woo-a" href="{{ document.detailsUrl }}">{{ document.name }}</a> <span>({{ ('public.documents.file_type.' ~ document.sourceType) | trans }}, {{ document.size | size }})</span>
+                        <a class="woo-a" href="{{ document.detailsUrl }}">{{ document.name }}</a> <span>({{ document.sourceType | trans }}, {{ document.size | size }})</span>
                     </td>
                 </tr>
                 {% for attachment in (attachments | default([])) %}
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ attachment.type | trans | capitalize }}</th>
                     <td>
-                        <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a> ({{ ('public.documents.file_type.' ~ attachment.sourceType) | trans }}, {{ attachment.size | size }})
+                        <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a> ({{ attachment.sourceType | trans }}, {{ attachment.size | size }})
                     </td>
                 </tr>
                 {% endfor %}

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
+use App\Domain\Search\Index\Rollover\RolloverParameters;
+use App\Domain\Search\Index\Rollover\RolloverService;
 use App\Form\Elastic\ActivateIndexType;
 use App\Form\Elastic\DeleteIndexType;
 use App\Form\Elastic\RolloverParametersType;
-use App\Service\Elastic\IndexService;
-use App\Service\Elastic\Model\RolloverParameters;
-use App\Service\Elastic\RolloverService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +21,7 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 class ElasticController extends AbstractController
 {
     public function __construct(
-        protected IndexService $indexService,
+        protected ElasticIndexManager $indexService,
         protected RolloverService $rolloverService,
         protected TranslatorInterface $translator,
     ) {

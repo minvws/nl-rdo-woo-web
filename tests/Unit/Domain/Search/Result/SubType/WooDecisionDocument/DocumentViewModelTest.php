@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Domain\Search\Result\SubType\WooDecisionDocument;
 
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use App\Entity\Judgement;
+use App\SourceType;
 use PHPUnit\Framework\TestCase;
 
 class DocumentViewModelTest extends TestCase
@@ -16,7 +17,7 @@ class DocumentViewModelTest extends TestCase
             $documentId = '123',
             $documentNr = 'foo-123',
             $filename = 'foo.txt',
-            $sourceType = 'bar',
+            $sourceType = SourceType::PDF,
             $fileUploaded = true,
             $fileSize = 456,
             $pageCount = 12,
@@ -27,7 +28,7 @@ class DocumentViewModelTest extends TestCase
         self::assertEquals($documentId, $viewmodel->documentId);
         self::assertEquals($documentNr, $viewmodel->documentNr);
         self::assertEquals($filename, $viewmodel->fileInfo->getName());
-        self::assertEquals($sourceType, $viewmodel->fileInfo->getSourceType());
+        self::assertEquals($sourceType->value, $viewmodel->fileInfo->getSourceType());
         self::assertEquals($fileUploaded, $viewmodel->fileInfo->isUploaded());
         self::assertEquals($fileSize, $viewmodel->fileInfo->getSize());
         self::assertEquals($pageCount, $viewmodel->pageCount);

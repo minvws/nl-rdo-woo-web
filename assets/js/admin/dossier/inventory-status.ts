@@ -8,7 +8,8 @@ export const dossierInventoryStatus = () => {
   let placeholderElement: HTMLElement | null = null;
   let timeoutId: NodeJS.Timeout | null = null;
 
-  const { cleanup: cleanupUploadAreas, initialize: initializeUploadAreas } = uploadAreas();
+  const { cleanup: cleanupUploadAreas, initialize: initializeUploadAreas } =
+    uploadAreas();
 
   const initialize = () => {
     placeholderElement = document.getElementById('js-inventory-status');
@@ -84,7 +85,8 @@ export const dossierInventoryStatus = () => {
     return wrapperElement.querySelector('.js-inventory-status-continue-later');
   };
 
-  const getWrapperElement = () => placeholderElement?.closest('.js-inventory-status-wrapper');
+  const getWrapperElement = () =>
+    placeholderElement?.closest('.js-inventory-status-wrapper');
 
   return {
     initialize,

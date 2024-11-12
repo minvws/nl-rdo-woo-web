@@ -1,141 +1,156 @@
 <script setup>
-  import Alert from '@admin-fe/component/Alert.vue';
-  import Dialog from '@admin-fe/component/Dialog.vue';
-  import PublicationDocumentForm from '@admin-fe/component/publication/PublicationDocumentForm.vue';
-  import UploadedAttachment from '@admin-fe/component/publication/UploadedAttachment.vue';
-  import { findDocumentTypeLabelByValue } from '@admin-fe/component/publication/helper';
-  import { isSuccessStatusCode } from '@js/admin/utils';
-  import { computed, ref } from 'vue';
+import Alert from '@admin-fe/component/Alert.vue';
+import Dialog from '@admin-fe/component/Dialog.vue';
+import PublicationDocumentForm from '@admin-fe/component/publication/PublicationDocumentForm.vue';
+import UploadedAttachment from '@admin-fe/component/publication/UploadedAttachment.vue';
+import { findDocumentTypeLabelByValue } from '@admin-fe/component/publication/helper';
+import { isSuccessStatusCode } from '@js/admin/utils';
+import { computed, ref } from 'vue';
 
-  const props = defineProps({
-    allowedFileTypes: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-    allowedMimeTypes: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-    canDelete: {
-      type: Boolean,
-      default: false,
-    },
-    documentLanguageOptions: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-    documentType: {
-      type: String,
-      required: true,
-    },
-    documentTypeOptions: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-    endpoint: {
-      type: String,
-      required: true,
-    },
-    groundOptions: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-    uploadGroupId: {
-      type: String,
-    },
-  });
+const props = defineProps({
+  allowedFileTypes: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
+  allowedMimeTypes: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
+  canDelete: {
+    type: Boolean,
+    default: false,
+  },
+  documentLanguageOptions: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
+  documentType: {
+    type: String,
+    required: true,
+  },
+  documentTypeOptions: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
+  endpoint: {
+    type: String,
+    required: true,
+  },
+  groundOptions: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
+  uploadGroupId: {
+    type: String,
+  },
+});
 
-  const createEmptyDocument = () => ({
-    formalDate: '',
-    internalReference: '',
-    grounds: [],
-    name: '',
-    language: 'Dutch',
-    type: '',
-  });
+const createEmptyDocument = () => ({
+  formalDate: '',
+  internalReference: '',
+  grounds: [],
+  name: '',
+  language: 'Dutch',
+  type: '',
+});
 
-  const action = ref(null);
-  const addDocumentButton = ref(null);
-  const currentDocument = ref(createEmptyDocument());
-  const document = ref(null);
-  const hasDocument = computed(() => document.value !== null);
-  const isDialogOpen = ref(false);
-  const isEditMode = computed(() => Boolean(document.value));
-  const dialogTitle = computed(() => isEditMode.value ? `${props.documentType} bewerken` : `${props.documentType} toevoegen`);
-  const readableDocumentType = computed(() => document.value ? findDocumentTypeLabelByValue(props.documentTypeOptions, document.value.type) : props.documentType);
+const action = ref(null);
+const addDocumentButton = ref(null);
+const currentDocument = ref(createEmptyDocument());
+const document = ref(null);
+const hasDocument = computed(() => document.value !== null);
+const isDialogOpen = ref(false);
+const isEditMode = computed(() => Boolean(document.value));
+const dialogTitle = computed(() =>
+  isEditMode.value
+    ? `${props.documentType} bewerken`
+    : `${props.documentType} toevoegen`,
+);
+const readableDocumentType = computed(() =>
+  document.value
+    ? findDocumentTypeLabelByValue(
+        props.documentTypeOptions,
+        document.value.type,
+      )
+    : props.documentType,
+);
 
-  const onCancel = () => {
-    isDialogOpen.value = false;
+const onCancel = () => {
+  isDialogOpen.value = false;
+};
+
+const onDeleted = () => {
+  setAction('deleted');
+  currentDocument.value = { ...createEmptyDocument() };
+  document.value = null;
+  isDialogOpen.value = false;
+};
+
+const onEdit = () => {
+  resetAction();
+  currentDocument.value = { ...document.value };
+  isDialogOpen.value = true;
+};
+
+const onAddDocument = () => {
+  resetAction();
+  currentDocument.value = { ...createEmptyDocument() };
+  isDialogOpen.value = true;
+};
+
+const onSaved = (relatedDocument) => {
+  setAction(isEditMode.value ? 'edited' : 'added');
+  document.value = { ...relatedDocument };
+  isDialogOpen.value = false;
+};
+
+const setAction = (value) => {
+  action.value = value;
+};
+
+const resetAction = () => {
+  setAction(null);
+};
+
+const translateAction = () => {
+  const mappings = {
+    added: 'toegevoegd',
+    deleted: 'verwijderd',
+    edited: 'bijgewerkt',
   };
 
-  const onDeleted = () => {
-    setAction('deleted');
-    currentDocument.value = { ...createEmptyDocument() };
-    document.value = null;
-    isDialogOpen.value = false;
-  };
+  return mappings[action.value] || '';
+};
 
-  const onEdit = () => {
-    resetAction();
-    currentDocument.value = { ...document.value };
-    isDialogOpen.value = true;
-  };
+const retrieveDocument = async () => {
+  try {
+    const response = await fetch(props.endpoint, {
+      headers: {
+        'Content-Type': 'application/json',
+        accept: 'application/json',
+      },
+    });
+    if (isSuccessStatusCode(response.status)) {
+      const documentFromApi = await response.json();
+      document.value = { ...documentFromApi };
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
+  } catch (error) {}
+};
 
-  const onAddDocument = () => {
-    resetAction();
-    currentDocument.value = { ...createEmptyDocument() };
-    isDialogOpen.value = true;
-  };
-
-  const onSaved = (relatedDocument) => {
-    setAction(isEditMode.value ? 'edited' : 'added');
-    document.value = { ...relatedDocument };
-    isDialogOpen.value = false;
-  };
-
-  const setAction = (value) => {
-    action.value = value;
-  };
-
-  const resetAction = () => {
-    setAction(null);
-  };
-
-  const translateAction = () => {
-    const mappings = {
-      added: 'toegevoegd',
-      deleted: 'verwijderd',
-      edited: 'bijgewerkt',
-    };
-
-    return mappings[action.value] || '';
-  }
-
-  const retrieveDocument = async () => {
-    try {
-      const response = await fetch(props.endpoint, { headers: { 'Content-Type': 'application/json', accept: 'application/json' } });
-      if (isSuccessStatusCode(response.status)) {
-        const documentFromApi = await response.json();
-        document.value = { ...documentFromApi }
-      }
-    } catch (error) {}
-  }
-
-  retrieveDocument();
+retrieveDocument();
 </script>
 
 <template>
   <UploadedAttachment
     v-if="hasDocument"
-
     @deleted="onDeleted"
     @edit="onEdit"
-
     :can-delete="props.canDelete"
     :date="document.formalDate"
     :document-type="document.type"

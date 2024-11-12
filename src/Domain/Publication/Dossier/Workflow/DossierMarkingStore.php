@@ -26,7 +26,7 @@ final class DossierMarkingStore implements MarkingStoreInterface
      * @param AbstractDossier         $subject
      * @param array<array-key, mixed> $context
      */
-    public function setMarking(object $subject, Marking $marking, array $context = [])
+    public function setMarking(object $subject, Marking $marking, array $context = []): void
     {
         unset($context);
 

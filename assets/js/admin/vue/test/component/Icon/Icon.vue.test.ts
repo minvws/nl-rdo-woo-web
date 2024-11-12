@@ -8,24 +8,29 @@ describe('The "Icon" component', () => {
     size: number;
     width: number;
   }
-  const createComponent = (options: Partial<Options> = {}) => mount(Icon, {
-    props: {
-      color: 'mocked-color',
-      name: 'mocked-name',
-      height: options.height,
-      size: options.size,
-      width: options.width,
-    },
-  });
+  const createComponent = (options: Partial<Options> = {}) =>
+    mount(Icon, {
+      props: {
+        color: 'mocked-color',
+        name: 'mocked-name',
+        height: options.height,
+        size: options.size,
+        width: options.width,
+      },
+    });
 
   const getSvg = (component: VueWrapper) => component.find('svg');
-  const getSvgHeight = (component: VueWrapper) => Number(getSvg(component).attributes('height'));
-  const getSvgWidth = (component: VueWrapper) => Number(getSvg(component).attributes('width'));
+  const getSvgHeight = (component: VueWrapper) =>
+    Number(getSvg(component).attributes('height'));
+  const getSvgWidth = (component: VueWrapper) =>
+    Number(getSvg(component).attributes('width'));
 
   test('should render an svg element with the provided color and name', () => {
     const svgElement = getSvg(createComponent());
     expect(svgElement.classes()).toContain('mocked-color');
-    expect(svgElement.find('use').attributes('href')).toBe('/assets/img/admin/icons.svg#mocked-name');
+    expect(svgElement.find('use').attributes('href')).toBe(
+      '/assets/img/admin/icons.svg#mocked-name',
+    );
   });
 
   describe('the height of the svg', () => {

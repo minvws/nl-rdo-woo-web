@@ -13,7 +13,6 @@ use App\Exception\ViewingNotAllowedException;
 use App\Repository\DocumentRepository;
 use App\Service\DossierService;
 use App\Service\DownloadResponseHelper;
-use App\Service\Search\SearchService;
 use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -37,7 +36,6 @@ class DocumentController extends AbstractController
     public function __construct(
         private readonly EntityStorageService $entityStorageService,
         private readonly ThumbnailStorageService $thumbnailStorage,
-        private readonly SearchService $searchService,
         private readonly DocumentRepository $documentRepository,
         private readonly DossierService $dossierService,
         private readonly DownloadResponseHelper $downloadHelper,
@@ -113,29 +111,6 @@ class DocumentController extends AbstractController
         }
 
         return $this->downloadHelper->getResponseForEntityWithFileInfo($document, false);
-    }
-
-    #[Route(
-        '/dossier/{prefix}/{dossierId}/download/{documentId}/{pageNr}/_text',
-        name: 'app_document_text',
-        requirements: ['pageNr' => '\d+'],
-        methods: ['GET']
-    )]
-    public function debugPage(
-        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
-        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
-        string $pageNr,
-    ): Response {
-        if (! $this->dossierService->isViewingAllowed($dossier, $document)) {
-            throw ViewingNotAllowedException::forDossierOrDocument();
-        }
-
-        $content = $this->searchService->getPageContent($document, intval($pageNr));
-        if (! $content) {
-            throw $this->createNotFoundException('No content found for this page');
-        }
-
-        return new Response('<pre>' . trim($content) . '</pre>');
     }
 
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]

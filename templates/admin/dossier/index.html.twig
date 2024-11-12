@@ -68,8 +68,9 @@
                         {{ knp_pagination_sortable(pagination, 'admin.publications.organisation_and_reference' | trans, ['dos.documentPrefix','dos.dossierNr'], {}, {}, 'pagination/sort.admin.html.twig') }}
                         {{ knp_pagination_sortable(pagination, 'admin.publications.status' | trans, 'dos.status', {}, {}, 'pagination/sort.admin.html.twig') }}
                         <th class="bhr-column-head bhr-column-head--gray border-r-1 font-bold" scope="col">{{ "admin.dossiers.category" | trans() }}</th>
+                        {{ knp_pagination_sortable(pagination, 'global.created_at' | trans, 'dos.createdAt', {}, {}, 'pagination/sort.admin.html.twig') }}
                         {{ knp_pagination_sortable(pagination, 'global.publication_date' | trans, 'dos.publicationDate', {}, {}, 'pagination/sort.admin.html.twig') }}
-                        {{ knp_pagination_sortable(pagination, 'global.summary' | trans, 'dos.summary', { thClassName: 'border-r-0' }, {}, 'pagination/sort.admin.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'global.description' | trans, 'dos.summary', { thClassName: 'border-r-0' }, {}, 'pagination/sort.admin.html.twig') }}
                         <th class="bhr-column-head bhr-column-head--gray" scope="col">
                             <span class="sr-only">{{ 'global.details'| trans }}</span>
                         </th>
@@ -96,12 +97,17 @@
                             </td>
                             <td>
                                 <a class="bhr-fill-cell" href="{{ url }}">
+                                    {{ dossier.createdAt|format_date('medium') }}
+                                </a>
+                            </td>
+                            <td>
+                                <a class="bhr-fill-cell" href="{{ url }}">
                                     {{ dossier.publicationDate  is empty ? "-" : dossier.publicationDate|format_date('medium') }}
                                 </a>
                             </td>
                             <td>
                                 <a class="bhr-fill-cell" href="{{ url }}">
-                                    <span class="bhr-clamp">{{ dossier.summary }}</span>
+                                    <span class="bhr-clamp">{{ dossier.title }}</span>
                                 </a>
                             </td>
                             <td class="text-right">

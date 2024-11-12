@@ -10,33 +10,33 @@ use PHPUnit\Framework\TestCase;
 
 class CovenantSearchEntryTest extends TestCase
 {
-    #[DataProvider('getTypeProvider')]
-    public function testGetType(?string $input, string $expectedResult): void
+    #[DataProvider('createProvider')]
+    public function testCreate(?string $input, SourceType $expectedResult): void
     {
-        self::assertEquals($expectedResult, SourceType::getType($input));
+        self::assertEquals($expectedResult, SourceType::create($input));
     }
 
     /**
-     * @return array<string, array{input:?string, expectedResult:string}>
+     * @return array<string, array{input:?string, expectedResult:SourceType}>
      */
-    public static function getTypeProvider(): array
+    public static function createProvider(): array
     {
         return [
             'empty-string' => [
                 'input' => '',
-                'expectedResult' => SourceType::SOURCE_UNKNOWN,
+                'expectedResult' => SourceType::UNKNOWN,
             ],
             'null' => [
                 'input' => null,
-                'expectedResult' => SourceType::SOURCE_UNKNOWN,
+                'expectedResult' => SourceType::UNKNOWN,
             ],
             'PDF-whitespaced-and-uppercased' => [
                 'input' => ' PDF   ',
-                'expectedResult' => SourceType::SOURCE_PDF,
+                'expectedResult' => SourceType::PDF,
             ],
             'mimetype' => [
                 'input' => 'application/vnd.openxmlformats-officedocument',
-                'expectedResult' => SourceType::SOURCE_DOCUMENT,
+                'expectedResult' => SourceType::DOC,
             ],
         ];
     }

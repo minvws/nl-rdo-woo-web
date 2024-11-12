@@ -13,11 +13,6 @@ use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<ComplaintJudgement>
- *
- * @method ComplaintJudgement|null find($id, $lockMode = null, $lockVersion = null)
- * @method ComplaintJudgement|null findOneBy(array $criteria, array $orderBy = null)
- * @method ComplaintJudgement[]    findAll()
- * @method ComplaintJudgement[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ComplaintJudgementRepository extends ServiceEntityRepository implements ProvidesDossierTypeSearchResultInterface
 {

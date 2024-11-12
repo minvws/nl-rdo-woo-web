@@ -1,4 +1,8 @@
-import { formatFileSize, type InvalidFile, type InvalidFilesSet } from '@js/admin/utils';
+import {
+  formatFileSize,
+  type InvalidFile,
+  type InvalidFilesSet,
+} from '@js/admin/utils';
 import { hideElement, showElement } from '@utils';
 
 export interface InvalidFiles {
@@ -8,7 +12,9 @@ export interface InvalidFiles {
 export const initializeInvalidFiles = (
   invalidFilesElement: HTMLElement,
 ): InvalidFiles => {
-  const listElement = invalidFilesElement.querySelector('.js-invalid-files-list');
+  const listElement = invalidFilesElement.querySelector(
+    '.js-invalid-files-list',
+  );
 
   const processInvalidFiles = (invalidFiles: InvalidFilesSet) => {
     if (invalidFiles.size === 0) {

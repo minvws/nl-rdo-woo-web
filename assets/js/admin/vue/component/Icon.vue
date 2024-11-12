@@ -22,8 +22,8 @@ const getDimension = (dimension: 'height' | 'width') => {
 };
 
 const imagePath = computed(() => `${filePath}#${props.name}`);
-const height = computed(() => getDimension('height'));
-const width = computed(() => getDimension('width'));
+const heightComputed = computed(() => getDimension('height'));
+const widthComputed = computed(() => getDimension('width'));
 </script>
 
 <template>
@@ -31,8 +31,8 @@ const width = computed(() => getDimension('width'));
     aria-hidden="true"
     class="bhr-icon"
     :class="color"
-    :height="height"
-    :width="width"
+    :height="heightComputed"
+    :width="widthComputed"
   >
     <use :xlink:href="imagePath"></use>
   </svg>

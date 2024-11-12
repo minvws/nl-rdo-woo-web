@@ -10,12 +10,26 @@ import { resetFocus } from './reset-focus';
 export const searchResults = () => {
   let abortController: AbortController;
 
-  const { initialize: initializeActiveFilterPills, cleanup: cleanupActiveFilterPills } = activeFilterPills();
-  const { initialize: initializeCheckboxFilters, cleanup: cleanupCheckboxFilters } = checkboxFilters();
-  const { initialize: initializeCollapsibleFilters, cleanup: cleanupCollapsibleFilters } = collapsibleFilters();
-  const { initialize: initializeDateFilters, cleanup: cleanupDateFilters } = dateFilters();
-  const { initialize: initializeDetailsComponents, cleanup: cleanupDetailsComponents } = detailsComponents();
-  const { initialize: initializeResetFocus, cleanup: cleanupResetFocus } = resetFocus();
+  const {
+    initialize: initializeActiveFilterPills,
+    cleanup: cleanupActiveFilterPills,
+  } = activeFilterPills();
+  const {
+    initialize: initializeCheckboxFilters,
+    cleanup: cleanupCheckboxFilters,
+  } = checkboxFilters();
+  const {
+    initialize: initializeCollapsibleFilters,
+    cleanup: cleanupCollapsibleFilters,
+  } = collapsibleFilters();
+  const { initialize: initializeDateFilters, cleanup: cleanupDateFilters } =
+    dateFilters();
+  const {
+    initialize: initializeDetailsComponents,
+    cleanup: cleanupDetailsComponents,
+  } = detailsComponents();
+  const { initialize: initializeResetFocus, cleanup: cleanupResetFocus } =
+    resetFocus();
 
   const executeFetchAndUpdateResults = (params: URLSearchParams) => {
     fetchAndUpdateResults(params, (previousActiveElement?: HTMLElement) => {
@@ -38,9 +52,13 @@ export const searchResults = () => {
   const listenToUrlChanges = () => {
     abortController = new AbortController();
 
-    window.addEventListener('popstate', () => {
-      executeFetchAndUpdateResults(getSearchParams());
-    }, { signal: abortController.signal });
+    window.addEventListener(
+      'popstate',
+      () => {
+        executeFetchAndUpdateResults(getSearchParams());
+      },
+      { signal: abortController.signal },
+    );
   };
 
   const cleanup = () => {

@@ -23,15 +23,23 @@ final readonly class UploaderNamer implements NamerInterface
 
         $clientOriginalName = basename($file->getClientOriginalName());
 
-        return sprintf('%s/%s_%s', $this->getGroupdId()->value, uniqid(), $clientOriginalName);
+        return sprintf('%s/%s_%s', $this->getGroupId()->value, uniqid(), $clientOriginalName);
     }
 
-    private function getGroupdId(): UploadGroupId
+    private function getGroupId(): UploadGroupId
     {
         $groupId = $this->requestStack->getCurrentRequest()?->get('groupId');
 
         return is_string($groupId)
             ? UploadGroupId::tryFrom($groupId) ?? UploadGroupId::DEFAULT
             : UploadGroupId::DEFAULT;
+    }
+
+    public static function getOriginalName(string $fileName): string
+    {
+        return substr(
+            $fileName,
+            strpos($fileName, '_') + 1
+        );
     }
 }

@@ -63,17 +63,16 @@ final class ComplaintJudgementDocumentTest extends ApiTestCase
         );
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
 
-        ['uploadUuid' => $uploadUuid, 'uploadName' => $uploadName] = $this->uploadDocument($client);
+        $uploadUuid = $this->uploadDocument($client);
 
         // Now create the ComplaintJudgementDocument
         $data = [
             'formalDate' => (new \DateTimeImmutable('yesterday'))->format('Y-m-d'),
             'internalReference' => 'foo bar',
-            'type' => AttachmentType::COMPLAINT->value,
+            'type' => AttachmentType::COMPLAINT_JUDGEMENT->value,
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $uploadUuid,
-            'name' => $uploadName,
         ];
         $client->request(
             Request::METHOD_POST,
@@ -183,17 +182,16 @@ final class ComplaintJudgementDocumentTest extends ApiTestCase
         );
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
 
-        ['uploadUuid' => $uploadUuid, 'uploadName' => $uploadName] = $this->uploadDocument($client);
+        $uploadUuid = $this->uploadDocument($client);
 
         // Now create the ComplaintJudgementDocument
         $data = [
             'formalDate' => (new \DateTimeImmutable('yesterday'))->format('Y-m-d'),
             'internalReference' => 'foo bar',
-            'type' => AttachmentType::COMPLAINT->value,
+            'type' => AttachmentType::COMPLAINT_JUDGEMENT->value,
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $uploadUuid,
-            'name' => $uploadName,
         ];
         $client->request(
             Request::METHOD_POST,
@@ -237,17 +235,16 @@ final class ComplaintJudgementDocumentTest extends ApiTestCase
 
         $client = static::createClient()->loginUser($user->_real(), 'balie');
 
-        ['uploadUuid' => $uploadUuid, 'uploadName' => $uploadName] = $this->uploadDocument($client);
+        $uploadUuid = $this->uploadDocument($client);
 
         // Now create the ComplaintJudgementDocument
         $data = [
             'formalDate' => (new \DateTimeImmutable('yesterday'))->format('Y-m-d'),
             'internalReference' => 'foo bar',
-            'type' => AttachmentType::COMPLAINT->value,
+            'type' => AttachmentType::COMPLAINT_JUDGEMENT->value,
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $uploadUuid,
-            'name' => $uploadName,
         ];
         $client->request(
             Request::METHOD_POST,
@@ -290,7 +287,7 @@ final class ComplaintJudgementDocumentTest extends ApiTestCase
 
         $client = static::createClient()->loginUser($user->_real(), 'balie');
 
-        ['uploadUuid' => $uploadUuid, 'uploadName' => $uploadName] = $this->uploadDocument($client);
+        $uploadUuid = $this->uploadDocument($client);
 
         $data = [
             'formalDate' => (new \DateTimeImmutable('yesterday'))->format('Y-m-d'),
@@ -299,7 +296,6 @@ final class ComplaintJudgementDocumentTest extends ApiTestCase
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $uploadUuid,
-            'name' => $uploadName,
         ];
 
         $client->request(
@@ -361,10 +357,7 @@ final class ComplaintJudgementDocumentTest extends ApiTestCase
         ]]);
     }
 
-    /**
-     * @return array{uploadUuid:string,uploadName:string}
-     */
-    private function uploadDocument(Client $client): array
+    private function uploadDocument(Client $client): string
     {
         vfsStream::newFile('test_file.pdf')
             ->withContent('This is a test file.')
@@ -376,7 +369,6 @@ final class ComplaintJudgementDocumentTest extends ApiTestCase
         );
 
         $uploadUuid = 'file-' . $this->getFaker()->uuid();
-        $uploadName = 'test-123.pdf';
 
         // Upload the document first
         $client->request(
@@ -400,6 +392,6 @@ final class ComplaintJudgementDocumentTest extends ApiTestCase
 
         self::assertResponseIsSuccessful();
 
-        return ['uploadUuid' => $uploadUuid, 'uploadName' => $uploadName];
+        return $uploadUuid;
     }
 }

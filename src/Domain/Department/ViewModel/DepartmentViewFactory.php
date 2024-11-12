@@ -30,13 +30,10 @@ readonly class DepartmentViewFactory
      */
     public function makeCollection(array $departments): array
     {
-        $departments = array_map(
+        /** @var list<Department> */
+        return array_map(
             fn (DepartmentEntity $department): Department => $this->make($department),
             $departments,
         );
-
-        usort($departments, fn (Department $a, Department $b): int => $a->name <=> $b->name);
-
-        return $departments;
     }
 }

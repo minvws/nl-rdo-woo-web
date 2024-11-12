@@ -13,7 +13,11 @@ use App\Domain\Publication\Dossier\Type\Disposition\DispositionDocument;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportDocument;
 use App\Entity\EntityWithFileInfo;
 use Doctrine\ORM\Mapping as ORM;
+use Webmozart\Assert\Assert;
 
+/**
+ * @template TDossier of AbstractDossier&EntityWithMainDocument
+ */
 #[ORM\Entity(repositoryClass: AbstractMainDocumentRepository::class)]
 #[ORM\Table(name: 'main_document')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
@@ -30,5 +34,14 @@ abstract class AbstractMainDocument implements EntityWithFileInfo
 {
     use AttachmentAndMainDocumentEntityTrait;
 
-    abstract public function getDossier(): AbstractDossier&EntityWithMainDocument;
+    #[ORM\OneToOne(targetEntity: AbstractDossier::class)]
+    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
+    protected AbstractDossier $dossier;
+
+    public function getDossier(): AbstractDossier&EntityWithMainDocument
+    {
+        Assert::isInstanceOf($this->dossier, EntityWithMainDocument::class);
+
+        return $this->dossier;
+    }
 }

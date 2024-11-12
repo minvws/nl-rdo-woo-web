@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\SourceType;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -34,8 +35,8 @@ class FileInfo
     private bool $uploaded = false;
 
     /* The type of the original file. This could be a spreadsheet, word document or email */
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $sourceType = null;
+    #[ORM\Column(length: 255, nullable: true, enumType: SourceType::class)]
+    private ?SourceType $sourceType = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $pageCount = null;
@@ -132,12 +133,12 @@ class FileInfo
         return $this;
     }
 
-    public function getSourceType(): ?string
+    public function getSourceType(): ?SourceType
     {
         return $this->sourceType;
     }
 
-    public function setSourceType(string $sourceType): self
+    public function setSourceType(SourceType $sourceType): self
     {
         $this->sourceType = $sourceType;
 

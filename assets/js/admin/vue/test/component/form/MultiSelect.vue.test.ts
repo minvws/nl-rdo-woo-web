@@ -32,21 +32,28 @@ describe('The "MultiSelect" component', () => {
     });
 
     const multiInputComponent = getMultiInputComponent(component);
-    await multiInputComponent.vm.$emit('update', mockedValues.map((value, index) => ({ id: index, value })));
+    await multiInputComponent.vm.$emit(
+      'update',
+      mockedValues.map((value, index) => ({ id: index, value })),
+    );
     return component;
   };
 
-  const getMultiInputComponent = (component: VueWrapper) => component.findComponent({ name: 'MultiInput' });
-  const getRemovableSelectComponents = (component: VueWrapper) => component.findAllComponents(
-    { name: 'RemovableSelect' },
-  );
+  const getMultiInputComponent = (component: VueWrapper) =>
+    component.findComponent({ name: 'MultiInput' });
+  const getRemovableSelectComponents = (component: VueWrapper) =>
+    component.findAllComponents({ name: 'RemovableSelect' });
 
   test('should display a <MultiInput /> component', async () => {
     const multiInputComponent = getMultiInputComponent(await createComponent());
 
     expect(multiInputComponent).toBeTruthy();
-    expect(multiInputComponent.props('buttonText')).toEqual('mocked_button_text');
-    expect(multiInputComponent.props('buttonTextMultiple')).toEqual('mocked_button_text_multiple');
+    expect(multiInputComponent.props('buttonText')).toEqual(
+      'mocked_button_text',
+    );
+    expect(multiInputComponent.props('buttonTextMultiple')).toEqual(
+      'mocked_button_text_multiple',
+    );
     expect(multiInputComponent.props('helpText')).toEqual('mocked_help_text');
     expect(multiInputComponent.props('legend')).toEqual('mocked_legend');
     expect(multiInputComponent.props('minLength')).toEqual(10);
@@ -61,8 +68,14 @@ describe('The "MultiSelect" component', () => {
     const removableSelectComponents = getRemovableSelectComponents(component);
 
     expect(removableSelectComponents.length).toBe(2);
-    expect(removableSelectComponents[0].props('label')).toEqual('mocked_label 1');
-    expect(removableSelectComponents[0].props('options')).toEqual(mockedOptions);
-    expect(removableSelectComponents[0].props('value')).toEqual(mockedValues[0]);
+    expect(removableSelectComponents[0].props('label')).toEqual(
+      'mocked_label 1',
+    );
+    expect(removableSelectComponents[0].props('options')).toEqual(
+      mockedOptions,
+    );
+    expect(removableSelectComponents[0].props('value')).toEqual(
+      mockedValues[0],
+    );
   });
 });

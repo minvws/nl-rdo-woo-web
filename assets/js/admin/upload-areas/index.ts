@@ -7,14 +7,19 @@ export const uploadAreas = () => {
   const initialize = () => {
     cleanup();
 
-    const uploadAreaElements = Array.from(document.getElementsByClassName('js-upload-area')) as HTMLElement[];
+    const uploadAreaElements = Array.from(
+      document.getElementsByClassName('js-upload-area'),
+    ) as HTMLElement[];
     uploadAreaElements.forEach((uploadAreaElement) => {
       if (uploadAreaElement.hasAttribute(INITIALIZED_ATTRIBUTE_NAME)) {
         return;
       }
 
       uploadAreaElement.setAttribute(INITIALIZED_ATTRIBUTE_NAME, 'true');
-      const instance = uploadArea(uploadAreaElement, uploadAreaElements.length === 1);
+      const instance = uploadArea(
+        uploadAreaElement,
+        uploadAreaElements.length === 1,
+      );
       instance.initialize();
       instances.add(instance);
     });

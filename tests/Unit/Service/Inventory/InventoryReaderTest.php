@@ -90,8 +90,8 @@ class InventoryReaderTest extends MockeryTestCase
         self::assertEquals('test remark', $result[0]->getDocumentMetaData()->getRemark());
         self::assertEquals(null, $result[1]->getDocumentMetaData()->getRemark());
 
-        self::assertEquals(SourceType::SOURCE_UNKNOWN, $result[0]->getDocumentMetaData()->getSourceType());
-        self::assertEquals(SourceType::SOURCE_UNKNOWN, $result[1]->getDocumentMetaData()->getSourceType());
+        self::assertEquals(SourceType::UNKNOWN, $result[0]->getDocumentMetaData()->getSourceType());
+        self::assertEquals(SourceType::UNKNOWN, $result[1]->getDocumentMetaData()->getSourceType());
     }
 
     public function testInventoryReaderAddsExceptionsForEmptyMatterCells(): void

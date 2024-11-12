@@ -20,6 +20,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\DecisionAttachment;
 use App\Entity\FileInfo;
 use App\Enum\ApplicationMode;
+use App\SourceType;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Matcher\Closure;
@@ -45,7 +46,7 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         $fileInfo->shouldReceive('getName')->andReturn($expectedFileName = 'file name');
         $fileInfo->shouldReceive('getMimetype')->andReturn($expectedMimeType = 'file mime type');
         $fileInfo->shouldReceive('getSize')->andReturn($expectedSize = 101);
-        $fileInfo->shouldReceive('getSourceType')->andReturn($expectedSourceType = 'pdf');
+        $fileInfo->shouldReceive('getSourceType')->andReturn($expectedSourceType = SourceType::PDF);
         $fileInfo->shouldReceive('getPageCount')->andReturn($expectedPageCount = 2);
 
         $uuid = \Mockery::mock(UuidV6::class);

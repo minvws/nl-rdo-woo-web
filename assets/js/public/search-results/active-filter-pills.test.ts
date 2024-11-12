@@ -1,4 +1,12 @@
-import { MockInstance, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import {
+  MockInstance,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from 'vitest';
 import { activeFilterPills } from './active-filter-pills';
 import { updateUrl } from './helpers';
 
@@ -8,8 +16,12 @@ vi.mock('./helpers', async (importOriginal) => {
   const original = await importOriginal<typeof import('./helpers')>();
   return {
     ...original,
-    getUpdatedParamsFromCheckboxFilter: vi.fn().mockImplementation(() => new URLSearchParams('?updated=params')),
-    getCheckboxFilterElements: vi.fn().mockImplementation(() => mockedCheckboxFilterElements),
+    getUpdatedParamsFromCheckboxFilter: vi
+      .fn()
+      .mockImplementation(() => new URLSearchParams('?updated=params')),
+    getCheckboxFilterElements: vi
+      .fn()
+      .mockImplementation(() => mockedCheckboxFilterElements),
     updateUrl: vi.fn(),
   };
 });
@@ -46,10 +58,13 @@ describe('The "activeFilterPills" function', () => {
     vi.clearAllMocks();
   });
 
-  const initializeCheckboxFilters = () => initialize(mockedFetchAndUpdateResultsFunction as any);
+  const initializeCheckboxFilters = () =>
+    initialize(mockedFetchAndUpdateResultsFunction as any);
 
-  const getActiveFilterPills = () => document.querySelectorAll<HTMLAnchorElement>('.js-active-filter-pill');
-  const clickActiveFilterPill = (index = 0) => getActiveFilterPills()[index].click();
+  const getActiveFilterPills = () =>
+    document.querySelectorAll<HTMLAnchorElement>('.js-active-filter-pill');
+  const clickActiveFilterPill = (index = 0) =>
+    getActiveFilterPills()[index].click();
   const hasListElement = () => document.querySelector('ul') !== null;
 
   describe('when an active filter pill is clicked', () => {
@@ -59,7 +74,10 @@ describe('The "activeFilterPills" function', () => {
 
       clickActiveFilterPill();
 
-      expect(updateUrl).toHaveBeenCalledWith(new URLSearchParams('?updated=params'), mockedFetchAndUpdateResultsFunction);
+      expect(updateUrl).toHaveBeenCalledWith(
+        new URLSearchParams('?updated=params'),
+        mockedFetchAndUpdateResultsFunction,
+      );
     });
 
     test('should remove the clicked filter pill and the surrounding list when no active filter pills are left', () => {

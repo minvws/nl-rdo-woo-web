@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command\Index;
 
+use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
+use App\Domain\Search\Index\Rollover\MappingService;
 use App\ElasticConfig;
-use App\Service\Elastic\IndexService;
-use App\Service\Elastic\MappingService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Create extends Command
 {
     public function __construct(
-        protected IndexService $indexService,
+        protected ElasticIndexManager $indexService,
         protected MappingService $mappingService,
     ) {
         parent::__construct();

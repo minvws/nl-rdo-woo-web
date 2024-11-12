@@ -6,11 +6,8 @@ namespace App\Api\Admin\Publication\Search;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Admin\DossierSearchService;
-use App\Entity\Document;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * @implements ProviderInterface<SearchResultDto>
@@ -19,7 +16,7 @@ class SearchProvider implements ProviderInterface
 {
     public function __construct(
         private DossierSearchService $dossierSearchService,
-        private UrlGeneratorInterface $urlGenerator,
+        private SearchResultDtoFactory $searchResultDtoFactory,
     ) {
     }
 
@@ -33,13 +30,12 @@ class SearchProvider implements ProviderInterface
             return null;
         }
 
-        return array_map(
-            fn (AbstractDossier|Document $result) => SearchResultDto::fromEntity($result, $this->urlGenerator),
-            [
-                ...$this->dossierSearchService->searchDossiers($searchTerm),
-                ...$this->dossierSearchService->searchDocuments($searchTerm),
-            ],
-        );
+        return $this->searchResultDtoFactory->makeCollection([
+            ...$this->dossierSearchService->searchDossiers($searchTerm),
+            ...$this->dossierSearchService->searchDocuments($searchTerm),
+            ...$this->dossierSearchService->searchMainDocuments($searchTerm),
+            ...$this->dossierSearchService->searchAttachments($searchTerm),
+        ]);
     }
 
     /**

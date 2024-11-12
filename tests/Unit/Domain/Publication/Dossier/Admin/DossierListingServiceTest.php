@@ -20,6 +20,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\QueryBuilder;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DossierListingServiceTest extends MockeryTestCase
 {
@@ -29,6 +30,7 @@ class DossierListingServiceTest extends MockeryTestCase
     private DossierListingService $listingService;
     private Organisation&MockInterface $organisation;
     private DossierQueryConditions&MockInterface $queryConditions;
+    private TranslatorInterface&MockInterface $translator;
 
     public function setUp(): void
     {
@@ -40,14 +42,15 @@ class DossierListingServiceTest extends MockeryTestCase
         $this->authorizationMatrix->shouldReceive('getActiveOrganisation')->andReturn($this->organisation);
 
         $this->dossierTypeManager = \Mockery::mock(DossierTypeManager::class);
-
         $this->queryConditions = \Mockery::mock(DossierQueryConditions::class);
+        $this->translator = \Mockery::mock(TranslatorInterface::class);
 
         $this->listingService = new DossierListingService(
             $this->dossierRepository,
             $this->authorizationMatrix,
             $this->dossierTypeManager,
             $this->queryConditions,
+            $this->translator,
         );
     }
 
@@ -273,6 +276,25 @@ class DossierListingServiceTest extends MockeryTestCase
         self::assertEquals(
             [DossierType::COVENANT, DossierType::WOO_DECISION],
             $this->listingService->getAvailableTypes(),
+        );
+    }
+
+    public function testGetAvailableTypesOrderedByName(): void
+    {
+        $configA = \Mockery::mock(DossierTypeConfigInterface::class);
+        $configA->shouldReceive('getDossierType')->andReturn(DossierType::WOO_DECISION);
+
+        $configB = \Mockery::mock(DossierTypeConfigInterface::class);
+        $configB->shouldReceive('getDossierType')->andReturn(DossierType::COVENANT);
+
+        $this->translator->shouldReceive('trans')->with('dossier.type.woo-decision', [], [], null)->andReturn('W');
+        $this->translator->shouldReceive('trans')->with('dossier.type.covenant', [], [], null)->andReturn('C');
+
+        $this->dossierTypeManager->expects('getAvailableConfigs')->andReturn([$configA, $configB]);
+
+        self::assertEquals(
+            [DossierType::COVENANT, DossierType::WOO_DECISION],
+            $this->listingService->getAvailableTypesOrderedByName(),
         );
     }
 }

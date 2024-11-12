@@ -13,11 +13,6 @@ use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Disposition>
- *
- * @method Disposition|null find($id, $lockMode = null, $lockVersion = null)
- * @method Disposition|null findOneBy(array $criteria, array $orderBy = null)
- * @method Disposition[]    findAll()
- * @method Disposition[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class DispositionRepository extends ServiceEntityRepository implements ProvidesDossierTypeSearchResultInterface
 {

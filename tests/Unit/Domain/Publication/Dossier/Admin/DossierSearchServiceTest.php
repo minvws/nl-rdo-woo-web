@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Admin;
 
+use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
 use App\Domain\Publication\Dossier\AbstractDossierRepository;
 use App\Domain\Publication\Dossier\Admin\DossierSearchService;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
 use App\Entity\Document;
 use App\Entity\Organisation;
 use App\Repository\DocumentRepository;
@@ -18,6 +20,8 @@ class DossierSearchServiceTest extends MockeryTestCase
 {
     private AbstractDossierRepository&MockInterface $dossierRepository;
     private DocumentRepository&MockInterface $documentRepository;
+    private AbstractMainDocumentRepository&MockInterface $abstractMainDocumentRepository;
+    private AbstractAttachmentRepository&MockInterface $abstractAttachmentRepository;
     private AuthorizationMatrix&MockInterface $authorizationMatrix;
     private DossierSearchService $searchService;
     private Organisation&MockInterface $organisation;
@@ -27,8 +31,9 @@ class DossierSearchServiceTest extends MockeryTestCase
         $this->organisation = \Mockery::mock(Organisation::class);
 
         $this->dossierRepository = \Mockery::mock(AbstractDossierRepository::class);
-
         $this->documentRepository = \Mockery::mock(DocumentRepository::class);
+        $this->abstractMainDocumentRepository = \Mockery::mock(AbstractMainDocumentRepository::class);
+        $this->abstractAttachmentRepository = \Mockery::mock(AbstractAttachmentRepository::class);
 
         $this->authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
         $this->authorizationMatrix->shouldReceive('getActiveOrganisation')->andReturn($this->organisation);
@@ -36,6 +41,8 @@ class DossierSearchServiceTest extends MockeryTestCase
         $this->searchService = new DossierSearchService(
             $this->dossierRepository,
             $this->documentRepository,
+            $this->abstractMainDocumentRepository,
+            $this->abstractAttachmentRepository,
             $this->authorizationMatrix,
         );
     }
@@ -47,7 +54,7 @@ class DossierSearchServiceTest extends MockeryTestCase
 
         $this->dossierRepository
             ->expects('findBySearchTerm')
-            ->with($searchTerm, 4, $this->organisation)
+            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation)
             ->andReturn([$dossier]);
 
         self::assertEquals(
@@ -63,12 +70,44 @@ class DossierSearchServiceTest extends MockeryTestCase
 
         $this->documentRepository
             ->expects('findBySearchTerm')
-            ->with($searchTerm, 4, $this->organisation)
+            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation)
             ->andReturn([$document]);
 
         self::assertEquals(
             [$document],
             $this->searchService->searchDocuments($searchTerm),
+        );
+    }
+
+    public function testSearchMainDocuments(): void
+    {
+        $searchTerm = 'foo bar';
+        $document = \Mockery::mock(Document::class);
+
+        $this->abstractMainDocumentRepository
+            ->expects('findBySearchTerm')
+            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation)
+            ->andReturn([$document]);
+
+        self::assertEquals(
+            [$document],
+            $this->searchService->searchMainDocuments($searchTerm),
+        );
+    }
+
+    public function testSearchAttachments(): void
+    {
+        $searchTerm = 'foo bar';
+        $document = \Mockery::mock(Document::class);
+
+        $this->abstractAttachmentRepository
+            ->expects('findBySearchTerm')
+            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation)
+            ->andReturn([$document]);
+
+        self::assertEquals(
+            [$document],
+            $this->searchService->searchAttachments($searchTerm),
         );
     }
 }

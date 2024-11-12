@@ -5,14 +5,20 @@ export const updateUrl = (
   fetchAndUpdateResultsFunction: (updatedParams: URLSearchParams) => void,
   shouldResetPageNumber = true,
 ) => {
-  const updatedParams = shouldResetPageNumber ? resetPageNumber(params) : params;
+  const updatedParams = shouldResetPageNumber
+    ? resetPageNumber(params)
+    : params;
 
   const currentParams = getSearchParams();
   if (updatedParams.toString() === currentParams.toString()) {
     return;
   }
 
-  window.history.pushState({}, '', `${window.location.pathname}?${updatedParams}`);
+  window.history.pushState(
+    {},
+    '',
+    `${window.location.pathname}?${updatedParams}`,
+  );
 
   if (fetchAndUpdateResultsFunction) {
     fetchAndUpdateResultsFunction(updatedParams);

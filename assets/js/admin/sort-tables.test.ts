@@ -35,9 +35,14 @@ describe('the "sortTables" function', () => {
     cleanup();
   });
 
-  const getSortedDirection = () => document.querySelector('th')?.getAttribute('aria-sort');
-  const sort = () => (document.querySelector('.js-sort-table-toggler') as HTMLAnchorElement)?.click();
-  const getBodyCellText = (rowNumber: number) => document.querySelectorAll('td')[rowNumber].textContent;
+  const getSortedDirection = () =>
+    document.querySelector('th')?.getAttribute('aria-sort');
+  const sort = () =>
+    (
+      document.querySelector('.js-sort-table-toggler') as HTMLAnchorElement
+    )?.click();
+  const getBodyCellText = (rowNumber: number) =>
+    document.querySelectorAll('td')[rowNumber].textContent;
 
   test('should sort the table when a sort element is clicked', () => {
     sort();

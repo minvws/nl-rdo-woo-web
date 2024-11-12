@@ -11,8 +11,13 @@ export const enum InputErrorId {
 
 export type InputValidationError = { id: string } & Record<string, unknown>;
 export type InputValidationErrors = InputValidationError[];
-export type Validator = (value: InputValueType) => InputValidationError | undefined;
-export type ValidatorMessage = (error?: InputValidationError, value?: InputValueType) => string;
+export type Validator = (
+  value: InputValueType,
+) => InputValidationError | undefined;
+export type ValidatorMessage = (
+  error?: InputValidationError,
+  value?: InputValueType,
+) => string;
 
 export interface SelectOption {
   label: string;

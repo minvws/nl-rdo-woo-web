@@ -26,6 +26,12 @@
                 </tr>
                 {% endif %}
                 <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.responsible_parties' | trans }}</th>
+                    <td data-e2e-name="dossier-metadata-responsible">
+                        {{ dossier.mainDepartment.name }}
+                    </td>
+                </tr>
+                <tr>
                     <th class="woo-table-cell-light" scope="row">
                         {{ 'public.dossiers.type' | trans }}
                     </th>

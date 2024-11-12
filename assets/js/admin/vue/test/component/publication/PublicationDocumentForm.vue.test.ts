@@ -3,34 +3,32 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 
 describe('The "PublicationDocumentForm" component', () => {
-  const createComponent = () => mount(PublicationDocumentForm, {
-    props: {
-      allowedFileTypes: [],
-      allowedMimeTypes: [],
-      document: {
-        formalDate: 'mocked-formal-date',
-        grounds: [],
-        internalReference: '',
-        language: 'nl',
-        name: '',
-        type: '',
+  const createComponent = () =>
+    mount(PublicationDocumentForm, {
+      props: {
+        allowedFileTypes: [],
+        allowedMimeTypes: [],
+        document: {
+          formalDate: 'mocked-formal-date',
+          grounds: [],
+          internalReference: '',
+          language: 'nl',
+          name: '',
+          type: '',
+        },
+        documentLanguageOptions: [],
+        documentTypeOptions: [],
+        endpoint: '',
+        groundOptions: [],
       },
-      documentLanguageOptions: [],
-      documentTypeOptions: [],
-      endpoint: '',
-      groundOptions: [],
-    },
-    shallow: true,
-  });
+      shallow: true,
+    });
 
-  const getComponent = (componentName: string) => createComponent().findComponent({ name: componentName });
+  const getComponent = (componentName: string) =>
+    createComponent().findComponent({ name: componentName });
 
   test('should display a file upload field', () => {
     expect(getComponent('InputDocumentFile')).toBeTruthy();
-  });
-
-  test('should allow the user to provide the file name', () => {
-    expect(getComponent('InputDocumentName')).toBeTruthy();
   });
 
   test('should allow the user to provide the internal reference of the file', () => {

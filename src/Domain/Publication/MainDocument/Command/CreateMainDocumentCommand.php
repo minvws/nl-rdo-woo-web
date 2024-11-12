@@ -21,7 +21,6 @@ readonly class CreateMainDocumentCommand
         public AttachmentLanguage $language,
         public array $grounds,
         public string $uploadFileReference,
-        public string $name,
     ) {
     }
 }

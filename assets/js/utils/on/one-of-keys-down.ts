@@ -3,11 +3,15 @@ export const onOneOfKeysDown = (
   fn: (event: KeyboardEvent) => void,
   options?: boolean | AddEventListenerOptions,
 ) => {
-  window.addEventListener('keydown', (event) => {
-    if (keyNames.length > 0 && !keyNames.includes(event.key)) {
-      return;
-    }
+  window.addEventListener(
+    'keydown',
+    (event) => {
+      if (keyNames.length > 0 && !keyNames.includes(event.key)) {
+        return;
+      }
 
-    fn(event);
-  }, options);
+      fn(event);
+    },
+    options,
+  );
 };

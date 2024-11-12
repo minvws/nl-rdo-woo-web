@@ -36,10 +36,7 @@
                         height="100"
                         width="50"
                     />
-                    {% apply spaceless %}
-                    <span class="woo-logo__text">{{ 'public.global.logo.text' | trans }}</span>
-                    <span class="sr-only">, {{ 'public.global.logo.label' | trans }}</span>
-                    {% endapply %}
+                    <span class="woo-logo__text">{{ 'public.global.logo.text' | trans }}</span><span class="sr-only">, {{ 'public.global.logo.label' | trans }}</span>
                 </a>
             </p>
 
@@ -153,6 +150,7 @@
                             {{ _self.footer_nav_item(path('app_privacy'), 'global.footer.label.privacy' | trans) }}
                             {{ _self.footer_nav_item(path('app_cookies'), 'public.footer.label.cookies' | trans) }}
                             {{ _self.footer_nav_item(path('app_accessibility'), 'global.footer.label.accessibility' | trans) }}
+                            {{ _self.footer_nav_item(path('app_report_vulnerability'), 'global.footer.label.report_vulnerability' | trans) }}
                         </ul>
                     </nav>
                 </div>

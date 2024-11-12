@@ -45,9 +45,11 @@ class InquiryController extends AbstractController
     ) {
     }
 
-    #[Route('/inquiry/{token}', name: 'app_inquiry_detail', methods: ['GET'])]
-    public function detail(Inquiry $inquiry, Request $request): Response
-    {
+    #[Route('/zaak/{token}', name: 'app_inquiry_detail', methods: ['GET'])]
+    public function detail(
+        #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
+        Request $request,
+    ): Response {
         $this->inquirySession->saveInquiry($inquiry);
 
         $documentCount = $this->inquiryRepository->countDocumentsByJudgement($inquiry);
@@ -126,15 +128,18 @@ class InquiryController extends AbstractController
         ]);
     }
 
-    #[Route('/inquiry/{token}/inventory/download', name: 'app_inquiry_inventory_download', methods: ['GET'])]
-    public function downloadInventory(Inquiry $inquiry): StreamedResponse
-    {
+    #[Route('/zaak/{token}/inventarislijst/download', name: 'app_inquiry_inventory_download', methods: ['GET'])]
+    public function downloadInventory(
+        #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
+    ): StreamedResponse {
         return $this->downloadHelper->getResponseForEntityWithFileInfo($inquiry->getInventory());
     }
 
-    #[Route('/inquiry/{token}/batch/{filter}', name: 'app_inquiry_batch', methods: ['POST'])]
-    public function createBatch(Inquiry $inquiry, string $filter): Response
-    {
+    #[Route('/zaak/{token}/batch/{filter}', name: 'app_inquiry_batch', methods: ['POST'])]
+    public function createBatch(
+        #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
+        string $filter,
+    ): Response {
         if ($filter === InquiryFilterFormType::CASE) {
             $docQuery = $this->inquiryRepository->getDocumentsForPubliclyAvailableDossiers($inquiry);
         } else {
@@ -156,9 +161,9 @@ class InquiryController extends AbstractController
         ]);
     }
 
-    #[Route('/inquiry/{token}/batch/detail/{batchId}', name: 'app_inquiry_batch_detail', methods: ['GET'])]
+    #[Route('/zaak/{token}/batch/detail/{batchId}', name: 'app_inquiry_batch_detail', methods: ['GET'])]
     public function batch(
-        Inquiry $inquiry,
+        #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -173,15 +178,15 @@ class InquiryController extends AbstractController
         return $this->render('batchdownload/batch.html.twig', [
             'inquiry' => $inquiry,
             'batch' => $batch,
-            'page_title' => 'public.documents.inquiry.download',
+            'pageTitle' => 'public.documents.inquiry.download',
             'download_path' => $this->generateUrl('app_inquiry_batch_download', ['token' => $inquiry->getToken(), 'batchId' => $batch->getId()]),
         ]);
     }
 
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
-    #[Route('/inquiry/{token}/batch/{batchId}/download', name: 'app_inquiry_batch_download', methods: ['GET'])]
+    #[Route('/zaak/{token}/batch/{batchId}/download', name: 'app_inquiry_batch_download', methods: ['GET'])]
     public function batchDownload(
-        Inquiry $inquiry,
+        #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
     ): Response {
         if ($batch->getEntity() !== $inquiry) {

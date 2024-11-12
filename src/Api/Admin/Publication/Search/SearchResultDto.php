@@ -7,10 +7,6 @@ namespace App\Api\Admin\Publication\Search;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\QueryParameter;
 use ApiPlatform\OpenApi\Model\Operation;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Entity\Document;
-use App\Entity\Dossier;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[GetCollection(
@@ -35,51 +31,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 final readonly class SearchResultDto
 {
     public function __construct(
-        public string $id,
+        public ?string $id,
         public SearchResultType $type,
         public string $title,
         public string $link,
     ) {
-    }
-
-    public static function fromEntity(AbstractDossier|Document $entity, UrlGeneratorInterface $urlGenerator): static
-    {
-        return match (true) {
-            $entity instanceof AbstractDossier => self::fromAbstractDossierEntity($entity, $urlGenerator),
-            $entity instanceof Document => self::fromDocumentEntity($entity, $urlGenerator),
-        };
-    }
-
-    private static function fromAbstractDossierEntity(AbstractDossier $entity, UrlGeneratorInterface $urlGenerator): static
-    {
-        return new static(
-            id: $entity->getDossierNr(),
-            type: SearchResultType::DOSSIER,
-            title: $entity->getTitle() ?? '',
-            link: $urlGenerator->generate(
-                'app_admin_dossier',
-                ['prefix' => $entity->getDocumentPrefix(), 'dossierId' => $entity->getDossierNr()],
-            ),
-        );
-    }
-
-    private static function fromDocumentEntity(Document $entity, UrlGeneratorInterface $urlGenerator): static
-    {
-        /** @var Dossier $firstDossier */
-        $firstDossier = $entity->getDossiers()->first();
-
-        return new static(
-            id: $entity->getDocumentNr(),
-            type: SearchResultType::DOCUMENT,
-            title: $entity->getFileInfo()->getName() ?? '',
-            link: $urlGenerator->generate(
-                'app_admin_dossier_woodecision_document',
-                [
-                    'prefix' => $firstDossier->getDocumentPrefix(),
-                    'dossierId' => $firstDossier->getDossierNr(),
-                    'documentId' => $entity->getDocumentNr(),
-                ],
-            )
-        );
     }
 }

@@ -10,11 +10,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<BatchDownload>
- *
- * @method BatchDownload|null find($id, $lockMode = null, $lockVersion = null)
- * @method BatchDownload|null findOneBy(array $criteria, array $orderBy = null)
- * @method BatchDownload[]    findAll()
- * @method BatchDownload[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class BatchDownloadRepository extends ServiceEntityRepository
 {

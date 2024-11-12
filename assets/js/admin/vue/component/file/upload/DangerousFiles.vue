@@ -1,27 +1,33 @@
 <script setup>
-  import { computed } from 'vue';
-  import Alert from '../../Alert.vue';
-  import FilesList from './FilesList.vue';
+import { computed } from 'vue';
+import Alert from '../../Alert.vue';
+import FilesList from './FilesList.vue';
 
-  const props = defineProps({
-    allowMultiple: {
-      type: Boolean,
-    },
-    files: {
-      type: Array,
-      default: () => [],
-    },
-  });
+const props = defineProps({
+  allowMultiple: {
+    type: Boolean,
+  },
+  files: {
+    type: Array,
+    default: () => [],
+  },
+});
 
-  const numberOfFiles = computed(() => props.files.length);
+const numberOfFiles = computed(() => props.files.length);
 </script>
 
 <template>
   <div v-if="numberOfFiles > 0">
     <Alert type="danger">
       <p>
-        <template v-if="props.allowMultiple">Er zijn mogelijke gevaren gevonden in de onderstaande bestanden. Ze worden daarom niet opgeslagen. Probeer een ander bestand.</template>
-        <template v-else>Er zijn mogelijk gevaren gevonden in het bestand, het bestand wordt niet opgeslagen. Probeer een ander bestand.</template>
+        <template v-if="props.allowMultiple"
+          >Er zijn mogelijke gevaren gevonden in de onderstaande bestanden. Ze
+          worden daarom niet opgeslagen. Probeer een ander bestand.</template
+        >
+        <template v-else
+          >Er zijn mogelijk gevaren gevonden in het bestand, het bestand wordt
+          niet opgeslagen. Probeer een ander bestand.</template
+        >
       </p>
 
       <template v-if="props.allowMultiple" #extra>

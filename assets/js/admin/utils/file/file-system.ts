@@ -8,7 +8,10 @@ export interface InvalidFile {
 
 export type InvalidFilesSet = Set<InvalidFile>;
 
-export const filterDataTransferFiles = async (dataTransfer: DataTransfer, isRecursive = true) => {
+export const filterDataTransferFiles = async (
+  dataTransfer: DataTransfer,
+  isRecursive = true,
+) => {
   const files: File[] = [];
   const directoryPromises: Promise<File[]>[] = [];
 
@@ -18,7 +21,12 @@ export const filterDataTransferFiles = async (dataTransfer: DataTransfer, isRecu
       const file = item.getAsFile();
       files.push(file as File);
     } else if (entry && entry.isDirectory) {
-      directoryPromises.push(getFilesFromDirectoryEntry(entry as FileSystemDirectoryEntry, isRecursive));
+      directoryPromises.push(
+        getFilesFromDirectoryEntry(
+          entry as FileSystemDirectoryEntry,
+          isRecursive,
+        ),
+      );
     }
   });
 
@@ -38,7 +46,11 @@ const createDataTransfer = (files: File[]) => {
   return dataTransfer;
 };
 
-const getFilesFromDirectoryEntry = async (directoryEntry: FileSystemDirectoryEntry, isRecursive: boolean, files: File[] = []) => {
+const getFilesFromDirectoryEntry = async (
+  directoryEntry: FileSystemDirectoryEntry,
+  isRecursive: boolean,
+  files: File[] = [],
+) => {
   const entries = await getEntriesFromDirectoryEntry(directoryEntry);
   const filePromises: Promise<File>[] = [];
   const filesPromises: Promise<File[]>[] = [];
@@ -47,7 +59,13 @@ const getFilesFromDirectoryEntry = async (directoryEntry: FileSystemDirectoryEnt
     if (entry.isFile) {
       filePromises.push(getFileFromFileEntry(entry as FileSystemFileEntry));
     } else if (entry.isDirectory && isRecursive) {
-      filesPromises.push(getFilesFromDirectoryEntry(entry as FileSystemDirectoryEntry, isRecursive, files));
+      filesPromises.push(
+        getFilesFromDirectoryEntry(
+          entry as FileSystemDirectoryEntry,
+          isRecursive,
+          files,
+        ),
+      );
     }
   });
 
@@ -70,17 +88,22 @@ const getEntry = (item: DataTransferItem) => {
   return item.webkitGetAsEntry();
 };
 
-const getFileFromFileEntry = async (fileEntry: FileSystemFileEntry): Promise<File> => new Promise((resolve) => {
-  fileEntry.file(resolve);
-});
+const getFileFromFileEntry = async (
+  fileEntry: FileSystemFileEntry,
+): Promise<File> =>
+  new Promise((resolve) => {
+    fileEntry.file(resolve);
+  });
 
-const getEntriesFromDirectoryEntry = async (directoryEntry: FileSystemDirectoryEntry): Promise<FileSystemEntry[]> => new Promise(
-  (resolve) => {
+const getEntriesFromDirectoryEntry = async (
+  directoryEntry: FileSystemDirectoryEntry,
+): Promise<FileSystemEntry[]> =>
+  new Promise((resolve) => {
     directoryEntry.createReader().readEntries(resolve);
-  },
-);
+  });
 
-const hasFile = (files: File[], file: File) => files.some((existingFile) => areFilesEqual(existingFile, file));
+const hasFile = (files: File[], file: File) =>
+  files.some((existingFile) => areFilesEqual(existingFile, file));
 
 const shouldIgnoreFile = (file: File) => file.name.startsWith('.');
 
@@ -100,7 +123,11 @@ const addFile = (files: File[], file: File) => {
   files.push(file);
 };
 
-export const validateFiles = (files: FileList, mimeTypes: string[], maxFileSize?: number) => {
+export const validateFiles = (
+  files: FileList,
+  mimeTypes: string[],
+  maxFileSize?: number,
+) => {
   const invalidFiles: InvalidFilesSet = new Set();
   const validFiles = new DataTransfer();
 

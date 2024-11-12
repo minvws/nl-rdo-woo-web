@@ -1,5 +1,9 @@
 import { ref, Ref, watch } from 'vue';
-import type { InputValueType, InputValidationErrors, Validator } from '../form/interface';
+import type {
+  InputValueType,
+  InputValidationErrors,
+  Validator,
+} from '../form/interface';
 
 export interface InputStore {
   addSubmitValidationError: (error: string) => void;
@@ -22,7 +26,10 @@ export interface InputStore {
   value: InputValueType;
 }
 
-const getStaticErrors = (inputValue: InputValueType, validators: Validator[] = []): InputValidationErrors => {
+const getStaticErrors = (
+  inputValue: InputValueType,
+  validators: Validator[] = [],
+): InputValidationErrors => {
   const errorCollection = validators.reduce((accumulated, validator) => {
     const error = validator(inputValue);
     if (error) {
@@ -34,9 +41,16 @@ const getStaticErrors = (inputValue: InputValueType, validators: Validator[] = [
   return Array.from(errorCollection.values());
 };
 
-export const useInputStore = (name: string, label: string, value: Ref<InputValueType>, initialValidators: Validator[] = []): InputStore => {
+export const useInputStore = (
+  name: string,
+  label: string,
+  value: Ref<InputValueType>,
+  initialValidators: Validator[] = [],
+): InputStore => {
   const validators = ref(initialValidators);
-  const staticErrors = ref<InputValidationErrors>(getStaticErrors(value.value, validators.value));
+  const staticErrors = ref<InputValidationErrors>(
+    getStaticErrors(value.value, validators.value),
+  );
   const submitValidationErrors = ref<string[]>([]);
   const isDirty = ref(false);
   const isTouched = ref(false);

@@ -2,7 +2,11 @@ import { Ref, ref } from 'vue';
 import type { InputValidationErrors, InputValueType } from '../form/interface';
 import { InputStore } from './input-store';
 
-export interface MultiInputStore extends Omit<InputStore, 'addSubmitValidationError' | 'submitValidationErrors'> {
+export interface MultiInputStore
+  extends Omit<
+    InputStore,
+    'addSubmitValidationError' | 'submitValidationErrors'
+  > {
   addInputStore: (inputStore: InputStore) => void;
   addSubmitValidationError: (path: string, error: string) => void;
   findInputStore: (path: string) => InputStore | undefined;
@@ -11,7 +15,11 @@ export interface MultiInputStore extends Omit<InputStore, 'addSubmitValidationEr
   submitValidationErrors: Record<string, string[]>;
 }
 
-export const useMultiInputStore = (name: string, label: string, value: Ref<InputValueType>): MultiInputStore => {
+export const useMultiInputStore = (
+  name: string,
+  label: string,
+  value: Ref<InputValueType>,
+): MultiInputStore => {
   const inputStores = new Map<string, InputStore>();
 
   const isDirty = ref(false);
@@ -20,7 +28,8 @@ export const useMultiInputStore = (name: string, label: string, value: Ref<Input
     inputStores.set(inputStore.name, inputStore);
   };
 
-  const findInputStore = (inputStoreName: string) => inputStores.get(inputStoreName);
+  const findInputStore = (inputStoreName: string) =>
+    inputStores.get(inputStoreName);
 
   const removeInputStore = (inputStore: InputStore) => {
     inputStores.delete(inputStore.name);
@@ -69,10 +78,13 @@ export const useMultiInputStore = (name: string, label: string, value: Ref<Input
       return name;
     },
     get submitValidationErrors() {
-      return getInputStores().reduce((accumulated, inputStore) => ({
-        ...accumulated,
-        [inputStore.name]: inputStore.submitValidationErrors,
-      }), {} as Record<string, string[]>);
+      return getInputStores().reduce(
+        (accumulated, inputStore) => ({
+          ...accumulated,
+          [inputStore.name]: inputStore.submitValidationErrors,
+        }),
+        {} as Record<string, string[]>,
+      );
     },
     get value() {
       return value.value;
@@ -88,10 +100,14 @@ export const useMultiInputStore = (name: string, label: string, value: Ref<Input
       isDirty.value = true;
     },
     resetSubmitValidationErrors() {
-      getInputStores().forEach((inputStore) => inputStore.resetSubmitValidationErrors());
+      getInputStores().forEach((inputStore) =>
+        inputStore.resetSubmitValidationErrors(),
+      );
     },
     markAsShouldDisplayErrors() {
-      getInputStores().forEach((inputStore) => inputStore.markAsShouldDisplayErrors());
+      getInputStores().forEach((inputStore) =>
+        inputStore.markAsShouldDisplayErrors(),
+      );
     },
     markAsTouched() {
       getInputStores().forEach((inputStore) => inputStore.markAsTouched());

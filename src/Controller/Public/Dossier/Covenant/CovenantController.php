@@ -30,7 +30,7 @@ class CovenantController extends AbstractController
     }
 
     #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
-    #[Route('/covenant/{prefix}/{dossierId}', name: 'app_covenant_detail', methods: ['GET'])]
+    #[Route('/convenant/{prefix}/{dossierId}', name: 'app_covenant_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] Covenant $covenant,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
@@ -49,7 +49,7 @@ class CovenantController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/covenant/{prefix}/{dossierId}/covenant-document',
+        '/convenant/{prefix}/{dossierId}/document',
         name: 'app_covenant_covenantdocument_detail',
         methods: ['GET'],
     )]
@@ -77,7 +77,7 @@ class CovenantController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/covenant/{prefix}/{dossierId}/covenant-document/download',
+        '/convenant/{prefix}/{dossierId}/document/download',
         name: 'app_covenant_covenantdocument_download',
         methods: ['GET'],
     )]
@@ -93,7 +93,7 @@ class CovenantController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/covenant/{prefix}/{dossierId}/covenant-attachment/{attachmentId}',
+        '/convenant/{prefix}/{dossierId}/bijlage/{attachmentId}',
         name: 'app_covenant_covenantattachment_detail',
         methods: ['GET'],
     )]
@@ -124,7 +124,7 @@ class CovenantController extends AbstractController
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
     #[Route(
-        '/covenant/{prefix}/{dossierId}/covenant-attachment/{attachmentId}/download',
+        '/convenant/{prefix}/{dossierId}/bijlage/{attachmentId}/download',
         name: 'app_covenant_covenantattachment_download',
         methods: ['GET'],
     )]

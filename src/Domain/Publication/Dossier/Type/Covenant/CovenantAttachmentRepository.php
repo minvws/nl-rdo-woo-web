@@ -15,11 +15,6 @@ use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<CovenantAttachment>
- *
- * @method CovenantAttachment|null find($id, $lockMode = null, $lockVersion = null)
- * @method CovenantAttachment|null findOneBy(array $criteria, array $orderBy = null)
- * @method CovenantAttachment[]    findAll()
- * @method CovenantAttachment[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class CovenantAttachmentRepository extends ServiceEntityRepository implements AttachmentRepositoryInterface
 {

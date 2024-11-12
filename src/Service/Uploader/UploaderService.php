@@ -16,6 +16,9 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Webmozart\Assert\Assert;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 readonly class UploaderService
 {
     public function __construct(
@@ -93,9 +96,15 @@ readonly class UploaderService
             $fileInfo->removeFileProperties();
         }
 
+        if ($file->getFilename() === null) {
+            throw new \RuntimeException('Cannot attach file without a name to entity');
+        }
+
         $fileType = $this->fileTypeHelper->getFileType($file->getMimeType() ?? '');
-        $fileInfo->setSourceType($fileType ? SourceType::fromFileType($fileType) : SourceType::SOURCE_UNKNOWN);
-        $fileInfo->setType($fileType->value ?? SourceType::SOURCE_UNKNOWN);
+
+        $fileInfo->setSourceType($fileType ? SourceType::fromFileType($fileType) : SourceType::UNKNOWN);
+        $fileInfo->setType($fileType->value ?? SourceType::UNKNOWN->value);
+        $fileInfo->setName(UploaderNamer::getOriginalName($file->getFilename()));
 
         if (! $this->entityStorageService->storeEntity($file, $entity)) {
             throw UploaderServiceException::forCouldNotAttachFileToEntity($entity);

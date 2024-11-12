@@ -346,6 +346,7 @@ final class UploaderServiceTest extends UnitTestCase
         $storedFile = \Mockery::mock(File::class);
         $storedFile->expects('getPathname')->andReturn($mockFilePath);
         $storedFile->shouldReceive('getMimeType')->andReturn('application/msword');
+        $storedFile->shouldReceive('getFilename')->andReturn('prefix_dummy.pdf');
 
         $finder = \Mockery::mock(Finder::class);
         $finder
@@ -368,6 +369,7 @@ final class UploaderServiceTest extends UnitTestCase
 
         $fileInfo = \Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
+        $fileInfo->shouldReceive('getName')->andReturn('prefix_dummy.pdf');
 
         $entity = \Mockery::mock(CovenantDocument::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
@@ -375,8 +377,9 @@ final class UploaderServiceTest extends UnitTestCase
 
         $this->entityStorageService->expects('removeFileForEntity')->with($entity);
         $fileInfo->expects('removeFileProperties');
-        $fileInfo->expects('setSourceType')->with(SourceType::SOURCE_DOCUMENT);
+        $fileInfo->expects('setSourceType')->with(SourceType::DOC);
         $fileInfo->expects('setType')->with('doc');
+        $fileInfo->expects('setName')->with('dummy.pdf');
 
         $this->entityStorageService->expects('storeEntity')->with($storedFile, $entity)->andReturnTrue();
 

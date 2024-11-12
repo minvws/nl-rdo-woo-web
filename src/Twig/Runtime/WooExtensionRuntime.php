@@ -19,7 +19,6 @@ use App\Service\Search\Query\Facet\FacetTwigService;
 use App\Service\Search\Query\QueryGenerator;
 use App\Service\Security\OrganisationSwitcher;
 use App\Service\Storage\ThumbnailStorageService;
-use App\SourceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -71,14 +70,6 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
         }
 
         return false;
-    }
-
-    /**
-     * Returns icon class for a given source type.
-     */
-    public function sourceTypeIcon(string $value): string
-    {
-        return SourceType::getIcon($value);
     }
 
     /**

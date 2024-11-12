@@ -187,7 +187,6 @@ final class DispositionAttachmentTest extends ApiTestCase
                 ],
                 'json' => [
                     'uploadUuid' => $uploadUuid,
-                    'name' => 'foobar',
                     'type' => AttachmentType::COVENANT->value,
                     'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
                     'language' => AttachmentLanguage::DUTCH->value,
@@ -286,7 +285,6 @@ final class DispositionAttachmentTest extends ApiTestCase
         return [
             'invalid type error' => [
                 'input' => [
-                    'name' => '',
                     'type' => '',
                     'language' => '',
                     'grounds' => '',
@@ -309,15 +307,10 @@ final class DispositionAttachmentTest extends ApiTestCase
             'invalid input data' => [
                 'input' => [
                     'uploadUuid' => '55ae5de9-55f4-3420-b50b-5cde6e07fc5a',
-                    'name' => '',
                     'formalDate' => 'foobar',
                     'grounds' => [1, 2, 3],
                 ],
                 'expectedViolations' => [
-                    [
-                        'propertyPath' => 'name',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
                     [
                         'propertyPath' => 'formalDate',
                         'code' => Date::INVALID_FORMAT_ERROR,
@@ -339,14 +332,9 @@ final class DispositionAttachmentTest extends ApiTestCase
             'empty string input data' => [
                 'input' => [
                     'uploadUuid' => '',
-                    'name' => '',
                     'formalDate' => '',
                 ],
                 'expectedViolations' => [
-                    [
-                        'propertyPath' => 'name',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
                     [
                         'propertyPath' => 'formalDate',
                         'code' => NotBlank::IS_BLANK_ERROR,
@@ -364,14 +352,9 @@ final class DispositionAttachmentTest extends ApiTestCase
             'single space input data' => [
                 'input' => [
                     'uploadUuid' => ' ',
-                    'name' => ' ',
                     'formalDate' => ' ',
                 ],
                 'expectedViolations' => [
-                    [
-                        'propertyPath' => 'name',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
                     [
                         'propertyPath' => 'formalDate',
                         'code' => NotBlank::IS_BLANK_ERROR,
@@ -397,7 +380,6 @@ final class DispositionAttachmentTest extends ApiTestCase
             'invalid business logic data' => [
                 'input' => [
                     'uploadUuid' => '55ae5de9-55f4-3420-b50b-5cde6e07fc5a',
-                    'name' => 'foobar',
                     'type' => AttachmentType::COVENANT->value,
                     'formalDate' => CarbonImmutable::now()->addYear()->format('Y-m-d'),
                     'internalReference' => str_repeat('a', 256),
@@ -414,23 +396,9 @@ final class DispositionAttachmentTest extends ApiTestCase
                     ],
                 ],
             ],
-            'missing name field' => [
-                'input' => [
-                    'uploadUuid' => '55ae5de9-55f4-3420-b50b-5cde6e07fc5a',
-                    'formalDate' => CarbonImmutable::now()->subYear()->format('Y-m-d'),
-                    'type' => AttachmentType::OBJECTION->value,
-                ],
-                'expectedViolations' => [
-                    [
-                        'propertyPath' => 'name',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
-                ],
-            ],
             'invalid type field PERMIT' => [
                 'input' => [
                     'uploadUuid' => '55ae5de9-55f4-3420-b50b-5cde6e07fc5a',
-                    'name' => 'foobar',
                     'type' => AttachmentType::PERMIT->value,
                     'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
                     'language' => AttachmentLanguage::DUTCH->value,
@@ -445,7 +413,6 @@ final class DispositionAttachmentTest extends ApiTestCase
             'invalid type field DECISION_TO_IMPOSE_A_FINE' => [
                 'input' => [
                     'uploadUuid' => '55ae5de9-55f4-3420-b50b-5cde6e07fc5a',
-                    'name' => 'foobar',
                     'type' => AttachmentType::DECISION_TO_IMPOSE_A_FINE->value,
                     'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
                     'language' => AttachmentLanguage::DUTCH->value,
@@ -542,7 +509,6 @@ final class DispositionAttachmentTest extends ApiTestCase
                         'Content-Type' => 'application/json',
                     ],
                     'json' => [
-                        'name' => 'foobar.pdf',
                         'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
                         'type' => $attachment->getType()->value,
                         'language' => $attachment->getLanguage()->value,
@@ -644,17 +610,6 @@ final class DispositionAttachmentTest extends ApiTestCase
     public static function getInvalidUpdateRequestData(): array
     {
         return [
-            'invalid name input data' => [
-                'input' => [
-                    'name' => '',
-                ],
-                'expectedViolations' => [
-                    [
-                        'propertyPath' => 'name',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
-                ],
-            ],
             'invalid empty string for formalDate input data' => [
                 'input' => [
                     'formalDate' => '',

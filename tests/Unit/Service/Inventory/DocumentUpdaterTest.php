@@ -17,6 +17,7 @@ use App\Service\Inventory\DocumentMetadata;
 use App\Service\Inventory\DocumentNumber;
 use App\Service\Inventory\DocumentUpdater;
 use App\Service\Storage\EntityStorageService;
+use App\SourceType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -201,7 +202,7 @@ class DocumentUpdaterTest extends MockeryTestCase
             date: new \DateTimeImmutable('2023-09-28 10:11:12'),
             filename: 'file.doc',
             familyId: 1,
-            sourceType: 'email',
+            sourceType: SourceType::EMAIL,
             grounds: ['5.1.1a', '5.1.1b'],
             id: '123',
             judgement: $judgement,

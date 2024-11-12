@@ -1,24 +1,30 @@
 <script setup>
-  import { formatFileSize } from '@js/admin/utils';
-  import { computed } from 'vue';
-  import Alert from '../../Alert.vue';
-  import FilesList from './FilesList.vue';
+import { formatFileSize } from '@js/admin/utils';
+import { computed } from 'vue';
+import Alert from '../../Alert.vue';
+import FilesList from './FilesList.vue';
 
-  const props = defineProps({
-    files: {
-      type: Array,
-      default: () => [],
-    },
-  });
+const props = defineProps({
+  files: {
+    type: Array,
+    default: () => [],
+  },
+});
 
-  const numberOfFiles = computed(() => props.files.length);
+const numberOfFiles = computed(() => props.files.length);
 </script>
 
 <template>
   <div v-if="numberOfFiles > 0">
     <Alert type="danger">
-      <p v-if="numberOfFiles === 1">Het bestand "{{ props.files[0].name }}" ({{ formatFileSize(props.files[0].size) }}) werd genegeerd omdat het al geüpload is.</p>
-      <p v-else>De volgende bestanden werden genegeerd omdat ze al geüpload zijn.</p>
+      <p v-if="numberOfFiles === 1">
+        Het bestand "{{ props.files[0].name }}" ({{
+          formatFileSize(props.files[0].size)
+        }}) werd genegeerd omdat het al geüpload is.
+      </p>
+      <p v-else>
+        De volgende bestanden werden genegeerd omdat ze al geüpload zijn.
+      </p>
 
       <template v-if="numberOfFiles > 1" #extra>
         <FilesList :files="props.files" />

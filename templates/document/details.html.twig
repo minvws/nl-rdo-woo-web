@@ -7,8 +7,8 @@
 <div class="woo-container woo-container--sm">
     <h1 class="woo-h1 sm:flex">
         <span class="block">
-            <twig:Public:FileIcon type="{{ document.entity.fileInfo.sourceType }}" class="mr-4 -mt-0.5" size="32" />
-            <span class="sr-only">{{ ('public.documents.file_type.' ~ document.entity.fileInfo.sourceType) | trans }}</span>
+            <twig:Public:FileIcon type="{{ document.entity.fileInfo.sourceType.value }}" class="mr-4 -mt-0.5" size="32" />
+            <span class="sr-only">{{ document.entity.fileInfo.sourceType | trans }}</span>
         </span>
         <span>{{ document.entity.fileInfo.name }}</span>
     </h1>
@@ -46,7 +46,7 @@
 
     {% include 'document/snippets/about.html.twig' %}
 
-    {% if document.entity.fileInfo.sourceType == constant('App\\SourceType::SOURCE_EMAIL') %}
+    {% if document.entity.fileInfo.sourceType.isEmail %}
         {{ macro.documents_section(thread, 'public.documents.email_thread') }}
         {{ macro.documents_section(family, 'public.documents.attachments') }}
     {% else %}

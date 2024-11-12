@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 describe('The "PublicationAttachments" component', () => {
   interface CreateComponentOptions {
-    allowedFileTypes: string[],
+    allowedFileTypes: string[];
     allowedMimeTypes: string[];
     documentLanguageOptions: string[];
     documentTypeOptions: string[];
@@ -24,7 +24,11 @@ describe('The "PublicationAttachments" component', () => {
   const mockedFetchedAttachments = [createMockedAtachment()];
 
   beforeEach(() => {
-    global.fetch = vi.fn().mockImplementation(() => Promise.resolve({ json: () => Promise.resolve(mockedFetchedAttachments) }));
+    global.fetch = vi.fn().mockImplementation(() =>
+      Promise.resolve({
+        json: () => Promise.resolve(mockedFetchedAttachments),
+      }),
+    );
     HTMLDialogElement.prototype.close = vi.fn(); // This prevents a warning saying this function does not exist
     HTMLDialogElement.prototype.showModal = vi.fn(); // This prevents a warning saying this function does not exist
   });
@@ -35,7 +39,11 @@ describe('The "PublicationAttachments" component', () => {
 
   const createComponent = (options: Partial<CreateComponentOptions> = {}) => {
     const {
-      allowedFileTypes = [], allowedMimeTypes = [], documentLanguageOptions = [], documentTypeOptions = [], groundOptions = [],
+      allowedFileTypes = [],
+      allowedMimeTypes = [],
+      documentLanguageOptions = [],
+      documentTypeOptions = [],
+      groundOptions = [],
     } = options;
 
     return mount(PublicationAttachments, {
@@ -60,25 +68,41 @@ describe('The "PublicationAttachments" component', () => {
     });
   };
 
-  const getAddAttachmentButton = (component = createComponent()) => component.get('button');
-  const getChildComponent = (componentName: string, component = createComponent()) => component.findComponent({ name: componentName });
-  const getAttachmentsListComponent = (component = createComponent()) => getChildComponent('AttachmentsList', component);
-  const getDialogComponent = (component = createComponent()) => getChildComponent('Dialog', component);
-  const getAlertComponent = (component = createComponent()) => getChildComponent('Alert', component);
-  const getPublicationAttachmentsFormComponent = (component = createComponent()) => getChildComponent(
-    'PublicationAttachmentsForm',
-    component,
-  );
+  const getAddAttachmentButton = (component = createComponent()) =>
+    component.get('button');
+  const getChildComponent = (
+    componentName: string,
+    component = createComponent(),
+  ) => component.findComponent({ name: componentName });
+  const getAttachmentsListComponent = (component = createComponent()) =>
+    getChildComponent('AttachmentsList', component);
+  const getDialogComponent = (component = createComponent()) =>
+    getChildComponent('Dialog', component);
+  const getAlertComponent = (component = createComponent()) =>
+    getChildComponent('Alert', component);
+  const getPublicationAttachmentsFormComponent = (
+    component = createComponent(),
+  ) => getChildComponent('PublicationAttachmentsForm', component);
 
   test('should make a request to fetch the current set of attachments', () => {
     createComponent();
-    expect(global.fetch).toHaveBeenNthCalledWith(1, 'https://mocked-endpoint.com', {
-      headers: { 'Content-Type': 'application/json', accept: 'application/json' },
-    });
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      1,
+      'https://mocked-endpoint.com',
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          accept: 'application/json',
+        },
+      },
+    );
   });
 
   test('should display a list of uploaded attachments', async () => {
-    const documentTypeOptions = ['mocked-document-type-1', 'mocked-document-type-2'];
+    const documentTypeOptions = [
+      'mocked-document-type-1',
+      'mocked-document-type-2',
+    ];
 
     const component = createComponent({ documentTypeOptions });
     const attachmentListComponent = getAttachmentsListComponent(component);
@@ -86,10 +110,16 @@ describe('The "PublicationAttachments" component', () => {
     await flushPromises();
 
     expect(attachmentListComponent).toBeTruthy();
-    expect(attachmentListComponent.props('attachments')).toEqual(new Map([['abc', mockedFetchedAttachments[0]]]));
+    expect(attachmentListComponent.props('attachments')).toEqual(
+      new Map([['abc', mockedFetchedAttachments[0]]]),
+    );
     expect(attachmentListComponent.props('canDelete')).toBe(false);
-    expect(attachmentListComponent.props('documentTypes')).toEqual(documentTypeOptions);
-    expect(attachmentListComponent.props('endpoint')).toBe('https://mocked-endpoint.com');
+    expect(attachmentListComponent.props('documentTypes')).toEqual(
+      documentTypeOptions,
+    );
+    expect(attachmentListComponent.props('endpoint')).toBe(
+      'https://mocked-endpoint.com',
+    );
   });
 
   describe('the button to add a new attachment', () => {
@@ -98,7 +128,9 @@ describe('The "PublicationAttachments" component', () => {
 
       expect(buttonElement).toBeTruthy();
       expect(buttonElement.text()).toBe('+ Bijlage toevoegen...');
-      expect(buttonElement.attributes()).toEqual(expect.objectContaining({ 'aria-haspopup': 'dialog', type: 'button' }));
+      expect(buttonElement.attributes()).toEqual(
+        expect.objectContaining({ 'aria-haspopup': 'dialog', type: 'button' }),
+      );
     });
 
     test('should have a text saying to add another attachment when there is currently 1 or more attachments', async () => {
@@ -135,7 +167,9 @@ describe('The "PublicationAttachments" component', () => {
 
       const alertComponent = getAlertComponent(component);
       expect(alertComponent.exists()).toBe(true);
-      expect(alertComponent.text()).toContain("Bijlage 'mocked-name' is verwijderd");
+      expect(alertComponent.text()).toContain(
+        "Bijlage 'mocked-name' is verwijderd",
+      );
     });
   });
 
@@ -148,12 +182,18 @@ describe('The "PublicationAttachments" component', () => {
 
       await attachmentListComponent.vm.$emit('edit', 1);
 
-      const publicationAttachmentsFormComponent = getPublicationAttachmentsFormComponent(component);
+      const publicationAttachmentsFormComponent =
+        getPublicationAttachmentsFormComponent(component);
       expect(publicationAttachmentsFormComponent.exists()).toBe(true);
-      await publicationAttachmentsFormComponent.vm.$emit('saved', createMockedAtachment('mocked-new-name'));
+      await publicationAttachmentsFormComponent.vm.$emit(
+        'saved',
+        createMockedAtachment('mocked-new-name'),
+      );
 
       const alertComponent = getAlertComponent(component);
-      expect(alertComponent.text()).toContain("Bijlage 'mocked-new-name' is toegevoegd");
+      expect(alertComponent.text()).toContain(
+        "Bijlage 'mocked-new-name' is toegevoegd",
+      );
     });
   });
 });

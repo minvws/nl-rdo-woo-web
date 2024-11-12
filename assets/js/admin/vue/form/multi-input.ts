@@ -6,11 +6,18 @@ export const createName = (name: string, index: number) => {
   return name.replace(regex, `[${index}]`);
 };
 
-interface Item { id: string; value: string; }
-export const getOtherValues = (itemId: string, items: Item[]) => items.filter((item) => item.id !== itemId)
-  .map((item) => item.value);
+interface Item {
+  id: string;
+  value: string;
+}
+export const getOtherValues = (itemId: string, items: Item[]) =>
+  items.filter((item) => item.id !== itemId).map((item) => item.value);
 
-export const shouldAutoFocus = (index: number, items: Item[], minLength = 0) => {
+export const shouldAutoFocus = (
+  index: number,
+  items: Item[],
+  minLength = 0,
+) => {
   const numberOfItems = items.length;
   if (minLength === numberOfItems) {
     return false;

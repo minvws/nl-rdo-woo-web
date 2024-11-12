@@ -1,4 +1,9 @@
-import { collapseElement, expandElement, hideElement, showElement } from '../utils';
+import {
+  collapseElement,
+  expandElement,
+  hideElement,
+  showElement,
+} from '../utils';
 
 export const mainNav = () => {
   let abortController: AbortController;
@@ -11,7 +16,9 @@ export const mainNav = () => {
       return;
     }
 
-    expandableElement = document.getElementById(toggleButtonElement.getAttribute('aria-controls') || '') as HTMLElement;
+    expandableElement = document.getElementById(
+      toggleButtonElement.getAttribute('aria-controls') || '',
+    ) as HTMLElement;
     if (!expandableElement) {
       return;
     }
@@ -19,14 +26,18 @@ export const mainNav = () => {
     collapseElement(expandableElement, false);
 
     abortController = new AbortController();
-    toggleButtonElement.addEventListener('click', () => {
-      if (isExpanded()) {
-        collapseExpandableElement();
-        return;
-      }
+    toggleButtonElement.addEventListener(
+      'click',
+      () => {
+        if (isExpanded()) {
+          collapseExpandableElement();
+          return;
+        }
 
-      expandExpandableElement();
-    }, { signal: abortController.signal });
+        expandExpandableElement();
+      },
+      { signal: abortController.signal },
+    );
   };
 
   const collapseExpandableElement = () => {
@@ -47,9 +58,12 @@ export const mainNav = () => {
     toggleButtonElement?.setAttribute('aria-expanded', 'true');
   };
 
-  const getCollapsedIconElement = () => toggleButtonElement?.querySelector('.js-icon-collapsed') ?? null;
-  const getExpandedIconElement = () => toggleButtonElement?.querySelector('.js-icon-expanded') ?? null;
-  const isExpanded = () => toggleButtonElement?.getAttribute('aria-expanded') === 'true';
+  const getCollapsedIconElement = () =>
+    toggleButtonElement?.querySelector('.js-icon-collapsed') ?? null;
+  const getExpandedIconElement = () =>
+    toggleButtonElement?.querySelector('.js-icon-expanded') ?? null;
+  const isExpanded = () =>
+    toggleButtonElement?.getAttribute('aria-expanded') === 'true';
 
   const cleanup = () => {
     if (abortController) {

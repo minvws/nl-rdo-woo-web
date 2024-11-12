@@ -78,3 +78,16 @@ app_accessibility: &app_accessibility
             priority: 0.7
             changefreq: monthly
             section: legal
+
+app_report_vulnerability:
+    path:
+        en: /report-vulnerability
+        nl: /kwetsbaarheid-melden
+    controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+    defaults:
+        template:  'static/report-vulnerability.html.twig'
+    options:
+        sitemap:
+            priority: 0.7
+            changefreq: monthly
+            section: legal

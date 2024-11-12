@@ -65,7 +65,6 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
     public function testEntityIsUpdated(): void
     {
         $uploadFileReference = 'file-' . Uuid::v6();
-        $uploadName = 'test-123.pdf';
 
         $formalDate = new \DateTimeImmutable();
         $internalReference = 'foo bar';
@@ -129,7 +128,6 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
                 $language,
                 $grounds,
                 $uploadFileReference,
-                $uploadName,
             )
         );
     }
@@ -142,7 +140,6 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
     public function testExceptionIsThrownWhenDocumentDoesntExists(): void
     {
         $uploadFileReference = 'file-' . Uuid::v6();
-        $uploadName = 'test-123.pdf';
 
         $formalDate = new \DateTimeImmutable();
         $internalReference = 'foo bar';
@@ -178,7 +175,6 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
                 $language,
                 $grounds,
                 $uploadFileReference,
-                $uploadName,
             )
         );
     }
@@ -229,7 +225,6 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
                 $attachmentType,
                 $language,
                 $grounds,
-                null,
                 null,
             )
         );

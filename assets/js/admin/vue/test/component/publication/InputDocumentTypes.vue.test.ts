@@ -66,25 +66,29 @@ describe('The "InputDocumentTypes" component', () => {
     },
   });
 
-  const createComponent = (options: DocumentTypes, addInputSpy: MockInstance) => mount(InputDocumentTypes, {
-    global: {
-      provide: {
-        form: {
-          addInput: addInputSpy,
+  const createComponent = (options: DocumentTypes, addInputSpy: MockInstance) =>
+    mount(InputDocumentTypes, {
+      global: {
+        provide: {
+          form: {
+            addInput: addInputSpy,
+          },
         },
       },
-    },
-    props: {
-      options,
-      value: 'mocked-value',
-    },
-    shallow: true,
-  });
+      props: {
+        options,
+        value: 'mocked-value',
+      },
+      shallow: true,
+    });
 
-  const getInputSelectComponent = (options = getMockedOptions(), addInputSpy = vi.fn()) => createComponent(
-    options,
-    addInputSpy,
-  ).findComponent({ name: 'InputSelect' });
+  const getInputSelectComponent = (
+    options = getMockedOptions(),
+    addInputSpy = vi.fn(),
+  ) =>
+    createComponent(options, addInputSpy).findComponent({
+      name: 'InputSelect',
+    });
 
   describe('when the component is provided with multiple options', () => {
     test('should display a dropdown with a label being "Soort document"', () => {
@@ -96,15 +100,21 @@ describe('The "InputDocumentTypes" component', () => {
     });
 
     test('should display a dropdown with a help text being "Wat is de rol van dit document in het Woo-proces?"', () => {
-      expect(getInputSelectComponent().props('helpText')).toBe('Wat is de rol van dit document in het Woo-proces?');
+      expect(getInputSelectComponent().props('helpText')).toBe(
+        'Wat is de rol van dit document in het Woo-proces?',
+      );
     });
 
     test('should transform the provided options into dropdown suitable options and pass them to the dropdown component', () => {
-      expect(getInputSelectComponent().props('options')).toEqual(getSelectOptionsFromDocumentTypes(getMockedOptions()));
+      expect(getInputSelectComponent().props('options')).toEqual(
+        getSelectOptionsFromDocumentTypes(getMockedOptions()),
+      );
     });
 
     test('should transform the provided options into dropdown suitable opt groups and pass them to the dropdown component', () => {
-      expect(getInputSelectComponent().props('optgroups')).toEqual(getOptgroupsFromDocumentTypes(getMockedOptions()));
+      expect(getInputSelectComponent().props('optgroups')).toEqual(
+        getOptgroupsFromDocumentTypes(getMockedOptions()),
+      );
     });
   });
 
@@ -125,11 +135,14 @@ describe('The "InputDocumentTypes" component', () => {
       const addInputSpy = vi.fn();
 
       getInputSelectComponent(oneMockedOption, addInputSpy);
-      expect(addInputSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
-        name: 'type',
-        label: 'Soort document',
-        value: 'mocked-only-option-value',
-      }));
+      expect(addInputSpy).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          name: 'type',
+          label: 'Soort document',
+          value: 'mocked-only-option-value',
+        }),
+      );
     });
   });
 });

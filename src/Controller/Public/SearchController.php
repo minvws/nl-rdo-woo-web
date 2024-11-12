@@ -80,7 +80,7 @@ class SearchController extends AbstractController
         ]);
     }
 
-    #[Route('/search', name: 'app_search')]
+    #[Route('/zoeken', name: 'app_search')]
     public function search(Request $request, Breadcrumbs $breadcrumbs): Response
     {
         // If we have a POST request, we have a search query in the body. Redirect to GET request
@@ -116,8 +116,8 @@ class SearchController extends AbstractController
         ]);
     }
 
-    #[Cache(public: true, maxage: 600, mustRevalidate: true)]
-    #[Route('/browse', name: 'app_browse')]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
+    #[Route('/alle-categorieën', name: 'app_browse')]
     public function browse(Request $request, Breadcrumbs $breadcrumbs): Response
     {
         // If we have a POST request, we have a search query in the body. Redirect to GET request

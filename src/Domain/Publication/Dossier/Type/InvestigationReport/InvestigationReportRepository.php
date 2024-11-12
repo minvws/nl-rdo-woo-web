@@ -13,11 +13,6 @@ use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<InvestigationReport>
- *
- * @method InvestigationReport|null find($id, $lockMode = null, $lockVersion = null)
- * @method InvestigationReport|null findOneBy(array $criteria, array $orderBy = null)
- * @method InvestigationReport[]    findAll()
- * @method InvestigationReport[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class InvestigationReportRepository extends ServiceEntityRepository implements ProvidesDossierTypeSearchResultInterface
 {

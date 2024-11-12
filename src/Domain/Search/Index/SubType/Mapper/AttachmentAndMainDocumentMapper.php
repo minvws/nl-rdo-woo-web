@@ -40,6 +40,7 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
             'mime_type' => $file->getMimeType(),
             'file_size' => $file->getSize(),
             'file_type' => $file->getType(),
+            'source_type' => $file->getSourceType(),
             'date' => $entity->getFormalDate()->format(\DateTimeInterface::ATOM),
             'filename' => $file->getName(),
             'grounds' => $entity->getGrounds(),

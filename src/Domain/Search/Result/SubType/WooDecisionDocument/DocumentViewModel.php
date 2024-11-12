@@ -7,6 +7,7 @@ namespace App\Domain\Search\Result\SubType\WooDecisionDocument;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\FileInfo;
 use App\Domain\Search\Result\SubType\SubTypeViewModelInterface;
 use App\Entity\Judgement;
+use App\SourceType;
 
 readonly class DocumentViewModel implements SubTypeViewModelInterface
 {
@@ -16,7 +17,7 @@ readonly class DocumentViewModel implements SubTypeViewModelInterface
         public string $documentId,
         public string $documentNr,
         string $fileName,
-        string $fileSourceType,
+        public SourceType $fileSourceType,
         bool $fileUploaded,
         int $fileSize,
         public int $pageCount,
@@ -25,7 +26,7 @@ readonly class DocumentViewModel implements SubTypeViewModelInterface
     ) {
         $this->fileInfo = new FileInfo(
             $fileName,
-            $fileSourceType,
+            $fileSourceType->value,
             $fileUploaded,
             $fileSize,
         );

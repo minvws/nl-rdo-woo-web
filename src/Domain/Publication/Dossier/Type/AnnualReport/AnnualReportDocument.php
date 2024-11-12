@@ -13,15 +13,13 @@ use Webmozart\Assert\Assert;
 
 /**
  * @property AttachmentType::ANNUAL_REPORT|AttachmentType::ANNUAL_PLAN $type
+ *
+ * @extends AbstractMainDocument<AnnualReport>
  */
 #[ORM\Entity(repositoryClass: AnnualReportDocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class AnnualReportDocument extends AbstractMainDocument
 {
-    #[ORM\OneToOne(inversedBy: 'document', targetEntity: AnnualReport::class)]
-    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private AnnualReport $dossier;
-
     public function __construct(
         AnnualReport $dossier,
         \DateTimeImmutable $formalDate,
@@ -37,11 +35,6 @@ class AnnualReportDocument extends AbstractMainDocument
         $this->type = $type;
         $this->language = $language;
         $this->fileInfo->setPaginatable(true);
-    }
-
-    public function getDossier(): AnnualReport
-    {
-        return $this->dossier;
     }
 
     public static function getUploadGroupId(): UploadGroupId

@@ -13,10 +13,13 @@
 -
     branch: false
     attachmentTypes: true
-    name: branch.letter
+    name: branch.communications
 -
     name: COVENANT
     value: c_386e74cb
+-
+    name: COMPLAINT_JUDGEMENT
+    value: ww_jc6woe9
 -
     branch: false
     attachmentTypes: true
@@ -37,3 +40,7 @@
     branch: false
     attachmentTypes: true
     name: branch.meeting_document
+-
+    branch: false
+    attachmentTypes: true
+    name: branch.woo_procedure

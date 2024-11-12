@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, MockInstance, test, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  MockInstance,
+  test,
+  vi,
+} from 'vitest';
 import { jsEnabled } from '@utils';
 import { init } from './init';
 
@@ -23,19 +31,31 @@ describe('the main "init" function for the admin', () => {
   });
 
   vi.mock('@js/shared', () => ({
-    detailsComponents: () => ({ cleanup: detailsComponentsCleanupSpy, initialize: detailsComponentsInitializeSpy }),
+    detailsComponents: () => ({
+      cleanup: detailsComponentsCleanupSpy,
+      initialize: detailsComponentsInitializeSpy,
+    }),
   }));
 
   vi.mock('./auto-submit-form', () => ({
-    autoSubmitForm: () => ({ cleanup: autoSubmitFormCleanupSpy, initialize: autoSubmitFormInitializeSpy }),
+    autoSubmitForm: () => ({
+      cleanup: autoSubmitFormCleanupSpy,
+      initialize: autoSubmitFormInitializeSpy,
+    }),
   }));
 
   vi.mock('./main-nav', () => ({
-    mainNav: () => ({ cleanup: mainNavCleanupSpy, initialize: mainNavInitializeSpy }),
+    mainNav: () => ({
+      cleanup: mainNavCleanupSpy,
+      initialize: mainNavInitializeSpy,
+    }),
   }));
 
   vi.mock('./search-results', () => ({
-    searchResults: () => ({ cleanup: searchResultsCleanupSpy, initialize: searchResultsInitializeSpy }),
+    searchResults: () => ({
+      cleanup: searchResultsCleanupSpy,
+      initialize: searchResultsInitializeSpy,
+    }),
   }));
 
   vi.mock('./tabs', () => ({

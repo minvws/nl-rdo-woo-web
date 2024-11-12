@@ -53,7 +53,6 @@ readonly class CreateAttachmentHandler
 
         $entity->setInternalReference($command->internalReference);
         $entity->setGrounds($command->grounds);
-        $entity->getFileInfo()->setName($command->name);
 
         $violations = $this->validator->validate($entity);
         if ($violations->count() > 0) {

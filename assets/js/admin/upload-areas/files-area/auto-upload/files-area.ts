@@ -3,7 +3,11 @@ import { FilesArea } from '../files-area';
 import { chunksStore as createChunksStore, Chunk } from './chunks-store';
 
 export class AutoUploadFilesArea extends FilesArea {
-  addElementFunctionality(listItemElement: HTMLElement, fileId: string, file: File) {
+  addElementFunctionality(
+    listItemElement: HTMLElement,
+    fileId: string,
+    file: File,
+  ) {
     const functionalities = [
       this.addRemoveElementFunctionality(listItemElement, fileId),
       this.addUploadFunctionality(listItemElement, fileId, file),
@@ -14,7 +18,11 @@ export class AutoUploadFilesArea extends FilesArea {
     };
   }
 
-  addUploadFunctionality(listItemElement: HTMLElement, fileId: string, file: File) {
+  addUploadFunctionality(
+    listItemElement: HTMLElement,
+    fileId: string,
+    file: File,
+  ) {
     this.showProgress(listItemElement);
     this.makeElementTransitionable(listItemElement);
 
@@ -24,7 +32,12 @@ export class AutoUploadFilesArea extends FilesArea {
     };
 
     const chunksStore = createChunksStore(file, () => {
-      const cleanupFunction = this.onFileResult(listItemElement, fileId, true, '');
+      const cleanupFunction = this.onFileResult(
+        listItemElement,
+        fileId,
+        true,
+        '',
+      );
       chunkCleanupFunctions.push(cleanupFunction);
     });
 
@@ -33,7 +46,11 @@ export class AutoUploadFilesArea extends FilesArea {
         chunk,
 
         (bytesOfChunkSent: number, bytesOfChunkToSend: number) => {
-          chunksStore.updateChunkProgress(chunk.id, bytesOfChunkSent, bytesOfChunkToSend);
+          chunksStore.updateChunkProgress(
+            chunk.id,
+            bytesOfChunkSent,
+            bytesOfChunkToSend,
+          );
           this.updateProgress(listItemElement, chunksStore.getFileProgress());
         },
 
@@ -61,7 +78,11 @@ export class AutoUploadFilesArea extends FilesArea {
   }
 
   makeElementTransitionable(listItemElement: HTMLElement) {
-    listItemElement.classList.add('transition-all', 'duration-500', 'overflow-hidden');
+    listItemElement.classList.add(
+      'transition-all',
+      'duration-500',
+      'overflow-hidden',
+    );
     const height = listItemElement.offsetHeight;
     listItemElement.style.height = `${height}px`;
   }
@@ -75,15 +96,23 @@ export class AutoUploadFilesArea extends FilesArea {
 
     const abortController = new AbortController();
 
-    request.upload.addEventListener('progress', (event) => {
-      const { loaded, total } = event;
-      onChunkProgressFunction(loaded, total);
-    }, { signal: abortController.signal });
+    request.upload.addEventListener(
+      'progress',
+      (event) => {
+        const { loaded, total } = event;
+        onChunkProgressFunction(loaded, total);
+      },
+      { signal: abortController.signal },
+    );
 
-    request.addEventListener('load', () => {
-      const isUploadSuccess = request.status >= 200 && request.status < 300;
-      onChunkUploadedFunction(isUploadSuccess);
-    }, { signal: abortController.signal });
+    request.addEventListener(
+      'load',
+      () => {
+        const isUploadSuccess = request.status >= 200 && request.status < 300;
+        onChunkUploadedFunction(isUploadSuccess);
+      },
+      { signal: abortController.signal },
+    );
 
     sendRequest();
 
@@ -112,7 +141,12 @@ export class AutoUploadFilesArea extends FilesArea {
     };
   }
 
-  onFileResult(listItemElement: HTMLElement, fileId: string, isUploadSuccess: boolean, errorMessage: string) {
+  onFileResult(
+    listItemElement: HTMLElement,
+    fileId: string,
+    isUploadSuccess: boolean,
+    errorMessage: string,
+  ) {
     this.hideProgress(listItemElement);
 
     this.displayUploadResultIcon(listItemElement, isUploadSuccess);
@@ -124,9 +158,12 @@ export class AutoUploadFilesArea extends FilesArea {
       listItemElement.classList.add('delay-[3000ms]');
       listItemElement.style.height = '0';
 
-      timeoutId = setTimeout(() => {
-        this.removeFile(fileId);
-      }, 3000 + 500 + 10); // delay + transition duration + some extra
+      timeoutId = setTimeout(
+        () => {
+          this.removeFile(fileId);
+        },
+        3000 + 500 + 10,
+      ); // delay + transition duration + some extra
     }
 
     if (!isUploadSuccess) {
@@ -142,7 +179,9 @@ export class AutoUploadFilesArea extends FilesArea {
   }
 
   updateProgress(listItemElement: HTMLElement, progress: number) {
-    const progressElement = listItemElement.querySelector(`.${this.progressClass}`) as HTMLProgressElement;
+    const progressElement = listItemElement.querySelector(
+      `.${this.progressClass}`,
+    ) as HTMLProgressElement;
     const { value: currentProgress } = progressElement;
 
     if (progress === currentProgress) {
@@ -150,7 +189,8 @@ export class AutoUploadFilesArea extends FilesArea {
     }
 
     if (progress === 100) {
-      const doesThisListItemContainFocus = isFocusWithinElement(listItemElement);
+      const doesThisListItemContainFocus =
+        isFocusWithinElement(listItemElement);
       this.hideRemoveButton(listItemElement);
       this.showSpinner(listItemElement);
       if (doesThisListItemContainFocus) {
@@ -161,13 +201,20 @@ export class AutoUploadFilesArea extends FilesArea {
     progressElement.value = progress;
   }
 
-  displayUploadResultIcon(listItemElement: HTMLElement, isUploadSuccess: boolean) {
+  displayUploadResultIcon(
+    listItemElement: HTMLElement,
+    isUploadSuccess: boolean,
+  ) {
     const isFocusWithinListItem = isFocusWithinElement(listItemElement);
     this.hideRemoveButton(listItemElement);
     this.hideSpinner(listItemElement);
 
-    const elementClass = isUploadSuccess ? this.uploadSuccessClass : this.uploadFailedClass;
-    const iconElement = listItemElement.querySelector(`.${elementClass}`) as HTMLElement | null;
+    const elementClass = isUploadSuccess
+      ? this.uploadSuccessClass
+      : this.uploadFailedClass;
+    const iconElement = listItemElement.querySelector(
+      `.${elementClass}`,
+    ) as HTMLElement | null;
     showElement(iconElement);
 
     if (isFocusWithinListItem) {
@@ -201,6 +248,8 @@ export class AutoUploadFilesArea extends FilesArea {
   }
 
   #getSpinnerElement(listItemElement: HTMLElement) {
-    return listItemElement.querySelector(`.${this.spinnerClass}`) as HTMLElement | null;
+    return listItemElement.querySelector(
+      `.${this.spinnerClass}`,
+    ) as HTMLElement | null;
   }
 }

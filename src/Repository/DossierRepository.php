@@ -18,11 +18,6 @@ use Symfony\Component\Uid\Uuid;
  * @deprecated use AbstractDossierRepository or dossier type specific repositories instead
  *
  * @extends ServiceEntityRepository<Dossier>
- *
- * @method Dossier|null find($id, $lockMode = null, $lockVersion = null)
- * @method Dossier|null findOneBy(array $criteria, array $orderBy = null)
- * @method Dossier[]    findAll()
- * @method Dossier[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class DossierRepository extends ServiceEntityRepository implements ProvidesDossierTypeSearchResultInterface
 {

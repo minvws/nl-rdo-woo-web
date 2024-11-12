@@ -20,11 +20,15 @@ describe('The "Alert" component', () => {
     });
   };
 
-  const getIconComponent = (component: VueWrapper) => component.findComponent({ name: 'Icon' });
-  const getIconName = (component: VueWrapper) => getIconComponent(component).props().name;
+  const getIconComponent = (component: VueWrapper) =>
+    component.findComponent({ name: 'Icon' });
+  const getIconName = (component: VueWrapper) =>
+    getIconComponent(component).props().name;
 
   test('should display the provided content', () => {
-    expect(createComponent().text()).toContain('This is the provided alert content');
+    expect(createComponent().text()).toContain(
+      'This is the provided alert content',
+    );
   });
 
   describe('a danger alert', () => {

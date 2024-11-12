@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Form\Elastic;
 
-use App\Service\Elastic\MappingService;
-use App\Service\Elastic\Model\RolloverParameters;
+use App\Domain\Search\Index\Rollover\MappingService;
+use App\Domain\Search\Index\Rollover\RolloverParameters;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

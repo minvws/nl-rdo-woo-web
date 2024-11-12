@@ -169,7 +169,7 @@ Verify Dossier Metadata
 Search For A Publication
   [Arguments]  ${search_query}
   Type Text  id=search-previews  ${search_query}  delay=50 ms  clear=Yes
-  Click  xpath=//*[@data-e2e-name="search-previews-results"]//*[@data-e2e-name="search-previews-result"][1]/td[2]
+  Click  xpath=//*[@data-e2e-name="search-previews-results"]//*[@data-e2e-name="search-previews-result"][1]/td[2]//*[contains(text(),'${search_query}')]
 
 Click Button Withdraw All Documents
   Click  xpath=//*[@data-e2e-name="withdraw-documents-link"]

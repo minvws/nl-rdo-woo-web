@@ -10,11 +10,18 @@ export const dossierLinkSearch = () => {
 
   const listboxSettings = {
     defaultOptionClassNames: ['bhr-clickable-row'],
-    highlightedOptionClassNames: ['bhr-clickable-row--with-color', 'bhr-outline'],
+    highlightedOptionClassNames: [
+      'bhr-clickable-row--with-color',
+      'bhr-outline',
+    ],
   };
 
-  const { initialize: initializeListboxRole, cleanup: cleanupListboxRole } = listboxRole(listboxSettings);
-  const { initialize: initializeSearchPreviews, cleanup: cleanupSearchPreviews } = searchPreviews();
+  const { initialize: initializeListboxRole, cleanup: cleanupListboxRole } =
+    listboxRole(listboxSettings);
+  const {
+    initialize: initializeSearchPreviews,
+    cleanup: cleanupSearchPreviews,
+  } = searchPreviews();
 
   const hiddenDossierIds = new Set<string>();
 
@@ -25,28 +32,40 @@ export const dossierLinkSearch = () => {
       removeSearchResultsFunctionality,
     );
 
-    hiddenDossierIdsInputElement = document.getElementById('js-hidden-dossiers-input') as HTMLInputElement;
-    selectedDossiersElement = document.getElementById('js-selected-dossiers') as HTMLDivElement;
-    selectedDossiersFallbackElement = document.querySelector('.js-select-dossiers-fallback') as HTMLSelectElement;
+    hiddenDossierIdsInputElement = document.getElementById(
+      'js-hidden-dossiers-input',
+    ) as HTMLInputElement;
+    selectedDossiersElement = document.getElementById(
+      'js-selected-dossiers',
+    ) as HTMLDivElement;
+    selectedDossiersFallbackElement = document.querySelector(
+      '.js-select-dossiers-fallback',
+    ) as HTMLSelectElement;
 
     displayPossibleErrors();
     addLinkDossierFunctionality();
   };
 
   const displayPossibleErrors = () => {
-    const errorNotification = selectedDossiersFallbackElement?.closest('.bhr-form-row--invalid') as HTMLDivElement;
+    const errorNotification = selectedDossiersFallbackElement?.closest(
+      '.bhr-form-row--invalid',
+    ) as HTMLDivElement;
     if (!errorNotification) {
       return;
     }
 
-    const originalErrorElement = errorNotification.querySelector('.js-input-errors');
-    const copiedErrorElement = selectedDossiersElement.querySelector('.js-input-errors');
+    const originalErrorElement =
+      errorNotification.querySelector('.js-input-errors');
+    const copiedErrorElement =
+      selectedDossiersElement.querySelector('.js-input-errors');
 
     if (!originalErrorElement || !copiedErrorElement) {
       return;
     }
 
-    const invalidInputField = document.getElementById('link-dossiers-search-input') as HTMLInputElement;
+    const invalidInputField = document.getElementById(
+      'link-dossiers-search-input',
+    ) as HTMLInputElement;
     if (!invalidInputField) {
       return;
     }
@@ -54,15 +73,22 @@ export const dossierLinkSearch = () => {
     copiedErrorElement.outerHTML = originalErrorElement.outerHTML;
 
     invalidInputField.setAttribute('aria-invalid', 'true');
-    const currentAriaDescribedBy = invalidInputField.getAttribute('aria-describedby') ?? '';
-    invalidInputField.setAttribute('aria-describedby', `${currentAriaDescribedBy} ${originalErrorElement.id}`.trim());
+    const currentAriaDescribedBy =
+      invalidInputField.getAttribute('aria-describedby') ?? '';
+    invalidInputField.setAttribute(
+      'aria-describedby',
+      `${currentAriaDescribedBy} ${originalErrorElement.id}`.trim(),
+    );
 
     originalErrorElement.remove();
 
     selectedDossiersElement.classList.add('bhr-form-row--invalid');
   };
 
-  const addSearchResultsFunctionality = (searchResultsElement: HTMLElement, inputElement: HTMLInputElement) => {
+  const addSearchResultsFunctionality = (
+    searchResultsElement: HTMLElement,
+    inputElement: HTMLInputElement,
+  ) => {
     // The search previews functionality will hide the search results when an element outside the search form receives focus.
     // In this case, the search form is included in a dialog element. It will receive focus when leaving the search field.
     // To prevent the search results from hiding in this case, we give the search results element a tabindex of -1.
@@ -81,31 +107,41 @@ export const dossierLinkSearch = () => {
   const addLinkDossierFunctionality = () => {
     linkDossierAbortController = new AbortController();
 
-    const dialogElement = document.getElementById('js-link-dossiers-dialog') as HTMLDialogElement;
-    const linkDossierButtonElement = document.getElementById('js-link-dossier') as HTMLButtonElement;
-    const selectedDossiersListElement = document.getElementById('js-selected-dossiers-list') as HTMLParagraphElement;
+    const dialogElement = document.getElementById(
+      'js-link-dossiers-dialog',
+    ) as HTMLDialogElement;
+    const linkDossierButtonElement = document.getElementById(
+      'js-link-dossier',
+    ) as HTMLButtonElement;
+    const selectedDossiersListElement = document.getElementById(
+      'js-selected-dossiers-list',
+    ) as HTMLParagraphElement;
 
-    linkDossierButtonElement?.addEventListener('click', () => {
-      // Check if the hidden element contains a selected dossier ID.
-      if (!hiddenDossierIdsInputElement.value) {
-        return;
-      }
-
-      // Set all the selected dossier ids on the actual inquiry_link_dossier_form_dossiers select field.
-      const { options } = selectedDossiersFallbackElement;
-      // Store the selected option titles.
-      const optionsText: string[] = [];
-      for (let i = 0; i < options.length; i += 1) {
-        const option = options[i] as HTMLOptionElement;
-        if (hiddenDossierIds.has(option.value)) {
-          option.selected = true;
-          optionsText.push(option.textContent!);
+    linkDossierButtonElement?.addEventListener(
+      'click',
+      () => {
+        // Check if the hidden element contains a selected dossier ID.
+        if (!hiddenDossierIdsInputElement.value) {
+          return;
         }
-      }
-      // Let's display the selected option titles to the balie user.
-      selectedDossiersListElement.innerHTML = `<li>${optionsText.join('</li><li>')}</li>`;
-      dialogElement.close();
-    }, { signal: linkDossierAbortController.signal });
+
+        // Set all the selected dossier ids on the actual inquiry_link_dossier_form_dossiers select field.
+        const { options } = selectedDossiersFallbackElement;
+        // Store the selected option titles.
+        const optionsText: string[] = [];
+        for (let i = 0; i < options.length; i += 1) {
+          const option = options[i] as HTMLOptionElement;
+          if (hiddenDossierIds.has(option.value)) {
+            option.selected = true;
+            optionsText.push(option.textContent!);
+          }
+        }
+        // Let's display the selected option titles to the balie user.
+        selectedDossiersListElement.innerHTML = `<li>${optionsText.join('</li><li>')}</li>`;
+        dialogElement.close();
+      },
+      { signal: linkDossierAbortController.signal },
+    );
   };
 
   const removeSearchResultsFunctionality = () => {

@@ -11,88 +11,107 @@ use PHPUnit\Framework\TestCase;
 
 class SourceTypeTest extends TestCase
 {
-    #[DataProvider('getTypeProvider')]
-    public function testGetType(?string $input, string $expectedResult): void
+    #[DataProvider('createProvider')]
+    public function testCreate(?string $input, SourceType $expectedResult): void
     {
-        self::assertEquals($expectedResult, SourceType::getType($input));
+        self::assertEquals($expectedResult, SourceType::create($input));
     }
 
     /**
-     * @return array<string, array{input:?string, expectedResult:string}>
+     * @return array<string, array{input:?string, expectedResult:SourceType}>
      */
-    public static function getTypeProvider(): array
+    public static function createProvider(): array
     {
         return [
             'empty-string' => [
                 'input' => '',
-                'expectedResult' => SourceType::SOURCE_UNKNOWN,
+                'expectedResult' => SourceType::UNKNOWN,
             ],
             'null' => [
                 'input' => null,
-                'expectedResult' => SourceType::SOURCE_UNKNOWN,
+                'expectedResult' => SourceType::UNKNOWN,
             ],
             'PDF-whitespaced-and-uppercased' => [
                 'input' => ' PDF   ',
-                'expectedResult' => SourceType::SOURCE_PDF,
+                'expectedResult' => SourceType::PDF,
             ],
             'mimetype' => [
                 'input' => 'application/vnd.openxmlformats-officedocument',
-                'expectedResult' => SourceType::SOURCE_DOCUMENT,
+                'expectedResult' => SourceType::DOC,
+            ],
+            'image' => [
+                'input' => 'image',
+                'expectedResult' => SourceType::IMAGE,
+            ],
+            'presentation' => [
+                'input' => 'presentation',
+                'expectedResult' => SourceType::PRESENTATION,
+            ],
+            'spreadsheet' => [
+                'input' => 'spreadsheet',
+                'expectedResult' => SourceType::SPREADSHEET,
+            ],
+            'html' => [
+                'input' => 'html',
+                'expectedResult' => SourceType::HTML,
+            ],
+            'note' => [
+                'input' => 'application/msonenote',
+                'expectedResult' => SourceType::NOTE,
+            ],
+            'database' => [
+                'input' => 'application/x-sqlite3',
+                'expectedResult' => SourceType::DATABASE,
+            ],
+            'xml' => [
+                'input' => 'xml',
+                'expectedResult' => SourceType::XML,
+            ],
+            'video' => [
+                'input' => 'video',
+                'expectedResult' => SourceType::VIDEO,
+            ],
+            'vcard' => [
+                'input' => 'vcard',
+                'expectedResult' => SourceType::VCARD,
+            ],
+            'chat' => [
+                'input' => 'chat',
+                'expectedResult' => SourceType::CHAT,
+            ],
+            'chatbericht' => [
+                'input' => 'Chatbericht ',
+                'expectedResult' => SourceType::CHAT,
             ],
         ];
     }
 
     #[DataProvider('fromFileTypeProvider')]
-    public function testFromFileType(FileType $fileType, string $expectedResult): void
+    public function testFromFileType(FileType $fileType, SourceType $expectedResult): void
     {
         self::assertEquals($expectedResult, SourceType::fromFileType($fileType));
     }
 
     /**
-     * @return array<string, array{fileType:FileType, expectedResult:string}>
+     * @return array<string, array{fileType:FileType, expectedResult:SourceType}>
      */
     public static function fromFileTypeProvider(): array
     {
         return [
             'doc' => [
                 'fileType' => FileType::DOC,
-                'expectedResult' => SourceType::SOURCE_DOCUMENT,
+                'expectedResult' => SourceType::DOC,
             ],
             'zip' => [
                 'fileType' => FileType::ZIP,
-                'expectedResult' => SourceType::SOURCE_UNKNOWN,
+                'expectedResult' => SourceType::UNKNOWN,
             ],
         ];
     }
 
-    #[DataProvider('getIconProvider')]
-    public function testGetIcon(string $input, string $expectedResult): void
+    public function testIsEmail(): void
     {
-        self::assertEquals($expectedResult, SourceType::getIcon($input));
-    }
-
-    /**
-     * @return array<string, array{input:?string, expectedResult:string}>
-     */
-    public static function getIconProvider(): array
-    {
-        return [
-            'empty-string' => [
-                'input' => '',
-                'expectedResult' => 'fas fa-file',
-            ],
-            'pdf' => [
-                'input' => SourceType::SOURCE_PDF,
-                'expectedResult' => 'fas fa-file-pdf',
-            ],
-            'foo' => [
-                'input' => 'foo',
-                'expectedResult' => 'fas fa-file',
-            ],
-            'email' => [
-                'input' => SourceType::SOURCE_EMAIL,
-                'expectedResult' => 'fas fa-envelope',
-            ],
-        ];
+        self::assertFalse(SourceType::DOC->isEmail());
+        self::assertTrue(SourceType::EMAIL->isEmail());
     }
 }

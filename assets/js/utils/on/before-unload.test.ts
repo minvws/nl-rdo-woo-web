@@ -11,6 +11,10 @@ describe('the "onBeforeUnload" function', () => {
 
     onBeforeUnload(someFunction);
     expect(getWindow().addEventListener).toHaveBeenCalledTimes(1);
-    expect(getWindow().addEventListener).toHaveBeenCalledWith('beforeunload', someFunction, { once: true });
+    expect(getWindow().addEventListener).toHaveBeenCalledWith(
+      'beforeunload',
+      someFunction,
+      { once: true },
+    );
   });
 });

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Search\Result\SubType\MainDocument;
 
 use App\Domain\Publication\Dossier\Type\DossierReference;
+use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use App\Domain\Search\Index\ElasticDocumentType;
@@ -36,6 +37,7 @@ readonly class MainDocumentSearchResultMapper implements SearchResultMapperInter
             return null;
         }
 
+        /** @var AbstractMainDocument $mainDocument */
         $mainDocument = $this->mainDocumentRepository->find($id);
         if (! $mainDocument) {
             return null;

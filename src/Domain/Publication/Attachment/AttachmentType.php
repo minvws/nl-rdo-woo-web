@@ -14,7 +14,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  *   label: string,
  * }
  *
- * The cases are based on https://identifier.overheid.nl/tooi/set/ccw_plooi_documentsoorten_aanlevering/1
+ * The cases are based on https://standaarden.overheid.nl/tooi/waardelijsten/expression?lijst_uri=https%3A%2F%2Fidentifier.overheid.nl%2Ftooi%2Fset%2Fccw_plooi_documentsoorten%2F5
+ *
+ * Custom cases start with a prefix `ww_` (= Woo Web) to avoid conflicts with the official cases.
  */
 enum AttachmentType: string implements TranslatableInterface
 {
@@ -45,8 +47,6 @@ enum AttachmentType: string implements TranslatableInterface
 
     case DESIGNATION_DECISION = 'c_c1956ef0';
     case APPOINTMENT_DECISION = 'c_acb44d77';
-    case DECISION_ON_REQUEST_ART3_WOB = 'c_e0865e4d';
-    case DECISION_ON_REQUEST_ART4_1_WOO = 'c_bcaddc61';
     case CONCESSION = 'c_30e8b503';
     case RECOGNITION_DECISION = 'c_2ab17960';
     case CONSENT_DECISION = 'c_2c0438f4';
@@ -64,13 +64,12 @@ enum AttachmentType: string implements TranslatableInterface
 
     case COVENANT = 'c_386e74cb';
 
-    case APPLICATION_ART_4_1_WOO = 'c_8ec8e5e7';
     case OBJECTION = 'c_06a67c95';
     case COMPLAINT = 'c_ef935990';
+    case COMPLAINT_JUDGEMENT = 'ww_jc6woe9';
     case EXEMPTION_REQUEST = 'c_d943ca24';
     case SUBSIDY_APPLICATION = 'c_5824891d';
     case PERMIT_APPLICATION = 'c_dad2a6ed';
-    case WOB_REQUEST = 'c_dd451365';
     case POINT_OF_VIEW = 'c_df2cb56e';
 
     case ACTIONS = 'c_a17ef403';
@@ -79,6 +78,7 @@ enum AttachmentType: string implements TranslatableInterface
 
     case PARLIAMENTARY_QUESTION_WITH_ANSWER = 'c_6d494ab6';
     case PARLIAMENTARY_QUESTION_WITHOUT_ANSWER = 'c_03c52ba0';
+    case MOTION = 'c_bf0f9c95';
 
     case GOVERNMENT_GAZETTE = 'c_61e3099a';
     case STAATSCOURANT = 'c_0670bae1';
@@ -90,6 +90,10 @@ enum AttachmentType: string implements TranslatableInterface
     case DECISION_LIST = 'c_d4a4792f';
     case INCOMING_DOCUMENT = 'c_de27ae7a';
     case MEETING_REPORT = 'c_42e406dd';
+
+    case DECISION_ON_OBJECTION = 'ww_a2azo7q';
+    case JUDEGEMENT_ON_WOB_WOO_REQUEST = 'c_4f50ca9c';
+    case WOB_WOO_REQUEST = 'c_1cf18f83';
 
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {

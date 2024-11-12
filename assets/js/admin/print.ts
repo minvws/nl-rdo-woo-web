@@ -6,16 +6,21 @@ export const printPage = () => {
   const initialize = () => {
     cleanup();
 
-    const printButtons: NodeListOf<HTMLButtonElement> = document.querySelectorAll('.js-print-page');
+    const printButtons: NodeListOf<HTMLButtonElement> =
+      document.querySelectorAll('.js-print-page');
     if (printButtons.length === 0) {
       return;
     }
 
     abortController = new AbortController();
     printButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        getWindow().print();
-      }, { signal: abortController?.signal });
+      button.addEventListener(
+        'click',
+        () => {
+          getWindow().print();
+        },
+        { signal: abortController?.signal },
+      );
     });
   };
 

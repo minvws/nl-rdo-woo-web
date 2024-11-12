@@ -6,17 +6,24 @@ describe('The "RemovableSelect" component', () => {
   const mockedErrors = ['mocked-error'];
   const mockedForbiddenValues = ['mocked-forbidden-value'];
   const mockedOptions = ['mocked_value-1', 'mocked_value-2'];
-  const mockedOptGroups = [{ label: 'mocked_optgroup_label', options: mockedOptions }];
+  const mockedOptGroups = [
+    { label: 'mocked_optgroup_label', options: mockedOptions },
+  ];
 
   interface Properties {
     autoFocus: boolean;
     forbiddenValues: string[];
-    options: string[] | { label: string, value: string }[];
+    options: string[] | { label: string; value: string }[];
     value: string;
   }
 
   const createComponent = (props: Partial<Properties> = {}) => {
-    const { autoFocus = false, forbiddenValues = mockedForbiddenValues, options = mockedOptions, value = 'mocked_value-1' } = props;
+    const {
+      autoFocus = false,
+      forbiddenValues = mockedForbiddenValues,
+      options = mockedOptions,
+      value = 'mocked_value-1',
+    } = props;
 
     return mount(RemovableSelect, {
       props: {
@@ -34,17 +41,19 @@ describe('The "RemovableSelect" component', () => {
     });
   };
 
-  const getRemovableInputComponent = (component: VueWrapper) => component.findComponent({ name: 'RemovableInput' });
-  const getDropdownElement = (component: VueWrapper) => component.find('select').element as HTMLSelectElement;
+  const getRemovableInputComponent = (component: VueWrapper) =>
+    component.findComponent({ name: 'RemovableInput' });
+  const getDropdownElement = (component: VueWrapper) =>
+    component.find('select').element as HTMLSelectElement;
 
   test('should display a <RemovableInput /> component', async () => {
-    const removableInputComponent = getRemovableInputComponent(createComponent(
-      {
+    const removableInputComponent = getRemovableInputComponent(
+      createComponent({
         autoFocus: true,
         options: [{ label: 'mocked_label', value: 'mocked_value' }],
         forbiddenValues: [],
-      },
-    ));
+      }),
+    );
 
     expect(removableInputComponent).toBeTruthy();
     expect(removableInputComponent.props('canDelete')).toEqual(true);
@@ -66,7 +75,9 @@ describe('The "RemovableSelect" component', () => {
     const optGroups = component.findAll('optgroup');
     expect(optGroups.length).toBe(mockedOptGroups.length);
     expect(optGroups[0].attributes('label')).toBe('mocked_optgroup_label');
-    expect(component.findAll('optgroup option').length).toBe(mockedOptGroups[0].options.length);
+    expect(component.findAll('optgroup option').length).toBe(
+      mockedOptGroups[0].options.length,
+    );
   });
 
   describe('the default value', () => {
@@ -77,7 +88,10 @@ describe('The "RemovableSelect" component', () => {
     });
 
     test('should equal the first provided option is there is only one', async () => {
-      const component = createComponent({ value: '', options: ['some_mocked_value'] });
+      const component = createComponent({
+        value: '',
+        options: ['some_mocked_value'],
+      });
 
       expect(getDropdownElement(component).value).toBe('some_mocked_value');
     });
@@ -116,13 +130,17 @@ describe('The "RemovableSelect" component', () => {
 
       expect(getDropdownElement(component).value).toBe('');
 
-      await (component as any).setProps({ options: [...mockedOptions, 'another_mocked_option'] });
+      await (component as any).setProps({
+        options: [...mockedOptions, 'another_mocked_option'],
+      });
       expect(getDropdownElement(component).value).toBe('');
 
       await (component as any).setProps({ options: ['mocked_option'] });
       expect(getDropdownElement(component).value).toBe('mocked_option');
 
-      await (component as any).setProps({ options: [...mockedOptions, 'mocked_option'] });
+      await (component as any).setProps({
+        options: [...mockedOptions, 'mocked_option'],
+      });
       expect(getDropdownElement(component).value).toBe('mocked_option');
     });
   });

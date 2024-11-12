@@ -1,4 +1,8 @@
-import { areFilesEqual, filterDataTransferFiles, validateFiles } from '@js/admin/utils';
+import {
+  areFilesEqual,
+  filterDataTransferFiles,
+  validateFiles,
+} from '@js/admin/utils';
 import { AutoUploadFilesArea, FilesArea } from './files-area';
 import { initializeInvalidFiles, InvalidFiles } from './invalid-files';
 import { initializeUploadVisual, UploadVisual } from './upload-visual';
@@ -8,7 +12,10 @@ export interface UploadArea {
   initialize: () => void;
 }
 
-export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnThisPage: boolean) => {
+export const uploadArea = (
+  areaElement: HTMLElement,
+  isThisTheOnlyUploadAreaOnThisPage: boolean,
+) => {
   const SELECT_FILES_CLASS_NAME = 'js-select-files';
 
   let abortController: AbortController;
@@ -19,8 +26,12 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
 
   const initialize = () => {
     inputElement = areaElement.querySelector('.js-upload-input');
-    const uploadVisualElement = areaElement.querySelector('.js-upload-visual') as HTMLElement;
-    const invalidFilesElement = areaElement.closest('.js-upload-section')?.querySelector('.js-invalid-files') as HTMLElement;
+    const uploadVisualElement = areaElement.querySelector(
+      '.js-upload-visual',
+    ) as HTMLElement;
+    const invalidFilesElement = areaElement
+      .closest('.js-upload-section')
+      ?.querySelector('.js-invalid-files') as HTMLElement;
 
     if (!uploadVisualElement || !inputElement || !invalidFilesElement) {
       return;
@@ -58,21 +69,40 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
     }
   };
 
-  const addEventListeners = (element: HTMLElement, uploadVisualElement: HTMLElement) => {
+  const addEventListeners = (
+    element: HTMLElement,
+    uploadVisualElement: HTMLElement,
+  ) => {
     abortController = new AbortController();
 
-    element.addEventListener('dragenter', onDragEnter, { signal: abortController.signal });
-    uploadVisualElement.addEventListener('dragleave', onDragLeave, { signal: abortController.signal });
-    uploadVisualElement.addEventListener('dragover', onDragOver, { signal: abortController.signal });
-    uploadVisualElement.addEventListener('drop', onFilesDropped, { signal: abortController.signal });
+    element.addEventListener('dragenter', onDragEnter, {
+      signal: abortController.signal,
+    });
+    uploadVisualElement.addEventListener('dragleave', onDragLeave, {
+      signal: abortController.signal,
+    });
+    uploadVisualElement.addEventListener('dragover', onDragOver, {
+      signal: abortController.signal,
+    });
+    uploadVisualElement.addEventListener('drop', onFilesDropped, {
+      signal: abortController.signal,
+    });
 
-    inputElement?.addEventListener('change', onFilesSelected, { signal: abortController.signal });
+    inputElement?.addEventListener('change', onFilesSelected, {
+      signal: abortController.signal,
+    });
 
-    Array.from(areaElement.getElementsByClassName(SELECT_FILES_CLASS_NAME)).forEach((selectFilesElement) => {
+    Array.from(
+      areaElement.getElementsByClassName(SELECT_FILES_CLASS_NAME),
+    ).forEach((selectFilesElement) => {
       selectFilesElement.removeAttribute('tabindex');
-      selectFilesElement.addEventListener('click', () => {
-        inputElement?.click();
-      }, { signal: abortController?.signal });
+      selectFilesElement.addEventListener(
+        'click',
+        () => {
+          inputElement?.click();
+        },
+        { signal: abortController?.signal },
+      );
     });
   };
 
@@ -80,7 +110,9 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
     event.stopPropagation();
     event.preventDefault();
 
-    if ((event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)) {
+    if (
+      (event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)
+    ) {
       return;
     }
 
@@ -96,7 +128,9 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
     event.stopPropagation();
     event.preventDefault();
 
-    if ((event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)) {
+    if (
+      (event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)
+    ) {
       return;
     }
 
@@ -114,13 +148,18 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
     event.stopPropagation();
     event.preventDefault();
 
-    if ((event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)) {
+    if (
+      (event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)
+    ) {
       return;
     }
 
     uploadVisual.slideOutUp();
 
-    const dataTransfer = await filterDataTransferFiles(event.dataTransfer!, false);
+    const dataTransfer = await filterDataTransferFiles(
+      event.dataTransfer!,
+      false,
+    );
     const filteredFiles = filterDroppedFiles(dataTransfer.files);
     updateInputFiles(filteredFiles);
   };
@@ -130,7 +169,11 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
   };
 
   const updateInputFiles = (files: FileList) => {
-    const { validFiles, invalidFiles: invalid } = validateFiles(files, getValidMimeTypes(), getMaxFileSize());
+    const { validFiles, invalidFiles: invalid } = validateFiles(
+      files,
+      getValidMimeTypes(),
+      getMaxFileSize(),
+    );
     invalidFiles.processInvalidFiles(invalid);
 
     if (validFiles.length === 0) {
@@ -145,9 +188,12 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
     filesArea.addFiles(getInputElementFiles());
 
     if (canUploadMultipleFiles()) {
-      const mainSelectFilesElement = areaElement.querySelector('.js-select-files-main') as HTMLElement;
+      const mainSelectFilesElement = areaElement.querySelector(
+        '.js-select-files-main',
+      ) as HTMLElement;
       if (mainSelectFilesElement) {
-        mainSelectFilesElement.textContent = mainSelectFilesElement.dataset.uploadMoreText || '';
+        mainSelectFilesElement.textContent =
+          mainSelectFilesElement.dataset.uploadMoreText || '';
       }
     }
   };
@@ -171,7 +217,8 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
     console.log(`Failed to upload file "${failedFile.name}": ${message}`);
   };
 
-  const getInputElementFiles = () => (inputElement ? Array.from(inputElement.files as FileList) : []);
+  const getInputElementFiles = () =>
+    inputElement ? Array.from(inputElement.files as FileList) : [];
 
   const setInputElementFiles = (files: FileList) => {
     if (!inputElement) {
@@ -210,12 +257,16 @@ export const uploadArea = (areaElement: HTMLElement, isThisTheOnlyUploadAreaOnTh
     return parseInt(maxFileSize, 10);
   };
 
-  const getSelectFilesButtonElement = () => areaElement.querySelector(`.${SELECT_FILES_CLASS_NAME}`) as HTMLElement;
+  const getSelectFilesButtonElement = () =>
+    areaElement.querySelector(`.${SELECT_FILES_CLASS_NAME}`) as HTMLElement;
 
-  const canUploadMultipleFiles = () => Boolean(inputElement?.hasAttribute('multiple'));
+  const canUploadMultipleFiles = () =>
+    Boolean(inputElement?.hasAttribute('multiple'));
   const isAutoUploadEnabled = () => getAutoUploadFileArea() !== null;
-  const getNoAutoUploadFileArea = (): HTMLElement | null => areaElement.querySelector('.js-no-auto-upload-files-area');
-  const getAutoUploadFileArea = (): HTMLElement | null => areaElement.querySelector('.js-auto-upload-files-area');
+  const getNoAutoUploadFileArea = (): HTMLElement | null =>
+    areaElement.querySelector('.js-no-auto-upload-files-area');
+  const getAutoUploadFileArea = (): HTMLElement | null =>
+    areaElement.querySelector('.js-auto-upload-files-area');
 
   const cleanup = () => {
     if (abortController) {

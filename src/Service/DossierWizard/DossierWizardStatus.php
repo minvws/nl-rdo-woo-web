@@ -96,6 +96,11 @@ readonly class DossierWizardStatus
         return $this->getStep(StepName::CONTENT);
     }
 
+    public function getContentPath(): string
+    {
+        return $this->getStep(StepName::CONTENT)->getRouteName();
+    }
+
     public function getDecisionPath(): string
     {
         return $this->getStep(StepName::DECISION)->getRouteName();

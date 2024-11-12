@@ -22,7 +22,6 @@ readonly class UpdateAttachmentCommand
         public ?AttachmentLanguage $language = null,
         public ?array $grounds = null,
         public ?string $uploadFileReference = null,
-        public ?string $name = null,
     ) {
     }
 }

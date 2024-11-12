@@ -177,7 +177,7 @@ readonly class DossierService
             $fileInfo->removeFileProperties();
         }
 
-        $fileInfo->setSourceType(SourceType::SOURCE_PDF);
+        $fileInfo->setSourceType(SourceType::PDF);
         $fileInfo->setType('pdf');
         $fileInfo->setName($upload->getClientOriginalName());
 
@@ -264,7 +264,7 @@ readonly class DossierService
         $run = new InventoryProcessRun($dossier);
 
         $file = $run->getFileInfo();
-        $file->setSourceType(SourceType::SOURCE_SPREADSHEET);
+        $file->setSourceType(SourceType::SPREADSHEET);
         $file->setType('pdf');
         $file->setName($upload->getClientOriginalName());
 

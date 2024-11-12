@@ -13,9 +13,6 @@ use Webmozart\Assert\Assert as WebmozartAssert;
 abstract class AttachmentUpdateDto
 {
     #[Assert\NotBlank(allowNull: true, normalizer: 'trim')]
-    public ?string $name = null;
-
-    #[Assert\NotBlank(allowNull: true, normalizer: 'trim')]
     #[Assert\Date]
     #[ApiProperty(
         openapiContext: [

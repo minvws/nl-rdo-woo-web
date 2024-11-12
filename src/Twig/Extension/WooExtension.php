@@ -24,7 +24,6 @@ class WooExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('sourceTypeIcon', [$this->runtime, 'sourceTypeIcon']),
             new TwigFilter('classification', [$this->runtime, 'classification']),
             new TwigFilter(
                 'highlights',

@@ -1,6 +1,12 @@
 import { createTestFile } from '@js/test';
 import { describe, expect, test } from 'vitest';
-import { areFilesEqual, formatFileSize, getFileTypeByMimeType, getIconNameByMimeType, isValidMaxFileSize } from './file';
+import {
+  areFilesEqual,
+  formatFileSize,
+  getFileTypeByMimeType,
+  getIconNameByMimeType,
+  isValidMaxFileSize,
+} from './file';
 
 describe('The file utility functions', () => {
   describe('the "formatFileSize" function', () => {
@@ -21,7 +27,11 @@ describe('The file utility functions', () => {
 
   describe('the "getIconNameByMimeType" function', () => {
     test('should return "file-csv" for csv mimetypes', () => {
-      expect(getIconNameByMimeType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')).toBe('file-csv');
+      expect(
+        getIconNameByMimeType(
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ),
+      ).toBe('file-csv');
     });
 
     test('should return "file-pdf" for pdf mimetypes', () => {
@@ -29,9 +39,19 @@ describe('The file utility functions', () => {
     });
 
     test('should return "file-presentation" for presentation mimetypes', () => {
-      expect(getIconNameByMimeType('application/mspowerpoint')).toBe('file-presentation');
-      expect(getIconNameByMimeType('application/vnd.openxmlformats-officedocument.presentationml.slideshow')).toBe('file-presentation');
-      expect(getIconNameByMimeType('application/vnd.oasis.opendocument.presentation')).toBe('file-presentation');
+      expect(getIconNameByMimeType('application/mspowerpoint')).toBe(
+        'file-presentation',
+      );
+      expect(
+        getIconNameByMimeType(
+          'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+        ),
+      ).toBe('file-presentation');
+      expect(
+        getIconNameByMimeType(
+          'application/vnd.oasis.opendocument.presentation',
+        ),
+      ).toBe('file-presentation');
     });
 
     test('should return "file-text" for text mimetypes', () => {
@@ -43,7 +63,11 @@ describe('The file utility functions', () => {
     });
 
     test('should return "file-word" for word mimetypes', () => {
-      expect(getIconNameByMimeType('application/vnd.openxmlformats-officedocument.wordprocessingml.document')).toBe('file-word');
+      expect(
+        getIconNameByMimeType(
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ),
+      ).toBe('file-word');
     });
 
     test('should return "file-xml" for xml mimetypes', () => {
@@ -52,18 +76,24 @@ describe('The file utility functions', () => {
 
     test('should return "file-zip" for zip mimetypes', () => {
       expect(getIconNameByMimeType('application/zip')).toBe('file-zip');
-      expect(getIconNameByMimeType('application/x-7z-compressed')).toBe('file-zip');
+      expect(getIconNameByMimeType('application/x-7z-compressed')).toBe(
+        'file-zip',
+      );
     });
 
     test('should return "file-unknown" for unknown mimetypes', () => {
-      expect(getIconNameByMimeType('an-unknown-mime-type')).toBe('file-unknown');
+      expect(getIconNameByMimeType('an-unknown-mime-type')).toBe(
+        'file-unknown',
+      );
     });
   });
 
   describe('the "getFileTypeByMimeType" function', () => {
     test('should return the correct file type based on the mime type', () => {
       expect(getFileTypeByMimeType('application/acrobat')).toBe('pdf');
-      expect(getFileTypeByMimeType('application/vnd.ms-powerpoint')).toBe('presentatie');
+      expect(getFileTypeByMimeType('application/vnd.ms-powerpoint')).toBe(
+        'presentatie',
+      );
       expect(getFileTypeByMimeType('unknown-mime-type')).toBe('onbekend');
     });
   });
