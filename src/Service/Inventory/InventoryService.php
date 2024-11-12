@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Entity\Dossier;
-use App\Entity\InventoryProcessRun;
-use App\Entity\RawInventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Entity\ProductionReport;
+use App\Entity\ProductionReportProcessRun;
 use App\Exception\ProcessInventoryException;
 use App\Service\Inventory\Reader\InventoryReaderFactory;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
@@ -27,7 +27,7 @@ class InventoryService
     ) {
     }
 
-    public function getReader(InventoryProcessRun $run): InventoryReaderInterface
+    public function getReader(ProductionReportProcessRun $run): InventoryReaderInterface
     {
         if (! $run->getFileInfo()->isUploaded()) {
             throw new \RuntimeException('Input file missing, cannot process inventory');
@@ -46,7 +46,7 @@ class InventoryService
         return $inventoryReader;
     }
 
-    public function cleanupTmpFile(InventoryProcessRun $run): void
+    public function cleanupTmpFile(ProductionReportProcessRun $run): void
     {
         if ($run->getTmpFilename()) {
             $this->entityStorageService->removeDownload($run->getTmpFilename());
@@ -54,12 +54,12 @@ class InventoryService
         }
     }
 
-    public function removeInventories(Dossier $dossier): bool
+    public function removeInventories(WooDecision $dossier): bool
     {
         $inventory = $dossier->getInventory();
-        $rawInventory = $dossier->getRawInventory();
+        $productionReport = $dossier->getProductionReport();
 
-        if (! $inventory && ! $rawInventory) {
+        if (! $inventory && ! $productionReport) {
             return false;
         }
 
@@ -69,10 +69,10 @@ class InventoryService
             $dossier->setInventory(null);
         }
 
-        if ($rawInventory) {
-            $this->entityStorageService->removeFileForEntity($rawInventory);
-            $this->doctrine->remove($rawInventory);
-            $dossier->setRawInventory(null);
+        if ($productionReport) {
+            $this->entityStorageService->removeFileForEntity($productionReport);
+            $this->doctrine->remove($productionReport);
+            $dossier->setProductionReport(null);
         }
 
         $this->doctrine->persist($dossier);
@@ -80,19 +80,16 @@ class InventoryService
         return true;
     }
 
-    /**
-     * Store the inventory to disk and add the inventory document to the dossier.
-     */
-    public function storeRawInventory(InventoryProcessRun $run): void
+    public function storeProductionReport(ProductionReportProcessRun $run): void
     {
-        $inventory = new RawInventory();
+        $inventory = new ProductionReport();
         $inventory->setDossier($run->getDossier());
 
         $file = $inventory->getFileInfo();
         $file->setSourceType(SourceType::SPREADSHEET);
         $file->setType('xlsx');
 
-        $defaultFilename = 'raw-inventory-' . $run->getDossier()->getDossierNr() . '.xlsx';
+        $defaultFilename = 'production-report-' . $run->getDossier()->getDossierNr() . '.xlsx';
         $file->setName($run->getFileInfo()->getName() ?? $defaultFilename);
 
         $this->doctrine->persist($inventory);
@@ -104,7 +101,7 @@ class InventoryService
 
         $fileInfo = new \SplFileInfo($tmpFilename);
         if (! $this->entityStorageService->storeEntity($fileInfo, $inventory, false)) {
-            throw new \RuntimeException('Cannot store raw inventory');
+            throw new \RuntimeException('Cannot store production report');
         }
     }
 }

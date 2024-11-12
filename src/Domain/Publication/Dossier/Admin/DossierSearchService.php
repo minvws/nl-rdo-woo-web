@@ -5,24 +5,26 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Admin;
 
 use App\Domain\Publication\Attachment\AbstractAttachment;
-use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
+use App\Domain\Publication\Attachment\AttachmentRepository;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
+use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
+use App\Domain\Publication\MainDocument\MainDocumentRepository;
 use App\Entity\Document;
 use App\Repository\DocumentRepository;
 use App\Service\Security\Authorization\AuthorizationMatrix;
+use Symfony\Component\Uid\Uuid;
 
 readonly class DossierSearchService
 {
     public const SEARCH_RESULT_LIMIT = 4;
 
     public function __construct(
-        private AbstractDossierRepository $dossierRepository,
+        private DossierRepository $dossierRepository,
         private DocumentRepository $documentRepository,
-        private AbstractMainDocumentRepository $mainDocumentRepository,
-        private AbstractAttachmentRepository $attachmentRepository,
+        private MainDocumentRepository $mainDocumentRepository,
+        private AttachmentRepository $attachmentRepository,
         private AuthorizationMatrix $authorizationMatrix,
     ) {
     }
@@ -30,56 +32,74 @@ readonly class DossierSearchService
     /**
      * @return AbstractDossier[]
      */
-    public function searchDossiers(string $searchTerm): array
-    {
+    public function searchDossiers(
+        string $searchTerm,
+        ?Uuid $dossierId = null,
+        ?DossierType $dossierType = null,
+    ): array {
         $organisation = $this->authorizationMatrix->getActiveOrganisation();
 
         return $this->dossierRepository->findBySearchTerm(
             searchTerm: $searchTerm,
             limit: self::SEARCH_RESULT_LIMIT,
             organisation: $organisation,
+            dossierId: $dossierId,
+            dossierType: $dossierType,
         );
     }
 
     /**
      * @return Document[]
      */
-    public function searchDocuments(string $searchTerm): array
-    {
+    public function searchDocuments(
+        string $searchTerm,
+        ?Uuid $dossierId = null,
+    ): array {
         $organisation = $this->authorizationMatrix->getActiveOrganisation();
 
         return $this->documentRepository->findBySearchTerm(
             searchTerm: $searchTerm,
             limit: self::SEARCH_RESULT_LIMIT,
             organisation: $organisation,
+            dossierId: $dossierId,
         );
     }
 
     /**
      * @return list<AbstractMainDocument>
      */
-    public function searchMainDocuments(string $searchTerm): array
-    {
+    public function searchMainDocuments(
+        string $searchTerm,
+        ?Uuid $dossierId = null,
+        ?DossierType $dossierType = null,
+    ): array {
         $organisation = $this->authorizationMatrix->getActiveOrganisation();
 
         return $this->mainDocumentRepository->findBySearchTerm(
             searchTerm: $searchTerm,
             limit: self::SEARCH_RESULT_LIMIT,
             organisation: $organisation,
+            dossierId: $dossierId,
+            dossierType: $dossierType,
         );
     }
 
     /**
      * @return list<AbstractAttachment>
      */
-    public function searchAttachments(string $searchTerm): array
-    {
+    public function searchAttachments(
+        string $searchTerm,
+        ?Uuid $dossierId = null,
+        ?DossierType $dossierType = null,
+    ): array {
         $organisation = $this->authorizationMatrix->getActiveOrganisation();
 
         return $this->attachmentRepository->findBySearchTerm(
             searchTerm: $searchTerm,
             limit: self::SEARCH_RESULT_LIMIT,
             organisation: $organisation,
+            dossierId: $dossierId,
+            dossierType: $dossierType,
         );
     }
 }

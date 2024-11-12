@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Search\Result\SubType\Attachment;
 
 use App\Domain\Publication\Attachment\AbstractAttachment;
-use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
+use App\Domain\Publication\Attachment\AttachmentRepository;
 use App\Domain\Publication\Attachment\ViewModel\Attachment;
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -19,19 +19,25 @@ use Mockery\MockInterface;
 
 class AttachmentSearchResultMapperTest extends MockeryTestCase
 {
-    private AbstractAttachmentRepository&MockInterface $attachmentRepository;
+    private AttachmentRepository&MockInterface $attachmentRepository;
     private AttachmentViewFactory&MockInterface $attachmentViewFactory;
     private AttachmentSearchResultMapper $mapper;
 
     public function setUp(): void
     {
-        $this->attachmentRepository = \Mockery::mock(AbstractAttachmentRepository::class);
+        $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);
         $this->attachmentViewFactory = \Mockery::mock(AttachmentViewFactory::class);
 
         $this->mapper = new AttachmentSearchResultMapper(
             $this->attachmentRepository,
             $this->attachmentViewFactory,
         );
+    }
+
+    public function testSupports(): void
+    {
+        self::assertTrue($this->mapper->supports(ElasticDocumentType::ATTACHMENT));
+        self::assertFalse($this->mapper->supports(ElasticDocumentType::COMPLAINT_JUDGEMENT_MAIN_DOCUMENT));
     }
 
     public function testMapReturnsNullWhenIdIsMissing(): void

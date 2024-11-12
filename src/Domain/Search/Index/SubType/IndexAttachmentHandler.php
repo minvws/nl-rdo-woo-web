@@ -7,7 +7,7 @@ namespace App\Domain\Search\Index\SubType;
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\Attachment\AbstractAttachment;
-use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
+use App\Domain\Publication\Attachment\AttachmentRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -15,7 +15,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 readonly class IndexAttachmentHandler
 {
     public function __construct(
-        private AbstractAttachmentRepository $repository,
+        private AttachmentRepository $repository,
         private SubTypeIndexer $subTypeIndexer,
         private LoggerInterface $logger,
         private SubTypeIngester $subTypeIngester,

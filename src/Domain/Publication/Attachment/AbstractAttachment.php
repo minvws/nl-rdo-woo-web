@@ -12,10 +12,11 @@ use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
 use App\Entity\DecisionAttachment;
 use App\Entity\EntityWithFileInfo;
+use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
 
-#[ORM\Entity(repositoryClass: AbstractAttachmentRepository::class)]
+#[ORM\Entity(repositoryClass: AttachmentRepository::class)]
 #[ORM\Table(name: 'attachment')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'entity_type', type: 'string')]
@@ -40,5 +41,13 @@ abstract class AbstractAttachment implements EntityWithFileInfo
         Assert::isInstanceOf($this->dossier, EntityWithAttachments::class);
 
         return $this->dossier;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public static function getUploadGroupId(): UploadGroupId
+    {
+        return UploadGroupId::ATTACHMENTS;
     }
 }

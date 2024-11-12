@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Repository\DocumentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,8 +31,10 @@ class Document extends PublicationItem
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $title = null;
 
-    /** @var Collection<array-key,Dossier> */
-    #[ORM\ManyToMany(targetEntity: Dossier::class, inversedBy: 'documents')]
+    /** @var Collection<array-key,WooDecision> */
+    #[ORM\ManyToMany(targetEntity: WooDecision::class, inversedBy: 'documents')]
+    #[ORM\JoinTable(name: 'document_dossier')]
+    #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id')]
     private Collection $dossiers;
 
     #[ORM\Column(length: 255, unique: true, nullable: false)]
@@ -55,10 +58,6 @@ class Document extends PublicationItem
     /** @var array<string> */
     #[ORM\Column(type: Types::JSON, nullable: false)]
     private array $grounds = [];
-
-    /** @var array<string> */
-    #[ORM\Column(type: Types::JSON, nullable: false)]
-    private array $subjects = [];
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $period = null;
@@ -239,26 +238,6 @@ class Document extends PublicationItem
         return $this;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getSubjects(): array
-    {
-        return array_values($this->subjects);
-    }
-
-    /**
-     * @param string[] $subjects
-     *
-     * @return $this
-     */
-    public function setSubjects(array $subjects): static
-    {
-        $this->subjects = $subjects;
-
-        return $this;
-    }
-
     public function getPeriod(): ?string
     {
         return $this->period;
@@ -272,14 +251,14 @@ class Document extends PublicationItem
     }
 
     /**
-     * @return Collection<array-key,Dossier>
+     * @return Collection<array-key,WooDecision>
      */
     public function getDossiers(): Collection
     {
         return $this->dossiers;
     }
 
-    public function addDossier(Dossier $dossier): self
+    public function addDossier(WooDecision $dossier): self
     {
         if (! $this->dossiers->contains($dossier)) {
             $this->dossiers->add($dossier);
@@ -288,7 +267,7 @@ class Document extends PublicationItem
         return $this;
     }
 
-    public function removeDossier(Dossier $dossier): self
+    public function removeDossier(WooDecision $dossier): self
     {
         $this->dossiers->removeElement($dossier);
 

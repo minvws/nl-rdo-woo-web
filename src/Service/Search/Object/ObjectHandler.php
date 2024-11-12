@@ -38,14 +38,14 @@ class ObjectHandler
         return $response->asBool();
     }
 
-    public function getObjectCount(string $index, string $type): int
+    public function getObjectCount(string $index, string ...$type): int
     {
         /** @var Elasticsearch $response */
         $response = $this->elastic->count([
             'index' => $index,
             'body' => [
                 'query' => [
-                    'term' => [
+                    'terms' => [
                         'type' => $type,
                     ],
                 ],

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\SubType\Mapper;
 
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper;
 use App\Domain\Search\Index\ElasticDocument;
@@ -31,6 +32,20 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
         $this->mapper = new WooDecisionDocumentMapper($this->wooDecisionMapper);
 
         parent::setUp();
+    }
+
+    public function testSupportsReturnsTrueForDocument(): void
+    {
+        self::assertTrue(
+            $this->mapper->supports(\Mockery::mock(Document::class))
+        );
+    }
+
+    public function testSupportsReturnsFalseForAttachment(): void
+    {
+        self::assertFalse(
+            $this->mapper->supports(\Mockery::mock(CovenantAttachment::class))
+        );
     }
 
     public function testMap(): void
@@ -65,11 +80,10 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
         $document->shouldReceive('getThreadId')->andReturn(567);
         $document->shouldReceive('getJudgement')->andReturn(Judgement::PARTIAL_PUBLIC);
         $document->shouldReceive('getGrounds')->andReturn(['x', 'y']);
-        $document->shouldReceive('getSubjects')->andReturn(['n', 'm']);
         $document->shouldReceive('getPeriod')->andReturn('foo-bar');
         $document->shouldReceive('getPageCount')->andReturn(13);
 
-        $doc = $this->mapper->map($document);
+        $doc = $this->mapper->map($document, ['foo'], [1 => 'bar']);
 
         self::assertEquals(
             [
@@ -94,10 +108,6 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
                     0 => 'x',
                     1 => 'y',
                 ],
-                'subjects' => [
-                    0 => 'n',
-                    1 => 'm',
-                ],
                 'date_period' => 'foo-bar',
                 'document_pages' => 13,
                 'dossiers' => [
@@ -106,6 +116,8 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
                 'inquiry_ids' => [
                     $inquiryId,
                 ],
+                'metadata' => ['foo'],
+                'pages' => [1 => 'bar'],
             ],
             $doc->getDocumentValues(),
         );

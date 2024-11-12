@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\WooDecision;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Service\DocumentWorkflow\DocumentWorkflow;
 use App\Service\FileUploader;
 use Psr\Log\LoggerInterface;
@@ -35,7 +35,7 @@ class DocumentController extends AbstractController
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function document(
         Breadcrumbs $breadcrumbs,
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
         #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId,documentId)')] Document $document,
     ): Response {
         $breadcrumbs->addRouteItem(
@@ -65,7 +65,7 @@ class DocumentController extends AbstractController
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function uploadStatus(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
     ): Response {
         $uploadStatus = $dossier->getUploadStatus();
 
@@ -90,7 +90,7 @@ class DocumentController extends AbstractController
     #[IsGranted('AuthMatrix.document.update', subject: 'dossier')]
     public function upload(
         Request $request,
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
     ): Response {
         try {
             $completed = $this->fileUploader->handleUpload($request, $dossier);

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Organisation;
 use App\Service\Inventory\InquiryChangeset;
@@ -49,7 +49,7 @@ class InquiryChangesetTest extends MockeryTestCase
 
         // Dossier is added to case 3 and 4
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(Dossier::class);
+        $dossier = \Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn($dossierId);
         $dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection());
         $this->changeset->addCaseNrsForDossier($dossier, ['case-3', 'case-4']);

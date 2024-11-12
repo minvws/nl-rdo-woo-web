@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\Rollover;
 
+use App\Domain\Publication\Dossier\DossierRepository;
+use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
 use App\Domain\Search\Index\Rollover\DocumentCounts;
 use App\Domain\Search\Index\Rollover\MappingService;
@@ -13,7 +15,6 @@ use App\ElasticConfig;
 use App\Message\InitiateElasticRolloverMessage;
 use App\Message\SetElasticAliasMessage;
 use App\Repository\DocumentRepository;
-use App\Repository\WooDecisionRepository;
 use App\Service\Search\Object\ObjectHandler;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
@@ -23,7 +24,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class RolloverServiceTest extends UnitTestCase
 {
     private RolloverService $rolloverService;
-    private WooDecisionRepository&MockInterface $wooDecisionRepository;
+    private DossierRepository&MockInterface $dossierRepository;
     private DocumentRepository&MockInterface $documentRepository;
     private ObjectHandler&MockInterface $objectHandler;
     private MessageBusInterface&MockInterface $messageBus;
@@ -31,14 +32,14 @@ class RolloverServiceTest extends UnitTestCase
 
     public function setUp(): void
     {
-        $this->wooDecisionRepository = \Mockery::mock(WooDecisionRepository::class);
+        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
         $this->documentRepository = \Mockery::mock(DocumentRepository::class);
         $this->objectHandler = \Mockery::mock(ObjectHandler::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->mappingService = \Mockery::mock(MappingService::class);
 
         $this->rolloverService = new RolloverService(
-            $this->wooDecisionRepository,
+            $this->dossierRepository,
             $this->documentRepository,
             $this->objectHandler,
             $this->messageBus,
@@ -97,9 +98,12 @@ class RolloverServiceTest extends UnitTestCase
             ['woopie-write'],
         );
 
-        $this->wooDecisionRepository->expects('count')->andReturn(123);
+        $this->dossierRepository->expects('count')->andReturn(123);
         $this->documentRepository->expects('getCountAndPageSum')->andReturn(new DocumentCounts(77, 88));
-        $this->objectHandler->expects('getObjectCount')->with($indexB->name, 'dossier')->andReturn(222);
+        $this->objectHandler
+            ->expects('getObjectCount')
+            ->with($indexB->name, ...ElasticDocumentType::getMainTypeValues())
+            ->andReturn(222);
         $this->objectHandler->expects('getObjectCount')->with($indexB->name, 'document')->andReturn(333);
         $this->objectHandler->expects('getTotalPageCount')->with($indexB->name)->andReturn(444);
 
@@ -120,9 +124,12 @@ class RolloverServiceTest extends UnitTestCase
             ['woopie-read', 'woopie-write'],
         );
 
-        $this->wooDecisionRepository->expects('count')->andReturn(123);
+        $this->dossierRepository->expects('count')->andReturn(123);
         $this->documentRepository->expects('getCountAndPageSum')->andReturn(new DocumentCounts(77, 88));
-        $this->objectHandler->expects('getObjectCount')->with($index->name, 'dossier')->andReturn(222);
+        $this->objectHandler
+            ->expects('getObjectCount')
+            ->with($index->name, ...ElasticDocumentType::getMainTypeValues())
+            ->andReturn(222);
         $this->objectHandler->expects('getObjectCount')->with($index->name, 'document')->andReturn(333);
         $this->objectHandler->expects('getTotalPageCount')->with($index->name)->andReturn(444);
 

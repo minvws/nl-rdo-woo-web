@@ -1,0 +1,43 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Service\Inventory\Sanitizer\DataProvider;
+
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Entity\Document;
+use App\Entity\Inventory;
+
+readonly class WooDecisionInventoryDataProvider implements InventoryDataProviderInterface
+{
+    public function __construct(
+        private WooDecision $dossier,
+        /** @var array<array-key, Document> $documents */
+        private array $documents,
+    ) {
+    }
+
+    /**
+     * @return array<array-key, Document>
+     */
+    public function getDocuments(): array
+    {
+        return $this->documents;
+    }
+
+    public function getInventoryEntity(): Inventory
+    {
+        $inventory = $this->dossier->getInventory();
+        if (! $inventory) {
+            $inventory = new Inventory();
+            $inventory->setDossier($this->dossier);
+        }
+
+        return $inventory;
+    }
+
+    public function getFilename(): string
+    {
+        return 'inventarislijst-' . $this->dossier->getDossierNr();
+    }
+}

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Inventory;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\InventoryProcessRun;
+use App\Entity\ProductionReportProcessRun;
 use App\Service\DossierService;
 use App\Service\Inventory\InventoryChangeset;
 use App\Service\Inventory\InventoryComparator;
@@ -29,7 +29,7 @@ class InventoryRunProcessorTest extends MockeryTestCase
     private InventoryService $inventoryService;
     private DossierService&MockInterface $dossierService;
     private InventoryRunProcessor $runProcessor;
-    private InventoryProcessRun&MockInterface $run;
+    private ProductionReportProcessRun&MockInterface $run;
     private InventoryReaderInterface&MockInterface $reader;
     private WooDecision&MockInterface $dossier;
     private ProgressUpdater&MockInterface $progressUpdater;
@@ -56,7 +56,7 @@ class InventoryRunProcessorTest extends MockeryTestCase
 
         $this->dossier = \Mockery::mock(WooDecision::class);
 
-        $this->run = \Mockery::mock(InventoryProcessRun::class);
+        $this->run = \Mockery::mock(ProductionReportProcessRun::class);
         $this->run->expects('startComparing');
         $this->run->shouldReceive('getDossier')->andReturn($this->dossier);
 
@@ -126,7 +126,7 @@ class InventoryRunProcessorTest extends MockeryTestCase
             ->expects('applyChangesetToDatabase')
             ->with($this->dossier, $this->reader, $changeset, \Mockery::type(RunProgress::class));
 
-        $this->inventoryService->expects('storeRawInventory')->with($this->run);
+        $this->inventoryService->expects('storeProductionReport')->with($this->run);
 
         $this->dossierService->expects('validateCompletion')->with($this->dossier);
 

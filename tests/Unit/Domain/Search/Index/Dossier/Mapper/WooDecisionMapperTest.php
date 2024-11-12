@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
+use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
 use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -32,6 +33,16 @@ class WooDecisionMapperTest extends MockeryTestCase
         );
 
         parent::setUp();
+    }
+
+    public function testSupportsReturnsTrueForWooDecision(): void
+    {
+        self::assertTrue($this->mapper->supports(new WooDecision()));
+    }
+
+    public function testSupportsReturnsFalseForCovenant(): void
+    {
+        self::assertFalse($this->mapper->supports(new Covenant()));
     }
 
     public function testMap(): void

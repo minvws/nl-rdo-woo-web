@@ -8,8 +8,8 @@ use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Attachment\AttachmentType;
 use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Repository\DecisionAttachmentRepository;
-use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
 
@@ -24,17 +24,12 @@ class DecisionAttachment extends AbstractAttachment
     ) {
         parent::__construct();
 
-        Assert::isInstanceOf($dossier, Dossier::class);
+        Assert::isInstanceOf($dossier, WooDecision::class);
 
         $this->dossier = $dossier;
         $this->formalDate = $formalDate;
         $this->type = $type;
         $this->language = $language;
         $this->fileInfo->setPaginatable(true);
-    }
-
-    public static function getUploadGroupId(): UploadGroupId
-    {
-        return UploadGroupId::WOO_DECISION_ATTACHMENTS;
     }
 }

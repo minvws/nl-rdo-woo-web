@@ -6,7 +6,6 @@ namespace App\Form\Dossier\WooDecision;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Dossier;
 use App\Form\Dossier\AbstractDossierStepType;
 use App\Form\Dossier\DossierFormBuilderTrait;
 use App\Form\YearMonthType;
@@ -20,7 +19,7 @@ class DetailsType extends AbstractDossierStepType
 
     public function getDataClass(): string
     {
-        return Dossier::class;
+        return WooDecision::class;
     }
 
     /**

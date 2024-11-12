@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload\Process;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\Process\DocumentFileProcessor;
 use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Domain\Upload\Process\FileStorer;
 use App\Domain\Upload\UploadedFile;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
@@ -21,7 +21,7 @@ final class DocumentFileProcessorTest extends UnitTestCase
     private DocumentNumberExtractor&MockInterface $documentNumberExtractor;
     private FileStorer&MockInterface $fileStorer;
     private UploadedFile&MockInterface $file;
-    private Dossier&MockInterface $dossier;
+    private WooDecision&MockInterface $dossier;
     private Document&MockInterface $document;
 
     protected function setUp(): void
@@ -32,7 +32,7 @@ final class DocumentFileProcessorTest extends UnitTestCase
         $this->documentNumberExtractor = \Mockery::mock(DocumentNumberExtractor::class);
         $this->fileStorer = \Mockery::mock(FileStorer::class);
         $this->file = \Mockery::mock(UploadedFile::class);
-        $this->dossier = \Mockery::mock(Dossier::class);
+        $this->dossier = \Mockery::mock(WooDecision::class);
         $this->document = \Mockery::mock(Document::class);
     }
 

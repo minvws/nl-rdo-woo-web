@@ -8,21 +8,22 @@ use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
 use App\Domain\Publication\Dossier\Admin\Action\IndexDossierAdminAction;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\DossierService;
+use App\Domain\Search\SearchDispatcher;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Symfony\Component\Uid\Uuid;
 
 final class IndexDossierAdminActionTest extends MockeryTestCase
 {
-    private DossierService&MockInterface $dossierService;
+    private SearchDispatcher&MockInterface $searchDispatcher;
     private IndexDossierAdminAction $action;
 
     public function setUp(): void
     {
-        $this->dossierService = \Mockery::mock(DossierService::class);
+        $this->searchDispatcher = \Mockery::mock(SearchDispatcher::class);
 
         $this->action = new IndexDossierAdminAction(
-            $this->dossierService,
+            $this->searchDispatcher,
         );
 
         parent::setUp();
@@ -45,8 +46,9 @@ final class IndexDossierAdminActionTest extends MockeryTestCase
     public function testExecute(): void
     {
         $dossier = \Mockery::mock(WooDecision::class);
+        $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
 
-        $this->dossierService->expects('update')->with($dossier);
+        $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($dossierId);
 
         $this->action->execute($dossier);
     }

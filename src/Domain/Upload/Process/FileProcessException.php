@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Process;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 class FileProcessException extends \RuntimeException
 {
@@ -19,7 +19,7 @@ class FileProcessException extends \RuntimeException
         );
     }
 
-    public static function forFailingToExtractDocumentId(string $originalFile, Dossier $dossier): self
+    public static function forFailingToExtractDocumentId(string $originalFile, WooDecision $dossier): self
     {
         return new self(
             sprintf(

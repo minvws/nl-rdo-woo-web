@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Twig\Runtime;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use App\Repository\DocumentRepository;
 use App\Service\DocumentUploadQueue;
 use App\Service\HistoryService;
 use App\Service\Search\Query\Facet\FacetTwigService;
@@ -17,24 +17,23 @@ use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
 {
     private RequestStack|MockInterface $requestStack;
+    private DocumentUploadQueue&MockInterface $uploadQueue;
     private WooExtensionRuntime $runtime;
 
     public function setUp(): void
     {
         $this->requestStack = \Mockery::mock(RequestStack::class);
+        $this->uploadQueue = \Mockery::mock(DocumentUploadQueue::class);
 
         $this->runtime = new WooExtensionRuntime(
             $this->requestStack,
             \Mockery::mock(ThumbnailStorageService::class),
-            \Mockery::mock(DocumentRepository::class),
-            \Mockery::mock(UrlGeneratorInterface::class),
             \Mockery::mock(FacetTwigService::class),
-            \Mockery::mock(DocumentUploadQueue::class),
+            $this->uploadQueue,
             \Mockery::mock(OrganisationSwitcher::class),
             \Mockery::mock(HistoryService::class),
             \Mockery::mock(DossierPathHelper::class),
@@ -90,5 +89,22 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
                 'expectedQuery' => '?a=1&dt[to]=b',
             ],
         ];
+    }
+
+    public function testGetUploadQueue(): void
+    {
+        $wooDecision = \Mockery::mock(WooDecision::class);
+
+        $filenames = [
+            'foo.pdf',
+            'bar.pdf',
+        ];
+
+        $this->uploadQueue->expects('getFilenames')->with($wooDecision)->andReturn($filenames);
+
+        self::assertEquals(
+            $filenames,
+            $this->runtime->getUploadQueue($wooDecision),
+        );
     }
 }

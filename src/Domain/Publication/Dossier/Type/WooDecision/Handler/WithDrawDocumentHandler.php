@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
-use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentWithDrawnEvent;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
@@ -27,6 +27,7 @@ readonly class WithDrawDocumentHandler
         private ThumbnailStorageService $thumbStorage,
         private MessageBusInterface $messageBus,
         private DossierWorkflowManager $dossierWorkflowManager,
+        private IngestDispatcher $ingestDispatcher,
     ) {
     }
 
@@ -48,9 +49,7 @@ readonly class WithDrawDocumentHandler
         $this->documentRepository->save($document, true);
 
         // Re-ingest the document, this will update all file metadata and overwrite any existing page content with an empty set.
-        $this->messageBus->dispatch(
-            IngestMetadataOnlyCommand::forEntity($document, true)
-        );
+        $this->ingestDispatcher->dispatchIngestMetadataOnlyCommandForEntity($document, true);
 
         foreach ($document->getDossiers() as $dossier) {
             $this->messageBus->dispatch(

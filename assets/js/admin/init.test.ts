@@ -10,6 +10,8 @@ import {
 import { jsEnabled } from '@utils';
 import { init } from './init';
 
+let clickableRowCleanupSpy: MockInstance;
+let clickableRowInitializeSpy: MockInstance;
 let clickOnSelectorCleanupSpy: MockInstance;
 let clickOnSelectorInitializeSpy: MockInstance;
 let copyToClipboardCleanupSpy: MockInstance;
@@ -42,6 +44,13 @@ describe('the main "init" function for the admin', () => {
     detailsComponents: () => ({
       cleanup: detailsComponentsCleanupSpy,
       initialize: detailsComponentsInitializeSpy,
+    }),
+  }));
+
+  vi.mock('./clickable-row', () => ({
+    clickableRows: () => ({
+      cleanup: clickableRowCleanupSpy,
+      initialize: clickableRowInitializeSpy,
     }),
   }));
 
@@ -102,6 +111,8 @@ describe('the main "init" function for the admin', () => {
   }));
 
   beforeEach(() => {
+    clickableRowCleanupSpy = vi.fn();
+    clickableRowInitializeSpy = vi.fn();
     clickOnSelectorCleanupSpy = vi.fn();
     clickOnSelectorInitializeSpy = vi.fn();
     copyToClipboardCleanupSpy = vi.fn();
@@ -138,6 +149,7 @@ describe('the main "init" function for the admin', () => {
   });
 
   test('should initialize the functionalities used in the admin', () => {
+    expect(clickableRowInitializeSpy).not.toHaveBeenCalled();
     expect(clickOnSelectorInitializeSpy).not.toHaveBeenCalled();
     expect(copyToClipboardInitializeSpy).not.toHaveBeenCalled();
     expect(detailsComponentsInitializeSpy).not.toHaveBeenCalled();
@@ -149,6 +161,7 @@ describe('the main "init" function for the admin', () => {
     expect(visibilityTogglerInitializeSpy).not.toHaveBeenCalled();
 
     init();
+    expect(clickableRowInitializeSpy).toHaveBeenCalled();
     expect(clickOnSelectorInitializeSpy).toHaveBeenCalled();
     expect(copyToClipboardInitializeSpy).toHaveBeenCalled();
     expect(detailsComponentsInitializeSpy).toHaveBeenCalled();
@@ -162,6 +175,7 @@ describe('the main "init" function for the admin', () => {
 
   test('should clean up the functionalities when the beforeunload event is triggered', () => {
     init();
+    expect(clickableRowCleanupSpy).not.toHaveBeenCalled();
     expect(clickOnSelectorCleanupSpy).not.toHaveBeenCalled();
     expect(copyToClipboardCleanupSpy).not.toHaveBeenCalled();
     expect(detailsComponentsCleanupSpy).not.toHaveBeenCalled();
@@ -173,6 +187,7 @@ describe('the main "init" function for the admin', () => {
     expect(visibilityTogglerCleanupSpy).not.toHaveBeenCalled();
 
     triggerBeforeUnload();
+    expect(clickableRowCleanupSpy).toHaveBeenCalled();
     expect(clickOnSelectorCleanupSpy).toHaveBeenCalled();
     expect(copyToClipboardCleanupSpy).toHaveBeenCalled();
     expect(detailsComponentsCleanupSpy).toHaveBeenCalled();

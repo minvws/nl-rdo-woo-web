@@ -23,7 +23,7 @@ final readonly class CommonDossierProperties
         public Department $mainDepartment,
         public string $summary,
         public DossierTypeEnum $type,
-        public ?string $subject,
+        public ?Subject $subject,
     ) {
     }
 }

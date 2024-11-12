@@ -57,29 +57,11 @@ class InventoryReaderTest extends MockeryTestCase
         self::assertEquals('foo bar', $item->getDocumentMetaData()->getRemark());
     }
 
-    public function testAreDefaultSubjectsUsedForAllDocuments(): void
-    {
-        $dossier = new WooDecision();
-        $dossier->setDefaultSubjects(['foo', 'bar']);
-
-        $this->reader->open(__DIR__ . '/inventory-subjects-1.xlsx');
-
-        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
-        self::assertEquals(['foo', 'bar'], $result[0]->getDocumentMetadata()->getSubjects());
-        self::assertEquals(['foo', 'bar'], $result[1]->getDocumentMetadata()->getSubjects());
-    }
-
     public function testInventoryWithNewFormatDescribedInWoo1645(): void
     {
-        $dossier = new WooDecision();
-        $dossier->setDefaultSubjects(['foo', 'bar']);
-
         $this->reader->open(__DIR__ . '/inventory-1645.xlsx');
 
-        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
-
-        self::assertEquals(['foo', 'bar'], $result[0]->getDocumentMetadata()->getSubjects());
-        self::assertEquals(['foo', 'bar'], $result[1]->getDocumentMetadata()->getSubjects());
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()));
 
         self::assertEquals(new \DateTimeImmutable('2023-11-04'), $result[0]->getDocumentMetadata()->getDate());
         self::assertEquals(new \DateTimeImmutable('2023-05-06'), $result[1]->getDocumentMetadata()->getDate());
@@ -96,12 +78,9 @@ class InventoryReaderTest extends MockeryTestCase
 
     public function testInventoryReaderAddsExceptionsForEmptyMatterCells(): void
     {
-        $dossier = new WooDecision();
-        $dossier->setDefaultSubjects(['foo', 'bar']);
-
         $this->reader->open(__DIR__ . '/inventory-empty-matter.xlsx');
 
-        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()));
 
         self::assertEquals(InventoryReaderException::forMissingMatterInRow(2), $result[0]->getException());
         self::assertEquals(InventoryReaderException::forMissingMatterInRow(3), $result[1]->getException());
@@ -109,11 +88,9 @@ class InventoryReaderTest extends MockeryTestCase
 
     public function testInventoryWithEmptyDates(): void
     {
-        $dossier = new WooDecision();
-
         $this->reader->open(__DIR__ . '/inventory-empty-date.xlsx');
 
-        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()));
 
         self::assertEquals(new \DateTimeImmutable('2023-11-04'), $result[0]->getDocumentMetadata()->getDate());
         self::assertEquals(null, $result[1]->getDocumentMetadata()->getDate());
@@ -121,12 +98,9 @@ class InventoryReaderTest extends MockeryTestCase
 
     public function testInventoryReaderAddsExceptionForInvalidDocumentId(): void
     {
-        $dossier = new WooDecision();
-        $dossier->setDefaultSubjects(['foo', 'bar']);
-
         $this->reader->open(__DIR__ . '/inventory-invalid-document-id.xlsx');
 
-        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator($dossier));
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()));
 
         self::assertNull($result[0]->getException());
         self::assertEquals(InventoryReaderException::forInvalidDocumentId(3), $result[1]->getException());

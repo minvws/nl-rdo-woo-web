@@ -43,11 +43,11 @@ readonly class DossierPublisher
 
     public function canSchedulePublication(AbstractDossier $dossier): bool
     {
-        return $this->dossierWorkflowManager->isTransitionAllowed($dossier, DossierStatusTransition::SCHEDULE);
+        return $this->dossierWorkflowManager->isTransitionAllowed($dossier, DossierStatusTransition::SCHEDULE_PUBLISH);
     }
 
     public function schedulePublication(AbstractDossier $dossier): void
     {
-        $this->dossierWorkflowManager->applyTransition($dossier, DossierStatusTransition::SCHEDULE);
+        $this->dossierWorkflowManager->applyTransition($dossier, DossierStatusTransition::SCHEDULE_PUBLISH);
     }
 }

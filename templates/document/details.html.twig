@@ -30,7 +30,7 @@
         </div>
     </dl>
 
-    {% if not dossier.isVwsResponsible %}
+    {% if dossier.isExternalDepartmentResponsible %}
     <div class="pt-10">
         <twig:Public:Notification>
             <p>{{ 'public.global.contact_other' | trans({ '{source}': 'public.document.this_document' | trans | capitalize, '{ministry}': dossier.mainDepartment.name }) | raw }}</p>

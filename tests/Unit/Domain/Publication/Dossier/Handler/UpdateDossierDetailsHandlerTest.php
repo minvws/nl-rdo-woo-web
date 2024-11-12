@@ -49,7 +49,6 @@ class UpdateDossierDetailsHandlerTest extends MockeryTestCase
         $this->dossierWorkflowManager->expects('applyTransition')->with($covenant, DossierStatusTransition::UPDATE_DETAILS);
 
         $this->dossierService->expects('validateCompletion')->with($covenant);
-        $this->dossierService->expects('updateHistory')->with($covenant);
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             static function (DossierUpdatedEvent $message) use ($covenantUuid) {

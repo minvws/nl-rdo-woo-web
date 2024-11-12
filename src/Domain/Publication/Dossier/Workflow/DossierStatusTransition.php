@@ -7,11 +7,11 @@ namespace App\Domain\Publication\Dossier\Workflow;
 enum DossierStatusTransition: string
 {
     case UPDATE_DETAILS = 'update_details';
-    case UPDATE_DECISION_DOCUMENT = 'update_decision_document';
     case UPDATE_DECISION = 'update_decision';
-    case UPDATE_INVENTORY = 'update_inventory';
+    case UPDATE_PRODUCTION_REPORT = 'update_production_report';
     case UPDATE_DOCUMENTS = 'update_documents';
-    case SCHEDULE = 'schedule';
+    case SCHEDULE_PUBLISH = 'schedule_publish';
+    case SCHEDULE_PUBLISH_AS_PREVIEW = 'schedule_publish_as_preview';
     case PUBLISH_AS_PREVIEW = 'publish_as_preview';
     case PUBLISH = 'publish';
     case DELETE = 'delete';

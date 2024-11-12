@@ -8,7 +8,6 @@
 {% set dossierTypeTitle = 'global.annual_report' | trans %}
 {% set summaryLabel = 'admin.dossiers.annual-report.summary' | trans %}
 {% set documentLabel = 'admin.dossiers.annual-report.document' | trans %}
-{% set downloadDocumentPath = path('app_admin_annualreport_document_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) %}
 {% set completeFirstOpenStepTitle = ('admin.dossiers.annual-report.complete_step.' ~ workflowStatus.firstOpenStep.stepName.value | default) | trans %}
 
 {% set deleteTitle = 'admin.dossiers.annual-report.delete' | trans %}

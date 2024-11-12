@@ -53,33 +53,6 @@ class SearchController extends AbstractController
         return new JsonResponse($ret);
     }
 
-    /**
-     * Ajax endpoint for light version of search results.
-     */
-    #[Route('/_result_minimalistic', name: 'app_search_result_minimalistic_ajax', methods: ['GET'])]
-    public function ajaxResultMinimalistic(Request $request): Response
-    {
-        // Do the search
-        $searchParameters = $this->searchParametersFactory->createFromRequest(
-            $request,
-            pagination: false,
-            aggregations: false,
-        );
-        $result = $this->searchService->search($searchParameters);
-
-        // If the search failed, we show a different template
-        // @todo: this was copied from the normal search, but should not we just throw an error?
-        if ($result->hasFailed()) {
-            $template = 'search/result-failure.html.twig';
-        } else {
-            $template = 'search/entries-minimalistic.html.twig';
-        }
-
-        return $this->render($template, [
-            'result' => $result,
-        ]);
-    }
-
     #[Route('/zoeken', name: 'app_search')]
     public function search(Request $request, Breadcrumbs $breadcrumbs): Response
     {
@@ -98,11 +71,7 @@ class SearchController extends AbstractController
         $searchParameters = $this->searchParametersFactory->createFromRequest($request);
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        if ($searchParameters->searchType->isDossier()) {
-            $breadcrumbs->addItem('public.global.label.overview_publications');
-        } else {
-            $breadcrumbs->addItem('public.search.label');
-        }
+        $breadcrumbs->addItem('public.search.label');
 
         $result = $this->searchService->search($searchParameters);
         if ($result->hasFailed()) {
@@ -113,6 +82,7 @@ class SearchController extends AbstractController
 
         return $this->render('search/result.html.twig', [
             'result' => $result,
+            'ajaxResultsUrl' => $this->generateUrl('app_search_result_ajax'),
         ]);
     }
 

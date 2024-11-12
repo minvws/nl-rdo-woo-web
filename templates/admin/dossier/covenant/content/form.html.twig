@@ -28,7 +28,7 @@
         helpText="{{ 'admin.dossiers.covenant.form.content.document_help' | trans }}"
         languages="{{ attachmentLanguages }}"
         title="{{ 'admin.dossiers.covenant.form.content.document_label' | trans }}"
-        uploadGroupId="covenant-documents"
+        uploadGroupId="main-documents"
     />
 
     {{ form_row(form.previous_version_link) }}
@@ -42,7 +42,7 @@
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.covenant.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"
-        uploadGroupId="covenant-attachments"
+        uploadGroupId="attachments"
     />
 
     {% do form.parties.setRendered %}

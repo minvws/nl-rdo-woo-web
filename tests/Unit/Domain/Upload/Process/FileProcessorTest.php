@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload\Process;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\Postprocessor\FilePostprocessor;
 use App\Domain\Upload\Postprocessor\NoMatchingFilePostprocessorException;
 use App\Domain\Upload\Preprocessor\FilePreprocessor;
 use App\Domain\Upload\Process\FileProcessor;
 use App\Domain\Upload\UploadedFile;
-use App\Entity\Dossier;
 use App\Tests\Unit\Domain\Upload\IterableToGenerator;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
@@ -24,7 +24,7 @@ final class FileProcessorTest extends UnitTestCase
     private FilePreprocessor&MockInterface $filePreprocessor;
     private FilePostprocessor&MockInterface $filePostprocessor;
     private UploadedFile&MockInterface $file;
-    private Dossier&MockInterface $dossier;
+    private WooDecision&MockInterface $dossier;
 
     protected function setUp(): void
     {
@@ -34,7 +34,7 @@ final class FileProcessorTest extends UnitTestCase
         $this->filePreprocessor = \Mockery::mock(FilePreprocessor::class);
         $this->filePostprocessor = \Mockery::mock(FilePostprocessor::class);
         $this->file = \Mockery::mock(UploadedFile::class);
-        $this->dossier = \Mockery::mock(Dossier::class);
+        $this->dossier = \Mockery::mock(WooDecision::class);
     }
 
     public function testProcess(): void

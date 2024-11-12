@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Predis\ClientInterface;
 
 /**
@@ -17,7 +17,7 @@ class DocumentUploadQueue
     ) {
     }
 
-    public function add(Dossier $dossier, string $filename): void
+    public function add(WooDecision $dossier, string $filename): void
     {
         $this->redis->lpush(
             $this->getListName($dossier),
@@ -25,7 +25,7 @@ class DocumentUploadQueue
         );
     }
 
-    public function remove(Dossier $dossier, string $filename): void
+    public function remove(WooDecision $dossier, string $filename): void
     {
         $this->redis->lrem(
             $this->getListName($dossier),
@@ -34,7 +34,7 @@ class DocumentUploadQueue
         );
     }
 
-    public function clear(Dossier $dossier): void
+    public function clear(WooDecision $dossier): void
     {
         $this->redis->del(
             $this->getListName($dossier)
@@ -44,7 +44,7 @@ class DocumentUploadQueue
     /**
      * @return string[]
      */
-    public function getFilenames(Dossier $dossier): array
+    public function getFilenames(WooDecision $dossier): array
     {
         return $this->redis->lrange(
             $this->getListName($dossier),
@@ -53,7 +53,7 @@ class DocumentUploadQueue
         );
     }
 
-    private function getListName(Dossier $dossier): string
+    private function getListName(WooDecision $dossier): string
     {
         return 'uploads:dossier:' . $dossier->getId()->toRfc4122();
     }

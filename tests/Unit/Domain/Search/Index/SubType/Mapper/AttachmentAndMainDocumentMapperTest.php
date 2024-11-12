@@ -55,7 +55,7 @@ class AttachmentAndMainDocumentMapperTest extends UnitTestCase
             new ElasticDocument('foo-123', ElasticDocumentType::COVENANT, null, ['mapped-dossier-data' => 'dummy'])
         );
 
-        $doc = $this->mapper->map($attachment);
+        $doc = $this->mapper->map($attachment, ['foo'], [1 => 'bar']);
 
         $this->assertMatchesJsonSnapshot($doc->getDocumentValues());
     }

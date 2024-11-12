@@ -55,13 +55,16 @@ final class UploaderControllerTest extends ApiTestCase
                 'POST',
                 '/balie/uploader',
                 [
-                    'headers' => ['Content-Type' => 'multipart/form-data'],
+                    'headers' => [
+                        'Content-Type' => 'multipart/form-data',
+                        'Accept' => 'application/json',
+                    ],
                     'extra' => [
                         'parameters' => [
                             'chunkindex' => '0',
                             'totalchunkcount' => '1',
-                            'groupId' => UploadGroupId::WOO_DECISION_ATTACHMENTS->value,
-                            'uuid' => $this->getFaker()->uuid(),
+                            'groupId' => UploadGroupId::ATTACHMENTS->value,
+                            'uuid' => 'f031b587-1b85-3183-8c94-7d524c68c37b',
                         ],
                         'files' => [
                             'file' => $uploadFile,
@@ -71,6 +74,56 @@ final class UploaderControllerTest extends ApiTestCase
             );
 
         $this->assertResponseIsSuccessful();
-        $this->assertJson($response->getContent());
+        $this->assertMatchesJsonSnapshot($response->toArray(false));
+    }
+
+    public function testUploadWithInvalidGroupId(): void
+    {
+        $user = UserFactory::new()
+            ->asSuperAdmin()
+            ->isEnabled()
+            ->create();
+
+        vfsStream::newFile('test_file.txt')
+            ->withContent(<<<'FILE'
+                This is a test file.
+
+                With another line.
+
+                FILE
+            )
+            ->at($this->root);
+
+        $uploadFile = new UploadedFile(
+            path: $this->root->url() . '/test_file.txt',
+            originalName: 'test_file.txt',
+        );
+
+        $response = static::createClient()
+            ->loginUser($user->_real(), 'balie')
+            ->request(
+                'POST',
+                '/balie/uploader',
+                [
+                    'headers' => [
+                        'Content-Type' => 'multipart/form-data',
+                        'Accept' => 'application/json',
+                    ],
+                    'extra' => [
+                        'parameters' => [
+                            'chunkindex' => '0',
+                            'totalchunkcount' => '1',
+                            'groupId' => 'INVALID',
+                            'uuid' => 'f031b587-1b85-3183-8c94-7d524c68c37b',
+                        ],
+                        'files' => [
+                            'file' => $uploadFile,
+                        ],
+                    ],
+                ],
+            );
+
+        $this->assertResponseStatusCodeSame(400);
+        $this->assertMatchesJsonSnapshot($response->toArray(false));
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\WooDecision;
 
+use App\Domain\Publication\Dossier\DossierDispatcher;
 use App\Domain\Publication\Dossier\DossierFactory;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
@@ -11,7 +12,7 @@ use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierFormParamBuilder;
 use App\Form\Dossier\WooDecision\DetailsType;
-use App\Service\DossierWizard\DossierWizardHelper;
+use App\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -21,13 +22,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class DetailsStepController extends AbstractController
 {
     public function __construct(
-        private readonly DossierWizardHelper $wizardHelper,
+        private readonly WizardStatusFactory $wizardStatusFactory,
         private readonly DossierFactory $dossierFactory,
         private readonly StepActionHelper $stepHelper,
         private readonly DossierFormParamBuilder $formParamBuilder,
+        private readonly DossierDispatcher $dossierDispatcher,
     ) {
     }
 
@@ -46,16 +51,16 @@ class DetailsStepController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->wizardHelper->create($dossier);
+            $this->dossierDispatcher->dispatchCreateDossierCommand($dossier);
 
-            $wizardStatus = $this->wizardHelper->getStatus($dossier);
+            $wizardStatus = $this->wizardStatusFactory->getWizardStatus($dossier);
 
             return $this->stepHelper->redirectAfterFormSubmit($wizardStatus, $form);
         }
 
         return $this->render('admin/dossier/woo-decision/details/concept.html.twig', [
             'dossier' => $dossier,
-            'workflowStatus' => $this->wizardHelper->getStatus($dossier),
+            'workflowStatus' => $this->wizardStatusFactory->getWizardStatus($dossier),
             'form' => $form,
             'departments' => $this->formParamBuilder->getDepartmentsFieldParams($dossier, $form),
         ]);
@@ -82,7 +87,7 @@ class DetailsStepController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->wizardHelper->updateDetails($dossier);
+            $this->dossierDispatcher->dispatchUpdateDossierDetailsCommand($dossier);
 
             return $this->stepHelper->redirectAfterFormSubmit($wizardStatus, $form);
         }
@@ -123,7 +128,7 @@ class DetailsStepController extends AbstractController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->wizardHelper->updateDetails($dossier);
+            $this->dossierDispatcher->dispatchUpdateDossierDetailsCommand($dossier);
 
             return $this->stepHelper->redirectToDossier($dossier);
         }

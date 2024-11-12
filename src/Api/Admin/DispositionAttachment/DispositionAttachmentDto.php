@@ -12,7 +12,9 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Model\Operation;
-use App\Api\Admin\Attachment\AttachmentDto;
+use App\Api\Admin\Attachment\AbstractAttachmentDto;
+use App\Api\Admin\Attachment\AttachmentCreateDto;
+use App\Api\Admin\Attachment\AttachmentUpdateDto;
 use App\Api\Admin\Dossier\DossierReferenceDto;
 use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
 
@@ -36,11 +38,11 @@ use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
                 'dossierId' => new Link(toProperty: 'dossier', fromClass: DossierReferenceDto::class),
             ],
             security: "is_granted('AuthMatrix.dossier.update')",
-            input: DispositionAttachmentCreateDto::class,
+            input: AttachmentCreateDto::class,
         ),
         new Put(
             security: "is_granted('AuthMatrix.dossier.update')",
-            input: DispositionAttachmentUpdateDto::class,
+            input: AttachmentUpdateDto::class,
         ),
         new Delete(
             security: "is_granted('AuthMatrix.dossier.update')",
@@ -62,6 +64,6 @@ use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
     provider: DispositionAttachmentProvider::class,
     processor: DispositionAttachmentProcessor::class,
 )]
-final readonly class DispositionAttachmentDto extends AttachmentDto
+final readonly class DispositionAttachmentDto extends AbstractAttachmentDto
 {
 }

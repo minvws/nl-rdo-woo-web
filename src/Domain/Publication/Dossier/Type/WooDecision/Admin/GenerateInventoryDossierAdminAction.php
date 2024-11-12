@@ -7,14 +7,14 @@ namespace App\Domain\Publication\Dossier\Type\WooDecision\Admin;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
 use App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionInterface;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\DossierService;
 use Webmozart\Assert\Assert;
 
 readonly class GenerateInventoryDossierAdminAction implements DossierAdminActionInterface
 {
     public function __construct(
-        private DossierService $dossierService,
+        private ProductionReportDispatcher $dispatcher,
     ) {
     }
 
@@ -32,6 +32,6 @@ readonly class GenerateInventoryDossierAdminAction implements DossierAdminAction
     {
         Assert::isInstanceOf($dossier, WooDecision::class);
 
-        $this->dossierService->generateSanitizedInventory($dossier);
+        $this->dispatcher->dispatchGenerateInventoryCommand($dossier->getId());
     }
 }

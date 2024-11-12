@@ -19,7 +19,7 @@ readonly class DocumentSearchResultMapper implements SearchResultMapperInterface
 
     public function __construct(
         private DocumentRepository $documentRepository,
-        private WooDecisionRepository $dossierRepository,
+        private WooDecisionRepository $wooDecisionRepository,
     ) {
     }
 
@@ -40,7 +40,7 @@ readonly class DocumentSearchResultMapper implements SearchResultMapperInterface
             return null;
         }
 
-        $dossiers = $this->dossierRepository->getDossierReferencesForDocument($documentNr);
+        $dossiers = $this->wooDecisionRepository->getDossierReferencesForDocument($documentNr);
 
         $highlightPaths = [
             '[highlight][pages.content]',

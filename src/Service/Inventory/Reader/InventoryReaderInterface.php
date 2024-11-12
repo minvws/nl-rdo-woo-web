@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory\Reader;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 interface InventoryReaderInterface
 {
@@ -16,7 +16,7 @@ interface InventoryReaderInterface
     /**
      * @return \Generator<InventoryReadItem>
      */
-    public function getDocumentMetadataGenerator(Dossier $dossier): \Generator;
+    public function getDocumentMetadataGenerator(WooDecision $dossier): \Generator;
 
     public function getCount(): int;
 }

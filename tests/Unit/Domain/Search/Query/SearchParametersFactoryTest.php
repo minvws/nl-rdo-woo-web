@@ -40,21 +40,46 @@ class SearchParametersFactoryTest extends MockeryTestCase
         self::assertSame($parameters->facetInputs, $facetInputCollection);
     }
 
-    public function testCreateFromRequest(): void
+    public function testCreateFromRequestWithInquiriesMissingInSession(): void
     {
         $request = new Request([
             'page' => 9,
             'q' => 'foo',
+            'dci' => ['inq-1', 'inq-2'],
         ]);
 
         $facetInputCollection = \Mockery::mock(FacetInputCollection::class);
         $this->facetInputFactory->expects('fromParameterBag')->with($request->query)->andReturn($facetInputCollection);
+
+        $this->inquirySessionService->expects('getInquiries')->andReturn([]);
 
         $parameters = $this->factory->createFromRequest($request);
 
         self::assertSame($parameters->facetInputs, $facetInputCollection);
         self::assertEquals(80, $parameters->offset);
         self::assertEquals('foo', $parameters->query);
+        self::assertEquals([], $parameters->documentInquiries);
+    }
+
+    public function testCreateFromRequestWithOneInquiryInSession(): void
+    {
+        $request = new Request([
+            'page' => 9,
+            'q' => 'foo',
+            'dci' => ['inq-1', 'inq-2'],
+        ]);
+
+        $facetInputCollection = \Mockery::mock(FacetInputCollection::class);
+        $this->facetInputFactory->expects('fromParameterBag')->with($request->query)->andReturn($facetInputCollection);
+
+        $this->inquirySessionService->expects('getInquiries')->andReturn(['inq-2']);
+
+        $parameters = $this->factory->createFromRequest($request);
+
+        self::assertSame($parameters->facetInputs, $facetInputCollection);
+        self::assertEquals(80, $parameters->offset);
+        self::assertEquals('foo', $parameters->query);
+        self::assertEquals(['inq-2'], $parameters->documentInquiries);
     }
 
     public function testCreateForDepartment(): void

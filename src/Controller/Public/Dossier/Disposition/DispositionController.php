@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Controller\Public\Dossier\Disposition;
 
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
+use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionDocument;
+use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use App\Domain\Publication\Dossier\Type\Disposition\ViewModel\DispositionViewFactory;
+use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Service\DownloadResponseHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +26,7 @@ class DispositionController extends AbstractController
         private readonly DispositionViewFactory $viewFactory,
         private readonly AttachmentViewFactory $attachmentViewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
-        private readonly DownloadResponseHelper $downloadHelper,
+        private readonly DossierFileViewFactory $dossierFileViewFactory,
     ) {
     }
 
@@ -34,7 +35,7 @@ class DispositionController extends AbstractController
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] Disposition $dossier,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        DispositionDocument $document,
+        DispositionMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('Home', 'app_home');
@@ -56,7 +57,7 @@ class DispositionController extends AbstractController
     public function documentDetail(
         #[ValueResolver('dossierWithAccessCheck')] Disposition $dossier,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        DispositionDocument $document,
+        DispositionMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $mainDocumentViewModel = $this->mainDocumentViewFactory->make($dossier, $document);
@@ -72,23 +73,12 @@ class DispositionController extends AbstractController
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'document' => $mainDocumentViewModel,
+            'file' => $this->dossierFileViewFactory->make(
+                $dossier,
+                $document,
+                DossierFileType::MAIN_DOCUMENT,
+            ),
         ]);
-    }
-
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
-    #[Route(
-        '/beschikking/{prefix}/{dossierId}/document/download',
-        name: 'app_disposition_document_download',
-        methods: ['GET'],
-    )]
-    public function documentDownload(
-        #[ValueResolver('dossierWithAccessCheck')] Disposition $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        DispositionDocument $document,
-    ): Response {
-        unset($dossier);
-
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($document);
     }
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
@@ -101,8 +91,6 @@ class DispositionController extends AbstractController
         #[ValueResolver('dossierWithAccessCheck')] Disposition $dossier,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
         DispositionAttachment $attachment,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        DispositionDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $attachmentViewModel = $this->attachmentViewFactory->make($dossier, $attachment);
@@ -118,23 +106,11 @@ class DispositionController extends AbstractController
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'attachment' => $attachmentViewModel,
-            'document' => $this->mainDocumentViewFactory->make($dossier, $document),
+            'file' => $this->dossierFileViewFactory->make(
+                $dossier,
+                $attachment,
+                DossierFileType::ATTACHMENT,
+            ),
         ]);
-    }
-
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
-    #[Route(
-        '/beschikking/{prefix}/{dossierId}/bijlage/{attachmentId}/download',
-        name: 'app_disposition_attachment_download',
-        methods: ['GET'],
-    )]
-    public function attachmentDownload(
-        #[ValueResolver('dossierWithAccessCheck')] Disposition $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
-        DispositionAttachment $attachment,
-    ): Response {
-        unset($dossier);
-
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($attachment);
     }
 }

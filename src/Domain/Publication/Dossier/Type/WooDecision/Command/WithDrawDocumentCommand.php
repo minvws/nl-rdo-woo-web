@@ -7,7 +7,6 @@ namespace App\Domain\Publication\Dossier\Type\WooDecision\Command;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
 use App\Entity\WithdrawReason;
-use Symfony\Component\Form\FormInterface;
 
 readonly class WithDrawDocumentCommand
 {
@@ -17,21 +16,5 @@ readonly class WithDrawDocumentCommand
         public WithdrawReason $reason,
         public string $explanation,
     ) {
-    }
-
-    public static function fromForm(WooDecision $dossier, Document $document, FormInterface $form): self
-    {
-        /** @var WithdrawReason $reason */
-        $reason = $form->get('reason')->getData();
-
-        /** @var string $explanation */
-        $explanation = $form->get('explanation')->getData();
-
-        return new self(
-            $dossier,
-            $document,
-            $reason,
-            $explanation,
-        );
     }
 }

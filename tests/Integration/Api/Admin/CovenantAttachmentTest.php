@@ -163,7 +163,7 @@ final class CovenantAttachmentTest extends ApiTestCase
                     'parameters' => [
                         'chunkindex' => '0',
                         'totalchunkcount' => '1',
-                        'groupId' => UploadGroupId::COVENANT_ATTACHMENTS->value,
+                        'groupId' => UploadGroupId::ATTACHMENTS->value,
                         'uuid' => $uploadUuid,
                         'grounds' => ['ground one', 'ground two'],
                     ],
@@ -248,7 +248,7 @@ final class CovenantAttachmentTest extends ApiTestCase
                     'parameters' => [
                         'chunkindex' => '0',
                         'totalchunkcount' => '1',
-                        'groupId' => UploadGroupId::COVENANT_ATTACHMENTS->value,
+                        'groupId' => UploadGroupId::ATTACHMENTS->value,
                         'uuid' => $uploadUuid,
                     ],
                     'files' => [

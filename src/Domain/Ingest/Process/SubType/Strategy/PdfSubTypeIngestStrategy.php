@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domain\Ingest\Process\SubType\Strategy;
 
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Ingest\Process\Pdf\IngestPdfCommand;
 use App\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface;
 use App\Entity\EntityWithFileInfo;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class PdfSubTypeIngestStrategy implements SubTypeIngestStrategyInterface
 {
     public function __construct(
-        private MessageBusInterface $bus,
+        private IngestDispatcher $ingestDispatcher,
         private LoggerInterface $logger,
     ) {
     }
@@ -26,9 +25,7 @@ readonly class PdfSubTypeIngestStrategy implements SubTypeIngestStrategyInterfac
             'class' => $entity::class,
         ]);
 
-        $this->bus->dispatch(
-            IngestPdfCommand::forEntity($entity, $options->forceRefresh())
-        );
+        $this->ingestDispatcher->dispatchIngestPdfCommand($entity, $options->forceRefresh());
     }
 
     public function canHandle(EntityWithFileInfo $entity): bool

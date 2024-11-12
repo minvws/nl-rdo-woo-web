@@ -11,6 +11,13 @@
         </a>
     </p>
 
+    {% if file.hasPages %}
+        <twig:Public:PdfViewer
+            file="{{ file }}"
+            title="{{ "public.documents.viewer.click_on_page" | trans({ fileInfo: document.sourceType.value|upper, fileSize: document.size != "0" ? document.size | size : ""  }) }}"
+        />
+    {% endif %}
+
     <div class="mt-8">
         <twig:Public:DownloadFileButton href="{{ document.downloadUrl }}">{{ 'global.download_document' | trans }} ({{ document.sourceType | trans }}, {{ document.size | size }})</twig:Public:DownloadFileButton>
     </div>
@@ -54,22 +61,30 @@
                     <tr>
                         <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.subject' | trans }}</th>
                         <td>
-                            {{ dossier.subject }}
+                            <p><a class="woo-a" href="{{ dossier.subject.searchUrl }}">{{ dossier.subject.name }}</a></p>
                         </td>
                     </tr>
                     {% endif %}
-                    {% if document.grounds is defined and document.grounds|length > 0 %}
+
                     <tr>
                         <th class="woo-table-cell-light" scope="row">
-                            {{ 'global.grounds' | trans }}
+                            {{ 'public.documents.redacted_data' | trans }}
                         </th>
                         <td class="woo-table-cell--wrap">
-                            {% for ground in document.grounds %}
+                            {% set grounds = document.grounds | default([]) %}
+                            {% for ground in grounds %}
                                 {{ macro.document_ground(ground) }}
                             {% endfor %}
+
+                            {% include 'snippets/document/redacted-message.html.twig' with {
+                                'departmentName': dossier.mainDepartment.name,
+                                'documentId': document.id,
+                                'documentName': document.name,
+                                'isExternalDepartmentResponsible': dossier.isExternalDepartmentResponsible,
+                                'hasGrounds': grounds | length > 0,
+                            } %}
                         </td>
                     </tr>
-                    {% endif %}
                 </tbody>
             </table>
         </div>

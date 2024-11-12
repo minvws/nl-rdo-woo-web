@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\ViewModel;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Entity\Department;
 
 readonly class DossierViewFactory
 {
     public function __construct(
-        private AbstractDossierRepository $dossierRepository,
+        private DossierRepository $dossierRepository,
     ) {
     }
 

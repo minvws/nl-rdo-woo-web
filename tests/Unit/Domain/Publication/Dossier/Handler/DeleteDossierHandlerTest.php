@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Handler;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
 use App\Domain\Publication\Dossier\Command\DeleteDossierCommand;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Handler\DeleteDossierHandler;
 use App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
 use App\Domain\Publication\Dossier\Type\DossierType;
@@ -21,7 +21,7 @@ use Symfony\Component\Uid\UuidV6;
 
 class DeleteDossierHandlerTest extends MockeryTestCase
 {
-    private AbstractDossierRepository&MockInterface $dossierRepository;
+    private DossierRepository&MockInterface $dossierRepository;
     private LoggerInterface&MockInterface $logger;
     private DossierWorkflowManager&MockInterface $dossierWorkflowManager;
     private EntityManagerInterface&MockInterface $entityManager;
@@ -33,7 +33,7 @@ class DeleteDossierHandlerTest extends MockeryTestCase
 
     public function setUp(): void
     {
-        $this->dossierRepository = \Mockery::mock(AbstractDossierRepository::class);
+        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
@@ -44,7 +44,6 @@ class DeleteDossierHandlerTest extends MockeryTestCase
         $this->dossierUuid = Uuid::v6();
 
         $this->dossier = \Mockery::mock(AbstractDossier::class);
-        $this->dossier->shouldReceive('getId')->andReturn($this->dossierUuid);
         $this->dossier->shouldReceive('getType')->andReturn(DossierType::WOO_DECISION);
 
         $this->handler = new DeleteDossierHandler(
@@ -58,7 +57,7 @@ class DeleteDossierHandlerTest extends MockeryTestCase
 
     public function testLogsWarningWhenDossierIsNotFound(): void
     {
-        $command = DeleteDossierCommand::forDossier($this->dossier);
+        $command = new DeleteDossierCommand($this->dossierUuid);
 
         $this->dossierRepository->expects('find')->with($this->dossierUuid)->andReturnNull();
         $this->logger->expects('warning');
@@ -68,7 +67,7 @@ class DeleteDossierHandlerTest extends MockeryTestCase
 
     public function testDeleteSuccessful(): void
     {
-        $command = DeleteDossierCommand::forDossier($this->dossier);
+        $command = new DeleteDossierCommand($this->dossierUuid);
 
         $this->dossierRepository->expects('find')->with($this->dossierUuid)->andReturn($this->dossier);
 
@@ -87,7 +86,7 @@ class DeleteDossierHandlerTest extends MockeryTestCase
 
     public function testDeleteRollsBackChangesOnException(): void
     {
-        $command = DeleteDossierCommand::forDossier($this->dossier);
+        $command = new DeleteDossierCommand($this->dossierUuid);
 
         $this->dossierRepository->expects('find')->with($this->dossierUuid)->andReturn($this->dossier);
 

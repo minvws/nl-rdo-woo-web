@@ -111,8 +111,7 @@ In a public dossier with N public and M non-public documents, replace the produc
   ...  download_type=niet van toepassing
   ...  publication_status=Gepubliceerd
   Click Public URL
-  Verify Notification
-  ...  Tijdens de beoordeling van het Woo-verzoek heeft Ministerie van Volksgezondheid, Welzijn en Sport besloten dit document niet openbaar te maken.
+  Verify Notification  besloten dit document niet openbaar te maken.
 
 In a public dossier with N public files, retract one of the documents
   Publish Test Dossier
@@ -241,7 +240,8 @@ Create Additional Prefixes
   [Documentation]  Creates new prefixes for testing purposes, including the default one because we assume a cleansheet -p was ran before.
   Click Organisation Selector
   Click Manage Organisations
-  Click  "VWS"
+  Open Organisation Details  Programmadirectie Openbaarheid
+  Select Responsible Department  ministerie van Volksgezondheid, Welzijn en Sport
   Add A New Organisation Prefix  MINVWS
   Add A New Organisation Prefix  MINVWS1
   Add A New Organisation Prefix  MINVWS2

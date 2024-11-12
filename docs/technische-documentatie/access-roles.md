@@ -12,7 +12,7 @@
   - [Misc](#misc)
 <!-- TOC -->
 
-Source of this information: [auth_matrix.yaml](../config/packages/auth_matrix.yaml)
+Source of this information: [auth_matrix.yaml](../../config/packages/auth_matrix.yaml)
 
 ## User
 

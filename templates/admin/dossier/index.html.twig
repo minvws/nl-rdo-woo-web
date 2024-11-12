@@ -36,10 +36,10 @@
                 {% include 'admin/dossier/snippets/filter.html.twig' with { 'form': form } %}
 
                 <twig:block name="right">
-                    <div {{ vue_component('SearchPreviewsFormController', {
+                    <div {{ vue_component('PublicationSearchController', {
                         endpoint: '/balie/api/publication/search',
                         label: 'admin.publications.search_within' | trans,
-                    }) }}>
+                    }) }} data-e2e-name="dossier-search">
                         <div class="h-[50px]"></div>
                     </div>
                 </twig:block>
@@ -61,7 +61,7 @@
         {% endif %}
 
         {% if pagination | length > 0 %}
-            <table class="bhr-table" id="resultaten">
+            <table class="bhr-table" id="resultaten" data-e2e-name="dossiers-table">
                 <caption class="sr-only">Alle dossiers. Kolomkoppen met links zijn sorteerbaar.</caption>
                 <thead>
                     <tr>
@@ -70,51 +70,31 @@
                         <th class="bhr-column-head bhr-column-head--gray border-r-1 font-bold" scope="col">{{ "admin.dossiers.category" | trans() }}</th>
                         {{ knp_pagination_sortable(pagination, 'global.created_at' | trans, 'dos.createdAt', {}, {}, 'pagination/sort.admin.html.twig') }}
                         {{ knp_pagination_sortable(pagination, 'global.publication_date' | trans, 'dos.publicationDate', {}, {}, 'pagination/sort.admin.html.twig') }}
-                        {{ knp_pagination_sortable(pagination, 'global.description' | trans, 'dos.summary', { thClassName: 'border-r-0' }, {}, 'pagination/sort.admin.html.twig') }}
-                        <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                            <span class="sr-only">{{ 'global.details'| trans }}</span>
-                        </th>
+                        {{ knp_pagination_sortable(pagination, 'global.description' | trans, 'dos.summary', {}, {}, 'pagination/sort.admin.html.twig') }}
                     </tr>
                 </thead>
                 <tbody>
                     {% for dossier in pagination %}
-                        {% set url = path('app_admin_dossier', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) %}
-                        <tr class="bhr-clickable-row">
+                        <tr>
                             <td>
-                                <a class="bhr-fill-cell" href="{{ url }}">
+                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">
                                     {{ dossier.documentPrefix }} / {{ dossier.dossierNr }}
                                 </a>
                             </td>
                             <td>
-                                <a class="bhr-fill-cell" href="{{ url }}">
-                                    <twig:Admin:DossierStatusBadge status="{{ dossier.status }}" />
-                                </a>
+                                <twig:Admin:DossierStatusBadge status="{{ dossier.status }}" />
                             </td>
                             <td>
-                                <a class="bhr-fill-cell" href="{{ url }}">
-                                    {{ dossier.type | trans }}
-                                </a>
+                                {{ dossier.type | trans }}
                             </td>
                             <td>
-                                <a class="bhr-fill-cell" href="{{ url }}">
-                                    {{ dossier.createdAt|format_date('medium') }}
-                                </a>
+                                {{ dossier.createdAt|format_date('medium') }}
                             </td>
                             <td>
-                                <a class="bhr-fill-cell" href="{{ url }}">
-                                    {{ dossier.publicationDate  is empty ? "-" : dossier.publicationDate|format_date('medium') }}
-                                </a>
+                                {{ dossier.publicationDate  is empty ? "-" : dossier.publicationDate|format_date('medium') }}
                             </td>
                             <td>
-                                <a class="bhr-fill-cell" href="{{ url }}">
-                                    <span class="bhr-clamp">{{ dossier.title }}</span>
-                                </a>
-                            </td>
-                            <td class="text-right">
-                                <a class="bhr-fill-cell" href="{{ url }}">
-                                    <span class="sr-only">{{ 'global.details' | trans }} {{ dossier.title }}</span>
-                                    <twig:Admin:Icon name="chevron-right" />
-                                </a>
+                                <span class="bhr-clamp">{{ dossier.title }}</span>
                             </td>
                         </tr>
                     {% endfor %}

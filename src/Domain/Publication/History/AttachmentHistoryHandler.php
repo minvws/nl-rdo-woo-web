@@ -9,7 +9,7 @@ use App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
 use App\Domain\Publication\Attachment\Event\AttachmentDeletedEvent;
 use App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Service\HistoryService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -17,7 +17,7 @@ final readonly class AttachmentHistoryHandler
 {
     public function __construct(
         private HistoryService $historyService,
-        private AbstractDossierRepository $dossierRepository,
+        private DossierRepository $dossierRepository,
     ) {
     }
 

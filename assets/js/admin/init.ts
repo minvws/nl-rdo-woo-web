@@ -1,5 +1,6 @@
 import { detailsComponents } from '@js/shared';
 import { jsEnabled, onBeforeUnload, onDomReady } from '@utils';
+import { clickableRows } from './clickable-row';
 import { clickOnSelector } from './click-on-selector';
 import { copyToClipboard } from './copy-to-clipboard';
 import { toggleDialog } from './dialog';
@@ -20,6 +21,7 @@ export const init = () => {
     jsEnabled();
 
     const functionalities = [
+      clickableRows(),
       clickOnSelector(),
       copyToClipboard(),
       detailsComponents(),

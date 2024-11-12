@@ -40,6 +40,8 @@ enum DossierStatus: string implements TranslatableInterface
     case DELETED = 'deleted';
 
     /**
+     * @codeCoverageIgnore
+     *
      * @return self[]
      */
     public static function filterCases(): array

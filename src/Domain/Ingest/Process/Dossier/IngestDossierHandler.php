@@ -20,12 +20,12 @@ final readonly class IngestDossierHandler
 
     public function __invoke(IngestDossierCommand $message): void
     {
-        $dossier = $this->doctrine->getRepository(AbstractDossier::class)->find($message->getUuid());
+        $dossier = $this->doctrine->getRepository(AbstractDossier::class)->find($message->uuid);
         if ($dossier === null) {
-            throw IngestProcessException::forCannotFindDossier($message->getUuid());
+            throw IngestProcessException::forCannotFindDossier($message->uuid);
         }
 
-        $this->ingester->ingest($dossier, $message->getRefresh());
+        $this->ingester->ingest($dossier, $message->refresh);
 
         $this->doctrine->flush();
     }

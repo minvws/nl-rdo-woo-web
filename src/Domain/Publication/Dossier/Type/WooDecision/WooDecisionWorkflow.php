@@ -62,14 +62,18 @@ class WooDecisionWorkflow
 
         WorkflowConfigHelper::defineNonMovingTransitions(
             $workflow,
-            DossierStatusTransition::UPDATE_DECISION_DOCUMENT,
+            DossierStatusTransition::UPDATE_MAIN_DOCUMENT,
             [
                 DossierStatus::CONCEPT,
                 DossierStatus::SCHEDULED,
-                DossierStatus::PREVIEW,
                 DossierStatus::PUBLISHED,
             ],
         );
+
+        $workflow->transition()
+            ->name(DossierStatusTransition::DELETE_MAIN_DOCUMENT->value)
+            ->from(DossierStatus::CONCEPT->value)
+            ->to(DossierStatus::CONCEPT->value);
 
         WorkflowConfigHelper::defineNonMovingTransitions(
             $workflow,
@@ -84,7 +88,7 @@ class WooDecisionWorkflow
 
         WorkflowConfigHelper::defineNonMovingTransitions(
             $workflow,
-            DossierStatusTransition::UPDATE_INVENTORY,
+            DossierStatusTransition::UPDATE_PRODUCTION_REPORT,
             [
                 DossierStatus::CONCEPT,
                 DossierStatus::SCHEDULED,
@@ -110,9 +114,19 @@ class WooDecisionWorkflow
             ->to(DossierStatus::DELETED->value);
 
         $workflow->transition()
-            ->name(DossierStatusTransition::SCHEDULE->value)
+            ->name(DossierStatusTransition::SCHEDULE_PUBLISH_AS_PREVIEW->value)
             ->from([DossierStatus::CONCEPT->value, DossierStatus::SCHEDULED->value])
             ->to(DossierStatus::SCHEDULED->value);
+
+        $workflow->transition()
+            ->name(DossierStatusTransition::SCHEDULE_PUBLISH->value)
+            ->from([DossierStatus::CONCEPT->value, DossierStatus::SCHEDULED->value])
+            ->to(DossierStatus::SCHEDULED->value);
+
+        $workflow->transition()
+            ->name(DossierStatusTransition::SCHEDULE_PUBLISH->value)
+            ->from(DossierStatus::PREVIEW->value)
+            ->to(DossierStatus::PREVIEW->value);
 
         $workflow->transition()
             ->name(DossierStatusTransition::PUBLISH_AS_PREVIEW->value)

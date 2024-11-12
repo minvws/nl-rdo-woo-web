@@ -26,7 +26,6 @@ readonly class UpdateDossierDetailsHandler
     {
         $this->dossierWorkflowManager->applyTransition($command->dossier, DossierStatusTransition::UPDATE_DETAILS);
 
-        $this->dossierService->updateHistory($command->dossier);
         $this->dossierService->validateCompletion($command->dossier);
 
         $this->messageBus->dispatch(

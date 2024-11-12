@@ -13,18 +13,20 @@
 
 {{ form_row(form.summary) }}
 
-{{ form_row(form.decision_document) }}
-
-{% if dossier.decisionDocument.fileInfo.isUploaded|default(false) %}
-    <div class="bhr-form-row -mt-6">
-        <twig:Admin:UploadedFile
-            downloadUrl="{{ path('app_admin_dossier_decision_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
-            fileName="{{ dossier.decisionDocument.fileInfo.name }}"
-            fileSize="{{ dossier.decisionDocument.fileInfo.size }}"
-            mimeType="{{ dossier.decisionDocument.fileInfo.mimetype }}"
-        />
-    </div>
-{% endif %}
+<twig:Admin:Publication:ManageDocument
+    allowedFileTypes="{{ documentTypeNames }}"
+    allowedMimeTypes="{{ documentMimeTypes }}"
+    canDelete="{{ canDeleteDocument }}"
+    documentType="{{ 'admin.dossiers.woo-decision.document' | trans }}"
+    documentTypes="{{ documentTypes }}"
+    endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/woo-decision-main-document' }}"
+    formField="{{ form.document }}"
+    grounds="{{ grounds }}"
+    helpText="{{ 'admin.dossiers.woo-decision.form.content.document_help' | trans }}"
+    languages="{{ attachmentLanguages }}"
+    title="{{ 'admin.dossiers.woo-decision.form.content.document_label' | trans }}"
+    uploadGroupId="main-documents"
+/>
 
 {{ form_row(form.decision_date) }}
 
@@ -38,7 +40,7 @@
     helpText="{{ 'admin.dossiers.woo-decision.form.content.attachments_help' | trans }}"
     languages="{{ attachmentLanguages }}"
     title="Andere officiële bijlagen"
-    uploadGroupId="woo-decision-attachments"
+    uploadGroupId="attachments"
 />
 
 {{ form_end(form) }}

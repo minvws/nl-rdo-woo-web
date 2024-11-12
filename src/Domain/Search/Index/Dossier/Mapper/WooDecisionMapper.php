@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Search\Index\Dossier\Mapper;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\ElasticDocumentType;
-use App\Entity\Dossier;
 use App\Entity\Inquiry;
 
 readonly class WooDecisionMapper implements ElasticDossierMapperInterface
@@ -19,11 +19,11 @@ readonly class WooDecisionMapper implements ElasticDossierMapperInterface
 
     public function supports(AbstractDossier $dossier): bool
     {
-        return $dossier instanceof Dossier;
+        return $dossier instanceof WooDecision;
     }
 
     /**
-     * @param Dossier $dossier
+     * @param WooDecision $dossier
      */
     public function map(AbstractDossier $dossier): ElasticDocument
     {

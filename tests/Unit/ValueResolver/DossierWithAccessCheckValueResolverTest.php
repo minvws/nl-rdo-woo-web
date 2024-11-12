@@ -6,7 +6,7 @@ namespace App\Tests\Unit\ValueResolver;
 
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Exception\ViewingNotAllowedException;
-use App\Service\DossierService;
+use App\Service\Security\DossierVoter;
 use App\ValueResolver\DossierWithAccessCheckValueResolver;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,21 +14,22 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class DossierWithAccessCheckValueResolverTest extends MockeryTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
-    private DossierService&MockInterface $dossierService;
+    private AuthorizationCheckerInterface&MockInterface $authorizationChecker;
     private DossierWithAccessCheckValueResolver $resolver;
 
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->dossierService = \Mockery::mock(DossierService::class);
+        $this->authorizationChecker = \Mockery::mock(AuthorizationCheckerInterface::class);
 
         $this->resolver = new DossierWithAccessCheckValueResolver(
             $this->entityManager,
-            $this->dossierService,
+            $this->authorizationChecker,
         );
 
         parent::setUp();
@@ -110,7 +111,7 @@ class DossierWithAccessCheckValueResolverTest extends MockeryTestCase
 
         $this->entityManager->shouldReceive('getRepository')->with(Covenant::class)->andReturn($repository);
 
-        $this->dossierService->expects('isViewingAllowed')->with($dossier)->andReturnFalse();
+        $this->authorizationChecker->expects('isGranted')->with(DossierVoter::VIEW, $dossier)->andReturnFalse();
 
         $this->expectException(ViewingNotAllowedException::class);
         $this->resolver->resolve($request, $argument);
@@ -134,7 +135,7 @@ class DossierWithAccessCheckValueResolverTest extends MockeryTestCase
 
         $this->entityManager->shouldReceive('getRepository')->with(Covenant::class)->andReturn($repository);
 
-        $this->dossierService->expects('isViewingAllowed')->with($dossier)->andReturnTrue();
+        $this->authorizationChecker->expects('isGranted')->with(DossierVoter::VIEW, $dossier)->andReturnTrue();
 
         self::assertEquals(
             [$dossier],

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Doctrine\TimestampableTrait;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Repository\InquiryRepository;
 use App\ValueObject\TranslatableMessage;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -32,8 +33,11 @@ class Inquiry implements EntityWithBatchDownload
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'inquiries', cascade: ['persist'])]
     private Collection $documents;
 
-    /** @var Collection<array-key,Dossier> */
-    #[ORM\ManyToMany(targetEntity: Dossier::class, inversedBy: 'inquiries', cascade: ['persist'])]
+    /** @var Collection<array-key,WooDecision> */
+    #[ORM\ManyToMany(targetEntity: WooDecision::class, inversedBy: 'inquiries', cascade: ['persist'])]
+    #[ORM\JoinTable(name: 'inquiry_dossier')]
+    #[ORM\JoinColumn(name: 'inquiry_id', referencedColumnName: 'id')]
+    #[ORM\OrderBy(['decisionDate' => 'DESC'])]
     private Collection $dossiers;
 
     #[ORM\Column(length: 255)]
@@ -102,14 +106,14 @@ class Inquiry implements EntityWithBatchDownload
     }
 
     /**
-     * @return Collection<array-key,Dossier>
+     * @return Collection<array-key,WooDecision>
      */
     public function getDossiers(): Collection
     {
         return $this->dossiers;
     }
 
-    public function addDossier(Dossier $dossier): self
+    public function addDossier(WooDecision $dossier): self
     {
         if (! $this->dossiers->contains($dossier)) {
             $this->dossiers->add($dossier);
@@ -118,7 +122,7 @@ class Inquiry implements EntityWithBatchDownload
         return $this;
     }
 
-    public function removeDossier(Dossier $dossier): self
+    public function removeDossier(WooDecision $dossier): self
     {
         $this->dossiers->removeElement($dossier);
 
@@ -131,22 +135,21 @@ class Inquiry implements EntityWithBatchDownload
     }
 
     /**
-     * @return Collection<array-key,Dossier>
+     * @return Collection<array-key,WooDecision>
      */
     public function getPubliclyAvailableDossiers(): Collection
     {
-        return $this->dossiers->filter(
-            static fn (Dossier $dossier) => $dossier->getStatus()->isPubliclyAvailable()
-        );
+        return $this->dossiers
+            ->filter(static fn (WooDecision $dossier) => $dossier->getStatus()->isPubliclyAvailable());
     }
 
     /**
-     * @return Collection<array-key,Dossier>
+     * @return Collection<array-key,WooDecision>
      */
     public function getScheduledDossiers(): Collection
     {
         return $this->dossiers->filter(
-            static fn (Dossier $dossier) => $dossier->getStatus()->isScheduled()
+            static fn (WooDecision $dossier) => $dossier->getStatus()->isScheduled()
         );
     }
 

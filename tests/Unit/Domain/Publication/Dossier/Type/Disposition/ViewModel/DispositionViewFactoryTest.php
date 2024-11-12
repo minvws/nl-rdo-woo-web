@@ -9,6 +9,7 @@ use App\Domain\Publication\Dossier\Type\Disposition\ViewModel\DispositionViewFac
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierProperties;
 use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierPropertiesViewFactory;
+use App\Domain\Publication\Dossier\Type\ViewModel\Subject;
 use App\Domain\Publication\Dossier\ViewModel\Department;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
@@ -42,7 +43,7 @@ final class DispositionViewFactoryTest extends UnitTestCase
                 mainDepartment: $expectedMainDepartment = $expectedMainDepartment,
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::DISPOSITION,
-                subject: $expectedSubject = 'my subject',
+                subject: $expectedSubject = \Mockery::mock(Subject::class),
             ));
 
         /** @var Disposition&MockInterface $dossier */

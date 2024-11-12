@@ -7,11 +7,10 @@ namespace App\Twig\Runtime;
 use App\Citation;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\DossierReference;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\History;
-use App\Repository\DocumentRepository;
 use App\Service\DateRangeConverter;
 use App\Service\DocumentUploadQueue;
 use App\Service\HistoryService;
@@ -21,7 +20,6 @@ use App\Service\Security\OrganisationSwitcher;
 use App\Service\Storage\ThumbnailStorageService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Extension\RuntimeExtensionInterface;
 
 /**
@@ -33,8 +31,6 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     public function __construct(
         private RequestStack $requestStack,
         private ThumbnailStorageService $storageService,
-        private DocumentRepository $documentRepository,
-        private UrlGeneratorInterface $urlGenerator,
         private FacetTwigService $facetService,
         private DocumentUploadQueue $uploadQueue,
         private OrganisationSwitcher $organisationSwitcher,
@@ -112,78 +108,9 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
         return $this->facetService->getParamKeyByFacetName($facet);
     }
 
-    /**
-     * Returns true if the given link is actually a document ID (ie: PREFIX-12345) and the given dossier is set to published.
-     */
-    public function isDocumentLink(string $link): bool
-    {
-        /** @var Document|null $document */
-        $document = $this->documentRepository->findOneBy(['documentNr' => $link]);
-        if (is_null($document)) {
-            return false;
-        }
-
-        // If we find a dossier with status published, we can return true
-        foreach ($document->getDossiers() as $dossier) {
-            if ($dossier->getStatus()->isPublished()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Generate the link from the given document ID found in the link. If the link is not an existing document id, it will be returned as is.
-     */
-    public function generateDocumentLink(string $link): string
-    {
-        /** @var Document|null $document */
-        $document = $this->documentRepository->findOneBy(['documentNr' => $link]);
-        if (is_null($document)) {
-            return $link;
-        }
-
-        // If we find a dossier with status published, we can return true
-        foreach ($document->getDossiers() as $dossier) {
-            if ($dossier->getStatus()->isPublished()) {
-                return $this->urlGenerator->generate('app_document_detail', [
-                    'prefix' => $dossier->getDocumentPrefix(),
-                    'dossierId' => $dossier->getDossierNr(),
-                    'documentId' => $document->getDocumentNr(),
-                ]);
-            }
-        }
-
-        return $link;
-    }
-
     public function getCitationType(string $citation): string
     {
         return Citation::getCitationType($citation);
-    }
-
-    /**
-     * @param array<string, string> $params
-     */
-    public function getQuerystringWithParams(array $params): string
-    {
-        $request = $this->requestStack->getCurrentRequest();
-        if (! $request) {
-            return '';
-        }
-
-        $queryString = strval($request->getQueryString());
-        parse_str($queryString, $currentParams);
-
-        foreach ($params as $key => $value) {
-            $currentParams[$key] = $value;
-        }
-
-        $query = http_build_query($currentParams);
-        $query = preg_replace('/%5B\d+%5D/imU', '%5B%5D', $query);
-
-        return strval($query);
     }
 
     public function queryStringWithoutParam(string $queryParam, string $value): string
@@ -231,7 +158,7 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     /**
      * @return string[]
      */
-    public function getUploadQueue(Dossier $dossier): array
+    public function getUploadQueue(WooDecision $dossier): array
     {
         return $this->uploadQueue->getFilenames($dossier);
     }
@@ -264,14 +191,6 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     public function getBackendHistory(string $type, string $identifier): array
     {
         return $this->historyService->getHistory($type, $identifier, HistoryService::MODE_PRIVATE);
-    }
-
-    /**
-     * @return History[]|array
-     */
-    public function getHistory(string $type, string $identifier): array
-    {
-        return $this->historyService->getHistory($type, $identifier, HistoryService::MODE_BOTH);
     }
 
     public function historyTranslation(History $entry, string $mode = HistoryService::MODE_PUBLIC): string

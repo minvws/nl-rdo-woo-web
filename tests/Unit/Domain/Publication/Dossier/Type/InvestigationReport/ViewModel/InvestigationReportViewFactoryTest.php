@@ -9,6 +9,7 @@ use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\ViewModel\InvestigationReportViewFactory;
 use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierProperties;
 use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierPropertiesViewFactory;
+use App\Domain\Publication\Dossier\Type\ViewModel\Subject;
 use App\Domain\Publication\Dossier\ViewModel\Department;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
@@ -42,7 +43,7 @@ final class InvestigationReportViewFactoryTest extends UnitTestCase
                 mainDepartment: $expectedMainDepartment = $expectedMainDepartment,
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::INVESTIGATION_REPORT,
-                subject: $expectedSubject = 'my subject',
+                subject: $expectedSubject = \Mockery::mock(Subject::class),
             ));
 
         /** @var InvestigationReport&MockInterface $dossier */

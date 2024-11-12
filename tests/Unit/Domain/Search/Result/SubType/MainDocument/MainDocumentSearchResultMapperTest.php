@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Domain\Search\Result\SubType\MainDocument;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
+use App\Domain\Publication\MainDocument\MainDocumentRepository;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use App\Domain\Search\Index\ElasticDocumentType;
@@ -19,13 +19,13 @@ use Mockery\MockInterface;
 
 class MainDocumentSearchResultMapperTest extends MockeryTestCase
 {
-    private AbstractMainDocumentRepository&MockInterface $mainDocumentRepository;
+    private MainDocumentRepository&MockInterface $mainDocumentRepository;
     private MainDocumentViewFactory&MockInterface $mainDocumentViewFactory;
     private MainDocumentSearchResultMapper $mapper;
 
     public function setUp(): void
     {
-        $this->mainDocumentRepository = \Mockery::mock(AbstractMainDocumentRepository::class);
+        $this->mainDocumentRepository = \Mockery::mock(MainDocumentRepository::class);
         $this->mainDocumentViewFactory = \Mockery::mock(MainDocumentViewFactory::class);
 
         $this->mapper = new MainDocumentSearchResultMapper(

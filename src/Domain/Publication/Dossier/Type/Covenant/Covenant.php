@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @implements EntityWithAttachments<CovenantAttachment>
- * @implements EntityWithMainDocument<CovenantDocument>
+ * @implements EntityWithMainDocument<CovenantMainDocument>
  */
 #[ORM\Entity(repositoryClass: CovenantRepository::class)]
 class Covenant extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument
@@ -27,7 +27,7 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
     /** @use HasAttachments<CovenantAttachment> */
     use HasAttachments;
 
-    /** @use HasMainDocument<CovenantDocument> */
+    /** @use HasMainDocument<CovenantMainDocument> */
     use HasMainDocument;
 
     #[ORM\Column(length: 255)]
@@ -43,10 +43,10 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
     )]
     private array $parties = [];
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: CovenantDocument::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: CovenantMainDocument::class)]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
-    private ?CovenantDocument $document;
+    private ?CovenantMainDocument $document;
 
     /** @var Collection<array-key,CovenantAttachment> */
     #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: CovenantAttachment::class)]
@@ -98,6 +98,6 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
 
     public function getMainDocumentEntityClass(): string
     {
-        return CovenantDocument::class;
+        return CovenantMainDocument::class;
     }
 }

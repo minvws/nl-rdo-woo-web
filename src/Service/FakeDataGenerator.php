@@ -10,7 +10,6 @@ use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Department;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\Judgement;
 use App\Entity\Organisation;
 use App\SourceType;
@@ -39,7 +38,7 @@ class FakeDataGenerator
         $this->faker = FakerFactory::create();
     }
 
-    public function generateDossier(Organisation $organisation, string $dossierNr): Dossier
+    public function generateDossier(Organisation $organisation, string $dossierNr): WooDecision
     {
         $deps = $this->doctrine->getRepository(Department::class)->findAll();
         shuffle($deps);
@@ -75,7 +74,6 @@ class FakeDataGenerator
         $dossier->setDecision($decision);
         $dossier->setStatus(DossierStatus::PUBLISHED);
         $dossier->setOrganisation($organisation);
-        $dossier->setSubject(null);
         foreach ($deps as $dep) {
             $dossier->addDepartment($dep);
         }
@@ -107,7 +105,6 @@ class FakeDataGenerator
         $document->setThreadId(0);
         $document->setPageCount(random_int(1, 20));
         $document->setSummary('summary of the document');
-        $document->setSubjects($this->generateSubjects());
         $document->setGrounds($this->faker->groundsBetween());
 
         $file = $document->getFileInfo();
@@ -144,17 +141,6 @@ class FakeDataGenerator
         }
 
         return $document;
-    }
-
-    /**
-     * @return string[]
-     */
-    protected function generateSubjects(): array
-    {
-        /** @var string[] $words */
-        $words = $this->faker->words(random_int(1, 5));
-
-        return $words;
     }
 
     public function generateContent(): string

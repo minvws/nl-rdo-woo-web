@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Admin\Action;
 
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Service\DossierService;
 
 readonly class IngestDossierAdminAction implements DossierAdminActionInterface
 {
     public function __construct(
-        private DossierService $dossierService,
+        private IngestDispatcher $ingestDispatcher,
     ) {
     }
 
@@ -26,6 +26,6 @@ readonly class IngestDossierAdminAction implements DossierAdminActionInterface
 
     public function execute(AbstractDossier $dossier): void
     {
-        $this->dossierService->ingest($dossier);
+        $this->ingestDispatcher->dispatchIngestDossierCommand($dossier);
     }
 }

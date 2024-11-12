@@ -21,9 +21,6 @@ class AuthMatrixVoter extends Voter
     ) {
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
     protected function supports(string $attribute, mixed $subject): bool
     {
         if (! str_starts_with($attribute, self::MARKER . '.')) {

@@ -12,9 +12,12 @@ use App\Domain\Publication\Dossier\Admin\DossierSearchService;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
 use App\Domain\Publication\Dossier\Type\ViewModel\DossierTypeViewFactory;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use App\Domain\Publication\MainDocument\AbstractMainDocument;
+use App\Domain\Publication\MainDocument\EntityWithMainDocument;
+use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use App\Enum\ApplicationMode;
 use App\Form\Dossier\SearchFormType;
-use App\Service\DossierWizard\DossierWizardHelper;
+use App\Service\DossierWizard\WizardStatusFactory;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,11 +38,12 @@ class DossierController extends AbstractController
         private readonly DossierListingService $listingService,
         private readonly DossierSearchService $searchService,
         private readonly PaginatorInterface $paginator,
-        private readonly DossierWizardHelper $wizardHelper,
+        private readonly WizardStatusFactory $wizardStatusFactory,
         private readonly DossierTypeManager $dossierTypeManager,
         private readonly AttachmentViewFactory $attachmentViewFactory,
         private readonly DossierPathHelper $dossierPathHelper,
         private readonly DossierTypeViewFactory $dossierTypeViewFactory,
+        private readonly MainDocumentViewFactory $mainDocumentViewFactory,
     ) {
     }
 
@@ -126,6 +130,15 @@ class DossierController extends AbstractController
         )]
         AbstractDossier $dossier,
     ): Response {
+        $mainDocumentView = null;
+        if ($dossier instanceof EntityWithMainDocument && $dossier->getMainDocument() instanceof AbstractMainDocument) {
+            $mainDocumentView = $this->mainDocumentViewFactory->make(
+                $dossier,
+                $dossier->getMainDocument(),
+                ApplicationMode::ADMIN,
+            );
+        }
+
         return $this->render(
             'admin/dossier/' . $dossier->getType()->value . '/view.html.twig',
             [
@@ -133,8 +146,9 @@ class DossierController extends AbstractController
                     $dossier,
                     ApplicationMode::ADMIN,
                 ),
+                'mainDocument' => $mainDocumentView,
                 'dossier' => $dossier,
-                'workflowStatus' => $this->wizardHelper->getStatus($dossier),
+                'workflowStatus' => $this->wizardStatusFactory->getWizardStatus($dossier),
                 'publicDossierUrl' => $this->dossierPathHelper->getAbsoluteDetailsPath($dossier),
             ]
         );

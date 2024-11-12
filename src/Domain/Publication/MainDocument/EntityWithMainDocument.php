@@ -19,10 +19,10 @@ interface EntityWithMainDocument
     /**
      * @return ?TDocument
      */
-    public function getDocument(): ?AbstractMainDocument;
+    public function getMainDocument(): ?AbstractMainDocument;
 
     /**
      * @param ?TDocument $document
      */
-    public function setDocument(?AbstractMainDocument $document): void;
+    public function setMainDocument(?AbstractMainDocument $document): void;
 }

@@ -1,7 +1,7 @@
 {% if document.entity.shouldBeUploaded and document.entity.isUploaded and (document.entity.fileInfo.size != '0') %}
 <div class="mt-10">
-    <twig:Public:DownloadFileButton
-        href="{{ path('app_document_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.entity.documentNr}) }}"
-    >{{ 'public.global.download' | trans }} ({{ document.entity.fileInfo.type | trans }}, {{ document.entity.fileInfo.size | size }})</twig:Public:DownloadFileButton>
+    <twig:Public:DownloadFileButton href="{{ file.downloadUrl }}">
+        {{ 'public.global.download' | trans }} ({{ document.entity.fileInfo.type | trans }}, {{ document.entity.fileInfo.size | size }})
+    </twig:Public:DownloadFileButton>
 </div>
 {% endif %}

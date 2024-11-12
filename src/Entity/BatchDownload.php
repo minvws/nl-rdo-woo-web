@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Repository\BatchDownloadRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -25,7 +26,7 @@ class BatchDownload
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
-    private ?Dossier $dossier;
+    private ?WooDecision $dossier;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
@@ -143,7 +144,7 @@ class BatchDownload
 
     public function setEntity(EntityWithBatchDownload $entity): void
     {
-        if ($entity instanceof Dossier) {
+        if ($entity instanceof WooDecision) {
             $this->dossier = $entity;
 
             return;

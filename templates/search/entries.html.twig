@@ -3,37 +3,22 @@
 {% set searchQuery = app.request.query.get('q') %}
 {% set numberOfResults = result.entries | length %}
 {% set numberOfPages = result.pagination.pageCount %}
-{% set sortBy = app.request.query.get('sort') %}
-{% set sortOrder = app.request.query.get('sortorder') %}
-
-{% if sortBy == 'decision_date' %}
-    {% set sortByText = 'global.decision_date' | trans %}
-{% elseif sortBy == 'publication_date' %}
-    {% set sortByText = 'global.publication_date' | trans %}
-{% endif %}
-{% if sortOrder == 'desc' %}
-    {% set sortOrderText = 'global.sort_newest' | trans %}
-{% elseif sortOrder == 'asc' %}
-    {% set sortOrderText = 'global.sort_oldest' | trans %}
-{% endif %}
+{% set activeSort = result.sortItems.active %}
 
 <div class="md:flex pb-3">
     <div class="grow pb-3 md:pb-0">
-        {% set isDossierTypeResult = result.type == constant('App\\Domain\\Search\\Index\\ElasticDocumentType::WOO_DECISION').value %}
         {% set tooManyResultsMinimum = 10000 %}
-        {% set hasTooManyNonDossierTypeResults = not isDossierTypeResult and result.resultCount >= tooManyResultsMinimum %}
-        <h2 class="leading-tight {% if not hasTooManyNonDossierTypeResults %}mt-3{% endif %}" aria-live="polite" id="js-number-of-search-results" tabindex="-1">
-            {% if isDossierTypeResult %}
-                <span class="font-bold">{{ "global.number_of_dossiers" | trans({'count': result.dossierCount}) }}</span>
-            {% elseif hasTooManyNonDossierTypeResults %}
+        {% set hasTooManyResults = result.resultCount >= tooManyResultsMinimum %}
+        <h2 class="leading-tight {% if not hasTooManyResults %}mt-3{% endif %}" aria-live="polite" id="js-number-of-search-results" tabindex="-1">
+            {% if hasTooManyResults %}
                 {{ 'public.search.only_first_set_displayed' | trans({ display_count: tooManyResultsMinimum | format_number(locale=('lang' | trans)) }) | raw }}
             {% else %}
-                <span class="font-bold">{{ "global.number_of_results" | trans({'count': result.resultCount}) }}</span>
-                {{ "public.results.in_dossiers" | trans({'count': result.dossierCount}) }}
+                <span class="font-bold" data-e2e-name="result-count">{{ "global.number_of_results" | trans({'count': result.resultCount}) }}</span>
+                <span data-e2e-name="dossier-count">{{ "public.results.in_dossiers" | trans({'count': result.dossierCount}) }}</span>
             {% endif %}
         </h2>
 
-        {% if hasTooManyNonDossierTypeResults %}
+        {% if hasTooManyResults %}
             <p class="leading-tight">{{ 'public.search.refine_results' | trans }}</p>
         {% endif %}
 
@@ -55,46 +40,36 @@
 
         {% if result.displayWithoutDateMessage %}
         <p class="text-sm woo-muted leading-none py-1">
-            {{ 'search.results_without_date' | trans({'count': result.documentCountWithoutDate, '%pre_document%': '<a class="woo-a" href="?' ~ query_string_with_params({'dt[without_date]': 1}) ~ '">', '%post_document%': '</a>'}) | raw }}
+            {{ 'search.results_without_date' | trans({'count': result.documentCountWithoutDate, '%pre_document%': '<a class="woo-a" href="' ~ path('app_search', result.searchParameters.includeWithoutDate.queryParameters.all) ~ '">', '%post_document%': '</a>'}) | raw }}
         </p>
         {% endif %}
     </div>
-
     {# Only allow sorting if there is more than 1 result or when there's pagination (there can be 1 result on this page) #}
     {% if numberOfResults > 1 or numberOfPages > 1 %}
     <div class="shrink-0 md:ml-4 pt-3 md:pt-0">
-        <details class="relative js-details">
+        <details class="relative js-details" data-e2e-name="sorting-selector">
             <summary class="woo-bordered-button woo-bordered-button--secondary" id="sort-results">
-                {% if sortBy and sortOrder %}
-                    {{ sortByText }} ({{ sortOrderText }})
-                {% else %}
-                    {{ 'global.sort' | trans }}
+                {{ activeSort.field | trans }}
+                {% if activeSort.showSortOrder %}
+                    ({{ activeSort.order | trans }})
                 {% endif %}
                 <twig:Public:Icon class="woo-button-icon-right" name="sort" />
             </summary>
 
             <div aria-labelledby="sort-results" class="woo-overlay-card md:right-0 w-72 sm:w-96">
-                {% macro sort_items(sortBy, sortText) %}
-                    {{ _self.sort_item(sortBy, 'desc', sortText, 'global.sort_newest' | trans) }}
-                    {{ _self.sort_item(sortBy, 'asc', sortText, 'global.sort_oldest' | trans) }}
-                {% endmacro %}
-
-                {% macro sort_item(sortBy, sortOrder, sortByText, sortOrderText) %}
-                    <li class="group/li leading-none">
-                        <a
-                            class="block px-4 group/a"
-                            href="?{{ query_string_with_params({'sort': sortBy, 'sortorder': sortOrder}) }}#search-results-list"
-                        >
+                <ul class="-mx-4 -my-2">
+                    {% for sortItem in result.sortItems %}
+                        <li class="group/li leading-none">
+                            <a
+                                class="block px-4 group/a"
+                                href="{{ path('app_search', sortItem.searchParameters.queryParameters.all) }}#search-results-list"
+                            >
                             <span
                                 class="block border-b border-woo-chinese-silver group-last/li:border-b-0 py-4 group-hover/a:underline group-focus/a:underline"
-                            >{{ sortByText }} ({{ sortOrderText }})</span>
-                        </a>
-                    </li>
-                {% endmacro %}
-
-                <ul class="-mx-4 -my-2">
-                    {{ _self.sort_items('decision_date', 'global.decision_date' | trans) }}
-                    {{ _self.sort_items('publication_date', 'global.publication_date' | trans) }}
+                            >{{ sortItem.field | trans }}{% if sortItem.showSortOrder %} ({{ sortItem.order | trans }}){% endif %}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
                 </ul>
             </div>
         </details>

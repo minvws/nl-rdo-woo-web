@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Inquiry;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use Symfony\Component\Uid\Uuid;
 
@@ -30,7 +30,7 @@ class InquiryLinkUpdateResult
     ) {
     }
 
-    public function dossierAdded(Dossier $dossier): void
+    public function dossierAdded(WooDecision $dossier): void
     {
         $this->addedDossierCount++;
         $this->updatedDossierIds[] = $dossier->getId();

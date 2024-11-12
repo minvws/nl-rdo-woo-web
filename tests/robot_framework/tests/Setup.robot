@@ -32,4 +32,3 @@ Login
   Set Global Variable  ${OTP_CODE}  %{SECRET_WOO_LOCAL}
   Open Browser And BaseUrl
   Login Admin
-  Debug

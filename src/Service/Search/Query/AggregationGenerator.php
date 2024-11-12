@@ -7,6 +7,7 @@ namespace App\Service\Search\Query;
 use App\Domain\Search\Query\SearchParameters;
 use App\Service\Search\Query\Condition\ContentAccessConditions;
 use App\Service\Search\Query\Condition\FacetConditions;
+use App\Service\Search\Query\Condition\QueryConditions;
 use App\Service\Search\Query\Condition\SearchTermConditions;
 use App\Service\Search\Query\Facet\Facet;
 use App\Service\Search\Query\Facet\FacetList;
@@ -22,6 +23,9 @@ class AggregationGenerator
     ) {
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     */
     public function addAggregations(FacetList $facetList, QueryBuilder $queryBuilder, SearchParameters $searchParameters, int $maxCount): void
     {
         if (! $searchParameters->aggregations) {
@@ -63,6 +67,10 @@ class AggregationGenerator
             $baseConditionsQuery = Query::bool();
             $this->accessConditions->applyToQuery($facetList, $searchParameters, $baseConditionsQuery);
             $this->searchTermConditions->applyToQuery($facetList, $searchParameters, $baseConditionsQuery);
+            if ($searchParameters->baseQueryConditions instanceof QueryConditions) {
+                $searchParameters->baseQueryConditions->applyToQuery($facetList, $searchParameters, $baseConditionsQuery);
+            }
+
             $baseFilterAgg = Aggregation::filter(
                 name: 'facet-base-filter',
                 query: $baseConditionsQuery,

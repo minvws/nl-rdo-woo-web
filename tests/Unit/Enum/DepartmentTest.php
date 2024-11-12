@@ -71,6 +71,10 @@ final class DepartmentTest extends MockeryTestCase
                 'input' => 'Ministerie van Volksgezondheid, Welzijn en Sport',
                 'expected' => Department::VWS,
             ],
+            'VWS lowercase' => [
+                'input' => 'ministerie van volksgezondheid, welzijn en sport',
+                'expected' => Department::VWS,
+            ],
             'EZK' => [
                 'input' => 'Ministerie van Economische Zaken en Klimaat',
                 'expected' => Department::EZK,

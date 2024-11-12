@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Judgement;
 use App\Entity\Organisation;
@@ -47,7 +47,7 @@ class InquiryRepository extends ServiceEntityRepository
     /**
      * @return Inquiry[]
      */
-    public function findByDossier(Dossier $dossier): array
+    public function findByDossier(WooDecision $dossier): array
     {
         return $this->createQueryBuilder('i')
             ->join('i.dossiers', 'd')
@@ -65,12 +65,13 @@ class InquiryRepository extends ServiceEntityRepository
         return $this->getEntityManager()->createQueryBuilder()
             ->select('dos.dossierNr', 'dos.title')
             ->addSelect('count(doc) as doccount')
-            ->from(Dossier::class, 'dos')
+            ->from(WooDecision::class, 'dos')
             ->where('dos.status IN (:statuses)')
             ->innerJoin('dos.inquiries', 'inq', Join::WITH, 'inq.id = :inquiryId')
             ->innerJoin('dos.documents', 'doc')
             ->innerJoin('doc.inquiries', 'doc_inq', Join::WITH, 'doc_inq.id = :inquiryId')
             ->groupBy('dos.id')
+            ->orderBy('dos.decisionDate', 'DESC')
             ->setParameter('inquiryId', $inquiry->getId())
             ->setParameter('statuses', [
                 DossierStatus::PREVIEW,
@@ -99,7 +100,7 @@ class InquiryRepository extends ServiceEntityRepository
         ;
     }
 
-    public function getDocsForInquiryDossierQueryBuilder(Inquiry $inquiry, Dossier $dossier): QueryBuilder
+    public function getDocsForInquiryDossierQueryBuilder(Inquiry $inquiry, WooDecision $dossier): QueryBuilder
     {
         return $this->getEntityManager()->createQueryBuilder()
             ->select('doc, dos')

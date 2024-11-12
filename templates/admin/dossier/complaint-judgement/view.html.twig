@@ -9,7 +9,6 @@
 {% set periodLabel = 'admin.dossiers.complaint-judgement.date' | trans %}
 {% set summaryLabel = 'admin.dossiers.complaint-judgement.summary' | trans %}
 {% set documentLabel = 'admin.dossiers.complaint-judgement.document' | trans %}
-{% set downloadDocumentPath = path('app_admin_complaintjudgement_document_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) %}
 {% set completeFirstOpenStepTitle = ('admin.dossiers.complaint-judgement.complete_step.' ~ workflowStatus.firstOpenStep.stepName.value | default) | trans %}
 
 {% set deleteTitle = 'admin.dossiers.complaint-judgement.delete' | trans %}

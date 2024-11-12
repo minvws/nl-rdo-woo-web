@@ -29,7 +29,7 @@
 {% block resultSpecsBottom %}
     <li class="woo-search-result__spec">
         {% if entry.viewmodel.documentDate is not empty %}
-            <time datetime="{{ entry.viewmodel.documentDate | date("Y-m-d") }}">
+            <time datetime="{{ entry.viewmodel.documentDate | date("Y-m-d") }}" data-e2e-name="document-date">
                 {{ entry.viewmodel.documentDate | format_date('long') }}
             </time>
         {% else %}

@@ -6,8 +6,8 @@ namespace App\Domain\Publication\Dossier\Step;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
-use App\Service\DossierWizard\DossierWizardHelper;
 use App\Service\DossierWizard\DossierWizardStatus;
+use App\Service\DossierWizard\WizardStatusFactory;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Form\FormInterface;
@@ -20,7 +20,7 @@ readonly class StepActionHelper
 {
     public function __construct(
         private RouterInterface $router,
-        private DossierWizardHelper $dossierWizardHelper,
+        private WizardStatusFactory $wizardStatusFactory,
         private PaginatorInterface $paginator,
         private DossierViewParamsBuilder $paramsBuilder,
     ) {
@@ -88,7 +88,7 @@ readonly class StepActionHelper
 
     public function getWizardStatus(AbstractDossier $dossier, StepName $stepName): DossierWizardStatus
     {
-        return $this->dossierWizardHelper->getStatus($dossier, $stepName);
+        return $this->wizardStatusFactory->getWizardStatus($dossier, $stepName);
     }
 
     private function redirectToRouteWithDossierParams(string $name, AbstractDossier $dossier): RedirectResponse

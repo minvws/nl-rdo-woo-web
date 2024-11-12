@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\MainDocument\Handler;
 
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportDocument;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportDocumentRepository;
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
@@ -28,18 +28,18 @@ use Symfony\Component\Workflow\Exception\TransitionException;
 class DeleteMainDocumentHandlerTest extends MockeryTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
-    private AnnualReportDocumentRepository&MockInterface $annualReportDocumentRepository;
+    private AnnualReportMainDocumentRepository&MockInterface $annualReportDocumentRepository;
     private MessageBusInterface&MockInterface $messageBus;
     private DossierWorkflowManager&MockInterface $dossierWorkflowManager;
     private DeleteMainDocumentHandler $handler;
-    private AbstractDossierRepository&MockInterface $dossierRepository;
+    private DossierRepository&MockInterface $dossierRepository;
     private MainDocumentDeleteStrategyInterface&MockInterface $deleteStrategy;
 
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->annualReportDocumentRepository = \Mockery::mock(AnnualReportDocumentRepository::class);
-        $this->dossierRepository = \Mockery::mock(AbstractDossierRepository::class);
+        $this->annualReportDocumentRepository = \Mockery::mock(AnnualReportMainDocumentRepository::class);
+        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
         $this->deleteStrategy = \Mockery::mock(MainDocumentDeleteStrategyInterface::class);
@@ -63,20 +63,20 @@ class DeleteMainDocumentHandlerTest extends MockeryTestCase
         $fileInfo->shouldReceive('getSize')->andReturn('z');
 
         $docUuid = Uuid::v6();
-        $annualReportDocument = \Mockery::mock(AnnualReportDocument::class);
+        $annualReportDocument = \Mockery::mock(AnnualReportMainDocument::class);
         $annualReportDocument->shouldReceive('getId')->andReturn($docUuid);
         $annualReportDocument->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $dossierUuid = Uuid::v6();
         $dossier = \Mockery::mock(AnnualReport::class)->makePartial();
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getDocument')->andReturn($annualReportDocument);
-        $dossier->expects('setDocument')->with(null);
-        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportDocument::class);
+        $dossier->shouldReceive('getMainDocument')->andReturn($annualReportDocument);
+        $dossier->expects('setMainDocument')->with(null);
+        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
 
         $this->entityManager
             ->shouldReceive('getRepository')
-            ->with(AnnualReportDocument::class)
+            ->with(AnnualReportMainDocument::class)
             ->andReturn($this->annualReportDocumentRepository);
 
         $annualReportDocument->shouldReceive('getDossier')->andReturn($dossier);
@@ -104,18 +104,18 @@ class DeleteMainDocumentHandlerTest extends MockeryTestCase
     public function testEntityIsNotDeletedWhenTheWorkflowTransitionFails(): void
     {
         $docUuid = Uuid::v6();
-        $annualReportDocument = \Mockery::mock(AnnualReportDocument::class);
+        $annualReportDocument = \Mockery::mock(AnnualReportMainDocument::class);
         $annualReportDocument->shouldReceive('getId')->andReturn($docUuid);
 
         $dossierUuid = Uuid::v6();
         $dossier = \Mockery::mock(AnnualReport::class)->makePartial();
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getDocument')->andReturn($annualReportDocument);
-        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportDocument::class);
+        $dossier->shouldReceive('getMainDocument')->andReturn($annualReportDocument);
+        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
 
         $this->entityManager
             ->shouldReceive('getRepository')
-            ->with(AnnualReportDocument::class)
+            ->with(AnnualReportMainDocument::class)
             ->andReturn($this->annualReportDocumentRepository);
 
         $this->dossierRepository->shouldReceive('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
@@ -146,11 +146,11 @@ class DeleteMainDocumentHandlerTest extends MockeryTestCase
         $dossierUuid = Uuid::v6();
         $dossier = \Mockery::mock(AnnualReport::class)->makePartial();
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportDocument::class);
+        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
 
         $this->entityManager
             ->shouldReceive('getRepository')
-            ->with(AnnualReportDocument::class)
+            ->with(AnnualReportMainDocument::class)
             ->andReturn($this->annualReportDocumentRepository);
 
         $this->dossierRepository->shouldReceive('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);

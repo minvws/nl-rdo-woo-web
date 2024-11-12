@@ -1,7 +1,7 @@
 {% if dossier.isPreview %}
 <div class="mt-10">
     <twig:Public:Alert>
-        {{ 'public.documents.exclusive_access' | trans({ date: dossier.publicationDate | date_modify('-1 minute') | format_datetime(pattern="d LLLL y 'om' H:mm 'uur'") }) }}
+        {{ 'public.documents.exclusive_access' | trans({ date: dossier.publicationDate | date_modify('-1 minute') | format_datetime(pattern="d LLLL y 'om' H:mm 'uur'", timezone: false) }) }}
     </twig:Public:Alert>
 </div>
 {% endif %}

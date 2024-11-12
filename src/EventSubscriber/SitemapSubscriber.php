@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use App\Entity\Dossier;
-use App\Repository\DocumentRepository;
-use App\Repository\DossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
+use App\Domain\Publication\Dossier\Type\DossierType;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
@@ -14,19 +15,18 @@ use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class SitemapSubscriber implements EventSubscriberInterface
+readonly class SitemapSubscriber implements EventSubscriberInterface
 {
-    protected DossierRepository $dossierRepository;
-    protected DocumentRepository $documentRepository;
-    protected EntityManagerInterface $doctrine;
-
-    public function __construct(EntityManagerInterface $doctrine, DossierRepository $dossierRepository, DocumentRepository $documentRepository)
-    {
-        $this->dossierRepository = $dossierRepository;
-        $this->documentRepository = $documentRepository;
-        $this->doctrine = $doctrine;
+    public function __construct(
+        private EntityManagerInterface $doctrine,
+        private DossierRepository $dossierRepository,
+        private DossierPathHelper $dossierPathHelper,
+    ) {
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -36,27 +36,22 @@ class SitemapSubscriber implements EventSubscriberInterface
 
     public function populate(SitemapPopulateEvent $event): void
     {
-        $this->populateDossiers($event->getUrlContainer(), $event->getUrlGenerator());
+        $this->populateDossiers($event->getUrlContainer());
         $this->populateDocuments($event->getUrlContainer(), $event->getUrlGenerator());
     }
 
-    protected function populateDossiers(UrlContainerInterface $urls, UrlGeneratorInterface $generator): void
+    private function populateDossiers(UrlContainerInterface $urls): void
     {
-        $dossierQuery = $this->doctrine->getRepository(Dossier::class)->createQueryBuilder('d')
+        $dossierQuery = $this->dossierRepository->createQueryBuilder('d')
             ->select('d')
             ->where('d.status = :status')
             ->setParameter('status', 'published')
             ->getQuery()
         ;
-
         foreach ($dossierQuery->toIterable() as $dossier) {
             $urls->addUrl(
                 new UrlConcrete(
-                    $generator->generate(
-                        'app_woodecision_detail',
-                        ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
-                        UrlGeneratorInterface::ABSOLUTE_URL
-                    ),
+                    $this->dossierPathHelper->getAbsoluteDetailsPath($dossier),
                     $dossier->getUpdatedAt(),
                     UrlConcrete::CHANGEFREQ_MONTHLY,
                     0.8
@@ -67,15 +62,18 @@ class SitemapSubscriber implements EventSubscriberInterface
         }
     }
 
-    protected function populateDocuments(UrlContainerInterface $urls, UrlGeneratorInterface $generator): void
+    private function populateDocuments(UrlContainerInterface $urls, UrlGeneratorInterface $generator): void
     {
-        $dossierQuery = $this->doctrine->getRepository(Dossier::class)->createQueryBuilder('d')
+        $dossierQuery = $this->dossierRepository->createQueryBuilder('d')
             ->select('d')
             ->where('d.status = :status')
+            ->andWhere('d INSTANCE OF :type')
             ->setParameter('status', 'published')
+            ->setParameter('type', DossierType::WOO_DECISION)
             ->getQuery()
         ;
 
+        /** @var WooDecision $dossier */
         foreach ($dossierQuery->toIterable() as $dossier) {
             foreach ($dossier->getDocuments() as $document) {
                 $urls->addUrl(
@@ -91,6 +89,7 @@ class SitemapSubscriber implements EventSubscriberInterface
                     ),
                     'documents',
                 );
+                $this->doctrine->detach($document);
             }
 
             $this->doctrine->detach($dossier);

@@ -6,10 +6,10 @@ namespace App\Tests\Unit\Domain\Publication\MainDocument\Handler;
 
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Attachment\AttachmentType;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportDocument;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportDocumentRepository;
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Domain\Publication\MainDocument\Command\UpdateMainDocumentCommand;
@@ -32,19 +32,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class UpdateMainDocumentHandlerTest extends MockeryTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
-    private AnnualReportDocumentRepository&MockInterface $annualReportDocumentRepository;
+    private AnnualReportMainDocumentRepository&MockInterface $annualReportDocumentRepository;
     private MessageBusInterface&MockInterface $messageBus;
     private DossierWorkflowManager&MockInterface $dossierWorkflowManager;
     private UpdateMainDocumentHandler $handler;
-    private AbstractDossierRepository&MockInterface $dossierRepository;
+    private DossierRepository&MockInterface $dossierRepository;
     private UploaderService&MockInterface $uploaderService;
     private ValidatorInterface&MockInterface $validator;
 
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->annualReportDocumentRepository = \Mockery::mock(AnnualReportDocumentRepository::class);
-        $this->dossierRepository = \Mockery::mock(AbstractDossierRepository::class);
+        $this->annualReportDocumentRepository = \Mockery::mock(AnnualReportMainDocumentRepository::class);
+        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
         $this->uploaderService = \Mockery::mock(UploaderService::class);
@@ -75,14 +75,14 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
         $dossierUuid = Uuid::v6();
         $dossier = \Mockery::mock(AnnualReport::class)->makePartial();
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportDocument::class);
+        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
 
         $this->entityManager
             ->shouldReceive('getRepository')
-            ->with(AnnualReportDocument::class)
+            ->with(AnnualReportMainDocument::class)
             ->andReturn($this->annualReportDocumentRepository);
 
-        $annualReportDocument = \Mockery::mock(AnnualReportDocument::class);
+        $annualReportDocument = \Mockery::mock(AnnualReportMainDocument::class);
         $annualReportDocument->shouldReceive('getId')->andReturn(Uuid::v6());
         $annualReportDocument->shouldReceive('getDossier')->andReturn($dossier);
         $annualReportDocument->shouldReceive('setFormalDate')->with($formalDate);
@@ -91,9 +91,9 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
         $annualReportDocument->shouldReceive('setLanguage')->with($language);
         $annualReportDocument->shouldReceive('setGrounds')->with($grounds);
         $annualReportDocument->shouldReceive('getFileInfo')->andReturn(new FileInfo());
-        $annualReportDocument->shouldReceive('getUploadGroupId')->andReturn(UploadGroupId::ANNUAL_REPORT_DOCUMENTS);
+        $annualReportDocument->shouldReceive('getUploadGroupId')->andReturn(UploadGroupId::MAIN_DOCUMENTS);
 
-        $dossier->shouldReceive('getDocument')->andReturn($annualReportDocument);
+        $dossier->shouldReceive('getMainDocument')->andReturn($annualReportDocument);
 
         $this->dossierRepository->shouldReceive('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
 
@@ -115,8 +115,8 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
             ->expects('attachFileToEntity')
             ->with(
                 $uploadFileReference,
-                \Mockery::type(AnnualReportDocument::class),
-                UploadGroupId::ANNUAL_REPORT_DOCUMENTS,
+                \Mockery::type(AnnualReportMainDocument::class),
+                UploadGroupId::MAIN_DOCUMENTS,
             );
 
         $this->handler->__invoke(
@@ -147,17 +147,17 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
         $language = AttachmentLanguage::DUTCH;
         $grounds = ['foo', 'bar'];
 
-        $annualReportDocument = \Mockery::mock(AnnualReportDocument::class);
+        $annualReportDocument = \Mockery::mock(AnnualReportMainDocument::class);
 
         $dossierUuid = Uuid::v6();
         $dossier = \Mockery::mock(AnnualReport::class)->makePartial();
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getDocument')->andReturn($annualReportDocument);
-        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportDocument::class);
+        $dossier->shouldReceive('getMainDocument')->andReturn($annualReportDocument);
+        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
 
         $this->entityManager
             ->shouldReceive('getRepository')
-            ->with(AnnualReportDocument::class)
+            ->with(AnnualReportMainDocument::class)
             ->andReturn($this->annualReportDocumentRepository);
 
         $this->dossierRepository->shouldReceive('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
@@ -187,7 +187,7 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
         $language = AttachmentLanguage::DUTCH;
         $grounds = ['foo', 'bar'];
 
-        $annualReportDocument = \Mockery::mock(AnnualReportDocument::class);
+        $annualReportDocument = \Mockery::mock(AnnualReportMainDocument::class);
         $annualReportDocument->expects('setFormalDate')->with($formalDate);
         $annualReportDocument->expects('setInternalReference')->with($internalReference);
         $annualReportDocument->expects('setType')->with($attachmentType);
@@ -197,12 +197,12 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
         $dossierUuid = Uuid::v6();
         $dossier = \Mockery::mock(AnnualReport::class)->makePartial();
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getDocument')->andReturn($annualReportDocument);
-        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportDocument::class);
+        $dossier->shouldReceive('getMainDocument')->andReturn($annualReportDocument);
+        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
 
         $this->entityManager
             ->shouldReceive('getRepository')
-            ->with(AnnualReportDocument::class)
+            ->with(AnnualReportMainDocument::class)
             ->andReturn($this->annualReportDocumentRepository);
 
         $this->dossierRepository->shouldReceive('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);

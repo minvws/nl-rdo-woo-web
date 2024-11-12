@@ -9,16 +9,14 @@
                     <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'categories.category.judgement' | trans }}</th>
                     <td class="font-bold min-w-64" data-e2e-name="dossier-metadata-decision">{{ dossier.decision | trans }}</td>
                 </tr>
-                {% if dossier.decisionDocument.isUploaded %}
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.decision.reason' | trans }}</th>
                     <td>
-                        <a class="woo-a" data-e2e-name="download-decision-file-link" href="{{ path('app_woodecision_decision_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" download>{{ 'public.dossiers.decision.download_decision' | trans }}</a> ({{ dossier.decisionDocument.fileSize | size }})
+                        <a class="woo-a" data-e2e-name="main-document-detail-link" href="{{ path('app_woodecision_document_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ dossier.mainDocument.name }}</a> ({{ dossier.mainDocument.sourceType | trans }}, {{ dossier.mainDocument.size | size }})
                     </td>
                 </tr>
-                {% endif %}
                 {% if attachments | length > 0 %}
-                <tr>
+                <tr data-e2e-name="dossier-attachments-row">
                     <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.additional_attachments' | trans }}</th>
                     <td>
                         <ul>
@@ -57,7 +55,7 @@
                     <td  data-e2e-name="dossier-metadata-size">
                         <span>
                         {% if dossier.counts.hasDocuments %}
-                            {{ 'global.number_of_documents' | trans({'count': dossier.counts.documentCount})}}{% if dossier.counts.hasDocuments and dossier.counts.hasPages %},{% endif %}
+                            <span data-e2e-name="dossier-document-count">{{ 'global.number_of_documents' | trans({'count': dossier.counts.documentCount})}}</span>{% if dossier.counts.hasDocuments and dossier.counts.hasPages %},{% endif %}
                         {% endif %}
 
                         {% if dossier.counts.hasPages %}
@@ -69,15 +67,15 @@
                         {% endif %}
                         </span>
                         {% if dossier.counts.hasDocuments or dossier.counts.hasPages %}
-                        <a class="woo-a" data-e2e-name="download-inventory-file-link" href="{{ path('app_woodecision_inventory_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" download>{{ 'public.dossiers.inventory_list' | trans }}</a>
+                        <a class="woo-a" data-e2e-name="download-inventory-file-link" href="{{ path('app_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::INVENTORY').value}) }}" download>{{ 'public.dossiers.inventory_list' | trans }}</a>
                         {% endif %}
                     </td>
                 </tr>
-                {% if dossier.subject %}
+                {% if dossier.hasSubject %}
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.subject' | trans }}</th>
                     <td>
-                        <p>{{ dossier.subject }}</p>
+                        <p><a class="woo-a" href="{{ dossier.subject.searchUrl }}">{{ dossier.subject.name }}</a></p>
                     </td>
                 </tr>
                 {% endif %}

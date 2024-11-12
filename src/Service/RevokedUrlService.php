@@ -43,7 +43,6 @@ readonly class RevokedUrlService
                 continue;
             }
 
-            $pageNrs = $document->getPageCount() === 0 ? [] : range(1, $document->getPageCount());
             $urlParams = [
                 'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),
@@ -51,22 +50,10 @@ readonly class RevokedUrlService
             ];
 
             yield $this->router->generate('app_document_detail', $urlParams);
-            yield $this->router->generate('app_document_download', $urlParams);
-            foreach ($pageNrs as $pageNr) {
-                $urlParams['pageNr'] = $pageNr;
-                yield $this->router->generate('app_document_download_page', $urlParams);
-                yield $this->router->generate('app_document_thumbnail', $urlParams);
-            }
 
-            unset($urlParams['prefix'], $urlParams['pageNr']);
+            unset($urlParams['prefix']);
 
             yield $this->router->generate('app_legacy_document_detail', $urlParams);
-            yield $this->router->generate('app_legacy_document_download', $urlParams);
-            foreach ($pageNrs as $pageNr) {
-                $urlParams['pageNr'] = $pageNr;
-                yield $this->router->generate('app_legacy_document_download_page', $urlParams);
-                yield $this->router->generate('app_legacy_document_thumbnail', $urlParams);
-            }
         }
     }
 }

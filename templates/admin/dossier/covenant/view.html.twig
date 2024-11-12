@@ -9,7 +9,6 @@
 {% set periodLabel = 'admin.dossiers.covenant.period' | trans %}
 {% set summaryLabel = 'admin.dossiers.covenant.summary' | trans %}
 {% set documentLabel = 'admin.dossiers.covenant.document' | trans %}
-{% set downloadDocumentPath = path('app_admin_covenant_covenantdocument_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) %}
 {% set completeFirstOpenStepTitle = ('admin.dossiers.covenant.complete_step.' ~ workflowStatus.firstOpenStep.stepName.value | default) | trans %}
 
 {% set deleteTitle = 'admin.dossiers.covenant.delete' | trans %}

@@ -9,7 +9,7 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('subject.create') %}
-            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_subject_create') }}">{{ 'admin.subject.create' | trans() }}</a>
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_subject_create') }}" data-e2e-name="new-subject">{{ 'admin.subject.create' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>
@@ -17,7 +17,7 @@
     <div class="bhr-card">
         {% set alerts = app.flashes('backend') %}
         {% if alerts | length > 0 %}
-            <div class="mb-8">
+            <div class="mb-8" data-e2e-name="alerts">
                 {% for messages in alerts %}
                     {% for label, message in messages %}
                         <twig:Admin:Alert type="{{ label }}">
@@ -31,22 +31,16 @@
         {% if pagination | length > 0 %}
             <table class="bhr-table">
                 <thead>
-                <tr>
-                    {{ knp_pagination_sortable(pagination, 'admin.subject.subject' | trans, 'sub.name', { thClassName: 'border-r-0' }, {}, 'pagination/sort.admin.html.twig') }}
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                        <span class="sr-only">{{ 'global.details' | trans }}</span>
-                    </th>
-                </tr>
+                    <tr>
+                        {{ knp_pagination_sortable(pagination, 'admin.subject.subject' | trans, 'sub.name', {}, {}, 'pagination/sort.admin.html.twig') }}
+                    </tr>
                 </thead>
                 <tbody data-e2e-name="inquiry-list">
                 {% for row in pagination %}
-                    {% set url = path('app_admin_subject_edit', { id: row.id.toBase58 }) %}
-                    <tr class="bhr-clickable-row">
-                        <td><a class="bhr-fill-cell" href="{{ url }}">{{ row.name }}</a></td>
-                        <td class="text-right">
-                            <a class="bhr-fill-cell" href="{{ url }}">
-                                <span class="sr-only">{{ 'global.details' | trans }} {{ row.name }}</span>
-                                <twig:Admin:Icon name="chevron-right" />
+                    <tr>
+                        <td>
+                            <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_subject_edit', { id: row.id.toBase58 }) }}">
+                                {{ row.name }}
                             </a>
                         </td>
                     </tr>

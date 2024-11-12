@@ -13,14 +13,15 @@ use App\Domain\Ingest\Content\LazyFileReference;
 use App\Entity\EntityWithFileInfo;
 use App\Entity\FileInfo;
 use App\Service\Storage\EntityStorageService;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Component\Uid\Uuid;
 
-class ContentExtractServiceTest extends MockeryTestCase
+class ContentExtractServiceTest extends UnitTestCase
 {
     private EntityStorageService&MockInterface $entityStorage;
     private LoggerInterface&MockInterface $logger;
@@ -343,5 +344,86 @@ class ContentExtractServiceTest extends MockeryTestCase
             $contentA . PHP_EOL . $contentB,
             $extracts->getCombinedContent(),
         );
+    }
+
+    public function testSkipsExtractorIfNotEnabled(): void
+    {
+        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
+        $fileInfo->shouldReceive('getHash')->once()->andReturn('uuid');
+
+        /** @var EntityWithFileInfo&MockInterface $entity */
+        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
+        $entity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
+
+        $this->logger->shouldReceive('log')->with(
+            LogLevel::WARNING,
+            'No content could be extracted',
+            ['id' => $entityId, 'class' => $entity::class]
+        );
+
+        $contentExtractOptions = ContentExtractOptions::create()->withExtractor(ContentExtractorKey::TIKA);
+
+        $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
+        $this->extractorA->shouldNotReceive('supports');
+        $this->extractorA->shouldNotReceive('getContent');
+
+        $service = new ContentExtractService(
+            $this->entityStorage,
+            $this->logger,
+            new TagAwareAdapter(new ArrayAdapter()),
+            new ContentExtractCacheKeyGenerator(),
+            [
+                $this->extractorA,
+            ],
+        );
+
+        $extracts = $service->getExtracts(
+            $entity,
+            $contentExtractOptions,
+        );
+
+        self::assertTrue($extracts->isEmpty());
+    }
+
+    public function testItMarksExtractorsAsFailureWhenItFails(): void
+    {
+        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
+        $fileInfo->shouldReceive('getHash')->andReturn('uuid');
+
+        /** @var EntityWithFileInfo&MockInterface $entity */
+        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
+        $entity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
+        $entity->shouldReceive('getFileCacheKey')->andReturn('entitycachekey');
+
+        $this->logger->shouldReceive('log')->with(
+            LogLevel::WARNING,
+            'No content could be extracted',
+            ['id' => $entityId, 'class' => $entity::class]
+        );
+
+        $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
+        $this->extractorA->shouldReceive('supports')->andReturn(true);
+        $this->extractorA->shouldReceive('getContent')->andThrow(new \Exception($exMessage = 'Extractor A failed'));
+
+        $this->extractorB->shouldNotReceive('getKey');
+        $this->extractorB->shouldNotReceive('supports');
+        $this->extractorB->shouldNotReceive('getContent');
+
+        $this->logger->shouldReceive('log')->with(
+            LogLevel::ERROR,
+            sprintf('Content extract error: %s', $exMessage),
+            ['id' => $entityId, 'class' => $entity::class]
+        );
+
+        $extracts = $this->service->getExtracts(
+            $entity,
+            ContentExtractOptions::create()->withAllExtractors(),
+        );
+
+        self::assertTrue($extracts->isFailure(), 'Extracts is marked as failure');
     }
 }

@@ -36,14 +36,10 @@ readonly class ElasticIndexManager
         ]);
 
         $mapping = $this->mappingService->getMapping($version);
-        try {
-            $this->elastic->indices()->putMapping([
-                'index' => $indexName,
-                'body' => $mapping,
-            ]);
-        } catch (\Throwable $e) {
-            throw $e;
-        }
+        $this->elastic->indices()->putMapping([
+            'index' => $indexName,
+            'body' => $mapping,
+        ]);
 
         // Open the index again for usage
         $this->elastic->indices()->open(['index' => $indexName]);

@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\AnnualReport;
 
-use App\Domain\Publication\Dossier\Command\CreateDossierCommand;
-use App\Domain\Publication\Dossier\Command\UpdateDossierDetailsCommand;
+use App\Domain\Publication\Dossier\DossierDispatcher;
 use App\Domain\Publication\Dossier\DossierFactory;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
@@ -19,7 +18,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
@@ -34,7 +32,7 @@ class DetailsStepController extends AbstractController
     public function __construct(
         private readonly DossierFactory $dossierFactory,
         private readonly StepActionHelper $stepHelper,
-        private readonly MessageBusInterface $messageBus,
+        private readonly DossierDispatcher $dossierDispatcher,
         private readonly DossierFormParamBuilder $formParamBuilder,
     ) {
     }
@@ -53,9 +51,7 @@ class DetailsStepController extends AbstractController
         $form = $this->getForm($dossier);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->messageBus->dispatch(
-                new CreateDossierCommand($dossier),
-            );
+            $this->dossierDispatcher->dispatchCreateDossierCommand($dossier);
 
             $wizardStatus = $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME);
 
@@ -96,9 +92,7 @@ class DetailsStepController extends AbstractController
         $form = $this->getForm($dossier);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->messageBus->dispatch(
-                new UpdateDossierDetailsCommand($dossier),
-            );
+            $this->dossierDispatcher->dispatchUpdateDossierDetailsCommand($dossier);
 
             return $this->stepHelper->redirectAfterFormSubmit($wizardStatus, $form);
         }
@@ -137,9 +131,7 @@ class DetailsStepController extends AbstractController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->messageBus->dispatch(
-                new UpdateDossierDetailsCommand($dossier),
-            );
+            $this->dossierDispatcher->dispatchUpdateDossierDetailsCommand($dossier);
 
             return $this->stepHelper->redirectToDossier($dossier);
         }

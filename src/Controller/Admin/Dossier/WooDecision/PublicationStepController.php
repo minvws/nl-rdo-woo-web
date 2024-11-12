@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\WooDecision;
 
+use App\Domain\Publication\Dossier\DossierDispatcher;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Form\Dossier\WooDecision\PublishType;
-use App\Service\DossierWizard\DossierWizardHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +20,7 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 class PublicationStepController extends AbstractController
 {
     public function __construct(
-        private readonly DossierWizardHelper $wizardHelper,
+        private readonly DossierDispatcher $dossierDispatcher,
         private readonly StepActionHelper $stepHelper,
     ) {
     }
@@ -43,7 +43,7 @@ class PublicationStepController extends AbstractController
         $form = $this->createForm(PublishType::class, $dossier);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->wizardHelper->publish($dossier);
+            $this->dossierDispatcher->dispatchUpdateDossierPublicationCommand($dossier);
 
             return $this->stepHelper->redirectToPublicationConfirmation($dossier);
         }
@@ -74,7 +74,7 @@ class PublicationStepController extends AbstractController
         $form = $this->createForm(PublishType::class, $dossier);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->wizardHelper->publish($dossier);
+            $this->dossierDispatcher->dispatchUpdateDossierPublicationCommand($dossier);
 
             return $this->stepHelper->redirectToPublicationConfirmation($dossier);
         }

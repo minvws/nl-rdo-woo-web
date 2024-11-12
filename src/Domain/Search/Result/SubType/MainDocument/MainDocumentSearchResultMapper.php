@@ -6,7 +6,7 @@ namespace App\Domain\Search\Result\SubType\MainDocument;
 
 use App\Domain\Publication\Dossier\Type\DossierReference;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
+use App\Domain\Publication\MainDocument\MainDocumentRepository;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\HighlightMapperTrait;
@@ -20,7 +20,7 @@ readonly class MainDocumentSearchResultMapper implements SearchResultMapperInter
     use HighlightMapperTrait;
 
     public function __construct(
-        private AbstractMainDocumentRepository $mainDocumentRepository,
+        private MainDocumentRepository $mainDocumentRepository,
         private MainDocumentViewFactory $viewFactory,
     ) {
     }

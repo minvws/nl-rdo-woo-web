@@ -7,7 +7,6 @@ namespace App\Tests\Integration\Domain\Publication\Dossier\Type\InvestigationRep
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportRepository;
 use App\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
 use App\Tests\Integration\IntegrationTestTrait;
-use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class InvestigationReportRepositoryTest extends KernelTestCase
@@ -25,21 +24,6 @@ final class InvestigationReportRepositoryTest extends KernelTestCase
         parent::setUp();
 
         self::bootKernel();
-    }
-
-    public function testFindAndRemove(): void
-    {
-        $dossier = InvestigationReportFactory::createOne();
-
-        $repository = $this->getRepository();
-
-        $result = $this->getRepository()->findOneByDossierId($dossier->getId());
-        self::assertEquals($dossier->getId(), $result->getId());
-
-        $repository->remove($result, true);
-
-        $this->expectException(NoResultException::class);
-        $this->getRepository()->findOneByDossierId($dossier->getId());
     }
 
     public function testGetSearchResultViewModel(): void

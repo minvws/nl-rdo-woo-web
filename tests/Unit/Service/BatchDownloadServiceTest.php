@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\BatchDownload;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Message\GenerateArchiveMessage;
 use App\Repository\BatchDownloadRepository;
 use App\Service\ArchiveService;
@@ -59,7 +59,7 @@ class BatchDownloadServiceTest extends MockeryTestCase
 
         $dossierUuid = Uuid::v6();
 
-        $dossier = \Mockery::mock(Dossier::class);
+        $dossier = \Mockery::mock(WooDecision::class);
         $dossier->expects('isAvailableForBatchDownload')->andReturnTrue();
         $dossier->expects('getDocuments')->andReturn(new ArrayCollection([$docA, $docB]));
         $dossier->expects('getId')->andReturn($dossierUuid);
@@ -104,7 +104,7 @@ class BatchDownloadServiceTest extends MockeryTestCase
 
     public function testRefreshForDossierDoesNotGenerateNewArchiveForEntityThatIsNotAvailableForBatchDownload(): void
     {
-        $dossier = \Mockery::mock(Dossier::class);
+        $dossier = \Mockery::mock(WooDecision::class);
         $dossier->expects('isAvailableForBatchDownload')->andReturnFalse();
 
         $batchA = \Mockery::mock(BatchDownload::class);
@@ -135,7 +135,7 @@ class BatchDownloadServiceTest extends MockeryTestCase
     {
         $docNrs = ['doc-x', 'doc-y'];
 
-        $dossier = \Mockery::mock(Dossier::class);
+        $dossier = \Mockery::mock(WooDecision::class);
 
         $expectedBatch = \Mockery::mock(BatchDownload::class);
         $expectedBatch->expects('getStatus')->andReturns(BatchDownload::STATUS_COMPLETED);

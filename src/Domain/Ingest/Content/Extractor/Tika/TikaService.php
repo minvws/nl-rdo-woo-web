@@ -45,11 +45,9 @@ readonly class TikaService
         $content = $result->getBody()->getContents();
         $content = json_decode($content, true);
 
-        if (! is_array($content)) {
-            return [];
-        }
-
         /** @var array<string,string> $content */
-        return $content;
+        return is_array($content)
+            ? $content
+            : [];
     }
 }

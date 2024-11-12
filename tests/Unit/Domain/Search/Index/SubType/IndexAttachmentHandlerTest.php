@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Domain\Search\Index\SubType;
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\Attachment\AbstractAttachment;
-use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
+use App\Domain\Publication\Attachment\AttachmentRepository;
 use App\Domain\Search\Index\SubType\IndexAttachmentCommand;
 use App\Domain\Search\Index\SubType\IndexAttachmentHandler;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
@@ -18,7 +18,7 @@ use Symfony\Component\Uid\Uuid;
 
 class IndexAttachmentHandlerTest extends MockeryTestCase
 {
-    private AbstractAttachmentRepository&MockInterface $repository;
+    private AttachmentRepository&MockInterface $repository;
     private SubTypeIndexer&MockInterface $subTypeIndexer;
     private LoggerInterface&MockInterface $logger;
     private SubTypeIngester&MockInterface $subTypeIngester;
@@ -26,7 +26,7 @@ class IndexAttachmentHandlerTest extends MockeryTestCase
 
     public function setUp(): void
     {
-        $this->repository = \Mockery::mock(AbstractAttachmentRepository::class);
+        $this->repository = \Mockery::mock(AttachmentRepository::class);
         $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->subTypeIngester = \Mockery::mock(SubTypeIngester::class);
@@ -42,9 +42,7 @@ class IndexAttachmentHandlerTest extends MockeryTestCase
     public function testInvokeReturnsEarlyIfNoAttachmentIsFound(): void
     {
         $id = Uuid::v6();
-        $attachment = \Mockery::mock(AbstractAttachment::class);
-        $attachment->shouldReceive('getId')->andReturn($id);
-        $command = IndexAttachmentCommand::forAttachment($attachment);
+        $command = new IndexAttachmentCommand($id);
 
         $this->repository->expects('find')->with($id)->andReturnNull();
         $this->logger->expects('warning');
@@ -55,9 +53,7 @@ class IndexAttachmentHandlerTest extends MockeryTestCase
     public function testInvokeLogsException(): void
     {
         $id = Uuid::v6();
-        $attachment = \Mockery::mock(AbstractAttachment::class);
-        $attachment->shouldReceive('getId')->andReturn($id);
-        $command = IndexAttachmentCommand::forAttachment($attachment);
+        $command = new IndexAttachmentCommand($id);
 
         $this->repository->expects('find')->with($id)->andThrow(new \RuntimeException('oops'));
         $this->logger->expects('error');
@@ -69,8 +65,7 @@ class IndexAttachmentHandlerTest extends MockeryTestCase
     {
         $id = Uuid::v6();
         $attachment = \Mockery::mock(AbstractAttachment::class);
-        $attachment->shouldReceive('getId')->andReturn($id);
-        $command = IndexAttachmentCommand::forAttachment($attachment);
+        $command = new IndexAttachmentCommand($id);
 
         $this->repository->expects('find')->with($id)->andReturn($attachment);
         $this->subTypeIndexer->expects('index')->with($attachment);

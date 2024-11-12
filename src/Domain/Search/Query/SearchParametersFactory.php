@@ -9,8 +9,8 @@ use App\Entity\Department;
 use App\Service\Inquiry\InquirySessionService;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Facet\Input\FacetInputFactory;
-use App\Service\Search\Query\SortField;
-use App\Service\Search\Query\SortOrder;
+use App\Service\Search\Query\Sort\SortField;
+use App\Service\Search\Query\Sort\SortOrder;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Public;
 
+use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Search\Query\SearchParametersFactory;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Service\Search\SearchService;
 use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
@@ -40,7 +40,7 @@ class StatsController extends AbstractController
         $response = $this->render('stats/prometheus.txt.twig', [
             'app' => [
                 'document_count' => $this->doctrine->getRepository(Document::class)->count([]),
-                'dossier_count' => $this->doctrine->getRepository(Dossier::class)->count([]),
+                'dossier_count' => $this->doctrine->getRepository(AbstractDossier::class)->count([]),
                 'page_count' => $this->doctrine->getRepository(Document::class)->pagecount(),
             ],
         ]);

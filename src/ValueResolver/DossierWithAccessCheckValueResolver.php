@@ -6,19 +6,20 @@ namespace App\ValueResolver;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Exception\ViewingNotAllowedException;
-use App\Service\DossierService;
+use App\Service\Security\DossierVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsTargetedValueResolver;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 #[AsTargetedValueResolver('dossierWithAccessCheck')]
 readonly class DossierWithAccessCheckValueResolver implements ValueResolverInterface
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private DossierService $dossierService,
+        private AuthorizationCheckerInterface $authorizationChecker,
     ) {
     }
 
@@ -32,7 +33,7 @@ readonly class DossierWithAccessCheckValueResolver implements ValueResolverInter
             return [];
         }
 
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
+        if (! $this->authorizationChecker->isGranted(DossierVoter::VIEW, $dossier)) {
             throw ViewingNotAllowedException::forDossier();
         }
 
@@ -42,7 +43,7 @@ readonly class DossierWithAccessCheckValueResolver implements ValueResolverInter
     private function resolveDossier(Request $request, ArgumentMetadata $argument): ?AbstractDossier
     {
         $argumentType = $argument->getType();
-        if ($argumentType === null || ! is_subclass_of($argumentType, AbstractDossier::class)) {
+        if ($argumentType === null || ! is_a($argumentType, AbstractDossier::class, true)) {
             return null;
         }
 

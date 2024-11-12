@@ -10,7 +10,7 @@ use App\Domain\Publication\Attachment\AttachmentType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Webmozart\Assert\Assert as WebmozartAssert;
 
-abstract class AttachmentUpdateDto
+class AttachmentUpdateDto
 {
     #[Assert\NotBlank(allowNull: true, normalizer: 'trim')]
     #[Assert\Date]
@@ -29,7 +29,6 @@ abstract class AttachmentUpdateDto
     #[Assert\NotBlank(allowNull: true, normalizer: 'trim')]
     public ?string $uploadUuid = null;
 
-    #[Assert\Choice(callback: 'getAllowedAttachmentTypes')]
     public ?AttachmentType $type = null;
 
     public ?string $internalReference = null;
@@ -70,9 +69,4 @@ abstract class AttachmentUpdateDto
 
         return $date;
     }
-
-    /**
-     * @return array<array-key,AttachmentType>
-     */
-    abstract public function getAllowedAttachmentTypes(): array;
 }

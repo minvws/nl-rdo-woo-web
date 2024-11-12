@@ -9,12 +9,14 @@ use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
-use App\Service\DossierWizard\DossierWizardHelper;
 use App\Service\DossierWizard\DossierWizardStatus;
 use App\Service\DossierWizard\StepStatus;
+use App\Service\DossierWizard\WizardStatusFactory;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Symfony\Component\Form\Button;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Routing\RouterInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
@@ -23,16 +25,17 @@ class StepActionHelperTest extends MockeryTestCase
 {
     private RouterInterface&MockInterface $router;
     private StepActionHelper $helper;
-    private DossierWizardHelper&MockInterface $dossierWizardHelper;
+    private WizardStatusFactory&MockInterface $wizardStatusFactory;
     private AbstractDossier&MockInterface $dossier;
     private DossierWizardStatus&MockInterface $wizardStatus;
     private DossierViewParamsBuilder&MockInterface $paramsBuilder;
+    private PaginatorInterface&MockInterface $paginator;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->dossierWizardHelper = \Mockery::mock(DossierWizardHelper::class);
+        $this->wizardStatusFactory = \Mockery::mock(WizardStatusFactory::class);
 
         $this->dossier = \Mockery::mock(AbstractDossier::class);
         $this->dossier->shouldReceive('getDocumentPrefix')->andReturn('foo');
@@ -43,11 +46,13 @@ class StepActionHelperTest extends MockeryTestCase
 
         $this->paramsBuilder = \Mockery::mock(DossierViewParamsBuilder::class);
 
+        $this->paginator = \Mockery::mock(PaginatorInterface::class);
+
         $this->router = \Mockery::mock(RouterInterface::class);
         $this->helper = new StepActionHelper(
             $this->router,
-            $this->dossierWizardHelper,
-            \Mockery::mock(PaginatorInterface::class),
+            $this->wizardStatusFactory,
+            $this->paginator,
             $this->paramsBuilder,
         );
     }
@@ -148,7 +153,7 @@ class StepActionHelperTest extends MockeryTestCase
         $this->wizardStatus->shouldReceive('getFirstOpenStep')->andReturn($nextStep);
         $this->wizardStatus->shouldReceive('getCurrentStep')->andReturn($currentStep);
 
-        $this->dossierWizardHelper->expects('getStatus')->andReturn($this->wizardStatus);
+        $this->wizardStatusFactory->expects('getWizardStatus')->andReturn($this->wizardStatus);
 
         $this->router->expects('generate')->with(
             'dummy_route',
@@ -177,7 +182,7 @@ class StepActionHelperTest extends MockeryTestCase
 
         $this->wizardStatus->shouldReceive('getCurrentStep')->andReturn($currentStep);
 
-        $this->dossierWizardHelper->expects('getStatus')->andReturn($this->wizardStatus);
+        $this->wizardStatusFactory->expects('getWizardStatus')->andReturn($this->wizardStatus);
 
         $this->router->expects('generate')->with(
             'dummy_route',
@@ -203,7 +208,7 @@ class StepActionHelperTest extends MockeryTestCase
 
         $this->wizardStatus->shouldReceive('getCurrentStep')->andReturn($currentStep);
 
-        $this->dossierWizardHelper->expects('getStatus')->andReturn($this->wizardStatus);
+        $this->wizardStatusFactory->expects('getWizardStatus')->andReturn($this->wizardStatus);
 
         $this->router->expects('generate')->with(
             'app_admin_dossier',
@@ -269,6 +274,69 @@ class StepActionHelperTest extends MockeryTestCase
         self::assertSame(
             $expectedResult,
             $this->helper->getParamsBuilder($dossier),
+        );
+    }
+
+    public function testIsFormCancelledReturnsFalseWhenFormIsNotSubmitted(): void
+    {
+        $form = \Mockery::mock(FormInterface::class);
+        $form->shouldReceive('isSubmitted')->andReturnFalse();
+
+        self::assertFalse($this->helper->isFormCancelled($form));
+    }
+
+    public function testIsFormCancelledReturnsFalseWhenFormIsSubmittedButCancelButtonNotClicked(): void
+    {
+        $button = \Mockery::mock(Button::class);
+        $button->expects('isClicked')->andReturnFalse();
+
+        $form = \Mockery::mock(FormInterface::class);
+        $form->shouldReceive('isSubmitted')->andReturnTrue();
+        $form->shouldReceive('has')->with('cancel')->andReturnTrue();
+        $form->shouldReceive('get')->with('cancel')->andReturn($button);
+
+        self::assertFalse($this->helper->isFormCancelled($form));
+    }
+
+    public function testIsFormCancelledReturnsFalseWhenFormIsSubmittedButHasNoCancelButton(): void
+    {
+        $form = \Mockery::mock(FormInterface::class);
+        $form->shouldReceive('isSubmitted')->andReturnTrue();
+        $form->shouldReceive('has')->with('cancel')->andReturnFalse();
+
+        self::assertFalse($this->helper->isFormCancelled($form));
+    }
+
+    public function testIsFormCancelledReturnsTrueWhenFormIsSubmittedAndCancelButtonClicked(): void
+    {
+        $button = \Mockery::mock(Button::class);
+        $button->expects('isClicked')->andReturnTrue();
+
+        $form = \Mockery::mock(FormInterface::class);
+        $form->shouldReceive('isSubmitted')->andReturnTrue();
+        $form->shouldReceive('has')->with('cancel')->andReturnTrue();
+        $form->shouldReceive('get')->with('cancel')->andReturn($button);
+
+        self::assertTrue($this->helper->isFormCancelled($form));
+    }
+
+    public function testGetPaginator(): void
+    {
+        $pagination = \Mockery::mock(PaginationInterface::class);
+
+        $this->paginator->expects('paginate')->with(
+            $target = 'foo',
+            $page = 12,
+            $limit = 0,
+        )->andReturn($pagination);
+
+        self::assertSame(
+            $pagination,
+            $this->helper->getPaginator(
+                $target,
+                $page,
+                $limit,
+            ),
         );
     }
 }

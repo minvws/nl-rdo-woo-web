@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domain\Ingest\Process\SubType\Strategy;
 
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface;
-use App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand;
 use App\Entity\EntityWithFileInfo;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class TikaOnlySubTypeIngestStrategy implements SubTypeIngestStrategyInterface
 {
     public function __construct(
-        private MessageBusInterface $bus,
+        private IngestDispatcher $ingestDispatcher,
         private LoggerInterface $logger,
     ) {
     }
@@ -26,9 +25,7 @@ readonly class TikaOnlySubTypeIngestStrategy implements SubTypeIngestStrategyInt
             'class' => $entity::class,
         ]);
 
-        $this->bus->dispatch(
-            IngestTikaOnlyCommand::forEntity($entity, $options->forceRefresh())
-        );
+        $this->ingestDispatcher->dispatchIngestTikaOnlyCommand($entity, $options->forceRefresh());
     }
 
     public function canHandle(EntityWithFileInfo $entity): bool
@@ -36,6 +33,9 @@ readonly class TikaOnlySubTypeIngestStrategy implements SubTypeIngestStrategyInt
         return $entity->getFileInfo()->isUploaded();
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getDefaultPriority(): int
     {
         return -10;

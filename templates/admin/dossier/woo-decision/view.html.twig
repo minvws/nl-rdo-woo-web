@@ -78,17 +78,15 @@
                 </twig:Admin:Definition>
 
                 <twig:Admin:Definition term="Bijlage met officieel besluit">
-                    <span data-e2e-name="dossier-decisionDocument">
-                    {% if dossier.decisionDocument.fileInfo.name is defined %}
-                        <twig:Admin:IconLink
-                            href="{{ path('app_admin_dossier_decision_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
-                            icon="file-pdf"
-                            text="{{ dossier.decisionDocument.fileInfo.name }}"
+                    {% if mainDocument is defined and mainDocument is not null %}
+                        <twig:Admin:DownloadFile
+                            href="{{ mainDocument.downloadUrl }}"
+                            mimeType="{{ mainDocument.mimeType }}"
+                            text="{{ mainDocument.name }}"
                         />
                     {% else %}
-                        {{ 'admin.global.no_record' | trans() }}
+                        {{ 'admin.global.no_record' | trans }}
                     {% endif %}
-                    </span>
                 </twig:Admin:Definition>
 
                 {% if attachments | length > 0 %}
@@ -139,11 +137,11 @@
                 <dl class="text-lg">
                     <twig:Admin:Definition term="{{ 'public.dossiers.production_report' | trans() }}">
                         <span data-e2e-name="dossier-inventoryFile">
-                        {% if dossier.rawInventory is not null  %}
+                        {% if dossier.productionReport is not null  %}
                             <twig:Admin:IconLink
-                                href="{{ path('app_admin_dossier_raw_inventory_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
+                                href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
                                 icon="file-csv"
-                                text="{{ dossier.rawInventory.fileInfo.name }}"
+                                text="{{ dossier.productionReport.fileInfo.name }}"
                             />
                         {% else %}
                             {{ 'admin.global.no_record' | trans() }}

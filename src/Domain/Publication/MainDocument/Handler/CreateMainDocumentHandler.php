@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Publication\MainDocument\Handler;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
@@ -32,7 +32,7 @@ readonly class CreateMainDocumentHandler
         private MessageBusInterface $messageBus,
         private DossierWorkflowManager $dossierWorkflowManager,
         private EntityManagerInterface $entityManager,
-        private AbstractDossierRepository $dossierRepository,
+        private DossierRepository $dossierRepository,
         private UploaderService $uploaderService,
         private ValidatorInterface $validator,
     ) {
@@ -45,7 +45,7 @@ readonly class CreateMainDocumentHandler
         $dossier = $this->dossierRepository->findOneByDossierId($dossierId);
         Assert::isInstanceOf($dossier, EntityWithMainDocument::class);
 
-        if ($dossier->getDocument() !== null) {
+        if ($dossier->getMainDocument() !== null) {
             throw new MainDocumentAlreadyExistsException();
         }
 

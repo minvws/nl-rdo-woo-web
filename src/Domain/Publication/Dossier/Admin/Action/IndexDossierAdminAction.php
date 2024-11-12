@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Admin\Action;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Service\DossierService;
+use App\Domain\Search\SearchDispatcher;
 
 readonly class IndexDossierAdminAction implements DossierAdminActionInterface
 {
     public function __construct(
-        private DossierService $dossierService,
+        private SearchDispatcher $searchDispatcher,
     ) {
     }
 
@@ -26,6 +26,6 @@ readonly class IndexDossierAdminAction implements DossierAdminActionInterface
 
     public function execute(AbstractDossier $dossier): void
     {
-        $this->dossierService->update($dossier);
+        $this->searchDispatcher->dispatchIndexDossierCommand($dossier->getId());
     }
 }

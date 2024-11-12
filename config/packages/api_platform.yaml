@@ -5,6 +5,9 @@ api_platform:
     formats:
         json: ['application/json']
         jsonapi:  ['application/vnd.api+json']
+    error_formats:
+        json: ['application/json']
+        jsonapi:  ['application/vnd.api+json']
     docs_formats:
         json: ['application/json']
         jsonapi:  ['application/vnd.api+json']
@@ -29,7 +32,6 @@ api_platform:
     enable_swagger_ui: false
     enable_docs: false
     enable_re_doc: false
-
 
 when@dev:
     api_platform:

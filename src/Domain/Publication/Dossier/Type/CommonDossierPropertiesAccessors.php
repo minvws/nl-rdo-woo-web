@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Type;
 
 use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierProperties;
+use App\Domain\Publication\Dossier\Type\ViewModel\Subject;
 use App\Domain\Publication\Dossier\ViewModel\Department;
+use App\Enum\Department as DepartmentEnum;
 
 trait CommonDossierPropertiesAccessors
 {
@@ -64,7 +66,7 @@ trait CommonDossierPropertiesAccessors
         return $this->getCommonDossier()->type;
     }
 
-    public function getSubject(): ?string
+    public function getSubject(): ?Subject
     {
         return $this->getCommonDossier()->subject;
     }
@@ -75,5 +77,10 @@ trait CommonDossierPropertiesAccessors
     public function hasSubject(): bool
     {
         return $this->getCommonDossier()->subject !== null;
+    }
+
+    public function isExternalDepartmentResponsible(): bool
+    {
+        return ! $this->getMainDepartment()->isDepartment(DepartmentEnum::VWS);
     }
 }

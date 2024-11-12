@@ -100,6 +100,10 @@ services:
             tags: [ 'domain.upload.preprocessor.strategy' ]
         App\Domain\Upload\Postprocessor\FilePostprocessorStrategyInterface:
             tags: [ 'domain.upload.postprocessor.strategy' ]
+        App\Domain\Search\Theme\ThemeInterface:
+            tags: [ 'domain.search.theme' ]
+        App\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface:
+            tags: [ 'domain.publication.dossier.file_provider' ]
 
     # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
     App\Service\Encryption\EncryptionService:
@@ -307,6 +311,14 @@ services:
 
     App\Domain\Upload\Extractor\Extractor $zipExtractor: '@extractor.zip'
     App\Domain\Upload\Extractor\Extractor $sevenZipExtractor: '@extractor.7z'
+
+    App\Domain\Search\Theme\ThemeManager:
+        arguments:
+            $themes: !tagged_iterator domain.search.theme
+
+    App\Domain\Publication\Dossier\FileProvider\DossierFileProviderManager:
+        arguments:
+            $providers: !tagged_iterator domain.publication.dossier.file_provider
 
 when@dev:
     services: &services_dev

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Doctrine\TimestampableTrait;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Subject\Subject;
 use App\Repository\OrganisationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -51,8 +52,8 @@ class Organisation
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Inquiry::class)]
     private Collection $inquiries;
 
-    /** @var Collection<array-key,Dossier> */
-    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Dossier::class)]
+    /** @var Collection<array-key,WooDecision> */
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: WooDecision::class)]
     private Collection $dossiers;
 
     /** @var Collection<array-key,Subject> */
@@ -189,7 +190,7 @@ class Organisation
     }
 
     /**
-     * @param Collection<Dossier> $dossiers
+     * @param Collection<WooDecision> $dossiers
      */
     public function setDossiers(Collection $dossiers): void
     {
@@ -205,7 +206,7 @@ class Organisation
     }
 
     /**
-     * @return Collection<Dossier>
+     * @return Collection<WooDecision>
      */
     public function getDossiers(): Collection
     {
@@ -213,7 +214,7 @@ class Organisation
     }
 
     /**
-     * @return Collection<Subject>
+     * @return Collection<array-key,Subject>
      */
     public function getSubjects(): Collection
     {

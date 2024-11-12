@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 
 class DocumentNumber
 {
@@ -39,7 +39,7 @@ class DocumentNumber
         return $this->matter;
     }
 
-    public static function fromDossierAndDocumentMetadata(Dossier $dossier, DocumentMetadata $metadata): self
+    public static function fromDossierAndDocumentMetadata(WooDecision $dossier, DocumentMetadata $metadata): self
     {
         return new self($dossier->getDocumentPrefix(), $metadata->getMatter(), $metadata->getId());
     }
@@ -64,7 +64,7 @@ class DocumentNumber
         return new self($prefix, $matter, $documentId);
     }
 
-    public static function fromReferral(Dossier $dossier, Document $referringDocument, string $referral): self
+    public static function fromReferral(WooDecision $dossier, Document $referringDocument, string $referral): self
     {
         // Create an instance for the referring document first, to use it's matter as the fallback matter.
         $referringDocNr = self::fromDossierAndDocument($dossier, $referringDocument);
@@ -72,7 +72,7 @@ class DocumentNumber
         return self::fromString($dossier->getDocumentPrefix(), $referringDocNr->getMatter(), $referral);
     }
 
-    public static function fromDossierAndDocument(Dossier $dossier, Document $document): self
+    public static function fromDossierAndDocument(WooDecision $dossier, Document $document): self
     {
         if ($document->getDocumentId() === null) {
             throw new \RuntimeException('Document has no documentId');

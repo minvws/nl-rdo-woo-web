@@ -164,7 +164,7 @@ final class DispositionAttachmentTest extends ApiTestCase
                     'parameters' => [
                         'chunkindex' => '0',
                         'totalchunkcount' => '1',
-                        'groupId' => UploadGroupId::DISPOSITION_ATTACHMENTS->value,
+                        'groupId' => UploadGroupId::ATTACHMENTS->value,
                         'uuid' => $uploadUuid,
                         'grounds' => ['ground one', 'ground two'],
                     ],
@@ -249,7 +249,7 @@ final class DispositionAttachmentTest extends ApiTestCase
                     'parameters' => [
                         'chunkindex' => '0',
                         'totalchunkcount' => '1',
-                        'groupId' => UploadGroupId::DISPOSITION_ATTACHMENTS->value,
+                        'groupId' => UploadGroupId::ATTACHMENTS->value,
                         'uuid' => $uploadUuid,
                     ],
                     'files' => [

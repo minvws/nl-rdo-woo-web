@@ -4,23 +4,13 @@ declare(strict_types=1);
 
 namespace App\Api\Admin\CovenantAttachment;
 
-use App\Api\Admin\Attachment\AttachmentDto;
-use App\Api\Admin\Attachment\AttachmentProcessor;
+use App\Api\Admin\Attachment\AbstractAttachmentDto;
+use App\Api\Admin\Attachment\AbstractAttachmentProcessor;
 use App\Domain\Publication\Attachment\AbstractAttachment;
 
-final class CovenantAttachmentProcessor extends AttachmentProcessor
+final class CovenantAttachmentProcessor extends AbstractAttachmentProcessor
 {
-    protected function getCreateDtoClass(): string
-    {
-        return CovenantAttachmentCreateDto::class;
-    }
-
-    protected function getUpdateDtoClass(): string
-    {
-        return CovenantAttachmentUpdateDto::class;
-    }
-
-    protected function fromEntityToDto(AbstractAttachment $entity): AttachmentDto
+    protected function fromEntityToDto(AbstractAttachment $entity): AbstractAttachmentDto
     {
         return CovenantAttachmentDto::fromEntity($entity);
     }

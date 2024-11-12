@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory\Progress;
 
-use App\Entity\InventoryProcessRun;
+use App\Entity\ProductionReportProcessRun;
 
 class RunProgress
 {
@@ -12,7 +12,7 @@ class RunProgress
 
     public function __construct(
         private readonly ProgressUpdater $progressUpdater,
-        private readonly InventoryProcessRun $run,
+        private readonly ProductionReportProcessRun $run,
         private readonly int $totalCount,
         private int $currentCount = 0,
     ) {
@@ -54,7 +54,7 @@ class RunProgress
         ));
     }
 
-    public function getRun(): InventoryProcessRun
+    public function getRun(): ProductionReportProcessRun
     {
         return $this->run;
     }

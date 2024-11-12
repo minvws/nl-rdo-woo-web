@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Publication\MainDocument\Handler;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
@@ -34,7 +34,7 @@ readonly class DeleteMainDocumentHandler
         private MessageBusInterface $messageBus,
         private DossierWorkflowManager $dossierWorkflowManager,
         private EntityManagerInterface $entityManager,
-        private AbstractDossierRepository $dossierRepository,
+        private DossierRepository $dossierRepository,
         iterable $deleteStrategies,
     ) {
         $this->deleteStrategies = $deleteStrategies;
@@ -65,7 +65,7 @@ readonly class DeleteMainDocumentHandler
         $event = MainDocumentDeletedEvent::forDocument($mainDocument);
 
         $documentRepository->remove($mainDocument, true);
-        $dossier->setDocument(null);
+        $dossier->setMainDocument(null);
 
         $this->messageBus->dispatch($event);
     }

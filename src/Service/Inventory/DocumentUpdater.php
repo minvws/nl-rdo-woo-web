@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
+use App\Domain\Ingest\IngestDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
-use App\Message\RemoveDocumentMessage;
 use App\Repository\DocumentRepository;
 use App\Service\Storage\EntityStorageService;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * This class will process updates to documents based on DocumentMetadata parsed from an inventory.
  */
-class DocumentUpdater
+readonly class DocumentUpdater
 {
     public function __construct(
-        private readonly MessageBusInterface $messageBus,
-        private readonly EntityStorageService $entityStorageService,
-        private readonly DocumentRepository $documentRepository,
+        private EntityStorageService $entityStorageService,
+        private DocumentRepository $documentRepository,
+        private DocumentDispatcher $documentDispatcher,
+        private IngestDispatcher $ingestDispatcher,
     ) {
     }
 
@@ -31,7 +31,7 @@ class DocumentUpdater
      *
      * @throws \Exception
      */
-    public function databaseUpdate(DocumentMetadata $documentMetadata, Dossier $dossier, Document $document): Document
+    public function databaseUpdate(DocumentMetadata $documentMetadata, WooDecision $dossier, Document $document): Document
     {
         $this->mapMetadataToDocument($documentMetadata, $document, $document->getDocumentNr());
 
@@ -51,21 +51,21 @@ class DocumentUpdater
      */
     public function asyncUpdate(Document $document): void
     {
-        $this->messageBus->dispatch(
-            new IngestMetadataOnlyCommand($document->getId(), Document::class, ! $document->shouldBeUploaded())
+        $this->ingestDispatcher->dispatchIngestMetadataOnlyCommand(
+            $document->getId(),
+            Document::class,
+            ! $document->shouldBeUploaded(),
         );
     }
 
-    public function databaseRemove(Document $document, Dossier $dossier): void
+    public function databaseRemove(Document $document, WooDecision $dossier): void
     {
         $dossier->removeDocument($document);
     }
 
-    public function asyncRemove(Document $document, Dossier $dossier): void
+    public function asyncRemove(Document $document, WooDecision $dossier): void
     {
-        $this->messageBus->dispatch(
-            RemoveDocumentMessage::forDossierAndDocument($dossier, $document)
-        );
+        $this->documentDispatcher->dispatchRemoveDocumentCommand($dossier->getId(), $document->getId());
     }
 
     private function mapMetadataToDocument(DocumentMetadata $documentMetadata, Document $document, string $documentNr): void
@@ -76,7 +76,6 @@ class DocumentUpdater
         $document->setDocumentId($documentMetadata->getId());
         $document->setThreadId($documentMetadata->getThreadId());
         $document->setGrounds($documentMetadata->getGrounds());
-        $document->setSubjects($documentMetadata->getSubjects());
         $document->setPeriod($documentMetadata->getPeriod());
         $document->setSuspended($documentMetadata->isSuspended());
         $document->setLinks($documentMetadata->getLinks());
@@ -114,7 +113,7 @@ class DocumentUpdater
     /**
      * @param string[] $refersTo
      */
-    public function updateDocumentReferrals(Dossier $dossier, Document $document, array $refersTo): void
+    public function updateDocumentReferrals(WooDecision $dossier, Document $document, array $refersTo): void
     {
         // First convert '[matter]-[documentId]' string format to DocumentNumber instances that include the dossier prefix.
         $newReferrals = array_map(

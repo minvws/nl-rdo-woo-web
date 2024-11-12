@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inquiry;
 
-use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\Dossier\IndexDossierCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
+use App\Domain\Search\SearchDispatcher;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Organisation;
 use App\Message\GenerateInquiryArchivesMessage;
-use App\Message\GenerateInquiryInventoryMessage;
-use App\Message\UpdateInquiryLinksMessage;
 use App\Repository\DocumentRepository;
-use App\Repository\DossierRepository;
 use App\Repository\InquiryRepository;
 use App\Repository\WooDecisionRepository;
 use App\Service\BatchDownloadService;
@@ -45,6 +42,9 @@ class InquiryServiceTest extends MockeryTestCase
     private InquiryRepository&MockInterface $inquiryRepo;
     private DocumentRepository&MockInterface $documentRepo;
     private WooDecision&MockInterface $dossier;
+    private SearchDispatcher&MockInterface $searchDispatcher;
+    private WooDecisionDispatcher&MockInterface $wooDecisionDispatcher;
+    private IngestDispatcher&MockInterface $ingestDispatcher;
     private UuidV6 $dossierId;
 
     public function setUp(): void
@@ -54,6 +54,9 @@ class InquiryServiceTest extends MockeryTestCase
         $this->batchDownloads = \Mockery::mock(BatchDownloadService::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->historyService = \Mockery::mock(HistoryService::class);
+        $this->searchDispatcher = \Mockery::mock(SearchDispatcher::class);
+        $this->wooDecisionDispatcher = \Mockery::mock(WooDecisionDispatcher::class);
+        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
 
         $this->inquiryService = new InquiryService(
             $this->entityManager,
@@ -61,6 +64,9 @@ class InquiryServiceTest extends MockeryTestCase
             $this->batchDownloads,
             $this->entityStorageService,
             $this->historyService,
+            $this->searchDispatcher,
+            $this->wooDecisionDispatcher,
+            $this->ingestDispatcher
         );
 
         $this->historyService->shouldReceive('addInquiryEntry')->andReturnNull();
@@ -140,13 +146,7 @@ class InquiryServiceTest extends MockeryTestCase
         $this->entityManager->expects('flush')->twice();
         $this->entityManager->expects('getRepository')->with(WooDecision::class)->andReturn($dossierRepo);
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (GenerateInquiryInventoryMessage $message) use ($inquiryId) {
-                self::assertEquals($inquiryId, $message->getUuid());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
+        $this->wooDecisionDispatcher->expects('dispatchGenerateInquiryInventoryCommand')->with($inquiryId);
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (GenerateInquiryArchivesMessage $message) use ($inquiryId) {
@@ -156,45 +156,12 @@ class InquiryServiceTest extends MockeryTestCase
             }
         ))->andReturns(new Envelope(new \stdClass()));
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IngestMetadataOnlyCommand $message) use ($addDoc1Id) {
-                self::assertEquals($addDoc1Id, $message->getEntityId());
+        $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($addDoc1Id, Document::class, false);
+        $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($addDoc2Id, Document::class, false);
+        $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($removeDocId, Document::class, false);
 
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
-
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IngestMetadataOnlyCommand $message) use ($addDoc2Id) {
-                self::assertEquals($addDoc2Id, $message->getEntityId());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
-
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IngestMetadataOnlyCommand $message) use ($removeDocId) {
-                self::assertEquals($removeDocId, $message->getEntityId());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
-
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IndexDossierCommand $message) {
-                self::assertEquals($this->dossierId, $message->getUuid());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
-
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IndexDossierCommand $message) use ($newDossierId) {
-                self::assertEquals($newDossierId, $message->getUuid());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
+        $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($this->dossierId);
+        $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($newDossierId);
 
         $this->inquiryService->updateInquiryLinks($this->organisation, $caseNr, [$addDoc1Id, $addDoc2Id], [$removeDocId], [$newDossierId]);
     }
@@ -202,7 +169,7 @@ class InquiryServiceTest extends MockeryTestCase
     public function testUpdateInquiryLinksWithNewDossier(): void
     {
         $newDossierId = Uuid::v6();
-        $newDossier = \Mockery::mock(Dossier::class);
+        $newDossier = \Mockery::mock(WooDecision::class);
         $newDossier->shouldReceive('getId')->andReturn($newDossierId);
         $newDossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
@@ -240,20 +207,14 @@ class InquiryServiceTest extends MockeryTestCase
         $this->documentRepo->expects('find')->with($addDoc2Id)->andReturn($addDoc2);
         $this->documentRepo->expects('find')->with($removeDocId)->andReturn($removeDoc);
 
-        $dossierRepo = \Mockery::mock(DossierRepository::class);
+        $dossierRepo = \Mockery::mock(WooDecisionRepository::class);
         $dossierRepo->shouldReceive('find')->with($newDossierId)->andReturn($newDossier);
 
         $this->entityManager->shouldReceive('getRepository')->with(WooDecision::class)->andReturn($dossierRepo);
         $this->entityManager->expects('persist')->with($inquiry);
         $this->entityManager->expects('flush');
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (GenerateInquiryInventoryMessage $message) use ($inquiryId) {
-                self::assertEquals($inquiryId, $message->getUuid());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
+        $this->wooDecisionDispatcher->expects('dispatchGenerateInquiryInventoryCommand')->with($inquiryId);
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (GenerateInquiryArchivesMessage $message) use ($inquiryId) {
@@ -263,37 +224,11 @@ class InquiryServiceTest extends MockeryTestCase
             }
         ))->andReturns(new Envelope(new \stdClass()));
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IngestMetadataOnlyCommand $message) use ($addDoc1Id) {
-                self::assertEquals($addDoc1Id, $message->getEntityId());
+        $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($addDoc1Id, Document::class, false);
+        $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($addDoc2Id, Document::class, false);
+        $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($removeDocId, Document::class, false);
 
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
-
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IngestMetadataOnlyCommand $message) use ($addDoc2Id) {
-                self::assertEquals($addDoc2Id, $message->getEntityId());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
-
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IngestMetadataOnlyCommand $message) use ($removeDocId) {
-                self::assertEquals($removeDocId, $message->getEntityId());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
-
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (IndexDossierCommand $message) use ($newDossierId) {
-                self::assertEquals($newDossierId, $message->getUuid());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
+        $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($newDossierId);
 
         $this->inquiryService->updateInquiryLinks($this->organisation, $caseNr, [$addDoc1Id, $addDoc2Id], [$removeDocId], [$newDossierId]);
     }
@@ -320,52 +255,40 @@ class InquiryServiceTest extends MockeryTestCase
         );
 
         // Docs 123 and 456 should be added to case-1
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (UpdateInquiryLinksMessage $message) use ($docId123, $docId456, $organisationId) {
-                self::assertEquals($organisationId, $message->getOrganisationId());
-                self::assertEquals('case-1', $message->getCaseNr());
-                self::assertEquals([$docId123, $docId456], $message->getDocIdsToAdd());
-                self::assertEquals([], $message->getDocIdsToDelete());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
+        $this->wooDecisionDispatcher->expects('dispatchUpdateInquiryLinksCommand')->with(
+            $organisationId,
+            'case-1',
+            [$docId123, $docId456],
+            [],
+            [],
+        );
 
         // Doc 123 should be added to case-2
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (UpdateInquiryLinksMessage $message) use ($docId123, $organisationId) {
-                self::assertEquals($organisationId, $message->getOrganisationId());
-                self::assertEquals('case-2', $message->getCaseNr());
-                self::assertEquals([$docId123], $message->getDocIdsToAdd());
-                self::assertEquals([], $message->getDocIdsToDelete());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
+        $this->wooDecisionDispatcher->expects('dispatchUpdateInquiryLinksCommand')->with(
+            $organisationId,
+            'case-2',
+            [$docId123],
+            [],
+            [],
+        );
 
         // Doc 456 should be removed from case-4
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (UpdateInquiryLinksMessage $message) use ($docId456, $organisationId) {
-                self::assertEquals($organisationId, $message->getOrganisationId());
-                self::assertEquals('case-4', $message->getCaseNr());
-                self::assertEquals([], $message->getDocIdsToAdd());
-                self::assertEquals([$docId456], $message->getDocIdsToDelete());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
+        $this->wooDecisionDispatcher->expects('dispatchUpdateInquiryLinksCommand')->with(
+            $organisationId,
+            'case-4',
+            [],
+            [$docId456],
+            [],
+        );
 
         // Doc 456 should be added to case-3
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (UpdateInquiryLinksMessage $message) use ($docId456, $organisationId) {
-                self::assertEquals($organisationId, $message->getOrganisationId());
-                self::assertEquals('case-3', $message->getCaseNr());
-                self::assertEquals([$docId456], $message->getDocIdsToAdd());
-                self::assertEquals([], $message->getDocIdsToDelete());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
+        $this->wooDecisionDispatcher->expects('dispatchUpdateInquiryLinksCommand')->with(
+            $organisationId,
+            'case-3',
+            [$docId456],
+            [],
+            [],
+        );
 
         $this->inquiryService->applyChangesetAsync($changeset);
     }

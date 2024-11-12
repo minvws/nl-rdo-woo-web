@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\Judgement;
 use App\Repository\DocumentRepository;
 use App\Service\Inventory\DocumentComparator;
@@ -20,12 +20,12 @@ use Mockery\MockInterface;
 class DocumentComparatorTest extends MockeryTestCase
 {
     private DocumentComparator $documentComparator;
-    private Dossier&MockInterface $dossier;
+    private WooDecision&MockInterface $dossier;
     private DocumentRepository&MockInterface $repository;
 
     public function setUp(): void
     {
-        $this->dossier = \Mockery::mock(Dossier::class);
+        $this->dossier = \Mockery::mock(WooDecision::class);
         $this->dossier->shouldReceive('getDocumentPrefix')->andReturn('prefix');
 
         $this->repository = \Mockery::mock(DocumentRepository::class);
@@ -46,7 +46,6 @@ class DocumentComparatorTest extends MockeryTestCase
         $document->expects('getFamilyId')->twice()->andReturn(1);
         $document->expects('getThreadId')->twice()->andReturn(1);
         $document->expects('getGrounds')->twice()->andReturn([]);
-        $document->expects('getSubjects')->twice()->andReturn([]);
         $document->expects('getPeriod')->twice()->andReturnNull();
         $document->expects('isSuspended')->twice()->andReturnFalse();
         $document->expects('getLinks')->twice()->andReturn([]);
@@ -63,7 +62,6 @@ class DocumentComparatorTest extends MockeryTestCase
         $metadata->expects('getFamilyId')->twice()->andReturn(1);
         $metadata->expects('getThreadId')->twice()->andReturn(1);
         $metadata->expects('getGrounds')->twice()->andReturn([]);
-        $metadata->expects('getSubjects')->twice()->andReturn([]);
         $metadata->expects('getPeriod')->twice()->andReturnNull();
         $metadata->expects('isSuspended')->twice()->andReturnFalse();
         $metadata->expects('getLinks')->twice()->andReturn([]);

@@ -33,13 +33,7 @@ Click Inquiries
 
 Open Inquiry
   [Arguments]  ${inquiry_id}
-  VAR  ${count}  0
-  WHILE  ${count} < 1  limit=40 seconds
-    Sleep  5s
-    Reload
-    ${count} =  Get Element Count  //*[@data-e2e-name="inquiry-list"]//td[contains(.,'${inquiry_id}')]
-  END
-  Click  '${inquiry_id}'
+  Click With Reload Retry  //*[@data-e2e-name="inquiry-list"]//a[contains(.,'${inquiry_id}')]
 
 Verify Inquiry Dossiers
   [Arguments]  ${dossier_ids}

@@ -10,6 +10,8 @@ use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Facet\Input\DateFacetInput;
 use App\Service\Search\Query\Facet\Input\FacetInputCollection;
 use App\Service\Search\Query\Facet\Input\StringValuesFacetInput;
+use App\Service\Search\Query\Sort\ViewModel\SortItems;
+use App\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
 use App\Service\Search\Result\AggregationMapper;
 use App\Service\Search\Result\ResultTransformer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,6 +29,7 @@ class ResultTransformerTest extends MockeryTestCase
     private PaginatorInterface&MockInterface $paginator;
     private AggregationMapper&MockInterface $aggregationMapper;
     private ResultFactory&MockInterface $resultFactory;
+    private SortItemViewFactory&MockInterface $sortItemViewFactory;
     private ResultTransformer $transformer;
 
     public function setUp(): void
@@ -36,6 +39,7 @@ class ResultTransformerTest extends MockeryTestCase
         $this->paginator = \Mockery::mock(PaginatorInterface::class);
         $this->aggregationMapper = \Mockery::mock(AggregationMapper::class);
         $this->resultFactory = \Mockery::mock(ResultFactory::class);
+        $this->sortItemViewFactory = \Mockery::mock(SortItemViewFactory::class);
 
         $this->transformer = new ResultTransformer(
             $this->entityManager,
@@ -43,6 +47,7 @@ class ResultTransformerTest extends MockeryTestCase
             $this->paginator,
             $this->aggregationMapper,
             $this->resultFactory,
+            $this->sortItemViewFactory,
         );
     }
 
@@ -70,6 +75,9 @@ class ResultTransformerTest extends MockeryTestCase
         $this->aggregationMapper->shouldReceive('map');
         $this->resultFactory->shouldReceive('map');
 
+        $sortItems = \Mockery::mock(SortItems::class);
+        $this->sortItemViewFactory->shouldReceive('make')->with($searchParameters)->andReturn($sortItems);
+
         $result = $this->transformer->transform(
             [],
             $searchParameters,
@@ -78,5 +86,7 @@ class ResultTransformerTest extends MockeryTestCase
 
         self::assertEquals(16, $result->getResultCount());
         self::assertEquals(6, $result->getDossierCount());
+        self::assertSame($sortItems, $result->getSortItems());
+        self::assertSame($searchParameters, $result->getSearchParameters());
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration;
 
 use App\Tests\Faker\FakerFactory;
+use App\Tests\ResetCarbon;
 use Faker\Generator;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Spatie\Snapshots\MatchesSnapshots;
@@ -19,6 +20,7 @@ trait IntegrationTestTrait
     use MatchesSnapshots;
     use ResetDatabase;
     use Factories;
+    use ResetCarbon;
 
     protected Generator $faker;
 

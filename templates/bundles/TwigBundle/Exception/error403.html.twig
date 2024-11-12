@@ -6,7 +6,7 @@
     {%
         include "bundles/TwigBundle/Exception/error-content.html.twig" with {
             title: page_title,
-            content: 'global.access_denied.message' | trans,
+            content: is_backend() ? 'admin.global.access_denied.message' | trans : 'public.global.access_denied.message' | trans,
         }
     %}
 {% endblock %}

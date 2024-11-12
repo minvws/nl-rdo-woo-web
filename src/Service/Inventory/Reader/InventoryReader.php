@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory\Reader;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Exception\InventoryReaderException;
 use App\Service\FileReader\ColumnMapping;
 use App\Service\FileReader\FileReaderInterface;
@@ -45,7 +45,7 @@ class InventoryReader implements InventoryReaderInterface
     /**
      * @return \Generator<InventoryReadItem>
      */
-    public function getDocumentMetadataGenerator(Dossier $dossier): \Generator
+    public function getDocumentMetadataGenerator(WooDecision $dossier): \Generator
     {
         foreach ($this->reader as $rowIdx => $row) {
             unset($row);
@@ -53,7 +53,7 @@ class InventoryReader implements InventoryReaderInterface
             $documentMetadata = null;
             $exception = null;
             try {
-                $documentMetadata = $this->mapRow($rowIdx, $dossier);
+                $documentMetadata = $this->mapRow($rowIdx);
             } catch (\Exception $exception) {
                 // Exception occurred, but we still continue with the next row to discover and report any other errors
                 // To not break the generator yield instead of throwing the exception
@@ -69,7 +69,7 @@ class InventoryReader implements InventoryReaderInterface
      *
      * @throws \Exception
      */
-    protected function mapRow(int $rowIdx, Dossier $dossier): DocumentMetadata
+    protected function mapRow(int $rowIdx): DocumentMetadata
     {
         $documentId = $this->reader->getString($rowIdx, MetadataField::ID->value);
         if (empty($documentId)) {
@@ -83,9 +83,6 @@ class InventoryReader implements InventoryReaderInterface
         if (empty($matter)) {
             throw InventoryReaderException::forMissingMatterInRow($rowIdx);
         }
-
-        // Use default subjects from the dossier for now, to be improved in #1737
-        $subjects = $dossier->getDefaultSubjects() ?? [];
 
         $links = $this->getLinks($rowIdx);
         $remark = $this->reader->getOptionalString($rowIdx, MetadataField::REMARK->value);
@@ -110,7 +107,6 @@ class InventoryReader implements InventoryReaderInterface
             id: $documentId,
             judgement: InventoryDataHelper::judgement($this->reader->getString($rowIdx, MetadataField::JUDGEMENT->value)),
             period: null,
-            subjects: $subjects,
             threadId: $this->reader->getOptionalInt($rowIdx, MetadataField::THREADID->value),
             caseNumbers: InventoryDataHelper::separateValues($this->reader->getOptionalString($rowIdx, MetadataField::CASENR->value)),
             suspended: InventoryDataHelper::isTrue($this->reader->getOptionalString($rowIdx, MetadataField::SUSPENDED->value)),

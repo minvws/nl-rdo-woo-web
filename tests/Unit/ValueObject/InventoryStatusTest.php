@@ -6,8 +6,8 @@ namespace App\Tests\Unit\ValueObject;
 
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\InventoryProcessRun;
-use App\Entity\RawInventory;
+use App\Entity\ProductionReport;
+use App\Entity\ProductionReportProcessRun;
 use App\Service\Inventory\InventoryChangeset;
 use App\ValueObject\InventoryStatus;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -16,12 +16,12 @@ use Mockery\MockInterface;
 class InventoryStatusTest extends MockeryTestCase
 {
     private WooDecision&MockInterface $dossier;
-    private InventoryProcessRun&MockInterface $processRun;
+    private ProductionReportProcessRun&MockInterface $processRun;
     private InventoryStatus $status;
 
     public function setUp(): void
     {
-        $this->processRun = \Mockery::mock(InventoryProcessRun::class);
+        $this->processRun = \Mockery::mock(ProductionReportProcessRun::class);
         $this->dossier = \Mockery::mock(WooDecision::class);
         $this->dossier->shouldReceive('getProcessRun')->andReturn($this->processRun);
 
@@ -33,7 +33,7 @@ class InventoryStatusTest extends MockeryTestCase
     public function testIsUploadedReturnsTrueWhenAllConditionsAreMet(): void
     {
         $this->processRun->shouldReceive('isFinished')->andReturnTrue();
-        $this->dossier->shouldReceive('getRawInventory')->andReturn(\Mockery::mock(RawInventory::class));
+        $this->dossier->shouldReceive('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
 
         self::assertTrue($this->status->isUploaded());
     }
@@ -41,15 +41,15 @@ class InventoryStatusTest extends MockeryTestCase
     public function testIsUploadedReturnsFalseWhenRunIsNotFinished(): void
     {
         $this->processRun->shouldReceive('isFinished')->andReturnFalse();
-        $this->dossier->shouldReceive('getRawInventory')->andReturn(\Mockery::mock(RawInventory::class));
+        $this->dossier->shouldReceive('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
 
         self::assertFalse($this->status->isUploaded());
     }
 
-    public function testIsUploadedReturnsFalseWhenRawInventoryIsMissing(): void
+    public function testIsUploadedReturnsFalseWhenProductionReportIsMissing(): void
     {
         $this->processRun->shouldReceive('isFinished')->andReturnTrue();
-        $this->dossier->shouldReceive('getRawInventory')->andReturnNull();
+        $this->dossier->shouldReceive('getProductionReport')->andReturnNull();
 
         self::assertFalse($this->status->isUploaded());
     }
@@ -198,11 +198,11 @@ class InventoryStatusTest extends MockeryTestCase
         self::assertTrue($this->status->canUpload());
     }
 
-    public function testCanUploadReturnsTrueForConceptDossierWithoutRawInventory(): void
+    public function testCanUploadReturnsTrueForConceptDossierWithoutProductionReport(): void
     {
         $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
         $this->processRun->shouldReceive('isFailed')->andReturnFalse();
-        $this->dossier->shouldReceive('getRawInventory')->andReturnNull();
+        $this->dossier->shouldReceive('getProductionReport')->andReturnNull();
 
         self::assertTrue($this->status->canUpload());
     }
@@ -211,7 +211,7 @@ class InventoryStatusTest extends MockeryTestCase
     {
         $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
         $this->processRun->shouldReceive('isFailed')->andReturnFalse();
-        $this->dossier->shouldReceive('getRawInventory')->andReturn(\Mockery::mock(RawInventory::class));
+        $this->dossier->shouldReceive('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
 
         self::assertFalse($this->status->canUpload());
     }

@@ -157,7 +157,7 @@ readonly class AttachmentTypeFactory
                 name: $this->trans('branch.woo_procedure'),
                 attachmentTypes: [
                     AttachmentType::DECISION_ON_OBJECTION,
-                    AttachmentType::JUDEGEMENT_ON_WOB_WOO_REQUEST,
+                    AttachmentType::JUDGEMENT_ON_WOB_WOO_REQUEST,
                     AttachmentType::WOB_WOO_REQUEST,
                 ],
             ),

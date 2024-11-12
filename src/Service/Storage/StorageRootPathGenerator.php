@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Storage;
 
 use App\Entity\EntityWithFileInfo;
+use Symfony\Component\Uid\Uuid;
 
 class StorageRootPathGenerator
 {
@@ -14,8 +15,12 @@ class StorageRootPathGenerator
      */
     public function __invoke(EntityWithFileInfo $entity): string
     {
-        $documentId = (string) $entity->getId();
-        $hash = hash('sha256', $documentId);
+        return $this->fromUuid($entity->getId());
+    }
+
+    public function fromUuid(Uuid $id): string
+    {
+        $hash = hash('sha256', $id->__toString());
 
         $prefix = substr($hash, 0, 2);
         $suffix = substr($hash, 2);

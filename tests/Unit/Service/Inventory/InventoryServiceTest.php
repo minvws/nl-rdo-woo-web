@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Inventory;
-use App\Entity\InventoryProcessRun;
-use App\Entity\RawInventory;
+use App\Entity\ProductionReport;
+use App\Entity\ProductionReportProcessRun;
 use App\Exception\ProcessInventoryException;
 use App\Service\Inventory\InventoryService;
 use App\Service\Inventory\Reader\InventoryReaderFactory;
@@ -23,14 +23,14 @@ class InventoryServiceTest extends MockeryTestCase
     private EntityStorageService&MockInterface $entityStorageService;
     private InventoryReaderFactory&MockInterface $readerFactory;
     private InventoryService $inventoryService;
-    private InventoryProcessRun&MockInterface $run;
+    private ProductionReportProcessRun&MockInterface $run;
 
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->readerFactory = \Mockery::mock(InventoryReaderFactory::class);
-        $this->run = \Mockery::mock(InventoryProcessRun::class);
+        $this->run = \Mockery::mock(ProductionReportProcessRun::class);
 
         $this->inventoryService = new InventoryService(
             $this->entityManager,
@@ -101,9 +101,9 @@ class InventoryServiceTest extends MockeryTestCase
 
     public function testRemoveInventoriesDoesNothingAndReturnsFalseWhenThereAreNoInventories(): void
     {
-        $dossier = \Mockery::mock(Dossier::class);
+        $dossier = \Mockery::mock(WooDecision::class);
         $dossier->expects('getInventory')->andReturnNull();
-        $dossier->expects('getRawInventory')->andReturnNull();
+        $dossier->expects('getProductionReport')->andReturnNull();
 
         self::assertFalse(
             $this->inventoryService->removeInventories($dossier)
@@ -113,19 +113,19 @@ class InventoryServiceTest extends MockeryTestCase
     public function testRemoveInventoriesRemovesAllInventories(): void
     {
         $inventory = \Mockery::mock(Inventory::class);
-        $rawInventory = \Mockery::mock(RawInventory::class);
+        $productionReport = \Mockery::mock(ProductionReport::class);
 
-        $dossier = \Mockery::mock(Dossier::class);
+        $dossier = \Mockery::mock(WooDecision::class);
         $dossier->expects('getInventory')->andReturn($inventory);
-        $dossier->expects('getRawInventory')->andReturn($rawInventory);
+        $dossier->expects('getProductionReport')->andReturn($productionReport);
         $dossier->expects('setInventory')->with(null);
-        $dossier->expects('setRawInventory')->with(null);
+        $dossier->expects('setProductionReport')->with(null);
 
         $this->entityStorageService->expects('removeFileForEntity')->with($inventory);
-        $this->entityStorageService->expects('removeFileForEntity')->with($rawInventory);
+        $this->entityStorageService->expects('removeFileForEntity')->with($productionReport);
 
         $this->entityManager->expects('remove')->with($inventory);
-        $this->entityManager->expects('remove')->with($rawInventory);
+        $this->entityManager->expects('remove')->with($productionReport);
         $this->entityManager->expects('persist')->with($dossier);
 
         self::assertTrue(

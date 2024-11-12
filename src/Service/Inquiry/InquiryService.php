@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace App\Service\Inquiry;
 
-use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\Dossier\IndexDossierCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
+use App\Domain\Search\SearchDispatcher;
 use App\Entity\BatchDownload;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\InquiryInventory;
 use App\Entity\Organisation;
 use App\Message\GenerateInquiryArchivesMessage;
-use App\Message\GenerateInquiryInventoryMessage;
-use App\Message\UpdateInquiryLinksMessage;
 use App\Service\BatchDownloadService;
 use App\Service\HistoryService;
 use App\Service\Inventory\InquiryChangeset;
@@ -36,6 +34,9 @@ readonly class InquiryService
         private BatchDownloadService $batchDownloadService,
         private EntityStorageService $entityStorageService,
         private HistoryService $historyService,
+        private SearchDispatcher $searchDispatcher,
+        private WooDecisionDispatcher $wooDecisionDispatcher,
+        private IngestDispatcher $ingestDispatcher,
     ) {
     }
 
@@ -86,9 +87,7 @@ readonly class InquiryService
 
     public function generateInventory(Inquiry $inquiry): void
     {
-        $this->messageBus->dispatch(
-            GenerateInquiryInventoryMessage::forInquiry($inquiry)
-        );
+        $this->wooDecisionDispatcher->dispatchGenerateInquiryInventoryCommand($inquiry->getId());
     }
 
     public function generateArchives(Inquiry $inquiry): void
@@ -166,19 +165,17 @@ readonly class InquiryService
     public function applyChangesetAsync(InquiryChangeset $changeset): void
     {
         foreach ($changeset->getChanges() as $caseNr => $actions) {
-            $this->messageBus->dispatch(
-                new UpdateInquiryLinksMessage(
-                    $changeset->getOrganisation()->getId(),
-                    strval($caseNr),
-                    $actions[InquiryChangeset::ADD_DOCUMENTS],
-                    $actions[InquiryChangeset::DEL_DOCUMENTS],
-                    $actions[InquiryChangeset::ADD_DOSSIERS],
-                )
+            $this->wooDecisionDispatcher->dispatchUpdateInquiryLinksCommand(
+                $changeset->getOrganisation()->getId(),
+                strval($caseNr),
+                $actions[InquiryChangeset::ADD_DOCUMENTS],
+                $actions[InquiryChangeset::DEL_DOCUMENTS],
+                $actions[InquiryChangeset::ADD_DOSSIERS],
             );
         }
     }
 
-    private function addDossierToInquiry(Inquiry $inquiry, ?Dossier $dossier, string $caseNr): bool
+    private function addDossierToInquiry(Inquiry $inquiry, ?WooDecision $dossier, string $caseNr): bool
     {
         if (! $dossier || $inquiry->getDossiers()->contains($dossier)) {
             return false;
@@ -194,14 +191,14 @@ readonly class InquiryService
     private function dispatchDocumentUpdates(InquiryLinkUpdateResult $result): void
     {
         foreach ($result->getUpdatedDocumentIds() as $id) {
-            $this->messageBus->dispatch(new IngestMetadataOnlyCommand($id, Document::class, false));
+            $this->ingestDispatcher->dispatchIngestMetadataOnlyCommand($id, Document::class, false);
         }
     }
 
     private function dispatchDossierUpdates(InquiryLinkUpdateResult $result): void
     {
         foreach ($result->getUpdatedDossierIds() as $id) {
-            $this->messageBus->dispatch(new IndexDossierCommand($id));
+            $this->searchDispatcher->dispatchIndexDossierCommand($id);
         }
     }
 

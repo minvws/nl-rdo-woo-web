@@ -46,19 +46,6 @@ class ExcelReaderTest extends MockeryTestCase
         );
     }
 
-    public function testGetOptionalStringReturnsValueForExistingColumnWhenFilled(): void
-    {
-        $subjects = [];
-        foreach ($this->excelReader as $row) {
-            $subjects[] = $this->excelReader->getOptionalString($row->getRowIndex(), 'subject');
-        }
-
-        self::assertEquals(
-            ['Dummy onderwerp 1', null],
-            $subjects,
-        );
-    }
-
     public function testGetOptionalStringReturnsNullForNonExistingColumn(): void
     {
         $values = [];

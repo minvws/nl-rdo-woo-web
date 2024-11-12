@@ -6,12 +6,12 @@ namespace App\Service;
 
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Exception\DocumentReplaceException;
-use App\Message\ReplaceDocumentMessage;
 use App\Message\UpdateDossierArchivesMessage;
 use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
@@ -37,10 +37,11 @@ readonly class DocumentService
         private MessageBusInterface $messageBus,
         private HistoryService $historyService,
         private DocumentNumberExtractor $documentNumberExtractor,
+        private DocumentDispatcher $documentDispatcher,
     ) {
     }
 
-    public function removeDocumentFromDossier(Dossier $dossier, Document $document, bool $flush = true): void
+    public function removeDocumentFromDossier(WooDecision $dossier, Document $document, bool $flush = true): void
     {
         // In some cases the dossier-document relation has already been cleaned up, so check first
         if ($document->getDossiers()->contains($dossier)) {
@@ -93,7 +94,7 @@ readonly class DocumentService
         $this->thumbStorage->deleteAllThumbsForEntity($document);
     }
 
-    public function replace(Dossier $dossier, Document $document, UploadedFile $uploadedFile): void
+    public function replace(WooDecision $dossier, Document $document, UploadedFile $uploadedFile): void
     {
         $filename = $uploadedFile->getClientOriginalName();
         try {
@@ -110,15 +111,12 @@ readonly class DocumentService
             throw new \RuntimeException('Document file replacements failed, could not store uploadedfile');
         }
 
-        $message = new ReplaceDocumentMessage(
-            dossierUuid: $dossier->getId(),
-            documentUuid: $document->getId(),
+        $this->documentDispatcher->dispatchReplaceDocumentCommand(
+            dossierId: $dossier->getId(),
+            documentId: $document->getId(),
             remotePath: $remotePath,
             originalFilename: $uploadedFile->getClientOriginalName(),
-            chunked: false,
         );
-
-        $this->messageBus->dispatch($message);
 
         $this->historyService->addDocumentEntry($document, 'document_replaced', [
             'filetype' => $document->getFileInfo()->getType(),

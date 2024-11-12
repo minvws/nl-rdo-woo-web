@@ -63,10 +63,10 @@
     {% if dossier.status.isConcept %}
         <twig:Admin:UploadedFile
             deleteUrl="{{ path('app_admin_dossier_woodecision_documents_concept_inventory_delete', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
-            downloadUrl="{{ path('app_admin_dossier_raw_inventory_download', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
-            fileName="{{ dossier.rawInventory.fileInfo.name }}"
-            fileSize="{{ dossier.rawInventory.fileInfo.size }}"
-            mimeType="{{ dossier.rawInventory.fileInfo.mimetype }}"
+            downloadUrl="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
+            fileName="{{ dossier.productionReport.fileInfo.name }}"
+            fileSize="{{ dossier.productionReport.fileInfo.size }}"
+            mimeType="{{ dossier.productionReport.fileInfo.mimetype }}"
         />
     {% else %}
         <p>De inventaris is succesvol vervangen.</p>

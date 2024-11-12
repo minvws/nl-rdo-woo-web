@@ -6,6 +6,7 @@ namespace App\Tests\Factory;
 
 use App\Entity\Document;
 use App\Entity\Judgement;
+use App\Service\Storage\StorageRootPathGenerator;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -13,6 +14,10 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
  */
 final class DocumentFactory extends PersistentProxyObjectFactory
 {
+    public function __construct(private StorageRootPathGenerator $storageRootPathGenerator)
+    {
+    }
+
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
@@ -40,7 +45,6 @@ final class DocumentFactory extends PersistentProxyObjectFactory
             'threadId' => 0,
             'pageCount' => self::faker()->numberBetween(1, 20),
             'summary' => self::faker()->paragraph(),
-            'subjects' => self::faker()->words(self::faker()->numberBetween(1, 5)),
             'grounds' => self::faker()->groundsBetween(),
             'judgement' => $judgement,
             'fileInfo' => FileInfoFactory::new([
@@ -62,7 +66,15 @@ final class DocumentFactory extends PersistentProxyObjectFactory
      */
     protected function initialize(): static
     {
-        return $this;
+        return $this->afterInstantiate(function (Document $document): void {
+            $document
+                ->getFileInfo()
+                ->setPath(sprintf(
+                    '%s/%s',
+                    $this->storageRootPathGenerator->fromUuid($document->getId()),
+                    $document->getFileInfo()->getName(),
+                ));
+        });
     }
 
     public static function class(): string

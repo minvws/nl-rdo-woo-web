@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Process;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\UploadedFile;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use Psr\Log\LoggerInterface;
 
 final readonly class DocumentFileProcessor
@@ -20,7 +20,7 @@ final readonly class DocumentFileProcessor
 
     public function process(
         UploadedFile $file,
-        Dossier $dossier,
+        WooDecision $dossier,
         Document $document,
         string $type,
     ): void {

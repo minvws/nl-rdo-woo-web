@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\BatchDownload;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\EntityWithBatchDownload;
 use App\Entity\Inquiry;
 use App\Message\GenerateArchiveMessage;
@@ -128,7 +128,7 @@ class BatchDownloadService
     private function getExistingBatches(EntityWithBatchDownload $entity): array
     {
         $criteria = match (true) {
-            $entity instanceof Dossier => ['dossier' => $entity],
+            $entity instanceof WooDecision => ['dossier' => $entity],
             $entity instanceof Inquiry => ['inquiry' => $entity],
             default => throw new \OutOfBoundsException('Unsupported entity for batchdownload'),
         };

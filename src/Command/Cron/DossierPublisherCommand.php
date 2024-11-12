@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command\Cron;
 
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
 use App\Domain\Publication\Dossier\DossierPublisher;
+use App\Domain\Publication\Dossier\DossierRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DossierPublisherCommand extends Command
 {
     public function __construct(
-        private readonly AbstractDossierRepository $repository,
+        private readonly DossierRepository $repository,
         private readonly DossierPublisher $publisher,
     ) {
         parent::__construct();

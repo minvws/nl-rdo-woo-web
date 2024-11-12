@@ -80,11 +80,11 @@
                     </twig:Admin:Definition>
 
                     <twig:Admin:Definition term="{{ documentLabel }}">
-                        {% if dossier.document.fileInfo.name is defined %}
+                        {% if mainDocument is defined and mainDocument is not null %}
                             <twig:Admin:DownloadFile
-                                href="{{ downloadDocumentPath }}"
-                                mimeType="{{ dossier.document.fileInfo.mimetype }}"
-                                text="{{ dossier.document.fileInfo.name }}"
+                                href="{{ mainDocument.downloadUrl }}"
+                                mimeType="{{ mainDocument.mimeType }}"
+                                text="{{ mainDocument.name }}"
                             />
                         {% else %}
                             {{ 'admin.global.no_record' | trans }}

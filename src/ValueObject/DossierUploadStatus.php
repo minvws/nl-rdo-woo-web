@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace App\ValueObject;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use Doctrine\Common\Collections\ReadableCollection;
 
-class DossierUploadStatus
+readonly class DossierUploadStatus
 {
     public function __construct(
-        private readonly Dossier $dossier,
+        private WooDecision $dossier,
     ) {
+    }
+
+    public function getDossier(): WooDecision
+    {
+        return $this->dossier;
     }
 
     public function getExpectedUploadCount(): int

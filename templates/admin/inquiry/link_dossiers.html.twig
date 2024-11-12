@@ -36,6 +36,21 @@
                     </div>
                 </div>
 
+                {# {% do inquiry_link_form.dossiers.setRendered %}
+
+                {% set dossier_errors = [] %}
+                {% for error in inquiry_link_form.dossiers.vars.errors %}
+                    {% set dossier_errors = dossier_errors|merge([error.message]) %}
+                {% endfor %}
+
+                <div {{ vue_component('LinkDossiersController', {
+                    endpoint: path('app_admin_dossiers_search_link'),
+                    name: 'inquiry_link_dossier_form[dossiers][]',
+                    submitErrors: dossier_errors
+                }) }}>
+                    <div class="min-h-36"></div>
+                </div> #}
+
                 {{ form_row(inquiry_link_form.link) }}
                 {{ form_row(inquiry_link_form.cancel) }}
 

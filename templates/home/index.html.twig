@@ -12,12 +12,6 @@
     <div class="woo-container woo-container--sm">
         <div class="pb-8 lg:pb-16">
             {% include "home/snippets/intro.html.twig" %}
-
-            {% if recents | length > 0 %}
-                <section class="pt-10">
-                    {% include "snippets/recent-publications.html.twig" %}
-                </section>
-            {% endif %}
         </div>
     </div>
 
@@ -40,5 +34,11 @@
         </div>
     </section>
 
-    {% include "home/snippets/info.html.twig" %}
+    <section class="pt-8 lg:pt-16">
+        <div class="woo-container woo-container--sm">
+            <div class="woo-rich-text woo-readable-width">
+                {% include "snippets/about-platform.html.twig" %}
+            </div>
+        </div>
+    </section>
 {% endblock %}

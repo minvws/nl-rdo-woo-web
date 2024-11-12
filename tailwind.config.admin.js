@@ -20,8 +20,6 @@ module.exports = {
       },
 
       colors: {
-        // https://www.color-name.com/hex/f3f3f3
-
         // Gray colors
         'bhr-anti-flash-white': '#f3f3f3',
         'bhr-black-olive': '#404040',

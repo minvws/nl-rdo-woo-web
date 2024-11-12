@@ -37,9 +37,18 @@ Fill Out Decision Details
   [Arguments]  ${decision}  ${has_attachment}=${FALSE}
   Check Checkbox  text="${decision}"
   Fill Text  id=decision_summary  Samenvatting voor het besluitdossier Robot ${CURRENT_TIME}
-  Upload File By Selector  id=decision_decision_document  tests/robot_framework/files/woodecision/besluitbrief.pdf
+  Upload Besluitbrief  tests/robot_framework/files/woodecision/besluitbrief.pdf  besluitbrief.pdf
   IF  ${has_attachment}  Upload Attachment  staatscourant
   Click  "Opslaan en verder"
+
+Upload Besluitbrief
+  [Arguments]  ${besluitbrief_location}  ${besluitbrief_filename}
+  Click  " + Besluitbrief toevoegen... "
+  Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${besluitbrief_location}
+  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${besluitbrief_filename}  timeout=10s
+  Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
+  Click  //dialog[@open]//button[@type="submit"]
+  Wait For Condition  Text  //*[@id="inhoud"]  contains  Beslissing op Wob-/Woo-verzoek toegevoegd.
 
 Upload Documents Step
   Upload Inventory  ${INVENTORY}
@@ -53,7 +62,11 @@ Upload Inventory
   Upload File By Selector  id=inventory_inventory  ${inventory_file_location}
   Click  //*[@id="inventory_submit"]
   IF  not ${expect_error}
-    Wait For Elements State  //*[@id="upload-area-dossier-files"]  visible  timeout=30s
+    Wait For Elements State
+    ...  //*[@id="upload-area-dossier-files"]
+    ...  visible
+    ...  timeout=30s
+    ...  message=Error(s) while uploading
   END
 
 Verify Inventory Error
@@ -96,7 +109,7 @@ Click Continue To Documents
 
 Open Document In Dossier
   [Arguments]  ${document_id}
-  Click  "${document_id}"
+  Click  //table[@data-e2e-name="dossier-documents"]//a[contains(@href,'${document_id}')]
   Wait For Condition  Text  //*[@data-e2e-name="document-nr"]  contains  ${document_id}
 
 Retract Document

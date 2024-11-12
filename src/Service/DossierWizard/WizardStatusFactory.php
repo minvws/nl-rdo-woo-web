@@ -19,7 +19,7 @@ readonly class WizardStatusFactory
 
     public function getWizardStatus(
         AbstractDossier $dossier,
-        StepName $currentStep,
+        StepName $currentStep = StepName::DETAILS,
         bool $withAccessCheck = true,
     ): DossierWizardStatus {
         $beforeCurrentStep = true;

@@ -92,7 +92,7 @@ enum AttachmentType: string implements TranslatableInterface
     case MEETING_REPORT = 'c_42e406dd';
 
     case DECISION_ON_OBJECTION = 'ww_a2azo7q';
-    case JUDEGEMENT_ON_WOB_WOO_REQUEST = 'c_4f50ca9c';
+    case JUDGEMENT_ON_WOB_WOO_REQUEST = 'c_4f50ca9c';
     case WOB_WOO_REQUEST = 'c_1cf18f83';
 
     public function trans(TranslatorInterface $translator, ?string $locale = null): string

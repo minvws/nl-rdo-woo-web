@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Attachment\Handler;
 
 use App\Domain\Publication\Attachment\AbstractAttachment;
-use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
+use App\Domain\Publication\Attachment\AttachmentRepository;
 use App\Domain\Publication\Attachment\Command\UpdateAttachmentCommand;
 use App\Domain\Publication\Attachment\EntityWithAttachments;
 use App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
 use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Service\Uploader\UploaderService;
@@ -30,8 +30,8 @@ readonly class UpdateAttachmentHandler
     public function __construct(
         private MessageBusInterface $messageBus,
         private DossierWorkflowManager $dossierWorkflowManager,
-        private AbstractAttachmentRepository $attachmentRepository,
-        private AbstractDossierRepository $dossierRepository,
+        private AttachmentRepository $attachmentRepository,
+        private DossierRepository $dossierRepository,
         private ValidatorInterface $validator,
         private UploaderService $uploaderService,
     ) {

@@ -22,8 +22,6 @@ class DocumentMetadata
         private readonly string $id,
         private readonly Judgement $judgement,
         private readonly ?string $period,
-        /** @var string[] */
-        private readonly array $subjects,
         private readonly ?int $threadId,
         /** @var string[] */
         private readonly array $caseNumbers,
@@ -83,14 +81,6 @@ class DocumentMetadata
     public function getPeriod(): ?string
     {
         return $this->period;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getSubjects(): array
-    {
-        return $this->subjects;
     }
 
     public function getThreadId(): ?int

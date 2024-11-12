@@ -5,17 +5,21 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\DossierType;
+use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierProperties;
+use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierPropertiesViewFactory;
+use App\Domain\Publication\Dossier\Type\ViewModel\Subject as SubjectViewModel;
 use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
 use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionMainDocument;
 use App\Domain\Publication\Dossier\ViewModel\Department;
 use App\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
-use App\Domain\Publication\Dossier\ViewModel\PublicationItem;
-use App\Domain\Publication\Dossier\ViewModel\PublicationItemViewFactory;
+use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
+use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use App\Domain\Publication\Subject\Subject;
-use App\Entity\DecisionDocument;
 use App\Entity\Department as DepartmentEntity;
 use App\Enum\Department as DepartmentEnum;
 use App\Repository\WooDecisionRepository;
@@ -28,7 +32,9 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
 {
     private WooDecisionRepository&MockInterface $dossierRepository;
     private DepartmentViewFactory&MockInterface $departmentViewFactory;
-    private PublicationItemViewFactory&MockInterface $publicationItemViewFactory;
+    private MainDocumentViewFactory&MockInterface $mainDocumentViewFactory;
+    private CommonDossierPropertiesViewFactory&MockInterface $commonDossierPropertiesViewFactory;
+    private WooDecisionViewFactory $factory;
 
     protected function setUp(): void
     {
@@ -38,8 +44,15 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->dossierRepository->shouldReceive('getDossierCounts')->andReturn(\Mockery::mock(DossierCounts::class));
 
         $this->departmentViewFactory = \Mockery::mock(DepartmentViewFactory::class);
+        $this->mainDocumentViewFactory = \Mockery::mock(MainDocumentViewFactory::class);
+        $this->commonDossierPropertiesViewFactory = \Mockery::mock(CommonDossierPropertiesViewFactory::class);
 
-        $this->publicationItemViewFactory = \Mockery::mock(PublicationItemViewFactory::class);
+        $this->factory = new WooDecisionViewFactory(
+            $this->dossierRepository,
+            $this->departmentViewFactory,
+            $this->commonDossierPropertiesViewFactory,
+            $this->mainDocumentViewFactory,
+        );
     }
 
     public function testMake(): void
@@ -48,7 +61,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         /** @var ArrayCollection<array-key,DepartmentEntity> $departments */
         $departments = new ArrayCollection([$department]);
 
-        $decisionDocument = \Mockery::mock(DecisionDocument::class);
+        $mainDocument = \Mockery::mock(WooDecisionMainDocument::class);
 
         $this->departmentViewFactory
             ->shouldReceive('make')
@@ -60,48 +73,60 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
             ->with($departments)
             ->andReturn(new ArrayCollection([$expectedDepartment]));
 
-        $this->publicationItemViewFactory
-            ->shouldReceive('make')
-            ->with($decisionDocument)
-            ->andReturn($expectedDecisionDocument = new PublicationItem('my filename', 100, true));
-
         $dossier = $this->createWooDecision(
-            status: $expectedStatus = DossierStatus::PUBLISHED,
-            publicationDate: $expectedPublicationDate = $this->getRandomDate(),
+            status: DossierStatus::PUBLISHED,
             departments: $departments,
             needsInventoryAndDocuments: $expectedNeedsInventoryAndDocuments = true,
             decisionDate: $expectedDecisionDate = $this->getRandomDate(),
-            decisionDocument: $decisionDocument,
+            decisionDocument: $mainDocument,
             dateFrom: null,
             dateTo: $expectedDateTo = $this->getRandomDate(),
         );
 
-        $result = (new WooDecisionViewFactory(
-            $this->dossierRepository,
-            $this->departmentViewFactory,
-            $this->publicationItemViewFactory,
-        ))->make($dossier);
+        $this->mainDocumentViewFactory
+            ->shouldReceive('make')
+            ->with($dossier, $mainDocument)
+            ->andReturn($expectedMainDocumentView = \Mockery::mock(MainDocument::class));
+
+        $this->commonDossierPropertiesViewFactory
+            ->shouldReceive('make')
+            ->andReturn(new CommonDossierProperties(
+                dossierId: $expectedUuid = 'my uuid',
+                dossierNr: $expectedDossierNr = 'my dossier nr',
+                documentPrefix: $expectedDocumentPrefix = 'my document prefix',
+                isPreview: $expectedIsPreview = true,
+                title: $expectedTitle = 'my title',
+                pageTitle: $expectedPageTitle = 'my page title',
+                publicationDate: $publicationDate = new \DateTimeImmutable(),
+                mainDepartment: $expectedMainDepartment = new Department(DepartmentEnum::VWS->value),
+                summary: $expectedSummary = 'my summary',
+                type: $expectedType = DossierType::COVENANT,
+                subject: $expectedSubject = \Mockery::mock(SubjectViewModel::class),
+            ));
+
+        $result = $this->factory->make($dossier);
 
         $this->assertInstanceOf(DossierCounts::class, $result->counts);
-        $this->assertSame('my uuid', $result->dossierId);
-        $this->assertSame('my dossier nr', $result->dossierNr);
-        $this->assertSame('my document prefix', $result->documentPrefix);
-        $this->assertSame($expectedStatus->isPreview(), $result->isPreview);
-        $this->assertSame('my title', $result->title);
-        $this->assertSame('my title', $result->pageTitle);
-        $this->assertSame($expectedPublicationDate, $result->publicationDate);
-        $this->assertSame($expectedDepartment, $result->mainDepartment);
-        $this->assertSame('my summary', $result->summary);
         $this->assertSame($expectedNeedsInventoryAndDocuments, $result->needsInventoryAndDocuments);
         $this->assertSame(DecisionType::NOT_PUBLIC, $result->decision);
         $this->assertSame($expectedDecisionDate, $result->decisionDate);
-        $this->assertSame($expectedDecisionDocument, $result->decisionDocument);
+        $this->assertSame($expectedMainDocumentView, $result->mainDocument);
         $this->assertNull($result->dateFrom);
         $this->assertSame($expectedDateTo, $result->dateTo);
         $this->assertSame(PublicationReason::WOO_REQUEST, $result->publicationReason);
-        $this->assertTrue($result->isVwsResponsible());
+        $this->assertFalse($result->isExternalDepartmentResponsible());
+        $this->assertSame($expectedUuid, $result->getDossierId());
+        $this->assertSame($expectedDossierNr, $result->getDossierNr());
+        $this->assertSame($expectedDocumentPrefix, $result->getDocumentPrefix());
+        $this->assertSame($expectedIsPreview, $result->isPreview());
+        $this->assertSame($expectedTitle, $result->getTitle());
+        $this->assertSame($expectedPageTitle, $result->getPageTitle());
+        $this->assertSame($publicationDate, $result->getPublicationDate());
+        $this->assertSame($expectedMainDepartment, $result->getMainDepartment());
+        $this->assertSame($expectedSubject, $result->getSubject());
         $this->assertTrue($result->hasSubject());
-        $this->assertSame('my subject', $result->subject);
+        $this->assertSame($expectedSummary, $result->getSummary());
+        $this->assertSame($expectedType, $result->getType());
     }
 
     public function testMakeWithWooDecisionInPreviewWithNonVwsDepartment(): void
@@ -110,49 +135,66 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         /** @var ArrayCollection<array-key,DepartmentEntity> $departments */
         $departments = new ArrayCollection([$department]);
 
-        $decisionDocument = \Mockery::mock(DecisionDocument::class);
+        $mainDocument = \Mockery::mock(WooDecisionMainDocument::class);
 
         $this->departmentViewFactory->shouldReceive('make')->with($department)->andReturn($expectedDepartment = new Department('my departmen'));
         $this->departmentViewFactory->shouldReceive('makeCollection')->with($departments)->andReturn(new ArrayCollection([$expectedDepartment]));
-        $this->publicationItemViewFactory->shouldReceive('make')->with($decisionDocument)->andReturn($expectedDecisionDocument = new PublicationItem('my filename', 100, true));
+
+        $this->commonDossierPropertiesViewFactory
+            ->shouldReceive('make')
+            ->andReturn(new CommonDossierProperties(
+                dossierId: $expectedUuid = 'my uuid',
+                dossierNr: $expectedDossierNr = 'my dossier nr',
+                documentPrefix: $expectedDocumentPrefix = 'my document prefix',
+                isPreview: $expectedIsPreview = true,
+                title: $expectedTitle = 'my title',
+                pageTitle: $expectedPageTitle = 'my page title',
+                publicationDate: $publicationDate = new \DateTimeImmutable(),
+                mainDepartment: $expectedMainDepartment = new Department(DepartmentEnum::JV->value),
+                summary: $expectedSummary = 'my summary',
+                type: $expectedType = DossierType::COVENANT,
+                subject: $expectedSubject = \Mockery::mock(SubjectViewModel::class),
+            ));
 
         $dossier = $this->createWooDecision(
-            status: $expectedStatus = DossierStatus::PREVIEW,
-            publicationDate: $expectedPublicationDate = $this->getRandomDate(),
+            status: DossierStatus::PREVIEW,
             departments: $departments,
             needsInventoryAndDocuments: $expectedNeedsInventoryAndDocuments = true,
             decisionDate: $expectedDecisionDate = $this->getRandomDate(),
-            decisionDocument: $decisionDocument,
+            decisionDocument: $mainDocument,
             dateFrom: null,
             dateTo: $expectedDateTo = $this->getRandomDate(),
         );
 
-        $result = (new WooDecisionViewFactory(
-            $this->dossierRepository,
-            $this->departmentViewFactory,
-            $this->publicationItemViewFactory,
-        ))->make($dossier);
+        $this->mainDocumentViewFactory
+            ->shouldReceive('make')
+            ->with($dossier, $mainDocument)
+            ->andReturn($expectedMainDocumentView = \Mockery::mock(MainDocument::class));
+
+        $result = $this->factory->make($dossier);
 
         $this->assertInstanceOf(DossierCounts::class, $result->counts);
-        $this->assertSame('my uuid', $result->dossierId);
-        $this->assertSame('my dossier nr', $result->dossierNr);
-        $this->assertSame('my document prefix', $result->documentPrefix);
-        $this->assertSame($expectedStatus->isPreview(), $result->isPreview);
-        $this->assertSame('my title', $result->title);
-        $this->assertSame(sprintf('%s %s', 'my title', '(preview)'), $result->pageTitle);
-        $this->assertSame($expectedPublicationDate, $result->publicationDate);
-        $this->assertSame($expectedDepartment, $result->mainDepartment);
-        $this->assertSame('my summary', $result->summary);
         $this->assertSame($expectedNeedsInventoryAndDocuments, $result->needsInventoryAndDocuments);
         $this->assertSame(DecisionType::NOT_PUBLIC, $result->decision);
         $this->assertSame($expectedDecisionDate, $result->decisionDate);
-        $this->assertSame($expectedDecisionDocument, $result->decisionDocument);
+        $this->assertSame($expectedMainDocumentView, $result->mainDocument);
         $this->assertNull($result->dateFrom);
         $this->assertSame($expectedDateTo, $result->dateTo);
         $this->assertSame(PublicationReason::WOO_REQUEST, $result->publicationReason);
-        $this->assertFalse($result->isVwsResponsible());
+        $this->assertTrue($result->isExternalDepartmentResponsible());
         $this->assertTrue($result->hasSubject());
-        $this->assertSame('my subject', $result->subject);
+        $this->assertSame($expectedUuid, $result->getDossierId());
+        $this->assertSame($expectedDossierNr, $result->getDossierNr());
+        $this->assertSame($expectedDocumentPrefix, $result->getDocumentPrefix());
+        $this->assertSame($expectedIsPreview, $result->isPreview());
+        $this->assertSame($expectedTitle, $result->getTitle());
+        $this->assertSame($expectedPageTitle, $result->getPageTitle());
+        $this->assertEquals($publicationDate, $result->getPublicationDate());
+        $this->assertSame($expectedMainDepartment, $result->getMainDepartment());
+        $this->assertSame($expectedSubject, $result->getSubject());
+        $this->assertTrue($result->hasSubject());
+        $this->assertSame($expectedSummary, $result->getSummary());
+        $this->assertSame($expectedType, $result->getType());
     }
 
     /**
@@ -160,11 +202,10 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
      */
     private function createWooDecision(
         DossierStatus $status,
-        \DateTimeImmutable $publicationDate,
         ArrayCollection $departments,
         bool $needsInventoryAndDocuments,
         \DateTimeImmutable $decisionDate,
-        DecisionDocument $decisionDocument,
+        WooDecisionMainDocument $decisionDocument,
         ?\DateTimeImmutable $dateFrom,
         ?\DateTimeImmutable $dateTo,
     ): WooDecision {
@@ -181,13 +222,12 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('my document prefix');
         $dossier->shouldReceive('getStatus')->andReturn($status);
         $dossier->shouldReceive('getTitle')->andReturn('my title');
-        $dossier->shouldReceive('getPublicationDate')->andReturn($publicationDate);
         $dossier->shouldReceive('getDepartments')->andReturn($departments);
         $dossier->shouldReceive('getSummary')->andReturn('my summary');
         $dossier->shouldReceive('needsInventoryAndDocuments')->andReturn($needsInventoryAndDocuments);
         $dossier->shouldReceive('getDecision')->andReturn(DecisionType::NOT_PUBLIC);
         $dossier->shouldReceive('getDecisionDate')->andReturn($decisionDate);
-        $dossier->shouldReceive('getDecisionDocument')->andReturn($decisionDocument);
+        $dossier->shouldReceive('getMainDocument')->andReturn($decisionDocument);
         $dossier->shouldReceive('getDateFrom')->andReturn($dateFrom);
         $dossier->shouldReceive('getDateTo')->andReturn($dateTo);
         $dossier->shouldReceive('getPublicationReason')->andReturn(PublicationReason::WOO_REQUEST);

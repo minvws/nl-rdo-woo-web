@@ -32,9 +32,7 @@ app_robots:
         template: 'static/robots.txt.twig'
 
 app_about: &app_about
-    path:
-        en: /about
-        nl: /over-deze-website
+    path:          /over-dit-platform
     controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
     defaults:
         template:  'static/about.html.twig'
@@ -67,9 +65,7 @@ app_cookies:
             section: legal
 
 app_accessibility: &app_accessibility
-    path:
-        en: /accessibility
-        nl: /toegankelijkheid
+    path:          /toegankelijkheid
     controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
     defaults:
         template:  'static/accessibility.html.twig'
@@ -80,9 +76,7 @@ app_accessibility: &app_accessibility
             section: legal
 
 app_report_vulnerability:
-    path:
-        en: /report-vulnerability
-        nl: /kwetsbaarheid-melden
+    path:          /kwetsbaarheid-melden
     controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
     defaults:
         template:  'static/report-vulnerability.html.twig'

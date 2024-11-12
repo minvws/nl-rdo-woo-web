@@ -1,0 +1,30 @@
+-
+    active: true
+    searchParameters: { queryParameters: { type: dossier, sort: _score, sortorder: desc }, facetInputs: {  }, operator: { name: AND, value: and }, limit: 0, offset: 0, pagination: true, aggregations: true, query: '', searchType: { dossier: true, document: false, all: false, notAll: true, name: DOSSIER, value: dossier }, documentInquiries: {  }, dossierInquiries: {  }, sortField: { name: SCORE, value: _score }, sortOrder: { name: DESC, value: desc }, baseQueryConditions: null }
+    field: { name: SCORE, value: _score }
+    order: { name: DESC, value: desc }
+    hideSortOrder: true
+-
+    active: false
+    searchParameters: { queryParameters: { type: dossier, sort: publication_date, sortorder: desc }, facetInputs: {  }, operator: { name: AND, value: and }, limit: 0, offset: 0, pagination: true, aggregations: true, query: '', searchType: { dossier: true, document: false, all: false, notAll: true, name: DOSSIER, value: dossier }, documentInquiries: {  }, dossierInquiries: {  }, sortField: { name: PUBLICATION_DATE, value: publication_date }, sortOrder: { name: DESC, value: desc }, baseQueryConditions: null }
+    field: { name: PUBLICATION_DATE, value: publication_date }
+    order: { name: DESC, value: desc }
+    hideSortOrder: false
+-
+    active: false
+    searchParameters: { queryParameters: { type: dossier, sort: publication_date, sortorder: asc }, facetInputs: {  }, operator: { name: AND, value: and }, limit: 0, offset: 0, pagination: true, aggregations: true, query: '', searchType: { dossier: true, document: false, all: false, notAll: true, name: DOSSIER, value: dossier }, documentInquiries: {  }, dossierInquiries: {  }, sortField: { name: PUBLICATION_DATE, value: publication_date }, sortOrder: { name: ASC, value: asc }, baseQueryConditions: null }
+    field: { name: PUBLICATION_DATE, value: publication_date }
+    order: { name: ASC, value: asc }
+    hideSortOrder: false
+-
+    active: false
+    searchParameters: { queryParameters: { type: dossier, sort: decision_date, sortorder: desc }, facetInputs: {  }, operator: { name: AND, value: and }, limit: 0, offset: 0, pagination: true, aggregations: true, query: '', searchType: { dossier: true, document: false, all: false, notAll: true, name: DOSSIER, value: dossier }, documentInquiries: {  }, dossierInquiries: {  }, sortField: { name: DECISION_DATE, value: decision_date }, sortOrder: { name: DESC, value: desc }, baseQueryConditions: null }
+    field: { name: DECISION_DATE, value: decision_date }
+    order: { name: DESC, value: desc }
+    hideSortOrder: false
+-
+    active: false
+    searchParameters: { queryParameters: { type: dossier, sort: decision_date, sortorder: asc }, facetInputs: {  }, operator: { name: AND, value: and }, limit: 0, offset: 0, pagination: true, aggregations: true, query: '', searchType: { dossier: true, document: false, all: false, notAll: true, name: DOSSIER, value: dossier }, documentInquiries: {  }, dossierInquiries: {  }, sortField: { name: DECISION_DATE, value: decision_date }, sortOrder: { name: ASC, value: asc }, baseQueryConditions: null }
+    field: { name: DECISION_DATE, value: decision_date }
+    order: { name: ASC, value: asc }
+    hideSortOrder: false

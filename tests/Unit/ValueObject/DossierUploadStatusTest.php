@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\ValueObject;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\ValueObject\DossierUploadStatus;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -17,7 +17,7 @@ class DossierUploadStatusTest extends MockeryTestCase
     private Document&MockInterface $missingUpload;
     private Document&MockInterface $completedUpload;
     private Document&MockInterface $unwantedUpload;
-    private Dossier&MockInterface $dossier;
+    private WooDecision&MockInterface $dossier;
 
     public function setUp(): void
     {
@@ -33,7 +33,7 @@ class DossierUploadStatusTest extends MockeryTestCase
         $this->unwantedUpload->shouldReceive('shouldBeUploaded')->andReturnFalse();
         $this->unwantedUpload->shouldReceive('isUploaded')->andReturnFalse();
 
-        $this->dossier = \Mockery::mock(Dossier::class);
+        $this->dossier = \Mockery::mock(WooDecision::class);
 
         $this->dossierUploadStatus = new DossierUploadStatus($this->dossier);
 

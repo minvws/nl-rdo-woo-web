@@ -8,7 +8,6 @@ use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Attachment\AttachmentType;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
 
@@ -32,11 +31,6 @@ class DispositionAttachment extends AbstractAttachment
         $this->fileInfo->setPaginatable(true);
     }
 
-    public static function getUploadGroupId(): UploadGroupId
-    {
-        return UploadGroupId::DISPOSITION_ATTACHMENTS;
-    }
-
     /**
      * @return list<AttachmentType>
      */
@@ -44,7 +38,7 @@ class DispositionAttachment extends AbstractAttachment
     {
         $filtered = array_filter(
             AttachmentType::cases(),
-            static fn (AttachmentType $value): bool => ! in_array($value, DispositionDocument::getAllowedTypes(), true),
+            static fn (AttachmentType $value): bool => ! in_array($value, DispositionMainDocument::getAllowedTypes(), true),
         );
 
         return array_values($filtered);

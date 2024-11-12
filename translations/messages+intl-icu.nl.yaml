@@ -2,7 +2,6 @@ lang: "nl"
 none: "geen"
 
 global.access_denied: "Toegang geweigerd"
-global.access_denied.message: "Je hebt niet de toegangsrechten die nodig zijn om deze pagina of dit document te mogen bekijken."
 global.acronym: "Afkorting"
 global.admin: "Beheer"
 global.added: "toegevoegd"
@@ -55,7 +54,7 @@ global.error_occured: "Er is een fout opgetreden"
 global.error_message: "Er is een technische fout opgetreden in uw zoekopdracht. Wis uw zoekopdracht en probeer het opnieuw."
 global.error_label: "Foutmelding"
 global.file: "Bestand"
-global.grounds: "Gelakte gegevens"
+global.grounds: "Uitzonderingsgrond(en)"
 global.history: "Geschiedenis"
 global.home: "Home"
 global.inquiry: "Zaak"
@@ -88,8 +87,9 @@ global.save_edit: "Bewerken en opslaan"
 global.search_through: "Zoeken in deze documenten…"
 global.skip_link: "Ga direct naar de inhoud"
 global.sort: "Sorteren op"
-global.sort_newest: "Nieuwste bovenaan"
-global.sort_oldest: "Oudste bovenaan"
+global.sort.desc: "Nieuwste bovenaan"
+global.sort.asc: "Oudste bovenaan"
+global._score: "Relevantie"
 global.time: "Tijdstip"
 global.title: "Titel"
 global.menu_toggle.label: "Hoofdmenu in- of uitklappen"
@@ -97,9 +97,7 @@ global.organisation: "Organisatie"
 global.departments: "Bestuursorganen"
 global.page: "Pagina"
 global.page_not-found: "Pagina niet gevonden"
-global.page_not-found.message: "De pagina of het document dat je zoekt, bestaat niet of is niet beschikbaar."
 global.page_not-available: "Pagina of document niet beschikbaar"
-global.page_not-available.message: "De pagina of het document dat je zoekt, is momenteel niet beschikbaar."
 global.next: "Volgende"
 global.previous: "Vorige"
 global.responsible_parties: "Verantwoordelijk(en)"
@@ -205,6 +203,10 @@ admin.elastic.no_rollover: "Geen rollover op het moment"
 admin.elastic.indexes: "Elasticsearch indices"
 admin.elastic.new_rollover: "Nieuwe rollover"
 
+admin.global.access_denied.message: "Je hebt niet de toegangsrechten die nodig zijn om deze pagina of dit document te mogen bekijken."
+admin.global.page_not-found.message: "De pagina of het document dat je zoekt, bestaat niet of is niet beschikbaar."
+admin.global.page_not-available.message: "De pagina of het document dat je zoekt, is momenteel niet beschikbaar."
+admin.global.current_location: "Je bent hier"
 admin.global.continue_later: "Later verdergaan"
 admin.global.platform_title: "Beheer platform woo-publicaties Ministerie van VWS"
 admin.global.platform_explanation: "Deze instructies heb je nodig om jouw account voor het beheerplatform te activeren."
@@ -531,6 +533,9 @@ admin.dossiers.woo-decision.step.replace_document: "Document vervangen"
 admin.dossiers.woo-decision.step.withdraw_document: "Document intrekken"
 admin.dossiers.woo-decision.no_docs: "Er zijn geen documenten aangetroffen in dit besluit die verwijderd kunnen worden."
 admin.dossiers.woo-decision.withdraw_decision: "Besluit verwijderen"
+admin.dossiers.woo-decision.document: "Besluitbrief"
+admin.dossiers.woo-decision.form.content.document_help: 'Upload minimaal de besluitbrief.'
+admin.dossiers.woo-decision.form.content.document_label: 'Besluitbrief'
 admin.dossiers.decision.number: "Besluit {dossier_nr}"
 admin.dossiers.decision.inquiry_number: "Besluiten voor zaaknummer {case_nr}"
 admin.dossiers.documents.inquiry_number: "Documenten met zaaknummer {case_nr} "
@@ -560,6 +565,9 @@ admin.accessibility.paragraph-2: "Een toegankelijke website is voor alle bezoeke
 
 admin.user.password_changed: "Wachtwoord succesvol gewijzigd"
 
+public.global.access_denied.message: "U heeft niet de toegangsrechten die nodig zijn om deze pagina of dit document te mogen bekijken."
+public.global.page_not-found.message: "De pagina of het document dat u zoekt, bestaat niet of is niet beschikbaar."
+public.global.page_not-available.message: "De pagina of het document dat u zoekt, is momenteel niet beschikbaar."
 public.global.date: "Datum"
 public.global.from: vanaf
 public.global.to: tot en met
@@ -570,7 +578,7 @@ public.global.download: "Download"
 public.global.download_verb: "Downloaden"
 public.global.label: "Label"
 public.global.expected: "Verwacht"
-public.global.current_location: "Je bent hier"
+public.global.current_location: "U bent hier"
 public.global.woo_dossier: "Woo-besluit"
 public.global.covenant: "Convenant"
 public.global.annual_report: "Jaarplan of jaarverslag"
@@ -583,8 +591,7 @@ public.global.logo.text: "Ministerie van Volksgezondheid, Welzijn en Sport"
 public.global.logo.label: "ga naar de homepage"
 public.global.navigation.accessible.label: "Hoofdnavigatie"
 public.global.label.home: "Home"
-public.global.label.search_publications: "Zoeken naar documenten en besluiten"
-public.global.label.overview_publications: "Alle gepubliceerde besluiten"
+public.global.label.search_publications: "Zoek door alle publicaties"
 public.global.label.all_categories: "Alle categorieën"
 public.global.label.departments: "Bekijk per bestuursorgaan"
 public.global.no_doc_number: "Documentnummer {documentNr} bestaat niet"
@@ -653,7 +660,7 @@ public.publication.woo_request_more: "Meer weten over Woo/Wob-verzoeken"
 
 public.footer.title.service: "Service"
 public.footer.title.about: "Over deze site"
-public.footer.label.woo: "Over OpenVWS"
+public.footer.label.about_platform: "Over dit platform"
 public.footer.label.copyright: "Copyright"
 public.footer.label.cookies: "Cookies"
 public.footer.label.counter: "Counter"
@@ -677,12 +684,13 @@ public.search.only_first_set_displayed: "De eerste <span class='font-bold'>{disp
 public.search.refine_results: "Verfijn uw zoekopdracht door middel van specifieke zoektermen en de beschikbare filteropties."
 
 public.intro.label.oga: "OpenVWS"
-public.intro.description.oga: "Woo-besluiten gerelateerd aan COVID-19, van het Ministerie van Volksgezondheid, Welzijn en Sport"
-public.intro.maintext.oga: "Op deze website worden alle COVID-19 gerelateerde Woo-documenten en -besluiten gepubliceerd."
-public.about.oga: "Meer over deze website"
-public.about.oga.paragraph-1: "Op deze website vindt u documenten die openbaar zijn gemaakt naar aanleiding van verzoeken die betrekking hebben op COVID-19. Deze verzoeken zijn ingediend op grond van de Wet openbaarheid van bestuur (Wob) en de Wet open overheid (Woo)."
-public.about.oga.paragraph-2: "Uit deze documenten kan worden opgemaakt hoe VWS de coronabestrijding in samenwerking met andere ministeries, instellingen en organisaties heeft aangepakt. Iedereen kan op grond van de Woo een verzoek indienen om documenten openbaar te maken."
-public.about.oga.paragraph-3: "De openbaargemaakte documenten van het ministerie van VWS zijn momenteel nog op verschillende websites te vinden:"
+public.intro.description.oga: "Openbaar gemaakte informatie door het ministerie van Volksgezondheid, Welzijn en Sport"
+public.intro.maintext.oga.paragraph-1: "Iedereen heeft recht op informatie over wat de overheid doet, hoe ze dat doet en waarom. Bestuursorganen moeten die informatie uit zichzelf geven, of als iemand daarom vraagt. De informatie wordt dan openbaar."
+public.intro.maintext.oga.paragraph-2: 'Op dit platform vindt u informatie die openbaar is gemaakt op grond van de <a href="https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo">Wet open overheid (Woo)</a> door het Ministerie van Volksgezondheid, Welzijn en Sport en aan haar verwante (zelfstandig) bestuursorganen. Het platform zal de komende periode aangevuld worden met meer informatie.'
+public.intro.more_about_platform: "Meer over dit platform"
+
+public.about.oga: "Over dit platform"
+public.about.oga.paragraph-3: "De openbaargemaakte Woo-besluiten van het ministerie van VWS zijn momenteel nog op verschillende websites te vinden:"
 public.about.oga.bullet-1: "Algemene besluiten (niet COVID-19 gerelateerd) van het ministerie van Volksgezondheid, Welzijn en Sport kunt u vinden op <a href='https://www.rijksoverheid.nl'>rijksoverheid.nl</a>"
 public.about.oga.bullet-2: "COVID-19 gerelateerde besluiten kunt u vinden op deze website."
 
@@ -690,23 +698,25 @@ public.publications.recent_publications: "Recente publicaties"
 
 public.department.public_information_by_department: "Openbaar gemaakte informatie van {department}"
 public.department.public_information_default_description: "Op deze pagina vindt u een overzicht van de informatie die door {department} openbaar gemaakt is op grond van de Wet Open Overheid."
-public.department.description: "Op dit platform vindt u informatie die openbaar is gemaakt op grond van de Wet Open Overheid door het Ministerie van Volksgezondheid, Welzijn en Sport en aan haar verwante (zelfstandig) bestuursorganen. Bekijk de openbaar gemaakte informatie per bestuursorgaan."
+public.department.description: "Op dit platform vindt u informatie die openbaar is gemaakt op grond van de Wet Open Overheid door het Ministerie van Volksgezondheid, Welzijn en Sport en aan haar verwante (zelfstandig) bestuursorganen. Het platform zal de komende periode aangevuld worden met meer informatie."
+public.department.view_by_department: "Bekijk de openbaar gemaakte informatie per bestuursorgaan."
 
 public.other-publications.title: "Andere publicaties van VWS"
 public.other-publications.processing_register: "Verwerkingsregister"
+public.other-publications.algorithm_register: "Algoritmeregister"
+public.other-publications.github_vws: "Overzicht broncode van het ministerie van VWS op GitHub"
 
 public.woo-process.title: "Een Woo-verzoek indienen"
-public.woo-process.description: "U mag informatie opvragen over wat de overheid doet. Dat staat in de <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Wet open overheid (Woo)</a>. U doet dit via een Woo-verzoek. Goed om hierbij alvast te weten:"
-public.woo-process.step-1: "Controleer voordat u een verzoek doet of de informatie die u zoekt al openbaar is. Check bijvoorbeeld <a href='https://www.rijksoverheid.nl/documenten'>rijksoverheid.nl</a>, <a href='https://zoek.officielebekendmakingen.nl/uitgebreidzoeken/parlementair'>het archief van de Eerste Kamer en de Tweede Kamer</a> of <a href='https://open.overheid.nl/'>open.overheid.nl</a>."
-public.woo-process.step-2: "Ga na bij welke overheidsorganisatie u het verzoek moet indienen. Heeft u een verzoek voor het ministerie van Volksgezondheid, Welzijn en Sport (VWS):"
-public.woo-process.step-2a: "en gaat het over de COVID-19 periode? Kijk op de pagina <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/aanpak-vws-woo-verzoeken-corona'>Aanpak VWS Woo-verzoeken corona;</a>"
-public.woo-process.step-2b: "voor overige verzoeken, kijk op de pagina <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-verzoek-indienen'>Woo-verzoek indienen bij het ministerie van VWS.</a>"
-public.woo-process.step-3: "Geef zo precies mogelijk aan welke informatie u zoekt. Over welk onderwerp, met welke betrokken personen, uit welke periode?"
-public.woo-process.step-4: "Na het indienen van uw verzoek belt het ministerie u mogelijk met wat extra vragen. Het is dus handig als u bij het verzoek ook uw telefoonnummer doorgeeft."
+public.woo-process.description: "U mag informatie opvragen over wat de overheid doet. Dat is vastgelegd in de <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Wet open overheid (Woo)</a>. U vraagt informatie op via een Woo-verzoek. Voordat u een Woo-verzoek indient:"
+public.woo-process.step-1: "Controleert u of de informatie die u zoekt al openbaar is. Kijk bijvoorbeeld op <a href='https://www.rijksoverheid.nl/documenten'>rijksoverheid.nl</a>, <a href='https://zoek.officielebekendmakingen.nl/uitgebreidzoeken/parlementair'>het archief van de Eerste Kamer en de Tweede Kamer</a> of <a href='https://open.overheid.nl/'>open.overheid.nl</a> of de website van het bestuursorgaan."
+public.woo-process.step-2: "Gaat u na bij welk bestuursorgaan u het verzoek moet indienen."
+public.woo-process.step-3: "Geeft u zo precies mogelijk aan welke informatie u zoekt: over welk onderwerp, met welke betrokken personen en uit welke periode."
+public.woo-process.step-4: "Deelt u uw telefoonnummer in het verzoek. Mogelijk belt het bestuursorgaan u met extra vragen om uw verzoek te duiden."
+public.woo-process.step-regarding-vws: "Heeft u een verzoek voor het ministerie van Volksgezondheid, Welzijn en Sport (VWS) en gaat het over de COVID-19 periode? Bekijk de pagina <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/aanpak-vws-woo-verzoeken-corona'>Aanpak VWS Woo-verzoeken corona</a>. Voor overige verzoeken verwijzen wij u naar <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-verzoek-indienen'>Woo-verzoek indienen bij het ministerie van VWS</a>."
 
 public.browse.title: "Zoek per categorie"
 public.browse.facets.title: "Zoek via de categorieën door openbaar gemaakte informatie"
-public.browse.facets.description: "Op deze website worden alle COVID-19 gerelateerde Woo-documenten en -besluiten gepubliceerd."
+public.browse.facets.description: "Op dit platform vindt u informatie die openbaar is gemaakt op grond van de <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Wet open overheid (Woo)</a> door het Ministerie van Volksgezondheid, Welzijn en Sport en aan haar verwante (zelfstandig) bestuursorganen. Het platform zal de komende periode aangevuld worden met meer informatie."
 
 public.results.title: "Alle Wob- en Woo-besluiten"
 public.results.description: "Op deze website worden alle COVID-19 gerelateerde Woo-documenten en -besluiten gepubliceerd."
@@ -718,13 +728,9 @@ public.results.in_dossiers: >-
   }
 
 public.messages.new_dossiers: "Op {dates} komt op deze pagina een nieuw (deel)besluit beschikbaar."
-public.contact.paragraph-1: "Wij zetten ons dagelijks in om deze website aan te vullen met relevante informatie."
-public.contact.paragraph-2: "Wilt u contact met ons opnemen? Stuur dan een e-mail naar <a href='mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl'>_dienstpostbusWoo-corona-ondersteuning@minvws.nl</a>. U kunt hier terecht voor de volgende zaken:"
-public.contact.paragraph-3: "Voor feedback, tips en suggesties over hoe we deze website kunnen verbeteren, kunt u ons mailen via <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl</a>"
-public.contact.paragraph-4: "De broncode is open source beschikbaar op Github: <a href='https://github.com/minvws/nl-rdo-woo-web'>https://github.com/minvws/nl-rdo-woo-web</a>."
-public.contact.bullet-1: "een Woo-verzoek indienen"
-public.contact.bullet-2: "vragen of opmerkingen over de website"
-public.contact.bullet-3: "melding maken van een document op deze website waar nog extra informatie onleesbaar gemaakt moet worden (bijv. een naam of contactgegevens van een persoon)."
+public.contact.paragraph-1: "Wij zetten ons dagelijks in om dit platform te verbeteren, uit te breiden met nieuwe functionaliteit en te onderhouden. Voor feedback, tips of suggesties over hoe we dit platform kunnen verbeteren, kunt u ons bereiken via <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl</a>."
+public.contact.paragraph-2: "De broncode van dit platform is open source beschikbaar op Github: <a href='https://github.com/minvws/nl-rdo-woo-web'>https://github.com/minvws/nl-rdo-woo-web</a>."
+public.contact.paragraph-3: "Heeft u een vraag of opmerking over een publicatie of document op dit platform, neem dan contact op met het bestuursorgaan dat hiervoor verantwoordelijk is. De contactgegevens zijn te vinden op <a href='https://organisaties.overheid.nl'>organisaties.overheid.nl</a>."
 public.privacy.page_title: "Privacyverklaring"
 public.privacy.main_title: "Privacyverklaring Wet open overheid (Woo)"
 public.privacy.sub_title-1: "Welke persoonsgegevens verwerken wij?"
@@ -820,15 +826,16 @@ public.inquiries.document.open_or_download: " openen of downloaden ({fileInfo} {
 public.inquiry.page_title: "Besluiten en documenten voor zaaknummer {case_number}"
 public.inquiry.decisions_for_case: "Er {are_or_is} {number_of_decisions} genomen voor het verzoek om informatie te openbaren met zaaknummer {case_number}"
 
-public.documents.viewer.click_on_page: "Klik op een pagina om de {fileInfo} ({fileSize}) te openen in je browser"
+public.documents.viewer.click_on_page: "Klik op een pagina om de {fileInfo} ({fileSize}) te openen in uw browser"
 public.documents.viewer.document_preview: "Pagina-voorvertoning"
 public.documents.viewer.skip_document_preview: "Sla pagina-voorvertoning over"
 public.documents.viewer.back_to_document_preview: "Ga terug naar pagina-voorvertoning"
 public.documents.viewer.page_not_yet_processed: "Deze pagina is nog niet verwerkt door ons systeem"
 public.documents.judgement: "Beoordeling"
 public.documents.explanation: "Toelichting"
-public.documents.redacted: "Uitzonderingsgrond(en)"
-public.documents.redacted_comments: "Kom je in dit document gegevens tegen waarvan je denkt dat deze gelakt hadden moeten worden? Of is het document slecht leesbaar?"
+public.documents.redacted_data: "Gelakte gegevens"
+public.documents.redacted_data.comments: "Komt u in dit document gegevens tegen waarvan u denkt dat deze gelakt hadden moeten worden? Of is het document slecht leesbaar?"
+public.documents.redacted_data.find_contact: "Contactgegevens zijn te vinden op: <a href='https://organisaties.overheid.nl'>organisaties.overheid.nl</a>."
 public.documents.let_us_know: "Laat het ons weten"
 public.documents.background: "Achtergrond"
 public.documents.determined_not_public: "Tijdens de beoordeling van het {dossier_type} heeft {department} besloten dit document niet openbaar te maken."
@@ -854,7 +861,7 @@ public.documents.archive.download: "Download document archief"
 public.documents.inquiry.download: "Download zaak archief"
 public.documents.archive.download_suspended: "Het archief is nog niet gereed voor download. Probeer het over een paar minuten opnieuw."
 public.documents.archive.download_error: "Er is iets fout gegaan tijdens het genereren van het archief. Probeer het opnieuw."
-public.documents.archive.download_period: "Het archief is gereed voor download. Je kunt het archief downloaden tot {date}. Daarna moet het archief weer opnieuw worden gegenereerd."
+public.documents.archive.download_period: "Het archief is gereed voor download. U kunt het archief downloaden tot {date}. Daarna moet het archief weer opnieuw worden gegenereerd."
 public.documents.exclusive_access: "U heeft t/m {date} exclusief toegang tot deze documenten"
 public.documents.document_history: "Geschiedenis van dit document"
 
@@ -940,8 +947,9 @@ history.document_suspended.public: 'Opgeschort'
 history.document_unsuspended.private: 'Opschorting opgeheven'
 history.document_unsuspended.public: 'Opschorting opgeheven'
 date {date} cannot be parsed: 'de datum "{date}" heeft niet het juiste formaat'
-history.value.decision_date: 'Besluit datum'
-history.value.title: 'Titel'
+history.value.decision_date: 'besluit datum'
+history.value.summary: 'samenvatting'
+history.value.title: 'titel'
 history.dossiers_added.private: '{count} besluitdossier(s) toegevoegd'
 history.dossiers_added.public: '{count} besluitdossier(s) toegevoegd'
 history.documents_added.private: '{count} document(en) toegevoegd'
@@ -961,8 +969,8 @@ history.annual-report.main_document_updated.public: 'Jaarplan of jaarverslag ver
 history.annual-report.main_document_deleted.private: 'Jaarplan of jaarverslag verwijderd ({filename})'
 search.results_without_date: >-
   { count, plural,
-    =1 {Er is {pre_document}1 document of dossier{post_document} waarvan we de datum niet weten, die verder wel aan je zoekopdracht voldoet.}
-    other {Er zijn {pre_document}# documenten en/of dossiers{post_document} waarvan we de datum niet weten, die verder wel aan je zoekopdracht voldoen.}
+    =1 {Er is {pre_document}1 document of dossier{post_document} waarvan we de datum niet weten, die verder wel aan uw zoekopdracht voldoet.}
+    other {Er zijn {pre_document}# documenten en/of dossiers{post_document} waarvan we de datum niet weten, die verder wel aan uw zoekopdracht voldoen.}
   }
 
 dossier.type.woo-decision.decision-type.public: 'Openbaarmaking'
@@ -1181,6 +1189,7 @@ admin.dossiers.action.row.step_completed: 'Stap "{step}" compleet'
 public.search.type_description.dossier: 'Reacties op Woo-verzoeken'
 public.search.type.document: 'Documenten'
 public.search.type.attachment: 'Bijlagen'
+public.search.type.woo_decision_main_document: 'Hoofddocument'
 public.search.type.publication: 'Publicaties'
 
 public.search.type_description.covenant: 'Afspraken over samenwerking'
@@ -1197,3 +1206,7 @@ public.search.type.complaint_judgement_main_document: 'Hoofddocument'
 
 public.search.type_description.investigation_report: 'Beantwoording van onderzoeksvragen'
 public.search.type.investigation_report_main_document: 'Hoofddocument'
+
+public.theme.covid-19.menu_name: 'Thema COVID-19'
+public.theme.covid-19.page_title: 'Alle COVID-19 gerelateerde besluiten'
+public.theme.covid-19.page_text: 'Op deze pagina kunt u zoeken in alle COVID-19 gerelateerde Wob- en Woo-besluiten.'

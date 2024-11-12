@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Attachment\Handler;
 
-use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
 use App\Domain\Publication\Attachment\AttachmentDeleteStrategyInterface;
+use App\Domain\Publication\Attachment\AttachmentRepository;
 use App\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
 use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
 use App\Domain\Publication\Attachment\Handler\DeleteAttachmentHandler;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
@@ -20,17 +20,17 @@ use Symfony\Component\Uid\Uuid;
 
 class DeleteAttachmentHandlerTest extends MockeryTestCase
 {
-    private AbstractAttachmentRepository&MockInterface $attachmentRepository;
+    private AttachmentRepository&MockInterface $attachmentRepository;
     private MessageBusInterface&MockInterface $messageBus;
     private DossierWorkflowManager&MockInterface $dossierWorkflowManager;
     private DeleteAttachmentHandler $handler;
-    private AbstractDossierRepository&MockInterface $dossierRepository;
+    private DossierRepository&MockInterface $dossierRepository;
     private AttachmentDeleteStrategyInterface&MockInterface $deleteStrategy;
 
     public function setUp(): void
     {
-        $this->attachmentRepository = \Mockery::mock(AbstractAttachmentRepository::class);
-        $this->dossierRepository = \Mockery::mock(AbstractDossierRepository::class);
+        $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);
+        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
         $this->deleteStrategy = \Mockery::mock(AttachmentDeleteStrategyInterface::class);

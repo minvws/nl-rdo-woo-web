@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Uploader;
 
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocument;
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
 use App\Domain\Upload\FileType\FileType;
 use App\Domain\Upload\FileType\FileTypeHelper;
 use App\Entity\FileInfo;
@@ -63,7 +63,7 @@ final class UploaderServiceTest extends UnitTestCase
 
     public function testRegisterUploadWithAnEmptySession(): void
     {
-        $sessionKey = 'uploads_woo-decision-attachments';
+        $sessionKey = 'uploads_attachments';
         $this->session
             ->shouldReceive('get')
             ->once()
@@ -101,12 +101,12 @@ final class UploaderServiceTest extends UnitTestCase
             ->once()
             ->with($sessionKey, [$myUuid => [$myPathname]]);
 
-        $this->uploaderService->registerUpload($postUploadEvent, UploadGroupId::WOO_DECISION_ATTACHMENTS);
+        $this->uploaderService->registerUpload($postUploadEvent, UploadGroupId::ATTACHMENTS);
     }
 
     public function testRegisterUploadWithANonEmptySession(): void
     {
-        $sessionKey = 'uploads_default';
+        $sessionKey = 'uploads_attachments';
         $myUploadUuid = 'my-uuid';
         $myPathname = 'my-pathname';
 
@@ -145,27 +145,20 @@ final class UploaderServiceTest extends UnitTestCase
             ->once()
             ->andReturn($file);
 
-        $capturedUploads = [];
+        $capturedUploads = [$myUploadUuid => null];
         $this->session
             ->shouldReceive('set')
             ->once()
             ->with($sessionKey, \Mockery::capture($capturedUploads));
 
-        $this->uploaderService->registerUpload($postUploadEvent);
+        $this->uploaderService->registerUpload($postUploadEvent, UploadGroupId::ATTACHMENTS);
 
-        $this->assertArrayHasKey($myUploadUuid, $capturedUploads);
-        $this->assertSame([$myPathname], $capturedUploads[$myUploadUuid] ?? null);
-
-        $this->assertArrayHasKey('existing-uuid-one', $capturedUploads);
-        $this->assertSame($existingPaths['existing-uuid-one'], $capturedUploads['existing-uuid-one']);
-
-        $this->assertArrayHasKey('existing-uuid-two', $capturedUploads);
-        $this->assertSame($existingPaths['existing-uuid-two'], $capturedUploads['existing-uuid-two']);
+        $this->assertMatchesJsonSnapshot($capturedUploads);
     }
 
     public function testConfirmUploadOnEmptyUploadsSession(): void
     {
-        $sessionKey = 'uploads_default';
+        $sessionKey = 'uploads_main-documents';
         $myUuid = 'my-uuid';
 
         $this->session
@@ -174,12 +167,12 @@ final class UploaderServiceTest extends UnitTestCase
             ->with($sessionKey, [])
             ->andReturn([]);
 
-        $this->uploaderService->confirmUpload($myUuid, UploadGroupId::DEFAULT);
+        $this->uploaderService->confirmUpload($myUuid, UploadGroupId::MAIN_DOCUMENTS);
     }
 
     public function testConfirmUploadForNonExistingUploadUuid(): void
     {
-        $sessionKey = 'uploads_default';
+        $sessionKey = 'uploads_attachments';
         $myUuid = 'my-uuid';
 
         $this->session
@@ -191,12 +184,12 @@ final class UploaderServiceTest extends UnitTestCase
                 'existing-uuid-two' => ['existing-pathname'],
             ]);
 
-        $this->uploaderService->confirmUpload($myUuid);
+        $this->uploaderService->confirmUpload($myUuid, UploadGroupId::ATTACHMENTS);
     }
 
     public function testConfirmUploadForExistingUploadUuid(): void
     {
-        $sessionKey = 'uploads_woo-decision-attachments';
+        $sessionKey = 'uploads_attachments';
         $myUuid = 'my-uuid';
 
         $this->session
@@ -228,7 +221,7 @@ final class UploaderServiceTest extends UnitTestCase
         $finder
             ->shouldReceive('path')
             ->once()
-            ->with(['woo-decision-attachments/file1.txt', 'woo-decision-attachments/file2.pdf'])
+            ->with(['attachments/file1.txt', 'attachments/file2.pdf'])
             ->andReturn($subFinder);
 
         $this->orphanageStorage
@@ -241,12 +234,12 @@ final class UploaderServiceTest extends UnitTestCase
             ->with($arrayResult)
             ->andReturn([]);
 
-        $this->uploaderService->confirmUpload($myUuid, UploadGroupId::WOO_DECISION_ATTACHMENTS);
+        $this->uploaderService->confirmUpload($myUuid, UploadGroupId::ATTACHMENTS);
     }
 
     public function testConfirmSingleUploadThrowsExceptionForZeroUploads(): void
     {
-        $sessionKey = 'uploads_default';
+        $sessionKey = 'uploads_attachments';
         $myUuid = 'my-uuid';
 
         $this->session
@@ -256,12 +249,12 @@ final class UploaderServiceTest extends UnitTestCase
             ->andReturn([]);
 
         $this->expectExceptionObject(UploaderServiceException::forNoFilesUploaded($myUuid));
-        $this->uploaderService->confirmSingleUpload($myUuid);
+        $this->uploaderService->confirmSingleUpload($myUuid, UploadGroupId::ATTACHMENTS);
     }
 
     public function testConfirmSingleUploadThrowsExceptionForMultipleUploads(): void
     {
-        $sessionKey = 'uploads_default';
+        $sessionKey = 'uploads_main-documents';
         $myUuid = 'my-uuid';
 
         $this->session
@@ -293,7 +286,7 @@ final class UploaderServiceTest extends UnitTestCase
         $finder
             ->shouldReceive('path')
             ->once()
-            ->with(['default/file1.txt', 'default/file2.pdf'])
+            ->with(['main-documents/file1.txt', 'main-documents/file2.pdf'])
             ->andReturn($subFinder);
 
         $this->orphanageStorage
@@ -307,12 +300,12 @@ final class UploaderServiceTest extends UnitTestCase
             ->andReturn(['/foo/file1.txt', '/bar/file2.pdf']);
 
         $this->expectExceptionObject(UploaderServiceException::forMultipleFilesUploaded($myUuid));
-        $this->uploaderService->confirmSingleUpload($myUuid);
+        $this->uploaderService->confirmSingleUpload($myUuid, UploadGroupId::MAIN_DOCUMENTS);
     }
 
     public function testAttachFileToEntityReplacesExistingUpload(): void
     {
-        $sessionKey = 'uploads_covenant-documents';
+        $sessionKey = 'uploads_main-documents';
         $myUuid = 'my-uuid';
 
         $this->session
@@ -320,7 +313,7 @@ final class UploaderServiceTest extends UnitTestCase
             ->once()
             ->with($sessionKey, [])
             ->andReturn([
-                $myUuid => ['/covenant-documents/file1.txt'],
+                $myUuid => ['/main-documents/file1.txt'],
             ]);
 
         $this->session
@@ -352,7 +345,7 @@ final class UploaderServiceTest extends UnitTestCase
         $finder
             ->shouldReceive('path')
             ->once()
-            ->with(['covenant-documents/file1.txt'])
+            ->with(['main-documents/file1.txt'])
             ->andReturn($subFinder);
 
         $this->orphanageStorage
@@ -371,7 +364,7 @@ final class UploaderServiceTest extends UnitTestCase
         $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
         $fileInfo->shouldReceive('getName')->andReturn('prefix_dummy.pdf');
 
-        $entity = \Mockery::mock(CovenantDocument::class);
+        $entity = \Mockery::mock(CovenantMainDocument::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $entity->shouldReceive('getId')->andReturn($entityId);
 
@@ -387,6 +380,6 @@ final class UploaderServiceTest extends UnitTestCase
 
         self::assertFalse($this->fileSystem->hasChild($mockFilePath));
 
-        $this->uploaderService->attachFileToEntity($myUuid, $entity, UploadGroupId::COVENANT_DOCUMENTS);
+        $this->uploaderService->attachFileToEntity($myUuid, $entity, UploadGroupId::MAIN_DOCUMENTS);
     }
 }

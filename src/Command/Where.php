@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Entity\Document;
-use App\Entity\Dossier;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\DocumentRepository;
+use App\Repository\WooDecisionRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,15 +14,12 @@ use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 
 class Where extends Command
 {
-    protected EntityManagerInterface $doctrine;
-    protected UrlMatcherInterface $matcher;
-
-    public function __construct(EntityManagerInterface $doctrine, UrlMatcherInterface $matcher)
-    {
+    public function __construct(
+        private readonly WooDecisionRepository $wooDecisionRepository,
+        private readonly DocumentRepository $documentRepository,
+        private readonly UrlMatcherInterface $matcher,
+    ) {
         parent::__construct();
-
-        $this->doctrine = $doctrine;
-        $this->matcher = $matcher;
     }
 
     protected function configure(): void
@@ -57,7 +53,7 @@ class Where extends Command
             return 1;
         }
 
-        $dossier = $this->doctrine->getRepository(Dossier::class)->findOneBy(['dossierNr' => $match['dossierId']]);
+        $dossier = $this->wooDecisionRepository->findOneBy(['dossierNr' => $match['dossierId']]);
         if (! $dossier) {
             $output->writeln("<error>Dossier {$match['dossierId']} not found</error>");
 
@@ -65,7 +61,7 @@ class Where extends Command
         }
 
         if (isset($match['documentId'])) {
-            $document = $this->doctrine->getRepository(Document::class)->findOneBy(['documentNr' => $match['documentId']]);
+            $document = $this->documentRepository->findOneBy(['documentNr' => $match['documentId']]);
             $documents = [$document];
         } else {
             $documents = $dossier->getDocuments();

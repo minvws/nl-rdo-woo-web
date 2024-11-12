@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload\Process;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Domain\Upload\Process\FileProcessException;
-use App\Entity\Dossier;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -16,14 +16,14 @@ use Symfony\Component\Uid\Uuid;
 final class DocumentNumberExtractorTest extends UnitTestCase
 {
     private LoggerInterface&MockInterface $logger;
-    private Dossier&MockInterface $dossier;
+    private WooDecision&MockInterface $dossier;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->dossier = \Mockery::mock(Dossier::class);
+        $this->dossier = \Mockery::mock(WooDecision::class);
     }
 
     #[DataProvider('getValidFilenameData')]

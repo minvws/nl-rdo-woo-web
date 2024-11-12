@@ -19,8 +19,6 @@ module.exports = {
       },
 
       colors: {
-        // https://www.color-name.com/hex/f3f3f3
-
         'woo-anti-flash-white': '#f3f3f3',
         'woo-ateneo-blue': '#004161',
         'woo-chinese-silver': '#ccc',

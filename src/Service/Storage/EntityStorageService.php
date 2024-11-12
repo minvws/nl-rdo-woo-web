@@ -11,12 +11,14 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * This class is responsible for storing and retrieving files attached to entities using FileInfo. See StorageService
  * for more information.
  *
  * @SuppressWarnings(TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class EntityStorageService extends StorageService
 {
@@ -71,7 +73,7 @@ class EntityStorageService extends StorageService
      */
     public function retrieveResourceEntity(EntityWithFileInfo $entity)
     {
-        $remotePath = $this->generateEntityPath($entity, new \SplFileInfo($entity->getFileInfo()->getPath() ?? ''));
+        $remotePath = $this->generateEntityPath($entity);
 
         return $this->remoteFilesystem->readStream($remotePath);
     }
@@ -84,7 +86,11 @@ class EntityStorageService extends StorageService
             );
         }
 
-        $remotePath = $this->generateEntityPath($entity, $localFile);
+        $filename = $localFile instanceof UploadedFile
+            ? $localFile->getClientOriginalName()
+            : $localFile->getFilename();
+
+        $remotePath = $this->generateEntityPath($entity, $filename);
 
         $result = $this->doStore($localFile, $remotePath);
         if (! $result) {
@@ -98,7 +104,7 @@ class EntityStorageService extends StorageService
         $this->setHash($entity, $localFile->getPathname(), false);
 
         $foundationFile = new File($localFile->getPathname());
-        $file->setMimetype($foundationFile->getMimeType() ?? '');
+        $file->setMimetype($foundationFile->getMimeType());
         $file->setUploaded(true);
 
         $this->doctrine->persist($entity);
@@ -164,7 +170,7 @@ class EntityStorageService extends StorageService
 
     public function downloadEntity(EntityWithFileInfo $entity): string|false
     {
-        $remotePath = $this->generateEntityPath($entity, new \SplFileInfo($entity->getFileInfo()->getPath() ?? ''));
+        $remotePath = $this->generateEntityPath($entity);
 
         return $this->download($remotePath);
     }
@@ -196,7 +202,7 @@ class EntityStorageService extends StorageService
             EntityFileUpdateEvent::forEntity($entity)
         );
 
-        $path = $this->generateEntityPath($entity, new \SplFileInfo($entity->getFileInfo()->getPath() ?? ''));
+        $path = $this->generateEntityPath($entity);
 
         return $this->doDeleteAllFilesForEntity($entity, $path);
     }
@@ -207,7 +213,7 @@ class EntityStorageService extends StorageService
             EntityFileUpdateEvent::forEntity($entity)
         );
 
-        $path = $this->generateEntityPath($entity, new \SplFileInfo($entity->getFileInfo()->getPath() ?? ''));
+        $path = $this->generateEntityPath($entity);
 
         return $this->remoteFilesystem->delete($path);
     }
@@ -219,14 +225,20 @@ class EntityStorageService extends StorageService
         return sprintf('%s/pages/page-%d.pdf', $rootPath, $pageNr);
     }
 
-    protected function generateEntityPath(EntityWithFileInfo $entity, \SplFileInfo $file): string
+    protected function generateEntityPath(EntityWithFileInfo $entity, ?string $filename = null): string
     {
-        $rootPath = $this->getRootPathForEntity($entity);
+        if ($filename === null) {
+            $filename = $this->getBasenameOfFilePath($entity);
+        }
 
-        $filename = $file instanceof UploadedFile
-            ? $file->getClientOriginalName()
-            : $file->getFilename();
+        return sprintf('%s/%s', $this->getRootPathForEntity($entity), $filename);
+    }
 
-        return sprintf('%s/%s', $rootPath, $filename);
+    private function getBasenameOfFilePath(EntityWithFileInfo $entity): string
+    {
+        $path = $entity->getFileInfo()->getPath();
+        Assert::string($path);
+
+        return basename($path);
     }
 }

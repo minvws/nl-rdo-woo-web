@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload\Postprocessor;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\Postprocessor\FilePostprocessor;
 use App\Domain\Upload\Postprocessor\FilePostprocessorStrategyInterface;
 use App\Domain\Upload\Postprocessor\NoMatchingFilePostprocessorException;
 use App\Domain\Upload\UploadedFile;
-use App\Entity\Dossier;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\Uid\Uuid;
@@ -18,7 +18,7 @@ final class FilePostprocessorTest extends UnitTestCase
     private FilePostprocessorStrategyInterface&MockInterface $firstPostprocessor;
     private FilePostprocessorStrategyInterface&MockInterface $secondPostprocessor;
     private UploadedFile&MockInterface $file;
-    private Dossier&MockInterface $dossier;
+    private WooDecision&MockInterface $dossier;
 
     protected function setUp(): void
     {
@@ -28,7 +28,7 @@ final class FilePostprocessorTest extends UnitTestCase
         $this->secondPostprocessor = \Mockery::mock(FilePostprocessorStrategyInterface::class);
 
         $this->file = \Mockery::mock(UploadedFile::class);
-        $this->dossier = \Mockery::mock(Dossier::class);
+        $this->dossier = \Mockery::mock(WooDecision::class);
     }
 
     public function testProcessPassingArrayOfStrategies(): void

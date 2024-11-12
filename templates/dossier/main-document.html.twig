@@ -1,0 +1,7 @@
+{% extends 'publication/document.html.twig' %}
+
+{% set urlToDossierPage = url('app_woodecision_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr } ) %}
+{% set dateLabel = 'global.period' | trans %}
+
+{% block dossier_date %}
+{% endblock %}

@@ -8,35 +8,26 @@ use App\Domain\Ingest\Process\Dossier\DossierIngestStrategyInterface;
 use App\Domain\Publication\Attachment\EntityWithAttachments;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Domain\Search\Index\Dossier\IndexDossierCommand;
-use App\Domain\Search\Index\SubType\IndexAttachmentCommand;
-use App\Domain\Search\Index\SubType\IndexMainDocumentCommand;
-use Symfony\Component\Messenger\MessageBusInterface;
+use App\Domain\Search\SearchDispatcher;
 
 readonly class DefaultDossierIngestStrategy implements DossierIngestStrategyInterface
 {
     public function __construct(
-        private MessageBusInterface $messageBus,
+        private SearchDispatcher $searchDispatcher,
     ) {
     }
 
     public function ingest(AbstractDossier $dossier, bool $refresh): void
     {
-        $this->messageBus->dispatch(
-            IndexDossierCommand::forDossier($dossier, $refresh)
-        );
+        $this->searchDispatcher->dispatchIndexDossierCommand($dossier->getId(), $refresh);
 
-        if ($dossier instanceof EntityWithMainDocument && $dossier->getDocument() !== null) {
-            $this->messageBus->dispatch(
-                IndexMainDocumentCommand::forMainDocument($dossier->getDocument())
-            );
+        if ($dossier instanceof EntityWithMainDocument && $dossier->getMainDocument() !== null) {
+            $this->searchDispatcher->dispatchIndexMainDocumentCommand($dossier->getMainDocument()->getId());
         }
 
         if ($dossier instanceof EntityWithAttachments) {
             foreach ($dossier->getAttachments() as $attachment) {
-                $this->messageBus->dispatch(
-                    IndexAttachmentCommand::forAttachment($attachment)
-                );
+                $this->searchDispatcher->dispatchIndexAttachmentCommand($attachment->getId());
             }
         }
     }

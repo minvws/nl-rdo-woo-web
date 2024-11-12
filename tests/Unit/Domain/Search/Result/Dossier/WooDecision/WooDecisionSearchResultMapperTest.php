@@ -8,7 +8,7 @@ use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use App\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResultMapper;
 use App\Domain\Search\Result\ResultEntryInterface;
-use App\Repository\DossierRepository;
+use App\Repository\WooDecisionRepository;
 use Jaytaph\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -16,18 +16,24 @@ use Mockery\MockInterface;
 class WooDecisionSearchResultMapperTest extends MockeryTestCase
 {
     private DossierSearchResultBaseMapper&MockInterface $baseMapper;
-    private DossierRepository&MockInterface $repository;
+    private WooDecisionRepository&MockInterface $repository;
     private WooDecisionSearchResultMapper $mapper;
 
     public function setUp(): void
     {
         $this->baseMapper = \Mockery::mock(DossierSearchResultBaseMapper::class);
-        $this->repository = \Mockery::mock(DossierRepository::class);
+        $this->repository = \Mockery::mock(WooDecisionRepository::class);
 
         $this->mapper = new WooDecisionSearchResultMapper(
             $this->baseMapper,
             $this->repository,
         );
+    }
+
+    public function testSupports(): void
+    {
+        self::assertTrue($this->mapper->supports(ElasticDocumentType::WOO_DECISION));
+        self::assertFalse($this->mapper->supports(ElasticDocumentType::COVENANT));
     }
 
     public function testMapForwardsToBaseMapper(): void
@@ -42,7 +48,6 @@ class WooDecisionSearchResultMapperTest extends MockeryTestCase
                 $hit,
                 $this->repository,
                 ElasticDocumentType::WOO_DECISION,
-                ['title', 'summary', 'decision_content'],
             )
             ->andReturn($expectedResult);
 

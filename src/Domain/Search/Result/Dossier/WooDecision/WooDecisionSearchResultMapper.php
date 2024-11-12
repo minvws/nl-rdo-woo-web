@@ -8,14 +8,14 @@ use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\SearchResultMapperInterface;
-use App\Repository\DossierRepository;
+use App\Repository\WooDecisionRepository;
 use Jaytaph\TypeArray\TypeArray;
 
 readonly class WooDecisionSearchResultMapper implements SearchResultMapperInterface
 {
     public function __construct(
         private DossierSearchResultBaseMapper $baseMapper,
-        private DossierRepository $repository,
+        private WooDecisionRepository $repository,
     ) {
     }
 
@@ -30,7 +30,6 @@ readonly class WooDecisionSearchResultMapper implements SearchResultMapperInterf
             $hit,
             $this->repository,
             ElasticDocumentType::WOO_DECISION,
-            ['title', 'summary', 'decision_content'],
         );
     }
 }

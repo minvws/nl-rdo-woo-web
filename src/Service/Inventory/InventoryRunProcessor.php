@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Entity\InventoryProcessRun;
+use App\Entity\ProductionReportProcessRun;
 use App\Exception\ProcessInventoryException;
 use App\Exception\TranslatableException;
 use App\Service\DossierService;
@@ -38,7 +38,7 @@ class InventoryRunProcessor
      *
      * @throws \RuntimeException
      */
-    public function process(InventoryProcessRun $run): void
+    public function process(ProductionReportProcessRun $run): void
     {
         try {
             $this->loggingHelper->disableAll();
@@ -69,7 +69,7 @@ class InventoryRunProcessor
         }
     }
 
-    private function processComparison(InventoryProcessRun $run, InventoryReaderInterface $inventoryReader): void
+    private function processComparison(ProductionReportProcessRun $run, InventoryReaderInterface $inventoryReader): void
     {
         $run->startComparing();
         $this->doctrine->persist($run);
@@ -93,7 +93,7 @@ class InventoryRunProcessor
         $run->setChangeset($changeset);
     }
 
-    private function processUpdates(InventoryProcessRun $run, InventoryReaderInterface $inventoryReader): void
+    private function processUpdates(ProductionReportProcessRun $run, InventoryReaderInterface $inventoryReader): void
     {
         $run->startUpdating();
         $this->doctrine->persist($run);
@@ -114,7 +114,7 @@ class InventoryRunProcessor
 
         $this->inventoryUpdater->applyChangesetToDatabase($dossier, $inventoryReader, $changeset, $runProgress);
 
-        $this->inventoryService->storeRawInventory($run);
+        $this->inventoryService->storeProductionReport($run);
         $this->doctrine->persist($dossier);
         $this->doctrine->flush();
 

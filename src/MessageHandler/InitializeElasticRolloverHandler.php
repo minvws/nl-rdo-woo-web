@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use App\ElasticConfig;
-use App\Message\IngestDossiersMessage;
 use App\Message\InitiateElasticRolloverMessage;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Initialize the elasticsearch rollover and does a dossier ingestion of all dossiers.
@@ -21,7 +20,7 @@ class InitializeElasticRolloverHandler
     public function __construct(
         protected ElasticIndexManager $indexService,
         protected LoggerInterface $logger,
-        protected MessageBusInterface $bus,
+        protected IngestDispatcher $ingestDispatcher,
     ) {
     }
 
@@ -39,8 +38,7 @@ class InitializeElasticRolloverHandler
                 dstIndex: $message->indexName,
             );
 
-            $ingestDossiers = new IngestDossiersMessage();
-            $this->bus->dispatch($ingestDossiers);
+            $this->ingestDispatcher->dispatchIngestAllDossiersCommand();
         } catch (\Exception $e) {
             $this->logger->error('Failed to initialize the elasticsearch rollover', [
                 'index_name' => $message->indexName,

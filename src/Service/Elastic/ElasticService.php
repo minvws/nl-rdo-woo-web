@@ -7,7 +7,6 @@ namespace App\Service\Elastic;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Search\Index\ElasticDocument;
 use App\ElasticConfig;
-use App\Entity\Dossier;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Jaytaph\TypeArray\TypeArray;
@@ -32,25 +31,6 @@ class ElasticService
             'id' => $document->getId(),
             'body' => [
                 'doc' => $document->getDocumentValues(),
-                'doc_as_upsert' => true,
-            ],
-        ]);
-    }
-
-    /**
-     * @deprecated Use updateDoc instead. This method is to be phased out as part of woo-2705.
-     */
-    public function updateDossierDecisionContent(Dossier $dossier, string $content): void
-    {
-        $dossierDoc = [
-            'decision_content' => $content,
-        ];
-
-        $this->elastic->update([
-            'index' => ElasticConfig::WRITE_INDEX,
-            'id' => $dossier->getDossierNr(),
-            'body' => [
-                'doc' => $dossierDoc,
                 'doc_as_upsert' => true,
             ],
         ]);

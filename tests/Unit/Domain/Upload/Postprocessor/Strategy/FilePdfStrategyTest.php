@@ -6,12 +6,12 @@ namespace App\Tests\Unit\Domain\Upload\Postprocessor\Strategy;
 
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\Postprocessor\Strategy\FilePdfStrategy;
 use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Domain\Upload\Process\FileStorer;
 use App\Domain\Upload\UploadedFile;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\FileInfo;
 use App\Repository\DocumentRepository;
 use App\Service\HistoryService;
@@ -30,7 +30,7 @@ final class FilePdfStrategyTest extends UnitTestCase
     private DocumentNumberExtractor&MockInterface $documentNumberExtractor;
     private FileStorer&MockInterface $fileStorer;
     private UploadedFile&MockInterface $file;
-    private Dossier&MockInterface $dossier;
+    private WooDecision&MockInterface $dossier;
     private DocumentRepository&MockInterface $documentRepository;
     private Document&MockInterface $document;
     private FileInfo&MockInterface $fileInfo;
@@ -46,7 +46,7 @@ final class FilePdfStrategyTest extends UnitTestCase
         $this->documentNumberExtractor = \Mockery::mock(DocumentNumberExtractor::class);
         $this->fileStorer = \Mockery::mock(FileStorer::class);
         $this->file = \Mockery::mock(UploadedFile::class);
-        $this->dossier = \Mockery::mock(Dossier::class);
+        $this->dossier = \Mockery::mock(WooDecision::class);
         $this->documentRepository = \Mockery::mock(DocumentRepository::class);
         $this->document = \Mockery::mock(Document::class);
         $this->fileInfo = \Mockery::mock(FileInfo::class);

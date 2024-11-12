@@ -10,7 +10,7 @@ use Oneup\UploaderBundle\Uploader\Naming\NamerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Webmozart\Assert\Assert;
 
-final readonly class UploaderNamer implements NamerInterface
+readonly class UploaderNamer implements NamerInterface
 {
     public function __construct(private RequestStack $requestStack)
     {
@@ -23,16 +23,16 @@ final readonly class UploaderNamer implements NamerInterface
 
         $clientOriginalName = basename($file->getClientOriginalName());
 
-        return sprintf('%s/%s_%s', $this->getGroupId()->value, uniqid(), $clientOriginalName);
+        return sprintf('%s/%s_%s', $this->getGroupId()->value, $this->getUniqid(), $clientOriginalName);
     }
 
     private function getGroupId(): UploadGroupId
     {
         $groupId = $this->requestStack->getCurrentRequest()?->get('groupId');
 
-        return is_string($groupId)
-            ? UploadGroupId::tryFrom($groupId) ?? UploadGroupId::DEFAULT
-            : UploadGroupId::DEFAULT;
+        Assert::string($groupId);
+
+        return UploadGroupId::from($groupId);
     }
 
     public static function getOriginalName(string $fileName): string
@@ -41,5 +41,10 @@ final readonly class UploaderNamer implements NamerInterface
             $fileName,
             strpos($fileName, '_') + 1
         );
+    }
+
+    protected function getUniqid(): string
+    {
+        return uniqid(more_entropy: true);
     }
 }

@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Controller\Public\Dossier\AnnualReport;
 
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
+use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportDocument;
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
 use App\Domain\Publication\Dossier\Type\AnnualReport\ViewModel\AnnualReportViewFactory;
+use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Service\DownloadResponseHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +26,7 @@ class AnnualReportController extends AbstractController
         private readonly AnnualReportViewFactory $viewFactory,
         private readonly AttachmentViewFactory $attachmentViewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
-        private readonly DownloadResponseHelper $downloadHelper,
+        private readonly DossierFileViewFactory $dossierFileViewFactory,
     ) {
     }
 
@@ -34,7 +35,7 @@ class AnnualReportController extends AbstractController
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] AnnualReport $annualReport,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        AnnualReportDocument $document,
+        AnnualReportMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
@@ -56,7 +57,7 @@ class AnnualReportController extends AbstractController
     public function documentDetail(
         #[ValueResolver('dossierWithAccessCheck')] AnnualReport $dossier,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        AnnualReportDocument $document,
+        AnnualReportMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $mainDocumentViewModel = $this->mainDocumentViewFactory->make($dossier, $document);
@@ -72,23 +73,12 @@ class AnnualReportController extends AbstractController
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'document' => $mainDocumentViewModel,
+            'file' => $this->dossierFileViewFactory->make(
+                $dossier,
+                $document,
+                DossierFileType::MAIN_DOCUMENT,
+            ),
         ]);
-    }
-
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
-    #[Route(
-        '/jaarplan-jaarverslag/{prefix}/{dossierId}/document/download',
-        name: 'app_annualreport_document_download',
-        methods: ['GET'],
-    )]
-    public function documentDownload(
-        #[ValueResolver('dossierWithAccessCheck')] AnnualReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        AnnualReportDocument $document,
-    ): Response {
-        unset($dossier);
-
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($document);
     }
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
@@ -101,8 +91,6 @@ class AnnualReportController extends AbstractController
         #[ValueResolver('dossierWithAccessCheck')] AnnualReport $dossier,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
         AnnualReportAttachment $attachment,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        AnnualReportDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $attachmentViewModel = $this->attachmentViewFactory->make($dossier, $attachment);
@@ -118,23 +106,11 @@ class AnnualReportController extends AbstractController
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'attachment' => $attachmentViewModel,
-            'document' => $this->mainDocumentViewFactory->make($dossier, $document),
+            'file' => $this->dossierFileViewFactory->make(
+                $dossier,
+                $attachment,
+                DossierFileType::ATTACHMENT,
+            ),
         ]);
-    }
-
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
-    #[Route(
-        '/jaarplan-jaarverslag/{prefix}/{dossierId}/bijlage/{attachmentId}/download',
-        name: 'app_annualreport_attachment_download',
-        methods: ['GET'],
-    )]
-    public function attachmentDownload(
-        #[ValueResolver('dossierWithAccessCheck')] AnnualReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
-        AnnualReportAttachment $attachment,
-    ): Response {
-        unset($dossier);
-
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($attachment);
     }
 }

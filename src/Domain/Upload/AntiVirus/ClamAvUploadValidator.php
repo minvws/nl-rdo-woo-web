@@ -10,6 +10,7 @@ use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\FileUploadLogEvent;
 use Oneup\UploaderBundle\Event\ValidationEvent;
 use Oneup\UploaderBundle\Uploader\Exception\ValidationException;
+use Oneup\UploaderBundle\UploadEvents;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\When;
@@ -20,7 +21,7 @@ use Xenolope\Quahog\Result;
 // Intentionally not enabled for the 'test' environment
 #[When(env: 'dev')]
 #[When(env: 'prod')]
-#[AsEventListener(event: 'oneup_uploader.validation', method: 'onValidate')]
+#[AsEventListener(event: UploadEvents::VALIDATION, method: 'onValidate')]
 readonly class ClamAvUploadValidator
 {
     public const ERROR_TECHNICAL = 'error.technical';

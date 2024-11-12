@@ -13,7 +13,7 @@
         helpText="{{ 'admin.dossiers.annual-report.form.content.document_help' | trans }}"
         languages="{{ attachmentLanguages }}"
         title="{{ 'admin.dossiers.annual-report.form.content.document_label' | trans }}"
-        uploadGroupId="annual-report-documents"
+        uploadGroupId="main-documents"
     />
 
     <twig:Admin:Publication:ManageAttachments
@@ -25,7 +25,7 @@
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.annual-report.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"
-        uploadGroupId="annual-report-attachments"
+        uploadGroupId="attachments"
     />
 
 {{ form_end(form) }}

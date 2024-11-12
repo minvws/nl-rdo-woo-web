@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domain\Ingest\Process\SubType\Strategy;
 
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
 use App\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface;
 use App\Entity\EntityWithFileInfo;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class MetadataOnlySubTypeIngestStrategy implements SubTypeIngestStrategyInterface
 {
     public function __construct(
-        private MessageBusInterface $bus,
+        private IngestDispatcher $dispatcher,
         private LoggerInterface $logger,
     ) {
     }
@@ -27,9 +26,7 @@ readonly class MetadataOnlySubTypeIngestStrategy implements SubTypeIngestStrateg
         ]);
 
         // Set refresh to true so any existing metadata or pages from an older version are removed.
-        $this->bus->dispatch(
-            IngestMetadataOnlyCommand::forEntity($entity, true)
-        );
+        $this->dispatcher->dispatchIngestMetadataOnlyCommandForEntity($entity, true);
     }
 
     public function canHandle(EntityWithFileInfo $entity): bool

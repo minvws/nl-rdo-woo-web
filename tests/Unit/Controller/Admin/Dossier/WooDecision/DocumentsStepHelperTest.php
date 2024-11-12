@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Controller\Admin\Dossier\WooDecision;
 use App\Controller\Admin\Dossier\WooDecision\DocumentsStepHelper;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\InventoryProcessRun;
+use App\Entity\ProductionReportProcessRun;
 use App\Form\Dossier\WooDecision\InventoryType;
 use App\Form\Dossier\WooDecision\TranslatableFormErrorMapper;
 use App\ValueObject\InventoryStatus;
@@ -48,7 +48,7 @@ class DocumentsStepHelperTest extends MockeryTestCase
 
         $this->formFactory->expects('create')->with(InventoryType::class)->andReturn($form);
 
-        $processRun = \Mockery::mock(InventoryProcessRun::class);
+        $processRun = \Mockery::mock(ProductionReportProcessRun::class);
         $processRun->shouldReceive('isFailed')->andReturnTrue();
         $processRun->shouldReceive('hasErrors')->andReturnTrue();
         $processRun->shouldReceive('isPending')->andReturnFalse();
@@ -60,7 +60,7 @@ class DocumentsStepHelperTest extends MockeryTestCase
         $dossier = \Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getProcessRun')->andReturn($processRun);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
-        $dossier->shouldReceive('getRawInventory')->andReturnNull();
+        $dossier->shouldReceive('getProductionReport')->andReturnNull();
 
         $this->formErrorMapper->expects('mapRunErrorsToForm')->with($processRun, $form);
 
