@@ -6,18 +6,18 @@ namespace App\Enum;
 
 enum Department: string
 {
-    case AZ = 'Ministerie van Algemene Zaken';
-    case BZK = 'Ministerie van Binnenlandse Zaken en Koninkrijksrelaties';
-    case BZ = 'Ministerie van Buitenlandse Zaken';
-    case DEF = 'Ministerie van Defensie';
-    case EZK = 'Ministerie van Economische Zaken en Klimaat';
-    case FIN = 'Ministerie van Financiën';
-    case IW = 'Ministerie van Infrastructuur en Waterstaat';
-    case JV = 'Ministerie van Justitie en Veiligheid';
-    case LNV = 'Ministerie van Landbouw, Natuur en Voedselkwaliteit';
-    case OCW = 'Ministerie van Onderwijs, Cultuur en Wetenschap';
-    case SZW = 'Ministerie van Sociale Zaken en Werkgelegenheid';
-    case VWS = 'Ministerie van Volksgezondheid, Welzijn en Sport';
+    case AZ = 'ministerie van Algemene Zaken';
+    case BZK = 'ministerie van Binnenlandse Zaken en Koninkrijksrelaties';
+    case BZ = 'ministerie van Buitenlandse Zaken';
+    case DEF = 'ministerie van Defensie';
+    case EZK = 'ministerie van Economische Zaken en Klimaat';
+    case FIN = 'ministerie van Financiën';
+    case IW = 'ministerie van Infrastructuur en Waterstaat';
+    case JV = 'ministerie van Justitie en Veiligheid';
+    case LNV = 'ministerie van Landbouw, Natuur en Voedselkwaliteit';
+    case OCW = 'ministerie van Onderwijs, Cultuur en Wetenschap';
+    case SZW = 'ministerie van Sociale Zaken en Werkgelegenheid';
+    case VWS = 'ministerie van Volksgezondheid, Welzijn en Sport';
 
     public static function tryFromShortTag(string $tag): ?self
     {
@@ -33,7 +33,7 @@ enum Department: string
     public static function tryFromName(string $name): ?self
     {
         foreach (self::cases() as $case) {
-            if ($case->value === $name) {
+            if (strtolower($case->value) === strtolower($name)) {
                 return $case;
             }
         }

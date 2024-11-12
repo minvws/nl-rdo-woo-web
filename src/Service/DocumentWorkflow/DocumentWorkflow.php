@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\DocumentWorkflow;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Service\DocumentService;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -24,7 +24,7 @@ class DocumentWorkflow
         return new DocumentWorkflowStatus($document);
     }
 
-    public function replace(Dossier $dossier, Document $document, UploadedFile $file): void
+    public function replace(WooDecision $dossier, Document $document, UploadedFile $file): void
     {
         $status = $this->getStatus($document);
         if (! $status->canReplace()) {

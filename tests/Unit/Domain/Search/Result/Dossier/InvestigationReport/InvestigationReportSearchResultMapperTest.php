@@ -30,6 +30,12 @@ class InvestigationReportSearchResultMapperTest extends MockeryTestCase
         );
     }
 
+    public function testSupports(): void
+    {
+        self::assertTrue($this->mapper->supports(ElasticDocumentType::INVESTIGATION_REPORT));
+        self::assertFalse($this->mapper->supports(ElasticDocumentType::COVENANT));
+    }
+
     public function testMapForwardsToBaseMapper(): void
     {
         $hit = \Mockery::mock(TypeArray::class);

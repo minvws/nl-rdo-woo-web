@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory\Sanitizer;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\EntityWithFileInfo;
 use App\Entity\FileInfo;
 use App\Exception\InventorySanitizerException;
+use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterface;
 use App\Service\Storage\EntityStorageService;
 use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -66,7 +67,7 @@ class InventorySanitizer
      */
     private function getCellValues(Document $document): array
     {
-        /** @var Dossier $dossier */
+        /** @var WooDecision $dossier */
         $dossier = $document->getDossiers()->first();
 
         return [

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Postprocessor;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\UploadedFile;
-use App\Entity\Dossier;
 use Symfony\Component\Uid\Uuid;
 
 class NoMatchingFilePostprocessorException extends \RuntimeException
@@ -21,7 +21,7 @@ class NoMatchingFilePostprocessorException extends \RuntimeException
         );
     }
 
-    public static function create(UploadedFile $file, Dossier $dossier): self
+    public static function create(UploadedFile $file, WooDecision $dossier): self
     {
         return new self(
             $file->getOriginalFilename(),

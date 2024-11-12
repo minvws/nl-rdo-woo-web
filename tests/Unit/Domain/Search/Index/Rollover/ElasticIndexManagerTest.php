@@ -108,6 +108,21 @@ class ElasticIndexManagerTest extends UnitTestCase
         $this->indexManager->alias($name, $alias);
     }
 
+    public function testAliasWithDefaultSingleOptionIgnoreFailingDelete(): void
+    {
+        $name = 'foo';
+        $alias = 'bar';
+
+        $this->elasticClient
+            ->expects('indices->deleteAlias')
+            ->with(['index' => '*', 'name' => $alias])
+            ->andThrow(new \RuntimeException('oops'));
+
+        $this->elasticClient->expects('indices->putAlias')->with(['index' => $name, 'name' => $alias]);
+
+        $this->indexManager->alias($name, $alias);
+    }
+
     public function testAliasWithSingleOptionDisabledDoesNotDeleteExistingAliases(): void
     {
         $name = 'foo';

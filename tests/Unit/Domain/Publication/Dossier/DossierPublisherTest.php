@@ -82,7 +82,7 @@ class DossierPublisherTest extends MockeryTestCase
     {
         $this->dossierWorkflowManager
             ->expects('isTransitionAllowed')
-            ->with($this->dossier, DossierStatusTransition::SCHEDULE)
+            ->with($this->dossier, DossierStatusTransition::SCHEDULE_PUBLISH)
             ->andReturnTrue();
 
         self::assertTrue($this->publisher->canSchedulePublication($this->dossier));
@@ -92,7 +92,7 @@ class DossierPublisherTest extends MockeryTestCase
     {
         $this->dossierWorkflowManager
             ->expects('applyTransition')
-            ->with($this->dossier, DossierStatusTransition::SCHEDULE);
+            ->with($this->dossier, DossierStatusTransition::SCHEDULE_PUBLISH);
 
         $this->publisher->schedulePublication($this->dossier);
     }

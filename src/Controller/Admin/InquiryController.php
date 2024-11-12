@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\DocumentPrefix;
-use App\Entity\Dossier;
 use App\Form\ChoiceLoader\DocumentPrefixChoiceLoader;
-use App\Form\ChoiceLoader\DossierChoiceLoader;
+use App\Form\ChoiceLoader\WooDecisionChoiceLoader;
 use App\Form\Dossier\WooDecision\TranslatableFormErrorMapper;
 use App\Form\Inquiry\InquiryLinkDocumentsFormType;
 use App\Form\Inquiry\InquiryLinkDossierFormType;
 use App\Repository\InquiryRepository;
+use App\Repository\WooDecisionRepository;
 use App\Service\Inquiry\InquiryLinkImporter;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Inventory\InquiryChangeset;
@@ -36,9 +37,13 @@ class InquiryController extends AbstractController
 {
     protected const MAX_ITEMS_PER_PAGE = 100;
 
+    /**
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     */
     public function __construct(
         private readonly InquiryRepository $repository,
         private readonly PaginatorInterface $paginator,
+        private readonly WooDecisionRepository $wooDecisionRepository,
         private readonly EntityManagerInterface $doctrine,
         private readonly AuthorizationMatrix $authorizationMatrix,
         private readonly Security $security,
@@ -121,7 +126,7 @@ class InquiryController extends AbstractController
     #[IsGranted('AuthMatrix.inquiry.create')]
     public function linkDossiers(Request $request): Response
     {
-        $choiceLoader = new DossierChoiceLoader($this->doctrine, $this->authorizationMatrix, $this->security);
+        $choiceLoader = new WooDecisionChoiceLoader($this->wooDecisionRepository, $this->authorizationMatrix, $this->security);
         $form = $this->createForm(InquiryLinkDossierFormType::class, null, ['choice_loader' => $choiceLoader]);
 
         $form->handleRequest($request);
@@ -136,7 +141,7 @@ class InquiryController extends AbstractController
             $inquiryChangeset = new InquiryChangeset($this->authorizationMatrix->getActiveOrganisation());
             $caseNrs = InventoryDataHelper::separateValues(strval($form->get('map')->getData()), ',');
 
-            /** @var Dossier[] $dossiers */
+            /** @var WooDecision[] $dossiers */
             $dossiers = $form->get('dossiers')->getData();
             foreach ($dossiers as $dossier) {
                 $this->denyAccessUnlessGranted('AuthMatrix.dossier.read', subject: $dossier);

@@ -20,8 +20,8 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
         $withoutDate = isset($values['without_date']) && strlen(trim($values['without_date'])) > 0;
 
         if (! $withoutDate) {
-            $from = CastTypes::asImmutableDate($values['from'] ?? null, DateFacetInputInterface::DATE_FORMAT);
-            $to = CastTypes::asImmutableDate($values['to'] ?? null, DateFacetInputInterface::DATE_FORMAT);
+            $from = CastTypes::asImmutableDate($values['from'] ?? null, DateFacetInputInterface::DATE_FORMAT)?->setTime(0, 0);
+            $to = CastTypes::asImmutableDate($values['to'] ?? null, DateFacetInputInterface::DATE_FORMAT)?->setTime(0, 0);
         }
 
         return new self(
@@ -42,11 +42,6 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
     public function isActive(): bool
     {
         return $this->isActive;
-    }
-
-    public function isNotActive(): bool
-    {
-        return ! $this->isActive();
     }
 
     public function isWithoutDate(): bool
@@ -75,11 +70,25 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
 
         if ($this->isWithoutDate()) {
             $params['without_date'] = 1;
-        } else {
+        }
+
+        if ($this->from instanceof \DateTimeImmutable) {
             $params['from'] = $this->getPeriodFilterFrom();
+        }
+
+        if ($this->to instanceof \DateTimeImmutable) {
             $params['to'] = $this->getPeriodFilterTo();
         }
 
         return $params;
+    }
+
+    public function includeWithoutDate(): self
+    {
+        return new self(
+            true,
+            $this->from,
+            $this->to,
+        );
     }
 }

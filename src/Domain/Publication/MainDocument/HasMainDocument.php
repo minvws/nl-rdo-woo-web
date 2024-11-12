@@ -16,7 +16,7 @@ trait HasMainDocument
     /**
      * @phpstan-return ?TDocument
      */
-    public function getDocument(): ?AbstractMainDocument
+    public function getMainDocument(): ?AbstractMainDocument
     {
         /** @var ?TDocument */
         return $this->document;
@@ -25,7 +25,7 @@ trait HasMainDocument
     /**
      * @phpstan-param ?TDocument $document
      */
-    public function setDocument(?AbstractMainDocument $document): void
+    public function setMainDocument(?AbstractMainDocument $document): void
     {
         /** @var TDocument $document */
         $this->document = $document;

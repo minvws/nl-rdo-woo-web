@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawAllDocumentsCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawDocumentCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentDispatcher;
 use App\Domain\Publication\Dossier\Type\WooDecision\Event\AllDocumentsWithDrawnEvent;
 use App\Domain\Publication\Dossier\Type\WooDecision\Handler\WithDrawAllDocumentsHandler;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -23,6 +23,7 @@ class WithDrawAllDocumentsHandlerTest extends MockeryTestCase
 {
     private MessageBusInterface&MockInterface $messageBus;
     private DossierWorkflowManager&MockInterface $dossierWorkflowManager;
+    private DocumentDispatcher&MockInterface $documentDispatcher;
     private WithDrawAllDocumentsHandler $handler;
     private WooDecision&MockInterface $dossier;
 
@@ -30,11 +31,13 @@ class WithDrawAllDocumentsHandlerTest extends MockeryTestCase
     {
         $this->dossier = \Mockery::mock(WooDecision::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
+        $this->documentDispatcher = \Mockery::mock(DocumentDispatcher::class);
         $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
 
         $this->handler = new WithDrawAllDocumentsHandler(
             $this->dossierWorkflowManager,
             $this->messageBus,
+            $this->documentDispatcher,
         );
 
         parent::setUp();
@@ -59,14 +62,12 @@ class WithDrawAllDocumentsHandlerTest extends MockeryTestCase
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($this->dossier, DossierStatusTransition::UPDATE_DOCUMENTS);
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (WithDrawDocumentCommand $message) use ($reason, $explanation, $documentWithUpload) {
-                return $message->document === $documentWithUpload
-                    && $message->explanation === $explanation
-                    && $message->reason === $reason
-                    && $message->dossier === $this->dossier;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
+        $this->documentDispatcher->expects('dispatchWithdrawDocumentCommand')->with(
+            $this->dossier,
+            $documentWithUpload,
+            $reason,
+            $explanation,
+        );
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             function (AllDocumentsWithDrawnEvent $message) use ($reason, $explanation) {

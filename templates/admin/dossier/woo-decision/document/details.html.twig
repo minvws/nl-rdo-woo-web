@@ -95,14 +95,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <th class="bhr-row-head" scope="row">Onderwerpen</th>
-                            <td>
-                                {% for subject in document.subjects %}
-                                    {{ subject }}{% if not loop.last %}, {% endif %}
-                                {% endfor %}
-                            </td>
-                        </tr>
-                        <tr>
                             <th class="bhr-row-head" scope="row">Type download</th>
                             <td data-e2e-name="download-type">
                                 {% if document.isUploaded %}

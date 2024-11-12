@@ -12,10 +12,10 @@
             <h2 class="font-bold mb-6">{{ uploadStatus.actualUploadCount }}/{{ uploadStatus.expectedUploadCount }} {{ 'global.added' | trans}}</h2>
 
             <twig:Admin:LeftAndRight class="pt-1">
-                {% if dossier.rawInventory is not null  %}
+                {% if dossier.productionReport is not null  %}
                 <a
                     class="bhr-button bhr-button--primary bhr-button--with-icon-right mr-2"
-                    href="{{ path('app_admin_dossier_raw_inventory_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
+                    href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
                 >
                     {{ 'admin.dossiers.download_report' | trans }}
 
@@ -53,51 +53,37 @@
                 {% endif %}
 
                 {% if hasDocuments %}
-                    <table class="bhr-table" id="resultaten">
+                    <table class="bhr-table" id="resultaten" data-e2e-name="dossier-documents">
                         <caption class="sr-only">{{ 'admin.dossiers.documents_sortable' | trans }}</caption>
                         <thead>
                             <tr>
                                 {{ knp_pagination_sortable(pagination, 'global.document_number' | trans, 'doc.documentNr', { thClassName: 'w-40' }, {}, 'pagination/sort.admin.html.twig') }}
                                 {{ knp_pagination_sortable(pagination, 'global.document_name' | trans, 'doc.fileInfo.name', { thClassName: 'w-2/5' }, {}, 'pagination/sort.admin.html.twig') }}
                                 {{ knp_pagination_sortable(pagination, 'global.document_judgement' | trans, 'doc.judgement', {}, {}, 'pagination/sort.admin.html.twig') }}
-                                <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">
-                                    {{ 'global.document_particular' | trans }}
-                                </th>
                                 <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                                    <span class="sr-only">{{ 'global.document_edit'| trans }}</span>
+                                    {{ 'global.document_particular' | trans }}
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for document in pagination %}
-                                {% set url = path('app_admin_dossier_woodecision_document', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) %}
-                                <tr class="bhr-clickable-row">
+                                <tr>
                                     <td>
-                                        <a class="bhr-fill-cell" href="{{ url }}">
+                                        <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_woodecision_document', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">
                                             {{ document.documentId }}
                                         </a>
                                     </td>
                                     <td>
-                                        <a class="bhr-fill-cell" href="{{ url }}">
-                                            {{ document.fileInfo.name }}
-                                        </a>
+                                        {{ document.fileInfo.name }}
                                     </td>
                                     <td>
                                         {% if document.judgement is defined %}
-                                            <a class="bhr-fill-cell" href="{{ url }}">
-                                                {{ document.judgement | trans }}
-                                            </a>
+                                            {{ document.judgement | trans }}
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if document.withdrawn %}<a class="bhr-fill-cell" href="{{ url }}">{{ "global.withdrawn" | trans }}</a>{% endif %}
-                                        {% if document.suspended %}<a class="bhr-fill-cell" href="{{ url }}">{{ "global.suspended" | trans }}</a>{% endif %}
-                                    </td>
-                                    <td class="text-right">
-                                        <a class="bhr-fill-cell" href="{{ url }}">
-                                            <span class="sr-only">{{ 'global.details' | trans }} {{ document.documentNr }}</span>
-                                            <twig:Admin:Icon name="chevron-right" />
-                                        </a>
+                                        {% if document.withdrawn %}{{ "global.withdrawn" | trans }}{% endif %}
+                                        {% if document.suspended %}{{ "global.suspended" | trans }}{% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}

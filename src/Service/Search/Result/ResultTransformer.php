@@ -14,6 +14,7 @@ use App\Service\Search\Model\Suggestion;
 use App\Service\Search\Model\SuggestionEntry;
 use App\Service\Search\Query\Facet\Input\DateFacetInput;
 use App\Service\Search\Query\Facet\Input\StringValuesFacetInput;
+use App\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
 use App\ValueObject\FilterDetails;
 use App\ValueObject\InquiryDescription;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,6 +37,7 @@ class ResultTransformer
         private readonly PaginatorInterface $paginator,
         private readonly AggregationMapper $aggregationMapper,
         private readonly ResultFactory $resultFactory,
+        private readonly SortItemViewFactory $sortItemViewFactory,
     ) {
     }
 
@@ -75,6 +77,8 @@ class ResultTransformer
         }
 
         $result->setFilterDetails($this->getFilterDetails($searchParameters));
+        $result->setSortItems($this->sortItemViewFactory->make($searchParameters));
+        $result->setSearchParameters($searchParameters);
 
         return $result;
     }

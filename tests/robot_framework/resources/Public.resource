@@ -1,5 +1,6 @@
 *** Settings ***
 Documentation       Resource file with generic keywords.
+Library             String
 Library             Browser
 Library             DebugLibrary
 
@@ -75,3 +76,142 @@ Verify Symfony Error
 Click Dossier In Inquiry
   [Arguments]  ${dossier_text}
   Click  //*[@data-e2e-name="inquiry-dossiers"]//a[contains(., ${dossier_text})]
+
+Select Filter Options - Dossier
+  [Arguments]
+  ...  ${dossier_type}
+  ...  ${checked}=${TRUE}
+  ...  ${publications}=${TRUE}
+  ...  ${documents}=${TRUE}
+  ...  ${attachments}=${TRUE}
+  IF  '${dossier_type}' == 'woo-decision'
+    VAR  ${id}  dossier
+  ELSE IF  '${dossier_type}' == 'annual-report'
+    VAR  ${id}  annual_report
+  ELSE IF  '${dossier_type}' == 'covenant'
+    VAR  ${id}  covenant
+  ELSE IF  '${dossier_type}' == 'disposition'
+    VAR  ${id}  disposition
+  ELSE IF  '${dossier_type}' == 'investigation-report'
+    VAR  ${id}  investigation_report
+  ELSE IF  '${dossier_type}' == 'complaint-judgement'
+    VAR  ${id}  complaint_judgement
+  END
+  IF  ${checked}
+    Check Checkbox  id=input_${id}
+    IF  not ${publications}
+      Wait For Elements State  //input[@data-e2e-name="input_${id}.publication"]  visible
+      Uncheck Checkbox  //input[@data-e2e-name="input_${id}.publication"]
+    END
+    IF  not ${documents}
+      IF  '${dossier_type}' == 'woo-decision'
+        Wait For Elements State  //input[@data-e2e-name="input_${id}.document"]  visible
+        Uncheck Checkbox  //input[@data-e2e-name="input_${id}.document"]
+      ELSE
+        Wait For Elements State  //input[@data-e2e-name="input_${id}._main_document"]  visible
+        Uncheck Checkbox  //input[@data-e2e-name="input_${id}._main_document"]
+      END
+      Wait For Elements State  //input[@data-e2e-name="input_${id}.document"]  visible
+      Uncheck Checkbox  //input[@data-e2e-name="input_${id}.document"]
+    END
+    IF  not ${attachments} and '${dossier_type}' != 'complaint-judgement'
+      Wait For Elements State  //input[@data-e2e-name="input_${id}.attachment"]  visible
+      Uncheck Checkbox  //input[@data-e2e-name="input_${id}.attachment"]
+    END
+  ELSE
+    Uncheck Checkbox  id=input_${id}
+  END
+  ${total_count} =  Get Text  //span[@data-e2e-name="${id}_count"]
+  ${total_count} =  Remove String Using Regexp  ${total_count}  [()]
+  ${publication_count} =  Get Text  //span[@data-e2e-name="${id}.publication_count"]
+  ${publication_count} =  Remove String Using Regexp  ${publication_count}  [()]
+  #  IF  '${dossier_type}' == 'woo-decision'
+  #  ${document_count} =  Get Text  //span[@data-e2e-name="${id}.document_count"]
+  #  ELSE
+  #  ${document_count} =  Get Text  //span[@data-e2e-name="${id}.${id}_main_document_count"]
+  #  END
+  #  ${document_count} =  Remove String Using Regexp  ${document_count}  [()]
+  #  IF  '${dossier_type}' != 'complaint-judgement'
+  #  ${attachment_count} =  Get Text  //span[@data-e2e-name="${id}.attachment_count"]
+  #  ${attachment_count} =  Remove String Using Regexp  ${attachment_count}  [()]
+  #  ELSE
+  #  VAR  ${attachment_count} =  0
+  #  END
+  Sleep  2s  # Wait for page update
+  RETURN  ${total_count}  ${publication_count}  #  ${document_count}  ${attachment_count}
+
+Compare Search Result Summary
+  [Arguments]  ${expected_results}  ${expected_publications}
+  ${text} =  Get Text  //span[@data-e2e-name="result-count"]
+  ${results} =  Remove String Using Regexp  ${text}  \\D
+  Should Be Equal As Numbers  ${results}  ${expected_results}
+  IF  '${expected_publications}' != 'IGNORE'
+    ${text} =  Get Text  //span[@data-e2e-name="dossier-count"]
+    ${publications} =  Remove String Using Regexp  ${text}  \\D
+    Should Be Equal As Numbers  ${publications}  ${expected_publications}
+  END
+
+Select Filter Options - Document Type
+  [Arguments]  ${document_type}  ${checked}=${TRUE}
+  ${filter_count} =  Get Element Count  id=input_${document_type}
+  IF  ${filter_count}==1
+    IF  ${checked}
+      Check Checkbox  id=input_${document_type}
+    ELSE
+      Uncheck Checkbox  id=input_${document_type}
+    END
+    ${count} =  Get Text  //span[@data-e2e-name="${document_type}_count"]
+    ${count} =  Remove String Using Regexp  ${count}  [()]
+    Sleep  2s
+    RETURN  ${count}
+  ELSE
+    RETURN  0
+  END
+
+Click First Search Result
+  Click  //*[@id="search-results-list"]/li[1]//a
+
+Selecting Results Sorting
+  [Arguments]  ${sorting_option}
+  Click  //details[@data-e2e-name="sorting-selector"]
+  IF  '${sorting_option}' == 'newest-first'
+    VAR  ${sorting_option_text}  Publicatiedatum (Nieuwste bovenaan)
+  ELSE IF  '${sorting_option}' == 'oldest-first'
+    VAR  ${sorting_option_text}  Publicatiedatum (Oudste bovenaan)
+  ELSE IF  '${sorting_option}' == 'decision=date'
+    VAR  ${sorting_option_text}  Besluitdatum
+  END
+  Click  //details[@data-e2e-name="sorting-selector"]//li[contains(.,'${sorting_option_text}')]
+  Get Element States  //details[@data-e2e-name="sorting-selector"]/div  contains  hidden
+
+Click Bekijk Per Bestuursorgaan
+  Click With Reload Retry  //ul[@data-e2e-name="main-nav"]//a[contains(.,'Bekijk per bestuursorgaan')]
+
+Select Filter Options - Date
+  [Arguments]  ${date_from}  ${date_to}
+  Apply Date Filters Through URL  ${date_from}  ${date_to}
+  # Check if filtering went correct by checking facet pills, as sometimes the date component reverts to the previous value
+  Take Screenshot
+  ${date_from} =  Convert Date  date=${date_from}  date_format=%d-%m-%Y
+  ${date_to} =  Convert Date  date=${date_to}  date_format=%d-%m-%Y
+  ${from_text} =  Convert Timestamp Format  timestamp=${date_from}  locale=nl  time_format=d MMMM Y
+  ${to_text} =  Convert Timestamp Format  timestamp=${date_to}  locale=nl  time_format=d MMMM Y
+  Get Element Count
+  ...  //li[@data-e2e-name="facet-pill"]//span[contains(.,'${from_text}')]
+  ...  equals
+  ...  1
+  ...  message=A facet pill should contain '${from_text}'
+  Get Element Count
+  ...  //li[@data-e2e-name="facet-pill"]//span[contains(.,'${to_text}')]
+  ...  equals
+  ...  1
+  ...  message=A facet pill should contain '${to_text}'
+
+Apply Date Filters Through URL
+  [Arguments]  ${date_from}  ${date_to}
+  ${date_from} =  Convert Date  date=${date_from}  date_format=%d-%m-%Y
+  ${date_to} =  Convert Date  date=${date_to}  date_format=%d-%m-%Y
+  ${from_url} =  Convert Date  date=${date_from}  result_format=%Y-%m-%d
+  ${to_url} =  Convert Date  date=${date_to}  result_format=%Y-%m-%d
+  ${current_url} =  Get Url
+  Go To  url=${current_url}&dt%5Bfrom%5D=${from_url}&dt%5Bto%5D=${to_url}

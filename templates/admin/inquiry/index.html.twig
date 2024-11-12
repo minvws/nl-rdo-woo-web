@@ -32,43 +32,27 @@
             <thead>
                 <tr>
                     {{ knp_pagination_sortable(pagination, 'admin.inquiries.case_number' | trans, 'inq.casenr', {}, {}, 'pagination/sort.admin.html.twig') }}
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'public.global.decisions' | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.documents' | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">{{ 'global.last_update' | trans() }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                        <span class="sr-only">{{ 'admin.inquiries.link_to_case' | trans }}</span>
-                    </th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'public.global.decisions' | trans }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.documents' | trans }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.last_update' | trans }}</th>
                 </tr>
             </thead>
             <tbody data-e2e-name="inquiry-list">
                 {% for row in pagination %}
-                    {% set url = PUBLIC_BASE_URL ~ path('app_inquiry_detail', { token: row.inquiry.token }) %}
-                    <tr class="bhr-clickable-row">
-                        <td class="font-bold">
-                            <a class="bhr-fill-cell" href="{{ url }}">
+                    <tr>
+                        <td>
+                            <a class="bhr-a js-bhr-clickable-row-link" href="{{ PUBLIC_BASE_URL ~ path('app_inquiry_detail', { token: row.inquiry.token }) }}">
                                 {{ row.inquiry.casenr }}
                             </a>
                         </td>
                         <td>
-                            <a class="bhr-fill-cell" href="{{ url }}">
-                                {{ row.dossierCount }}
-                            </a>
+                            {{ row.dossierCount }}
                         </td>
                         <td>
-                            <a class="bhr-fill-cell" href="{{ url }}">
-                                {{ row.documentCount }}
-                            </a>
+                            {{ row.documentCount }}
                         </td>
                         <td>
-                            <a class="bhr-fill-cell" href="{{ url }}">
-                                {{ row.inquiry.updatedAt | format_datetime('medium') }}
-                            </a>
-                        </td>
-                        <td class="text-right">
-                            <a class="bhr-fill-cell" href="{{ url }}">
-                                <span class="sr-only">{{ 'global.details' | trans() }} {{ row.inquiry.casenr }}</span>
-                                <twig:Admin:Icon name="chevron-right"/>
-                            </a>
+                            {{ row.inquiry.updatedAt | format_datetime('medium') }}
                         </td>
                     </tr>
                 {% endfor %}

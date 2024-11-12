@@ -8,7 +8,6 @@ use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Attachment\AttachmentType;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
 
@@ -23,7 +22,6 @@ class AnnualReportAttachment extends AbstractAttachment
     ) {
         parent::__construct();
 
-        Assert::oneOf($type, self::getAllowedTypes(), sprintf('Not allowed attachment type given: %s', $type->name));
         Assert::isInstanceOf($dossier, AnnualReport::class);
 
         $this->dossier = $dossier;
@@ -31,11 +29,6 @@ class AnnualReportAttachment extends AbstractAttachment
         $this->type = $type;
         $this->language = $language;
         $this->fileInfo->setPaginatable(true);
-    }
-
-    public static function getUploadGroupId(): UploadGroupId
-    {
-        return UploadGroupId::ANNUAL_REPORT_ATTACHMENTS;
     }
 
     /**

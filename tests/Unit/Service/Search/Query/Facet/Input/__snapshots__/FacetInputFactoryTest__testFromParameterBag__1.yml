@@ -35,12 +35,12 @@ period:
     notActive: true
 date:
     active: true
-    notActive: false
     withoutDate: true
     anyPeriodFilterDates: false
     periodFilterFrom: null
     periodFilterTo: null
     requestParameters: { without_date: 1 }
+    notActive: false
     from: null
     to: null
 dnr:

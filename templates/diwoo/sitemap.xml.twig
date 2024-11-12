@@ -11,7 +11,7 @@
             {%- set documentDate = url.document.dossiers.first.publicationDate -%}
         {%- endif -%}
     <url>
-        <loc>{{ url('app_document_download', { prefix: url.document.dossiers.first.documentPrefix, dossierId: url.document.dossiers.first.dossierNr, documentId: url.document.documentNr}) }}</loc>
+        <loc>{{ url('app_dossier_file_download', { prefix: url.document.dossiers.first.documentPrefix, dossierId: url.document.dossiers.first.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::DOCUMENT').value, id: url.document.id}) }}</loc>
         <diwoo:Document>
             <diwoo:DiWoo>
                 <diwoo:creatiedatum>

@@ -20,6 +20,12 @@
             "sublevel_type": null
         }
     ],
+    "metadata": [
+        "foo"
+    ],
+    "pages": {
+        "1": "bar"
+    },
     "type": "attachment",
     "toplevel_type": "covenant",
     "sublevel_type": "attachment"

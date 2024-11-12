@@ -1,24 +1,6 @@
-{% if document.ingested and document.entity.shouldBeUploaded and document.entity.fileInfo.isUploaded %}
-<div class="mt-10">
-    <a
-        class="focus:mb-4 woo-skip-link"
-        href="#below-carousel"
-        id="above-carousel"
-    >{{ 'public.documents.viewer.skip_document_preview' | trans }}</a>
-
-    {% if document.entity.fileInfo.type == "pdf" and document.entity.pageCount > 0 %}
-        <p class="pb-1 woo-muted text-sm">
-            {{
-                "public.documents.viewer.click_on_page" | trans({ fileInfo: document.entity.fileInfo.type|upper, fileSize: document.entity.fileInfo.size != "0" ? document.entity.fileInfo.size | size : ""  })
-            }}
-        </p>
-        {% include "document/snippets/carousel.html.twig" %}
-    {% endif %}
-
-    <a
-        class="focus:mt-4 woo-skip-link"
-        href="#above-carousel"
-        id="below-carousel"
-    >{{ 'public.documents.viewer.back_to_document_preview' | trans }}</a>
-</div>
+{% if document.ingested and document.entity.shouldBeUploaded and document.entity.fileInfo.isUploaded and document.entity.fileInfo.type == "pdf" and document.entity.pageCount > 0 %}
+    <twig:Public:PdfViewer
+        file="{{ file }}"
+        title="{{ "public.documents.viewer.click_on_page" | trans({ fileInfo: document.entity.fileInfo.type|upper, fileSize: document.entity.fileInfo.size != "0" ? document.entity.fileInfo.size | size : ""  }) }}"
+    />
 {% endif %}

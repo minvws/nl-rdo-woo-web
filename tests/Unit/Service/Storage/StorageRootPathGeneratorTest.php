@@ -27,17 +27,32 @@ final class StorageRootPathGeneratorTest extends UnitTestCase
         $this->assertMatchesYamlSnapshot($mapped);
     }
 
+    public function testFromUuid(): void
+    {
+        $generator = new StorageRootPathGenerator();
+
+        $mapped = array_map(
+            fn (string $uuid): array => [
+                'input' => $uuid,
+                'output' => $generator->fromUuid(Uuid::fromString($uuid)),
+            ],
+            $this->getUuids(),
+        );
+
+        $this->assertMatchesYamlSnapshot($mapped);
+    }
+
     /**
      * @return list<string>
      */
     public function getUuids(): array
     {
         return [
-            'df103243-a515-3291-b7bf-7eaa19502f95',
-            '0a403de2-54dd-3574-baee-08991e1f6c,a4',
-            '79b41831-badf-3786-a07e-3596c73998ed',
-            '8396edf9-c786-3c5c-b1df-411d74d85cb1',
-            'a9530791-996a-3a87-9380-8a2dca634ce8',
+            '1ef93cd3-6749-6180-ac5e-1bd5a779c2cd',
+            '1ef93cd3-6749-6270-8ef3-1bd5a779c2cd',
+            '1ef93cd3-6749-628e-a672-1bd5a779c2cd',
+            '28239ea6-e320-428a-b88d-a6d35294efef',
+            '3b293bf3-ffa4-4254-b3fb-5d6ae95d750d',
         ];
     }
 
@@ -45,17 +60,8 @@ final class StorageRootPathGeneratorTest extends UnitTestCase
     {
         /** @var EntityWithFileInfo&MockInterface $entity */
         $entity = \Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId')->andReturn($this->getUuid($uuid));
+        $entity->shouldReceive('getId')->andReturn(Uuid::fromString($uuid));
 
         return $entity;
-    }
-
-    private function getUuid(string $uuid): Uuid&MockInterface
-    {
-        /** @var Uuid&MockInterface $uuidObject */
-        $uuidObject = \Mockery::mock(Uuid::class);
-        $uuidObject->shouldReceive('__toString')->andReturn($uuid);
-
-        return $uuidObject;
     }
 }

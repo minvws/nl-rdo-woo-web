@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Process;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\Postprocessor\FilePostprocessor;
 use App\Domain\Upload\Postprocessor\NoMatchingFilePostprocessorException;
 use App\Domain\Upload\Preprocessor\FilePreprocessor;
 use App\Domain\Upload\UploadedFile;
-use App\Entity\Dossier;
 use Psr\Log\LoggerInterface;
 
 readonly class FileProcessor
@@ -20,7 +20,7 @@ readonly class FileProcessor
     ) {
     }
 
-    public function process(UploadedFile $file, Dossier $dossier): void
+    public function process(UploadedFile $file, WooDecision $dossier): void
     {
         foreach ($this->filePreprocessor->process($file) as $file) {
             try {

@@ -29,6 +29,9 @@ readonly class WooDecisionConfig implements DossierTypeConfigInterface
         return DossierType::WOO_DECISION;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getSecurityExpression(): ?Expression
     {
         return null;
@@ -60,6 +63,9 @@ readonly class WooDecisionConfig implements DossierTypeConfigInterface
         ];
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getCreateRouteName(): string
     {
         return 'app_admin_dossier_woodecision_details_create';

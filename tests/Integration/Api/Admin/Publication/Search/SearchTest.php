@@ -7,12 +7,15 @@ namespace App\Tests\Integration\Api\Admin\Publication\Search;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Api\Admin\Publication\Search\SearchResultDto;
 use App\Api\Admin\Publication\Search\SearchResultType;
+use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Tests\Factory\DocumentFactory;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\OrganisationFactory;
 use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportAttachmentFactory;
-use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportDocumentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
+use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentFactory;
+use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
+use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantMainDocumentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use App\Tests\Factory\UserFactory;
 use App\Tests\Integration\IntegrationTestTrait;
@@ -51,9 +54,7 @@ final class SearchTest extends ApiTestCase
                 ['title' => 'A very fancy document'],
                 ['title' => 'The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested'],
             ])
-            ->create([
-                'organisation' => $organisation,
-            ]);
+            ->create(['organisation' => $organisation]);
 
         // This dossier should not be found because it is from another organisation
         WooDecisionFactory::createOne([
@@ -91,7 +92,7 @@ final class SearchTest extends ApiTestCase
             'organisation' => $organisation,
         ]);
 
-        $annualReportDocument = AnnualReportDocumentFactory::createOne([
+        $annualReportDocument = AnnualReportMainDocumentFactory::createOne([
             'dossier' => $annualReport,
             'fileInfo' => FileInfoFactory::new()->createOne([
                 'name' => 'maindocument fancy document.pdf',
@@ -129,19 +130,210 @@ final class SearchTest extends ApiTestCase
                 'title' => $dossiers[1]->getTitle(),
             ],
             [
-                'id' => $documents[0]->getDocumentNr(),
-                'type' => SearchResultType::DOCUMENT->value,
-                'title' => $documents[0]->getFileInfo()->getName(),
-            ],
-            [
                 'id' => $annualReportDocument->_real()->getId()->__toString(),
                 'type' => SearchResultType::MAIN_DOCUMENT->value,
-                'title' => 'maindocument fancy document.pdf',
+                'title' => $annualReportDocument->_real()->getFileInfo()->getName(),
             ],
             [
                 'id' => $annualReportAttachment->_real()->getId()->__toString(),
                 'type' => SearchResultType::ATTACHMENT->value,
-                'title' => 'attachment FANCY document.pdf',
+                'title' => $annualReportAttachment->_real()->getFileInfo()->getName(),
+            ],
+            [
+                'id' => $documents[0]->getDocumentNr(),
+                'type' => SearchResultType::DOCUMENT->value,
+                'title' => $documents[0]->getFileInfo()->getName(),
+            ],
+        ]);
+    }
+
+    public function testSearchFilteredByType(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+
+        $user = UserFactory::new()
+            ->asDossierAdmin()
+            ->isEnabled()
+            ->create(['organisation' => $organisation]);
+
+        $annualReports = AnnualReportFactory::new()
+            ->sequence([
+                ['title' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'],
+                ['title' => 'A very foobar document'], // This should be found
+            ])
+            ->create(['organisation' => $organisation]);
+
+        $annualReportDocumens = AnnualReportMainDocumentFactory::new()
+            ->sequence([
+                [
+                    'dossier' => $annualReports[0],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument fancy document.pdf',
+                    ]),
+                ],
+                [
+                    'dossier' => $annualReports[1],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument foobar document.pdf', // This should be found
+                    ]),
+                ],
+            ])
+            ->create();
+
+        $covenants = CovenantFactory::new()
+            ->sequence([
+                ['title' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'],
+                ['title' => 'A very foobar document'],
+            ])
+            ->create(['organisation' => $organisation]);
+
+        CovenantMainDocumentFactory::new()
+            ->sequence([
+                [
+                    'dossier' => $covenants[0],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument fancy document.pdf',
+                    ]),
+                ],
+                [
+                    'dossier' => $covenants[1],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument foobar document.pdf',
+                    ]),
+                ],
+            ])
+            ->create();
+
+        $searchQuery = 'foobar  ';
+
+        $response = static::createClient()
+            ->loginUser($user->_real(), 'balie')
+            ->request(
+                Request::METHOD_GET,
+                sprintf(
+                    '/balie/api/publication/search?q=%s&filter[type]=%s',
+                    rawurlencode($searchQuery),
+                    rawurlencode(DossierType::ANNUAL_REPORT->value),
+                ),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
+                ],
+            );
+
+        self::assertResponseIsSuccessful();
+        self::assertMatchesResourceCollectionJsonSchema(SearchResultDto::class);
+        self::assertCount(2, $response->toArray(false));
+        self::assertJsonContains([
+            [
+                'id' => $annualReports[1]->getDossierNr(),
+                'type' => SearchResultType::DOSSIER->value,
+                'title' => $annualReports[1]->getTitle(),
+            ],
+            [
+                'id' => $annualReportDocumens[1]->getId()->__toString(),
+                'type' => SearchResultType::MAIN_DOCUMENT->value,
+                'title' => $annualReportDocumens[1]->getFileInfo()->getName(),
+            ],
+        ]);
+    }
+
+    public function testSearchFilteredByUuid(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+
+        $user = UserFactory::new()
+            ->asDossierAdmin()
+            ->isEnabled()
+            ->create(['organisation' => $organisation]);
+
+        $annualReports = AnnualReportFactory::new()
+            ->sequence([
+                ['title' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'],
+                ['title' => 'A very foobar document'], // This should be found
+                ['title' => 'A very fancy foobar document'],
+            ])
+            ->create(['organisation' => $organisation]);
+
+        $annualReportDocumens = AnnualReportMainDocumentFactory::new()
+            ->sequence([
+                [
+                    'dossier' => $annualReports[0],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument fancy document.pdf',
+                    ]),
+                ],
+                [
+                    'dossier' => $annualReports[1],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument document.pdf',
+                    ]),
+                ],
+                [
+                    'dossier' => $annualReports[1],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument foobar document.pdf', // This should be found
+                    ]),
+                ],
+            ])
+            ->create();
+
+        $covenants = CovenantFactory::new()
+            ->sequence([
+                ['title' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'],
+                ['title' => 'A very foobar document'],
+            ])
+            ->create(['organisation' => $organisation]);
+
+        CovenantMainDocumentFactory::new()
+            ->sequence([
+                [
+                    'dossier' => $covenants[0],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument fancy document.pdf',
+                    ]),
+                ],
+                [
+                    'dossier' => $covenants[1],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument foobar document.pdf',
+                    ]),
+                ],
+            ])
+            ->create();
+
+        $searchQuery = 'foobar  ';
+
+        $response = static::createClient()
+            ->loginUser($user->_real(), 'balie')
+            ->request(
+                Request::METHOD_GET,
+                sprintf(
+                    '/balie/api/publication/search?q=%s&dossierId=%s',
+                    rawurlencode($searchQuery),
+                    $annualReports[1]->getId()->toRfc4122(),
+                ),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
+                ],
+            );
+
+        self::assertResponseIsSuccessful();
+        self::assertMatchesResourceCollectionJsonSchema(SearchResultDto::class);
+        self::assertCount(2, $response->toArray(false));
+        self::assertJsonContains([
+            [
+                'id' => $annualReports[1]->getDossierNr(),
+                'type' => SearchResultType::DOSSIER->value,
+                'title' => $annualReports[1]->getTitle(),
+            ],
+            [
+                'id' => $annualReportDocumens[2]->getId()->__toString(),
+                'type' => SearchResultType::MAIN_DOCUMENT->value,
+                'title' => $annualReportDocumens[2]->getFileInfo()->getName(),
             ],
         ]);
     }

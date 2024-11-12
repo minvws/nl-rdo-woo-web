@@ -15,7 +15,7 @@
 {% block resultSpecsBottom %}
     <li class="woo-search-result__spec">
         {{ 'global.decision_made' | trans }}&nbsp;<twig:Date date="{{ entry.dossier.decisionDate }}" />,
-        {{ 'global.published_on' | trans | lower }}&nbsp;<twig:Date date="{{ entry.dossier.publicationDate }}" />
+        {{ 'global.published_on' | trans | lower }}&nbsp;<span data-e2e-name="publication-date"><twig:Date date="{{ entry.dossier.publicationDate }}" /></span>
     </li>
     <li class="woo-search-result__spec">
         {{ entry.dossier.dossierNr }}

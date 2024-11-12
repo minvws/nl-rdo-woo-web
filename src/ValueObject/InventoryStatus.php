@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\ValueObject;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 class InventoryStatus
 {
     public function __construct(
-        private readonly Dossier $dossier,
+        private readonly WooDecision $dossier,
     ) {
     }
 
@@ -17,7 +17,7 @@ class InventoryStatus
     {
         $run = $this->dossier->getProcessRun();
 
-        return ($run && $run->isFinished()) && $this->dossier->getRawInventory() !== null;
+        return ($run && $run->isFinished()) && $this->dossier->getProductionReport() !== null;
     }
 
     public function needsUpdate(): bool
@@ -80,7 +80,7 @@ class InventoryStatus
             return true;
         }
 
-        return ($run && $run->isFailed()) || $this->dossier->getRawInventory() === null;
+        return ($run && $run->isFailed()) || $this->dossier->getProductionReport() === null;
     }
 
     public function hasErrors(): bool

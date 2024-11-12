@@ -49,13 +49,13 @@ final class FileTypeValidatorTest extends MockeryTestCase
 
     public function testValidateThrowsErrorWhenMimeTypeIsNotAllowed(): void
     {
-        $request = new Request(request: ['groupId' => UploadGroupId::COVENANT_DOCUMENTS->value]);
+        $request = new Request(request: ['groupId' => UploadGroupId::MAIN_DOCUMENTS->value]);
 
         $event = \Mockery::mock(ValidationEvent::class);
         $event->shouldReceive('getRequest')->andReturn($request);
         $event->shouldReceive('getFile->getMimetype')->andReturn('foo/bar');
 
-        $this->fileTypeHelper->expects('getMimeTypesByUploadGroup')->with(UploadGroupId::COVENANT_DOCUMENTS)->andReturn([
+        $this->fileTypeHelper->expects('getMimeTypesByUploadGroup')->with(UploadGroupId::MAIN_DOCUMENTS)->andReturn([
             'application/pdf',
         ]);
 
@@ -68,13 +68,13 @@ final class FileTypeValidatorTest extends MockeryTestCase
 
     public function testValidateContinuesWithoutExceptionForWhitelistedMimeType(): void
     {
-        $request = new Request(request: ['groupId' => UploadGroupId::COVENANT_DOCUMENTS->value]);
+        $request = new Request(request: ['groupId' => UploadGroupId::MAIN_DOCUMENTS->value]);
 
         $event = \Mockery::mock(ValidationEvent::class);
         $event->shouldReceive('getRequest')->andReturn($request);
         $event->expects('getFile->getMimetype')->andReturn('application/pdf');
 
-        $this->fileTypeHelper->expects('getMimeTypesByUploadGroup')->with(UploadGroupId::COVENANT_DOCUMENTS)->andReturn([
+        $this->fileTypeHelper->expects('getMimeTypesByUploadGroup')->with(UploadGroupId::MAIN_DOCUMENTS)->andReturn([
             'foo/bar',
             'application/pdf',
         ]);

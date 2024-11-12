@@ -4,24 +4,25 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
 class Inventory extends PublicationItem
 {
-    #[ORM\OneToOne(inversedBy: 'inventory', targetEntity: Dossier::class)]
+    #[ORM\OneToOne(inversedBy: 'inventory', targetEntity: WooDecision::class)]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private Dossier $dossier;
+    private WooDecision $dossier;
 
-    public function setDossier(Dossier $dossier): self
+    public function setDossier(WooDecision $dossier): self
     {
         $this->dossier = $dossier;
 
         return $this;
     }
 
-    public function getDossier(): Dossier
+    public function getDossier(): WooDecision
     {
         return $this->dossier;
     }

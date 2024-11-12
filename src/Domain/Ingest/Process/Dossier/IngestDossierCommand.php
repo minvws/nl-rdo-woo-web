@@ -9,18 +9,8 @@ use Symfony\Component\Uid\Uuid;
 readonly class IngestDossierCommand
 {
     public function __construct(
-        private Uuid $uuid,
-        private bool $refresh = false,
+        public Uuid $uuid,
+        public bool $refresh,
     ) {
-    }
-
-    public function getUuid(): Uuid
-    {
-        return $this->uuid;
-    }
-
-    public function getRefresh(): bool
-    {
-        return $this->refresh;
     }
 }

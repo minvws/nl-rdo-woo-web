@@ -40,16 +40,6 @@
                         <td>{{ document.entity.documentId }}</td>
                     </tr>
                 {% endif %}
-                {% if document.entity.subjects | length > 0 %}
-                <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ 'public.global.subjects' | trans }}</th>
-                    <td>
-                        {% for subject in document.entity.subjects %}
-                            <a class="woo-a" href="{{ path('app_search', { q: '', (facet2query(constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT').value) ~ '[]'): subject }) }}">{{ subject }}</a>
-                        {% endfor %}
-                    </td>
-                </tr>
-                {% endif %}
                 {% if document.entity.judgement is defined %}
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'public.documents.judgement' | trans }}</th>
@@ -71,11 +61,13 @@
                     </td>
                 </tr>
                 {% endif %}
-                {% if (document.entity.grounds | length > 0) or (document.entity.isUploaded and document.entity.fileInfo.size != "0") %}
+
+                {% set hasGrounds = document.entity.grounds | length > 0 %}
+                {% set isDownloadable = document.entity.isUploaded and document.entity.fileInfo.size != "0" %}
+                {% if hasGrounds or isDownloadable %}
                 <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ 'public.documents.redacted' | trans }}</th>
+                    <th class="woo-table-cell-light" scope="row">{{ isDownloadable ? 'public.documents.redacted_data' | trans : 'global.grounds' | trans }}</th>
                     <td>
-                        {% set hasGrounds = document.entity.grounds | length > 0 %}
                         {% if hasGrounds %}
                         <ul>
                             {% for ground in document.entity.grounds %}
@@ -86,18 +78,14 @@
                         </ul>
                         {% endif %}
 
-                        {% if document.entity.isUploaded and document.entity.fileInfo.size != "0" %}
-                            <p class="woo-readable-width {{ hasGrounds ? 'mt-4' : '' }}">
-                                {{ 'public.documents.redacted_comments' | trans }}
-                                {% if not dossier.isVwsResponsible %}
-                                    {{ 'public.global.contact' | trans({ '{ministry}': dossier.mainDepartment.name }) | raw }}.
-                                {% else %}
-                                    <a
-                                        class="woo-a-email"
-                                        href="mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl?subject=Opmerking over {{ document.entity.fileInfo.name }} (documentnummer {{ document.entity.documentId }})"
-                                    >{{ 'public.documents.let_us_know' | trans }}</a>.
-                                {% endif %}
-                            </p>
+                        {% if isDownloadable %}
+                            {% include 'snippets/document/redacted-message.html.twig' with {
+                                'departmentName': dossier.mainDepartment.name,
+                                'documentId': document.entity.id,
+                                'documentName': document.entity.fileInfo.name,
+                                'isExternalDepartmentResponsible': dossier.isExternalDepartmentResponsible,
+                                'hasGrounds': hasGrounds,
+                            } %}
                         {% endif %}
                     </td>
                 </tr>

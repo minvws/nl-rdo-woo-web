@@ -7,7 +7,7 @@ namespace App\Domain\Search\Index\SubType;
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
+use App\Domain\Publication\MainDocument\MainDocumentRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -15,7 +15,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 readonly class IndexMainDocumentHandler
 {
     public function __construct(
-        private AbstractMainDocumentRepository $repository,
+        private MainDocumentRepository $repository,
         private SubTypeIndexer $subTypeIndexer,
         private LoggerInterface $logger,
         private SubTypeIngester $subTypeIngester,

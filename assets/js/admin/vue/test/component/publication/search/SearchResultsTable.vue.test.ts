@@ -1,6 +1,6 @@
 import SearchResultsTable from '@admin-fe/component/publication/search/SearchResultsTable.vue';
 import { mount, VueWrapper } from '@vue/test-utils';
-import { describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 describe('The "SearchResultsTable" component', () => {
   const mockedResults = [
@@ -8,23 +8,19 @@ describe('The "SearchResultsTable" component', () => {
     { link: 'mocked_link_2', id: 'mocked_id_2', title: 'mocked_title_2' },
   ];
 
-  const defaultCreateComponentOptions = {
-    results: mockedResults,
-    hideResultId: false,
-  };
+  interface Options {
+    results: typeof mockedResults;
+    hideResultId: boolean;
+  }
 
-  const createComponent = (
-    options: {
-      results: typeof mockedResults;
-      hideResultId: boolean;
-    } = defaultCreateComponentOptions,
-  ) =>
-    mount(SearchResultsTable, {
+  const createComponent = (options: Partial<Options> = {}) => {
+    const { results = mockedResults, hideResultId = false } = options;
+    return mount(SearchResultsTable, {
       props: {
         columnResultId: 'Mocked column result id',
-        results: options.results,
+        results,
         title: 'Mocked title',
-        hideResultId: options.hideResultId,
+        hideResultId,
       },
       global: {
         directives: {
@@ -33,9 +29,23 @@ describe('The "SearchResultsTable" component', () => {
       },
       shallow: true,
     });
+  };
 
+  const getNumberOfColumns = (component: VueWrapper) =>
+    component.findAll('thead th').length;
+  const getRows = (component: VueWrapper) => component.findAll('tbody tr');
   const getTitle = (component: VueWrapper) => component.find('h2');
   const getTable = (component: VueWrapper) => component.find('table');
+
+  beforeEach(() => {
+    vi.spyOn(window, 'location', 'get').mockReturnValue({
+      assign: vi.fn(),
+    } as any);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   test('should display the provided title', () => {
     const component = createComponent();
@@ -54,33 +64,35 @@ describe('The "SearchResultsTable" component', () => {
   });
 
   test('should display all provided results', () => {
-    const component = createComponent();
-
-    const rows = component.findAll('tbody tr');
-    const columns = component.findAll('thead tr th');
+    const rows = getRows(createComponent());
 
     expect(rows.length).toBe(mockedResults.length);
-    expect(columns.length).toBe(Object.keys(mockedResults[0]).length);
     expect(rows[0].text()).toContain('mocked_title_1');
     expect(rows[0].text()).toContain('mocked_id_1');
 
     expect(rows[1].text()).toContain('mocked_title_2');
   });
 
-  test('should hide result id column when hideResultId is true', () => {
-    const component = createComponent({
-      ...defaultCreateComponentOptions,
-      hideResultId: true,
-    });
+  test('should go to the url of the result when clicking on the table row', () => {
+    const row = getRows(createComponent())[0];
 
-    const columns = component.findAll('thead tr th');
+    expect(window.location.assign).not.toHaveBeenCalled();
 
-    expect(columns.length).toBe(Object.keys(mockedResults[0]).length - 1);
+    row.trigger('click');
+    expect(window.location.assign).toHaveBeenCalledWith('mocked_link_1');
+  });
+
+  test('should hide result id column when hideResultId is true', async () => {
+    const component = createComponent();
+
+    expect(getNumberOfColumns(component)).toBe(2);
+
+    await (component as any).setProps({ hideResultId: true });
+    expect(getNumberOfColumns(component)).toBe(1);
   });
 
   test('should display nothing when no results are provided', () => {
     const component = createComponent({
-      ...defaultCreateComponentOptions,
       results: [],
     });
 

@@ -6,22 +6,19 @@ namespace App\Domain\Ingest\Process\SubType\EventHandler;
 
 use App\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent;
 use App\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
-use App\Domain\Search\Index\SubType\IndexMainDocumentCommand;
+use App\Domain\Search\SearchDispatcher;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 final readonly class MainDocumentIngestEventHandler
 {
     public function __construct(
-        private MessageBusInterface $messageBus,
+        private SearchDispatcher $searchDispatcher,
     ) {
     }
 
     #[AsMessageHandler()]
     public function handleCreate(MainDocumentCreatedEvent|MainDocumentUpdatedEvent $event): void
     {
-        $this->messageBus->dispatch(
-            IndexMainDocumentCommand::forMainDocumentEvent($event)
-        );
+        $this->searchDispatcher->dispatchIndexMainDocumentCommand($event->documentId);
     }
 }

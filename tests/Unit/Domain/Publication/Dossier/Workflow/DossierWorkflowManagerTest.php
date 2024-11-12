@@ -10,6 +10,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use App\Entity\Inquiry;
 use App\Service\DossierService;
 use App\Service\HistoryService;
 use App\Service\Inquiry\InquiryService;
@@ -30,12 +31,13 @@ class DossierWorkflowManagerTest extends MockeryTestCase
     private LoggerInterface&MockInterface $logger;
     private HistoryService&MockInterface $historyService;
     private DossierService&MockInterface $dossierService;
+    private InquiryService&MockInterface $inquiryService;
 
     public function setUp(): void
     {
         $this->logger = \Mockery::mock(LoggerInterface::class);
 
-        $inquiryService = \Mockery::mock(InquiryService::class);
+        $this->inquiryService = \Mockery::mock(InquiryService::class);
         $this->historyService = \Mockery::mock(HistoryService::class);
 
         $this->dossierTypeManager = \Mockery::mock(DossierTypeManager::class);
@@ -49,7 +51,7 @@ class DossierWorkflowManagerTest extends MockeryTestCase
 
         $this->manager = new DossierWorkflowManager(
             $this->logger,
-            $inquiryService,
+            $this->inquiryService,
             $this->historyService,
             $this->dossierTypeManager,
             $this->dossierService,
@@ -93,8 +95,10 @@ class DossierWorkflowManagerTest extends MockeryTestCase
 
     public function testApplyTransitionUpdatesStatus(): void
     {
+        $inquiry = \Mockery::mock(Inquiry::class);
+
         $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT, DossierStatus::PUBLISHED);
-        $this->dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection([]));
+        $this->dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection([$inquiry]));
 
         $this->dossierTypeManager->expects('getStatusWorkflow')->andReturn($this->workflow);
 
@@ -110,6 +114,23 @@ class DossierWorkflowManagerTest extends MockeryTestCase
             'dossier_state_published',
             ['old' => '%concept%', 'new' => '%published%'],
         );
+
+        $this->inquiryService->expects('generateInventory')->with($inquiry);
+        $this->inquiryService->expects('generateArchives')->with($inquiry);
+
+        $this->manager->applyTransition($this->dossier, DossierStatusTransition::PUBLISH);
+    }
+
+    public function testApplyTransitionUpdatesStatusDoesNotLogStatusNewToConcept(): void
+    {
+        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::NEW);
+        $this->dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection([]));
+
+        $this->dossierTypeManager->expects('getStatusWorkflow')->andReturn($this->workflow);
+
+        $this->workflow->expects('apply')->with($this->dossier, DossierStatusTransition::PUBLISH->value);
+
+        $this->dossierService->expects('handleEntityUpdate')->with($this->dossier);
 
         $this->manager->applyTransition($this->dossier, DossierStatusTransition::PUBLISH);
     }

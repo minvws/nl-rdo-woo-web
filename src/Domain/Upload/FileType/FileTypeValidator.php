@@ -7,10 +7,11 @@ namespace App\Domain\Upload\FileType;
 use App\Service\Uploader\UploadGroupId;
 use Oneup\UploaderBundle\Event\ValidationEvent;
 use Oneup\UploaderBundle\Uploader\Exception\ValidationException;
+use Oneup\UploaderBundle\UploadEvents;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-#[AsEventListener(event: 'oneup_uploader.validation', method: 'onValidate')]
+#[AsEventListener(event: UploadEvents::VALIDATION, method: 'onValidate')]
 readonly class FileTypeValidator
 {
     public const ERROR_TECHNICAL = 'error.technical';

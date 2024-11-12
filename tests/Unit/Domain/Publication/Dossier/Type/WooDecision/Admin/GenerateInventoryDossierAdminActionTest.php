@@ -7,22 +7,23 @@ namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Admin;
 use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\WooDecision\Admin\GenerateInventoryDossierAdminAction;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\DossierService;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Symfony\Component\Uid\Uuid;
 
 final class GenerateInventoryDossierAdminActionTest extends MockeryTestCase
 {
-    private DossierService&MockInterface $dossierService;
+    private ProductionReportDispatcher&MockInterface $dispatcher;
     private GenerateInventoryDossierAdminAction $action;
 
     public function setUp(): void
     {
-        $this->dossierService = \Mockery::mock(DossierService::class);
+        $this->dispatcher = \Mockery::mock(ProductionReportDispatcher::class);
 
         $this->action = new GenerateInventoryDossierAdminAction(
-            $this->dossierService,
+            $this->dispatcher,
         );
 
         parent::setUp();
@@ -45,8 +46,9 @@ final class GenerateInventoryDossierAdminActionTest extends MockeryTestCase
     public function testExecute(): void
     {
         $dossier = \Mockery::mock(WooDecision::class);
+        $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
 
-        $this->dossierService->expects('generateSanitizedInventory')->with($dossier);
+        $this->dispatcher->expects('dispatchGenerateInventoryCommand')->with($dossierId);
 
         $this->action->execute($dossier);
     }

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Result;
 
+use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Service\Search\Model\Aggregation;
 use App\Service\Search\Model\Suggestion;
+use App\Service\Search\Query\Sort\ViewModel\SortItems;
 use App\ValueObject\FilterDetails;
 use Knp\Component\Pager\Pagination\AbstractPagination;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -108,9 +110,37 @@ final class Result
      */
     private int $resultCount;
 
+    private SortItems $sortItems;
+
+    private SearchParameters $searchParameters;
+
     public static function create(): self
     {
         return new self();
+    }
+
+    public function getSortItems(): SortItems
+    {
+        return $this->sortItems;
+    }
+
+    public function setSortItems(SortItems $sortItems): self
+    {
+        $this->sortItems = $sortItems;
+
+        return $this;
+    }
+
+    public function getSearchParameters(): SearchParameters
+    {
+        return $this->searchParameters;
+    }
+
+    public function setSearchParameters(SearchParameters $searchParameters): self
+    {
+        $this->searchParameters = $searchParameters;
+
+        return $this;
     }
 
     public function getResultCount(): int

@@ -8,10 +8,9 @@ use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDeleteStrategy;
-use App\Entity\DecisionDocument;
 use App\Entity\Document;
 use App\Entity\Inventory;
-use App\Entity\RawInventory;
+use App\Entity\ProductionReport;
 use App\Service\BatchDownloadService;
 use App\Service\DocumentService;
 use App\Service\Inquiry\InquiryService;
@@ -68,17 +67,38 @@ class WooDecisionDeleteStrategyTest extends MockeryTestCase
         $inventory = \Mockery::mock(Inventory::class);
         $dossier->shouldReceive('getInventory')->andReturn($inventory);
 
-        $rawInventory = \Mockery::mock(RawInventory::class);
-        $dossier->shouldReceive('getRawInventory')->andReturn($rawInventory);
-
-        $decisionDocument = \Mockery::mock(DecisionDocument::class);
-        $dossier->shouldReceive('getDecisionDocument')->andReturn($decisionDocument);
+        $productionReport = \Mockery::mock(ProductionReport::class);
+        $dossier->shouldReceive('getProductionReport')->andReturn($productionReport);
 
         $this->documentService->expects('removeDocumentFromDossier')->with($dossier, $document, false);
 
         $this->entityStorageService->expects('removeFileForEntity')->with($inventory);
-        $this->entityStorageService->expects('removeFileForEntity')->with($rawInventory);
-        $this->entityStorageService->expects('removeFileForEntity')->with($decisionDocument);
+        $this->entityStorageService->expects('removeFileForEntity')->with($productionReport);
+
+        $this->batchDownloadService->expects('removeAllDownloadsForEntity')->with($dossier);
+        $this->inquiryService->expects('removeDossierFromInquiries')->with($dossier);
+
+        $this->strategy->delete($dossier);
+    }
+
+    public function testDeleteWithoutInventory(): void
+    {
+        $dossier = \Mockery::mock(WooDecision::class);
+
+        $document = \Mockery::mock(Document::class);
+        $dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([$document]));
+
+        $attachments = new ArrayCollection([\Mockery::mock(CovenantAttachment::class)]);
+        $dossier->shouldReceive('getAttachments')->andReturn($attachments);
+
+        $dossier->shouldReceive('getInventory')->andReturnNull();
+
+        $productionReport = \Mockery::mock(ProductionReport::class);
+        $dossier->shouldReceive('getProductionReport')->andReturn($productionReport);
+
+        $this->documentService->expects('removeDocumentFromDossier')->with($dossier, $document, false);
+
+        $this->entityStorageService->expects('removeFileForEntity')->with($productionReport);
 
         $this->batchDownloadService->expects('removeAllDownloadsForEntity')->with($dossier);
         $this->inquiryService->expects('removeDossierFromInquiries')->with($dossier);

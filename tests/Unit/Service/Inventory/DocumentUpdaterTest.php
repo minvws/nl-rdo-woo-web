@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
-use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\FileInfo;
 use App\Entity\Judgement;
 use App\Entity\Organisation;
-use App\Message\RemoveDocumentMessage;
 use App\Repository\DocumentRepository;
 use App\Service\Inventory\DocumentMetadata;
 use App\Service\Inventory\DocumentNumber;
@@ -21,25 +21,25 @@ use App\SourceType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 class DocumentUpdaterTest extends MockeryTestCase
 {
     private MockInterface&EntityStorageService $entityStorageService;
-    private MessageBusInterface&MockInterface $messageBus;
     private DocumentUpdater $documentUpdater;
-    private Dossier&MockInterface $dossier;
+    private DocumentDispatcher&MockInterface $documentDispatcher;
+    private IngestDispatcher&MockInterface $ingestDispatcher;
+    private WooDecision&MockInterface $dossier;
     private DocumentRepository&MockInterface $repository;
 
     public function setUp(): void
     {
         $this->repository = \Mockery::mock(DocumentRepository::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->messageBus = \Mockery::mock(MessageBusInterface::class);
+        $this->documentDispatcher = \Mockery::mock(DocumentDispatcher::class);
+        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
 
-        $this->dossier = \Mockery::mock(Dossier::class);
+        $this->dossier = \Mockery::mock(WooDecision::class);
         $this->dossier->shouldReceive('getDocumentPrefix')->andReturn('PREFIX');
         $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
 
@@ -47,9 +47,10 @@ class DocumentUpdaterTest extends MockeryTestCase
         $this->dossier->shouldReceive('getOrganisation')->andReturn($organisation);
 
         $this->documentUpdater = new DocumentUpdater(
-            $this->messageBus,
             $this->entityStorageService,
             $this->repository,
+            $this->documentDispatcher,
+            $this->ingestDispatcher,
         );
 
         parent::setUp();
@@ -70,7 +71,6 @@ class DocumentUpdaterTest extends MockeryTestCase
         $existingDocument->expects('setDocumentId')->with($documentMetadata->getId());
         $existingDocument->expects('setThreadId')->with($documentMetadata->getThreadId());
         $existingDocument->expects('setGrounds')->with($documentMetadata->getGrounds());
-        $existingDocument->expects('setSubjects')->with($documentMetadata->getSubjects());
         $existingDocument->expects('setPeriod')->with($documentMetadata->getPeriod());
         $existingDocument->expects('setSuspended')->with($documentMetadata->isSuspended());
         $existingDocument->expects('setLinks')->with($documentMetadata->getLinks());
@@ -104,7 +104,6 @@ class DocumentUpdaterTest extends MockeryTestCase
         $existingDocument->expects('setDocumentId')->with($documentMetadata->getId());
         $existingDocument->expects('setThreadId')->with($documentMetadata->getThreadId());
         $existingDocument->expects('setGrounds')->with($documentMetadata->getGrounds());
-        $existingDocument->expects('setSubjects')->with($documentMetadata->getSubjects());
         $existingDocument->expects('setPeriod')->with($documentMetadata->getPeriod());
         $existingDocument->expects('setSuspended')->with($documentMetadata->isSuspended());
         $existingDocument->expects('setLinks')->with($documentMetadata->getLinks());
@@ -165,13 +164,7 @@ class DocumentUpdaterTest extends MockeryTestCase
         $document->shouldReceive('getId')->andReturn($docId);
         $document->expects('shouldBeUploaded')->andReturnTrue();
 
-        $this->messageBus->expects('dispatch')->once()
-            ->with(\Mockery::on(
-                static function (IngestMetadataOnlyCommand $message) use ($docId) {
-                    return $message->getEntityId() === $docId && $message->getForceRefresh() === false;
-                }
-            ))
-            ->andReturns(new Envelope(new \stdClass()));
+        $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($docId, Document::class, false);
 
         $this->documentUpdater->asyncUpdate($document);
     }
@@ -185,13 +178,7 @@ class DocumentUpdaterTest extends MockeryTestCase
         $dossierId = Uuid::v6();
         $this->dossier->shouldReceive('getId')->andReturn($dossierId);
 
-        $this->messageBus->expects('dispatch')->once()
-            ->with(\Mockery::on(
-                static function (RemoveDocumentMessage $message) use ($docId, $dossierId) {
-                    return $message->getDocumentId() === $docId && $message->getDossierId() === $dossierId;
-                }
-            ))
-            ->andReturns(new Envelope(new \stdClass()));
+        $this->documentDispatcher->expects('dispatchRemoveDocumentCommand')->with($dossierId, $docId);
 
         $this->documentUpdater->asyncRemove($document, $this->dossier);
     }
@@ -207,7 +194,6 @@ class DocumentUpdaterTest extends MockeryTestCase
             id: '123',
             judgement: $judgement,
             period: '',
-            subjects: ['subject a', 'subject b'],
             threadId: 456,
             caseNumbers: ['12-b', '13-a'],
             suspended: true,
@@ -216,5 +202,15 @@ class DocumentUpdaterTest extends MockeryTestCase
             matter: '987',
             refersTo: ['matter-123'],
         );
+    }
+
+    public function testDatabaseRemove(): void
+    {
+        $document = \Mockery::mock(Document::class);
+
+        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision->expects('removeDocument')->with($document);
+
+        $this->documentUpdater->databaseRemove($document, $wooDecision);
     }
 }

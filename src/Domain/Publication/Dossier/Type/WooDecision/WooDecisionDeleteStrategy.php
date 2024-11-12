@@ -33,8 +33,7 @@ readonly class WooDecisionDeleteStrategy extends AbstractEntityWithFileInfoDelet
         }
 
         $this->deleteFileForEntity($dossier->getInventory());
-        $this->deleteFileForEntity($dossier->getRawInventory());
-        $this->deleteFileForEntity($dossier->getDecisionDocument());
+        $this->deleteFileForEntity($dossier->getProductionReport());
 
         $this->downloadService->removeAllDownloadsForEntity($dossier);
         $this->inquiryService->removeDossierFromInquiries($dossier);

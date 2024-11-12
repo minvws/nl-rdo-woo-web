@@ -13,18 +13,18 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @implements EntityWithMainDocument<ComplaintJudgementDocument>
+ * @implements EntityWithMainDocument<ComplaintJudgementMainDocument>
  */
 #[ORM\Entity(repositoryClass: ComplaintJudgementRepository::class)]
 class ComplaintJudgement extends AbstractDossier implements EntityWithMainDocument
 {
-    /** @use HasMainDocument<ComplaintJudgementDocument> */
+    /** @use HasMainDocument<ComplaintJudgementMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ComplaintJudgementDocument::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ComplaintJudgementMainDocument::class)]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
-    private ?ComplaintJudgementDocument $document;
+    private ?ComplaintJudgementMainDocument $document;
 
     public function __construct()
     {
@@ -48,6 +48,6 @@ class ComplaintJudgement extends AbstractDossier implements EntityWithMainDocume
 
     public function getMainDocumentEntityClass(): string
     {
-        return ComplaintJudgementDocument::class;
+        return ComplaintJudgementMainDocument::class;
     }
 }

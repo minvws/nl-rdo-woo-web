@@ -43,9 +43,8 @@ const onDelete = () => {
     <InputErrors
       class="mt-2"
       :errors="props.errors"
-      :inputId="inputId"
+      :inputId="props.id"
       :validator-messages="validatorMessages"
-      :value="value"
       v-if="props.areErrorsVisible"
     />
 

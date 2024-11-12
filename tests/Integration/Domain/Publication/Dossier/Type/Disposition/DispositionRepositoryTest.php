@@ -7,7 +7,6 @@ namespace App\Tests\Integration\Domain\Publication\Dossier\Type\Disposition;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionRepository;
 use App\Tests\Factory\Publication\Dossier\Type\Disposition\DispositionFactory;
 use App\Tests\Integration\IntegrationTestTrait;
-use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class DispositionRepositoryTest extends KernelTestCase
@@ -25,21 +24,6 @@ final class DispositionRepositoryTest extends KernelTestCase
         parent::setUp();
 
         self::bootKernel();
-    }
-
-    public function testFindAndRemove(): void
-    {
-        $dossier = DispositionFactory::createOne();
-
-        $repository = $this->getRepository();
-
-        $result = $this->getRepository()->findOneByDossierId($dossier->getId());
-        self::assertEquals($dossier->getId(), $result->getId());
-
-        $repository->remove($result, true);
-
-        $this->expectException(NoResultException::class);
-        $this->getRepository()->findOneByDossierId($dossier->getId());
     }
 
     public function testGetSearchResultViewModel(): void

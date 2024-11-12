@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier\WooDecision;
 
-use App\Entity\InventoryProcessRun;
+use App\Entity\ProductionReportProcessRun;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -16,7 +16,7 @@ readonly class TranslatableFormErrorMapper
     ) {
     }
 
-    public function mapRunErrorsToForm(InventoryProcessRun $run, FormInterface $form): void
+    public function mapRunErrorsToForm(ProductionReportProcessRun $run, FormInterface $form): void
     {
         $this->mapGenericErrorsToForm($run->getGenericErrors(), $form);
         $this->mapRowErrorsToForm($run->getRowErrors(), $form);

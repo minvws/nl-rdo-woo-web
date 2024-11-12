@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Postprocessor;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\UploadedFile;
-use App\Entity\Dossier;
 
 readonly class FilePostprocessor
 {
@@ -16,7 +16,7 @@ readonly class FilePostprocessor
     {
     }
 
-    public function process(UploadedFile $file, Dossier $dossier): void
+    public function process(UploadedFile $file, WooDecision $dossier): void
     {
         foreach ($this->strategies as $strategy) {
             if ($strategy->canProcess($file, $dossier)) {

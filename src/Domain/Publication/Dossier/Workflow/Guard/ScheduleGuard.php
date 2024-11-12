@@ -13,7 +13,7 @@ final class ScheduleGuard implements EventSubscriberInterface
 {
     public function guardSchedule(GuardEvent $event): void
     {
-        if ($event->getTransition()->getName() !== DossierStatusTransition::SCHEDULE->value) {
+        if ($event->getTransition()->getName() !== DossierStatusTransition::SCHEDULE_PUBLISH->value) {
             return;
         }
 
@@ -25,6 +25,9 @@ final class ScheduleGuard implements EventSubscriberInterface
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): array
     {
         return [

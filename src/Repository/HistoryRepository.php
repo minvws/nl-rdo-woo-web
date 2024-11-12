@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\History;
 use App\Service\HistoryService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -45,7 +45,7 @@ class HistoryRepository extends ServiceEntityRepository
             if ($type == HistoryService::TYPE_DOCUMENT) {
                 $document = $this->getEntityManager()->getRepository(Document::class)->find($identifier);
                 if ($document) {
-                    /** @var Dossier|null $dossier */
+                    /** @var WooDecision|null $dossier */
                     $dossier = $document->getDossiers()[0] ?? null;
                     if ($dossier) {
                         // If we show frontend dossiers, we only have to show entries since publication date of the dossier

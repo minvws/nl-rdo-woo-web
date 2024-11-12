@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Admin\Dossier\WooDecision;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\InventoryProcessRun;
+use App\Entity\ProductionReportProcessRun;
 use App\Form\Dossier\WooDecision\InventoryType;
 use App\Form\Dossier\WooDecision\TranslatableFormErrorMapper;
 use App\ValueObject\InventoryStatus;
@@ -48,10 +48,10 @@ readonly class DocumentsStepHelper
         ]);
     }
 
-    public function mapProcessRunToForm(WooDecision $dossier, FormInterface $form): ?InventoryProcessRun
+    public function mapProcessRunToForm(WooDecision $dossier, FormInterface $form): ?ProductionReportProcessRun
     {
         $processRun = $dossier->getProcessRun();
-        if ($processRun instanceof InventoryProcessRun && $processRun->isFailed()) {
+        if ($processRun instanceof ProductionReportProcessRun && $processRun->isFailed()) {
             $this->formErrorMapper->mapRunErrorsToForm($processRun, $form);
         }
 

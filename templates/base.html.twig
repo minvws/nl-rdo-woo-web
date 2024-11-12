@@ -53,7 +53,7 @@
                             </button>
                         </div>
 
-                        <ul class="woo-main-nav__list" id="main-nav-list">
+                        <ul class="woo-main-nav__list" id="main-nav-list" data-e2e-name="main-nav">
                             {% macro main_nav_item(route, isCurrentPage, title, iconName) %}
                                 <li>
                                     <a class="woo-main-nav__link group" href="{{ route }}" {% if isCurrentPage %}aria-current="page"{% endif %}>
@@ -76,12 +76,16 @@
                                     'public.global.label.search_publications' | trans
                                 )
                             }}
-                            {{ _self.main_nav_item(
-                                    path('app_search', {'type': 'dossier', 'sort': 'decision_date', 'sortorder': 'desc'}),
-                                    app.request.get('_route') == 'app_search' and app.request.get('type') == 'dossier',
-                                    'public.global.label.overview_publications' | trans
+
+                            {% for theme in all_themes() %}
+                                {{ _self.main_nav_item(
+                                    path('app_theme', {'name': theme.urlName}),
+                                    app.request.get('_route') == 'app_theme' and app.request.get('name') == theme.urlName,
+                                    theme.menuName | trans
                                 )
-                            }}
+                                }}
+                            {% endfor %}
+
                             {% if DEPARTMENTS.hasAny %}
                             {{ _self.main_nav_item(
                                     path('app_departments_index'),
@@ -145,7 +149,7 @@
                     <nav class="woo-footer-nav" aria-labelledby="page-footer-nav-2-heading">
                         <h3 class="woo-footer-nav__title" id="page-footer-nav-2-heading">{{ 'public.footer.title.about' | trans }}</h3>
                         <ul>
-                            {{ _self.footer_nav_item(path('app_about'), 'public.footer.label.woo' | trans) }}
+                            {{ _self.footer_nav_item(path('app_about'), 'public.footer.label.about_platform' | trans) }}
                             {{ _self.footer_nav_item(path('app_copyright'), 'public.footer.label.copyright' | trans) }}
                             {{ _self.footer_nav_item(path('app_privacy'), 'global.footer.label.privacy' | trans) }}
                             {{ _self.footer_nav_item(path('app_cookies'), 'public.footer.label.cookies' | trans) }}

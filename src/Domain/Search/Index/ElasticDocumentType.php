@@ -6,16 +6,18 @@ namespace App\Domain\Search\Index;
 
 use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportDocument;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementDocument;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocument;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionDocument;
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
+use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportDocument;
+use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionMainDocument;
 
 enum ElasticDocumentType: string
 {
     case WOO_DECISION = 'dossier';
+    case WOO_DECISION_MAIN_DOCUMENT = 'woo_decision_main_document';
     case WOO_DECISION_DOCUMENT = 'document';
 
     case COVENANT = 'covenant';
@@ -50,11 +52,12 @@ enum ElasticDocumentType: string
 
         return match (true) {
             $entity instanceof AbstractAttachment => self::ATTACHMENT,
-            $entity instanceof CovenantDocument => self::COVENANT_MAIN_DOCUMENT,
-            $entity instanceof AnnualReportDocument => self::ANNUAL_REPORT_MAIN_DOCUMENT,
-            $entity instanceof InvestigationReportDocument => self::INVESTIGATION_REPORT_MAIN_DOCUMENT,
-            $entity instanceof DispositionDocument => self::DISPOSITION_MAIN_DOCUMENT,
-            $entity instanceof ComplaintJudgementDocument => self::COMPLAINT_JUDGEMENT_MAIN_DOCUMENT,
+            $entity instanceof CovenantMainDocument => self::COVENANT_MAIN_DOCUMENT,
+            $entity instanceof AnnualReportMainDocument => self::ANNUAL_REPORT_MAIN_DOCUMENT,
+            $entity instanceof InvestigationReportMainDocument => self::INVESTIGATION_REPORT_MAIN_DOCUMENT,
+            $entity instanceof DispositionMainDocument => self::DISPOSITION_MAIN_DOCUMENT,
+            $entity instanceof ComplaintJudgementMainDocument => self::COMPLAINT_JUDGEMENT_MAIN_DOCUMENT,
+            $entity instanceof WooDecisionMainDocument => self::WOO_DECISION_MAIN_DOCUMENT,
             default => throw IndexException::noTypeFoundForEntity($entity),
         };
     }
@@ -81,6 +84,7 @@ enum ElasticDocumentType: string
     {
         return [
             self::WOO_DECISION_DOCUMENT,
+            self::WOO_DECISION_MAIN_DOCUMENT,
             self::COVENANT_MAIN_DOCUMENT,
             self::ANNUAL_REPORT_MAIN_DOCUMENT,
             self::INVESTIGATION_REPORT_MAIN_DOCUMENT,
@@ -101,6 +105,7 @@ enum ElasticDocumentType: string
             self::INVESTIGATION_REPORT_MAIN_DOCUMENT,
             self::DISPOSITION_MAIN_DOCUMENT,
             self::COMPLAINT_JUDGEMENT_MAIN_DOCUMENT,
+            self::WOO_DECISION_MAIN_DOCUMENT,
         ];
     }
 

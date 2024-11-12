@@ -6,6 +6,7 @@ namespace App\Tests\Factory\Publication\Dossier\Type\Covenant;
 
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use App\Service\Storage\StorageRootPathGenerator;
 use App\Tests\Factory\FileInfoFactory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
@@ -14,6 +15,10 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
  */
 final class CovenantAttachmentFactory extends PersistentProxyObjectFactory
 {
+    public function __construct(private StorageRootPathGenerator $storageRootPathGenerator)
+    {
+    }
+
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
@@ -39,7 +44,15 @@ final class CovenantAttachmentFactory extends PersistentProxyObjectFactory
      */
     protected function initialize(): static
     {
-        return $this;
+        return $this->afterInstantiate(function (CovenantAttachment $attachment): void {
+            $attachment
+                ->getFileInfo()
+                ->setPath(sprintf(
+                    '%s/%s',
+                    $this->storageRootPathGenerator->fromUuid($attachment->getId()),
+                    $attachment->getFileInfo()->getName(),
+                ));
+        });
     }
 
     public static function class(): string

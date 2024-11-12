@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Admin\Action;
 
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
 use App\Domain\Publication\Dossier\Admin\Action\IngestDossierAdminAction;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\DossierService;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 
 final class IngestDossierAdminActionTest extends MockeryTestCase
 {
-    private DossierService&MockInterface $dossierService;
+    private IngestDispatcher&MockInterface $ingestDispatcher;
     private IngestDossierAdminAction $action;
 
     public function setUp(): void
     {
-        $this->dossierService = \Mockery::mock(DossierService::class);
+        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
 
         $this->action = new IngestDossierAdminAction(
-            $this->dossierService,
+            $this->ingestDispatcher,
         );
 
         parent::setUp();
@@ -46,7 +46,7 @@ final class IngestDossierAdminActionTest extends MockeryTestCase
     {
         $dossier = \Mockery::mock(WooDecision::class);
 
-        $this->dossierService->expects('ingest')->with($dossier);
+        $this->ingestDispatcher->expects('dispatchIngestDossierCommand')->with($dossier);
 
         $this->action->execute($dossier);
     }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\ViewModel\DossierViewFactory;
 use App\Entity\Department;
@@ -14,12 +14,12 @@ use Mockery\MockInterface;
 
 final class DossierViewFactoryTest extends MockeryTestCase
 {
-    private AbstractDossierRepository&MockInterface $repository;
+    private DossierRepository&MockInterface $repository;
     private DossierViewFactory $factory;
 
     public function setUp(): void
     {
-        $this->repository = \Mockery::mock(AbstractDossierRepository::class);
+        $this->repository = \Mockery::mock(DossierRepository::class);
 
         $this->factory = new DossierViewFactory(
             $this->repository,

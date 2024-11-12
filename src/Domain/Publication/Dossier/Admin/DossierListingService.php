@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Admin;
 
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
@@ -18,7 +18,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 readonly class DossierListingService
 {
     public function __construct(
-        private AbstractDossierRepository $dossierRepository,
+        private DossierRepository $dossierRepository,
         private AuthorizationMatrix $authorizationMatrix,
         private DossierTypeManager $dossierTypeManager,
         private DossierQueryConditions $queryConditions,

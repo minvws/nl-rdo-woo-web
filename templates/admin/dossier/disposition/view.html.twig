@@ -9,7 +9,6 @@
 {% set periodLabel = 'admin.dossiers.disposition.date' | trans %}
 {% set summaryLabel = 'admin.dossiers.disposition.summary' | trans %}
 {% set documentLabel = 'admin.dossiers.disposition.document' | trans %}
-{% set downloadDocumentPath = path('app_admin_disposition_document_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) %}
 {% set completeFirstOpenStepTitle = ('admin.dossiers.disposition.complete_step.' ~ workflowStatus.firstOpenStep.stepName.value | default) | trans %}
 
 {% set deleteTitle = 'admin.dossiers.disposition.delete' | trans %}

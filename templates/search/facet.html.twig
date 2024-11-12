@@ -70,12 +70,13 @@
                                                     type="checkbox"
                                                     value="{{ inputValue }}"
                                                     {% if facet_checked(queryKey, inputValue) %}checked{% endif %}
+                                                    data-e2e-name="input_{{ entry.key|url_encode }}.{{ subentry.key|url_encode }}"
                                                 >
                                             </span>
                                             <label class="grow cursor-pointer" for="input_{{ subentry.key|url_encode }}">
                                                 <span class="flex">
                                                     <span class="grow mr-2 text-base leading-tight">{{ subentry.displayValue | trans }}</span>
-                                                    <span class="woo-muted text-sm">({{ subentry.count }})</span>
+                                                    <span class="woo-muted text-sm" data-e2e-name="{{ entry.key|url_encode }}.{{ subentry.key|url_encode }}_count">({{ subentry.count }})</span>
                                                 </span>
                                             </label>
                                         </div>

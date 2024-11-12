@@ -7,10 +7,10 @@ namespace App\Api\Admin\Publication\Search;
 use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Step\StepName;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Entity\DecisionAttachment;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -61,7 +61,7 @@ readonly class SearchResultDtoFactory
 
     private function fromDocumentEntity(Document $entity): SearchResultDto
     {
-        /** @var Dossier $firstDossier */
+        /** @var WooDecision $firstDossier */
         $firstDossier = $entity->getDossiers()->first();
 
         return new SearchResultDto(

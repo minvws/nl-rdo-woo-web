@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Command\Cron;
 
 use App\Exception\ProcessInventoryException;
-use App\Repository\InventoryProcessRunRepository;
+use App\Repository\ProductionReportProcessRunRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CleanInventoryProcessRun extends Command
 {
     public function __construct(
-        private readonly InventoryProcessRunRepository $repository,
+        private readonly ProductionReportProcessRunRepository $repository,
     ) {
         parent::__construct();
     }

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Factory;
 
 use App\Entity\FileInfo;
+use App\Service\Storage\StorageRootPathGenerator;
 use App\SourceType;
+use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\ObjectFactory;
 
 /**
@@ -13,6 +15,10 @@ use Zenstruck\Foundry\ObjectFactory;
  */
 final class FileInfoFactory extends ObjectFactory
 {
+    public function __construct(private StorageRootPathGenerator $storageRootPathGenerator)
+    {
+    }
+
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
@@ -21,8 +27,6 @@ final class FileInfoFactory extends ObjectFactory
     protected function defaults(): array
     {
         $fileName = 'file_name.pdf';
-        $documentIdHash = hash('sha256', self::faker()->uuid());
-        $path = sprintf('/%s/%s', substr($documentIdHash, 0, 2), substr($documentIdHash, 2));
 
         return [
             'sourceType' => self::faker()->randomElement(SourceType::cases()),
@@ -30,7 +34,7 @@ final class FileInfoFactory extends ObjectFactory
             'mimetype' => 'application/pdf',
             'type' => 'pdf',
             'uploaded' => true,
-            'path' => sprintf('%s/%s', $path, $fileName),
+            'path' => sprintf('%s/%s', $this->storageRootPathGenerator->fromUuid(Uuid::v6()), $fileName),
             'size' => 1337,
         ];
     }

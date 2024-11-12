@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\Disposition;
 
 use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionDocument;
+use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use Carbon\CarbonImmutable;
 use PHPUnit\Framework\TestCase;
@@ -18,15 +18,15 @@ final class DispositionReportTest extends TestCase
         self::assertEquals(DossierType::DISPOSITION, $dossier->getType());
     }
 
-    public function testGetAndSetDocument(): void
+    public function testGetAndSetMainDocument(): void
     {
         $dossier = new Disposition();
-        self::assertNull($dossier->getDocument());
+        self::assertNull($dossier->getMainDocument());
 
-        $document = \Mockery::mock(DispositionDocument::class);
-        $dossier->setDocument($document);
+        $document = \Mockery::mock(DispositionMainDocument::class);
+        $dossier->setMainDocument($document);
 
-        self::assertEquals($document, $dossier->getDocument());
+        self::assertEquals($document, $dossier->getMainDocument());
     }
 
     public function testSetDateFromSetsDateTo(): void

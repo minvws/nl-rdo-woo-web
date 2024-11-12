@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Admin;
 
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
 use App\Domain\Publication\Dossier\Admin\DossierFilterParameters;
 use App\Domain\Publication\Dossier\Admin\DossierListingService;
 use App\Domain\Publication\Dossier\Admin\DossierQueryConditions;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
@@ -24,7 +24,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DossierListingServiceTest extends MockeryTestCase
 {
-    private AbstractDossierRepository&MockInterface $dossierRepository;
+    private DossierRepository&MockInterface $dossierRepository;
     private AuthorizationMatrix&MockInterface $authorizationMatrix;
     private DossierTypeManager&MockInterface $dossierTypeManager;
     private DossierListingService $listingService;
@@ -36,7 +36,7 @@ class DossierListingServiceTest extends MockeryTestCase
     {
         $this->organisation = \Mockery::mock(Organisation::class);
 
-        $this->dossierRepository = \Mockery::mock(AbstractDossierRepository::class);
+        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
 
         $this->authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
         $this->authorizationMatrix->shouldReceive('getActiveOrganisation')->andReturn($this->organisation);

@@ -52,13 +52,11 @@ class RevokedUrlServiceTest extends UnitTestCase
         $documentInPublishedDossier = \Mockery::mock(Document::class);
         $documentInPublishedDossier->shouldReceive('getDossiers')
             ->andReturn(new ArrayCollection([$publishedDossier]));
-        $documentInPublishedDossier->shouldReceive('getPageCount')->andReturn(0);
         $documentInPublishedDossier->shouldReceive('getDocumentNr')->andReturn($docNrA = 'D1');
 
         $documentInConceptAndPublishedDossier = \Mockery::mock(Document::class);
         $documentInConceptAndPublishedDossier->shouldReceive('getDossiers')
             ->andReturn(new ArrayCollection([$conceptDossier, $publishedDossier]));
-        $documentInConceptAndPublishedDossier->shouldReceive('getPageCount')->andReturn(2);
         $documentInConceptAndPublishedDossier->shouldReceive('getDocumentNr')->andReturn($docNrB = 'D2');
 
         $this->router->shouldReceive('generate')->with(
@@ -71,29 +69,12 @@ class RevokedUrlServiceTest extends UnitTestCase
         )->andReturn('link_A');
 
         $this->router->shouldReceive('generate')->with(
-            'app_document_download',
-            [
-                'prefix' => $docPrefix,
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrA,
-            ]
-        )->andReturn('link_B');
-
-        $this->router->shouldReceive('generate')->with(
             'app_legacy_document_detail',
             [
                 'dossierId' => $dossierNr,
                 'documentId' => $docNrA,
             ]
-        )->andReturn('link_C');
-
-        $this->router->shouldReceive('generate')->with(
-            'app_legacy_document_download',
-            [
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrA,
-            ]
-        )->andReturn('link_D');
+        )->andReturn('link_B');
 
         $this->router->shouldReceive('generate')->with(
             'app_document_detail',
@@ -102,56 +83,7 @@ class RevokedUrlServiceTest extends UnitTestCase
                 'dossierId' => $dossierNr,
                 'documentId' => $docNrB,
             ]
-        )->andReturn('link_E');
-
-        $this->router->shouldReceive('generate')->with(
-            'app_document_download',
-            [
-                'prefix' => $docPrefix,
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrB,
-            ]
-        )->andReturn('link_F');
-
-        $this->router->shouldReceive('generate')->with(
-            'app_document_download_page',
-            [
-                'prefix' => $docPrefix,
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrB,
-                'pageNr' => 1,
-            ]
-        )->andReturn('link_G');
-
-        $this->router->shouldReceive('generate')->with(
-            'app_document_thumbnail',
-            [
-                'prefix' => $docPrefix,
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrB,
-                'pageNr' => 1,
-            ]
-        )->andReturn('link_H');
-
-        $this->router->shouldReceive('generate')->with(
-            'app_document_download_page',
-            [
-                'prefix' => $docPrefix,
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrB,
-                'pageNr' => 2,
-            ]
-        )->andReturn('link_I');
-
-        $this->router->shouldReceive('generate')->with(
-            'app_document_thumbnail',
-            [
-                'prefix' => $docPrefix,
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrB,
-                'pageNr' => 2,
-            ]
-        )->andReturn('link_J');
+        )->andReturn('link_C');
 
         $this->router->shouldReceive('generate')->with(
             'app_legacy_document_detail',
@@ -159,51 +91,7 @@ class RevokedUrlServiceTest extends UnitTestCase
                 'dossierId' => $dossierNr,
                 'documentId' => $docNrB,
             ]
-        )->andReturn('link_K');
-
-        $this->router->shouldReceive('generate')->with(
-            'app_legacy_document_download',
-            [
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrB,
-            ]
-        )->andReturn('link_L');
-
-        $this->router->shouldReceive('generate')->with(
-            'app_legacy_document_download_page',
-            [
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrB,
-                'pageNr' => 1,
-            ]
-        )->andReturn('link_M');
-
-        $this->router->shouldReceive('generate')->with(
-            'app_legacy_document_thumbnail',
-            [
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrB,
-                'pageNr' => 1,
-            ]
-        )->andReturn('link_N');
-
-        $this->router->shouldReceive('generate')->with(
-            'app_legacy_document_download_page',
-            [
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrB,
-                'pageNr' => 2,
-            ]
-        )->andReturn('link_O');
-
-        $this->router->shouldReceive('generate')->with(
-            'app_legacy_document_thumbnail',
-            [
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrB,
-                'pageNr' => 2,
-            ]
-        )->andReturn('link_P');
+        )->andReturn('link_D');
 
         $this->documentRepository->expects('getRevokedDocumentsInPublicDossiers')->andReturn([
             $documentInConceptDossier,

@@ -9,7 +9,7 @@ export const fetchAndUpdateResults = (
     return;
   }
 
-  fetch(`/_result?${params}`)
+  fetch(`${filtersElement.dataset.url}?${params}`)
     .then((response) => response.text())
     .then((json) => {
       const data = JSON.parse(json);

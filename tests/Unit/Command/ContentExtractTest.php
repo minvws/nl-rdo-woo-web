@@ -10,8 +10,8 @@ use App\Domain\Ingest\Content\ContentExtractCollection;
 use App\Domain\Ingest\Content\ContentExtractOptions;
 use App\Domain\Ingest\Content\ContentExtractService;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocument;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocumentRepository;
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocumentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -49,12 +49,12 @@ class ContentExtractTest extends MockeryTestCase
             $uuid = '1ef42b68-68d2-682a-b16e-bd5397103001',
         ]);
 
-        $covenantDocumentRepository = \Mockery::mock(CovenantDocumentRepository::class);
+        $covenantDocumentRepository = \Mockery::mock(CovenantMainDocumentRepository::class);
         $covenantDocumentRepository->expects('find')->with($uuid)->andReturnNull();
 
         $this->entityManager
             ->shouldReceive('getRepository')
-            ->with(CovenantDocument::class)
+            ->with(CovenantMainDocument::class)
             ->andReturn($covenantDocumentRepository);
 
         $commandTester->execute([__FILE__]);
@@ -79,13 +79,13 @@ class ContentExtractTest extends MockeryTestCase
         $collection->append($extract1);
         $collection->append($extract2);
 
-        $covenantDocument = \Mockery::mock(CovenantDocument::class);
-        $covenantDocumentRepository = \Mockery::mock(CovenantDocumentRepository::class);
+        $covenantDocument = \Mockery::mock(CovenantMainDocument::class);
+        $covenantDocumentRepository = \Mockery::mock(CovenantMainDocumentRepository::class);
         $covenantDocumentRepository->expects('find')->with($uuid)->andReturn($covenantDocument);
 
         $this->entityManager
             ->shouldReceive('getRepository')
-            ->with(CovenantDocument::class)
+            ->with(CovenantMainDocument::class)
             ->andReturn($covenantDocumentRepository);
 
         $this->contentExtractService

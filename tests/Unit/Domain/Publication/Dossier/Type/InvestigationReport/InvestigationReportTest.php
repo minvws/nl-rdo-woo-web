@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Domain\Publication\Dossier\Type\InvestigationReport;
 
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportDocument;
+use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
 use Carbon\CarbonImmutable;
 use PHPUnit\Framework\TestCase;
 
@@ -18,15 +18,15 @@ final class InvestigationReportTest extends TestCase
         self::assertEquals(DossierType::INVESTIGATION_REPORT, $dossier->getType());
     }
 
-    public function testGetAndSetDocument(): void
+    public function testGetAndSetMainDocument(): void
     {
         $dossier = new InvestigationReport();
-        self::assertNull($dossier->getDocument());
+        self::assertNull($dossier->getMainDocument());
 
-        $document = \Mockery::mock(InvestigationReportDocument::class);
-        $dossier->setDocument($document);
+        $document = \Mockery::mock(InvestigationReportMainDocument::class);
+        $dossier->setMainDocument($document);
 
-        self::assertEquals($document, $dossier->getDocument());
+        self::assertEquals($document, $dossier->getMainDocument());
     }
 
     public function testSetDateFromSetsDateTo(): void

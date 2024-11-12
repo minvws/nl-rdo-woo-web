@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Organisation;
 use Symfony\Component\Uid\Uuid;
@@ -49,7 +49,7 @@ class InquiryChangeset
     /**
      * @param string[] $updatedCaseNrs
      */
-    public function addCaseNrsForDossier(Dossier $dossier, array $updatedCaseNrs): void
+    public function addCaseNrsForDossier(WooDecision $dossier, array $updatedCaseNrs): void
     {
         $currentCaseNumbers = $dossier->getInquiries()->map(
             fn (Inquiry $inquiry) => $inquiry->getCasenr()
@@ -62,7 +62,7 @@ class InquiryChangeset
     /**
      * @param string[] $caseNrs
      */
-    private function addActionForCases(Document|Dossier $entity, string $action, array $caseNrs): void
+    private function addActionForCases(Document|WooDecision $entity, string $action, array $caseNrs): void
     {
         foreach ($caseNrs as $caseNr) {
             if (! array_key_exists($caseNr, $this->changes)) {

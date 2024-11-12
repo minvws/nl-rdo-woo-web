@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Admin;
 
-use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Attachment\AttachmentRepository;
 use App\Domain\Publication\Dossier\Admin\DossierSearchService;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
+use App\Domain\Publication\MainDocument\MainDocumentRepository;
 use App\Entity\Document;
 use App\Entity\Organisation;
 use App\Repository\DocumentRepository;
@@ -18,10 +18,10 @@ use Mockery\MockInterface;
 
 class DossierSearchServiceTest extends MockeryTestCase
 {
-    private AbstractDossierRepository&MockInterface $dossierRepository;
+    private DossierRepository&MockInterface $dossierRepository;
     private DocumentRepository&MockInterface $documentRepository;
-    private AbstractMainDocumentRepository&MockInterface $abstractMainDocumentRepository;
-    private AbstractAttachmentRepository&MockInterface $abstractAttachmentRepository;
+    private MainDocumentRepository&MockInterface $abstractMainDocumentRepository;
+    private AttachmentRepository&MockInterface $abstractAttachmentRepository;
     private AuthorizationMatrix&MockInterface $authorizationMatrix;
     private DossierSearchService $searchService;
     private Organisation&MockInterface $organisation;
@@ -30,10 +30,10 @@ class DossierSearchServiceTest extends MockeryTestCase
     {
         $this->organisation = \Mockery::mock(Organisation::class);
 
-        $this->dossierRepository = \Mockery::mock(AbstractDossierRepository::class);
+        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
         $this->documentRepository = \Mockery::mock(DocumentRepository::class);
-        $this->abstractMainDocumentRepository = \Mockery::mock(AbstractMainDocumentRepository::class);
-        $this->abstractAttachmentRepository = \Mockery::mock(AbstractAttachmentRepository::class);
+        $this->abstractMainDocumentRepository = \Mockery::mock(MainDocumentRepository::class);
+        $this->abstractAttachmentRepository = \Mockery::mock(AttachmentRepository::class);
 
         $this->authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
         $this->authorizationMatrix->shouldReceive('getActiveOrganisation')->andReturn($this->organisation);
@@ -54,7 +54,7 @@ class DossierSearchServiceTest extends MockeryTestCase
 
         $this->dossierRepository
             ->expects('findBySearchTerm')
-            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation)
+            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation, null, null)
             ->andReturn([$dossier]);
 
         self::assertEquals(
@@ -70,7 +70,7 @@ class DossierSearchServiceTest extends MockeryTestCase
 
         $this->documentRepository
             ->expects('findBySearchTerm')
-            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation)
+            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation, null)
             ->andReturn([$document]);
 
         self::assertEquals(
@@ -86,7 +86,7 @@ class DossierSearchServiceTest extends MockeryTestCase
 
         $this->abstractMainDocumentRepository
             ->expects('findBySearchTerm')
-            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation)
+            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation, null, null)
             ->andReturn([$document]);
 
         self::assertEquals(
@@ -102,7 +102,7 @@ class DossierSearchServiceTest extends MockeryTestCase
 
         $this->abstractAttachmentRepository
             ->expects('findBySearchTerm')
-            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation)
+            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation, null, null)
             ->andReturn([$document]);
 
         self::assertEquals(

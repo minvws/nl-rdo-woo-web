@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Controller\Admin\Dossier;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
 use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
 use App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionService;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Form\Dossier\AdministrationActionsType;
-use App\Service\DossierWizard\DossierWizardHelper;
+use App\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,9 +22,9 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 class DossierAdministrationController extends AbstractController
 {
     public function __construct(
-        private readonly AbstractDossierRepository $repository,
+        private readonly DossierRepository $repository,
         private readonly DossierAdminActionService $adminActionService,
-        private readonly DossierWizardHelper $wizardHelper,
+        private readonly WizardStatusFactory $wizardStatusFactory,
         private readonly TranslatorInterface $translator,
     ) {
     }
@@ -70,7 +70,7 @@ class DossierAdministrationController extends AbstractController
             'dossier' => $dossier,
             'form' => $form,
             'breadcrumbs' => $breadcrumbs,
-            'workflowStatus' => $this->wizardHelper->getStatus($dossier),
+            'workflowStatus' => $this->wizardStatusFactory->getWizardStatus($dossier),
         ]);
     }
 }

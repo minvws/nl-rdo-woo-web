@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace App\Command\Ingest;
 
-use App\Domain\Ingest\Process\Dossier\IngestDossierCommand;
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 class IngestDossier extends Command
 {
     public function __construct(
-        private readonly AbstractDossierRepository $repository,
-        private readonly MessageBusInterface $messageBus,
+        private readonly DossierRepository $repository,
+        private readonly IngestDispatcher $ingestDispatcher,
     ) {
         parent::__construct();
     }
@@ -50,11 +49,9 @@ class IngestDossier extends Command
             return 1;
         }
 
-        $this->messageBus->dispatch(
-            new IngestDossierCommand(
-                $dossier->getId(),
-                boolval($input->getOption('force-refresh'))
-            )
+        $this->ingestDispatcher->dispatchIngestDossierCommand(
+            $dossier,
+            boolval($input->getOption('force-refresh')),
         );
 
         return 0;

@@ -1,12 +1,12 @@
 {% extends is_backend() ? 'admin.html.twig' : 'base.html.twig' %}
 
-{% set page_title = 'global.page_not-found' | trans() %}
+{% set page_title = 'global.page_not-found' | trans %}
 
 {% block body %}
     {%
         include "bundles/TwigBundle/Exception/error-content.html.twig" with {
             title: page_title,
-            content: 'global.page_not-found.message' | trans(),
+            content: is_backend() ? 'admin.global.page_not-found.message' | trans : 'public.global.page_not-found.message' | trans,
         }
     %}
 {% endblock %}

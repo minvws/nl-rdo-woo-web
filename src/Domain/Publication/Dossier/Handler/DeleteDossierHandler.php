@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Handler;
 
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
 use App\Domain\Publication\Dossier\Command\DeleteDossierCommand;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
@@ -25,7 +25,7 @@ class DeleteDossierHandler
      * @param iterable<DossierDeleteStrategyInterface> $deleteStrategies
      */
     public function __construct(
-        private readonly AbstractDossierRepository $repository,
+        private readonly DossierRepository $repository,
         private readonly LoggerInterface $logger,
         private readonly DossierWorkflowManager $dossierWorkflowManager,
         private readonly EntityManagerInterface $entityManager,

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawDocumentCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentDispatcher;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
+use App\Entity\WithdrawReason;
 use App\Exception\DocumentReplaceException;
 use App\Form\Document\ReplaceFormType;
 use App\Form\Document\WithdrawFormType;
@@ -17,7 +18,6 @@ use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -31,7 +31,7 @@ class DocumentActionController extends AbstractController
     public function __construct(
         private readonly DocumentWorkflow $workflow,
         private readonly TranslatorInterface $translator,
-        private readonly MessageBusInterface $messageBus,
+        private readonly DocumentDispatcher $dispatcher,
     ) {
     }
 
@@ -79,9 +79,13 @@ class DocumentActionController extends AbstractController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->messageBus->dispatch(
-                WithDrawDocumentCommand::fromForm($dossier, $document, $form)
-            );
+            /** @var WithdrawReason $reason */
+            $reason = $form->get('reason')->getData();
+
+            /** @var string $explanation */
+            $explanation = $form->get('explanation')->getData();
+
+            $this->dispatcher->dispatchWithDrawDocumentCommand($dossier, $document, $reason, $explanation);
         }
 
         return $this->render('admin/dossier/woo-decision/document/withdraw.html.twig', [

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller\Public\Dossier\ComplaintJudgement;
 
+use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementDocument;
+use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
 use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ViewModel\ComplaintJudgementViewFactory;
+use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Service\DownloadResponseHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +23,7 @@ class ComplaintJudgementController extends AbstractController
     public function __construct(
         private readonly ComplaintJudgementViewFactory $viewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
-        private readonly DownloadResponseHelper $downloadHelper,
+        private readonly DossierFileViewFactory $dossierFileViewFactory,
     ) {
     }
 
@@ -31,7 +32,7 @@ class ComplaintJudgementController extends AbstractController
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] ComplaintJudgement $dossier,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        ComplaintJudgementDocument $document,
+        ComplaintJudgementMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('Home', 'app_home');
@@ -52,7 +53,7 @@ class ComplaintJudgementController extends AbstractController
     public function documentDetail(
         #[ValueResolver('dossierWithAccessCheck')] ComplaintJudgement $dossier,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        ComplaintJudgementDocument $document,
+        ComplaintJudgementMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $mainDocumentViewModel = $this->mainDocumentViewFactory->make($dossier, $document);
@@ -67,22 +68,11 @@ class ComplaintJudgementController extends AbstractController
         return $this->render('complaintjudgement/document.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
             'document' => $mainDocumentViewModel,
+            'file' => $this->dossierFileViewFactory->make(
+                $dossier,
+                $document,
+                DossierFileType::MAIN_DOCUMENT,
+            ),
         ]);
-    }
-
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
-    #[Route(
-        '/klachtoordeel/{prefix}/{dossierId}/document/download',
-        name: 'app_complaintjudgement_document_download',
-        methods: ['GET'],
-    )]
-    public function documentDownload(
-        #[ValueResolver('dossierWithAccessCheck')] ComplaintJudgement $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        ComplaintJudgementDocument $document,
-    ): Response {
-        unset($dossier);
-
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($document);
     }
 }

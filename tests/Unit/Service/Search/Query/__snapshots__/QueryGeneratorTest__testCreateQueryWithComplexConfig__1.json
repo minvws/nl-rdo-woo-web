@@ -98,6 +98,7 @@
                                     "terms": {
                                         "type": [
                                             "document",
+                                            "woo_decision_main_document",
                                             "covenant_main_document",
                                             "annual_report_main_document",
                                             "investigation_report_main_document",
@@ -132,16 +133,6 @@
                                         ],
                                         "default_operator": "and",
                                         "boost": 4
-                                    }
-                                },
-                                {
-                                    "simple_query_string": {
-                                        "query": "search terms",
-                                        "fields": [
-                                            "decision_content"
-                                        ],
-                                        "default_operator": "and",
-                                        "boost": 3
                                     }
                                 }
                             ],
@@ -208,6 +199,7 @@
                                                 "terms": {
                                                     "type": [
                                                         "document",
+                                                        "woo_decision_main_document",
                                                         "covenant_main_document",
                                                         "annual_report_main_document",
                                                         "investigation_report_main_document",
@@ -296,6 +288,7 @@
                                     "terms": {
                                         "type": [
                                             "document",
+                                            "woo_decision_main_document",
                                             "covenant_main_document",
                                             "annual_report_main_document",
                                             "investigation_report_main_document",
@@ -330,6 +323,7 @@
                                                             "terms": {
                                                                 "type": [
                                                                     "document",
+                                                                    "woo_decision_main_document",
                                                                     "covenant_main_document",
                                                                     "annual_report_main_document",
                                                                     "investigation_report_main_document",
@@ -419,11 +413,6 @@
                     "fragment_size": 50,
                     "number_of_fragments": 5,
                     "type": "unified"
-                },
-                "decision_content": {
-                    "fragment_size": 50,
-                    "number_of_fragments": 5,
-                    "type": "unified"
                 }
             },
             "require_field_match": true,
@@ -433,7 +422,6 @@
                     "fields": [
                         "title",
                         "summary",
-                        "decision_content",
                         "dossiers.summary",
                         "dossiers.title",
                         "pages.content"
@@ -575,6 +563,7 @@
                                                     "terms": {
                                                         "type": [
                                                             "document",
+                                                            "woo_decision_main_document",
                                                             "covenant_main_document",
                                                             "annual_report_main_document",
                                                             "investigation_report_main_document",
@@ -609,16 +598,6 @@
                                                         ],
                                                         "default_operator": "and",
                                                         "boost": 4
-                                                    }
-                                                },
-                                                {
-                                                    "simple_query_string": {
-                                                        "query": "search terms",
-                                                        "fields": [
-                                                            "decision_content"
-                                                        ],
-                                                        "default_operator": "and",
-                                                        "boost": 3
                                                     }
                                                 }
                                             ],
@@ -685,6 +664,7 @@
                                                                 "terms": {
                                                                     "type": [
                                                                         "document",
+                                                                        "woo_decision_main_document",
                                                                         "covenant_main_document",
                                                                         "annual_report_main_document",
                                                                         "investigation_report_main_document",
@@ -748,6 +728,7 @@
                                                             "terms": {
                                                                 "type": [
                                                                     "document",
+                                                                    "woo_decision_main_document",
                                                                     "covenant_main_document",
                                                                     "annual_report_main_document",
                                                                     "investigation_report_main_document",
@@ -782,6 +763,7 @@
                                                                                     "terms": {
                                                                                         "type": [
                                                                                             "document",
+                                                                                            "woo_decision_main_document",
                                                                                             "covenant_main_document",
                                                                                             "annual_report_main_document",
                                                                                             "investigation_report_main_document",
@@ -916,6 +898,7 @@
                                                                                     "terms": {
                                                                                         "type": [
                                                                                             "document",
+                                                                                            "woo_decision_main_document",
                                                                                             "covenant_main_document",
                                                                                             "annual_report_main_document",
                                                                                             "investigation_report_main_document",
@@ -1029,6 +1012,7 @@
                                                             "terms": {
                                                                 "type": [
                                                                     "document",
+                                                                    "woo_decision_main_document",
                                                                     "covenant_main_document",
                                                                     "annual_report_main_document",
                                                                     "investigation_report_main_document",
@@ -1065,6 +1049,7 @@
                                                                     "terms": {
                                                                         "type": [
                                                                             "document",
+                                                                            "woo_decision_main_document",
                                                                             "covenant_main_document",
                                                                             "annual_report_main_document",
                                                                             "investigation_report_main_document",

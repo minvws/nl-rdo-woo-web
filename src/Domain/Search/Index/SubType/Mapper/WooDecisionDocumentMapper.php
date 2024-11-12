@@ -60,7 +60,6 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
             'thread_id' => $entity->getThreadId() ?? 0,
             'judgement' => $entity->getJudgement(),
             'grounds' => $entity->getGrounds(),
-            'subjects' => $entity->getSubjects(),
             'date_period' => $entity->getPeriod(),
             'document_pages' => $entity->getPageCount(),
             'dossiers' => $dossiers,

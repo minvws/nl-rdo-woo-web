@@ -177,4 +177,10 @@ class FileInfo
         $this->setPath(null);
         $this->setPageCount(null);
     }
+
+    /** @phpstan-assert-if-true !null $this->getPageCount() */
+    public function hasPages(): bool
+    {
+        return $this->pageCount !== null && $this->pageCount > 0;
+    }
 }

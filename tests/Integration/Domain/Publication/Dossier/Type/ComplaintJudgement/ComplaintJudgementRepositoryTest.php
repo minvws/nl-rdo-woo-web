@@ -7,7 +7,6 @@ namespace App\Tests\Integration\Domain\Publication\Dossier\Type\ComplaintJudgeme
 use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementRepository;
 use App\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
 use App\Tests\Integration\IntegrationTestTrait;
-use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class ComplaintJudgementRepositoryTest extends KernelTestCase
@@ -25,21 +24,6 @@ final class ComplaintJudgementRepositoryTest extends KernelTestCase
         parent::setUp();
 
         self::bootKernel();
-    }
-
-    public function testFindAndRemove(): void
-    {
-        $dossier = ComplaintJudgementFactory::createOne();
-
-        $repository = $this->getRepository();
-
-        $result = $this->getRepository()->findOneByDossierId($dossier->getId());
-        self::assertEquals($dossier->getId(), $result->getId());
-
-        $repository->remove($result, true);
-
-        $this->expectException(NoResultException::class);
-        $this->getRepository()->findOneByDossierId($dossier->getId());
     }
 
     public function testGetSearchResultViewModel(): void

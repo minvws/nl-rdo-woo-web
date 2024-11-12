@@ -1,0 +1,29 @@
+{% if HAS_FEATURE_VERWERKINGSREGISTER_LINK %}
+    <h2 class="woo-h2 woo-h2-spacing">{{ 'public.other-publications.title' | trans }}</h2>
+
+    <ul>
+        <li><a href="{{ PUBLIC_BASE_URL }}/verwerkingsregister">{{ 'public.other-publications.processing_register' | trans }}</a></li>
+        <li><a href="https://algoritmes.overheid.nl/nl/organisatie/ministerie-vws">{{ 'public.other-publications.algorithm_register' | trans }}</a></li>
+        <li><a href="https://github.com/minvws">{{ 'public.other-publications.github_vws' | trans }}</a></li>
+    </ul>
+{% endif %}
+
+<h2>{{ 'public.woo-process.title' | trans }}</h2>
+<p>{{ 'public.woo-process.description' | trans | raw }}</p>
+
+<ul>
+    <li>
+        {{ 'public.woo-process.step-1' | trans | raw }}
+    </li>
+    <li>
+        {{ 'public.woo-process.step-2' | trans }}
+    </li>
+    <li>
+        {{ 'public.woo-process.step-3' | trans }}
+    </li>
+    <li>
+        {{ 'public.woo-process.step-4' | trans }}
+    </li>
+</ul>
+
+<p>{{ 'public.woo-process.step-regarding-vws' | trans | raw }}</p>

@@ -1,0 +1,7 @@
+pages:
+    - { thumbnail: false, pageNr: 1, thumbnailUrl: null, viewUrl: null }
+    - { thumbnail: true, pageNr: 2, thumbnailUrl: thumb-url, viewUrl: 'my-url#page=2' }
+type: pdf
+size: 456
+hasPages: true
+downloadUrl: my-url

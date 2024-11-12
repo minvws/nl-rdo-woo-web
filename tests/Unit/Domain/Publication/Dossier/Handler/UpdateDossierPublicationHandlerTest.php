@@ -49,12 +49,39 @@ class UpdateDossierPublicationHandlerTest extends MockeryTestCase
         $this->dossierService->expects('validateCompletion')->with($dossier, false);
 
         $this->dossierPublisher->expects('canPublish')->with($dossier)->andReturnTrue();
-        $this->dossierPublisher->expects('canSchedulePublication')->with($dossier)->andReturnTrue();
 
-        $this->dossierService->expects('updateHistory')->with($dossier);
         $this->dossierService->expects('validateCompletion')->with($dossier);
 
         $this->dossierPublisher->expects('publish')->with($dossier);
+
+        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+            static function (DossierUpdatedEvent $message) use ($dossierId) {
+                self::assertEquals($dossierId, $message->id);
+
+                return true;
+            }
+        ))->andReturns(new Envelope(new \stdClass()));
+
+        $this->handler->__invoke(
+            new UpdateDossierPublicationCommand($dossier)
+        );
+    }
+
+    public function testInvokeSuccessfullyForPreviewPublication(): void
+    {
+        $dossierId = Uuid::v6();
+        $dossier = \Mockery::mock(AnnualReport::class);
+        $dossier->shouldReceive('getId')->andReturn($dossierId);
+        $dossier->shouldReceive('isCompleted')->andReturnTrue();
+
+        $this->dossierService->expects('validateCompletion')->with($dossier, false);
+
+        $this->dossierPublisher->expects('canPublish')->with($dossier)->andReturnFalse();
+        $this->dossierPublisher->expects('canPublishAsPreview')->with($dossier)->andReturnTrue();
+
+        $this->dossierService->expects('validateCompletion')->with($dossier);
+
+        $this->dossierPublisher->expects('publishAsPreview')->with($dossier);
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             static function (DossierUpdatedEvent $message) use ($dossierId) {
@@ -79,9 +106,9 @@ class UpdateDossierPublicationHandlerTest extends MockeryTestCase
         $this->dossierService->expects('validateCompletion')->with($dossier, false);
 
         $this->dossierPublisher->expects('canPublish')->with($dossier)->andReturnFalse();
+        $this->dossierPublisher->expects('canPublishAsPreview')->with($dossier)->andReturnFalse();
         $this->dossierPublisher->expects('canSchedulePublication')->with($dossier)->andReturnTrue();
 
-        $this->dossierService->expects('updateHistory')->with($dossier);
         $this->dossierService->expects('validateCompletion')->with($dossier);
 
         $this->dossierPublisher->expects('schedulePublication')->with($dossier);
@@ -109,6 +136,7 @@ class UpdateDossierPublicationHandlerTest extends MockeryTestCase
         $this->dossierService->expects('validateCompletion')->with($dossier, false);
 
         $this->dossierPublisher->expects('canPublish')->with($dossier)->andReturnFalse();
+        $this->dossierPublisher->expects('canPublishAsPreview')->with($dossier)->andReturnFalse();
         $this->dossierPublisher->expects('canSchedulePublication')->with($dossier)->andReturnFalse();
 
         $this->expectException(DossierWorkflowException::class);

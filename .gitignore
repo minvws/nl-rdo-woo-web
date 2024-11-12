@@ -54,3 +54,4 @@ phpstan.neon
 ###< phpstan/phpstan ###
 
 phpunit.xml
+stdout.txt

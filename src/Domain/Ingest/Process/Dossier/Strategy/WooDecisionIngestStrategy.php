@@ -9,15 +9,12 @@ use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Message\IngestDecisionMessage;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Webmozart\Assert\Assert;
 
 readonly class WooDecisionIngestStrategy implements DossierIngestStrategyInterface
 {
     public function __construct(
         private SubTypeIngester $ingester,
-        private MessageBusInterface $messageBus,
         private DefaultDossierIngestStrategy $defaultDossierIngester,
     ) {
     }
@@ -28,10 +25,6 @@ readonly class WooDecisionIngestStrategy implements DossierIngestStrategyInterfa
         Assert::isInstanceOf($dossier, WooDecision::class);
 
         $this->defaultDossierIngester->ingest($dossier, $refresh);
-
-        $this->messageBus->dispatch(
-            IngestDecisionMessage::forDossier($dossier)
-        );
 
         $options = new IngestProcessOptions();
         $options->setForceRefresh($refresh);

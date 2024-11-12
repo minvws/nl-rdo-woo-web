@@ -6,12 +6,15 @@ namespace App\Controller\Public\Dossier\WooDecision;
 
 use App\Doctrine\DocumentConditions;
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
+use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Query\SearchType;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionMainDocument;
+use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
+use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
+use App\Domain\Search\Theme\Covid19Theme;
 use App\Entity\BatchDownload;
 use App\Entity\DecisionAttachment;
-use App\Entity\Dossier;
 use App\Exception\ViewingNotAllowedException;
 use App\Repository\DocumentRepository;
 use App\Service\BatchDownloadService;
@@ -22,7 +25,6 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Annotation\Route;
@@ -42,6 +44,8 @@ class WooDecisionController extends AbstractController
         private readonly DocumentRepository $documentRepository,
         private readonly WooDecisionViewFactory $wooDecisionViewFactory,
         private readonly AttachmentViewFactory $attachmentViewFactory,
+        private readonly DossierFileViewFactory $dossierFileViewFactory,
+        private readonly MainDocumentViewFactory $mainDocumentViewFactory,
     ) {
     }
 
@@ -49,7 +53,7 @@ class WooDecisionController extends AbstractController
     #[Route('/dossiers', name: 'app_woodecision_index', methods: ['GET'])]
     public function index(): Response
     {
-        return $this->redirectToRoute('app_search', ['type' => SearchType::DOSSIER->value]);
+        return $this->redirectToRoute('app_theme', ['name' => Covid19Theme::URL_NAME]);
     }
 
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
@@ -64,7 +68,7 @@ class WooDecisionController extends AbstractController
 
         $docQuery = $this->documentRepository->getDossierDocumentsQueryBuilder($dossier);
 
-        /** @var PaginationInterface<array-key,Dossier> $publicPagination */
+        /** @var PaginationInterface<array-key,WooDecision> $publicPagination */
         $publicPagination = $this->paginator->paginate(
             DocumentConditions::onlyPubliclyAvailable($docQuery),
             $request->query->getInt('pu', 1),
@@ -72,7 +76,7 @@ class WooDecisionController extends AbstractController
             ['pageParameterName' => 'pu'],
         );
 
-        /** @var PaginationInterface<array-key,Dossier> $alreadyPublicPagination */
+        /** @var PaginationInterface<array-key,WooDecision> $alreadyPublicPagination */
         $alreadyPublicPagination = $this->paginator->paginate(
             DocumentConditions::onlyAlreadyPublic($docQuery),
             $request->query->getInt('pa', 1),
@@ -80,7 +84,7 @@ class WooDecisionController extends AbstractController
             ['pageParameterName' => 'pa'],
         );
 
-        /** @var PaginationInterface<array-key,Dossier> $notPublicPagination */
+        /** @var PaginationInterface<array-key,WooDecision> $notPublicPagination */
         $notPublicPagination = $this->paginator->paginate(
             DocumentConditions::notPubliclyAvailable($docQuery),
             $request->query->getInt('pn', 1),
@@ -88,7 +92,7 @@ class WooDecisionController extends AbstractController
             ['pageParameterName' => 'pn'],
         );
 
-        /** @var PaginationInterface<array-key,Dossier> $notOnlinePagination */
+        /** @var PaginationInterface<array-key,WooDecision> $notOnlinePagination */
         $notOnlinePagination = $this->paginator->paginate(
             DocumentConditions::notOnline($docQuery),
             $request->query->getInt('po', 1),
@@ -109,7 +113,7 @@ class WooDecisionController extends AbstractController
     #[Route('/dossier/{prefix}/{dossierId}/batch', name: 'app_woodecision_batch', methods: ['POST'])]
     public function createBatch(
         Request $request,
-        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
     ): Response {
         $docs = $request->request->all()['doc'] ?? [];
         if (! is_array($docs)) {
@@ -137,7 +141,7 @@ class WooDecisionController extends AbstractController
 
     #[Route('/dossier/{prefix}/{dossierId}/batch/{batchId}', name: 'app_woodecision_batch_detail', methods: ['GET'])]
     public function batch(
-        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -169,7 +173,7 @@ class WooDecisionController extends AbstractController
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
     #[Route('/dossier/{prefix}/{dossierId}/batch/{batchId}/download', name: 'app_woodecision_batch_download', methods: ['GET'])]
     public function batchDownload(
-        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
     ): Response {
         if ($batch->getEntity() !== $dossier) {
@@ -188,50 +192,9 @@ class WooDecisionController extends AbstractController
     }
 
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
-    #[Route('/dossier/{prefix}/{dossierId}/inventarislijst/download', name: 'app_woodecision_inventory_download', methods: ['GET'])]
-    public function downloadInventory(
-        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
-    ): StreamedResponse {
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($dossier->getInventory());
-    }
-
-    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
-    #[Route('/dossier/{prefix}/{dossierId}/besluit/download', name: 'app_woodecision_decision_download', methods: ['GET'])]
-    public function downloadDecision(
-        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
-    ): StreamedResponse {
-        $decisionDocument = $dossier->getDecisionDocument();
-        if (! $decisionDocument) {
-            throw $this->createNotFoundException('Dossier decision not found');
-        }
-
-        return $this->downloadHelper->getResponseForEntityWithFileInfo(
-            $decisionDocument,
-            true,
-            'decision-' . $dossier->getDossierNr() . '.' . $decisionDocument->getFileInfo()->getType()
-        );
-    }
-
-    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
-    #[Route(
-        '/dossier/{prefix}/{dossierId}/bijlage/{attachmentId}/download',
-        name: 'app_woodecision_decisionattachment_download',
-        methods: ['GET'],
-    )]
-    public function decisionAttachmentDownload(
-        #[ValueResolver('dossierWithAccessCheck')] Dossier $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
-        DecisionAttachment $attachment,
-    ): Response {
-        unset($dossier);
-
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($attachment);
-    }
-
-    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
     #[Route(
         '/dossier/{prefix}/{dossierId}/bijlage/{attachmentId}',
-        name: 'app_woodecision_decisionattachment_detail',
+        name: 'app_woodecision_attachment_detail',
         methods: ['GET'],
     )]
     public function decisionAttachmentDetail(
@@ -253,6 +216,44 @@ class WooDecisionController extends AbstractController
             'dossier' => $this->wooDecisionViewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'attachment' => $attachmentView,
+            'file' => $this->dossierFileViewFactory->make(
+                $dossier,
+                $attachment,
+                DossierFileType::ATTACHMENT,
+            ),
+        ]);
+    }
+
+    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
+    #[Route(
+        '/dossier/{prefix}/{dossierId}/document',
+        name: 'app_woodecision_document_detail',
+        methods: ['GET'],
+    )]
+    public function mainDocumentDetail(
+        #[ValueResolver('dossierWithAccessCheck')] WooDecision $wooDecision,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
+        WooDecisionMainDocument $mainDocument,
+        Breadcrumbs $breadcrumbs,
+    ): Response {
+        $mainDocumentViewModel = $this->mainDocumentViewFactory->make($wooDecision, $mainDocument);
+
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
+        $breadcrumbs->addRouteItem('global.decision', 'app_woodecision_detail', [
+            'prefix' => $wooDecision->getDocumentPrefix(),
+            'dossierId' => $wooDecision->getDossierNr(),
+        ]);
+        $breadcrumbs->addItem($mainDocumentViewModel->name ?? '');
+
+        return $this->render('dossier/main-document.html.twig', [
+            'dossier' => $this->wooDecisionViewFactory->make($wooDecision),
+            'attachments' => $this->attachmentViewFactory->makeCollection($wooDecision),
+            'document' => $mainDocumentViewModel,
+            'file' => $this->dossierFileViewFactory->make(
+                $wooDecision,
+                $mainDocument,
+                DossierFileType::MAIN_DOCUMENT,
+            ),
         ]);
     }
 }

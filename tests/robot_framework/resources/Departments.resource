@@ -10,12 +10,12 @@ Click Departments
 
 Change Department Settings
   [Arguments]  ${department}  ${visible}
-  Click  '${department}'
+  Click
+  ...  //table[@data-e2e-name="departments-table"]//tr[td[contains(.,'${department}')]]//td//a[@data-e2e-name="department-details-link"]
   IF  ${visible}
     Check Checkbox  //*[@id="department_public"]
   ELSE
     Uncheck Checkbox  //*[@id="department_public"]
   END
-  Take Screenshot
   Click  //*[@id="department_submit"]
   Get Text  //*[@data-e2e-name="alerts"]  contains  Het bestuursorgaan is aangepast

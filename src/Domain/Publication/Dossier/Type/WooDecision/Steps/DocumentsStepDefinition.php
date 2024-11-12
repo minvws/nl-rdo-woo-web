@@ -26,7 +26,7 @@ readonly class DocumentsStepDefinition extends StepDefinition
 
     private function dossierHasAllExpectedUploads(WooDecision $dossier): bool
     {
-        return $dossier->getRawInventory()?->getFileInfo()->isUploaded()
+        return $dossier->getProductionReport()?->getFileInfo()->isUploaded()
             && $dossier->getUploadStatus()->isComplete();
     }
 }

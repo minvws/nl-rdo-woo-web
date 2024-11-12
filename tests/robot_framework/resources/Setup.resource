@@ -23,10 +23,10 @@ ${TST_BALIE_PASSWORD}   IkLoopNooitVastVandaag
 
 *** Keywords ***
 Suite Setup - CI
-  [Arguments]  ${include_prefixes}=${FALSE}
-  Cleansheet  ${include_prefixes}
+  [Arguments]  ${cleansheet}=${TRUE}  ${include_prefixes}=${FALSE}
+  IF  ${cleansheet}  Cleansheet  ${include_prefixes}
   # If run locally, set the OTP code from the local env vars coz the setup has likely already ran
-  IF  ${RUN_LOCALLY}  Set Global Variable  ${OTP_CODE}  %{SECRET_WOO_LOCAL}
+  IF  ${RUN_LOCALLY}  VAR  ${OTP_CODE}  %{SECRET_WOO_LOCAL}  scope=global
   # On first run of this keyword, create the user.
   IF  '${OTP_CODE}' == '${EMPTY}'
     Create Woo Admin User
@@ -36,31 +36,31 @@ Suite Setup - CI
   Close Symfony Dev Bar
   Setting Global Variables
 
-Suite Setup - Test
-  Open Browser And BaseUrl
-  Setting Global Variables
-
 Cleansheet
   [Documentation]  In some tests we want unique prefixes, which must also be cleaned up afterwards.
   [Arguments]  ${include_prefixes}=${FALSE}
   Run Process  task worker:stop  shell=True
   IF  ${include_prefixes}
-    Run Process  task app:cleansheet -- -p  shell=True
+    Run Process  task app:cleansheet -- -p  shell=True  alias=cleansheet
+    ${result} =  Get Process Result  cleansheet
+    Should Not Contain  ${result.stdout}  exception
   ELSE
-    Run Process  task app:cleansheet  shell=True
+    Run Process  task app:cleansheet  shell=True  alias=cleansheet
+    ${result} =  Get Process Result  cleansheet
+    Should Not Contain  ${result.stdout}  exception
   END
   Run Process  task worker:start  shell=True
 
 Setting Global Variables
   ${current_time} =  Get Time  format=%Y-%m-%d %H:%M:%S
   ${current_date} =  Get Current Date  result_format=%Y-%m-%d
-  ${timestamp} =  Get Utc Timestamp  locale=nl  time_format=dd LLL y H:mm:ss
+  ${timestamp} =  Get Utc Timestamp
   ${current_date_format2} =  Convert Timestamp Format  ${timestamp}  time_format=d MMMM y  locale=nl
   ${current_epoch} =  Get Time  format=epoch
-  Set Global Variable  $CURRENT_TIME  ${current_time}
-  Set Global Variable  $CURRENT_DATE  ${current_date}
-  Set Global Variable  $CURRENT_DATE_FORMAT2  ${current_date_format2}
-  Set Global Variable  $CURRENT_EPOCH  ${current_epoch}
+  VAR  ${current_time}  ${current_time}  scope=global
+  VAR  ${current_date}  ${current_date}  scope=global
+  VAR  ${current_date_format2}  ${current_date_format2}  scope=global
+  VAR  ${current_epoch}  ${current_epoch}  scope=global
 
 Open Browser And BaseUrl
   [Arguments]  ${device}=Desktop Chrome  ${slow_mo}=50ms
@@ -84,8 +84,8 @@ Create Woo Admin User
   ${otp_line} =  Get Line  ${stdout}  3
   ${otp_code} =  Get Substring  ${otp_line}  13
   # Should Not Be Empty  ${otp_code}  No otp code found in: ${stdout}
-  Set Global Variable  ${OTP_CODE}  ${otp_code}
-  Set Global Variable  ${WW}  ${ww}
+  VAR  ${otp_code}  ${otp_code}  scope=global
+  VAR  ${ww}  ${ww}  scope=global
 
 First Time Login With Admin
   Open Browser And BaseUrl
@@ -102,11 +102,3 @@ First Time Login With Admin
 Close Symfony Dev Bar
   ${c} =  Get Element Count  //body/div/div[3]/button
   IF  ${c}>0  Click  //body/div/div[3]/button
-
-Create MINVWS Prefix
-  [Documentation]  When cleansheet -p is ran, the default prefix is also removed. This keyword can bring it back.
-  Click Organisation Selector
-  Click Manage Organisations
-  Click  "VWS"
-  Add A New Organisation Prefix  MINVWS
-  Click Save Prefixes

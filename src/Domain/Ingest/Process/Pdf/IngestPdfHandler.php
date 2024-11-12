@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Ingest\Process\Pdf;
 
-use App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand;
+use App\Domain\Ingest\IngestDispatcher;
 use App\Entity\Document;
 use App\Entity\EntityWithFileInfo;
 use App\Service\Worker\Pdf\Extractor\PagecountExtractor;
@@ -12,7 +12,6 @@ use App\Service\Worker\PdfProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -24,9 +23,9 @@ final readonly class IngestPdfHandler
     public function __construct(
         private EntityManagerInterface $doctrine,
         private PagecountExtractor $extractor,
-        private MessageBusInterface $bus,
         private PdfProcessor $processor,
         private LoggerInterface $logger,
+        private IngestDispatcher $ingestDispatcher,
     ) {
     }
 
@@ -58,13 +57,11 @@ final readonly class IngestPdfHandler
 
         // Go and ingest all pages in the document
         for ($i = 1; $i <= $pageCount; $i++) {
-            $this->bus->dispatch(
-                new IngestPdfPageCommand(
-                    $message->getEntityId(),
-                    $message->getEntityClass(),
-                    $message->getForceRefresh(),
-                    $i,
-                )
+            $this->ingestDispatcher->dispatchIngestPdfPageCommand(
+                $message->getEntityId(),
+                $message->getEntityClass(),
+                $message->getForceRefresh(),
+                $i,
             );
         }
     }

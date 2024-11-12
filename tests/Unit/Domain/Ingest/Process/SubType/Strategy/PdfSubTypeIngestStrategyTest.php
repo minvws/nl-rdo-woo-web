@@ -4,42 +4,34 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Ingest\Process\SubType\Strategy;
 
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Ingest\Process\Pdf\IngestPdfCommand;
 use App\Domain\Ingest\Process\SubType\Strategy\PdfSubTypeIngestStrategy;
-use App\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface;
 use App\Entity\Document;
 use App\Entity\FileInfo;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 final class PdfSubTypeIngestStrategyTest extends UnitTestCase
 {
-    private MessageBusInterface&MockInterface $bus;
+    private IngestDispatcher&MockInterface $ingestDispatcher;
     private LoggerInterface&MockInterface $logger;
+    private PdfSubTypeIngestStrategy $strategy;
 
     protected function setUp(): void
     {
-        $this->bus = \Mockery::mock(MessageBusInterface::class);
+        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
-    }
 
-    public function testItCanBeInitialized(): void
-    {
-        $strategy = new PdfSubTypeIngestStrategy($this->bus, $this->logger);
-
-        $this->assertInstanceOf(PdfSubTypeIngestStrategy::class, $strategy);
-        $this->assertInstanceOf(SubTypeIngestStrategyInterface::class, $strategy);
+        $this->strategy = new PdfSubTypeIngestStrategy($this->ingestDispatcher, $this->logger);
     }
 
     public function testHandle(): void
     {
         $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('getId')->twice()->andReturn($id = \Mockery::mock(Uuid::class));
+        $document->shouldReceive('getId')->andReturn($id = \Mockery::mock(Uuid::class));
         $options = \Mockery::mock(IngestProcessOptions::class);
         $options->shouldReceive('forceRefresh')->andReturn($forceRefresh = true);
 
@@ -48,14 +40,12 @@ final class PdfSubTypeIngestStrategyTest extends UnitTestCase
             'class' => $document::class,
         ]);
 
-        $this->bus->shouldReceive('dispatch')->with(\Mockery::on(function (IngestPdfCommand $message) use ($id, $document, $forceRefresh) {
-            return $message->getEntityId() === $id
-                && $message->getEntityClass() === $document::class
-                && $message->getForceRefresh() === $forceRefresh;
-        }))->andReturn(new Envelope(new \stdClass()));
+        $this->ingestDispatcher->expects('dispatchIngestPdfCommand')->with(
+            $document,
+            $forceRefresh,
+        );
 
-        $handler = new PdfSubTypeIngestStrategy($this->bus, $this->logger);
-        $handler->handle($document, $options);
+        $this->strategy->handle($document, $options);
     }
 
     public function testCanHandleReturnsTrueWhenTheUploadIsAPdfAndPaginatable(): void
@@ -67,8 +57,7 @@ final class PdfSubTypeIngestStrategyTest extends UnitTestCase
         $document = \Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
-        $handler = new PdfSubTypeIngestStrategy($this->bus, $this->logger);
-        $this->assertTrue($handler->canHandle($document));
+        $this->assertTrue($this->strategy->canHandle($document));
     }
 
     public function testCanHandleReturnsFalseWhenTheUploadIsNotAPdf(): void
@@ -79,8 +68,7 @@ final class PdfSubTypeIngestStrategyTest extends UnitTestCase
         $document = \Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
-        $handler = new PdfSubTypeIngestStrategy($this->bus, $this->logger);
-        $this->assertFalse($handler->canHandle($document));
+        $this->assertFalse($this->strategy->canHandle($document));
     }
 
     public function testCanHandleReturnsFalseWhenTheUploadIsAPdfAndNotPaginatable(): void
@@ -92,7 +80,6 @@ final class PdfSubTypeIngestStrategyTest extends UnitTestCase
         $document = \Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
-        $handler = new PdfSubTypeIngestStrategy($this->bus, $this->logger);
-        $this->assertFalse($handler->canHandle($document));
+        $this->assertFalse($this->strategy->canHandle($document));
     }
 }

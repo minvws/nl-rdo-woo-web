@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier\WooDecision;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -24,7 +24,7 @@ class PublishType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var Dossier $dossier */
+        /** @var WooDecision $dossier */
         $dossier = $builder->getData();
 
         if ($dossier->getStatus()->isConceptOrScheduled()) {

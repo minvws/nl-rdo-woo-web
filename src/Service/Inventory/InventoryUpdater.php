@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Service\Inventory;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentUpdateEvent;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Search\SearchDispatcher;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Exception\InventoryUpdaterException;
 use App\Repository\DocumentRepository;
 use App\Service\DossierService;
@@ -32,6 +33,8 @@ readonly class InventoryUpdater
         private DossierService $dossierService,
         private InquiryService $inquiryService,
         private MessageBusInterface $messageBus,
+        private SearchDispatcher $searchDispatcher,
+        private ProductionReportDispatcher $dispatcher,
     ) {
     }
 
@@ -125,7 +128,7 @@ readonly class InventoryUpdater
         $this->applyDeletes($changeset, $dossier);
     }
 
-    private function applyDeletes(InventoryChangeset $changeset, Dossier $dossier): void
+    private function applyDeletes(InventoryChangeset $changeset, WooDecision $dossier): void
     {
         foreach ($changeset->getDeleted() as $documentNr) {
             $document = $this->getDocument($documentNr);
@@ -141,11 +144,11 @@ readonly class InventoryUpdater
         $this->doctrine->flush();
     }
 
-    public function sendMessagesForChangeset(InventoryChangeset $changeset, Dossier $dossier, RunProgress $runProgress): void
+    public function sendMessagesForChangeset(InventoryChangeset $changeset, WooDecision $dossier, RunProgress $runProgress): void
     {
-        $this->dossierService->generateSanitizedInventory($dossier);
+        $this->dispatcher->dispatchGenerateInventoryCommand($dossier->getId());
         $this->dossierService->generateArchives($dossier);
-        $this->dossierService->update($dossier);
+        $this->searchDispatcher->dispatchIndexDossierCommand($dossier->getId());
 
         foreach ($changeset->getAll() as $documentNr => $action) {
             $runProgress->tick();
@@ -184,7 +187,7 @@ readonly class InventoryUpdater
     /**
      * @param array<string, string[]> $docReferralUpdates
      */
-    private function applyDocumentReferralUpdates(Dossier $dossier, array $docReferralUpdates): void
+    private function applyDocumentReferralUpdates(WooDecision $dossier, array $docReferralUpdates): void
     {
         $documentsToUpdate = [];
         foreach ($docReferralUpdates as $documentNr => $refersTo) {

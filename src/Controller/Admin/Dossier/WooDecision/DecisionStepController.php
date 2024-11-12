@@ -8,12 +8,11 @@ use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use App\Enum\ApplicationMode;
 use App\Form\Dossier\WooDecision\DecisionType;
-use App\Service\DossierWizard\DossierWizardHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,9 +25,9 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 class DecisionStepController extends AbstractController
 {
     public function __construct(
-        private readonly DossierWizardHelper $wizardHelper,
         private readonly StepActionHelper $stepHelper,
         private readonly AttachmentViewFactory $attachmentViewFactory,
+        private readonly WooDecisionDispatcher $dispatcher,
     ) {
     }
 
@@ -57,32 +56,16 @@ class DecisionStepController extends AbstractController
         );
 
         $form->handleRequest($request);
-        if ($form->isSubmitted()) {
-            // Always handle the upload if it is available, even if another field might still have some error.
-            /** @var ?UploadedFile $uploadedFile */
-            $uploadedFile = $form->get('decision_document')->getData();
-            if ($uploadedFile instanceof UploadedFile) {
-                $this->wizardHelper->updateDecisionDocument($dossier, $uploadedFile);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->dispatcher->dispatchUpdateDecisionCommand($dossier);
 
-                // Renew the form instance so validation on decisionDocument is updated
-                $form = $this->createForm(
-                    DecisionType::class,
-                    $dossier,
-                    ['validation_groups' => [$stepName->value]],
-                );
-                $form->handleRequest($request);
-            }
-
-            if ($form->isValid()) {
-                $this->wizardHelper->updateDecision($dossier);
-
-                return $this->stepHelper->redirectAfterFormSubmit($wizardStatus, $form);
-            }
+            return $this->stepHelper->redirectAfterFormSubmit($wizardStatus, $form);
         }
 
         return $this->render(
             'admin/dossier/woo-decision/decision/concept.html.twig',
             $this->stepHelper->getParamsBuilder($dossier)
+                ->withMainDocumentParams($dossier)
                 ->withAttachmentsParams($dossier)
                 ->withForm($form)
                 ->withWizardStatus($wizardStatus)
@@ -124,27 +107,10 @@ class DecisionStepController extends AbstractController
             return $this->stepHelper->redirectToDossier($dossier);
         }
 
-        if ($form->isSubmitted()) {
-            // Always handle the upload if it is available, even if another field might still have some error.
-            /** @var ?UploadedFile $uploadedFile */
-            $uploadedFile = $form->get('decision_document')->getData();
-            if ($uploadedFile instanceof UploadedFile) {
-                $this->wizardHelper->updateDecisionDocument($dossier, $uploadedFile);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->dispatcher->dispatchUpdateDecisionCommand($dossier);
 
-                // Renew the form instance so validation on decisionDocument is updated
-                $form = $this->createForm(
-                    DecisionType::class,
-                    $dossier,
-                    ['validation_groups' => [$stepName->value]],
-                );
-                $form->handleRequest($request);
-            }
-
-            if ($form->isValid()) {
-                $this->wizardHelper->updateDecision($dossier);
-
-                return $this->stepHelper->redirectToDossier($dossier);
-            }
+            return $this->stepHelper->redirectToDossier($dossier);
         }
 
         $this->stepHelper->addDossierToBreadcrumbs($breadcrumbs, $dossier, 'admin.dossiers.woo-decision.step.decision');
@@ -152,6 +118,7 @@ class DecisionStepController extends AbstractController
         return $this->render(
             'admin/dossier/woo-decision/decision/edit.html.twig',
             $this->stepHelper->getParamsBuilder($dossier)
+                ->withMainDocumentParams($dossier)
                 ->withAttachmentsParams($dossier)
                 ->withForm($form)
                 ->withWizardStatus($wizardStatus)

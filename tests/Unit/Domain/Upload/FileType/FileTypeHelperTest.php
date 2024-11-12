@@ -53,21 +53,21 @@ final class FileTypeHelperTest extends UnitTestCase
     public function testGetMimeTypesByUploadGroup(): void
     {
         $this->assertMatchesObjectSnapshot(
-            $this->helper->getMimeTypesByUploadGroup(UploadGroupId::DISPOSITION_DOCUMENTS),
+            $this->helper->getMimeTypesByUploadGroup(UploadGroupId::MAIN_DOCUMENTS),
         );
     }
 
     public function testGetExtensionsByUploadGroup(): void
     {
         $this->assertMatchesObjectSnapshot(
-            $this->helper->getExtensionsByUploadGroup(UploadGroupId::DISPOSITION_DOCUMENTS)
+            $this->helper->getExtensionsByUploadGroup(UploadGroupId::MAIN_DOCUMENTS)
         );
     }
 
     public function testGetTypeNamesByUploadGroup(): void
     {
         $this->assertMatchesObjectSnapshot(
-            $this->helper->getTypeNamesByUploadGroup(UploadGroupId::DISPOSITION_DOCUMENTS)
+            $this->helper->getTypeNamesByUploadGroup(UploadGroupId::MAIN_DOCUMENTS)
         );
     }
 }

@@ -6,12 +6,12 @@ namespace App\Domain\Upload\Postprocessor\Strategy;
 
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\Postprocessor\FilePostprocessorStrategyInterface;
 use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Domain\Upload\Process\FileStorer;
 use App\Domain\Upload\UploadedFile;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Repository\DocumentRepository;
 use App\Service\HistoryService;
 use App\Utils;
@@ -30,7 +30,7 @@ final readonly class FilePdfStrategy implements FilePostprocessorStrategyInterfa
     ) {
     }
 
-    public function process(UploadedFile $file, Dossier $dossier): void
+    public function process(UploadedFile $file, WooDecision $dossier): void
     {
         $documentId = $this->documentNumberExtractor->extract($file->getOriginalFilename(), $dossier);
 
@@ -80,7 +80,7 @@ final readonly class FilePdfStrategy implements FilePostprocessorStrategyInterfa
         );
     }
 
-    public function canProcess(UploadedFile $file, Dossier $dossier): bool
+    public function canProcess(UploadedFile $file, WooDecision $dossier): bool
     {
         return $file->getOriginalFileExtension() === 'pdf';
     }

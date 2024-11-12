@@ -4,25 +4,18 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType as DecisionTypeEnum;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Form\Dossier\AbstractDossierStepType;
 use App\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Constraints\File;
 
 class DecisionType extends AbstractDossierStepType
 {
     use DossierFormBuilderTrait;
-
-    protected const DOCUMENT_MIMETYPES = [
-        'application/pdf',
-    ];
 
     public function getDataClass(): string
     {
@@ -56,33 +49,7 @@ class DecisionType extends AbstractDossierStepType
                 'empty_data' => '',
             ]);
 
-        $uploadRequired = false;
-        $uploadConstraints = [
-            new File(
-                [
-                    'mimeTypes' => self::DOCUMENT_MIMETYPES,
-                    'mimeTypesMessage' => 'Gebruik een document van het type PDF',
-                ],
-                groups: [DossierValidationGroup::DECISION->value]
-            ),
-        ];
-
-        // When there is no decision document uploaded yet this field is mandatory
-        if (! $dossier->getDecisionDocument()?->getFileInfo()->isUploaded()) {
-            $uploadRequired = true;
-        }
-
-        $builder
-            ->add('decision_document', FileType::class, [
-                'label' => 'Officiële besluitbrief',
-                'mapped' => false,
-                'required' => $uploadRequired,
-                'constraints' => $uploadConstraints,
-                'attr' => [
-                    'accept' => self::DOCUMENT_MIMETYPES,
-                ],
-                'property_path' => 'decisionDocument',
-            ]);
+        $this->addDocumentField($builder);
 
         $builder
             ->add('decision_date', DateType::class, [

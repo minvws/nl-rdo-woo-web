@@ -379,10 +379,9 @@ class EntityStorageServiceTest extends UnitTestCase
     {
         $fileInfo = \Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('isUploaded')->once()->andReturnTrue();
-        $fileInfo->shouldReceive('getPath')->once()->andReturn('aPath/myFilename.pdf');
 
         $entity = \Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->twice()->andReturn($fileInfo);
+        $entity->shouldReceive('getFileInfo')->once()->andReturn($fileInfo);
         $entity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
 
         $service = $this->getStorageService();
@@ -429,12 +428,7 @@ class EntityStorageServiceTest extends UnitTestCase
 
     public function testRemoveFileForEntity(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getPath')->once()->andReturn('aPath/myFilename.pdf');
-        $fileInfo->shouldReceive('getHash')->andReturnNull();
-
         $entity = \Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->once()->andReturn($fileInfo);
         $entity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
 
         $service = $this->getStorageService();

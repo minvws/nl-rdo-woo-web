@@ -17,6 +17,7 @@ use App\Domain\Publication\Dossier\Validator as DossierValidator;
 use App\Domain\Publication\Subject\Subject;
 use App\Entity\Department;
 use App\Entity\Organisation;
+use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -28,7 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * This is the base class for dossier type entities. It contains only the common properties and relationships.
  */
-#[ORM\Entity(repositoryClass: AbstractDossierRepository::class)]
+#[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[ORM\Table(name: 'dossier')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
@@ -149,7 +150,7 @@ abstract class AbstractDossier
 
     #[ORM\ManyToOne(inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    protected ?Subject $subject;
+    protected ?Subject $subject = null;
 
     public function __construct()
     {
@@ -195,11 +196,12 @@ abstract class AbstractDossier
 
     public function setStatus(DossierStatus $status): self
     {
-        $this->status = $status;
-
-        if ($this->publicationDate === null && $status->isPublished()) {
-            $this->setPublicationDate(new \DateTimeImmutable());
+        // If the status changes to 'published' update the (planned) publicationDate to actual date/time of publication
+        if ($this->status !== $status && $status->isPublished()) {
+            $this->setPublicationDate(CarbonImmutable::now());
         }
+
+        $this->status = $status;
 
         return $this;
     }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Repository\DocumentRepository;
 
@@ -16,12 +16,12 @@ readonly class DocumentComparator
     ) {
     }
 
-    public function needsUpdate(Dossier $dossier, Document $document, DocumentMetadata $metadata): bool
+    public function needsUpdate(WooDecision $dossier, Document $document, DocumentMetadata $metadata): bool
     {
         return $this->getChangeset($dossier, $document, $metadata)->hasChanges();
     }
 
-    public function getChangeset(Dossier $dossier, Document $document, DocumentMetadata $metadata): PropertyChangeset
+    public function getChangeset(WooDecision $dossier, Document $document, DocumentMetadata $metadata): PropertyChangeset
     {
         $changeset = new PropertyChangeset();
 
@@ -31,7 +31,6 @@ readonly class DocumentComparator
         $changeset->compare(MetadataField::FAMILY->value, $document->getFamilyId(), $metadata->getFamilyId());
         $changeset->compare(MetadataField::THREADID->value, $document->getThreadId(), $metadata->getThreadId());
         $changeset->compare(MetadataField::GROUND->value, $document->getGrounds(), $metadata->getGrounds());
-        $changeset->compare('subjects', $document->getSubjects(), $metadata->getSubjects());
         $changeset->compare('period', $document->getPeriod(), $metadata->getPeriod());
         $changeset->compare(MetadataField::SUSPENDED->value, $document->isSuspended(), $metadata->isSuspended());
         $changeset->compare(MetadataField::LINK->value, $document->getLinks(), $metadata->getLinks());
@@ -74,7 +73,7 @@ readonly class DocumentComparator
         return count($currentCaseNrs) !== count($newCaseNrs) || array_diff($currentCaseNrs, $newCaseNrs);
     }
 
-    public function hasRefersToUpdate(Dossier $dossier, Document $document, DocumentMetadata $metadata): bool
+    public function hasRefersToUpdate(WooDecision $dossier, Document $document, DocumentMetadata $metadata): bool
     {
         $currentDocNrs = $document->getRefersTo()->map(
             fn (Document $doc) => $doc->getDocumentNr()

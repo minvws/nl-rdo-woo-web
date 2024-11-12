@@ -1,8 +1,8 @@
 # Definition of Done
 
-This definition of Done is determined by the WOO team of iRealisatie. It is based on the template from iRealisatie quality coordination.
+This definition of Done is determined by the Woo team of iRealisatie. It is based on the template from iRealisatie quality coordination.
 
-From now on we will use the following definition of Done for each story (issue) in the WOO project:
+From now on we will use the following definition of Done for each story (issue) in the Woo project:
 
 - Acceptance criteria are met
 - QA has tested the feature locally

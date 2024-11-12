@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\Rollover\DocumentCounts;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Organisation;
 use App\Service\Inventory\DocumentNumber;
@@ -17,9 +17,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  *
  * @extends ServiceEntityRepository<Document>
  */
@@ -51,7 +53,7 @@ class DocumentRepository extends ServiceEntityRepository
     /**
      * @return Document[]
      */
-    public function findByThreadId(Dossier $dossier, int $threadId): array
+    public function findByThreadId(WooDecision $dossier, int $threadId): array
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds')
@@ -70,7 +72,7 @@ class DocumentRepository extends ServiceEntityRepository
     /**
      * @return Document[]
      */
-    public function findByFamilyId(Dossier $dossier, int $familyId): array
+    public function findByFamilyId(WooDecision $dossier, int $familyId): array
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds')
@@ -112,7 +114,7 @@ class DocumentRepository extends ServiceEntityRepository
         );
     }
 
-    public function getRelatedDocumentsByThread(Dossier $dossier, Document $document): ArrayCollection|QueryBuilder
+    public function getRelatedDocumentsByThread(WooDecision $dossier, Document $document): ArrayCollection|QueryBuilder
     {
         $threadId = $document->getThreadId();
         if ($threadId < 1) {
@@ -134,7 +136,7 @@ class DocumentRepository extends ServiceEntityRepository
         ;
     }
 
-    public function getRelatedDocumentsByFamily(Dossier $dossier, Document $document): ArrayCollection|QueryBuilder
+    public function getRelatedDocumentsByFamily(WooDecision $dossier, Document $document): ArrayCollection|QueryBuilder
     {
         $familyId = $document->getFamilyId();
         if ($familyId < 1) {
@@ -159,9 +161,14 @@ class DocumentRepository extends ServiceEntityRepository
     /**
      * @return Document[]
      */
-    public function findBySearchTerm(string $searchTerm, int $limit, Organisation $organisation): array
-    {
-        $qb = $this->createQueryBuilder('d')
+    public function findBySearchTerm(
+        string $searchTerm,
+        int $limit,
+        Organisation $organisation,
+        ?Uuid $dossierId = null,
+    ): array {
+        $qb = $this
+            ->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds')
             ->leftJoin('d.inquiries', 'i')
             ->where('ILIKE(d.fileInfo.name, :searchTerm) = true')
@@ -171,19 +178,40 @@ class DocumentRepository extends ServiceEntityRepository
             ->orderBy('d.updatedAt', 'DESC')
             ->setMaxResults($limit)
             ->setParameter('searchTerm', '%' . $searchTerm . '%')
-            ->setParameter('organisation', $organisation)
-        ;
+            ->setParameter('organisation', $organisation);
+
+        if ($dossierId !== null) {
+            $qb = $qb
+                ->andWhere('ds.id = :dossierId')
+                ->setParameter('dossierId', $dossierId);
+        }
 
         return $qb->getQuery()->getResult();
     }
 
-    public function findOneByDossierAndDocumentId(Dossier $dossier, string $documentId): ?Document
+    public function findOneByDossierAndDocumentId(WooDecision $dossier, string $documentId): ?Document
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds')
             ->where('d.documentId = :documentId')
             ->andWhere('ds.id = :dossierId')
             ->setParameter('documentId', $documentId)
+            ->setParameter('dossierId', $dossier->getId())
+        ;
+
+        /** @var ?Document $document */
+        $document = $qb->getQuery()->getOneOrNullResult();
+
+        return $document;
+    }
+
+    public function findOneByDossierAndId(WooDecision $dossier, Uuid $id): ?Document
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->innerJoin('d.dossiers', 'ds')
+            ->where('d.id = :id')
+            ->andWhere('ds.id = :dossierId')
+            ->setParameter('id', $id)
             ->setParameter('dossierId', $dossier->getId())
         ;
 
@@ -211,7 +239,7 @@ class DocumentRepository extends ServiceEntityRepository
         return $document;
     }
 
-    public function getDossierDocumentsQueryBuilder(Dossier $dossier): QueryBuilder
+    public function getDossierDocumentsQueryBuilder(WooDecision $dossier): QueryBuilder
     {
         return $this->createQueryBuilder('doc')
             ->innerJoin('doc.dossiers', 'dos')
@@ -223,7 +251,7 @@ class DocumentRepository extends ServiceEntityRepository
     /**
      * @return Document[]
      */
-    public function findForDossierBySearchTerm(Dossier $dossier, string $searchTerm, int $limit): array
+    public function findForDossierBySearchTerm(WooDecision $dossier, string $searchTerm, int $limit): array
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds', Join::WITH, 'ds.id = :dossierId')
@@ -241,7 +269,7 @@ class DocumentRepository extends ServiceEntityRepository
     /**
      * @return Document[]
      */
-    public function getAllDossierDocumentsWithDossiers(Dossier $dossier): array
+    public function getAllDossierDocumentsWithDossiers(WooDecision $dossier): array
     {
         $qb = $this->getDossierDocumentsQueryBuilder($dossier)
             ->select('doc', 'dos');
@@ -268,7 +296,7 @@ class DocumentRepository extends ServiceEntityRepository
     /**
      * @return string[]
      */
-    public function getAllDocumentNumbersForDossier(Dossier $dossier): array
+    public function getAllDocumentNumbersForDossier(WooDecision $dossier): array
     {
         /** @var string[] $docNumbers */
         $docNumbers = $this->getDossierDocumentsQueryBuilder($dossier)

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Result\SubType\Attachment;
 
-use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
+use App\Domain\Publication\Attachment\AttachmentRepository;
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\Type\DossierReference;
 use App\Domain\Search\Index\ElasticDocumentType;
@@ -19,7 +19,7 @@ readonly class AttachmentSearchResultMapper implements SearchResultMapperInterfa
     use HighlightMapperTrait;
 
     public function __construct(
-        private AbstractAttachmentRepository $attachmentRepository,
+        private AttachmentRepository $attachmentRepository,
         private AttachmentViewFactory $viewFactory,
     ) {
     }

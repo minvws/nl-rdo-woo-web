@@ -81,7 +81,7 @@ Display facet with hyperlinks
     when displaying date range pills.
 #}
 {% macro facet_pill(title, key, value) %}
-    <li class="mb-2" data-e2e-name="face-pill">
+    <li class="mb-2" data-e2e-name="facet-pill">
         <a
             class="bg-woo-anti-flash-white text-woo-davys-grey leading-none text-sm py-1.5 px-3 rounded-2xl js-active-filter-pill group"
             data-key="{{ key }}"
@@ -190,7 +190,7 @@ Display facet with hyperlinks
         <label class="grow cursor-pointer" for="input_{{ entry.key|url_encode }}">
             <span class="flex">
                 <span class="grow mr-2 text-base leading-tight">{{ entry.displayValue }}</span>
-                <span class="woo-muted text-sm">({{ entry.count }})</span>
+                <span class="woo-muted text-sm" data-e2e-name="{{ entry.key|url_encode }}_count">({{ entry.count }})</span>
             </span>
         </label>
     </div>

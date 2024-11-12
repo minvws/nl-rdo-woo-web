@@ -54,6 +54,7 @@
                                                 "terms": {
                                                     "type": [
                                                         "document",
+                                                        "woo_decision_main_document",
                                                         "covenant_main_document",
                                                         "annual_report_main_document",
                                                         "investigation_report_main_document",
@@ -95,6 +96,7 @@
                                                             "terms": {
                                                                 "type": [
                                                                     "document",
+                                                                    "woo_decision_main_document",
                                                                     "covenant_main_document",
                                                                     "annual_report_main_document",
                                                                     "investigation_report_main_document",

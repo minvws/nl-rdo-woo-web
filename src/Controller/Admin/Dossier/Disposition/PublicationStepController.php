@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\Disposition;
 
-use App\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
+use App\Domain\Publication\Dossier\DossierDispatcher;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
@@ -13,7 +13,6 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
@@ -24,7 +23,7 @@ class PublicationStepController extends AbstractController
 
     public function __construct(
         private readonly StepActionHelper $stepHelper,
-        private readonly MessageBusInterface $messageBus,
+        private readonly DossierDispatcher $dossierDispatcher,
     ) {
     }
 
@@ -46,9 +45,7 @@ class PublicationStepController extends AbstractController
         $form = $this->createForm(PublishType::class, $dossier);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->messageBus->dispatch(
-                new UpdateDossierPublicationCommand($dossier),
-            );
+            $this->dossierDispatcher->dispatchUpdateDossierPublicationCommand($dossier);
 
             return $this->stepHelper->redirectToPublicationConfirmation($dossier);
         }
@@ -79,9 +76,7 @@ class PublicationStepController extends AbstractController
         $form = $this->createForm(PublishType::class, $dossier);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->messageBus->dispatch(
-                new UpdateDossierPublicationCommand($dossier),
-            );
+            $this->dossierDispatcher->dispatchUpdateDossierPublicationCommand($dossier);
 
             return $this->stepHelper->redirectToPublicationConfirmation($dossier);
         }

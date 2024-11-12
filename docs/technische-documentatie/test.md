@@ -17,7 +17,7 @@ We have written all use cases in [test-use-cases.md](test-use-cases.md).
 
 ## Robot Framework
 
-Robot framework is used for the WOO Project to execute E2E tests and mainly uses the [Browser Library](https://robotframework-browser.org) and several other [libraries](../tests/robot_framework/Libraries.resource) for specific situations.
+Robot framework is used for the Woo Project to execute E2E tests and mainly uses the [Browser Library](https://robotframework-browser.org) and several other [libraries](../tests/robot_framework/Libraries.resource) for specific situations.
 
 Additional resources:
 

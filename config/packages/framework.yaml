@@ -23,7 +23,11 @@ framework:
     #fragments: true
     php_errors:
         log: true
-
+    exceptions:
+        App\Domain\Publication\PageProvider\PageProviderException:
+            status_code: 404
+        App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException:
+            status_code: 404
     assets:
         version_strategy: 'Pentatrion\ViteBundle\Asset\ViteAssetVersionStrategy'
 

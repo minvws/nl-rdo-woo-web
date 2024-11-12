@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Domain\Publication\History;
 use App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
 use App\Domain\Publication\Attachment\Event\AttachmentDeletedEvent;
 use App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
@@ -21,13 +21,13 @@ use Symfony\Component\Uid\Uuid;
 final class AttachmentHistoryHandlerTest extends UnitTestCase
 {
     private HistoryService&MockInterface $historyService;
-    private AbstractDossierRepository&MockInterface $repository;
+    private DossierRepository&MockInterface $repository;
     private AttachmentHistoryHandler $handler;
 
     public function setUp(): void
     {
         $this->historyService = \Mockery::mock(HistoryService::class);
-        $this->repository = \Mockery::mock(AbstractDossierRepository::class);
+        $this->repository = \Mockery::mock(DossierRepository::class);
 
         $this->handler = new AttachmentHistoryHandler(
             $this->historyService,

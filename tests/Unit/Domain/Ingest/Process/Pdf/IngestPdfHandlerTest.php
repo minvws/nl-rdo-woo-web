@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Ingest\Process\Pdf;
 
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Ingest\Process\Pdf\IngestPdfCommand;
 use App\Domain\Ingest\Process\Pdf\IngestPdfHandler;
-use App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand;
 use App\Entity\Document;
 use App\Entity\EntityWithFileInfo;
 use App\Entity\FileInfo;
@@ -16,21 +16,19 @@ use App\Service\Worker\PdfProcessor;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Mockery\Matcher\Closure as ClosureMatcher;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 final class IngestPdfHandlerTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $doctrine;
     private PagecountExtractor&MockInterface $extractor;
-    private MessageBusInterface&MockInterface $bus;
+    private IngestDispatcher&MockInterface $ingestDispatcher;
     private PdfProcessor&MockInterface $processor;
     private LoggerInterface&MockInterface $logger;
     private EntityRepository&MockInterface $repository;
+    private IngestPdfHandler $handler;
 
     protected function setUp(): void
     {
@@ -38,10 +36,18 @@ final class IngestPdfHandlerTest extends UnitTestCase
 
         $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
         $this->extractor = \Mockery::mock(PagecountExtractor::class);
-        $this->bus = \Mockery::mock(MessageBusInterface::class);
+        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
         $this->processor = \Mockery::mock(PdfProcessor::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->repository = \Mockery::mock(EntityRepository::class);
+
+        $this->handler = new IngestPdfHandler(
+            $this->doctrine,
+            $this->extractor,
+            $this->processor,
+            $this->logger,
+            $this->ingestDispatcher,
+        );
     }
 
     public function testInvokeWithoutForce(): void
@@ -77,17 +83,10 @@ final class IngestPdfHandlerTest extends UnitTestCase
 
         $this->processor->shouldReceive('processEntity')->once()->with($entity, $forceRefresh);
 
-        $this->bus->shouldReceive('dispatch')
-            ->once()
-            ->with($this->ingestPdfPageMessageMatcher($id, $entityClass, $forceRefresh, pageNr: 1))
-            ->andReturn(new Envelope(new \stdClass()));
-        $this->bus->shouldReceive('dispatch')
-            ->once()
-            ->with($this->ingestPdfPageMessageMatcher($id, $entityClass, $forceRefresh, pageNr: 2))
-            ->andReturn(new Envelope(new \stdClass()));
+        $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, $forceRefresh, 1);
+        $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, $forceRefresh, 2);
 
-        $handler = new IngestPdfHandler($this->doctrine, $this->extractor, $this->bus, $this->processor, $this->logger);
-        $handler->__invoke($message);
+        $this->handler->__invoke($message);
     }
 
     public function testInvokeWithForce(): void
@@ -124,17 +123,10 @@ final class IngestPdfHandlerTest extends UnitTestCase
 
         $this->processor->shouldReceive('processEntity')->once()->with($entity, $forceRefresh);
 
-        $this->bus->shouldReceive('dispatch')
-            ->once()
-            ->with($this->ingestPdfPageMessageMatcher($id, $entityClass, $forceRefresh, pageNr: 1))
-            ->andReturn(new Envelope(new \stdClass()));
-        $this->bus->shouldReceive('dispatch')
-            ->once()
-            ->with($this->ingestPdfPageMessageMatcher($id, $entityClass, $forceRefresh, pageNr: 2))
-            ->andReturn(new Envelope(new \stdClass()));
+        $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, $forceRefresh, 1);
+        $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, $forceRefresh, 2);
 
-        $handler = new IngestPdfHandler($this->doctrine, $this->extractor, $this->bus, $this->processor, $this->logger);
-        $handler->__invoke($message);
+        $this->handler->__invoke($message);
     }
 
     public function testInvokeWhenEntityCannotBeFound(): void
@@ -162,19 +154,7 @@ final class IngestPdfHandlerTest extends UnitTestCase
         $this->extractor->shouldNotReceive('getOutPut');
         $entity->shouldNotReceive('setPageCount');
         $this->processor->shouldNotReceive('processEntity');
-        $this->bus->shouldNotReceive('dispatch');
 
-        $handler = new IngestPdfHandler($this->doctrine, $this->extractor, $this->bus, $this->processor, $this->logger);
-        $handler->__invoke($message);
-    }
-
-    private function ingestPdfPageMessageMatcher(Uuid $id, string $entityClass, bool $forceRefresh, int $pageNr): ClosureMatcher
-    {
-        return \Mockery::on(function (IngestPdfPageCommand $message) use ($id, $entityClass, $forceRefresh, $pageNr) {
-            return $message->getEntityId() === $id
-                && $message->getEntityClass() === $entityClass
-                && $message->getForceRefresh() === $forceRefresh
-                && $message->getPageNr() === $pageNr;
-        });
+        $this->handler->__invoke($message);
     }
 }

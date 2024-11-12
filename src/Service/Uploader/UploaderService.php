@@ -29,7 +29,7 @@ readonly class UploaderService
     ) {
     }
 
-    public function registerUpload(PostUploadEvent $event, UploadGroupId $uploaderGroupId = UploadGroupId::DEFAULT): void
+    public function registerUpload(PostUploadEvent $event, UploadGroupId $uploaderGroupId): void
     {
         $session = $this->requestStack->getSession();
 
@@ -44,7 +44,7 @@ readonly class UploaderService
     /**
      * @return array<File>
      */
-    public function confirmUpload(string $uploadUuid, UploadGroupId $uploadGroupId = UploadGroupId::DEFAULT): array
+    public function confirmUpload(string $uploadUuid, UploadGroupId $uploadGroupId): array
     {
         $session = $this->requestStack->getSession();
 
@@ -69,7 +69,7 @@ readonly class UploaderService
         return $this->orphanageStorage->uploadFiles(iterator_to_array($finder));
     }
 
-    public function confirmSingleUpload(string $uploadUuid, UploadGroupId $uploadGroupId = UploadGroupId::DEFAULT): File
+    public function confirmSingleUpload(string $uploadUuid, UploadGroupId $uploadGroupId): File
     {
         $files = $this->confirmUpload($uploadUuid, $uploadGroupId);
         $numberOfFiles = count($files);

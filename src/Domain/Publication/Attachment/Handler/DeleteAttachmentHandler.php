@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Attachment\Handler;
 
-use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
 use App\Domain\Publication\Attachment\AttachmentDeleteStrategyInterface;
+use App\Domain\Publication\Attachment\AttachmentRepository;
 use App\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
 use App\Domain\Publication\Attachment\EntityWithAttachments;
 use App\Domain\Publication\Attachment\Event\AttachmentDeletedEvent;
 use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -32,8 +32,8 @@ readonly class DeleteAttachmentHandler
     public function __construct(
         private MessageBusInterface $messageBus,
         private DossierWorkflowManager $dossierWorkflowManager,
-        private AbstractAttachmentRepository $attachmentRepository,
-        private AbstractDossierRepository $dossierRepository,
+        private AttachmentRepository $attachmentRepository,
+        private DossierRepository $dossierRepository,
         iterable $deleteStrategies,
     ) {
         $this->deleteStrategies = $deleteStrategies;

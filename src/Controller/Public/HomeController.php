@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Public;
 
-use App\Domain\Publication\Dossier\ViewModel\DossierViewFactory;
 use App\Domain\Search\Query\SearchParametersFactory;
 use App\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,7 +18,6 @@ class HomeController extends AbstractController
 {
     public function __construct(
         private readonly SearchService $searchService,
-        private readonly DossierViewFactory $dossierViewFactory,
         private readonly SearchParametersFactory $searchParametersFactory,
     ) {
     }
@@ -50,7 +48,6 @@ class HomeController extends AbstractController
         $facetResult = $this->searchService->searchFacets($searchParameters);
 
         return $this->render('home/index.html.twig', [
-            'recents' => $this->dossierViewFactory->getRecentDossiers(5),
             'facets' => $facetResult,
         ]);
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
-use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
+use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentWithDrawnEvent;
 use App\Domain\Publication\Dossier\Type\WooDecision\Handler\WithDrawDocumentHandler;
@@ -32,6 +32,7 @@ class WithDrawDocumentHandlerTest extends MockeryTestCase
     private ThumbnailStorageService&MockInterface $thumbnailStorageService;
     private MessageBusInterface&MockInterface $messageBus;
     private DossierWorkflowManager&MockInterface $dossierWorkflowManager;
+    private IngestDispatcher&MockInterface $ingestDispatcher;
     private WithDrawDocumentHandler $handler;
 
     public function setUp(): void
@@ -41,6 +42,7 @@ class WithDrawDocumentHandlerTest extends MockeryTestCase
         $this->thumbnailStorageService = \Mockery::mock(ThumbnailStorageService::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
+        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
 
         $this->handler = new WithDrawDocumentHandler(
             $this->documentRepository,
@@ -48,6 +50,7 @@ class WithDrawDocumentHandlerTest extends MockeryTestCase
             $this->thumbnailStorageService,
             $this->messageBus,
             $this->dossierWorkflowManager,
+            $this->ingestDispatcher,
         );
 
         parent::setUp();
@@ -77,11 +80,7 @@ class WithDrawDocumentHandlerTest extends MockeryTestCase
         $document->shouldReceive('shouldBeUploaded')->andReturnTrue();
         $document->shouldReceive('isWithdrawn')->andReturnFalse();
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            static function (IngestMetadataOnlyCommand $message) use ($uuid) {
-                return $message->getEntityId() === $uuid;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
+        $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommandForEntity')->with($document, true);
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             static function (UpdateDossierArchivesMessage $message) use ($dossierUuid) {

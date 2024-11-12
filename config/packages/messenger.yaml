@@ -49,27 +49,26 @@ framework:
         routing:
             App\Message\InitiateElasticRolloverMessage: high
             App\Message\SetElasticAliasMessage: high
-            App\Message\InventoryProcessRunMessage: high
-            App\Message\GenerateSanitizedInventoryMessage: high
-            App\Message\ProcessDocumentMessage: high                   # Processes doc uploads (not the actual ingest). Higher prio for user feedback.
-            App\Message\UpdateInquiryLinksMessage: high
-            App\Message\ReplaceDocumentMessage: high
-            App\Message\RemoveInventoryAndDocumentsMessage: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ProductionReportProcessRunCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\GenerateInventoryCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ProcessDocumentCommand: high                   # Processes doc uploads (not the actual ingest). Higher prio for user feedback.
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\UpdateInquiryLinksCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ReplaceDocumentCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveInventoryAndDocumentsCommand: high
+            App\Domain\Publication\Dossier\Command\DeleteDossierCommand: high
 
-            App\Message\IngestDossiersMessage: ingestor                # Ingests all dossiers
-            App\Domain\Ingest\Process\Dossier\IngestDossierCommand: ingestor   # Ingests a single dossier
+            App\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand: ingestor
+            App\Domain\Ingest\Process\Dossier\IngestDossierCommand: ingestor
             App\Domain\Ingest\Process\Pdf\IngestPdfCommand: ingestor           # Ingests a complete PDF document and fires a message for each page
             App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand: ingestor
             App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand: ingestor   # Ingests a single PDF page from a PDF document
-            App\Message\IngestDecisionMessage: ingestor
             App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand: ingestor
-            App\Message\GenerateInquiryInventoryMessage: ingestor
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\GenerateInquiryInventoryCommand: ingestor
             App\Message\GenerateInquiryArchivesMessage: ingestor
 
             App\Domain\Search\Index\Dossier\IndexDossierCommand: esupdater     # Updates the dossier in the elastic index
             App\Message\UpdateDepartmentMessage: esupdater             # Updates the dossier in the elastic index
-            App\Domain\Publication\Dossier\Command\DeleteDossierCommand: esupdater
-            App\Message\RemoveDocumentMessage: esupdater
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveDocumentCommand: esupdater
             App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent: esupdater
             App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent: esupdater
             App\Domain\Publication\Attachment\Event\AttachmentDeletedEvent: esupdater

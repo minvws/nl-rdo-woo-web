@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use App\Entity\BatchDownload;
+use App\Entity\Document;
 use App\Entity\EntityWithFileInfo;
 use App\Service\Storage\EntityStorageService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Mime\MimeTypes;
+use Webmozart\Assert\Assert;
 
 class DownloadResponseHelper
 {
@@ -18,11 +22,8 @@ class DownloadResponseHelper
     ) {
     }
 
-    public function getResponseForEntityWithFileInfo(
-        ?EntityWithFileInfo $entity,
-        bool $asAttachment = true,
-        ?string $filename = null,
-    ): StreamedResponse {
+    public function getResponseForEntityWithFileInfo(?EntityWithFileInfo $entity, DossierFileType $type): StreamedResponse
+    {
         if (! $entity || ! $entity->getFileInfo()->isUploaded()) {
             throw new NotFoundHttpException('File is not available for download');
         }
@@ -36,11 +37,7 @@ class DownloadResponseHelper
         $response->headers->set('Content-Type', $entity->getFileInfo()->getMimetype());
         $response->headers->set('Content-Length', (string) $entity->getFileInfo()->getSize());
         $response->headers->set('Last-Modified', $entity->getUpdatedAt()->format('D, d M Y H:i:s') . ' GMT');
-
-        if ($asAttachment) {
-            $filename = $filename ?? $entity->getFileInfo()->getName();
-            $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
-        }
+        $response->headers->set('Content-Disposition', sprintf('attachment; filename="%s"', $this->getFileName($entity, $type)));
 
         $response->setCallback(function () use ($stream) {
             fpassthru($stream);
@@ -65,5 +62,26 @@ class DownloadResponseHelper
         });
 
         return $response;
+    }
+
+    private function getFileName(EntityWithFileInfo $entity, DossierFileType $type): string
+    {
+        if ($type === DossierFileType::DOCUMENT) {
+            /** @var Document $entity */
+            Assert::isInstanceOf($entity, Document::class);
+
+            $mimeType = $entity->getFileInfo()->getMimetype();
+            Assert::string($mimeType);
+
+            $ext = MimeTypes::getDefault()->getExtensions($mimeType)[0] ?? null;
+            Assert::string($ext);
+
+            return sprintf('%s.%s', $entity->getDocumentNr(), $ext);
+        }
+
+        $filename = $entity->getFileInfo()->getName();
+        Assert::string($filename);
+
+        return $filename;
     }
 }

@@ -6,14 +6,18 @@ namespace App\Api\Admin\Publication\Search;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use App\Api\ContextGetter;
 use App\Domain\Publication\Dossier\Admin\DossierSearchService;
-use Symfony\Component\HttpFoundation\Request;
+use App\Domain\Publication\Dossier\Type\DossierType;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @implements ProviderInterface<SearchResultDto>
  */
 class SearchProvider implements ProviderInterface
 {
+    use ContextGetter;
+
     public function __construct(
         private DossierSearchService $dossierSearchService,
         private SearchResultDtoFactory $searchResultDtoFactory,
@@ -25,34 +29,46 @@ class SearchProvider implements ProviderInterface
         unset($operation);
         unset($uriVariables);
 
-        $searchTerm = $this->getSearchTerm($context);
-        if ($searchTerm === null) {
-            return null;
+        $attributes = $this
+            ->getRequest($context)
+            ->attributes;
+
+        $searchTerm = $attributes->getString('search_query');
+
+        /** @var ?DossierType $dossierType */
+        $dossierType = $attributes->get('type_query');
+
+        /** @var ?Uuid $dossierId */
+        $dossierId = $attributes->get('dossier_id_query');
+
+        $entities = [
+            ...$this->dossierSearchService->searchDossiers(
+                $searchTerm,
+                dossierId: $dossierId,
+                dossierType: $dossierType,
+            ),
+            ...$this->dossierSearchService->searchMainDocuments(
+                $searchTerm,
+                dossierId: $dossierId,
+                dossierType: $dossierType
+            ),
+            ...$this->dossierSearchService->searchAttachments(
+                $searchTerm,
+                dossierId: $dossierId,
+                dossierType: $dossierType
+            ),
+        ];
+
+        if ($dossierType === null || $dossierType->isWooDecision()) {
+            $entities = [
+                ...$entities,
+                ...$this->dossierSearchService->searchDocuments(
+                    $searchTerm,
+                    dossierId: $dossierId,
+                ),
+            ];
         }
 
-        return $this->searchResultDtoFactory->makeCollection([
-            ...$this->dossierSearchService->searchDossiers($searchTerm),
-            ...$this->dossierSearchService->searchDocuments($searchTerm),
-            ...$this->dossierSearchService->searchMainDocuments($searchTerm),
-            ...$this->dossierSearchService->searchAttachments($searchTerm),
-        ]);
-    }
-
-    /**
-     * @param array<string,mixed> $context
-     */
-    private function getSearchTerm(array $context): ?string
-    {
-        /** @var ?Request $request */
-        $request = $context['request'] ?? null;
-        if ($request === null) {
-            return null;
-        }
-
-        $searchTerm = trim($request->query->getString('q'));
-
-        return $searchTerm === ''
-            ? null
-            : $searchTerm;
+        return $this->searchResultDtoFactory->makeCollection($entities);
     }
 }

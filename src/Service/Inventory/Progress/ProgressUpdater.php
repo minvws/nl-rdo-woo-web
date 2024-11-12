@@ -21,7 +21,7 @@ class ProgressUpdater
         $queryBuilder = $this->entityManager->getConnection()->createQueryBuilder();
 
         $queryBuilder
-            ->update('inventory_process_run')
+            ->update('production_report_process_run')
             ->set('progress', strval($progress->getPercentage()))
             ->where('id = :runId')
             ->setParameter('runId', $progress->getRun()->getId()->toRfc4122())

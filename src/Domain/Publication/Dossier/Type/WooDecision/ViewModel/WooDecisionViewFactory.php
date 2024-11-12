@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
+use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierPropertiesViewFactory;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision as WooDecisionEntity;
 use App\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
-use App\Domain\Publication\Dossier\ViewModel\PublicationItemViewFactory;
+use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use App\Repository\WooDecisionRepository;
 use Webmozart\Assert\Assert;
 
@@ -15,23 +16,18 @@ final readonly class WooDecisionViewFactory
     public function __construct(
         private WooDecisionRepository $wooDecisionRepository,
         private DepartmentViewFactory $departmentViewFactory,
-        private PublicationItemViewFactory $publicationItemViewFactory,
+        private CommonDossierPropertiesViewFactory $commonDossierViewFactory,
+        private MainDocumentViewFactory $mainDocumentViewFactory,
     ) {
     }
 
     public function make(WooDecisionEntity $dossier): WooDecision
     {
-        $title = $dossier->getTitle();
-        Assert::notNull($title);
-
-        $publicationDate = $dossier->getPublicationDate();
-        Assert::notNull($publicationDate);
-
         $decisionDate = $dossier->getDecisionDate();
         Assert::notNull($decisionDate);
 
-        $decisionDocument = $dossier->getDecisionDocument();
-        Assert::notNull($decisionDocument);
+        $mainDocument = $dossier->getMainDocument();
+        Assert::notNull($mainDocument);
 
         $decision = $dossier->getDecision();
         Assert::notNull($decision);
@@ -40,31 +36,18 @@ final readonly class WooDecisionViewFactory
         Assert::notNull($publicationReason);
 
         $departments = $this->departmentViewFactory->makeCollection($dossier->getDepartments());
-        $mainDepartment = $departments->first();
-        Assert::notFalse($mainDepartment);
 
         return new WooDecision(
+            commonDossier: $this->commonDossierViewFactory->make($dossier),
             counts: $this->wooDecisionRepository->getDossierCounts($dossier),
-            dossierId: $dossier->getId()->toRfc4122(),
-            dossierNr: $dossier->getDossierNr(),
-            documentPrefix: $dossier->getDocumentPrefix(),
-            isPreview: $dossier->getStatus()->isPreview(),
-            title: $title,
-            pageTitle: $dossier->getStatus()->isPreview()
-                ? sprintf('%s %s', $title, '(preview)')
-                : $title,
-            publicationDate: $publicationDate,
-            mainDepartment: $mainDepartment,
             departments: $departments,
-            summary: $dossier->getSummary(),
             needsInventoryAndDocuments: $dossier->needsInventoryAndDocuments(),
             decision: $decision,
             decisionDate: $decisionDate,
-            decisionDocument: $this->publicationItemViewFactory->make($decisionDocument),
+            mainDocument: $this->mainDocumentViewFactory->make($dossier, $mainDocument),
             dateFrom: $dossier->getDateFrom(),
             dateTo: $dossier->getDateTo(),
             publicationReason: $publicationReason,
-            subject: $dossier->getSubject()?->getName(),
         );
     }
 }

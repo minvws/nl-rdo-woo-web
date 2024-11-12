@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Controller\Public\Dossier\InvestigationReport;
 
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
+use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportDocument;
+use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\ViewModel\InvestigationReportViewFactory;
+use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Service\DownloadResponseHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +26,7 @@ class InvestigationReportController extends AbstractController
         private readonly InvestigationReportViewFactory $viewFactory,
         private readonly AttachmentViewFactory $attachmentViewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
-        private readonly DownloadResponseHelper $downloadHelper,
+        private readonly DossierFileViewFactory $dossierFileViewFactory,
     ) {
     }
 
@@ -34,7 +35,7 @@ class InvestigationReportController extends AbstractController
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $investigationReport,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        InvestigationReportDocument $document,
+        InvestigationReportMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
@@ -56,7 +57,7 @@ class InvestigationReportController extends AbstractController
     public function documentDetail(
         #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $dossier,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        InvestigationReportDocument $document,
+        InvestigationReportMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
@@ -70,23 +71,12 @@ class InvestigationReportController extends AbstractController
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'document' => $this->mainDocumentViewFactory->make($dossier, $document),
+            'file' => $this->dossierFileViewFactory->make(
+                $dossier,
+                $document,
+                DossierFileType::MAIN_DOCUMENT,
+            ),
         ]);
-    }
-
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
-    #[Route(
-        '/onderzoeksrapport/{prefix}/{dossierId}/document/download',
-        name: 'app_investigationreport_document_download',
-        methods: ['GET'],
-    )]
-    public function documentDownload(
-        #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        InvestigationReportDocument $document,
-    ): Response {
-        unset($dossier);
-
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($document);
     }
 
     #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
@@ -99,8 +89,6 @@ class InvestigationReportController extends AbstractController
         #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $dossier,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
         InvestigationReportAttachment $attachment,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        InvestigationReportDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $attachmentViewModel = $this->attachmentViewFactory->make($dossier, $attachment);
@@ -116,23 +104,11 @@ class InvestigationReportController extends AbstractController
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'attachment' => $attachmentViewModel,
-            'document' => $this->mainDocumentViewFactory->make($dossier, $document),
+            'file' => $this->dossierFileViewFactory->make(
+                $dossier,
+                $attachment,
+                DossierFileType::ATTACHMENT,
+            ),
         ]);
-    }
-
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
-    #[Route(
-        '/onderzoeksrapport/{prefix}/{dossierId}/bijlage/{attachmentId}/download',
-        name: 'app_investigationreport_attachment_download',
-        methods: ['GET'],
-    )]
-    public function attachmentDownload(
-        #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
-        InvestigationReportAttachment $attachment,
-    ): Response {
-        unset($dossier);
-
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($attachment);
     }
 }

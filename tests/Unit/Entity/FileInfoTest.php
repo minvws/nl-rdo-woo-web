@@ -69,10 +69,21 @@ final class FileInfoTest extends UnitTestCase
     public function testGetAndSetSourceType(): void
     {
         $fileInfo = new FileInfo();
-
         self::assertNull($fileInfo->getSourceType());
 
         $fileInfo->setSourceType(SourceType::PDF);
         self::assertEquals(SourceType::PDF, $fileInfo->getSourceType());
+    }
+
+    public function testHasPages(): void
+    {
+        $fileInfo = new FileInfo();
+        self::assertFalse($fileInfo->hasPages());
+
+        $fileInfo->setPageCount(10);
+        self::assertTrue($fileInfo->hasPages());
+
+        $fileInfo->setPageCount(0);
+        self::assertFalse($fileInfo->hasPages());
     }
 }

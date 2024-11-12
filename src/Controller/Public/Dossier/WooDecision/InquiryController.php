@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Controller\Public\Dossier\WooDecision;
 
 use App\Doctrine\DocumentConditions;
+use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use App\Entity\BatchDownload;
 use App\Entity\Inquiry;
 use App\Exception\ViewingNotAllowedException;
 use App\Form\Inquiry\InquiryFilterFormType;
-use App\Repository\DossierRepository;
 use App\Repository\InquiryRepository;
-use App\Service\DossierService;
+use App\Repository\WooDecisionRepository;
 use App\Service\DownloadResponseHelper;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Inquiry\InquirySessionService;
+use App\Service\Security\DossierVoter;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,8 +38,7 @@ class InquiryController extends AbstractController
         protected Security $security,
         protected InquirySessionService $inquirySession,
         private readonly PaginatorInterface $paginator,
-        private readonly DossierRepository $dossierRepository,
-        private readonly DossierService $dossierService,
+        private readonly WooDecisionRepository $wooDecisionRepository,
         private readonly InquiryRepository $inquiryRepository,
         private readonly DownloadResponseHelper $downloadHelper,
         private readonly InquiryService $inquiryService,
@@ -64,8 +64,8 @@ class InquiryController extends AbstractController
                 'dci' => [$inquiry->getId()],
             ];
         } else {
-            $dossier = $this->dossierRepository->findOneBy(['dossierNr' => $filter]);
-            if (! $dossier || ! $this->dossierService->isViewingAllowed($dossier)) {
+            $dossier = $this->wooDecisionRepository->findOneBy(['dossierNr' => $filter]);
+            if (! $dossier || ! $this->isGranted(DossierVoter::VIEW, $dossier)) {
                 throw ViewingNotAllowedException::forDossier();
             }
             $docQuery = $this->inquiryRepository->getDocsForInquiryDossierQueryBuilder($inquiry, $dossier);
@@ -132,7 +132,7 @@ class InquiryController extends AbstractController
     public function downloadInventory(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
     ): StreamedResponse {
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($inquiry->getInventory());
+        return $this->downloadHelper->getResponseForEntityWithFileInfo($inquiry->getInventory(), DossierFileType::INVENTORY);
     }
 
     #[Route('/zaak/{token}/batch/{filter}', name: 'app_inquiry_batch', methods: ['POST'])]
@@ -143,8 +143,8 @@ class InquiryController extends AbstractController
         if ($filter === InquiryFilterFormType::CASE) {
             $docQuery = $this->inquiryRepository->getDocumentsForPubliclyAvailableDossiers($inquiry);
         } else {
-            $dossier = $this->dossierRepository->findOneBy(['dossierNr' => $filter]);
-            if (! $dossier || ! $this->dossierService->isViewingAllowed($dossier)) {
+            $dossier = $this->wooDecisionRepository->findOneBy(['dossierNr' => $filter]);
+            if (! $dossier || ! $this->isGranted(DossierVoter::VIEW, $dossier)) {
                 throw ViewingNotAllowedException::forDossier();
             }
             $docQuery = $this->inquiryRepository->getDocsForInquiryDossierQueryBuilder($inquiry, $dossier);

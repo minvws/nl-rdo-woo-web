@@ -97,7 +97,7 @@ class DispositionWorkflow
             ->to(DossierStatus::DELETED->value);
 
         $workflow->transition()
-            ->name(DossierStatusTransition::SCHEDULE->value)
+            ->name(DossierStatusTransition::SCHEDULE_PUBLISH->value)
             ->from([DossierStatus::CONCEPT->value, DossierStatus::SCHEDULED->value])
             ->to(DossierStatus::SCHEDULED->value);
 

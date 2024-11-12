@@ -6,6 +6,7 @@ config:
     strict: false
     code_blocks: false
     line_length: 256
+    tables: false
   no-inline-html:
     allowed_elements:
       - dl

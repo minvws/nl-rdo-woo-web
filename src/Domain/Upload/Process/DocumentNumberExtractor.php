@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Process;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Psr\Log\LoggerInterface;
 
 readonly class DocumentNumberExtractor
@@ -13,7 +13,7 @@ readonly class DocumentNumberExtractor
     {
     }
 
-    public function extract(string $originalFile, Dossier $dossier): string
+    public function extract(string $originalFile, WooDecision $dossier): string
     {
         $originalFile = basename($originalFile);
         preg_match('/^([a-zA-Z0-9\-]+)/', $originalFile, $matches);

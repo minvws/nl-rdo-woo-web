@@ -10,7 +10,7 @@ use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
 use App\Domain\Publication\Attachment\EntityWithAttachments;
 use App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Service\Uploader\UploaderService;
@@ -31,7 +31,7 @@ readonly class CreateAttachmentHandler
         private MessageBusInterface $messageBus,
         private DossierWorkflowManager $dossierWorkflowManager,
         private EntityManagerInterface $entityManager,
-        private AbstractDossierRepository $dossierRepository,
+        private DossierRepository $dossierRepository,
         private UploaderService $uploaderService,
         private ValidatorInterface $validator,
     ) {

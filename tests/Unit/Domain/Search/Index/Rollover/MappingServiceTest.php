@@ -45,6 +45,12 @@ class MappingServiceTest extends UnitTestCase
         $this->assertEquals(3, $this->mappingService->getLatestMappingVersion());
     }
 
+    public function testGetLatestMappingVersionWithNoMappings(): void
+    {
+        $mappingService = new MappingService('non-existing');
+        $this->assertEquals(-1, $mappingService->getLatestMappingVersion());
+    }
+
     public function testIsValidMappingVersion(): void
     {
         $this->assertTrue($this->mappingService->isValidMappingVersion(1));

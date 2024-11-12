@@ -1,0 +1,13 @@
+type: dossier
+q: foo
+dep:
+    x: 'y'
+sort: _score
+sortorder: desc
+page: 13
+dci:
+    - doc1
+    - doc2
+dsi:
+    - dos1
+    - dos2

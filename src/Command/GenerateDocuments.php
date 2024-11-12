@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\Dossier\DossierIndexer;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Entity\Inquiry;
 use App\Entity\Organisation;
 use App\Service\FakeDataGenerator;
@@ -135,7 +135,7 @@ class GenerateDocuments extends Command
     /**
      * @param Inquiry[] $inquiries
      */
-    protected function createDossier(Organisation $organisation, string $dossierNr, array $inquiries): Dossier
+    protected function createDossier(Organisation $organisation, string $dossierNr, array $inquiries): WooDecision
     {
         $dossier = $this->fakeDataGenerator->generateDossier($organisation, $dossierNr);
 
@@ -154,7 +154,7 @@ class GenerateDocuments extends Command
      *
      * @throws \Exception
      */
-    protected function addDocument(Dossier $dossier, array $inquiries): Document
+    protected function addDocument(WooDecision $dossier, array $inquiries): Document
     {
         // Add initial document to DB
         $document = $this->fakeDataGenerator->generateDocument();

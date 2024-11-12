@@ -28,25 +28,11 @@ legacy_investigationreport_document_detail:
         route: 'app_investigationreport_document_detail'
         permanent: true
 
-legacy_investigationreport_document_download:
-    path: /investigation-report/{prefix}/{dossierId}/document/download
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        route: 'app_investigationreport_document_download'
-        permanent: true
-
 legacy_investigationreport_attachment_detail:
     path: /investigation-report/{prefix}/{dossierId}/attachment/{attachmentId}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_investigationreport_attachment_detail'
-        permanent: true
-
-legacy_investigationreport_attachment_download:
-    path: /investigation-report/{prefix}/{dossierId}/attachment/{attachmentId}/download
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        route: 'app_investigationreport_attachment_download'
         permanent: true
 
 legacy_annualreport_detail:
@@ -63,25 +49,11 @@ legacy_annualreport_document_detail:
         route: 'app_annualreport_document_detail'
         permanent: true
 
-legacy_annualreport_document_download:
-    path: /annual-report/{prefix}/{dossierId}/document/download
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        route: 'app_annualreport_document_download'
-        permanent: true
-
 legacy_annualreport_attachment_detail:
     path: /annual-report/{prefix}/{dossierId}/attachment/{attachmentId}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_annualreport_attachment_detail'
-        permanent: true
-
-legacy_annualreport_attachment_download:
-    path: /annual-report/{prefix}/{dossierId}/attachment/{attachmentId}/download
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        route: 'app_annualreport_attachment_download'
         permanent: true
 
 legacy_disposition_detail:
@@ -98,25 +70,11 @@ legacy_disposition_document_detail:
         route: 'app_disposition_document_detail'
         permanent: true
 
-legacy_disposition_document_download:
-    path: /disposition/{prefix}/{dossierId}/document/download
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        route: 'app_disposition_document_download'
-        permanent: true
-
 legacy_disposition_attachment_detail:
     path: /disposition/{prefix}/{dossierId}/attachment/{attachmentId}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_disposition_attachment_detail'
-        permanent: true
-
-legacy_disposition_attachment_download:
-    path: /disposition/{prefix}/{dossierId}/attachment/{attachmentId}/download
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        route: 'app_disposition_attachment_download'
         permanent: true
 
 legacy_complaintjudgement_detail:
@@ -131,20 +89,6 @@ legacy_complaintjudgement_document_detail:
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_complaintjudgement_document_detail'
-        permanent: true
-
-legacy_complaintjudgement_document_download:
-    path: /complaint-judgement/{prefix}/{dossierId}/document/download
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        route: 'app_complaintjudgement_document_download'
-        permanent: true
-
-legacy_woodecision_decisionattachment_download:
-    path: /dossier/{prefix}/{dossierId}/decision-attachments/{attachmentId}/download
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        route: 'app_woodecision_decisionattachment_download'
         permanent: true
 
 legacy_woodecision_decisionattachment_detail:
@@ -168,25 +112,11 @@ legacy_covenant_covenantdocument_detail:
         route: 'app_covenant_covenantdocument_detail'
         permanent: true
 
-legacy_covenant_covenantdocument_download:
-    path: /covenant/{prefix}/{dossierId}/covenant-document/download
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        route: 'app_covenant_covenantdocument_download'
-        permanent: true
-
 legacy_covenant_covenantattachment_detail:
     path: /covenant/{prefix}/{dossierId}/covenant-attachment/{attachmentId}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_covenant_covenantattachment_detail'
-        permanent: true
-
-legacy_covenant_covenantattachment_download:
-    path: /covenant/{prefix}/{dossierId}/covenant-attachment/{attachmentId}/download
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        route: 'app_covenant_covenantattachment_download'
         permanent: true
 
 legacy_inquiry_detail:
@@ -226,16 +156,23 @@ legacy_inquiry_batch_download:
         route: 'app_inquiry_batch_download'
         permanent: true
 
-legacy_woodecision_inventory_download:
-    path: /dossier/{prefix}/{dossierId}/inventory/download
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+legacy_about:
+    path: /about
     defaults:
-        route: 'app_woodecision_inventory_download'
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+        path: /over-dit-platform
         permanent: true
 
-legacy_woodecision_decision_download:
-    path: /dossier/{prefix}/{dossierId}/decision/download
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+legacy_accessibility:
+    path: /accessibility
     defaults:
-        route: 'app_woodecision_decision_download'
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+        path: /toegankelijkheid
+        permanent: true
+
+legacy_report_vulnerability:
+    path: /report-vulnerability
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+        path: /kwetsbaarheid-melden
         permanent: true

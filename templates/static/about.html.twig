@@ -8,23 +8,23 @@
         <h1>{{ 'public.about.oga' | trans }}</h1>
 
         <p>
-            {{ 'public.about.oga.paragraph-1' | trans() }}
+            {{ 'public.intro.maintext.oga.paragraph-1' | trans }}
         </p>
 
         <p>
-            {{ 'public.about.oga.paragraph-2' | trans() }}
+            {{ 'public.intro.maintext.oga.paragraph-2' | trans | raw }}
         </p>
 
         <p>
-            {{ 'public.about.oga.paragraph-3' | trans() }}
+            {{ 'public.about.oga.paragraph-3' | trans }}
         </p>
 
         <ul>
-            <li>{{ 'public.about.oga.bullet-1' | trans() | raw }}</li>
-            <li>{{ 'public.about.oga.bullet-2' | trans() | raw }}</li>
+            <li>{{ 'public.about.oga.bullet-1' | trans | raw }}</li>
+            <li>{{ 'public.about.oga.bullet-2' | trans }}</li>
         </ul>
 
-        {% include "home/snippets/info.html.twig" %}
+        {% include "snippets/about-platform.html.twig" %}
     </div>
 </div>
 {% endblock %}

@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @implements EntityWithAttachments<AnnualReportAttachment>
- * @implements EntityWithMainDocument<AnnualReportDocument>
+ * @implements EntityWithMainDocument<AnnualReportMainDocument>
  */
 #[ORM\Entity(repositoryClass: AnnualReportRepository::class)]
 class AnnualReport extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument
@@ -27,13 +27,13 @@ class AnnualReport extends AbstractDossier implements EntityWithAttachments, Ent
     /** @use HasAttachments<AnnualReportAttachment> */
     use HasAttachments;
 
-    /** @use HasMainDocument<AnnualReportDocument> */
+    /** @use HasMainDocument<AnnualReportMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AnnualReportDocument::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AnnualReportMainDocument::class)]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
-    private ?AnnualReportDocument $document;
+    private ?AnnualReportMainDocument $document;
 
     /** @var Collection<array-key,AnnualReportAttachment> */
     #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: AnnualReportAttachment::class)]
@@ -69,6 +69,6 @@ class AnnualReport extends AbstractDossier implements EntityWithAttachments, Ent
 
     public function getMainDocumentEntityClass(): string
     {
-        return AnnualReportDocument::class;
+        return AnnualReportMainDocument::class;
     }
 }

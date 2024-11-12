@@ -8,9 +8,12 @@ use App\Domain\Search\Query\SearchParameters;
 use App\ElasticConfig;
 use App\Service\Search\Query\Condition\ContentAccessConditions;
 use App\Service\Search\Query\Condition\FacetConditions;
+use App\Service\Search\Query\Condition\QueryConditions;
 use App\Service\Search\Query\Condition\SearchTermConditions;
 use App\Service\Search\Query\Facet\FacetList;
 use App\Service\Search\Query\Facet\FacetListFactory;
+use App\Service\Search\Query\Sort\SortField;
+use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
 
 readonly class QueryGenerator
@@ -103,6 +106,12 @@ readonly class QueryGenerator
         $this->aggregationGenerator->addUniqueDossierCountAggregation($queryBuilder);
         $this->addHighlight($queryBuilder, $searchParameters);
 
+        if ($searchParameters->baseQueryConditions instanceof QueryConditions) {
+            /** @var BoolQuery $query */
+            $query = $queryBuilder->getQuery();
+            $searchParameters->baseQueryConditions->applyToQuery($facetList, $searchParameters, $query);
+        }
+
         return $queryBuilder;
     }
 
@@ -142,10 +151,10 @@ readonly class QueryGenerator
             return;
         }
 
-        // Hightlighting uses a 'clean' query with additional filters like status.
+        // Highlighting uses a 'clean' query with additional filters like status.
         // This is very important, otherwise filter values like 'document' and statuses will be highlighted in content.
         $query = Query::simpleQueryString(
-            fields: ['title', 'summary', 'decision_content', 'dossiers.summary', 'dossiers.title', 'pages.content'],
+            fields: ['title', 'summary', 'dossiers.summary', 'dossiers.title', 'pages.content'],
             query: $searchParameters->query,
         )->setDefaultOperator($searchParameters->operator->value);
 
@@ -177,11 +186,6 @@ readonly class QueryGenerator
                     'type' => 'unified',
                 ],
                 'summary' => [
-                    'fragment_size' => 50,
-                    'number_of_fragments' => 5,
-                    'type' => 'unified',
-                ],
-                'decision_content' => [
                     'fragment_size' => 50,
                     'number_of_fragments' => 5,
                     'type' => 'unified',

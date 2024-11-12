@@ -12,6 +12,7 @@ readonly class CommonDossierPropertiesViewFactory
 {
     public function __construct(
         private DepartmentViewFactory $departmentViewFactory,
+        private SubjectViewFactory $subjectViewFactory,
     ) {
     }
 
@@ -39,7 +40,7 @@ readonly class CommonDossierPropertiesViewFactory
             mainDepartment: $this->departmentViewFactory->make($mainDepartment),
             summary: $dossier->getSummary(),
             type: $dossier->getType(),
-            subject: $dossier->getSubject()?->getName(),
+            subject: $this->subjectViewFactory->getSubjectForDossier($dossier),
         );
     }
 }

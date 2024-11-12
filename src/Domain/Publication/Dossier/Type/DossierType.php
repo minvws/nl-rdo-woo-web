@@ -55,4 +55,12 @@ enum DossierType: string implements TranslatableInterface
     {
         return str_replace('-', '', $this->value);
     }
+
+    /**
+     * @return list<string>
+     */
+    public static function getAllValues(): array
+    {
+        return array_map(fn (DossierType $type): string => $type->value, DossierType::cases());
+    }
 }

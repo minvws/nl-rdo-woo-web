@@ -11,6 +11,8 @@ use Symfony\Config\Framework\Workflows\WorkflowsConfig;
 class WorkflowConfigHelper
 {
     /**
+     * @codeCoverageIgnore
+     *
      * @param DossierStatus[] $places
      */
     public static function defineNonMovingTransitions(

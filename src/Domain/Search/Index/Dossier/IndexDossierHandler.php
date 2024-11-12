@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\Dossier;
 
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -15,7 +15,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 class IndexDossierHandler
 {
     public function __construct(
-        private readonly AbstractDossierRepository $dossierRepository,
+        private readonly DossierRepository $dossierRepository,
         private readonly DossierIndexer $dossierIndexer,
         private readonly LoggerInterface $logger,
     ) {

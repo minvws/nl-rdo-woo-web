@@ -27,31 +27,19 @@
                 <thead>
                     <tr>
                         <th class="bhr-column-head bhr-column-head--gray" scope="col">Case nr</th>
-                        <th class="bhr-column-head bhr-column-head--gray border-r-0" scope="col">Database ID</th>
-                        <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                            <span class="sr-only">{{ 'global.details'| trans }}</span>
-                        </th>
+                        <th class="bhr-column-head bhr-column-head--gray" scope="col">Database ID</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for inquiry in inquiries %}
-                        {% set url = path('app_admin_inquiry_administration_details', {casenr: inquiry.casenr}) %}
-                        <tr class="bhr-clickable-row">
+                        <tr>
                             <td>
-                                <a class="bhr-fill-cell" href="{{ url }}">
+                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_inquiry_administration_details', {casenr: inquiry.casenr}) }}">
                                     {{ inquiry.casenr }}
                                 </a>
                             </td>
                             <td>
-                                <a class="bhr-fill-cell" href="{{ url }}">
-                                    {{ inquiry.id }}
-                                </a>
-                            </td>
-                            <td class="text-right">
-                                <a class="bhr-fill-cell" href="{{ url }}">
-                                    <span class="sr-only">{{ 'global.details' | trans }} {{ inquiry.casenr }}</span>
-                                    <twig:Admin:Icon name="chevron-right" />
-                                </a>
+                                {{ inquiry.id }}
                             </td>
                         </tr>
                     {% endfor %}

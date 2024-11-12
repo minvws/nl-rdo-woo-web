@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,7 +46,7 @@ class StatsController extends AbstractController
 
         return $this->render('admin/stats/index.html.twig', [
             'document_count' => $this->doctrine->getRepository(Document::class)->count([]),
-            'dossier_count' => $this->doctrine->getRepository(Dossier::class)->count([]),
+            'dossier_count' => $this->doctrine->getRepository(AbstractDossier::class)->count([]),
             'page_count' => $this->doctrine->getRepository(Document::class)->pagecount(),
             'rabbitmq_stats' => $rabbitmqStats,
         ]);

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller\Public\Dossier\WooDecision;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\BatchDownload;
-use App\Entity\Dossier;
 use App\Exception\ViewingNotAllowedException;
-use App\Service\DossierService;
+use App\Service\Security\DossierVoter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -17,15 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
 // Redirects old dossier urls (without prefixes in the url) to the new urls
 class LegacyWooDecisionController extends AbstractController
 {
-    public function __construct(
-        private readonly DossierService $dossierService,
-    ) {
-    }
-
     #[Route('/dossier/{dossierId}', name: 'app_legacy_dossier_detail', methods: ['GET'], priority: -1)]
     public function detail(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] WooDecision $dossier,
     ): RedirectResponse {
+        $this->denyAccessUnlessGranted(DossierVoter::VIEW, $dossier);
+
         return $this->redirectToRoute(
             'app_woodecision_detail',
             [
@@ -38,11 +35,9 @@ class LegacyWooDecisionController extends AbstractController
 
     #[Route('/dossier/{dossierId}/batch', name: 'app_legacy_dossier_batch', methods: ['POST'], priority: -1)]
     public function createBatch(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] WooDecision $dossier,
     ): RedirectResponse {
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw ViewingNotAllowedException::forDossier();
-        }
+        $this->denyAccessUnlessGranted(DossierVoter::VIEW, $dossier);
 
         return $this->redirectToRoute(
             'app_woodecision_batch',
@@ -56,10 +51,11 @@ class LegacyWooDecisionController extends AbstractController
 
     #[Route('/dossier/{dossierId}/batch/{batchId}', name: 'app_legacy_dossier_batch_detail', methods: ['GET'], priority: -1)]
     public function batch(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] WooDecision $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
     ): RedirectResponse {
-        if (! $this->dossierService->isViewingAllowed($dossier) || $batch->getEntity() !== $dossier) {
+        $this->denyAccessUnlessGranted(DossierVoter::VIEW, $dossier);
+        if ($batch->getEntity() !== $dossier) {
             throw ViewingNotAllowedException::forDossier();
         }
 
@@ -77,10 +73,11 @@ class LegacyWooDecisionController extends AbstractController
     #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
     #[Route('/dossier/{dossierId}/batch/{batchId}/download', name: 'app_legacy_dossier_batch_download', methods: ['GET'], priority: -1)]
     public function batchDownload(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] WooDecision $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
     ): RedirectResponse {
-        if (! $this->dossierService->isViewingAllowed($dossier) || $batch->getEntity() !== $dossier) {
+        $this->denyAccessUnlessGranted(DossierVoter::VIEW, $dossier);
+        if ($batch->getEntity() !== $dossier) {
             throw ViewingNotAllowedException::forDossier();
         }
 
@@ -95,34 +92,14 @@ class LegacyWooDecisionController extends AbstractController
         );
     }
 
-    #[Route('/dossier/{dossierId}/inventory/download', name: 'app_legacy_dossier_inventory_download', methods: ['GET'], priority: -1)]
-    public function downloadInventory(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
-    ): RedirectResponse {
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw ViewingNotAllowedException::forDossier();
-        }
-
-        return $this->redirectToRoute(
-            'app_woodecision_inventory_download',
-            [
-                'prefix' => $dossier->getDocumentPrefix(),
-                'dossierId' => $dossier->getDossierNr(),
-            ],
-            301,
-        );
-    }
-
     #[Route('/dossier/{dossierId}/decision/download', name: 'app_legacy_dossier_decision_download', methods: ['GET'], priority: -1)]
     public function downloadDecision(
-        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] Dossier $dossier,
+        #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] WooDecision $dossier,
     ): RedirectResponse {
-        if (! $this->dossierService->isViewingAllowed($dossier)) {
-            throw ViewingNotAllowedException::forDossier();
-        }
+        $this->denyAccessUnlessGranted(DossierVoter::VIEW, $dossier);
 
         return $this->redirectToRoute(
-            'app_woodecision_decision_download',
+            'app_woodecision_document_detail',
             [
                 'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),

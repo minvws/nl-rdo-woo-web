@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Entity\Dossier;
-use App\Entity\InventoryProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Entity\ProductionReportProcessRun;
 use App\Exception\ProcessInventoryException;
 use App\Exception\TranslatableException;
 use App\Repository\DocumentRepository;
@@ -24,7 +24,7 @@ class InventoryComparator
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function determineChangeset(
-        InventoryProcessRun $run,
+        ProductionReportProcessRun $run,
         InventoryReaderInterface $reader,
         RunProgress $runProgress,
     ): InventoryChangeset {
@@ -87,7 +87,7 @@ class InventoryComparator
 
     private function handleRowError(
         int $rowIndex,
-        InventoryProcessRun $run,
+        ProductionReportProcessRun $run,
         \Exception $exception,
     ): void {
         // Exception occurred, but we still continue with the next row. Just log the error
@@ -101,7 +101,7 @@ class InventoryComparator
     /**
      * @return array<string, int>
      */
-    private function getDocumentNrList(Dossier $dossier): array
+    private function getDocumentNrList(WooDecision $dossier): array
     {
         // Important: don't use $dossier->getDocuments which loads all document entities into memory and the entitymanager
         $documentNrs = $this->documentRepository->getAllDocumentNumbersForDossier($dossier);
@@ -115,8 +115,8 @@ class InventoryComparator
      */
     public function addDeletesToChangeset(
         array $tobeRemovedDocs,
-        Dossier $dossier,
-        InventoryProcessRun $run,
+        WooDecision $dossier,
+        ProductionReportProcessRun $run,
         InventoryChangeset $changeset,
     ): void {
         foreach (array_keys($tobeRemovedDocs) as $documentNr) {

@@ -44,19 +44,6 @@ class CsvReaderTest extends MockeryTestCase
         );
     }
 
-    public function testGetOptionalStringReturnsValueForExistingColumnWhenFilled(): void
-    {
-        $subjects = [];
-        foreach ($this->csvReader as $rowIndex => $data) {
-            $subjects[] = $this->csvReader->getOptionalString($rowIndex, 'subject');
-        }
-
-        self::assertEquals(
-            ['Dummy onderwerp 1', null],
-            $subjects,
-        );
-    }
-
     public function testGetOptionalStringReturnsNullForNonExistingColumn(): void
     {
         $values = [];

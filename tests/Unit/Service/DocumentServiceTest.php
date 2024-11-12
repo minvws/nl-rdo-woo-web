@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service;
 
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
+use App\Domain\Upload\FileType\FileType;
 use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Entity\Document;
-use App\Entity\Dossier;
 use App\Service\DocumentService;
 use App\Service\HistoryService;
 use App\Service\Storage\EntityStorageService;
@@ -16,7 +18,9 @@ use App\Service\Storage\ThumbnailStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Uid\Uuid;
 
 class DocumentServiceTest extends MockeryTestCase
 {
@@ -29,6 +33,7 @@ class DocumentServiceTest extends MockeryTestCase
     private MessageBusInterface&MockInterface $messageBus;
     private HistoryService&MockInterface $historyService;
     private DocumentNumberExtractor&MockInterface $documentNumberExtractor;
+    private DocumentDispatcher&MockInterface $documentDispatcher;
 
     public function setUp(): void
     {
@@ -41,6 +46,7 @@ class DocumentServiceTest extends MockeryTestCase
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->historyService = \Mockery::mock(HistoryService::class);
         $this->documentNumberExtractor = \Mockery::mock(DocumentNumberExtractor::class);
+        $this->documentDispatcher = \Mockery::mock(DocumentDispatcher::class);
 
         $this->historyService->shouldReceive('addDocumentEntry');
 
@@ -53,6 +59,7 @@ class DocumentServiceTest extends MockeryTestCase
             $this->messageBus,
             $this->historyService,
             $this->documentNumberExtractor,
+            $this->documentDispatcher,
         );
 
         parent::setUp();
@@ -60,7 +67,7 @@ class DocumentServiceTest extends MockeryTestCase
 
     public function testRemoveDocumentFromDossierDoesRemoveTheDocumentWhenItIsNotInTheCurrentDossierAndNotLinkedToOtherDossiers(): void
     {
-        $dossier = \Mockery::mock(Dossier::class);
+        $dossier = \Mockery::mock(WooDecision::class);
         $document = \Mockery::mock(Document::class);
 
         $document->shouldReceive('getDossiers->contains')->with($dossier)->andReturnFalse();
@@ -79,7 +86,7 @@ class DocumentServiceTest extends MockeryTestCase
 
     public function testRemoveDocumentFromDossierDoesNotRemoveTheDocumentWhenItIsLinkedToOtherDossiers(): void
     {
-        $dossier = \Mockery::mock(Dossier::class);
+        $dossier = \Mockery::mock(WooDecision::class);
         $document = \Mockery::mock(Document::class);
 
         $document->expects('getDossiers->contains')->with($dossier)->andReturnTrue();
@@ -97,7 +104,7 @@ class DocumentServiceTest extends MockeryTestCase
 
     public function testRemoveDocumentFromDossierDoesRemoveTheDocumentWhenItIsNotLinkedToOtherDossiers(): void
     {
-        $dossier = \Mockery::mock(Dossier::class);
+        $dossier = \Mockery::mock(WooDecision::class);
         $document = \Mockery::mock(Document::class);
 
         $dossier->expects('removeDocument')->with($document);
@@ -117,14 +124,31 @@ class DocumentServiceTest extends MockeryTestCase
         $this->documentService->removeDocumentFromDossier($dossier, $document);
     }
 
-    public function tearDown(): void
+    public function testReplace(): void
     {
-        parent::tearDown();
+        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision->shouldReceive('getId')->andReturn($wooDecisionId = Uuid::v6());
 
-        if ($container = \Mockery::getContainer()) {
-            $this->addToAssertionCount($container->mockery_getExpectationCount());
-        }
+        $document = \Mockery::mock(Document::class);
+        $document->shouldReceive('getDocumentId')->andReturn($documentId = 'foo-123');
+        $document->shouldReceive('getId')->andReturn($documentEntityId = Uuid::v6());
+        $document->shouldReceive('getFileInfo->getType')->andReturn(FileType::PDF->value);
+        $document->shouldReceive('getFileInfo->getSize')->andReturn(1234);
 
-        \Mockery::close();
+        $upload = \Mockery::mock(UploadedFile::class);
+        $upload->shouldReceive('getClientOriginalName')->andReturn($filename = 'foo.pdf');
+
+        $this->documentNumberExtractor->expects('extract')->with($filename, $wooDecision)->andReturn($documentId);
+
+        $this->entityStorageService->expects('store')->andReturnTrue();
+
+        $this->documentDispatcher->expects('dispatchReplaceDocumentCommand')->with(
+            $wooDecisionId,
+            $documentEntityId,
+            \Mockery::any(),
+            $filename,
+        );
+
+        $this->documentService->replace($wooDecision, $document, $upload);
     }
 }

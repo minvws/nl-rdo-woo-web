@@ -15,6 +15,6 @@ readonly class MainDocumentDeleteStrategy extends AbstractEntityWithFileInfoDele
             return;
         }
 
-        $this->deleteFileForEntity($dossier->getDocument());
+        $this->deleteFileForEntity($dossier->getMainDocument());
     }
 }

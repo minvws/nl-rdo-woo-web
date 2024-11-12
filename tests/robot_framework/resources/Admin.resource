@@ -36,7 +36,7 @@ Logout Admin
   Click  xpath=//*[@data-e2e-name="logout-link"]
 
 Click Organisation Selector
-  Click  //*[@data-e2e-name="organisations"]
+  Click  //*[@data-e2e-name="organisation-switcher"]
 
 Click Manage Organisations
   Click  //*[@data-e2e-name="manage-organisations"]
@@ -50,6 +50,21 @@ Add A New Organisation Prefix
 
 Click Save Prefixes
   Click  //*[@id="organisation_form_submit"]
+  ${error_present} =  Get Element Count  //div[@id="organisation_form-error"]
+  IF  ${error_present} > 0
+    # Retry, temp workaround for https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
+    Select Responsible Department  ministerie van Volksgezondheid, Welzijn en Sport
+    Click  //*[@id="organisation_form_submit"]
+    Get Element States
+    ...  //div[@id="organisation_form-error"]
+    ...  not contains
+    ...  attached
+    ...  message=Error shown, even after retry
+  END
+
+Select Responsible Department
+  [Arguments]  ${department}
+  Select Options By  //select[@name="organisation_form[departments][0]"]  label  ${department}
 
 Upload Attachment
   [Arguments]  ${type}  ${date}=01012022
@@ -63,7 +78,7 @@ Upload Attachment
 
 Wait For Queue To Empty
   New Page  http://localhost:8000/balie/stats
-  Wait Until Keyword Succeeds  5min  15s  Is Queue Empty
+  Wait Until Keyword Succeeds  10min  15s  Is Queue Empty
   Close Page
 
 Is Queue Empty
@@ -81,5 +96,23 @@ Is Queue Empty
 
 Select Organisation
   [Arguments]  ${organisation}=Programmadirectie Openbaarheid
-  Click  //*[@data-e2e-name="organisations"]
-  Click  //*[@data-e2e-name="organisations"]//li[contains(.,'${organisation}')]
+  Click  //*[@data-e2e-name="organisation-switcher"]
+  Click  //*[@data-e2e-name="organisation-switcher"]//li[contains(.,'${organisation}')]
+
+Open Organisation Details
+  [Arguments]  ${organisation}=Programmadirectie Openbaarheid
+  Click  //table[@data-e2e-name="organisations-table"]//td[contains(.,'${organisation}')]/..//a
+
+Create Random Subjects
+  Click  " Onderwerpen "
+  FOR  ${i}  IN RANGE  1  10
+    ${random_id} =  Generate Random String  3  [NUMBERS][UPPER]
+    Create New Subject  Onderwerp ${random_id}
+  END
+
+Create New Subject
+  [Arguments]  ${subject_name}
+  Click  //a[@data-e2e-name="new-subject"]
+  Fill Text  //input[@id="subject_name"]  ${subject_name}
+  Click  id=subject_submit
+  Get Text  //div[@data-e2e-name="alerts"]  contains  Het onderwerp is aangemaakt

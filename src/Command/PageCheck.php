@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Entity\Dossier;
+use App\Repository\WooDecisionRepository;
 use App\Service\Elastic\ElasticService;
-use Doctrine\ORM\EntityManagerInterface;
 use Jaytaph\TypeArray\TypeArray;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,15 +13,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class PageCheck extends Command
 {
-    protected EntityManagerInterface $doctrine;
-    protected ElasticService $elasticService;
-
-    public function __construct(EntityManagerInterface $entityManager, ElasticService $elasticService)
-    {
+    public function __construct(
+        private readonly WooDecisionRepository $wooDecisionRepository,
+        private readonly ElasticService $elasticService,
+    ) {
         parent::__construct();
-
-        $this->doctrine = $entityManager;
-        $this->elasticService = $elasticService;
     }
 
     protected function configure(): void
@@ -38,7 +33,7 @@ class PageCheck extends Command
         unset($input);
         $failed = false;
 
-        $dossiers = $this->doctrine->getRepository(Dossier::class)->findAll();
+        $dossiers = $this->wooDecisionRepository->findAll();
         foreach ($dossiers as $dossier) {
             foreach ($dossier->getDocuments() as $document) {
                 // Get the count from elastic

@@ -28,20 +28,17 @@ readonly class UpdateDossierPublicationHandler
 
         $this->dossierService->validateCompletion($dossier, false);
 
-        $canPublish = $this->dossierPublisher->canPublish($dossier);
-        $canSchedule = $this->dossierPublisher->canSchedulePublication($dossier);
-        if (! $canSchedule && ! $canPublish) {
+        if ($this->dossierPublisher->canPublish($dossier)) {
+            $this->dossierPublisher->publish($dossier);
+        } elseif ($this->dossierPublisher->canPublishAsPreview($dossier)) {
+            $this->dossierPublisher->publishAsPreview($dossier);
+        } elseif ($this->dossierPublisher->canSchedulePublication($dossier)) {
+            $this->dossierPublisher->schedulePublication($dossier);
+        } else {
             throw DossierWorkflowException::forCannotUpdatePublication($dossier);
         }
 
-        $this->dossierService->updateHistory($dossier);
         $this->dossierService->validateCompletion($dossier);
-
-        if ($canPublish) {
-            $this->dossierPublisher->publish($dossier);
-        } else {
-            $this->dossierPublisher->schedulePublication($dossier);
-        }
 
         $this->messageBus->dispatch(
             DossierUpdatedEvent::forDossier($dossier),

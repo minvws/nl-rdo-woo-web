@@ -13,6 +13,11 @@ class DocumentWorkflowStatus
     ) {
     }
 
+    public function getDocument(): Document
+    {
+        return $this->document;
+    }
+
     public function canWithdraw(): bool
     {
         return $this->document->shouldBeUploaded() && ! $this->document->isWithdrawn();

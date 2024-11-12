@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\Rollover;
 
+use App\Domain\Publication\Dossier\DossierRepository;
+use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
 use App\ElasticConfig;
 use App\Message\InitiateElasticRolloverMessage;
 use App\Message\SetElasticAliasMessage;
 use App\Repository\DocumentRepository;
-use App\Repository\WooDecisionRepository;
 use App\Service\Search\Object\ObjectHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class RolloverService
 {
     public function __construct(
-        private WooDecisionRepository $dossierRepository,
+        private DossierRepository $dossierRepository,
         private DocumentRepository $documentRepository,
         private ObjectHandler $objectHandler,
         private MessageBusInterface $messageBus,
@@ -49,7 +50,7 @@ readonly class RolloverService
         $dossierCount = $this->dossierRepository->count([]);
         $documentCounts = $this->documentRepository->getCountAndPageSum();
 
-        $elasticDossierCount = $this->objectHandler->getObjectCount($index->name, 'dossier');
+        $elasticDossierCount = $this->objectHandler->getObjectCount($index->name, ...ElasticDocumentType::getMainTypeValues());
         $elasticDocCount = $this->objectHandler->getObjectCount($index->name, 'document');
         $elasticPageCount = $this->objectHandler->getTotalPageCount($index->name);
 

@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Domain\Search\Index\SubType;
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
+use App\Domain\Publication\MainDocument\MainDocumentRepository;
 use App\Domain\Search\Index\SubType\IndexMainDocumentCommand;
 use App\Domain\Search\Index\SubType\IndexMainDocumentHandler;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
@@ -18,7 +18,7 @@ use Symfony\Component\Uid\Uuid;
 
 class IndexMainDocumentHandlerTest extends MockeryTestCase
 {
-    private AbstractMainDocumentRepository&MockInterface $repository;
+    private MainDocumentRepository&MockInterface $repository;
     private SubTypeIndexer&MockInterface $subTypeIndexer;
     private LoggerInterface&MockInterface $logger;
     private SubTypeIngester&MockInterface $subTypeIngester;
@@ -26,7 +26,7 @@ class IndexMainDocumentHandlerTest extends MockeryTestCase
 
     public function setUp(): void
     {
-        $this->repository = \Mockery::mock(AbstractMainDocumentRepository::class);
+        $this->repository = \Mockery::mock(MainDocumentRepository::class);
         $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->subTypeIngester = \Mockery::mock(SubTypeIngester::class);
@@ -42,9 +42,7 @@ class IndexMainDocumentHandlerTest extends MockeryTestCase
     public function testInvokeReturnsEarlyIfNoMainDocumentIsFound(): void
     {
         $id = Uuid::v6();
-        $mainDocument = \Mockery::mock(AbstractMainDocument::class);
-        $mainDocument->shouldReceive('getId')->andReturn($id);
-        $command = IndexMainDocumentCommand::forMainDocument($mainDocument);
+        $command = new IndexMainDocumentCommand($id);
 
         $this->repository->expects('find')->with($id)->andReturnNull();
         $this->logger->expects('warning');
@@ -55,9 +53,7 @@ class IndexMainDocumentHandlerTest extends MockeryTestCase
     public function testInvokeLogsException(): void
     {
         $id = Uuid::v6();
-        $mainDocument = \Mockery::mock(AbstractMainDocument::class);
-        $mainDocument->shouldReceive('getId')->andReturn($id);
-        $command = IndexMainDocumentCommand::forMainDocument($mainDocument);
+        $command = new IndexMainDocumentCommand($id);
 
         $this->repository->expects('find')->with($id)->andThrow(new \RuntimeException('oops'));
         $this->logger->expects('error');
@@ -69,8 +65,7 @@ class IndexMainDocumentHandlerTest extends MockeryTestCase
     {
         $id = Uuid::v6();
         $mainDocument = \Mockery::mock(AbstractMainDocument::class);
-        $mainDocument->shouldReceive('getId')->andReturn($id);
-        $command = IndexMainDocumentCommand::forMainDocument($mainDocument);
+        $command = new IndexMainDocumentCommand($id);
 
         $this->repository->expects('find')->with($id)->andReturn($mainDocument);
         $this->subTypeIndexer->expects('index')->with($mainDocument);

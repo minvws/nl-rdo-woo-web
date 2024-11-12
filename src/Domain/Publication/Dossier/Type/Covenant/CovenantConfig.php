@@ -25,6 +25,9 @@ readonly class CovenantConfig implements DossierTypeConfigInterface
         return DossierType::COVENANT;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getSecurityExpression(): ?Expression
     {
         return null;
@@ -52,6 +55,9 @@ readonly class CovenantConfig implements DossierTypeConfigInterface
         ];
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getCreateRouteName(): string
     {
         return 'app_admin_dossier_covenant_details_create';

@@ -37,7 +37,7 @@
                         {{ 'public.dossiers.subject' | trans }}
                     </th>
                     <td>
-                        <p>{{ dossier.subject }}</p>
+                        <p><a class="woo-a" href="{{ dossier.subject.searchUrl }}">{{ dossier.subject.name }}</a></p>
                     </td>
                 </tr>
                 {% endif %}

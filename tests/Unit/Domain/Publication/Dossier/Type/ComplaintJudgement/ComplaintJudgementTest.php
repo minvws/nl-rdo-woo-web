@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\ComplaintJudgement;
 
 use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementDocument;
+use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use Carbon\CarbonImmutable;
 use PHPUnit\Framework\TestCase;
@@ -18,15 +18,15 @@ final class ComplaintJudgementTest extends TestCase
         self::assertEquals(DossierType::COMPLAINT_JUDGEMENT, $dossier->getType());
     }
 
-    public function testGetAndSetDocument(): void
+    public function testGetAndSetMainDocument(): void
     {
         $dossier = new ComplaintJudgement();
-        self::assertNull($dossier->getDocument());
+        self::assertNull($dossier->getMainDocument());
 
-        $document = \Mockery::mock(ComplaintJudgementDocument::class);
-        $dossier->setDocument($document);
+        $document = \Mockery::mock(ComplaintJudgementMainDocument::class);
+        $dossier->setMainDocument($document);
 
-        self::assertEquals($document, $dossier->getDocument());
+        self::assertEquals($document, $dossier->getMainDocument());
     }
 
     public function testSetDateFromSetsDateTo(): void

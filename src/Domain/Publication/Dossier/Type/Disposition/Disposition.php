@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @implements EntityWithAttachments<DispositionAttachment>
- * @implements EntityWithMainDocument<DispositionDocument>
+ * @implements EntityWithMainDocument<DispositionMainDocument>
  */
 #[ORM\Entity(repositoryClass: DispositionRepository::class)]
 class Disposition extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument
@@ -26,13 +26,13 @@ class Disposition extends AbstractDossier implements EntityWithAttachments, Enti
     /** @use HasAttachments<DispositionAttachment> */
     use HasAttachments;
 
-    /** @use HasMainDocument<DispositionDocument> */
+    /** @use HasMainDocument<DispositionMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: DispositionDocument::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: DispositionMainDocument::class)]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
-    private ?DispositionDocument $document;
+    private ?DispositionMainDocument $document;
 
     /** @var Collection<array-key,DispositionAttachment> */
     #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DispositionAttachment::class)]
@@ -66,6 +66,6 @@ class Disposition extends AbstractDossier implements EntityWithAttachments, Enti
 
     public function getMainDocumentEntityClass(): string
     {
-        return DispositionDocument::class;
+        return DispositionMainDocument::class;
     }
 }

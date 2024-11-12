@@ -39,6 +39,7 @@ trait AttachmentAndMainDocumentEntityTrait
     protected \DateTimeImmutable $formalDate;
 
     #[ORM\Column(length: 255, enumType: AttachmentType::class)]
+    #[Assert\Choice(callback: 'getAllowedTypes')]
     protected AttachmentType $type;
 
     #[ORM\Column(length: 255)]

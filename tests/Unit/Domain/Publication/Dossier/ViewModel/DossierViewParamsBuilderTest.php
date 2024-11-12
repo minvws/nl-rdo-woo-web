@@ -8,7 +8,7 @@ use App\Domain\Publication\Attachment\AttachmentLanguageFactory;
 use App\Domain\Publication\Attachment\AttachmentTypeFactory;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocument;
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
 use App\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
 use App\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
@@ -74,7 +74,7 @@ final class DossierViewParamsBuilderTest extends MockeryTestCase
 
     public function testWithMainDocumentParams(): void
     {
-        $this->dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(CovenantDocument::class);
+        $this->dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(CovenantMainDocument::class);
 
         $this->workflowManager
             ->expects('isTransitionAllowed')
@@ -83,7 +83,7 @@ final class DossierViewParamsBuilderTest extends MockeryTestCase
 
         $this->attachmentTypeFactory
             ->expects('makeAsArray')
-            ->with(CovenantDocument::getAllowedTypes())
+            ->with(CovenantMainDocument::getAllowedTypes())
             ->andReturn(['types' => 'foo']);
 
         $this->attachmentLanguageFactory
@@ -92,17 +92,17 @@ final class DossierViewParamsBuilderTest extends MockeryTestCase
 
         $this->fileTypeHelper
             ->expects('getMimeTypesByUploadGroup')
-            ->with(CovenantDocument::getUploadGroupId())
+            ->with(CovenantMainDocument::getUploadGroupId())
             ->andReturn(['mimetypes' => 'foo']);
 
         $this->fileTypeHelper
             ->expects('getExtensionsByUploadGroup')
-            ->with(CovenantDocument::getUploadGroupId())
+            ->with(CovenantMainDocument::getUploadGroupId())
             ->andReturn(['extensions' => 'foo']);
 
         $this->fileTypeHelper
             ->expects('getTypeNamesByUploadGroup')
-            ->with(CovenantDocument::getUploadGroupId())
+            ->with(CovenantMainDocument::getUploadGroupId())
             ->andReturn(['labels' => 'foo']);
 
         $this->groundViewFactory

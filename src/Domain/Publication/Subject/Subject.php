@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Subject;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Entity\Organisation;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -28,8 +28,8 @@ class Subject
     #[ORM\JoinColumn(nullable: false)]
     private Organisation $organisation;
 
-    /** @var Collection<array-key,Dossier> */
-    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Dossier::class)]
+    /** @var Collection<array-key,AbstractDossier> */
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: AbstractDossier::class)]
     private Collection $dossiers;
 
     public function __construct()
@@ -67,7 +67,7 @@ class Subject
     }
 
     /**
-     * @return Collection<Dossier>
+     * @return Collection<AbstractDossier>
      */
     public function getDossiers(): Collection
     {
@@ -75,7 +75,7 @@ class Subject
     }
 
     /**
-     * @param Collection<Dossier> $dossiers
+     * @param Collection<AbstractDossier> $dossiers
      */
     public function setDossiers(Collection $dossiers): void
     {

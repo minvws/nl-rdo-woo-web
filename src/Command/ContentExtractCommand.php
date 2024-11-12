@@ -7,16 +7,16 @@ namespace App\Command;
 use App\Domain\Ingest\Content\ContentExtractOptions;
 use App\Domain\Ingest\Content\ContentExtractService;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportDocument;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementDocument;
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantDocument;
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionDocument;
+use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportDocument;
+use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionMainDocument;
 use App\Entity\DecisionAttachment;
-use App\Entity\DecisionDocument;
 use App\Entity\Document;
 use App\Entity\EntityWithFileInfo;
 use Doctrine\ORM\EntityManagerInterface;
@@ -56,17 +56,17 @@ class ContentExtractCommand extends Command
             'Please select an entity class',
             [
                 Document::class,
-                DecisionDocument::class,
+                WooDecisionMainDocument::class,
                 DecisionAttachment::class,
-                CovenantDocument::class,
+                CovenantMainDocument::class,
                 CovenantAttachment::class,
                 AnnualReportAttachment::class,
-                AnnualReportDocument::class,
-                InvestigationReportDocument::class,
+                AnnualReportMainDocument::class,
+                InvestigationReportMainDocument::class,
                 InvestigationReportAttachment::class,
-                DispositionDocument::class,
+                DispositionMainDocument::class,
                 DispositionAttachment::class,
-                ComplaintJudgementDocument::class,
+                ComplaintJudgementMainDocument::class,
             ],
             0
         );

@@ -5,17 +5,20 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
 use App\Domain\Publication\Dossier\Type\DossierReference;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
+use App\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
+use App\Entity\Organisation;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<WooDecision>
+ * @extends AbstractDossierRepository<WooDecision>
  */
-class WooDecisionRepository extends ServiceEntityRepository
+class WooDecisionRepository extends AbstractDossierRepository implements ProvidesDossierTypeSearchResultInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -58,6 +61,48 @@ class WooDecisionRepository extends ServiceEntityRepository
             ->setParameter('documentNr', $documentNr)
             ->setParameter('type', DossierType::WOO_DECISION)
             ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
+        ;
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getSearchResultViewModel(string $prefix, string $dossierNr): ?WooDecisionSearchResult
+    {
+        $qb = $this->createQueryBuilder('dos')
+            ->select(sprintf(
+                'new %s(
+                    dos.dossierNr,
+                    dos.documentPrefix,
+                    dos.title, dos.decision,
+                    dos.summary,
+                    dos.publicationDate,
+                    dos.decisionDate,
+                    COUNT(doc)
+                )',
+                WooDecisionSearchResult::class,
+            ))
+            ->where('dos.documentPrefix = :prefix')
+            ->andWhere('dos.dossierNr = :dossierNr')
+            ->andWhere('dos.status IN (:statuses)')
+            ->leftJoin('dos.documents', 'doc')
+            ->groupBy('dos.id')
+            ->setParameter('prefix', $prefix)
+            ->setParameter('dossierNr', $dossierNr)
+            ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
+        ;
+
+        /** @var ?WooDecisionSearchResult */
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * @return WooDecision[]
+     */
+    public function findAllForOrganisation(Organisation $organisation): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.organisation = :organisation')
+            ->setParameter('organisation', $organisation)
         ;
 
         return $qb->getQuery()->getResult();

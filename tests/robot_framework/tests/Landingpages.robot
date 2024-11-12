@@ -21,14 +21,15 @@ Enable landingpages
   Change Department Settings  BZK  ${TRUE}
   Change Department Settings  VWS  ${TRUE}
   Go To Public
+  Sleep  1s
   Reload
-  Click  "Bekijk per bestuursorgaan"
+  Click Bekijk Per Bestuursorgaan
   Get Text  //*[@data-e2e-name="departments"]  contains  AZ
   Get Text  //*[@data-e2e-name="departments"]  contains  BZK
   Get Text  //*[@data-e2e-name="departments"]  contains  VWS
 
 Existing department landingpage works
-  Click  "Bekijk per bestuursorgaan"
+  Click Bekijk Per Bestuursorgaan
   Navigate To Individual Landingpage  AZ
   Navigate To Individual Landingpage  BZK
   Navigate To Individual Landingpage  VWS
@@ -44,7 +45,7 @@ Invisble landingpage is not accessible
   Change Department Settings  AZ  ${FALSE}
   # Check through listing on home
   Go To Public
-  Click  "Bekijk per bestuursorgaan"
+  Click Bekijk Per Bestuursorgaan
   Reload
   Get Text  //*[@data-e2e-name="departments"]  not contains  AZ
   # Check through URL
@@ -55,7 +56,7 @@ Invisble landingpage is not accessible
 
 *** Keywords ***
 Suite Setup
-  Suite Setup - CI
+  Suite Setup - CI  cleansheet=${FALSE}
 
 Navigate To Individual Landingpage
   [Arguments]  ${keyword}

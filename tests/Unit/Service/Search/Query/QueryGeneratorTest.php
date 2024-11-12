@@ -12,12 +12,13 @@ use App\Entity\Judgement;
 use App\Service\Search\Query\AggregationGenerator;
 use App\Service\Search\Query\Condition\ContentAccessConditions;
 use App\Service\Search\Query\Condition\FacetConditions;
+use App\Service\Search\Query\Condition\QueryConditions;
 use App\Service\Search\Query\Condition\SearchTermConditions;
 use App\Service\Search\Query\Facet\FacetListFactory;
 use App\Service\Search\Query\Facet\Input\FacetInputFactory;
 use App\Service\Search\Query\QueryGenerator;
-use App\Service\Search\Query\SortField;
-use App\Service\Search\Query\SortOrder;
+use App\Service\Search\Query\Sort\SortField;
+use App\Service\Search\Query\Sort\SortOrder;
 use App\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
@@ -83,6 +84,9 @@ class QueryGeneratorTest extends UnitTestCase
 
     public function testCreateQueryWithComplexConfig(): void
     {
+        $baseQueryConditions = \Mockery::mock(QueryConditions::class);
+        $baseQueryConditions->expects('applyToQuery')->twice(); // Second time in global aggregations!
+
         $result = $this->queryGenerator->createQuery(
             new SearchParameters(
                 facetInputs: $this->facetInputFactory->fromParameterBag(
@@ -102,6 +106,7 @@ class QueryGeneratorTest extends UnitTestCase
                 dossierInquiries: ['dos-inq-1', 'dos-inq-2'],
                 sortField: SortField::DECISION_DATE,
                 sortOrder: SortOrder::ASC,
+                baseQueryConditions: $baseQueryConditions,
             )
         );
 

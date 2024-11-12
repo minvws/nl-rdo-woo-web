@@ -95,12 +95,6 @@ class SearchTermConditions implements QueryConditions
                 )
                     ->setDefaultOperator($searchParameters->operator->value)
                     ->setBoost(4),
-                Query::simpleQueryString(
-                    fields: ['decision_content'],
-                    query: $searchParameters->query,
-                )
-                    ->setDefaultOperator($searchParameters->operator->value)
-                    ->setBoost(3),
             ],
             filter: [
                 Query::terms(

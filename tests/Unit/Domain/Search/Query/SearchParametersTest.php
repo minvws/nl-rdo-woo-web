@@ -7,14 +7,19 @@ namespace App\Tests\Unit\Domain\Search\Query;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Query\SearchType;
 use App\Service\Search\Model\FacetKey;
+use App\Service\Search\Query\Condition\QueryConditions;
+use App\Service\Search\Query\Facet\Input\DateFacetInput;
 use App\Service\Search\Query\Facet\Input\FacetInput;
 use App\Service\Search\Query\Facet\Input\FacetInputCollection;
 use App\Service\Search\Query\Facet\Input\FacetInputInterface;
 use App\Service\Search\Query\Facet\Input\StringValuesFacetInput;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use App\Service\Search\Query\Sort\SortField;
+use App\Service\Search\Query\Sort\SortOrder;
+use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
-class SearchParametersTest extends MockeryTestCase
+class SearchParametersTest extends UnitTestCase
 {
     public function testWithFacetInput(): void
     {
@@ -66,17 +71,66 @@ class SearchParametersTest extends MockeryTestCase
 
         $parameters = new SearchParameters(
             facetInputs: $facetInputCollection,
+            offset: 13,
             query: 'foo',
             searchType: SearchType::DOSSIER,
+            documentInquiries: ['doc1', 'doc2'],
+            dossierInquiries: ['dos1', 'dos2'],
         );
 
-        self::assertEquals(
-            [
-                FacetKey::DEPARTMENT->getParamName() => ['x' => 'y'],
-                'type' => SearchType::DOSSIER->value,
-                'q' => 'foo',
-            ],
-            $parameters->getQueryParameters()->all(),
+        $this->assertMatchesObjectSnapshot(
+            $parameters->getQueryParameters()
         );
+    }
+
+    public function testWithSort(): void
+    {
+        $parameters = new SearchParameters(
+            facetInputs: new FacetInputCollection(),
+            query: 'foo',
+        );
+
+        $this->assertMatchesObjectSnapshot(
+            $parameters->withSort(SortField::PUBLICATION_DATE, SortOrder::ASC)
+        );
+    }
+
+    public function testIncludeWithoutDate(): void
+    {
+        $dateFacetInput = DateFacetInput::fromParameterBag(
+            FacetKey::DATE,
+            new ParameterBag([
+                'dt' => ['from' => '2021-01-15'],
+            ])
+        );
+
+        $parameters = new SearchParameters(
+            facetInputs: new FacetInputCollection(...[
+                FacetKey::DATE->value => $dateFacetInput,
+            ]),
+            query: 'foo',
+        );
+
+        $this->assertMatchesObjectSnapshot(
+            $parameters->includeWithoutDate()
+        );
+    }
+
+    public function testWithBaseQuery(): void
+    {
+        $parameters = new SearchParameters(
+            facetInputs: new FacetInputCollection(),
+            offset: 13,
+            query: 'foo',
+            searchType: SearchType::DOSSIER,
+            documentInquiries: ['doc1', 'doc2'],
+            dossierInquiries: ['dos1', 'dos2'],
+        );
+
+        $queryConditions = \Mockery::mock(QueryConditions::class);
+        $newParameters = $parameters->withBaseQueryConditions($queryConditions);
+
+        $this->assertMatchesObjectSnapshot($newParameters);
+        $this->assertSame($queryConditions, $newParameters->baseQueryConditions);
     }
 }

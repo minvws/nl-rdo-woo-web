@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Dossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Form\Dossier\WooDecision\DocumentUploadType;
-use App\Message\ProcessDocumentMessage;
 use App\Service\Storage\EntityStorageService;
 use Predis\Client;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
- * Handles a HTTP request which either contains a chunked upload or complete files. Once completed, a message will be dispatched
+ * Handles an HTTP request which either contains a chunked upload or complete files. Once completed, a message will be dispatched
  * over the message bus to process the document async by a worker.
  */
 class FileUploader
@@ -30,7 +29,7 @@ class FileUploader
     ];
 
     public function __construct(
-        private readonly MessageBusInterface $messageBus,
+        private readonly DocumentDispatcher $dispatcher,
         private readonly FormFactoryInterface $formFactory,
         private readonly EntityStorageService $entityStorageService,
         private readonly LoggerInterface $logger,
@@ -44,7 +43,7 @@ class FileUploader
      * Will return true when the complete file has been uploaded (or last chunk has been received), or false when there are more chunks
      * to be uploaded.
      */
-    public function handleUpload(Request $request, Dossier $dossier): bool
+    public function handleUpload(Request $request, WooDecision $dossier): bool
     {
         if (! $request->request->has('chunkbyteoffset')) {
             return $this->handleCompleteFiles($request, $dossier);
@@ -53,7 +52,7 @@ class FileUploader
         return $this->handleChunkedUpload($request, $dossier);
     }
 
-    protected function handleCompleteFiles(Request $request, Dossier $dossier): bool
+    protected function handleCompleteFiles(Request $request, WooDecision $dossier): bool
     {
         $form = $this->formFactory->create(DocumentUploadType::class, $dossier, ['csrf_protection' => false]);
         $form->handleRequest($request);
@@ -79,14 +78,11 @@ class FileUploader
 
             $this->uploadQueue->add($dossier, $uploadedFile->getClientOriginalName());
 
-            $message = new ProcessDocumentMessage(
+            $this->dispatcher->dispatchProcessDocumentCommand(
                 dossierUuid: $dossier->getId(),
                 remotePath: $remotePath,
                 originalFilename: $uploadedFile->getClientOriginalName(),
-                chunked: false,
             );
-
-            $this->messageBus->dispatch($message);
         }
 
         return true;
@@ -98,7 +94,7 @@ class FileUploader
      *
      * @throws \Exception
      */
-    protected function handleChunkedUpload(Request $request, Dossier $dossier): bool
+    protected function handleChunkedUpload(Request $request, WooDecision $dossier): bool
     {
         $dossierId = $dossier->getId();
         if ($dossierId == null) {
@@ -147,8 +143,7 @@ class FileUploader
 
         $this->uploadQueue->add($dossier, $uploadedFile->getClientOriginalName());
 
-        // Dispatch a message to process the uploaded file
-        $message = new ProcessDocumentMessage(
+        $this->dispatcher->dispatchProcessDocumentCommand(
             dossierUuid: $dossierId,
             remotePath: $remoteChunkPath,
             originalFilename: $uploadedFile->getClientOriginalName(),
@@ -156,8 +151,6 @@ class FileUploader
             chunkUuid: $uuid,
             chunkCount: $chunkCount,
         );
-
-        $this->messageBus->dispatch($message);
 
         return true;
     }

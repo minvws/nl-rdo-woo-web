@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\Covenant;
 
-use App\Domain\Publication\Dossier\Command\UpdateDossierContentCommand;
+use App\Domain\Publication\Dossier\DossierDispatcher;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -14,7 +14,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
@@ -25,7 +24,7 @@ class ContentStepController extends AbstractController
 
     public function __construct(
         private readonly StepActionHelper $stepHelper,
-        private readonly MessageBusInterface $messageBus,
+        private readonly DossierDispatcher $dossierDispatcher,
     ) {
     }
 
@@ -55,9 +54,7 @@ class ContentStepController extends AbstractController
         $form = $this->getForm($dossier);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->messageBus->dispatch(
-                new UpdateDossierContentCommand($dossier),
-            );
+            $this->dossierDispatcher->dispatchUpdateDossierContentCommand($dossier);
 
             return $this->stepHelper->redirectAfterFormSubmit($wizardStatus, $form);
         }
@@ -102,9 +99,7 @@ class ContentStepController extends AbstractController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->messageBus->dispatch(
-                new UpdateDossierContentCommand($dossier),
-            );
+            $this->dossierDispatcher->dispatchUpdateDossierContentCommand($dossier);
 
             return $this->stepHelper->redirectToDossier($dossier);
         }

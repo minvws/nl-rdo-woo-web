@@ -10,7 +10,7 @@ use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\GuardEvent;
 
-final class PublishAsPreviewGuard implements EventSubscriberInterface
+class PublishAsPreviewGuard implements EventSubscriberInterface
 {
     public function guardPublicationAsPreview(GuardEvent $event): void
     {
@@ -28,6 +28,8 @@ final class PublishAsPreviewGuard implements EventSubscriberInterface
 
         if ($dossier->getPreviewDate() === null || $dossier->getPreviewDate() > new \DateTimeImmutable('now midnight')) {
             $event->setBlocked(true, 'A dossier with an empty or future preview date cannot be published as preview');
+
+            return;
         }
 
         if (! $dossier->isCompleted()) {
@@ -35,6 +37,9 @@ final class PublishAsPreviewGuard implements EventSubscriberInterface
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): array
     {
         return [

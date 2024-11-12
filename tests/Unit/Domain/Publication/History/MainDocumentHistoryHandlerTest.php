@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\History;
 
-use App\Domain\Publication\Dossier\AbstractDossierRepository;
+use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\History\MainDocumentHistoryHandler;
@@ -21,13 +21,13 @@ use Symfony\Component\Uid\Uuid;
 final class MainDocumentHistoryHandlerTest extends UnitTestCase
 {
     private HistoryService&MockInterface $historyService;
-    private AbstractDossierRepository&MockInterface $repository;
+    private DossierRepository&MockInterface $repository;
     private MainDocumentHistoryHandler $handler;
 
     public function setUp(): void
     {
         $this->historyService = \Mockery::mock(HistoryService::class);
-        $this->repository = \Mockery::mock(AbstractDossierRepository::class);
+        $this->repository = \Mockery::mock(DossierRepository::class);
 
         $this->handler = new MainDocumentHistoryHandler(
             $this->historyService,
