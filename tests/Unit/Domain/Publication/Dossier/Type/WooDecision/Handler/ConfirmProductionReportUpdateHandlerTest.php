@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\ConfirmProductionReportUpdateCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\Handler\ConfirmProductionReportUpdateHandler;
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\ProductionReportProcessRunRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Entity\FileInfo;
-use App\Entity\ProductionReportProcessRun;
-use App\Exception\InventoryUpdaterException;
-use App\Repository\ProductionReportProcessRunRepository;
+use App\Domain\Publication\FileInfo;
+use App\Exception\ProductionReportUpdaterException;
 use App\Service\HistoryService;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
@@ -75,7 +75,7 @@ class ConfirmProductionReportUpdateHandlerTest extends UnitTestCase
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($wooDecision, DossierStatusTransition::UPDATE_PRODUCTION_REPORT);
 
-        $this->expectException(InventoryUpdaterException::class);
+        $this->expectException(ProductionReportUpdaterException::class);
 
         $this->handler->__invoke(
             new ConfirmProductionReportUpdateCommand($wooDecision)

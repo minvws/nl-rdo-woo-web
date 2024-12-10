@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Worker\Pdf;
 
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\LocalFilesystem;
 use App\Service\Storage\ThumbnailStorageService;

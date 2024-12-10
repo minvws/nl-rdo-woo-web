@@ -9,9 +9,9 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveInventoryAndDo
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\UpdateDecisionCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\UpdateInquiryLinksCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawAllDocumentsCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WithdrawReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
-use App\Entity\WithdrawReason;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\Messenger\Envelope;

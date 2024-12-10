@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Domain\Publication\Dossier\Type;
 
+use App\Domain\Publication\Attachment\AbstractAttachmentRepository;
 use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
-use App\Domain\Publication\Dossier\Type\AbstractAttachmentRepository;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;

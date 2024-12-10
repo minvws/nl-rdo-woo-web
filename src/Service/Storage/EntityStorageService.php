@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Storage;
 
 use App\Domain\Ingest\Content\Event\EntityFileUpdateEvent;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\File;

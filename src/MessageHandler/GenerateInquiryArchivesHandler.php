@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\InquiryRepository;
 use App\Message\GenerateInquiryArchivesMessage;
-use App\Repository\InquiryRepository;
 use App\Service\BatchDownloadService;
 use App\Service\Inquiry\InquiryService;
 use Psr\Log\LoggerInterface;

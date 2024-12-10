@@ -8,8 +8,8 @@
 
 [Inleiding](#inleiding)  
 [1. Uploadstraat stap 1: Basisgegevens](#1-uploadstraat-stap-1-basisgegevens)  
-[2. Uploadstraat stap 2: klachtenoordeel gegevens toevoegen](#2-uploadstraat-stap-2-klachtenoordeel-gegevens-toevoegen)  
-[3. Uploadstraat stap 3: klachtenoordeel publiceren](#3-uploadstraat-stap-3-klachtenoordeel-publiceren)  
+[2. Uploadstraat stap 2: Klachtenoordeel gegevens toevoegen](#2-uploadstraat-stap-2-klachtenoordeel-gegevens-toevoegen)  
+[3. Uploadstraat stap 3: Klachtenoordeel publiceren](#3-uploadstraat-stap-3-klachtenoordeel-publiceren)  
 [4. Wijzigen na publicatie](#4-wijzigen-na-publicatie)  
 
 ---
@@ -35,14 +35,14 @@ van de status kun je de publicatie nog verwijderen of aanpassen.
 
 ## 1. Uploadstraat stap 1: Basisgegevens
 
-<img src=images/klachtenoordeel_1.png  alt="Afbeelding toont de eerste stap van de uploadstraat waar de basisgegeven worden ingevuld."/>
+<img src=images/klachtenoordeel_1.png alt="Afbeelding toont de eerste stap van de uploadstraat waar de basisgegeven worden ingevuld."/>
 
-**Omschrijving**
-Voer een korte en concrete omschrijving in, zonder onnodige voorzetsels, lidwoorden of vanzelfsprekende termen zoals 'klachtenoordeel'
+**Omschrijving**  
+Voer een korte en concrete omschrijving in, zonder onnodige voorzetsels, lidwoorden of vanzelfsprekende termen zoals 'Klachtenoordeel'
 en ‘aangaande’. Deze omschrijving verschijnt als titel op de website en is verplicht om in te vullen.
 
-**Datum van het klachtenoordeel**  
-Kies de datum van dat in het klachtenoordeel wordt gebruikt. Het invullen van de beginmaand is verplicht.
+**Datum van het Klachtenoordeel**  
+Gebruik hier de datum die in het klachtenoordeel wordt vermeld. Het invullen van dit veld is verplicht.
 
 **Verantwoordelijk bestuursorgaan**  
 Kies uit het dropdown-menu het bestuursorgaan dat verantwoordelijk is voor deze publicatie. Indien er slechts één optie beschikbaar
@@ -64,49 +64,50 @@ dus voer het zorgvuldig in. Dit veld is verplicht om in te vullen.
 
 **Prefix voor publicatie**  
 Kies een prefix uit het dropdown-menu, bestaande uit minimaal 5 karakters, die samen met het referentienummer zorgt voor een
-unieke identificatie van de publicatie binnen de organisatie. Deze combinatie garandeert een uniek ID in de database. Als er
-slechts één optie beschikbaar is, wordt deze automatisch geselecteerd. Dit veld is verplicht om in te vullen.
+unieke identificatie van de publicatie binnen de organisatie. De prefixes worden aangemaakt door de organisatiebeheerder van je organisatie.
+Deze combinatie van prefix en referentienummer garandeert een uniek ID in de database. Als er slechts één optie beschikbaar is,
+wordt deze automatisch geselecteerd. Dit veld is verplicht om in te vullen.
 
 ---
 
-## 2. Uploadstraat stap 2: klachtenoordeel gegevens toevoegen
+## 2. Uploadstraat stap 2: Klachtenoordeel gegevens toevoegen
 
 <img src=images/klachtenoordeel_2.png  alt="De afbeelding laat de tweede stap van de uploadstraat zien waar de toelichting
-en het klachtenoordeel ingevuld worden "/>
+en het klachtenoordeel ingevuld worden"/>
 
-**Toelichting op het klachtenoordeel**  
+**Toelichting op het Klachtenoordeel**  
 Hier schrijf je een beknopte beschrijving van de inhoud van het klachtenoordeel. Deze toelichting verschijnt bovenaan de pagina
 en biedt een overzichtelijke introductie van de belangrijkste punten. Zorg ervoor dat de beschrijving helder en informatief is,
-zodat lezers snel begrijpen waar het klachtenoordeel over gaat. Dit veld is vereist om in te vullen.
+zodat lezers snel begrijpen waar het klachtenoordeel over gaat. Dit veld is verplicht om in te vullen.
 
-### klachtenoordeel toevoegen
+### Klachtenoordeel toevoegen
 
 <img src=images/klachtenoordeel_3.png  alt="Deze afbeelding laat de uploadwizard voor het klachtenoordeel zien"/>
 
-**Bestand**
+**Bestand**  
 Hier upload je maximaal 1 bestand van het type excel, pdf, powerpoint, of word.
 
-**Bestandsnaam**
+**Bestandsnaam**  
 Dit wordt standaard overgenomen uit het geüploade bestand, dat aan te passen is naar wens. De bestandsnaam wordt getoond op de
 website. Vul geen namen of andere persoonlijke gegevens in.
 
-**Referentienummer bestand**
-Vrij invulveld. Bijvoorbeeld een verwijzing naar de interne vindplaats of verantwoordelijke van het document. Wordt niet getoond
-op de website.
+**Referentienummer bestand**  
+Dit is een optioneel tekstveld. Bijvoorbeeld een verwijzing naar de interne vindplaats of verantwoordelijke van het document.
+Wordt niet getoond op de website.
 
-**Taal van het document**
-Keuze uit Nederlands (standaard ingevuld) of Engels
+**Taal van het document**  
+Keuze uit Nederlands (standaard ingevuld) of Engels.
 
-**Formele datum**
+**Formele datum**  
 De datum die wordt gehanteerd in het klachtenoordeel.
 
-**Weigeringsgronden**
+**Weigeringsgronden**  
 Wanneer gegevens in het document gelakt zijn, zijn hiervoor weigeringsgronden gebruikt uit de Wet open overheid. Kies indien
 van toepassing welke weigeringsgronden gebruikt zijn. Dit is een standaardlijst met weigeringsgronden waar je uit kan kiezen.
 
 ---
 
-## 3. Uploadstraat stap 3: klachtenoordeel publiceren
+## 3. Uploadstraat stap 3: Klachtenoordeel publiceren
 
 <img src=images/klachtenoordeel_4.png  alt="Deze afbeelding laat de laatste stap van de uploadstraat zien waar de publicatie
 datum wordt ingesteld"/>
@@ -130,7 +131,7 @@ publicatie"/>
 **Wijzigen voor de publicatie**  
 Wanneer de publicatie is opgeslagen en nog niet de status ‘openbaar’ heeft, is het nog mogelijk om alles aan te passen of om
 het hoofdbestand te verwijderen. Daarnaast kan je een klachtenoordeel verwijderen wanneer deze nog het label ‘concept’ heeft
-door naar beneden te scrollen en onder het kopje ‘gevarenzone’ op ‘klachtenoordeel verwijderen’ te klikken.
+door naar beneden te scrollen en onder het kopje ‘gevarenzone’ op ‘Klachtenoordeel verwijderen’ te klikken.
 
 **Wijzigen na de publicatie**  
 Zodra het klachtenoordeel openbaar is gemaakt blijft het mogelijk om indien nodig wijzigingen aan te brengen, het is dan niet

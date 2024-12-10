@@ -1,0 +1,32 @@
+
+{% set tabPaginators = [
+    activeUsers,
+    deactivatedUsers,
+    activeAdmins is not null ? activeAdmins : null,
+    deactivatedAdmins is not null ? deactivatedAdmins : null,
+] | filter(value => value) %}
+
+{% set tabTitles = [
+    'admin.user.active_users' | trans,
+    'admin.user.deactivated_users' | trans,
+    activeAdmins is not null ? 'admin.user.active_admins' | trans : null,
+    deactivatedAdmins is not null ? 'admin.user.deactivated_admins' | trans : null,
+] | filter(value => value) %}
+
+<twig:Admin:Tabs
+    titles="{{ tabTitles }}"
+    title="{{ page_title }}"
+>
+    {% for paginator in tabPaginators %}
+        <twig:Admin:Tab:Content
+            tabNumber="{{ loop.index }}"
+            isHidden="{{ not loop.first }}"
+        >
+            {% include 'admin/user/snippets/user-tab-content.html.twig' with {
+                'fragment': '#tabcontrol-' ~ loop.index,
+                'paginator': paginator,
+                'title': tabTitles[loop.index0],
+            } %}
+        </twig:Admin:Tab:Content>
+    {% endfor %}
+</twig:Admin:Tabs>

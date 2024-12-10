@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\ProcessDocumentCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
 use App\Domain\Upload\Process\FileProcessor;
 use App\Domain\Upload\UploadedFile;
-use App\Repository\WooDecisionRepository;
 use App\Service\DocumentUploadQueue;
 use App\Service\DossierService;
 use App\Service\Storage\EntityStorageService;

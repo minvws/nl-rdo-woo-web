@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Ingest\Content\Extractor;
 
 use App\Domain\Ingest\Content\LazyFileReference;
-use App\Entity\FileInfo;
+use App\Domain\Publication\FileInfo;
 
 interface ContentExtractorInterface
 {

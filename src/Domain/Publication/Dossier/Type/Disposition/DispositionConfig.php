@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\Disposition;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Step\StepDefinition;
 use App\Domain\Publication\Dossier\Step\StepDefinitionInterface;
 use App\Domain\Publication\Dossier\Step\StepName;
@@ -38,9 +37,12 @@ readonly class DispositionConfig implements DossierTypeConfigInterface
         return $this->dispositionWorkflow;
     }
 
-    public function createInstance(): AbstractDossier
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getEntityClass(): string
     {
-        return new Disposition();
+        return Disposition::class;
     }
 
     /**
@@ -58,5 +60,13 @@ readonly class DispositionConfig implements DossierTypeConfigInterface
     public function getCreateRouteName(): string
     {
         return 'app_admin_dossier_disposition_details_create';
+    }
+
+    public function getSubEntityClasses(): array
+    {
+        return [
+            DispositionMainDocument::class,
+            DispositionAttachment::class,
+        ];
     }
 }

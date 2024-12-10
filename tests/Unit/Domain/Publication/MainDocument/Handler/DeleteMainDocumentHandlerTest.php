@@ -11,12 +11,12 @@ use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentRep
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use App\Domain\Publication\FileInfo;
 use App\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use App\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent;
 use App\Domain\Publication\MainDocument\Handler\DeleteMainDocumentHandler;
 use App\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface;
 use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
-use App\Entity\FileInfo;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

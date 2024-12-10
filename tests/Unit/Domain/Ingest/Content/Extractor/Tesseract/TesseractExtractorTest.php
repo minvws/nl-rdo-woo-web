@@ -8,7 +8,7 @@ use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use App\Domain\Ingest\Content\Extractor\Tesseract\TesseractExtractor;
 use App\Domain\Ingest\Content\Extractor\Tesseract\TesseractService;
 use App\Domain\Ingest\Content\LazyFileReference;
-use App\Entity\FileInfo;
+use App\Domain\Publication\FileInfo;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 

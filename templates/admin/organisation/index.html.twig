@@ -34,7 +34,7 @@
                         </td>
                         <td>
                             {% for department in organisation.departments %}
-                                {{ department.shortTag }}{% if not loop.last %}, {% endif %}
+                                {{ department.shortTagOrName }}{% if not loop.last %}, {% endif %}
                             {% endfor %}
                         </td>
                         <td>

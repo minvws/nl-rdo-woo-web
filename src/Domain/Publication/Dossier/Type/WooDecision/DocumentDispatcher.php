@@ -8,8 +8,8 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Command\ProcessDocumentComma
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\ReplaceDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawDocumentCommand;
-use App\Entity\Document;
-use App\Entity\WithdrawReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 

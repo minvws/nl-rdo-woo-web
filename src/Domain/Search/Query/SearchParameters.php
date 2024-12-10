@@ -163,7 +163,7 @@ final readonly class SearchParameters
             facetInputs: $this->facetInputs,
             operator: $this->operator,
             limit: $this->limit,
-            offset: 0,
+            offset: $this->offset,
             pagination: $this->pagination,
             aggregations: $this->aggregations,
             query: $this->query,

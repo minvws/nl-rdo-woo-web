@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\ProductionReportProcessRunCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
 use App\Domain\Publication\Dossier\Type\WooDecision\Handler\ProductionReportProcessRunHandler;
-use App\Entity\ProductionReportProcessRun;
-use App\Repository\ProductionReportProcessRunRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\ProductionReportProcessRunRepository;
 use App\Service\Inventory\InventoryRunProcessor;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;

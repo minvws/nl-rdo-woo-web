@@ -14,7 +14,7 @@ networks:
 
 services:
   app:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.1.0
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.2.1
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -23,7 +23,7 @@ services:
         published: 8000
     volumes:
       - ./:/var/www/html
-      - ./docker/php.ini:/usr/local/etc/php/custom.d/php.ini
+      - ./docker/app/php.ini:/usr/local/etc/php/custom.d/php.ini
       - ./auth.json:/home/woopie/.composer/auth.json:ro
       - woo_composer:/home/woopie/.composer
       - woo_npm:/home/woopie/.npm
@@ -39,23 +39,24 @@ services:
   worker:
     depends_on:
       - rabbitmq
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.1.0
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.2.1
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
     volumes:
       - ./:/var/www/html
-      - ./docker/php.ini:/usr/local/etc/php/custom.d/php.ini
+      - ./docker/app.ini:/usr/local/etc/php/custom.d/php.ini
     networks:
       - woopie
     environment:
       PHP_INI_SCAN_DIR: "/usr/local/etc/php/custom.d:/usr/local/etc/php/conf.d"
     stop_signal: SIGINT
+    restart: always
     command:
       [
         "bash",
         "-c",
-        "wait-for-it rabbitmq:5672 --timeout=0 --strict -- symfony run --watch=config,src,templates,vendor symfony console messenger:consume -vv high esupdater ingestor global",
+        "wait-for-it rabbitmq:5672 --timeout=0 --strict -- symfony run --watch=config,src,templates,vendor php -d memory_limit=-1 bin/console messenger:consume --memory-limit=1G -vv high esupdater ingestor global",
       ]
 
   tika:
@@ -127,8 +128,9 @@ services:
       - woopie
 
   clamav:
-    image: clamav/clamav:latest
-    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: docker/clamav/Dockerfile
     labels:
       com.symfony.server.service-ignore: true
     ports:

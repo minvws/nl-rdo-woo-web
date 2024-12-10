@@ -9,10 +9,10 @@ use App\Domain\Publication\Attachment\AttachmentRepository;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Type\DossierType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Publication\MainDocument\MainDocumentRepository;
-use App\Entity\Document;
-use App\Repository\DocumentRepository;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Component\Uid\Uuid;
 

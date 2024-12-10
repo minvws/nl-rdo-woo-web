@@ -6,7 +6,6 @@ namespace App\Domain\Publication\History;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\DossierTypeWithPreview;
-use App\Entity\History;
 use App\Service\HistoryService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\EntityManagerInterface;

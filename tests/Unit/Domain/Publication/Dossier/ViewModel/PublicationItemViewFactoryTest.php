@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\AbstractPublicationItem;
 use App\Domain\Publication\Dossier\ViewModel\PublicationItemViewFactory;
-use App\Entity\FileInfo;
-use App\Entity\PublicationItem;
+use App\Domain\Publication\FileInfo;
 use App\Tests\Unit\UnitTestCase;
 
 final class PublicationItemViewFactoryTest extends UnitTestCase
@@ -18,7 +18,7 @@ final class PublicationItemViewFactoryTest extends UnitTestCase
         $fileInfo->shouldReceive('getSize')->andReturn(100);
         $fileInfo->shouldReceive('isUploaded')->andReturn(true);
 
-        $publicationItem = \Mockery::mock(PublicationItem::class);
+        $publicationItem = \Mockery::mock(AbstractPublicationItem::class);
         $publicationItem->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $result = (new PublicationItemViewFactory())->make($publicationItem);

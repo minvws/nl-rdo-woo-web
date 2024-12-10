@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

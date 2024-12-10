@@ -10,15 +10,10 @@ import {
 import { jsEnabled } from '@utils';
 import { init } from './init';
 
-let autoSubmitFormCleanupSpy: MockInstance;
 let autoSubmitFormInitializeSpy: MockInstance;
-let detailsComponentsCleanupSpy: MockInstance;
 let detailsComponentsInitializeSpy: MockInstance;
-let mainNavCleanupSpy: MockInstance;
 let mainNavInitializeSpy: MockInstance;
-let searchResultsCleanupSpy: MockInstance;
 let searchResultsInitializeSpy: MockInstance;
-let tabsCleanupSpy: MockInstance;
 let tabsInitializeSpy: MockInstance;
 
 describe('the main "init" function for the admin', () => {
@@ -32,56 +27,40 @@ describe('the main "init" function for the admin', () => {
 
   vi.mock('@js/shared', () => ({
     detailsComponents: () => ({
-      cleanup: detailsComponentsCleanupSpy,
       initialize: detailsComponentsInitializeSpy,
     }),
+    tabs: () => ({ initialize: tabsInitializeSpy }),
   }));
 
   vi.mock('./auto-submit-form', () => ({
     autoSubmitForm: () => ({
-      cleanup: autoSubmitFormCleanupSpy,
       initialize: autoSubmitFormInitializeSpy,
     }),
   }));
 
   vi.mock('./main-nav', () => ({
     mainNav: () => ({
-      cleanup: mainNavCleanupSpy,
       initialize: mainNavInitializeSpy,
     }),
   }));
 
   vi.mock('./search-results', () => ({
     searchResults: () => ({
-      cleanup: searchResultsCleanupSpy,
       initialize: searchResultsInitializeSpy,
     }),
   }));
 
-  vi.mock('./tabs', () => ({
-    tabs: () => ({ cleanup: tabsCleanupSpy, initialize: tabsInitializeSpy }),
-  }));
-
   beforeEach(() => {
-    autoSubmitFormCleanupSpy = vi.fn();
     autoSubmitFormInitializeSpy = vi.fn();
-    detailsComponentsCleanupSpy = vi.fn();
     detailsComponentsInitializeSpy = vi.fn();
-    mainNavCleanupSpy = vi.fn();
     mainNavInitializeSpy = vi.fn();
-    searchResultsCleanupSpy = vi.fn();
     searchResultsInitializeSpy = vi.fn();
-    tabsCleanupSpy = vi.fn();
     tabsInitializeSpy = vi.fn();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
-
-  const triggerBeforeUnload = () => {
-    window.dispatchEvent(new Event('beforeunload'));
-  };
 
   test('should add a class to the html element when javascript is enabled', () => {
     expect(jsEnabled).not.toHaveBeenCalled();
@@ -103,21 +82,5 @@ describe('the main "init" function for the admin', () => {
     expect(mainNavInitializeSpy).toHaveBeenCalled();
     expect(searchResultsInitializeSpy).toHaveBeenCalled();
     expect(tabsInitializeSpy).toHaveBeenCalled();
-  });
-
-  test('should clean up the functionalities when the beforeunload event is triggered', () => {
-    init();
-    expect(autoSubmitFormCleanupSpy).not.toHaveBeenCalled();
-    expect(detailsComponentsCleanupSpy).not.toHaveBeenCalled();
-    expect(mainNavCleanupSpy).not.toHaveBeenCalled();
-    expect(searchResultsCleanupSpy).not.toHaveBeenCalled();
-    expect(tabsCleanupSpy).not.toHaveBeenCalled();
-
-    triggerBeforeUnload();
-    expect(autoSubmitFormCleanupSpy).toHaveBeenCalled();
-    expect(detailsComponentsCleanupSpy).toHaveBeenCalled();
-    expect(mainNavCleanupSpy).toHaveBeenCalled();
-    expect(searchResultsCleanupSpy).toHaveBeenCalled();
-    expect(tabsCleanupSpy).toHaveBeenCalled();
   });
 });

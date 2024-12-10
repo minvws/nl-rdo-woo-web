@@ -1,0 +1,10 @@
+{
+    "content": "foo",
+    "inventoryStatus": {
+        "hasErrors": true,
+        "isQueued": false,
+        "isRunning": false,
+        "needsUpdate": false,
+        "needsConfirmation": false
+    }
+}

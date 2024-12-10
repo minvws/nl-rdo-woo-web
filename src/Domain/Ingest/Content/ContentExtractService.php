@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Ingest\Content;
 
 use App\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Storage\EntityStorageService;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;

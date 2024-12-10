@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Inventory;
-use App\Entity\ProductionReport;
-use App\Entity\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReport;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Exception\ProcessInventoryException;
 use App\Service\Inventory\InventoryService;
 use App\Service\Inventory\Reader\InventoryReaderFactory;

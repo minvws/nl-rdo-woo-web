@@ -108,14 +108,8 @@ Link Inquiry To Documents
   Wait For Condition  Text  //div[@class="bhr-upload-area__files-area"]  contains  ${filename}  timeout=10s
   Select Prefix When Linking Inquiries  MINVWS
   Click  id=inquiry_link_documents_form_link
-  Wait For Condition
-  ...  Text
-  ...  //*[@data-e2e-name="inquiry-alerts"]
-  ...  contains
-  ...  De zaaknummers worden gekoppeld
-  ...  timeout=10s
-  Sleep  5s
-  Reload
+  Wait For Condition  Text  //*[@data-e2e-name="inquiry-alerts"]  contains  zaaknummers gekoppeld  timeout=10s
+  Click  id=inquiry_link_documents_form_cancel
 
 Select Prefix When Linking Inquiries
   [Arguments]  ${prefix}
@@ -133,3 +127,13 @@ Select Prefix When Linking Inquiries
 Verify Inquiry Document Count
   [Arguments]  ${inquiry}  ${count}
   Get Text  //*[@data-e2e-name="inquiry-list"]//tr[contains(.,'${inquiry}')]/td[3]  equals  ${count}
+
+Download Inquiry Archive
+  Click  //button[@data-e2e-name="download-documents-button"]
+  Wait Until Keyword Succeeds  10min  10s  Download Status Not Contains Pending
+  Generic Download Click  //a[@data-e2e-name="download-file-link"]
+
+Download Status Not Contains Pending
+  Go Back
+  Click  //button[@data-e2e-name="download-documents-button"]
+  Get Text  //*[@data-e2e-name="download-status"]  not contains  Het archief is nog niet gereed voor download.

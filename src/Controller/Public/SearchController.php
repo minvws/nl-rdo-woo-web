@@ -87,7 +87,7 @@ class SearchController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/alle-categorieën', name: 'app_browse')]
+    #[Route('/alle-categorieën', name: 'app_browse', options: ['sitemap' => ['priority' => 0.7]])]
     public function browse(Request $request, Breadcrumbs $breadcrumbs): Response
     {
         // If we have a POST request, we have a search query in the body. Redirect to GET request

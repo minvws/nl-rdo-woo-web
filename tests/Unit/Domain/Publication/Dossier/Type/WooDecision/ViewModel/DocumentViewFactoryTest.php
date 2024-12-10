@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document as DocumentEntity;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DocumentViewFactory;
-use App\Entity\Document as DocumentEntity;
 use App\Service\Search\SearchService;
 use App\Tests\Unit\UnitTestCase;
 

@@ -6,11 +6,12 @@ namespace App\Controller\Admin\Dossier\WooDecision;
 
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 use App\Form\Dossier\WooDecision\InventoryType;
-use App\Repository\DocumentRepository;
-use App\ValueObject\InventoryStatus;
+use App\Service\Uploader\UploadGroupId;
+use App\ValueObject\ProductionReportStatus;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -70,6 +71,7 @@ class DocumentsEditStepController extends AbstractController
             'workflowStatus' => $wizardStatus,
             'pagination' => $pagination,
             'dataPath' => $dataPath,
+            'mimeTypes' => UploadGroupId::WOO_DECISION_DOCUMENTS->getMimeTypes(),
         ]);
     }
 
@@ -87,7 +89,7 @@ class DocumentsEditStepController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        return $this->documentsHelper->getInventoryProcessResponse($dossier);
+        return $this->documentsHelper->getProductionReportProcessResponse($dossier);
     }
 
     #[Route(
@@ -106,8 +108,16 @@ class DocumentsEditStepController extends AbstractController
             return $this->stepHelper->redirectToDossier($dossier);
         }
 
-        $form = $this->createForm(InventoryType::class);
+        $form = $this->createForm(InventoryType::class, $dossier);
         $form->handleRequest($request);
+
+        if ($this->stepHelper->isFormCancelled($form)) {
+            return $this->redirectToRoute(
+                'app_admin_dossier_woodecision_documents_edit',
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            );
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form->get('inventory')->getData();
             if (! $uploadedFile instanceof UploadedFile) {
@@ -151,7 +161,7 @@ class DocumentsEditStepController extends AbstractController
             'processRun' => $processRun,
             'workflowStatus' => $wizardStatus,
             'inventoryForm' => $form,
-            'inventoryStatus' => new InventoryStatus($dossier),
+            'inventoryStatus' => new ProductionReportStatus($dossier),
             'dataPath' => $dataPath,
         ]);
     }

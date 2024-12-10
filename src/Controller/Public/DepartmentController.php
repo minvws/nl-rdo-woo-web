@@ -51,7 +51,7 @@ class DepartmentController extends AbstractController
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('public.global.label.departments', 'app_departments_index');
-        $breadcrumbs->addItem($department->getShortTag());
+        $breadcrumbs->addItem($department->getShortTagOrName());
 
         $searchParameters = $this->searchParametersFactory->createForDepartment($department);
 

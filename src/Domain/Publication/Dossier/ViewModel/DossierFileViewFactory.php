@@ -6,7 +6,7 @@ namespace App\Domain\Publication\Dossier\ViewModel;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Storage\ThumbnailStorageService;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 

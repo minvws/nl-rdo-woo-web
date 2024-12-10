@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Domain\Ingest\Process\SubType\Strategy;
 use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\Strategy\TikaOnlySubTypeIngestStrategy;
-use App\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;

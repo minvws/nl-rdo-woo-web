@@ -34,10 +34,11 @@ Fill Out Basic Details
     Select Options By  id=details_date_to  value  ${date_to}
   END
   Select Options By  //select[@name="details[departments][0]"]  index  1
-  Select Random Subject
   IF  '${type}' == 'woo-decision'
-    Check Checkbox  text=Woo-verzoek
-    Select Options By  id=details_subject  label  Geen onderwerp
+    Check Checkbox  id=details_publication_reason_1
+    Select Options By  id=details_subject  label  Opstart Corona
+  ELSE
+    Select Random Subject
   END
   Select Options By  id=details_documentPrefix_documentPrefix  text  ${prefix}
   Fill Text  id=details_dossierNr  ${DOSSIER_REFERENCE}

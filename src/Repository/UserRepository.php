@@ -56,19 +56,64 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->save($user, true);
     }
 
-    public function findAllForOrganisationQuery(Organisation $organisation, bool $includeSuperAdmins): Query
+    public function findActiveUsersForOrganisationQuery(Organisation $organisation): Query
     {
-        $qb = $this->createQueryBuilder('u')
-            ->join('u.organisation', 'o')
+        $qb = $this->createQueryBuilder('u');
+        $qb->join('u.organisation', 'o')
             ->andWhere('o.id = :val')
+            ->andWhere('u.enabled = true')
+            ->andWhere($qb->expr()->orX(
+                "CONTAINS(u.roles, '\"" . Roles::ROLE_VIEW_ACCESS . "\"') = true",
+                "CONTAINS(u.roles, '\"" . Roles::ROLE_DOSSIER_ADMIN . "\"') = true",
+                "CONTAINS(u.roles, '\"" . Roles::ROLE_ORGANISATION_ADMIN . "\"') = true",
+            ))
             ->setParameter('val', $organisation->getId())
             ->orderBy('u.id', 'ASC');
 
-        if ($includeSuperAdmins) {
-            $qb->orWhere("CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = true");
-        } else {
-            $qb->andWhere("CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = false");
-        }
+        return $qb->getQuery();
+    }
+
+    public function findDeactivatedUsersForOrganisationQuery(Organisation $organisation): Query
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->join('u.organisation', 'o')
+            ->andWhere('o.id = :val')
+            ->andWhere('u.enabled = false')
+            ->andWhere($qb->expr()->orX(
+                "CONTAINS(u.roles, '\"" . Roles::ROLE_VIEW_ACCESS . "\"') = true",
+                "CONTAINS(u.roles, '\"" . Roles::ROLE_DOSSIER_ADMIN . "\"') = true",
+                "CONTAINS(u.roles, '\"" . Roles::ROLE_ORGANISATION_ADMIN . "\"') = true",
+            ))
+            ->setParameter('val', $organisation->getId())
+            ->orderBy('u.id', 'ASC');
+
+        return $qb->getQuery();
+    }
+
+    public function findActiveAdminsQuery(): Query
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->join('u.organisation', 'o')
+            ->andWhere('u.enabled = true')
+            ->andWhere($qb->expr()->orX(
+                "CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = true",
+                "CONTAINS(u.roles, '\"" . Roles::ROLE_GLOBAL_ADMIN . "\"') = true",
+            ))
+            ->orderBy('u.id', 'ASC');
+
+        return $qb->getQuery();
+    }
+
+    public function findDeactivatedAdminsQuery(): Query
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->join('u.organisation', 'o')
+            ->andWhere('u.enabled = false')
+            ->andWhere($qb->expr()->orX(
+                "CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = true",
+                "CONTAINS(u.roles, '\"" . Roles::ROLE_GLOBAL_ADMIN . "\"') = true",
+            ))
+            ->orderBy('u.id', 'ASC');
 
         return $qb->getQuery();
     }

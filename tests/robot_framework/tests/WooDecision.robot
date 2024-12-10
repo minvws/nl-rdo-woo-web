@@ -21,7 +21,7 @@ Upload a production report with N public files and a zip with N-1 files
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=MINVWS1
   Fill Out Decision Details  Openbaarmaking
-  Upload Inventory  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
+  Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
   Upload Document Zip  tests/robot_framework/files/woodecision/documenten - 10-1.zip
   Verify Document Upload Remaining  Nog te uploaden: 1 van 10 documenten.
@@ -30,7 +30,7 @@ Upload a production report with N public files and a zip with N+1 files
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=MINVWS2
   Fill Out Decision Details  Openbaarmaking
-  Upload Inventory  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
+  Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
   Upload Document Zip  tests/robot_framework/files/woodecision/documenten - 10+1.zip
   Verify Document Upload Completed
@@ -42,7 +42,7 @@ Upload a production report with N public files and a zip with N other files
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=MINVWS3
   Fill Out Decision Details  Openbaarmaking
-  Upload Inventory  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
+  Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
   Upload Document Zip  tests/robot_framework/files/woodecision/documenten - 10 andere.zip
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
@@ -51,7 +51,7 @@ Upload a production report with N public files, M non-public files, and a zip wi
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=MINVWS4
   Fill Out Decision Details  Openbaarmaking
-  Upload Inventory  tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
+  Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 8 van 8 documenten.
   Upload Document Zip  tests/robot_framework/files/woodecision/documenten - 10.zip
   Verify Document Upload Completed
@@ -62,48 +62,54 @@ Upload a production report with N public files, M non-public files, and a zip wi
 
 Upload a production report with N public files, M already public files, and a zip with N + M files
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/woodecision/productierapport - 2 openbaar.xlsx
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 2.zip
   ...  number_of_documents=2
   ...  prefix=MINVWS5
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=MINVWS5
   Fill Out Decision Details  Openbaarmaking
-  Upload Inventory  tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx  ${TRUE}
-  Verify Inventory Error  Regel 1: documentnummer 1001 bestaat al in een ander dossier
-  Verify Inventory Error  Regel 2: documentnummer 1002 bestaat al in een ander dossier
+  Upload Production Report
+  ...  tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
+  ...  ${TRUE}
+  Verify Production Report Error  Regel 1: documentnummer 1001 bestaat al in een ander dossier
+  Verify Production Report Error  Regel 2: documentnummer 1002 bestaat al in een ander dossier
 
 In a public dossier with N public and M non-public documents, replace the production report with one where 1 non-public document has been made public
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 8.zip
   ...  number_of_documents=8
   ...  prefix=MINVWS6
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
-  Upload Inventory  tests/robot_framework/files/woodecision/productierapport - 9 openbaar 1 niet openbaar.xlsx  ${TRUE}
-  Verify Inventory Replace  Productierapport geüpload en gecontroleerd
-  Verify Inventory Replace  1 bestaand document wordt aangepast.
-  Click Confirm Inventory Replacement
-  Verify Inventory Replace  De inventaris is succesvol vervangen.
+  Upload Production Report
+  ...  tests/robot_framework/files/woodecision/productierapport - 9 openbaar 1 niet openbaar.xlsx
+  ...  ${TRUE}
+  Verify Production Report Replace  Productierapport geüpload en gecontroleerd
+  Verify Production Report Replace  1 bestaand document wordt aangepast.
+  Click Confirm Production Report Replacement
+  Verify Production Report Replace  Het productierapport is succesvol vervangen.
   Click Continue To Documents
   Verify Document Upload Remaining  Nog te uploaden: 1 van 9 documenten.
 
 In a public dossier with N public and M non-public documents, replace the production report with one where 1 public document has been made non-public
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 8.zip
   ...  number_of_documents=8
   ...  prefix=MINVWS7
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
-  Upload Inventory  tests/robot_framework/files/woodecision/productierapport - 7 openbaar 3 niet openbaar.xlsx  ${TRUE}
-  Verify Inventory Replace  Productierapport geüpload en gecontroleerd
-  Verify Inventory Replace  1 bestaand document wordt aangepast.
-  Click Confirm Inventory Replacement
-  Verify Inventory Replace  De inventaris is succesvol vervangen.
+  Upload Production Report
+  ...  tests/robot_framework/files/woodecision/productierapport - 7 openbaar 3 niet openbaar.xlsx
+  ...  ${TRUE}
+  Verify Production Report Replace  Productierapport geüpload en gecontroleerd
+  Verify Production Report Replace  1 bestaand document wordt aangepast.
+  Click Confirm Production Report Replacement
+  Verify Production Report Replace  Het productierapport is succesvol vervangen.
   Click Continue To Documents
   Open Document In Dossier  1009
   Verify Document History  Beoordeling aangepast naar niet openbaar
@@ -115,7 +121,7 @@ In a public dossier with N public and M non-public documents, replace the produc
 
 In a public dossier with N public files, retract one of the documents
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 8.zip
   ...  number_of_documents=8
   ...  prefix=MINVWS8
@@ -131,18 +137,20 @@ In a public dossier with N public files, retract one of the documents
 
 In a public dossier with N public files, replace the production report with one where 1 public document is suspended
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 10.zip
   ...  number_of_documents=10
   ...  prefix=MINVWS9
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
-  Upload Inventory  tests/robot_framework/files/woodecision/productierapport - 10 openbaar 1 opgeschort.xlsx  ${TRUE}
-  Verify Inventory Replace  Productierapport geüpload en gecontroleerd
-  Verify Inventory Replace  1 bestaand document wordt aangepast.
-  Click Confirm Inventory Replacement
-  Verify Inventory Replace  De inventaris is succesvol vervangen.
+  Upload Production Report
+  ...  tests/robot_framework/files/woodecision/productierapport - 10 openbaar 1 opgeschort.xlsx
+  ...  ${TRUE}
+  Verify Production Report Replace  Productierapport geüpload en gecontroleerd
+  Verify Production Report Replace  1 bestaand document wordt aangepast.
+  Click Confirm Production Report Replacement
+  Verify Production Report Replace  Het productierapport is succesvol vervangen.
   Click Continue To Documents
   Open Document In Dossier  1010
   Verify Document Details
@@ -157,7 +165,7 @@ In a public dossier with N public files, replace the production report with one 
 
 In a public dossier with N public files, retract all documents via the Danger Zone
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 10.zip
   ...  number_of_documents=10
   ...  prefix=MINVWS10
@@ -171,7 +179,7 @@ Create a publication that becomes public in the future
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=MINVWS11
   Fill Out Decision Details  Openbaarmaking
-  Upload Inventory  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
+  Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
   Upload Document Zip  tests/robot_framework/files/woodecision/documenten - 10.zip
   Verify Document Upload Completed
@@ -187,21 +195,21 @@ Create a publication that becomes public in the future
 
 In a public dossier with N public files, replace the production report with a copy where one document is replaced with a new document
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 10.zip
   ...  number_of_documents=10
   ...  prefix=MINVWS12
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
-  Upload Inventory
+  Upload Production Report
   ...  tests/robot_framework/files/woodecision/productierapport - 10 openbaar waarvan 1 verwisseld.xlsx
   ...  ${TRUE}
-  Verify Inventory Replace  1001 mist in het productierapport
+  Verify Production Report Replace  1001 mist in het productierapport
 
 Retract a document that has already been published
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 10.zip
   ...  number_of_documents=10
   ...  prefix=MINVWS13
@@ -215,7 +223,7 @@ Retract a document that has already been published
 
 *** Keywords ***
 Suite Setup
-  Suite Setup - CI  include_prefixes=${TRUE}
+  Suite Setup - CI  keep_prefixes=${FALSE}
   Login Admin
   Create Additional Prefixes
   Select Organisation

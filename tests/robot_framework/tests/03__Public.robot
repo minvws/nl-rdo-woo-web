@@ -7,12 +7,13 @@ Resource            ../resources/Generic.resource
 Library             Collections
 Library             DependencyLibrary
 Suite Setup         Suite Setup
-Test Setup          Go To  ${BASE_URL}/zoeken
+Test Setup          Test Setup
 Test Tags           ci  public  public-init
 
 
 *** Variables ***
 ${BASE_URL}     localhost:8000
+${DEVICE}       Desktop Chrome
 
 
 *** Test Cases ***
@@ -79,7 +80,6 @@ Sorting on publication date
   Verify Search Results Sort Order  oldest-first
 
 Filter on dates
-  [Documentation]  Skipped for now due to inconsistent behavior by date input component. See https://github.com/minvws/nl-rdo-woo-web-private/issues/3432
   Select Filter Options - Dossier  woo-decision  publications=${FALSE}  documents=${TRUE}  attachments=${TRUE}
   ${today} =  Convert Date  date=${CURRENT_DATE}  result_format=%d-%m-%Y
   ${yesterday} =  Subtract Time From Date  date=${CURRENT_DATE}  time=1 day  result_format=%d-%m-%Y
@@ -94,7 +94,11 @@ Filter on dates
 
 *** Keywords ***
 Suite Setup
-  Suite Setup - CI  cleansheet=${FALSE}
+  Suite Setup - CI  cleansheet=${FALSE}  device=${DEVICE}
+
+Test Setup
+  Go To Public
+  Go To  ${BASE_URL}/zoeken
 
 Verify Search Results Sort Order
   [Arguments]  ${sorting_order}

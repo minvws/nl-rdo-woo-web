@@ -35,6 +35,12 @@ tasks:
       - task: dc
         vars: { DOCKER_COMPOSE_ARGS: "run --rm --user $(id -u):$(id -g)", CLI_ARGS: "{{.CLI_ARGS}}" }
 
+  dc:shell:
+    interactive: true
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "exec --user $(id -u):$(id -g)", CLI_ARGS: "{{.CLI_ARGS}}" }
+
   dc:pull:
     desc: Pull all docker images
     cmds:
@@ -46,7 +52,12 @@ tasks:
     cmds:
       - task: dc
         vars: { DOCKER_COMPOSE_ARGS: "build --build-arg USER_UID=$(id -u)" }
-      # - task: rf:build
+
+  dc:rebuild:
+    desc: Rebuild all docker images
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "build --build-arg USER_UID=$(id -u) --no-cache" }
 
   composer:install:
     desc: Install composer dependencies
@@ -128,6 +139,8 @@ tasks:
     desc: Reset the development environment
     cmds:
       - task: down
+      - task: down
+      - task: dc:rebuild
       - task: up
 
   ps:
@@ -170,7 +183,7 @@ tasks:
   app:user:create:
     desc: Create an user
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars:
           CLI_ARGS: |
             app bin/console woopie:user:create {{.CLI_ARGS | default "'email@example.org' 'full name' --super-admin"}}
@@ -178,51 +191,49 @@ tasks:
   app:migrate:
     desc: Run (doctrine) database migrations
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app bin/console doctrine:migrations:migrate --no-interaction" }
 
   app:loadfixtures:
     desc: Load doctrine fixtures
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction" }
 
   app:migrate:diff:
     desc: Run (doctrine) database migrations diff
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app bin/console doctrine:migrations:diff --no-interaction" }
 
   app:migrate:dump:
     desc: Dump doctrine migrations to plain SQL files
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app bin/console woopie:sql:dump" }
 
   app:migrate:test:
     desc: Run (doctrine) database migrations in test environment
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app bin/console doctrine:database:create --if-not-exists --no-interaction --env=test" }
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app bin/console doctrine:schema:drop --full-database --force --no-interaction --env=test" }
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app bin/console doctrine:schema:create --no-interaction --env=test" }
 
   app:cleansheet:
     desc: Clears dossiers and inquiries (with related data) from the database. Also clears ES index and RabbitMq message queues.
     cmds:
-      - task: dc:run
-        vars:
-          CLI_ARGS: |
-            app bin/console woopie:dev:clean-sheet --force {{.CLI_ARGS}}
+      - task: dc:shell
+        vars: { CLI_ARGS: "app bin/console woopie:dev:clean-sheet --force --keep-prefixes {{.CLI_ARGS}}" }
 
   app:db:reset:
     desc: Reset the application database including RabbitMQ queues and ElasticSearch indexes
     prompt: Are you REALLY sure you want to clear data from the system?
     cmds:
       - task: app:cleansheet
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: app bin/console doctrine:schema:drop --full-database --force }
       - task: app:migrate
       - task: app:loadfixtures
@@ -230,74 +241,74 @@ tasks:
   app:checkall:
     desc: Run all checks
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app composer checkall" }
       - task: docs:lint
 
   app:checkstyle:
     desc: Check code style using php_codesniffer and php-cs-fixer
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app composer checkstyle" }
 
   app:fixstyle:
     desc: Fix code style using php_codesniffer and php-cs-fixer
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app composer fixstyle" }
 
   app:checktype:
     desc: Check code type using PHPStan
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app composer checktype" }
 
   app:update-type-baseline:
     desc: Update PHPStan baseline
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app composer update-type-baseline" }
 
   app:md:
     desc: Run PHPMD
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app composer md" }
 
   app:test:
     desc: Run PHPUnit
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app composer test" }
 
   app:test-report:
     desc: Run PHPUnit tests with coverage test-report
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app composer test-report" }
 
   app:update-test-snapshots:
     desc: Update PHPUnit snapshots
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app composer update-test-snapshots" }
 
   app:checktranslations:
     desc: Run YAML linting on translation files
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app composer checktranslations" }
 
   app:checktemplates:
     desc: Run Twig linting on templates
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app composer checktemplates" }
 
   app:syncdotenv:
     desc: Synchronize .env.development with .env.local
     cmds:
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app composer syncdotenv" }
 
   app:update:

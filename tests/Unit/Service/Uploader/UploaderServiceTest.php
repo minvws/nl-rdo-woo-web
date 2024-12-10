@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Uploader;
 
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
+use App\Domain\Publication\FileInfo;
 use App\Domain\Upload\FileType\FileType;
-use App\Domain\Upload\FileType\FileTypeHelper;
-use App\Entity\FileInfo;
 use App\Exception\UploaderServiceException;
 use App\Service\Storage\EntityStorageService;
 use App\Service\Uploader\UploaderService;
@@ -15,15 +14,12 @@ use App\Service\Uploader\UploadGroupId;
 use App\SourceType;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
-use Oneup\UploaderBundle\Event\PostUploadEvent;
-use Oneup\UploaderBundle\Uploader\File\FileInterface;
 use Oneup\UploaderBundle\Uploader\Storage\FilesystemOrphanageStorage;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Uid\Uuid;
@@ -36,7 +32,6 @@ final class UploaderServiceTest extends UnitTestCase
     private EntityStorageService&MockInterface $entityStorageService;
     private Session&MockInterface $session;
     private vfsStreamDirectory $fileSystem;
-    private FileTypeHelper&MockInterface $fileTypeHelper;
     private UploaderService $uploaderService;
 
     protected function setUp(): void
@@ -46,7 +41,6 @@ final class UploaderServiceTest extends UnitTestCase
         $this->orphanageStorage = \Mockery::mock(FilesystemOrphanageStorage::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->session = \Mockery::mock(Session::class);
-        $this->fileTypeHelper = \Mockery::mock(FileTypeHelper::class);
 
         $this->requestStack = \Mockery::mock(RequestStack::class);
         $this->requestStack
@@ -57,58 +51,33 @@ final class UploaderServiceTest extends UnitTestCase
             $this->requestStack,
             $this->orphanageStorage,
             $this->entityStorageService,
-            $this->fileTypeHelper,
         );
     }
 
     public function testRegisterUploadWithAnEmptySession(): void
     {
         $sessionKey = 'uploads_attachments';
+        $uploadUuid = 'my-uuid';
+        $pathname = 'my-pathname';
+
         $this->session
             ->shouldReceive('get')
             ->once()
             ->with($sessionKey, [])
             ->andReturn([]);
-
-        $request = \Mockery::mock(Request::class);
-        $request
-            ->shouldReceive('get')
-            ->once()
-            ->with('uuid')
-            ->andReturn($myUuid = 'my-uuid');
-
-        $file = \Mockery::mock(FileInterface::class);
-        $file
-            ->shouldReceive('getPathname')
-            ->once()
-            ->andReturn($myPathname = 'my-pathname');
-        $file
-            ->shouldReceive('getMimeType')
-            ->andReturn('application/msword');
-
-        $postUploadEvent = \Mockery::mock(PostUploadEvent::class);
-        $postUploadEvent
-            ->shouldReceive('getRequest')
-            ->once()
-            ->andReturn($request);
-        $postUploadEvent
-            ->shouldReceive('getFile')
-            ->once()
-            ->andReturn($file);
-
         $this->session
             ->shouldReceive('set')
             ->once()
-            ->with($sessionKey, [$myUuid => [$myPathname]]);
+            ->with($sessionKey, [$uploadUuid => [$pathname]]);
 
-        $this->uploaderService->registerUpload($postUploadEvent, UploadGroupId::ATTACHMENTS);
+        $this->uploaderService->registerUpload($uploadUuid, $pathname, UploadGroupId::ATTACHMENTS);
     }
 
     public function testRegisterUploadWithANonEmptySession(): void
     {
         $sessionKey = 'uploads_attachments';
-        $myUploadUuid = 'my-uuid';
-        $myPathname = 'my-pathname';
+        $uploadUuid = 'my-uuid';
+        $pathname = 'my-pathname';
 
         $this->session
             ->shouldReceive('get')
@@ -119,39 +88,13 @@ final class UploaderServiceTest extends UnitTestCase
                 'existing-uuid-two' => ['existing-pathname'],
             ]);
 
-        $request = \Mockery::mock(Request::class);
-        $request
-            ->shouldReceive('get')
-            ->once()
-            ->with('uuid')
-            ->andReturn($myUploadUuid);
-
-        $file = \Mockery::mock(FileInterface::class);
-        $file
-            ->shouldReceive('getPathname')
-            ->once()
-            ->andReturn($myPathname);
-        $file
-            ->shouldReceive('getMimeType')
-            ->andReturn('application/msword');
-
-        $postUploadEvent = \Mockery::mock(PostUploadEvent::class);
-        $postUploadEvent
-            ->shouldReceive('getRequest')
-            ->once()
-            ->andReturn($request);
-        $postUploadEvent
-            ->shouldReceive('getFile')
-            ->once()
-            ->andReturn($file);
-
-        $capturedUploads = [$myUploadUuid => null];
+        $capturedUploads = [$uploadUuid => null];
         $this->session
             ->shouldReceive('set')
             ->once()
             ->with($sessionKey, \Mockery::capture($capturedUploads));
 
-        $this->uploaderService->registerUpload($postUploadEvent, UploadGroupId::ATTACHMENTS);
+        $this->uploaderService->registerUpload($uploadUuid, $pathname, UploadGroupId::ATTACHMENTS);
 
         $this->assertMatchesJsonSnapshot($capturedUploads);
     }
@@ -338,7 +281,7 @@ final class UploaderServiceTest extends UnitTestCase
 
         $storedFile = \Mockery::mock(File::class);
         $storedFile->expects('getPathname')->andReturn($mockFilePath);
-        $storedFile->shouldReceive('getMimeType')->andReturn('application/msword');
+        $storedFile->shouldReceive('getMimeType')->andReturn(FileType::DOC->getMimeTypes()[0]);
         $storedFile->shouldReceive('getFilename')->andReturn('prefix_dummy.pdf');
 
         $finder = \Mockery::mock(Finder::class);
@@ -375,8 +318,6 @@ final class UploaderServiceTest extends UnitTestCase
         $fileInfo->expects('setName')->with('dummy.pdf');
 
         $this->entityStorageService->expects('storeEntity')->with($storedFile, $entity)->andReturnTrue();
-
-        $this->fileTypeHelper->expects('getFileType')->with('application/msword')->andReturn(FileType::DOC);
 
         self::assertFalse($this->fileSystem->hasChild($mockFilePath));
 

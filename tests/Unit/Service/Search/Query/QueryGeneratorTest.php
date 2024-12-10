@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Search\Query;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Query\SearchType;
 use App\ElasticConfig;
-use App\Entity\Judgement;
 use App\Service\Search\Query\AggregationGenerator;
 use App\Service\Search\Query\Condition\ContentAccessConditions;
 use App\Service\Search\Query\Condition\FacetConditions;

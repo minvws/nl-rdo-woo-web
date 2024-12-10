@@ -100,10 +100,10 @@
                 </caption>
                 <thead>
                     <tr>
-                        {{ knp_pagination_sortable(documents, 'global.document_number' | trans | trans, 'doc.documentNr', { thClassName: "x-min-w-36 x-w-36", 'fragment': fragment }) }}
-                        <th class="x-min-w-12 x-w-12" scope="col">{{ 'global.document_type' | trans() }}</th>
-                        {{ knp_pagination_sortable(documents, 'global.document_name' | trans() | trans, 'doc.fileInfo.name', { 'fragment': fragment }) }}
-                        {{ knp_pagination_sortable(documents, 'global.date' | trans() | trans, 'doc.documentDate', { thClassName: '!text-right x-min-w-40 w-40', 'fragment': fragment }) }}
+                        {{ knp_pagination_sortable(documents, 'global.document_number' | trans, 'doc.documentNr', { thClassName: "x-min-w-36 x-w-36", 'fragment': fragment }) }}
+                        <th class="x-min-w-12 x-w-12" scope="col">{{ 'global.document_type' | trans }}</th>
+                        {{ knp_pagination_sortable(documents, 'global.document_name' | trans, 'doc.fileInfo.name', { 'fragment': fragment }) }}
+                        {{ knp_pagination_sortable(documents, 'global.date' | trans, 'doc.documentDate', { thClassName: '!text-right x-min-w-40 w-40', 'fragment': fragment }) }}
                     </tr>
                 </thead>
                 {{ _self.documents_table_tbody(documents, dossier) }}
@@ -156,7 +156,7 @@
                 {{ doc.documentId }}
             </td>
             <td>
-                {% set documentType = doc.judgement is defined and doc.judgement.isAlreadyPublic ? 'web' : (doc.fileInfo.sourceType | trans) %}
+                {% set documentType = doc.judgement is defined and doc.judgement.isAlreadyPublic ? 'web' : (doc.fileInfo.sourceType.value) %}
                 <twig:Public:FileIcon type="{{ documentType }}" />
                 <span class="sr-only">{{ doc.fileInfo.sourceType | trans }}</span>
             </td>

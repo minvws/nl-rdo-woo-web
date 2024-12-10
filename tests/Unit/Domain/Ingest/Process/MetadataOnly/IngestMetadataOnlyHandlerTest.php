@@ -6,9 +6,9 @@ namespace App\Tests\Unit\Domain\Ingest\Process\MetadataOnly;
 
 use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
 use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyHandler;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
-use App\Entity\Document;
-use App\Entity\EntityWithFileInfo;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;

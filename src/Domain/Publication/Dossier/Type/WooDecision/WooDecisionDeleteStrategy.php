@@ -6,6 +6,7 @@ namespace App\Domain\Publication\Dossier\Type\WooDecision;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\AbstractEntityWithFileInfoDeleteStrategy;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Service\BatchDownloadService;
 use App\Service\DocumentService;
 use App\Service\Inquiry\InquiryService;

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Entity\Document;
-use App\Entity\History;
-use App\Entity\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
+use App\Domain\Publication\History\History;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Uid\Uuid;

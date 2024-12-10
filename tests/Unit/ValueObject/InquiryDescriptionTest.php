@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\ValueObject;
 
-use App\Entity\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
 use App\ValueObject\InquiryDescription;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 

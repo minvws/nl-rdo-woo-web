@@ -3,6 +3,7 @@ queryParameters:
     q: foo
     sort: _score
     sortorder: desc
+    page: 13
     dci: [doc1, doc2]
     dsi: [dos1, dos2]
 facetInputs: {  }
@@ -10,7 +11,7 @@ operator:
     name: AND
     value: and
 limit: 0
-offset: 0
+offset: 13
 pagination: true
 aggregations: true
 query: foo

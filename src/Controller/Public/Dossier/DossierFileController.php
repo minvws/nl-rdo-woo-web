@@ -34,7 +34,7 @@ class DossierFileController extends AbstractController
     ): StreamedResponse {
         $entity = $this->fileProviderManager->getEntityForPublicUse($type, $dossier, $id);
 
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($entity, $type);
+        return $this->downloadHelper->getResponseForEntityWithFileInfo($entity);
     }
 
     #[Cache(maxage: 3600, public: true, mustRevalidate: true)]

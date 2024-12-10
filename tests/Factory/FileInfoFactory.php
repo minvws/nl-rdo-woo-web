@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Factory;
 
-use App\Entity\FileInfo;
+use App\Domain\Publication\FileInfo;
 use App\Service\Storage\StorageRootPathGenerator;
 use App\SourceType;
 use Symfony\Component\Uid\Uuid;

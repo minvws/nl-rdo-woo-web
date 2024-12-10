@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory\Sanitizer\DataProvider;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Inquiry;
-use App\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 
 readonly class InventoryDataProviderFactory
 {

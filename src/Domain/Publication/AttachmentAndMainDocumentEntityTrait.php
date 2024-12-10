@@ -9,7 +9,6 @@ use App\Doctrine\TimestampableTrait;
 use App\Domain\Publication\Attachment\AttachmentLanguage;
 use App\Domain\Publication\Attachment\AttachmentType;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Entity\FileInfo;
 use App\Service\Uploader\UploadGroupId;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

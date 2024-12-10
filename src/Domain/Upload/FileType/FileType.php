@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\FileType;
 
+use Symfony\Component\Mime\MimeTypes;
+
 enum FileType: string
 {
     case PDF = 'pdf';
@@ -13,8 +15,23 @@ enum FileType: string
     case PPT = 'ppt';
     case ZIP = 'zip';
 
+    public static function fromMimeType(string $mimeType): ?self
+    {
+        if ($mimeType === '') {
+            return null;
+        }
+
+        foreach (self::cases() as $fileType) {
+            if (in_array($mimeType, $fileType->getMimeTypes(), true)) {
+                return $fileType;
+            }
+        }
+
+        return null;
+    }
+
     /**
-     * @return string[]
+     * @return list<string>
      */
     public function getExtensions(): array
     {
@@ -41,32 +58,17 @@ enum FileType: string
     }
 
     /**
-     * @return string[]
-     */
-    public static function getExtensionsForTypes(self ...$types): array
-    {
-        $extensions = [];
-        foreach ($types as $type) {
-            $extensions = array_merge($extensions, $type->getExtensions());
-        }
-
-        return $extensions;
-    }
-
-    /**
      * @return list<string>
      */
-    public static function getTypeNamesForTypes(self ...$types): array
+    public function getMimeTypes(): array
     {
-        $names = [];
-        foreach ($types as $type) {
-            $names[] = $type->getTypeName();
+        $mimeTypeGuesser = MimeTypes::getDefault();
+
+        $mimeTypes = [];
+        foreach ($this->getExtensions() as $ext) {
+            $mimeTypes = array_merge($mimeTypes, $mimeTypeGuesser->getMimeTypes($ext));
         }
 
-        $names = array_values(array_unique($names));
-
-        sort($names);
-
-        return $names;
+        return array_values(array_unique($mimeTypes));
     }
 }

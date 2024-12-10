@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\GenerateInquiryInventoryCommand;
-use App\Repository\InquiryRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\InquiryRepository;
 use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
 use App\Service\Inventory\Sanitizer\InventorySanitizer;
 use Psr\Log\LoggerInterface;

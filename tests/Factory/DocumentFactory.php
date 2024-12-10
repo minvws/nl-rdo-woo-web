@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Factory;
 
-use App\Entity\Document;
-use App\Entity\Judgement;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Service\Storage\StorageRootPathGenerator;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 

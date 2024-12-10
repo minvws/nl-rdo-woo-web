@@ -6,19 +6,19 @@ namespace App\Tests\Unit\Controller\Admin\Dossier\WooDecision;
 
 use App\Controller\Admin\Dossier\WooDecision\DocumentsStepHelper;
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Form\Dossier\WooDecision\InventoryType;
 use App\Form\Dossier\WooDecision\TranslatableFormErrorMapper;
-use App\ValueObject\InventoryStatus;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use App\Tests\Unit\UnitTestCase;
+use App\ValueObject\ProductionReportStatus;
 use Mockery\MockInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Twig\Environment;
 
-class DocumentsStepHelperTest extends MockeryTestCase
+class DocumentsStepHelperTest extends UnitTestCase
 {
     private TranslatableFormErrorMapper&MockInterface $formErrorMapper;
     private Environment&MockInterface $twig;
@@ -40,13 +40,15 @@ class DocumentsStepHelperTest extends MockeryTestCase
         );
     }
 
-    public function testGetInventoryProcessResponse(): void
+    public function testGetProductionReportProcessResponse(): void
     {
+        $dossier = \Mockery::mock(WooDecision::class);
+
         $formView = \Mockery::mock(FormView::class);
         $form = \Mockery::mock(FormInterface::class);
         $form->shouldReceive('createView')->andReturn($formView);
 
-        $this->formFactory->expects('create')->with(InventoryType::class)->andReturn($form);
+        $this->formFactory->expects('create')->with(InventoryType::class, $dossier)->andReturn($form);
 
         $processRun = \Mockery::mock(ProductionReportProcessRun::class);
         $processRun->shouldReceive('isFailed')->andReturnTrue();
@@ -56,8 +58,9 @@ class DocumentsStepHelperTest extends MockeryTestCase
         $processRun->shouldReceive('isComparing')->andReturnFalse();
         $processRun->shouldReceive('isUpdating')->andReturnFalse();
         $processRun->shouldReceive('isNotFinal')->andReturnFalse();
+        $processRun->shouldReceive('isRejected')->andReturnFalse();
+        $processRun->shouldReceive('needsConfirmation')->andReturnFalse();
 
-        $dossier = \Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getProcessRun')->andReturn($processRun);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
         $dossier->shouldReceive('getProductionReport')->andReturnNull();
@@ -71,15 +74,14 @@ class DocumentsStepHelperTest extends MockeryTestCase
                     'dossier' => $dossier,
                     'processRun' => $processRun,
                     'inventoryForm' => $formView,
-                    'inventoryStatus' => new InventoryStatus($dossier),
+                    'inventoryStatus' => new ProductionReportStatus($dossier),
                     'ajax' => true,
                 ]
             )
             ->andReturn('foo');
 
-        $this->assertJsonStringEqualsJsonString(
-            '{"content":"foo","inventoryStatus":{"canUpload":true,"hasErrors":true,"isQueued":false,"isRunning":false,"needsUpdate":false}}',
-            $this->helper->getInventoryProcessResponse($dossier)->getContent() ?: '',
+        $this->assertMatchesJsonSnapshot(
+            $this->helper->getProductionReportProcessResponse($dossier)->getContent() ?: '',
         );
     }
 }

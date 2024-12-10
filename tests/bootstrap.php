@@ -6,9 +6,6 @@ use Symfony\Component\Dotenv\Dotenv;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-BypassFinals::setWhitelist([
-    '*/src/*',
-]);
 BypassFinals::enable();
 
 if (file_exists(dirname(__DIR__) . '/config/bootstrap.php')) {

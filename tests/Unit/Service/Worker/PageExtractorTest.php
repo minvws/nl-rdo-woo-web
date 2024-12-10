@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Worker;
 
-use App\Entity\EntityWithFileInfo;
-use App\Entity\FileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
+use App\Domain\Publication\FileInfo;
 use App\Service\Stats\WorkerStatsService;
 use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\LocalFilesystem;

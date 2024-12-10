@@ -3,11 +3,6 @@ parameters:
 		-
 			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
 			count: 1
-			path: src/Command/CleanSheet.php
-
-		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
-			count: 1
 			path: src/Command/GenerateBatch.php
 
 		-
@@ -76,16 +71,6 @@ parameters:
 			path: src/Controller/Admin/Dossier/WooDecision/DocumentsEditStepController.php
 
 		-
-			message: "#^Parameter \\#1 \\$errors of method App\\\\Form\\\\Dossier\\\\WooDecision\\\\TranslatableFormErrorMapper\\:\\:mapGenericErrorsToForm\\(\\) expects array\\<int, array\\{message\\: string, translation\\: string, placeholders\\: array\\<string, string\\>\\}\\>, array\\<int, mixed\\> given\\.$#"
-			count: 1
-			path: src/Controller/Admin/InquiryController.php
-
-		-
-			message: "#^Parameter \\#1 \\$rowErrors of method App\\\\Form\\\\Dossier\\\\WooDecision\\\\TranslatableFormErrorMapper\\:\\:mapRowErrorsToForm\\(\\) expects array\\<int, array\\<int, array\\{message\\: string, translation\\: string, placeholders\\: array\\<string, string\\>\\}\\>\\>, array\\<int, mixed\\> given\\.$#"
-			count: 1
-			path: src/Controller/Admin/InquiryController.php
-
-		-
 			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
 			count: 1
 			path: src/Controller/Admin/InquiryController.php
@@ -124,11 +109,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
 			count: 1
 			path: src/EventSubscriber/LocaleListener.php
-
-		-
-			message: "#^Method App\\\\Repository\\\\InquiryRepository\\:\\:getDocCountsByDossier\\(\\) should return array\\<int, array\\{title\\: string, dossierNr\\: string, doccount\\: int\\}\\> but returns array\\.$#"
-			count: 1
-			path: src/Repository/InquiryRepository.php
 
 		-
 			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"

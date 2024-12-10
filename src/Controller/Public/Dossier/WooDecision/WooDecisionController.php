@@ -6,17 +6,17 @@ namespace App\Controller\Public\Dossier\WooDecision;
 
 use App\Doctrine\DocumentConditions;
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
+use App\Domain\Publication\BatchDownload;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionAttachment;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionMainDocument;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionMainDocument;
 use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use App\Domain\Search\Theme\Covid19Theme;
-use App\Entity\BatchDownload;
-use App\Entity\DecisionAttachment;
 use App\Exception\ViewingNotAllowedException;
-use App\Repository\DocumentRepository;
 use App\Service\BatchDownloadService;
 use App\Service\DownloadResponseHelper;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -200,7 +200,7 @@ class WooDecisionController extends AbstractController
     public function decisionAttachmentDetail(
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
-        DecisionAttachment $attachment,
+        WooDecisionAttachment $attachment,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $attachmentView = $this->attachmentViewFactory->make($dossier, $attachment);

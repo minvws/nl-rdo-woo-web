@@ -27,6 +27,6 @@
         "1": "bar"
     },
     "type": "attachment",
-    "toplevel_type": "covenant",
+    "toplevel_type": "dossier",
     "sublevel_type": "attachment"
 }

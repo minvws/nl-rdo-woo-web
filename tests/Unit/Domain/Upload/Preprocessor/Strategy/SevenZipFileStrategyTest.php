@@ -10,23 +10,26 @@ use App\Domain\Upload\UploadedFile;
 use App\Tests\Unit\Domain\Upload\IterableToGenerator;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Symfony\Component\Mime\MimeTypesInterface;
 
 final class SevenZipFileStrategyTest extends UnitTestCase
 {
     use IterableToGenerator;
 
     private Extractor&MockInterface $extractor;
+    private MimeTypesInterface&MockInterface $mimeTypes;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->extractor = \Mockery::mock(Extractor::class);
+        $this->mimeTypes = \Mockery::mock(MimeTypesInterface::class);
     }
 
     public function testProcess(): void
     {
-        $strategy = new SevenZipFileStrategy($this->extractor);
+        $strategy = new SevenZipFileStrategy($this->extractor, $this->mimeTypes);
 
         /** @var UploadedFile&MockInterface $file */
         $file = \Mockery::mock(UploadedFile::class);
@@ -54,9 +57,9 @@ final class SevenZipFileStrategyTest extends UnitTestCase
         $this->assertEquals($pathTwo, $result[1]->getPathname());
     }
 
-    public function testCanProcessReturnsTrue(): void
+    public function testCanProcessReturnsTrueOn7zExt(): void
     {
-        $strategy = new SevenZipFileStrategy($this->extractor);
+        $strategy = new SevenZipFileStrategy($this->extractor, $this->mimeTypes);
 
         /** @var UploadedFile&MockInterface $file */
         $file = \Mockery::mock(UploadedFile::class);
@@ -65,24 +68,33 @@ final class SevenZipFileStrategyTest extends UnitTestCase
         $this->assertTrue($strategy->canProcess($file));
     }
 
-    public function testCanProcessReturnsFalseOnPdf(): void
+    public function testCanProcessReturnsTrueOnZipExt(): void
     {
-        $strategy = new SevenZipFileStrategy($this->extractor);
-
-        /** @var UploadedFile&MockInterface $file */
-        $file = \Mockery::mock(UploadedFile::class);
-        $file->shouldReceive('getOriginalFileExtension')->andReturn('pdf');
-
-        $this->assertFalse($strategy->canProcess($file));
-    }
-
-    public function testCanProcessReturnsFalseOnZipFile(): void
-    {
-        $strategy = new SevenZipFileStrategy($this->extractor);
+        $strategy = new SevenZipFileStrategy($this->extractor, $this->mimeTypes);
 
         /** @var UploadedFile&MockInterface $file */
         $file = \Mockery::mock(UploadedFile::class);
         $file->shouldReceive('getOriginalFileExtension')->andReturn('zip');
+
+        $this->assertTrue($strategy->canProcess($file));
+    }
+
+    public function testCanProcessReturnsFalseOnPdf(): void
+    {
+        $strategy = new SevenZipFileStrategy($this->extractor, $this->mimeTypes);
+
+        $path = 'my/path/file.pdf';
+
+        /** @var UploadedFile&MockInterface $file */
+        $file = \Mockery::mock(UploadedFile::class);
+        $file->shouldReceive('getOriginalFileExtension')->andReturn('pdf');
+        $file->shouldReceive('getPathname')->andReturn($path);
+
+        $this->mimeTypes
+            ->shouldReceive('guessMimeType')
+            ->once()
+            ->with($path)
+            ->andReturn('application/pdf');
 
         $this->assertFalse($strategy->canProcess($file));
     }

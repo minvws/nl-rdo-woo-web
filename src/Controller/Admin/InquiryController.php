@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\DocumentPrefix;
+use App\Domain\Publication\Dossier\DocumentPrefix;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\InquiryRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
 use App\Form\ChoiceLoader\DocumentPrefixChoiceLoader;
 use App\Form\ChoiceLoader\WooDecisionChoiceLoader;
-use App\Form\Dossier\WooDecision\TranslatableFormErrorMapper;
 use App\Form\Inquiry\InquiryLinkDocumentsFormType;
 use App\Form\Inquiry\InquiryLinkDossierFormType;
-use App\Repository\InquiryRepository;
-use App\Repository\WooDecisionRepository;
+use App\Service\Inquiry\InquiryChangeset;
 use App\Service\Inquiry\InquiryLinkImporter;
 use App\Service\Inquiry\InquiryService;
-use App\Service\Inventory\InquiryChangeset;
 use App\Service\Inventory\InventoryDataHelper;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,7 +27,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -49,8 +47,6 @@ class InquiryController extends AbstractController
         private readonly Security $security,
         private readonly InquiryService $inquiryService,
         private readonly InquiryLinkImporter $inquiryImporter,
-        private readonly TranslatableFormErrorMapper $formErrorMapper,
-        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -93,32 +89,24 @@ class InquiryController extends AbstractController
             return $this->redirectToRoute('app_admin_inquiries');
         }
 
+        $result = null;
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form->get('upload')->getData();
             if ($uploadedFile instanceof UploadedFile) {
                 /** @var DocumentPrefix $prefix */
                 $prefix = $form->get('prefix')->getData();
-                $errors = $this->inquiryImporter->processSpreadsheet(
+                $result = $this->inquiryImporter->processSpreadsheet(
                     $this->authorizationMatrix->getActiveOrganisation(),
                     $uploadedFile,
                     $prefix
                 );
-
-                if (count($errors['generic']) === 0 && count($errors['row']) === 0) {
-                    $this->addFlash('backend', ['success' => $this->translator->trans('admin.dossiers.inquiries.are_linked')]);
-
-                    return $this->redirectToRoute('app_admin_inquiries');
-                }
-
-                $this->formErrorMapper->mapGenericErrorsToForm($errors['generic'], $form);
-
-                $this->formErrorMapper->mapRowErrorsToForm($errors['row'], $form);
             }
         }
 
         return $this->render('admin/inquiry/link_documents.html.twig', [
             'placeholder' => '',
             'link_documents' => $form->createView(),
+            'result' => $result,
         ]);
     }
 

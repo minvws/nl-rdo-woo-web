@@ -20,7 +20,7 @@ readonly class DossierFactory
     {
         $config = $this->dossierTypeManager->getConfigWithAccessCheck($dossierType);
 
-        $dossier = $config->createInstance();
+        $dossier = new ($config->getEntityClass());
         $dossier->setOrganisation($this->authorizationMatrix->getActiveOrganisation());
 
         return $dossier;

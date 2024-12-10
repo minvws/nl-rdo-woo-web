@@ -6,11 +6,11 @@ namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision;
 
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReport;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDeleteStrategy;
-use App\Entity\Document;
-use App\Entity\Inventory;
-use App\Entity\ProductionReport;
 use App\Service\BatchDownloadService;
 use App\Service\DocumentService;
 use App\Service\Inquiry\InquiryService;

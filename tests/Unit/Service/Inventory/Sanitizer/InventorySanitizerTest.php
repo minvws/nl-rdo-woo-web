@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory\Sanitizer;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Document;
-use App\Entity\FileInfo;
-use App\Entity\Inventory;
-use App\Entity\Judgement;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use App\Domain\Publication\FileInfo;
 use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterface;
 use App\Service\Inventory\Sanitizer\InventorySanitizer;
 use App\Service\Inventory\Sanitizer\InventoryWriterInterface;

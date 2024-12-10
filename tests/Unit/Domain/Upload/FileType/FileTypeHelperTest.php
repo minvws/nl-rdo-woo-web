@@ -6,68 +6,98 @@ namespace App\Tests\Unit\Domain\Upload\FileType;
 
 use App\Domain\Upload\FileType\FileType;
 use App\Domain\Upload\FileType\FileTypeHelper;
-use App\Service\Uploader\UploadGroupId;
+use App\Domain\Upload\UploadedFile;
 use App\Tests\Unit\UnitTestCase;
-use Symfony\Component\Mime\MimeTypes;
+use Mockery\MockInterface;
+use Symfony\Component\Mime\MimeTypesInterface;
 
 final class FileTypeHelperTest extends UnitTestCase
 {
-    private FileTypeHelper $helper;
+    private MimeTypesInterface&MockInterface $mimeTypes;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
-        $this->helper = new FileTypeHelper(new MimeTypes());
-
-        parent::setUp();
+        $this->mimeTypes = \Mockery::mock(MimeTypesInterface::class);
     }
 
-    public function testGetFileTypeReturnsNullForUnknownMimeType(): void
+    public function testFilenameOfTypeReturnsTrue(): void
     {
-        self::assertNull($this->helper->getFileType('foo/bar'));
+        $pathname = 'path/to/file.pdf';
+
+        $this->mimeTypes
+            ->shouldReceive('guessMimeType')
+            ->once()
+            ->with($pathname)
+            ->andReturn('application/pdf');
+
+        $result = (new FileTypeHelper($this->mimeTypes))->pathnameOfType($pathname, FileType::PDF);
+
+        $this->assertTrue($result, 'File is of type PDF');
     }
 
-    public function testGetFileTypeForKnownMimeTypeReturnsFileType(): void
+    public function testFilenameOfTypeReturnsFalse(): void
     {
-        self::assertEquals(
-            FileType::DOC,
-            $this->helper->getFileType('application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
-        );
+        $pathname = 'path/to/file.pdf';
+
+        $this->mimeTypes
+            ->shouldReceive('guessMimeType')
+            ->once()
+            ->with($pathname)
+            ->andReturn('application/pdf');
+
+        $result = (new FileTypeHelper($this->mimeTypes))->pathnameOfType($pathname, FileType::XLS);
+
+        $this->assertFalse($result, 'File is not of type XLS');
     }
 
-    public function testGetMimeTypes(): void
+    public function testFilenameOfTypeReturnsTrueWithMultipleTypesGiven(): void
     {
-        self::assertEquals(
-            [
-                'application/zip',
-                'application/x-zip',
-                'application/x-zip-compressed',
-                'application/x-7z-compressed',
-                'text/plain',
-                'application/rdf+xml',
-                'text/rdf',
-            ],
-            $this->helper->getMimeTypes(FileType::ZIP, FileType::TXT),
-        );
+        $pathname = 'path/to/file.pdf';
+
+        $this->mimeTypes
+            ->shouldReceive('guessMimeType')
+            ->once()
+            ->with($pathname)
+            ->andReturn('application/pdf');
+
+        $result = (new FileTypeHelper($this->mimeTypes))->pathnameOfType($pathname, FileType::XLS, FileType::PDF);
+
+        $this->asserTTrue($result, 'File is of type PDF');
     }
 
-    public function testGetMimeTypesByUploadGroup(): void
+    public function testFilenameOfTypeReturnsFalseIfMimeTypeCannotBeDetermined(): void
     {
-        $this->assertMatchesObjectSnapshot(
-            $this->helper->getMimeTypesByUploadGroup(UploadGroupId::MAIN_DOCUMENTS),
-        );
+        $pathname = 'path/to/file.pdf';
+
+        $this->mimeTypes
+            ->shouldReceive('guessMimeType')
+            ->once()
+            ->with($pathname)
+            ->andReturnNull();
+
+        $result = (new FileTypeHelper($this->mimeTypes))->pathnameOfType($pathname, FileType::PDF);
+
+        $this->assertFalse($result, 'File is not of type PDF');
     }
 
-    public function testGetExtensionsByUploadGroup(): void
+    public function testFileOfTypeCallsPathnameOfType(): void
     {
-        $this->assertMatchesObjectSnapshot(
-            $this->helper->getExtensionsByUploadGroup(UploadGroupId::MAIN_DOCUMENTS)
-        );
-    }
+        $file = \Mockery::mock(UploadedFile::class);
+        $file->shouldReceive('getPathname')->once()->andReturn($pathname = 'path/to/file.pdf');
 
-    public function testGetTypeNamesByUploadGroup(): void
-    {
-        $this->assertMatchesObjectSnapshot(
-            $this->helper->getTypeNamesByUploadGroup(UploadGroupId::MAIN_DOCUMENTS)
-        );
+        /** @var FileTypeHelper&MockInterface $helper */
+        $helper = \Mockery::mock(FileTypeHelper::class, [$this->mimeTypes])->makePartial();
+
+        $types = [FileType::PDF, FileType::XLS];
+
+        $helper
+            ->shouldReceive('pathnameOfType')
+            ->once()
+            ->with($pathname, ...$types)
+            ->andReturnTrue();
+
+        $result = $helper->fileOfType($file, ...$types);
+
+        $this->assertTrue($result, 'File is of type PDF');
     }
 }

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Type\Covenant;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\AbstractMainDocumentRepository;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
+use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
 use App\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
 use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;

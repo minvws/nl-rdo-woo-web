@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Process;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Upload\UploadedFile;
-use App\Entity\Document;
 use Psr\Log\LoggerInterface;
 
 final readonly class DocumentFileProcessor
@@ -22,7 +22,6 @@ final readonly class DocumentFileProcessor
         UploadedFile $file,
         WooDecision $dossier,
         Document $document,
-        string $type,
     ): void {
         $documentId = $this->documentNumberExtractor->extract($file->getOriginalFilename(), $dossier);
 
@@ -39,6 +38,6 @@ final readonly class DocumentFileProcessor
             return;
         }
 
-        $this->fileStorer->storeForDocument($file, $document, $documentId, $type);
+        $this->fileStorer->storeForDocument($file, $document, $documentId, $file->getOriginalFileExtension());
     }
 }

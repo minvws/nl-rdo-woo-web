@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Service\Worker\Pdf\Extractor;
 
 use App\Domain\Ingest\Content\Extractor\Tika\TikaService;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
-use App\Entity\EntityWithFileInfo;
 use App\Service\Stats\WorkerStatsService;
 use App\Service\Storage\EntityStorageService;
 use Psr\Log\LoggerInterface;

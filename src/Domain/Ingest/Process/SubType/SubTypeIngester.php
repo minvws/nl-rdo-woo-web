@@ -6,22 +6,18 @@ namespace App\Domain\Ingest\Process\SubType;
 
 use App\Domain\Ingest\Process\IngestProcessException;
 use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 
 /**
  * This class is responsible for ingesting subtype entities (related to dossiers) into the system.
  */
 readonly class SubTypeIngester
 {
-    /** @var SubTypeIngestStrategyInterface[] */
-    private array $strategies;
-
     /**
-     * @param iterable|SubTypeIngestStrategyInterface[] $strategies
+     * @param iterable<array-key,SubTypeIngestStrategyInterface> $strategies
      */
-    public function __construct(iterable $strategies)
+    public function __construct(private iterable $strategies)
     {
-        $this->strategies = $strategies instanceof \Traversable ? iterator_to_array($strategies) : $strategies;
     }
 
     public function ingest(EntityWithFileInfo $entity, IngestProcessOptions $options): void

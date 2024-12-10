@@ -1,0 +1,65 @@
+[
+    {
+        "type": "dossier",
+        "expected": 1,
+        "actual": 2,
+        "subCounts": [
+            {
+                "type": "woo_decision_main_document",
+                "expected": 1,
+                "actual": 1,
+                "expectedPages": 0,
+                "actualPages": 1
+            },
+            {
+                "type": "attachment",
+                "expected": 1,
+                "actual": 0,
+                "expectedPages": 0,
+                "actualPages": 0
+            },
+            {
+                "type": "document",
+                "expected": 8,
+                "actual": 8,
+                "expectedPages": 0,
+                "actualPages": 16
+            }
+        ]
+    },
+    {
+        "type": "complaint_judgement",
+        "expected": 1,
+        "actual": 0,
+        "subCounts": [
+            {
+                "type": "complaint_judgement_main_document",
+                "expected": 1,
+                "actual": 0,
+                "expectedPages": 0,
+                "actualPages": 0
+            }
+        ]
+    },
+    {
+        "type": "covenant",
+        "expected": 0,
+        "actual": 0,
+        "subCounts": [
+            {
+                "type": "covenant_main_document",
+                "expected": 0,
+                "actual": 0,
+                "expectedPages": 0,
+                "actualPages": 0
+            },
+            {
+                "type": "attachment",
+                "expected": 0,
+                "actual": 0,
+                "expectedPages": 0,
+                "actualPages": 0
+            }
+        ]
+    }
+]

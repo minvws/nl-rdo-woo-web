@@ -9,21 +9,25 @@ Library             Browser
 
 
 *** Keywords ***
-Download File
-  [Arguments]  ${filename}  ${download_button_locator}
-  ${document_location} =  Set Variable  ${OUTPUT_DIR}/${filename}
-  ${dl_promise} =  Promise To Wait For Download  ${document_location}
-  Click  ${download_button_locator}
-  Wait For  ${dl_promise}
-  File Should Exist  ${document_location}
-  ${filesize} =  Get File Size  ${document_location}
-  Log  File size of ${filename}: ${filesize} bytes
-  Should Be True  ${filesize} > 0  File size of ${filename} should be greater than 0 bytes
-  Remove File  ${document_location}
+Generic Download Click
+  [Documentation]  Downloads a file by clicking on the selector, after which the download is verified if it's not 0 bytes.
+  [Arguments]  ${selector}
+  ${download_promise} =  Promise To Wait For Download
+  Click  ${selector}
+  ${file_object} =  Wait For  ${download_promise}
+  File Should Exist  ${file_object}[saveAs]
+  ${filesize} =  Get File Size  ${file_object}[saveAs]
+  Log  File size of ${file_object.suggestedFilename}: ${filesize} bytes
+  Should Be True  ${filesize} > 0  File size of ${file_object.suggestedFilename} should be greater than 0 bytes
 
-Click Download File Link
-  ${filename} =  Get Text  xpath=//*[@data-e2e-name="file-name"]
-  Download File  ${filename}  xpath=//*[@data-e2e-name="download-file-link"]
+Generic Download URL
+  [Documentation]  Downloads a file through url, after which the download is verified if it's not 0 bytes.
+  [Arguments]  ${url}
+  ${file_object} =  Download  ${url}
+  File Should Exist  ${file_object}[saveAs]
+  ${filesize} =  Get File Size  ${file_object}[saveAs]
+  Log  File size of ${file_object.suggestedFilename}: ${filesize} bytes
+  Should Be True  ${filesize} > 0  File size of ${file_object.suggestedFilename} should be greater than 0 bytes
 
 Verify Page Error
   [Arguments]  ${error_code}

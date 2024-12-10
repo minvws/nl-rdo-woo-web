@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
-use App\Entity\BatchDownload;
+use App\Domain\Publication\BatchDownload;
 use App\Message\GenerateArchiveMessage;
 use App\Service\ArchiveService;
 use Doctrine\ORM\EntityManagerInterface;

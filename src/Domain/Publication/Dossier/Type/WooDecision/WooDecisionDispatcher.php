@@ -9,7 +9,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveInventoryAndDo
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\UpdateDecisionCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\UpdateInquiryLinksCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawAllDocumentsCommand;
-use App\Entity\WithdrawReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 

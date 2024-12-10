@@ -29,8 +29,8 @@ export const dossierInventoryStatus = () => {
       placeholderElement.innerHTML = content;
     }
 
-    if (inventoryStatus.hasErrors) {
-      // There was an error, so the file upload is displayed now. A form submit will result in a new page load.
+    if (inventoryStatus.hasErrors || inventoryStatus.needsConfirmation) {
+      // A form submit will result in a new page load.
       cleanup();
 
       hideContinueLaterButton();

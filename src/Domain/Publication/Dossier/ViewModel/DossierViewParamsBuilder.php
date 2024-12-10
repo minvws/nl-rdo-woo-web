@@ -11,7 +11,6 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Domain\Upload\FileType\FileTypeHelper;
 use App\Repository\DepartmentRepository;
 use App\Service\DossierWizard\DossierWizardStatus;
 use Symfony\Component\Form\FormInterface;
@@ -32,7 +31,6 @@ class DossierViewParamsBuilder
         private readonly AttachmentTypeFactory $attachmentTypeFactory,
         private readonly AttachmentLanguageFactory $attachmentLanguageFactory,
         private readonly GroundViewFactory $groundViewFactory,
-        private readonly FileTypeHelper $fileTypeHelper,
         private readonly DepartmentRepository $departmentRepository,
     ) {
     }
@@ -52,23 +50,13 @@ class DossierViewParamsBuilder
         );
 
         $this->params['documentTypes'] = $this->attachmentTypeFactory->makeAsArray(
-            $dossier->getMainDocumentEntityClass()::getAllowedTypes()
+            $dossier->getMainDocumentEntityClass()::getAllowedTypes(),
         );
 
         $this->params['documentLanguages'] = $this->attachmentLanguageFactory->makeAsArray();
-
-        $this->params['documentMimeTypes'] = $this->fileTypeHelper->getMimeTypesByUploadGroup(
-            $dossier->getMainDocumentEntityClass()::getUploadGroupId()
-        );
-
-        $this->params['documentExtensions'] = $this->fileTypeHelper->getExtensionsByUploadGroup(
-            $dossier->getMainDocumentEntityClass()::getUploadGroupId()
-        );
-
-        $this->params['documentTypeNames'] = $this->fileTypeHelper->getTypeNamesByUploadGroup(
-            $dossier->getMainDocumentEntityClass()::getUploadGroupId()
-        );
-
+        $this->params['documentMimeTypes'] = $dossier->getMainDocumentEntityClass()::getUploadGroupId()->getMimeTypes();
+        $this->params['documentExtensions'] = $dossier->getMainDocumentEntityClass()::getUploadGroupId()->getExtensions();
+        $this->params['documentTypeNames'] = $dossier->getMainDocumentEntityClass()::getUploadGroupId()->getFileTypeNames();
         $this->params['grounds'] = $this->groundViewFactory->makeAsArray();
 
         return $this;
@@ -82,23 +70,13 @@ class DossierViewParamsBuilder
         );
 
         $this->params['attachmentTypes'] = $this->attachmentTypeFactory->makeAsArray(
-            $dossier->getAttachmentEntityClass()::getAllowedTypes()
+            $dossier->getAttachmentEntityClass()::getAllowedTypes(),
         );
 
-        $this->params['attachmentMimeTypes'] = $this->fileTypeHelper->getMimeTypesByUploadGroup(
-            $dossier->getAttachmentEntityClass()::getUploadGroupId()
-        );
-
-        $this->params['attachmentExtensions'] = $this->fileTypeHelper->getExtensionsByUploadGroup(
-            $dossier->getAttachmentEntityClass()::getUploadGroupId()
-        );
-
-        $this->params['attachmentTypeNames'] = $this->fileTypeHelper->getTypeNamesByUploadGroup(
-            $dossier->getAttachmentEntityClass()::getUploadGroupId()
-        );
-
+        $this->params['attachmentMimeTypes'] = $dossier->getAttachmentEntityClass()::getUploadGroupId()->getMimeTypes();
+        $this->params['attachmentExtensions'] = $dossier->getAttachmentEntityClass()::getUploadGroupId()->getExtensions();
+        $this->params['attachmentTypeNames'] = $dossier->getAttachmentEntityClass()::getUploadGroupId()->getFileTypeNames();
         $this->params['attachmentLanguages'] = $this->attachmentLanguageFactory->makeAsArray();
-
         $this->params['grounds'] = $this->groundViewFactory->makeAsArray();
 
         return $this;

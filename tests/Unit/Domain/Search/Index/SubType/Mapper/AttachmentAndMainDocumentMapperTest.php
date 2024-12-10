@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\SubType\Mapper;
 
-use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionAttachment;
+use App\Domain\Publication\FileInfo;
 use App\Domain\Search\Index\Dossier\DossierIndexer;
 use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\SubType\Mapper\AttachmentAndMainDocumentMapper;
-use App\Entity\FileInfo;
 use App\SourceType;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
@@ -44,7 +44,7 @@ class AttachmentAndMainDocumentMapperTest extends UnitTestCase
         $fileInfo->shouldReceive('getName')->andReturn('foo.bar');
 
         $attachmentId = Uuid::v6();
-        $attachment = \Mockery::mock(AbstractAttachment::class);
+        $attachment = \Mockery::mock(WooDecisionAttachment::class);
         $attachment->shouldReceive('getId')->andReturn($attachmentId);
         $attachment->shouldReceive('getDossier')->andReturn($dossier);
         $attachment->shouldReceive('getFileInfo')->andReturn($fileInfo);

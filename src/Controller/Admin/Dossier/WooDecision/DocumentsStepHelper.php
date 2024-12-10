@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Form\Dossier\WooDecision\InventoryType;
 use App\Form\Dossier\WooDecision\TranslatableFormErrorMapper;
-use App\ValueObject\InventoryStatus;
+use App\ValueObject\ProductionReportStatus;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,12 +23,12 @@ readonly class DocumentsStepHelper
     ) {
     }
 
-    public function getInventoryProcessResponse(WooDecision $dossier): JsonResponse
+    public function getProductionReportProcessResponse(WooDecision $dossier): JsonResponse
     {
-        $inventoryForm = $this->formFactory->create(InventoryType::class);
+        $inventoryForm = $this->formFactory->create(InventoryType::class, $dossier);
 
         $processRun = $this->mapProcessRunToForm($dossier, $inventoryForm);
-        $inventoryStatus = new InventoryStatus($dossier);
+        $inventoryStatus = new ProductionReportStatus($dossier);
 
         return new JsonResponse([
             'content' => $this->twig->render('admin/dossier/woo-decision/documents/processrun.html.twig', [
@@ -39,11 +39,11 @@ readonly class DocumentsStepHelper
                 'ajax' => true,
             ]),
             'inventoryStatus' => [
-                'canUpload' => $inventoryStatus->canUpload(),
                 'hasErrors' => $inventoryStatus->hasErrors(),
                 'isQueued' => $inventoryStatus->isQueued(),
                 'isRunning' => $inventoryStatus->isRunning(),
                 'needsUpdate' => $inventoryStatus->needsUpdate(),
+                'needsConfirmation' => $inventoryStatus->needsConfirmation(),
             ],
         ]);
     }

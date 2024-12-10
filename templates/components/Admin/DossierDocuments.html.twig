@@ -7,13 +7,7 @@
 >
     {% if not uploadStatus.isComplete %}
         <twig:Admin:UploadArea
-            accept="{{[
-                'application/pdf',
-                'application/x-pdf',
-                'application/zip',
-                'application/x-zip-compressed',
-                'application/x-7z-compressed',
-            ]}}"
+            accept="{{ mimeTypes }}"
             css="pb-6"
             endpoint="{{ path('app_admin_dossier_woodecision_document_upload', { 'prefix': dossier.documentPrefix, 'dossierId': dossier.dossierNr }) }}"
             id="upload-area-dossier-files"

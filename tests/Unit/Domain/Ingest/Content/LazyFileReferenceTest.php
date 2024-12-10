@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Domain\Ingest\Content;
 use App\Domain\Ingest\Content\ContentExtractException;
 use App\Domain\Ingest\Content\ContentExtractOptions;
 use App\Domain\Ingest\Content\LazyFileReference;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Storage\EntityStorageService;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

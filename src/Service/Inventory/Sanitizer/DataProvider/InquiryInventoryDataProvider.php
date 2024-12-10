@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory\Sanitizer\DataProvider;
 
-use App\Entity\Document;
-use App\Entity\Inquiry;
-use App\Entity\InquiryInventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\InquiryInventory;
 
 readonly class InquiryInventoryDataProvider implements InventoryDataProviderInterface
 {

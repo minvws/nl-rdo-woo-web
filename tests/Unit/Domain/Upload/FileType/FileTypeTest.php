@@ -9,27 +9,33 @@ use App\Tests\Unit\UnitTestCase;
 
 final class FileTypeTest extends UnitTestCase
 {
-    public function testGetExtensionsForTypesWithSingleType(): void
+    public function testGetExtensions(): void
     {
-        self::assertEquals(
-            ['txt', 'rdf'],
-            FileType::getExtensionsForTypes(FileType::TXT),
-        );
+        $extensions = [];
+        foreach (FileType::cases() as $fileType) {
+            $extensions[$fileType->name] = $fileType->getExtensions();
+        }
+
+        self::assertMatchesYamlSnapshot($extensions);
     }
 
-    public function testGetExtensionsForTypesWithMultipleTypes(): void
+    public function testGetTypeName(): void
     {
-        self::assertEquals(
-            ['doc', 'docx', 'odt', 'txt', 'rdf'],
-            FileType::getExtensionsForTypes(FileType::DOC, FileType::TXT),
-        );
+        $typeNames = [];
+        foreach (FileType::cases() as $fileType) {
+            $typeNames[$fileType->name] = $fileType->getTypeName();
+        }
+
+        self::assertMatchesYamlSnapshot($typeNames);
     }
 
-    public function testGetTypeNamesForTypes(): void
+    public function testGetMimeTypes(): void
     {
-        self::assertEquals(
-            ['Excel', 'PDF', 'PowerPoint', 'Word', 'Zip'],
-            FileType::getTypeNamesForTypes(FileType::PDF, FileType::XLS, FileType::DOC, FileType::TXT, FileType::PPT, FileType::ZIP),
-        );
+        foreach (FileType::cases() as $fileType) {
+            self::assertMatchesYamlSnapshot([
+                'fileType' => $fileType->getTypeName(),
+                'mimes' => $fileType->getMimeTypes(),
+            ]);
+        }
     }
 }

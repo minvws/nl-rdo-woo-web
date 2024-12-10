@@ -19,7 +19,6 @@ readonly class FileTypeValidator
 
     public function __construct(
         private LoggerInterface $logger,
-        private FileTypeHelper $fileTypeHelper,
     ) {
     }
 
@@ -32,8 +31,7 @@ readonly class FileTypeValidator
             throw new ValidationException(self::ERROR_TECHNICAL);
         }
 
-        $allowedMimetypes = $this->fileTypeHelper->getMimeTypesByUploadGroup($groupId);
-        if (! in_array($event->getFile()->getMimeType(), $allowedMimetypes, true)) {
+        if (! in_array($event->getFile()->getMimeType(), $groupId->getMimeTypes(), true)) {
             $this->logger->error(sprintf(
                 'Mimetype %s not accepted for group %s',
                 $event->getFile()->getMimeType(),

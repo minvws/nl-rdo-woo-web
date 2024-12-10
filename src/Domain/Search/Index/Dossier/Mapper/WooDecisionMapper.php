@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\Search\Index\Dossier\Mapper;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\ElasticDocumentType;
-use App\Entity\Inquiry;
 
 readonly class WooDecisionMapper implements ElasticDossierMapperInterface
 {

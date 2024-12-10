@@ -81,4 +81,17 @@ class Roles
     {
         return self::$roleHierarchy[$role] ?? [];
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function roleDescriptions(): array
+    {
+        $roleDetails = [];
+        foreach (self::$roleInfo as $role) {
+            $roleDetails[$role['role']] = $role['description'];
+        }
+
+        return $roleDetails;
+    }
 }

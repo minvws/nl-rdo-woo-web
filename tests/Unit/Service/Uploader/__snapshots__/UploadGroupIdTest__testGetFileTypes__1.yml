@@ -1,0 +1,7 @@
+uploadGroupId: MAIN_DOCUMENTS
+types:
+    - !php/const App\Domain\Upload\FileType\FileType::PDF
+    - !php/const App\Domain\Upload\FileType\FileType::XLS
+    - !php/const App\Domain\Upload\FileType\FileType::DOC
+    - !php/const App\Domain\Upload\FileType\FileType::PPT
+    - !php/const App\Domain\Upload\FileType\FileType::TXT

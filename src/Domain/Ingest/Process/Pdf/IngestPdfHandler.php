@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Ingest\Process\Pdf;
 
 use App\Domain\Ingest\IngestDispatcher;
-use App\Entity\Document;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Worker\Pdf\Extractor\PagecountExtractor;
 use App\Service\Worker\PdfProcessor;
 use Doctrine\ORM\EntityManagerInterface;

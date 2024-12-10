@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload\Process;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Upload\Process\DocumentFileProcessor;
 use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Domain\Upload\Process\FileStorer;
 use App\Domain\Upload\UploadedFile;
-use App\Entity\Document;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
@@ -41,6 +41,9 @@ final class DocumentFileProcessorTest extends UnitTestCase
         $this->file
             ->shouldReceive('getOriginalFilename')
             ->andReturn($originalFile = 'originalFile');
+        $this->file
+            ->shouldReceive('getOriginalFileExtension')
+            ->andReturn($type = 'type');
 
         $this->documentNumberExtractor
             ->shouldReceive('extract')
@@ -60,7 +63,7 @@ final class DocumentFileProcessorTest extends UnitTestCase
                 $this->file,
                 $this->document,
                 $documentId,
-                $type = 'type',
+                $type,
             );
 
         $documentFileProcessor = new DocumentFileProcessor(
@@ -72,7 +75,6 @@ final class DocumentFileProcessorTest extends UnitTestCase
             $this->file,
             $this->dossier,
             $this->document,
-            $type,
         );
     }
 
@@ -119,7 +121,6 @@ final class DocumentFileProcessorTest extends UnitTestCase
             $this->file,
             $this->dossier,
             $this->document,
-            'type',
         );
     }
 }

@@ -6,7 +6,12 @@ namespace App\Domain\Ingest\Process;
 
 class IngestProcessOptions
 {
-    protected bool $forceRefresh = false;            // Can extractors use cache (false) or should they extract data from the original file (true)?
+    /**
+     * @param bool $forceRefresh Can extractors use cache (false) or should they extract data from the original file (true)?
+     */
+    public function __construct(protected bool $forceRefresh = false)
+    {
+    }
 
     public function forceRefresh(): bool
     {

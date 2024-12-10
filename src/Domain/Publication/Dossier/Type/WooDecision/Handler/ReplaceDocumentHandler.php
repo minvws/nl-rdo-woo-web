@@ -7,11 +7,11 @@ namespace App\Domain\Publication\Dossier\Type\WooDecision\Handler;
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\ReplaceDocumentCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
 use App\Domain\Upload\Process\DocumentFileProcessor;
 use App\Domain\Upload\UploadedFile;
-use App\Entity\Document;
-use App\Repository\DocumentRepository;
-use App\Repository\WooDecisionRepository;
 use App\Service\Storage\EntityStorageService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -73,7 +73,7 @@ readonly class ReplaceDocumentHandler
                 return;
             }
 
-            $this->documentFileProcessor->process($localFile, $dossier, $document, 'pdf');
+            $this->documentFileProcessor->process($localFile, $dossier, $document);
             unlink($localFile->getPathname());
 
             $this->handleIngest($document);
@@ -94,7 +94,7 @@ readonly class ReplaceDocumentHandler
 
         $localFile = new UploadedFile($localFilePath, $message->getOriginalFilename());
         try {
-            $this->documentFileProcessor->process($localFile, $dossier, $document, 'pdf');
+            $this->documentFileProcessor->process($localFile, $dossier, $document);
             $this->handleIngest($document);
         } catch (\Throwable $e) {
             throw $e;
@@ -109,9 +109,6 @@ readonly class ReplaceDocumentHandler
             return;
         }
 
-        $options = new IngestProcessOptions();
-        $options->setForceRefresh(true);
-
-        $this->ingester->ingest($document, $options);
+        $this->ingester->ingest($document, new IngestProcessOptions(forceRefresh: true));
     }
 }

@@ -15,10 +15,10 @@ use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionMainDocument;
-use App\Entity\DecisionAttachment;
-use App\Entity\Document;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionAttachment;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionMainDocument;
+use App\Domain\Publication\EntityWithFileInfo;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -57,7 +57,7 @@ class ContentExtractCommand extends Command
             [
                 Document::class,
                 WooDecisionMainDocument::class,
-                DecisionAttachment::class,
+                WooDecisionAttachment::class,
                 CovenantMainDocument::class,
                 CovenantAttachment::class,
                 AnnualReportAttachment::class,

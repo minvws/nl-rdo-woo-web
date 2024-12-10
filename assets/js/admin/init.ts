@@ -1,5 +1,5 @@
-import { detailsComponents } from '@js/shared';
-import { jsEnabled, onBeforeUnload, onDomReady } from '@utils';
+import { detailsComponents, tabs } from '@js/shared';
+import { jsEnabled, onDomReady } from '@utils';
 import { clickableRows } from './clickable-row';
 import { clickOnSelector } from './click-on-selector';
 import { copyToClipboard } from './copy-to-clipboard';
@@ -20,7 +20,7 @@ export const init = () => {
   onDomReady(() => {
     jsEnabled();
 
-    const functionalities = [
+    [
       clickableRows(),
       clickOnSelector(),
       copyToClipboard(),
@@ -32,19 +32,12 @@ export const init = () => {
       manageWidget(),
       printPage(),
       sortTables(),
+      tabs(),
       toggleDialog(),
       uploadAreas(),
       visibilityToggler(),
-    ];
-
-    functionalities.forEach((functionality) => {
+    ].forEach((functionality) => {
       functionality.initialize();
-    });
-
-    onBeforeUnload(() => {
-      functionalities.forEach((functionality) => {
-        functionality.cleanup();
-      });
     });
   });
 };

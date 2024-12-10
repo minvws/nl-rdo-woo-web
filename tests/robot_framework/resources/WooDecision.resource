@@ -15,18 +15,23 @@ ${CURRENT_EPOCH}        ${EMPTY}
 ${RUN_LOCALLY}          ${EMPTY}
 ${ATTACHMENT_FILENAME}  ${EMPTY}
 ${ATTACHMENT_LOCATION}  ${EMPTY}
-${INVENTORY}            ${EMPTY}
+${PRODUCTION_REPORT}    ${EMPTY}
 ${DOCUMENTS}            ${EMPTY}
 ${NUMBER_OF_DOCUMENTS}  ${EMPTY}
 
 
 *** Keywords ***
 Publish Test Dossier
-  [Arguments]  ${inventory}  ${documents}  ${number_of_documents}  ${prefix}=MINVWS  ${publication_status}=Gepubliceerd
+  [Arguments]
+  ...  ${production_report}
+  ...  ${documents}
+  ...  ${number_of_documents}
+  ...  ${prefix}=MINVWS
+  ...  ${publication_status}=Gepubliceerd
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=${prefix}
+  Fill Out Basic Details  prefix=${prefix}  type=woo-decision
   Fill Out Decision Details  Openbaarmaking
-  Upload Inventory  ${inventory}
+  Upload Production Report  ${production_report}
   Verify Document Upload Remaining  Nog te uploaden: ${number_of_documents} van ${number_of_documents} documenten.
   Upload Document Zip  ${documents}
   Verify Document Upload Completed
@@ -51,15 +56,15 @@ Upload Besluitbrief
   Wait For Condition  Text  //*[@id="inhoud"]  contains  Beslissing op Wob-/Woo-verzoek toegevoegd.
 
 Upload Documents Step
-  Upload Inventory  ${INVENTORY}
+  Upload Production Report  ${PRODUCTION_REPORT}
   Verify Document Upload Remaining  Nog te uploaden: ${NUMBER_OF_DOCUMENTS} van ${NUMBER_OF_DOCUMENTS} documenten.
   Upload Document Zip  ${DOCUMENTS}
   Verify Document Upload Completed
   Click Continue To Publish
 
-Upload Inventory
-  [Arguments]  ${inventory_file_location}  ${expect_error}=${FALSE}
-  Upload File By Selector  id=inventory_inventory  ${inventory_file_location}
+Upload Production Report
+  [Arguments]  ${production_report_location}  ${expect_error}=${FALSE}
+  Upload File By Selector  id=inventory_inventory  ${production_report_location}
   Click  //*[@id="inventory_submit"]
   IF  not ${expect_error}
     Wait For Elements State
@@ -69,7 +74,7 @@ Upload Inventory
     ...  message=Error(s) while uploading
   END
 
-Verify Inventory Error
+Verify Production Report Error
   [Arguments]  ${expected_result}
   Wait For Elements State  //*[@id="inventory-error"]  visible  timeout=30s
   Get Text  //*[@id="inventory-error"]  contains  ${expected_result}
@@ -97,11 +102,11 @@ Click Save And Prepare
 Click Replace Report
   Click  //*[@data-e2e-name="replace-report"]
 
-Verify Inventory Replace
+Verify Production Report Replace
   [Arguments]  ${expected_result}
   Wait For Condition  Text  id=js-inventory-status  contains  ${expected_result}  timeout=30s
 
-Click Confirm Inventory Replacement
+Click Confirm Production Report Replacement
   Click  //*[@data-e2e-name="confirm-replacement"]
 
 Click Continue To Documents

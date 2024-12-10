@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Search\Result\SubType\WooDecisionDocument;
 
 use App\Domain\Publication\Dossier\Type\DossierReference;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentSearchResultMapper;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
-use App\Repository\DocumentRepository;
-use App\Repository\WooDecisionRepository;
 use Jaytaph\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

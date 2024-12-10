@@ -8,7 +8,7 @@ readonly class Department
 {
     public function __construct(
         public string $name,
-        public string $tag,
+        public ?string $tag,
         public string $url,
     ) {
     }

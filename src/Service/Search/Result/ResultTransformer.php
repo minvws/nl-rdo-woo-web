@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Result;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\ResultFactory;
-use App\Entity\Inquiry;
 use App\Service\Search\Model\Aggregation;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Model\Suggestion;

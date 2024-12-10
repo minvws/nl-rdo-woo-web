@@ -27,42 +27,8 @@
                 {% endfor %}
             </div>
         {% endif %}
-        <table class="bhr-table" data-e2e-name="user-table">
-            <thead>
-                <tr>
-                    {{ knp_pagination_sortable(pagination, 'admin.global.user' | trans, 'u.name', {}, {}, 'pagination/sort.admin.html.twig') }}
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.global.roles' | trans }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.global.last_login' | trans }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in pagination %}
-                    {% set roles = [] %}
-                    {% for user_role in user.roles %}
-                        {% set roles = roles|merge([role_details[user_role]|trans]) %}
-                    {% endfor %}
-                    <tr>
-                        <th class="text-left font-normal" scope="row">
-                            <a class="bhr-a js-bhr-clickable-row-link" href="{{ app.user.id is same as (user.id) ? path('app_admin_user_profile') : path('app_admin_user', { id: user.id }) }}">
-                                {{ user.name }}
-                            </a>
-                            {% if not user.enabled %}
-                                <span class="bhr-badge bhr-badge--red">{{ 'admin.user.deactivated' | trans }}</span>
-                            {% endif %}
-                        </th>
-                        <td>{{ roles|join(', ') }}</td>
-                        <td>
-                            {% set last_login = user.loginActivities|last %}
-                            {% if last_login is not empty %}
-                                {{ last_login.loginAt | format_datetime(timezone='Europe/Amsterdam') }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
 
-            {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
-        </table>
+        {% include 'admin/user/snippets/user-tabs.html.twig' %}
     </div>
 </div>
 {% endblock %}

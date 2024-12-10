@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Entity\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\InquiryRepository;
 use App\Form\Inquiry\AdministrationActionsType;
-use App\Repository\InquiryRepository;
 use App\Service\Inquiry\InquiryService;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,7 +40,7 @@ class InquiryAdmininistrationController extends AbstractController
     #[Route('/balie/admin/inquiry/{casenr}', name: 'app_admin_inquiry_administration_details', methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.inquiry.administration')]
     public function inquiry(
-        Inquiry $inquiry,
+        #[MapEntity(mapping: ['casenr' => 'casenr'])] Inquiry $inquiry,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {

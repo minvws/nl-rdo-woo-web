@@ -39,14 +39,15 @@ class DossierFactoryTest extends MockeryTestCase
         $this->authorizationMatrix->expects('getActiveOrganisation')->andReturn($organisation);
 
         $type = DossierType::DISPOSITION;
-        $dossier = \Mockery::mock(Disposition::class);
-        $dossier->expects('setOrganisation')->with($organisation);
 
         $config = \Mockery::mock(DossierTypeConfigInterface::class);
-        $config->expects('createInstance')->andReturn($dossier);
+        $config->expects('getEntityClass')->andReturn(Disposition::class);
 
         $this->dossierTypeManager->expects('getConfigWithAccessCheck')->with($type)->andReturn($config);
 
-        self::assertSame($dossier, $this->factory->create($type));
+        $dossier = $this->factory->create($type);
+
+        self::assertInstanceOf(Disposition::class, $dossier);
+        self::assertSame($organisation, $dossier->getOrganisation());
     }
 }

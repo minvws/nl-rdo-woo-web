@@ -9,8 +9,8 @@
 
 [Inleiding](#inleiding)  
 [1. Uploadstraat stap 1: Basisgegevens](#1-uploadstraat-stap-1-basisgegevens)  
-[2. Uploadstraat stap 2: Convenant gegevens](#2-uploadstraat-stap-2-beschikking-gegevens)  
-[3. Uploadstraat stap 3: Convenant publiceren](#3-uploadstraat-stap-3-beschikking-publiceren)  
+[2. Uploadstraat stap 2: Jaarplan/Jaarverslag](#2-uploadstraat-stap-2-jaarplanjaarverslag-gegevens)  
+[3. Uploadstraat stap 3: Jaarplan/Jaarverslag](#3-uploadstraat-stap-3-jaarplanjaarverslag-publiceren)  
 [4. Wijzigen van publicatie](#4-wijzigen-na-publicatie)  
 
 ---
@@ -19,37 +19,37 @@
 
 In deze handleiding vind je alle informatie die je nodig hebt om een jaarplan/jaarverslag succesvol te publiceren. Het is
 belangrijk dat je al een account hebt met de rechten ‘publicatie-beheer’ in het uploadportaal, zodat je een publicatie kunt
-doen op open.minvws.nl.
+doen op het publicatieplatform.
 
 Als je inlogt in het uploadportaal kom je terecht in het overzicht 'Alle publicaties'. Om een nieuwe
 publicatie aan te maken, klik je rechtsboven op de knop ‘Nieuwe publicatie’ en selecteer je ‘Jaarplan en Jaarverslag’.
 Het proces van het aanmaken van een nieuwe publicatie bestaat uit drie stappen:
 
-1. Eerst voer je de basisgegevens in
-2. Vervolgens voeg je de specifieke informatie over het jaarplan/jaarverslag toe en upload je het jaarplan/jaarverslag
+1. Eerst voer je de basisgegevens in;
+2. Vervolgens voeg je de specifieke informatie over het jaarplan/jaarverslag toe en upload je het jaarplan/jaarverslag;
 3. Ten slotte stel je de publicatiedatum in.
 
-Een publicatie zoals een jaarplan/jaarverslag kan drie statussen hebben: concept, publicatie gepland en openbaar. Afhankelijk
+Een publicatie zoals een jaarplan/jaarverslag kan drie statussen hebben: Concept, Publicatie gepland en Openbaar. Afhankelijk
 van de status kun je de publicatie nog verwijderen of aanpassen.
 
 ## 1. Uploadstraat stap 1: Basisgegevens
 
-<img src=images/jaarplan_jaarverslag_1.png  alt="Afbeelding toont de eerste stap van de uploadstraat van de balie waar alle basisgegeven van de publicatie worden ingevuld"/>
+<img src=images/jaarplan_jaarverslag_1.png  alt="Afbeelding toont de eerste stap van de uploadstraat van de balie waar alle basisgegevens van de publicatie worden ingevuld"/>
 
 **Omschrijving**
 In de omschrijving van het jaarplan of jaarverslag gebruik je geen onnodige voorzetsels, lidwoorden of vanzelfsprekende inhoudelijke
 woorden zoals 'jaarplan', ‘jaarverslag’ en 'aangaande'. De omschrijving staat bovenaan de pagina en fungeert als titel van
 de publicatie.
 
-Jaar waarover het jaarplan -/verslag gaat
-Hier vul je het jaar in dat wordt gehanteerd in het document. Dit veld is vereist om in te vullen.
+**Jaar waarover het Jaarplan/Jaarverslag betrekking op heeft**
+Hier vul je het jaar in dat wordt gehanteerd in het document. Dit veld is verplicht om in te vullen.
 
 **Verantwoordelijk bestuursorgaan**
 Kies uit het dropdown-menu het bestuursorgaan dat verantwoordelijk is voor deze publicatie. Is er slechts één keuze, dan is
 deze optie voor je geselecteerd.
 
 Het is alleen mogelijk om namens een bestuursorgaan te publiceren dat aan je organisatie is gekoppeld. Een bestuursorgaan kan
-aan meerdere organisaties gekoppeld worden. Dit veld is vereist om in te vullen.
+aan meerdere organisaties gekoppeld zijn. Dit veld is verplicht om in te vullen.
 
 **Onderwerp**
 Hier selecteer je een onderwerp uit een lijst van onderwerpen die van toepassing zijn op deze publicatie. De onderwerpen worden
@@ -60,28 +60,29 @@ De interne referentie is een vrij invulbaar veld dat niet wordt gepubliceerd. Je
 naar de vindplaats van de oorspronkelijke brondocumentatie.
 
 **Referentienummer**
-Upload hier het hoofddocument van het jaarplan/jaarverslag. Dit veld is verplicht om verder te gaan. Let op: je kunt slechts één
-document uploaden. Dit veld is vereist om in te vullen.
+Voer hier het referentienummer in, dat samen met de prefix een unieke identificatie binnen de organisatie moet vormen. Dit nummer
+is cruciaal voor de indexering van de publicatie. Let op: na het opslaan van deze stap kun je het referentienummer niet meer aanpassen,
+dus voer het zorgvuldig in. Dit veld is verplicht om in te vullen.
 
 **Prefix**
 Kies uit het dropdown-menu een prefix. Is er slechts één keuze, dan is deze optie voor je geselecteerd. De combinatie van prefix
-en referentienummer moet uniek zijn binnen de organisatie. Let op: het is niet mogelijk om de prefix te wijzigen, nadat je deze
-hebt opgeslagen.
+en referentienummer moet uniek zijn binnen de organisatie. De prefixes worden aangemaakt door de organisatiebeheerder van je organisatie.
+Let op: het is niet mogelijk om de prefix te wijzigen, nadat je deze hebt opgeslagen.
 
 ---
 
-## 2. Uploadstraat stap 2: Beschikking gegevens
+## 2. Uploadstraat stap 2: Jaarplan/Jaarverslag gegevens
 
 <img src=images/jaarplan_jaarverslag_2.png  alt="Afbeelding toont de tweede stap van de uploadstraat waar plek is voor een toelichting en het uploaden van het hoofddocument en bijlage"/>
 
 **Toelichting op de Jaarplan en jaarverslag**  
 Hier geef je een beknopte beschrijving van de inhoud van het jaarplan/jaarverslag. Deze toelichting verschijnt bovenaan op de
 websit een biedt een overzichtelijke introductie van de belangrijkste punten. Zorg ervoor dat de beschrijving helder en informatief
-is, zodat lezers snel begrijpen waar het jaarplan/jaarverslag over gaat. Dit veld is vereist om in te vullen.
+is, zodat lezers snel begrijpen waar het jaarplan/jaarverslag over gaat. Dit veld is verplicht om in te vullen.
 
 <img src=images/jaarplan_jaarverslag_3.png  alt="De afbeelding toont de uploadwizard voor het jaarplan of jaarverslag"/>
 
-**Het Jaarplan/jaarverslag**
+**Het Jaarplan/Jaarverslag**
 Upload hier het hoofddocument van het jaarplan/jaarverslag. Dit veld is verplicht om verder te gaan. Let op: je kunt slechts
 één document uploaden.
 
@@ -138,7 +139,7 @@ een standaardlijst met weigeringsgronden waar je uit kan kiezen.
 
 ---
 
-## 3. Uploadstraat stap 3: Beschikking publiceren
+## 3. Uploadstraat stap 3: Jaarplan/Jaarverslag publiceren
 
 <img src=images/jaarplan_jaarverslag_5.png  alt="Afbeelding toont de laatste stap van de uploadstraat waar de datum van publicatie wordt ingesteld"/>
 
@@ -158,7 +159,7 @@ Vanuit het overzicht van de publicatie is het mogelijk om de informatie te bewer
 <img src=images/jaarplan_jaarverslag_6.png  alt="Afbeelding toont het overzicht van de publicatie"/>
 
 **Wijzigen voor de publicatie**  
-Wanneer de publicatie is opgeslagen en nog niet de status ‘openbaar’ heeft, is het nog mogelijk om alles aan te passen of om
+Wanneer de publicatie is opgeslagen en nog niet de status ‘Openbaar’ heeft, is het nog mogelijk om alles aan te passen of om
 het hoofdbestand te verwijderen. Daarnaast kan je een jaarplan/jaarverslag verwijderen wanneer deze nog het label ‘concept’ heeft
 door naar beneden te scrollen en onder het kopje ‘gevarenzone’ op ‘jaarplan of jaarverslag verwijderen’ te klikken.
 

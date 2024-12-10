@@ -13,10 +13,11 @@ class DateRangeConverterTest extends TestCase
     public static function dateRangeProvider(): array
     {
         return [
+            // 01-01-2021 can be affected by ISO-8601 week-numbering year difference
             'Single month by first day' => [
-                'from' => new \DateTimeImmutable('01-01-2020'),
-                'to' => new \DateTimeImmutable('01-01-2020'),
-                'expectedResult' => 'Januari 2020',
+                'from' => new \DateTimeImmutable('01-01-2021'),
+                'to' => new \DateTimeImmutable('01-01-2021'),
+                'expectedResult' => 'Januari 2021',
             ],
             'Spanning a single year' => [
                 'from' => new \DateTimeImmutable('01-01-2020'),

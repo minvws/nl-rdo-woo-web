@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Form\Dossier\WooDecision\DocumentUploadType;
 use App\Service\Storage\EntityStorageService;
 use Predis\Client;

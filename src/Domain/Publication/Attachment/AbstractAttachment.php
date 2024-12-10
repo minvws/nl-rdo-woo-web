@@ -10,8 +10,8 @@ use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
-use App\Entity\DecisionAttachment;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionAttachment;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
@@ -23,7 +23,7 @@ use Webmozart\Assert\Assert;
 #[ORM\DiscriminatorMap([
     'covenant_attachment' => CovenantAttachment::class,
     'annual_report_attachment' => AnnualReportAttachment::class,
-    'decision_attachment' => DecisionAttachment::class,
+    'decision_attachment' => WooDecisionAttachment::class,
     'investigation_report_attachment' => InvestigationReportAttachment::class,
     'disposition_attachment' => DispositionAttachment::class,
 ])]

@@ -4,84 +4,48 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\FileType;
 
-use App\Service\Uploader\UploadGroupId;
+use App\Domain\Upload\UploadedFile;
 use Symfony\Component\Mime\MimeTypesInterface;
+use Webmozart\Assert\Assert;
 
-class FileTypeHelper
+readonly class FileTypeHelper
 {
-    /**
-     * @var array<string,FileType>
-     */
-    private ?array $mapping = null;
-
     public function __construct(
-        private readonly MimeTypesInterface $mimeTypes,
+        private MimeTypesInterface $mimeTypes,
     ) {
     }
 
-    public function getFileType(string $mimeType): ?FileType
+    public function fileOfType(UploadedFile $file, FileType ...$types): bool
     {
-        if ($this->mapping === null) {
-            $this->createMapping();
+        return $this->pathnameOfType($file->getPathname(), ...$types);
+    }
+
+    public function pathnameOfType(string $path, FileType ...$types): bool
+    {
+        Assert::notEmpty($types, 'At least one FileType must be provided');
+
+        $allAllowedMimeTypes = $this->getAllMimeTypes(...$types);
+
+        $mimeType = $this->mimeTypes->guessMimeType($path);
+        if ($mimeType === null) {
+            return false;
         }
 
-        return $this->mapping[$mimeType] ?? null;
+        return in_array($mimeType, $allAllowedMimeTypes, true);
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
-    public function getMimeTypes(FileType ...$fileTypes): array
+    private function getAllMimeTypes(FileType ...$types): array
     {
-        $allowedExtensions = FileType::getExtensionsForTypes(...$fileTypes);
+        /** @var array<int,string> $mimeTypes */
+        $mimeTypes = array_reduce(
+            $types,
+            static fn (array $carry, FileType $type): array => array_merge($carry, $type->getMimeTypes()),
+            [],
+        );
 
-        $mimeTypes = [];
-        foreach ($allowedExtensions as $extension) {
-            $mimeTypes = array_merge($mimeTypes, $this->mimeTypes->getMimeTypes($extension));
-        }
-
-        return $mimeTypes;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getMimeTypesByUploadGroup(UploadGroupId $uploadGroupId): array
-    {
-        return $this->getMimeTypes(...$uploadGroupId->getFileTypes());
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getExtensionsByUploadGroup(UploadGroupId $uploadGroupId): array
-    {
-        $extensions = [];
-        foreach ($uploadGroupId->getFileTypes() as $fileType) {
-            $extensions = array_merge($extensions, FileType::getExtensionsForTypes($fileType));
-        }
-
-        return $extensions;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getTypeNamesByUploadGroup(UploadGroupId $uploadGroupId): array
-    {
-        return FileType::getTypeNamesForTypes(...$uploadGroupId->getFileTypes());
-    }
-
-    private function createMapping(): void
-    {
-        $this->mapping = [];
-
-        foreach (FileType::cases() as $fileType) {
-            foreach (FileType::getExtensionsForTypes($fileType) as $extension) {
-                foreach ($this->mimeTypes->getMimeTypes($extension) as $mimeType) {
-                    $this->mapping[$mimeType] = $fileType;
-                }
-            }
-        }
+        return array_values(array_unique($mimeTypes));
     }
 }

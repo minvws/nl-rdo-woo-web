@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace App\Command\Ingest;
 
 use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Publication\Dossier\DossierRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class IngestDossier extends Command
@@ -30,7 +28,6 @@ class IngestDossier extends Command
             ->setDefinition([
                 new InputArgument('prefix', InputArgument::REQUIRED, 'The prefix of the dossier to ingest'),
                 new InputArgument('dossierNr', InputArgument::REQUIRED, 'The dossiernr of the dossier to ingest'),
-                new InputOption('force-refresh', 'f', InputOption::VALUE_NONE, 'Skip any caching'),
             ]);
     }
 
@@ -38,9 +35,6 @@ class IngestDossier extends Command
     {
         $prefix = strval($input->getArgument('prefix'));
         $dossierNr = strval($input->getArgument('dossierNr'));
-
-        $options = new IngestProcessOptions();
-        $options->setForceRefresh($input->getOption('force-refresh') == true);
 
         $dossier = $this->repository->findOneBy(['documentPrefix' => $prefix, 'dossierNr' => $dossierNr]);
         if (! $dossier) {

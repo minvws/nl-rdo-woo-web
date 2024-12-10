@@ -1,0 +1,7 @@
+{
+    "ROLE_SUPER_ADMIN": "admin.user.role.super_admin",
+    "ROLE_GLOBAL_ADMIN": "admin.user.role.global_admin",
+    "ROLE_ORGANISATION_ADMIN": "admin.user.role.organisation_admin",
+    "ROLE_DOSSIER_ADMIN": "admin.user.role.decision_admin",
+    "ROLE_VIEW_ACCESS": "admin.user.role.read_only"
+}

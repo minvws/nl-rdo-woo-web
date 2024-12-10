@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\AnnualReport;
 
-use App\Domain\Publication\Dossier\Type\AbstractMainDocumentRepository;
+use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
 use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Worker\Pdf\Extractor;
 
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Stats\WorkerStatsService;
 use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\LocalFilesystem;

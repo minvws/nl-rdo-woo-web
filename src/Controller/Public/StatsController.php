@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller\Public;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Search\Query\SearchParametersFactory;
-use App\Entity\Document;
 use App\Service\Search\SearchService;
 use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;

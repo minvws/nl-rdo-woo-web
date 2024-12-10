@@ -19,43 +19,11 @@
         {% endif %}
 
         {% if rolloverDetails %}
-            <table>
-                <caption class="sr-only">{{ 'elastic.rollover' | trans() }} {{ rolloverDetails.index.name }}</caption>
-                <thead>
-                    <tr>
-                        <th>{{ 'public.global.label' | trans() }}</th>
-                        <th>{{ 'public.global.expected' | trans() }}</th>
-                        <th>{{ 'elastic.contains' | trans() }}</th>
-                        <th>{{ 'elastic.percentage' | trans() }}</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td>{{ 'admin.global.dossier_count' | trans() }}</td>
-                        <td>{{ rolloverDetails.expectedDossierCount }}</td>
-                        <td>{{ rolloverDetails.actualDossierCount }}</td>
-                        <td>{{ rolloverDetails.getDossierPercentage() }}%</td>
-                    </tr>
-                    <tr>
-                        <td>{{ 'admin.global.document_count' | trans() }}</td>
-                        <td>{{ rolloverDetails.expectedDocCount }}</td>
-                        <td>{{ rolloverDetails.actualDocCount }}</td>
-                        <td>{{ rolloverDetails.getDocumentPercentage() }}%</td>
-                    </tr>
-                    <tr>
-                        <td>{{ 'admin.global.page_count' | trans() }}</td>
-                        <td>{{ rolloverDetails.expectedPageCount }}</td>
-                        <td>{{ rolloverDetails.actualPageCount }}</td>
-                        <td>{{ rolloverDetails.getPagePercentage() }}%</td>
-                    </tr>
-                </tbody>
-            </table>
+            {% include 'admin/elastic/counts.html.twig' with {'details': rolloverDetails} %}
 
             <p class="pt-6">
                 <a class="bhr-button bhr-button--primary" href="{{ path('app_admin_elastic_live', {indexName: rolloverDetails.index.name}) }}">{{ "admin.elastic.promote_to_live" | trans() }}</a>
             </p>
-
         {% else %}
             <p class="text-center italic">{{ "admin.elastic.no_rollover" | trans() }}</p>
         {% endif %}
@@ -67,8 +35,6 @@
             <thead>
                 <tr>
                     <th class="text-left" scope="col">{{ 'global.name' | trans() }}</th>
-                    <th class="text-left" scope="col">{{ 'elastic.health' | trans() }}</th>
-                    <th class="text-left" scope="col">{{ 'elastic.status' | trans() }}</th>
                     <th class="text-right" scope="col">{{ 'elastic.object_count' | trans() }}</th>
                     <th class="text-right" scope="col">{{ 'public.global.size' | trans() }}</th>
                     <th class="text-left" scope="col">{{ 'admin.elastic.mapping_version' | trans() }}</th>
@@ -81,14 +47,12 @@
             {% for index in indices %}
                 <tr>
                     <td>{{ index.name }}</td>
-                    <td>{{ index.health }}</td>
-                    <td>{{ index.status }}</td>
                     <td class="text-right">{{ index.docsCount }}</td>
                     <td class="text-right">{{ index.storeSize }}</td>
                     <td>{{ index.mappingVersion }}</td>
                     <td>
                         {% for alias in index.aliases %}
-                            <span>{{ alias }}</span>
+                            <span>{{ alias }}</span>{% if not loop.last %},{% endif %}
                         {% endfor %}
                     </td>
                     <td>

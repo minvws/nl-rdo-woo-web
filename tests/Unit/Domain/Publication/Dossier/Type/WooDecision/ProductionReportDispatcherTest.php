@@ -9,9 +9,8 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Command\GenerateInventoryCom
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\InitiateProductionReportUpdateCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\ProductionReportProcessRunCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\RejectProductionReportUpdateCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveInventoryCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -108,20 +107,5 @@ class ProductionReportDispatcherTest extends UnitTestCase
         ))->andReturns(new Envelope(new \stdClass()));
 
         $this->dispatcher->dispatchGenerateInventoryCommand($id);
-    }
-
-    public function testDispatchRemoveInventoryCommand(): void
-    {
-        $wooDecision = \Mockery::mock(WooDecision::class);
-
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            static function (RemoveInventoryCommand $command) use ($wooDecision) {
-                self::assertEquals($wooDecision, $command->dossier);
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
-
-        $this->dispatcher->dispatchRemoveInventoryCommand($wooDecision);
     }
 }
