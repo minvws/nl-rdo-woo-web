@@ -8,26 +8,58 @@ use App\Entity\Organisation;
 use App\Entity\User;
 use App\Service\Security\OrganisationSwitcher;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class OrganisationSwitchController extends AbstractController
 {
+    private const ROUTE_WHITELIST = [
+        'app_admin_dossiers',
+        'app_admin_inquiries',
+        'app_admin_departments',
+        'app_admin_subjects',
+        'app_admin_users',
+    ];
+
+    private const FALLBACK_ROUTE = 'app_admin_index';
+
     public function __construct(
         private readonly OrganisationSwitcher $organisationSwitcher,
+        private readonly RouterInterface $router,
     ) {
     }
 
     #[Route('/balie/organisatie-wissel/{id}', name: 'app_admin_switch_organisation', methods: ['GET'])]
     #[IsGranted('AuthMatrix.organisation.read')]
-    public function index(Organisation $organisation): Response
+    public function index(Request $request, Organisation $organisation): Response
     {
         /** @var User $user */
         $user = $this->getUser();
-
         $this->organisationSwitcher->switchToOrganisation($user, $organisation);
 
-        return $this->redirect($this->generateUrl('app_admin_index'));
+        $referer = $request->headers->get('referer');
+        if (empty($referer)) {
+            return $this->redirect(
+                $this->generateUrl(self::FALLBACK_ROUTE)
+            );
+        }
+
+        try {
+            $refererPathInfo = Request::create($referer)->getPathInfo();
+            $routeInfo = $this->router->match($refererPathInfo);
+            $routeName = in_array($routeInfo['_route'], self::ROUTE_WHITELIST, true)
+                ? $routeInfo['_route']
+                : self::FALLBACK_ROUTE;
+        } catch (ResourceNotFoundException) {
+            $routeName = self::FALLBACK_ROUTE;
+        }
+
+        return $this->redirect(
+            $this->generateUrl($routeName)
+        );
     }
 }

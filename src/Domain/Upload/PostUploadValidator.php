@@ -15,26 +15,31 @@ use Webmozart\Assert\Assert;
 #[AsEventListener(event: UploadEvents::POST_UPLOAD, method: 'onPostUpload', priority: 10)]
 final readonly class PostUploadValidator
 {
-    public function __construct(
-        private readonly UploaderService $uploaderService,
-    ) {
+    public function __construct(private UploaderService $uploaderService)
+    {
     }
 
     public function onPostUpload(PostUploadEvent $event): void
     {
-        $groupId = $event->getRequest()->get('groupId');
-        Assert::string($groupId);
+        $uploaderGroupId = $event->getRequest()->get('groupId');
+        Assert::string($uploaderGroupId);
 
-        $groupId = UploadGroupId::from($groupId);
+        $uploaderGroupId = UploadGroupId::from($uploaderGroupId);
 
-        $this->uploaderService->registerUpload($event, $groupId);
+        $uploadUuid = $event->getRequest()->get('uuid');
+        Assert::string($uploadUuid);
+
+        $pathname = $event->getFile()->getPathname();
+        Assert::string($pathname);
+
+        $this->uploaderService->registerUpload($uploadUuid, $pathname, $uploaderGroupId);
 
         $fileData = [
-            'uploadUuid' => $event->getRequest()->get('uuid'),
+            'uploadUuid' => $uploadUuid,
             'originalName' => null,
             'mimeType' => $event->getFile()->getMimeType(),
             'size' => $event->getFile()->getSize(),
-            'groupId' => $groupId->value,
+            'groupId' => $uploaderGroupId->value,
         ];
 
         $file = $event->getRequest()->files->get('file');

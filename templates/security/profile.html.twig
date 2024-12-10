@@ -55,7 +55,7 @@
                     <twig:Admin:Definition term="Rollen">
                         {% set roles = [] %}
                         {% for user_role in user.roles %}
-                            {% set roles = roles|merge([role_details[user_role]|trans]) %}
+                            {% set roles = roles|merge([role_descriptions[user_role]|trans]) %}
                         {% endfor %}
                         {{ roles|join(', ') }}
                     </twig:Admin:Definition>

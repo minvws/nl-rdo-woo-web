@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory\Sanitizer;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Document;
-use App\Entity\EntityWithFileInfo;
-use App\Entity\FileInfo;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\EntityWithFileInfo;
+use App\Domain\Publication\FileInfo;
 use App\Exception\InventorySanitizerException;
 use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterface;
 use App\Service\Storage\EntityStorageService;

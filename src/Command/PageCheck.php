@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Repository\WooDecisionRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
 use App\Service\Elastic\ElasticService;
 use Jaytaph\TypeArray\TypeArray;
 use Symfony\Component\Console\Command\Command;

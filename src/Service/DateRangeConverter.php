@@ -33,12 +33,12 @@ class DateRangeConverter
 
     protected static function getYear(\DateTimeImmutable $date): string
     {
-        return self::formatDate($date, 'YYYY');
+        return self::formatDate($date, 'yyyy');
     }
 
     protected static function getMonthAndYear(\DateTimeImmutable $date): string
     {
-        return self::formatDate($date, 'MMMM YYYY');
+        return self::formatDate($date, 'MMMM yyyy');
     }
 
     protected static function formatDate(\DateTimeImmutable $date, string $pattern): string
@@ -62,12 +62,12 @@ class DateRangeConverter
     protected static function handleRangeWithTwoDates(\DateTimeImmutable $from, \DateTimeImmutable $to): string
     {
         // Spanning a single year
-        if ($from->format('m') === '01' && $to->format('m') === '12' && $from->format('Y') === $to->format('Y')) {
+        if ($from->format('m') === '01' && $to->format('m') === '12' && $from->format('y') === $to->format('y')) {
             return 'Heel ' . self::getYear($from);
         }
 
         // Spanning multiple years
-        if ($from->format('Y') !== $to->format('Y')) {
+        if ($from->format('y') !== $to->format('y')) {
             return ucfirst(self::getMonthAndYear($from) . ' - ' . self::getMonthAndYear($to));
         }
 

@@ -170,7 +170,7 @@ categories.category.type: "Informatiecategorieën"
 categories.category.department: "Verantwoordelijke bestuursorganen"
 categories.category.subject: "Onderwerpen"
 categories.category.source_file: "Type bronbestand"
-categories.category.judgement: "Soort Woo-besluit"
+categories.category.judgement: "Soort besluit"
 categories.category.grounds: "Uitzonderingsgronden"
 categories.label.all-categories: "Naar alle categorieën"
 
@@ -185,7 +185,9 @@ elastic.index.promote_confirmation: "Weet je zeker dat je dit de live index wilt
 elastic.ingest: "Ingest besluit"
 elastic.health: "Health"
 elastic.status: "Status"
+elastic.count_type: "Type"
 elastic.object_count: "Objecten"
+elastic.page_count: "Pagina's"
 elastic.aliases: "Aliassen"
 elastic.options: "Opties"
 
@@ -202,6 +204,7 @@ admin.elastic.promote_to_live: "Promoveren naar Live"
 admin.elastic.no_rollover: "Geen rollover op het moment"
 admin.elastic.indexes: "Elasticsearch indices"
 admin.elastic.new_rollover: "Nieuwe rollover"
+admin.elastic.back_to_overview: "Terug naar overzicht"
 
 admin.global.access_denied.message: "Je hebt niet de toegangsrechten die nodig zijn om deze pagina of dit document te mogen bekijken."
 admin.global.page_not-found.message: "De pagina of het document dat je zoekt, bestaat niet of is niet beschikbaar."
@@ -231,6 +234,7 @@ admin.global.danger_zone: "Gevarenzone"
 admin.global.edit: "Bewerken"
 admin.global.subject: "Onderwerp"
 admin.global.decision_number: "Besluitnummer"
+admin.global.publication_reason: "Type besluit"
 admin.global.login_help: "Hulp bij inlogproblemen?"
 admin.global.no_record: "Niet opgegeven"
 admin.global.last_login: "Laatst ingelogd"
@@ -280,6 +284,11 @@ admin.subject.name_help: "Bijvoorbeeld: 'Vaccinaties en medicatie'. Minimaal 1 e
 admin.inquiries.manage: "Verzoekenbeheer"
 admin.inquiries.manage_details: "Verzoekenbeheer: details"
 admin.inquiries.manage_help: "Deze link biedt toegang tot beheerdersacties voor zaken."
+admin.inquiries.number_of_cases_added: "Er zijn {count} zaaknummers gekoppeld"
+admin.inquiries.back_to_overview: "Terug naar het overzicht"
+admin.inquiries.generic_errors_title: "De volgende algemene fouten zijn opgetreden"
+admin.inquiries.row_errors_title: "Niet alle zaaknummers zijn gekoppeld om de volgende redenen"
+admin.inquiries.row: "Rij"
 admin.decisions.manage: "Publicatiebeheer"
 admin.decisions.manage_details: "Publicatiebeheer: details"
 admin.decisions.manage_help: "Deze link biedt toegang tot beheerdersacties voor publicaties."
@@ -341,6 +350,11 @@ admin.user.password_current: "Huidig wachtwoord"
 admin.user.password_new: "Nieuw wachtwoord"
 admin.user.password_repeat: "Herhaal nieuw wachtwoord"
 admin.user.password.edit_confirm: "Wachtwoord aanpassen"
+admin.user.none_found: "Geen {title} gevonden"
+admin.user.active_users: "Actieve gebruikers"
+admin.user.deactivated_users: "Gedeactiveerde gebruikers"
+admin.user.active_admins: "Actieve beheerders"
+admin.user.deactivated_admins: "Gedeactiveerde beheerders"
 admin.department.name: "Naam"
 admin.department.name_help: "Naam van het bestuursorgaan (minimaal 2 karakters)"
 admin.department.abbreviation: "Afkorting"
@@ -431,7 +445,6 @@ admin.dossiers.decision_prefix_help: "Je kunt de prefix van het besluit vinden d
 admin.dossiers.inquiries: "Zaaknummer(s)"
 admin.dossiers.inquiries.are_linked: "De zaaknummers worden gekoppeld"
 admin.dossiers.inquiries.help: "Scheid meerdere zaaknummers met komma's, bijvoorbeeld 100-2465, 102-2384"
-admin.dossiers.inquiries.number: "zaaknummer-{caseNr}"
 admin.dossiers.inquiries.link_documents: "Koppel zaaknummers aan eerder gepubliceerde Woo-documenten op het platform"
 admin.dossiers.inquiries.link_documents_help: "Upload een Excel document met daarin de documentnummers, matters en te koppelen zaaknummers (<a href=\"/documenten/voorbeeld_excel_extra_zaaknummers.xlsx\" class=\"bhr-a\">Bekijk voorbeeld</a>)."
 admin.dossiers.inquiries.link_dossiers_documents: "Koppel zaaknummers aan eerder gepubliceerde Woo-documenten op het platform of aan eerder gepubliceerde Woo-besluiten"
@@ -517,6 +530,11 @@ admin.dossiers.documents_updated: >-
   { count, plural,
     =1{# bestaand document wordt aangepast.}
     other{# bestaande documenten worden aangepast.}
+  }
+admin.dossiers.documents_deleted: >-
+  { count, plural,
+    =1{# bestaand document wordt verwijderd.}
+    other{# bestaande documenten worden verwijderd.}
   }
 
 admin.dossiers.woo-decision.step.details: "Basisgegevens"
@@ -982,8 +1000,8 @@ dossier.type.woo-decision.judgement.public: 'Openbaarmaking'
 dossier.type.woo-decision.judgement.already_public: 'Reeds openbaar'
 dossier.type.woo-decision.judgement.partial_public: 'Gedeeltelijke openbaarmaking'
 dossier.type.woo-decision.judgement.not_public: 'Geen openbaarmaking'
-dossier.type.woo-decision.publication-reason.wob_request: 'Wob-verzoek'
-dossier.type.woo-decision.publication-reason.woo_request: 'Woo-verzoek'
+dossier.type.woo-decision.publication-reason.wob_request: 'Wob-besluit'
+dossier.type.woo-decision.publication-reason.woo_request: 'Woo-besluit'
 dossier.type.woo-decision.publication-reason.woo_active: 'Woo-actieve openbaarmaking'
 
 publication.dossier.new_basic_data: "Nieuw besluitdossier - basisgegevens"

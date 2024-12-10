@@ -8,13 +8,13 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionMainDocument;
-use App\Entity\Document;
-use App\Entity\EntityWithFileInfo;
-use App\Entity\Inventory;
-use App\Entity\Judgement;
-use App\Entity\ProductionReport;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReport;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionMainDocument;
+use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Entity\User;
 use App\Tests\Factory\DocumentFactory;
 use App\Tests\Factory\FileInfoFactory;
@@ -68,6 +68,7 @@ final class DossierFileControllerTest extends WebTestCase
             'judgement' => Judgement::PUBLIC,
             'fileInfo' => FileInfoFactory::new([
                 'uploaded' => true,
+                'type' => 'pdf',
             ]),
         ])->_real();
 
@@ -82,7 +83,7 @@ final class DossierFileControllerTest extends WebTestCase
         );
     }
 
-    public function testAdminDownloadingWooDecisionDocumentWithConflictingMimeTypeAndExtension(): void
+    public function testAdminDownloadingWooDecisionDocumentUsesOriginalFileType(): void
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
@@ -98,6 +99,7 @@ final class DossierFileControllerTest extends WebTestCase
                 'uploaded' => true,
                 'name' => 'foobar.docx',
                 'mimetype' => 'application/pdf',
+                'type' => 'pdf',
             ]),
         ])->_real();
 

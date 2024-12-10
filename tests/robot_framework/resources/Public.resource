@@ -121,6 +121,7 @@ Select Filter Options - Dossier
   ELSE
     Uncheck Checkbox  id=input_${id}
   END
+  Sleep  1s  # Wait for the subpage to be reloaded
   ${total_count} =  Get Text  //span[@data-e2e-name="${id}_count"]
   ${total_count} =  Remove String Using Regexp  ${total_count}  [()]
   ${publication_count} =  Get Text  //span[@data-e2e-name="${id}.publication_count"]
@@ -215,3 +216,8 @@ Apply Date Filters Through URL
   ${to_url} =  Convert Date  date=${date_to}  result_format=%Y-%m-%d
   ${current_url} =  Get Url
   Go To  url=${current_url}&dt%5Bfrom%5D=${from_url}&dt%5Bto%5D=${to_url}
+
+Navigate To Covid19 Theme Page
+  ${hamburger_visible} =  Get Element States  //div[@data-e2e-name="hamburger"]  then  bool(value & visible)
+  IF  ${hamburger_visible}  Click  //div[@data-e2e-name="hamburger"]
+  Click  //a[@data-e2e-name="nav-Thema COVID-19"]

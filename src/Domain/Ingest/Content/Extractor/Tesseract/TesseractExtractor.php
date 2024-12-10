@@ -7,7 +7,7 @@ namespace App\Domain\Ingest\Content\Extractor\Tesseract;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use App\Domain\Ingest\Content\LazyFileReference;
-use App\Entity\FileInfo;
+use App\Domain\Publication\FileInfo;
 
 readonly class TesseractExtractor implements ContentExtractorInterface
 {

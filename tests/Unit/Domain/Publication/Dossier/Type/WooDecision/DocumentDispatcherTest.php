@@ -9,9 +9,9 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveDocumentComman
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\ReplaceDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Document;
-use App\Entity\WithdrawReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WithdrawReason;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\Messenger\Envelope;

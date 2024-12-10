@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Form\Inquiry;
 
-use App\Entity\Inquiry;
-use App\Repository\InquiryRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\InquiryRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

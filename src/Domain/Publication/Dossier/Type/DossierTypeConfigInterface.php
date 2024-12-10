@@ -17,7 +17,15 @@ interface DossierTypeConfigInterface
 
     public function getStatusWorkflow(): WorkflowInterface;
 
-    public function createInstance(): AbstractDossier;
+    /**
+     * @return class-string<AbstractDossier>
+     */
+    public function getEntityClass(): string;
+
+    /**
+     * @return array<array-key, class-string>
+     */
+    public function getSubEntityClasses(): array;
 
     /**
      * @return StepDefinitionInterface[]

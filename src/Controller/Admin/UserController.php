@@ -13,10 +13,10 @@ use App\Form\User\UserCreateFormType;
 use App\Form\User\UserInfoFormType;
 use App\Repository\UserRepository;
 use App\Roles;
+use App\Service\PaginatorFactory;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use App\Service\UserService;
-use Knp\Component\Pager\PaginatorInterface;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
 use MinVWS\AuditLogger\Events\Logging\AccountChangeLogEvent;
@@ -24,7 +24,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -34,8 +33,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class UserController extends AbstractController
 {
-    protected const MAX_ITEMS_PER_PAGE = 100;
-
     protected const RESET_USER_KEY = 'reset_user';
 
     public function __construct(
@@ -44,7 +41,7 @@ class UserController extends AbstractController
         private readonly TranslatorInterface $translator,
         private readonly AuditLogger $auditLogger,
         private readonly AuthorizationMatrix $authorizationMatrix,
-        private readonly PaginatorInterface $paginator,
+        private readonly PaginatorFactory $paginatorFactory,
     ) {
     }
 
@@ -59,30 +56,45 @@ class UserController extends AbstractController
             $request->getSession()->remove(self::RESET_USER_KEY);
         }
 
-        /** @var User $user */
-        $user = $this->getUser();
+        $organisation = $this->authorizationMatrix->getActiveOrganisation();
 
-        $pagination = $this->paginator->paginate(
-            $this->repository->findAllForOrganisationQuery(
-                $this->authorizationMatrix->getActiveOrganisation(),
-                $user->hasRole(Roles::ROLE_SUPER_ADMIN),
-            ),
-            $request->query->getInt('page', 1),
-            100,
-            [
-                PaginatorInterface::DEFAULT_SORT_FIELD_NAME => 'u.name',
-            ],
+        $activeUsersPaginator = $this->paginatorFactory->createForQuery(
+            key: 'au',
+            query: $this->repository->findActiveUsersForOrganisationQuery($organisation),
+            defaultSortField: 'u.name',
         );
 
-        $roles = Roles::roleDetails();
-        $roleDetails = [];
-        foreach ($roles as $role) {
-            $roleDetails[$role['role']] = $role['description'];
+        $deactivatedUsersPaginator = $this->paginatorFactory->createForQuery(
+            key: 'du',
+            query: $this->repository->findDeactivatedUsersForOrganisationQuery($organisation),
+            defaultSortField: 'u.name',
+        );
+
+        /** @var User $user */
+        $user = $this->getUser();
+        if ($user->hasRole('ROLE_SUPER_ADMIN') || $user->hasRole('ROLE_ADMIN')) {
+            $activeAdminsPaginator = $this->paginatorFactory->createForQuery(
+                key: 'aa',
+                query: $this->repository->findActiveAdminsQuery(),
+                defaultSortField: 'u.name',
+            );
+
+            $deactivatedAdminsPaginator = $this->paginatorFactory->createForQuery(
+                key: 'da',
+                query: $this->repository->findDeactivatedAdminsQuery(),
+                defaultSortField: 'u.name',
+            );
+        } else {
+            $activeAdminsPaginator = null;
+            $deactivatedAdminsPaginator = null;
         }
 
         return $this->render('admin/user/index.html.twig', [
-            'pagination' => $pagination,
-            'role_details' => $roleDetails,
+            'activeUsers' => $activeUsersPaginator,
+            'deactivatedUsers' => $deactivatedUsersPaginator,
+            'activeAdmins' => $activeAdminsPaginator,
+            'deactivatedAdmins' => $deactivatedAdminsPaginator,
+            'role_descriptions' => Roles::roleDescriptions(),
         ]);
     }
 
@@ -130,7 +142,7 @@ class UserController extends AbstractController
     public function viewUserCredentials(Request $request): Response
     {
         if (! $request->getSession()->has(self::RESET_USER_KEY)) {
-            throw new NotFoundHttpException();
+            throw $this->createNotFoundException();
         }
 
         // Remove the data from the session as soon as possible
@@ -140,7 +152,7 @@ class UserController extends AbstractController
         /** @var array{user_id: int, plainTextPassword: string} $data */
         $user = $this->repository->find($data['user_id']);
         if (! $user) {
-            throw new NotFoundHttpException();
+            throw $this->createNotFoundException();
         }
 
         return $this->render('admin/user/credentials.html.twig', [
@@ -211,7 +223,7 @@ class UserController extends AbstractController
 
         /** @var string[] $roles */
         $roles = $form->get('roles')->getData();
-        /** @var LoggableUser $loggedInUser */
+
         $this->userService->updateRoles($loggedInUser, $user, $roles);
 
         $this->addFlash('backend', ['success' => $this->translator->trans('admin.user.user_modified')]);

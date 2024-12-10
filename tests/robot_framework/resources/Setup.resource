@@ -19,12 +19,13 @@ ${BASE_URL}             localhost:8000
 ${BASE_URL_BALIE}       localhost:8000/balie/dossiers
 ${TST_BALIE_USER}       email@example.org
 ${TST_BALIE_PASSWORD}   IkLoopNooitVastVandaag
+${DEVICE}               ${EMPTY}
 
 
 *** Keywords ***
 Suite Setup - CI
-  [Arguments]  ${cleansheet}=${TRUE}  ${include_prefixes}=${FALSE}
-  IF  ${cleansheet}  Cleansheet  ${include_prefixes}
+  [Arguments]  ${cleansheet}=${TRUE}  ${keep_prefixes}=${TRUE}  ${device}=Desktop Chrome
+  IF  ${cleansheet}  Cleansheet  ${keep_prefixes}
   # If run locally, set the OTP code from the local env vars coz the setup has likely already ran
   IF  ${RUN_LOCALLY}  VAR  ${OTP_CODE}  %{SECRET_WOO_LOCAL}  scope=global
   # On first run of this keyword, create the user.
@@ -32,23 +33,24 @@ Suite Setup - CI
     Create Woo Admin User
     First Time Login With Admin
   END
-  Open Browser And BaseUrl
+  Open Browser And BaseUrl  ${device}
   Close Symfony Dev Bar
   Setting Global Variables
 
 Cleansheet
   [Documentation]  In some tests we want unique prefixes, which must also be cleaned up afterwards.
-  [Arguments]  ${include_prefixes}=${FALSE}
+  [Arguments]  ${keep_prefixes}=${TRUE}
   Run Process  task worker:stop  shell=True
-  IF  ${include_prefixes}
-    Run Process  task app:cleansheet -- -p  shell=True  alias=cleansheet
-    ${result} =  Get Process Result  cleansheet
-    Should Not Contain  ${result.stdout}  exception
+  VAR  ${param_prefixes}  ${EMPTY}
+  IF  ${keep_prefixes}
+    VAR  ${param_prefixes} =  --keep-prefixes
   ELSE
-    Run Process  task app:cleansheet  shell=True  alias=cleansheet
-    ${result} =  Get Process Result  cleansheet
-    Should Not Contain  ${result.stdout}  exception
+    VAR  ${param_prefixes} =  ${EMPTY}
   END
+  ${command} =  Catenate  task rf:cleansheet --  ${param_prefixes}
+  Run Process  ${command}  shell=True  alias=cleansheet
+  ${result} =  Get Process Result  cleansheet
+  Should Not Contain  ${result.stdout}  exception
   Run Process  task worker:start  shell=True
 
 Setting Global Variables
@@ -63,14 +65,19 @@ Setting Global Variables
   VAR  ${current_epoch}  ${current_epoch}  scope=global
 
 Open Browser And BaseUrl
-  [Arguments]  ${device}=Desktop Chrome  ${slow_mo}=50ms
+  [Arguments]  ${device}  ${slow_mo}=50ms
   ${device_context} =  Get Device  ${device}
+  IF  'Desktop' in '${device}'
+    VAR  ${viewport} =  { "width": 1920, "height": 970 }  # this is the viewport when your resolution is 1920x1080
+  ELSE
+    VAR  ${viewport} =  ${device_context}[viewport]
+  END
   New Browser
   ...  browser=${device_context}[defaultBrowserType]
   ...  headless=${HEADLESS}
   ...  args=["--ignore-certificate-errors", "--lang=nl"]
   ...  slowMo=${slow_mo}
-  New Context  &{device_context}  locale=nl-NL  acceptDownloads=True
+  New Context  &{device_context}  locale=nl-NL  acceptDownloads=True  viewport=${viewport}
   New Page  ${BASE_URL}
 
 Create Woo Admin User
@@ -78,7 +85,7 @@ Create Woo Admin User
   ...  task app:user:create -- "${TST_BALIE_USER}" "full name" --super-admin
   Run Process  ${make_user_command}  shell=True  alias=create_admin
   ${stdout}  ${stderr} =  Get Process Result  create_admin  stdout=True  stderr=True
-  Should Be Empty  ${stderr}  Error creating admin ${stderr}
+  Should Be Empty  ${stderr}  Error creating admin user: ${stdout}
   ${regel_ww} =  Get Line  ${stdout}  1
   ${ww} =  Get Substring  ${regel_ww}  13
   ${otp_line} =  Get Line  ${stdout}  3
@@ -88,7 +95,7 @@ Create Woo Admin User
   VAR  ${ww}  ${ww}  scope=global
 
 First Time Login With Admin
-  Open Browser And BaseUrl
+  Open Browser And BaseUrl  Desktop Chrome
   Login Admin  ${TST_BALIE_USER}  ${WW}
   Go To  ${BASE_URL}/balie/login
   Fill Text  id=change_password_current_password  ${WW}

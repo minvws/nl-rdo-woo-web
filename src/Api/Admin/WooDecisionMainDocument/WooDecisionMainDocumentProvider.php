@@ -6,7 +6,7 @@ namespace App\Api\Admin\WooDecisionMainDocument;
 
 use App\Api\Admin\AbstractMainDocument\AbstractMainDocumentDto;
 use App\Api\Admin\AbstractMainDocument\AbstractMainDocumentProvider;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionMainDocumentRepository;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 

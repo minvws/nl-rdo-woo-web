@@ -15,9 +15,9 @@ use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\DecisionAttachment;
-use App\Entity\FileInfo;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionAttachment;
+use App\Domain\Publication\FileInfo;
 use App\Enum\ApplicationMode;
 use App\SourceType;
 use App\Tests\Unit\UnitTestCase;
@@ -123,7 +123,7 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         return [
             'DecisionAttachment in public mode' => [
                 'dossierType' => DossierType::WOO_DECISION,
-                'attachmentClass' => DecisionAttachment::class,
+                'attachmentClass' => WooDecisionAttachment::class,
                 'applicationMode' => ApplicationMode::PUBLIC,
                 'expectedDownloadRouteName' => 'app_dossier_file_download',
                 'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
@@ -132,7 +132,7 @@ final class AttachmentViewFactoryTest extends UnitTestCase
             ],
             'DecisionAttachment in admin mode' => [
                 'dossierType' => DossierType::WOO_DECISION,
-                'attachmentClass' => DecisionAttachment::class,
+                'attachmentClass' => WooDecisionAttachment::class,
                 'applicationMode' => ApplicationMode::ADMIN,
                 'expectedDownloadRouteName' => 'app_admin_dossier_file_download',
                 'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],

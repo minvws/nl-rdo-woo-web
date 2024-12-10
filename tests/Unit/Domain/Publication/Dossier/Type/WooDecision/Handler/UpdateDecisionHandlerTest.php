@@ -6,8 +6,8 @@ namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
 use App\Domain\Publication\Dossier\Event\DossierUpdatedEvent;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\UpdateDecisionCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\Handler\UpdateDecisionHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;

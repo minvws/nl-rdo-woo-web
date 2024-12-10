@@ -6,9 +6,9 @@ namespace App\Service\Inventory;
 
 use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Document;
-use App\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 use App\Service\Storage\EntityStorageService;
 
 /**

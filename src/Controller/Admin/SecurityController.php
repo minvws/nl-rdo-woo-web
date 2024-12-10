@@ -82,17 +82,11 @@ class SecurityController extends AbstractController
         /** @var LoggableUser $loggedInUser */
         $loggedInUser = $this->getUser();
 
-        $roles = Roles::roleDetails();
-        $roleDetails = [];
-        foreach ($roles as $role) {
-            $roleDetails[$role['role']] = $role['description'];
-        }
-
         return $this->render('security/profile.html.twig', [
             'form' => $form->createView(),
             'hasFormErrors' => count($form->getErrors(true)) > 0,
             'user' => $loggedInUser,
-            'role_details' => $roleDetails,
+            'role_descriptions' => Roles::roleDescriptions(),
         ]);
     }
 }

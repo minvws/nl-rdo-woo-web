@@ -1,0 +1,44 @@
+<table class="bhr-table">
+    <caption class="sr-only">{{ 'elastic.rollover' | trans() }} {{ details.index.name }}</caption>
+    <thead>
+        <tr>
+            <th><span class="sr-only">{{ 'elastic.count_type' | trans() }}</span></th>
+            <th class="text-right w-56" scope="col">{{ 'elastic.object_count' | trans() }}</th>
+            <th class="text-right w-56" scope="col">{{ 'elastic.page_count' | trans() }}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for mainTypeCount in details.counts %}
+        <tr>
+            <td>{{ mainTypeCount.type | trans }}</td>
+            <td class="text-right w-56">
+                <span class="pr-4">{{ mainTypeCount.actual }} van {{ mainTypeCount.expected }}</span>
+
+                <span class="bhr-badge bhr-badge--{{ mainTypeCount.percentage == 100 ? 'green' : 'red' }}">
+                    {{ mainTypeCount.percentage }}%
+                </span>
+            </td>
+            <td></td>
+        </tr>
+        {% for subTypeCount in mainTypeCount.subCounts %}
+            <tr>
+                <td><span class="inline-block pl-4">↳ {{ subTypeCount.type | trans }}</span></td>
+                <td class="text-right w-56">
+                    <span class="pr-4">{{ subTypeCount.actual }} van {{ subTypeCount.expected }}</span>
+
+                    <span class="bhr-badge bhr-badge--{{ subTypeCount.percentage  == 100 ? 'green' : 'red' }}">
+                        {{ subTypeCount.percentage  }}%
+                    </span>
+                </td>
+                <td class="text-right w-56">
+                    <span class="pr-4">{{ subTypeCount.actualPages }} van {{ subTypeCount.expectedPages }}</span>
+
+                    <span class="bhr-badge bhr-badge--{{ subTypeCount.pagesPercentage  == 100 ? 'green' : 'red' }}">
+                        {{ subTypeCount.pagesPercentage  }}%
+                    </span>
+                </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+    </tbody>
+</table>

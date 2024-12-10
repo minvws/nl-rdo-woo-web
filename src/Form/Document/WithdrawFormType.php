@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Document;
 
-use App\Entity\WithdrawReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\WithdrawReason;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

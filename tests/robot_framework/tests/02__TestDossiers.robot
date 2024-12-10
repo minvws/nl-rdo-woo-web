@@ -23,7 +23,7 @@ ${BASE_URL}             localhost:8000
 ${BASE_URL_BALIE}       localhost:8000/balie/dossiers
 ${TST_BALIE_USER}       email@example.org
 ${TST_BALIE_PASSWORD}   IkLoopNooitVastVandaag
-${INVENTORY}            ${EMPTY}
+${PRODUCTION_REPORT}    ${EMPTY}
 ${DOCUMENTS}            ${EMPTY}
 ${NUMBER_OF_DOCUMENTS}  ${EMPTY}
 ${ATTACHMENT_LOCATION}  ${EMPTY}
@@ -91,7 +91,7 @@ Parse Dataset To File Paths
   [Arguments]  ${dataset}  ${type}  ${has_attachment}
   ${files} =  List Files In Directory  tests/robot_framework/files/testdossiers/${dataset}  pattern=VWS*.pdf
   IF  '${type}' == 'woo-decision'
-    Set Test Variable  ${INVENTORY}  tests/robot_framework/files/testdossiers/${dataset}/inventory.xlsx
+    Set Test Variable  ${PRODUCTION_REPORT}  tests/robot_framework/files/testdossiers/${dataset}/inventory.xlsx
     Set Test Variable  ${DOCUMENTS}  tests/robot_framework/files/testdossiers/${dataset}/Archive.zip
     Set Test Variable  ${NUMBER_OF_DOCUMENTS}  5
   ELSE IF  '${type}' == 'covenant'

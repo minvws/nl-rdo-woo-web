@@ -15,7 +15,7 @@ use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Entity\FileInfo;
+use App\Domain\Publication\FileInfo;
 use App\Service\Uploader\UploaderService;
 use App\Service\Uploader\UploadGroupId;
 use Mockery\Adapter\Phpunit\MockeryTestCase;

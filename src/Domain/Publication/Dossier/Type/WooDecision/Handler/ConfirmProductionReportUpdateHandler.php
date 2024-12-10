@@ -6,10 +6,10 @@ namespace App\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\ConfirmProductionReportUpdateCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\ProductionReportProcessRunRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Exception\InventoryUpdaterException;
-use App\Repository\ProductionReportProcessRunRepository;
+use App\Exception\ProductionReportUpdaterException;
 use App\Service\HistoryService;
 use App\Utils;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -31,7 +31,7 @@ readonly class ConfirmProductionReportUpdateHandler
 
         $run = $command->dossier->getProcessRun();
         if (! $run) {
-            throw InventoryUpdaterException::forNoRunFound();
+            throw ProductionReportUpdaterException::forNoRunFound();
         }
 
         $run->confirm();

@@ -1,0 +1,8 @@
+fileType: Word
+mimes:
+    - application/msword
+    - application/vnd.ms-word
+    - application/x-msword
+    - zz-application/zz-winassoc-doc
+    - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+    - application/vnd.oasis.opendocument.text

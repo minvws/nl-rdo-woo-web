@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command\Cron;
 
-use App\Repository\BatchDownloadRepository;
+use App\Domain\Publication\BatchDownloadRepository;
 use App\Service\BatchDownloadService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

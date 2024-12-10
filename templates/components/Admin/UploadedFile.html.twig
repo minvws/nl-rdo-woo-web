@@ -21,10 +21,9 @@
             </span>
         </{{ element }}>
 
-    {% if deleteUrl is defined %}
-    <a class="bhr-file__delete" href="{{ deleteUrl }}">
-        <twig:Admin:Icon color="fill-current" size="18" name="trash-bin" />
-        <span class="sr-only">Verwijder {{ fileName }}</span>
+    {% if replaceUrl is defined %}
+    <a class="text-bhr-sea-blue underline" href="{{ replaceUrl }}">
+        {{ 'admin.dossiers.replace_report' | trans }}
     </a>
     {% endif %}
 </div>

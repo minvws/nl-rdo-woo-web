@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Service\Uploader;
 
-use App\Domain\Upload\FileType\FileTypeHelper;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
+use App\Domain\Upload\FileType\FileType;
 use App\Exception\UploaderServiceException;
 use App\Service\Storage\EntityStorageService;
 use App\SourceType;
-use Oneup\UploaderBundle\Event\PostUploadEvent;
 use Oneup\UploaderBundle\Uploader\Storage\FilesystemOrphanageStorage;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\File;
@@ -25,18 +24,17 @@ readonly class UploaderService
         private RequestStack $requestStack,
         private FilesystemOrphanageStorage $orphanageStorage,
         private EntityStorageService $entityStorageService,
-        private FileTypeHelper $fileTypeHelper,
     ) {
     }
 
-    public function registerUpload(PostUploadEvent $event, UploadGroupId $uploaderGroupId): void
+    public function registerUpload(string $uploadUuid, string $pathname, UploadGroupId $uploaderGroupId): void
     {
         $session = $this->requestStack->getSession();
 
         $uploads = $session->get($this->getSessionKey($uploaderGroupId), []);
         Assert::isArray($uploads);
 
-        $uploads[$event->getRequest()->get('uuid')] = [$event->getFile()->getPathname()];
+        $uploads[$uploadUuid] = [trim($pathname)];
 
         $session->set($this->getSessionKey($uploaderGroupId), $uploads);
     }
@@ -100,7 +98,7 @@ readonly class UploaderService
             throw new \RuntimeException('Cannot attach file without a name to entity');
         }
 
-        $fileType = $this->fileTypeHelper->getFileType($file->getMimeType() ?? '');
+        $fileType = FileType::fromMimeType($file->getMimeType() ?? '');
 
         $fileInfo->setSourceType($fileType ? SourceType::fromFileType($fileType) : SourceType::UNKNOWN);
         $fileInfo->setType($fileType->value ?? SourceType::UNKNOWN->value);

@@ -10,7 +10,7 @@
     <ul class="grid grid-cols-4 gap-x-4">
         {% for document in missingDocuments | slice(0, 100) %}
         <li class="py-1">
-            <twig:Admin:FileWithIcon fileName="{{ document.documentId }}.pdf" mimeType="application/pdf" />
+            <twig:Admin:FileWithIcon fileName="{{ document.documentId }}" mimeType="" />
         </li>
         {% endfor %}
     </ul>

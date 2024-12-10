@@ -8,8 +8,8 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\EntityWithFileInfo;
 
 readonly class ProductionReportDossierFileProvider implements DossierFileProviderInterface
 {

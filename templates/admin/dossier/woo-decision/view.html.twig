@@ -38,6 +38,10 @@
                     {% endif %}
                 </twig:Admin:Definition>
 
+                <twig:Admin:Definition term="{{ 'admin.global.publication_reason' | trans() }}">
+                    <span data-e2e-name="dossier-publicationReason">{{ dossier.publicationReason | trans }}</span>
+                </twig:Admin:Definition>
+
                 <twig:Admin:Definition term="{{ 'admin.global.decision_number' | trans() }}">
                     <span data-e2e-name="dossier-dossierNumber">{{ dossier.dossierNr }}</span>
                 </twig:Admin:Definition>

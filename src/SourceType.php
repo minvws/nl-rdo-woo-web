@@ -34,24 +34,20 @@ enum SourceType: string implements TranslatableInterface
 
         $target = strtolower(trim($target));
 
+        // First check for an exact match on enum cases
+        $match = self::tryFrom($target);
+        if ($match instanceof self) {
+            return $match;
+        }
+
+        // If there is no match try matching on alternative values
         return match ($target) {
-            'pdf' => self::PDF,
             'word processing',
             'application/vnd.openxmlformats-officedocument',
-            'application/rms.encrypted.ms-office',
-            'doc' => self::DOC,
-            'image' => self::IMAGE,
-            'presentation' => self::PRESENTATION,
-            'spreadsheet' => self::SPREADSHEET,
-            'email' => self::EMAIL,
-            'html' => self::HTML,
+            'application/rms.encrypted.ms-office' => self::DOC,
             'application/msonenote' => self::NOTE,
-            'database',
             'application/x-sqlite3' => self::DATABASE,
-            'xml' => self::XML,
-            'video' => self::VIDEO,
-            'vcard' => self::VCARD,
-            'chat', 'chatbericht' => self::CHAT,
+            'chatbericht' => self::CHAT,
             default => self::UNKNOWN,
         };
     }

@@ -6,8 +6,8 @@ namespace App\Tests\Factory\Publication\Dossier\Type\WooDecision;
 
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Tests\Factory\OrganisationFactory;
 use Carbon\CarbonImmutable;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;

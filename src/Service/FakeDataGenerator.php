@@ -6,11 +6,11 @@ namespace App\Service;
 
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Department;
-use App\Entity\Document;
-use App\Entity\Judgement;
 use App\Entity\Organisation;
 use App\SourceType;
 use App\Tests\Faker\FakerFactory;

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Exception;
 
-abstract class TranslatableException extends \RuntimeException
+use Symfony\Contracts\Translation\TranslatableInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+abstract class TranslatableException extends \RuntimeException implements TranslatableInterface
 {
     private readonly string $translationKey;
 
@@ -39,5 +42,14 @@ abstract class TranslatableException extends \RuntimeException
     public function getPlaceholders(): array
     {
         return $this->placeholders;
+    }
+
+    public function trans(TranslatorInterface $translator, ?string $locale = null): string
+    {
+        return $translator->trans(
+            id: $this->getTranslationKey(),
+            parameters: $this->getPlaceholders(),
+            locale: $locale,
+        );
     }
 }

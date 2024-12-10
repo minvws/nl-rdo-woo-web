@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\AnnualReport;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Step\StepDefinition;
 use App\Domain\Publication\Dossier\Step\StepDefinitionInterface;
 use App\Domain\Publication\Dossier\Step\StepName;
@@ -38,9 +37,12 @@ readonly class AnnualReportConfig implements DossierTypeConfigInterface
         return $this->annualReportWorkflow;
     }
 
-    public function createInstance(): AbstractDossier
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getEntityClass(): string
     {
-        return new AnnualReport();
+        return AnnualReport::class;
     }
 
     /**
@@ -58,5 +60,13 @@ readonly class AnnualReportConfig implements DossierTypeConfigInterface
     public function getCreateRouteName(): string
     {
         return 'app_admin_dossier_annualreport_details_create';
+    }
+
+    public function getSubEntityClasses(): array
+    {
+        return [
+            AnnualReportMainDocument::class,
+            AnnualReportAttachment::class,
+        ];
     }
 }

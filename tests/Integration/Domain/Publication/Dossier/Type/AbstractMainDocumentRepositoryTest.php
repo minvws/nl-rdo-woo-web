@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Dossier\Type\AbstractMainDocumentRepository;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
 use App\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
 use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
 use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentFactory;

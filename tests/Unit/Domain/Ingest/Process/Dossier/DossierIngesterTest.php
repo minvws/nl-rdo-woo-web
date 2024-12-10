@@ -8,7 +8,7 @@ use App\Domain\Ingest\Process\Dossier\DossierIngester;
 use App\Domain\Ingest\Process\Dossier\Strategy\DefaultDossierIngestStrategy;
 use App\Domain\Ingest\Process\Dossier\Strategy\WooDecisionIngestStrategy;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 

@@ -39,7 +39,6 @@ readonly class AttachmentTypeFactory
                 name: $this->trans('branch.policy_document'),
                 branch: new AttachmentTypeBranch(
                     name: $this->trans('branch.report'),
-                    branch: null,
                     attachmentTypes: [
                         AttachmentType::OFFICIAL_MESSAGE,
                         AttachmentType::EVALUATION_REPORT,

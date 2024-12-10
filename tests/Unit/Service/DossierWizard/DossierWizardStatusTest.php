@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\DossierWizard;
 
 use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Service\DossierWizard\DossierWizardStatus;
 use App\Service\DossierWizard\StepStatus;
 use Mockery\Adapter\Phpunit\MockeryTestCase;

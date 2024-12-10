@@ -1,0 +1,9 @@
+fileType: PowerPoint
+mimes:
+    - application/mspowerpoint
+    - application/powerpoint
+    - application/vnd.ms-powerpoint
+    - application/x-mspowerpoint
+    - application/vnd.openxmlformats-officedocument.presentationml.slideshow
+    - application/vnd.openxmlformats-officedocument.presentationml.presentation
+    - application/vnd.oasis.opendocument.presentation

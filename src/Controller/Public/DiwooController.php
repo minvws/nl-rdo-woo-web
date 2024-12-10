@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Public;
 
-use App\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;

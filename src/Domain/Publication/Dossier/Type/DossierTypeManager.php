@@ -64,7 +64,7 @@ class DossierTypeManager
 
     public function createDossier(DossierType $type): AbstractDossier
     {
-        return $this->getConfig($type)->createInstance();
+        return new ($this->getConfig($type)->getEntityClass());
     }
 
     public function getStatusWorkflow(AbstractDossier $dossier): WorkflowInterface
@@ -77,5 +77,13 @@ class DossierTypeManager
         $expression = $config->getSecurityExpression();
 
         return $expression === null || $this->authorizationChecker->isGranted($expression);
+    }
+
+    /**
+     * @return DossierTypeConfigInterface[]
+     */
+    public function getAllConfigs(): array
+    {
+        return $this->configs;
     }
 }

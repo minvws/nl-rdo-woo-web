@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload\FileType;
 
-use App\Domain\Upload\FileType\FileTypeHelper;
 use App\Domain\Upload\FileType\FileTypeValidator;
 use App\Service\Uploader\UploadGroupId;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -18,17 +17,12 @@ final class FileTypeValidatorTest extends MockeryTestCase
 {
     private LoggerInterface&MockInterface $logger;
     private FileTypeValidator $validator;
-    private FileTypeHelper&MockInterface $fileTypeHelper;
 
     public function setUp(): void
     {
         $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->fileTypeHelper = \Mockery::mock(FileTypeHelper::class);
 
-        $this->validator = new FileTypeValidator(
-            $this->logger,
-            $this->fileTypeHelper,
-        );
+        $this->validator = new FileTypeValidator($this->logger);
 
         parent::setUp();
     }
@@ -55,10 +49,6 @@ final class FileTypeValidatorTest extends MockeryTestCase
         $event->shouldReceive('getRequest')->andReturn($request);
         $event->shouldReceive('getFile->getMimetype')->andReturn('foo/bar');
 
-        $this->fileTypeHelper->expects('getMimeTypesByUploadGroup')->with(UploadGroupId::MAIN_DOCUMENTS)->andReturn([
-            'application/pdf',
-        ]);
-
         $this->logger->expects('error');
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage(FileTypeValidator::ERROR_WHITELIST);
@@ -73,11 +63,6 @@ final class FileTypeValidatorTest extends MockeryTestCase
         $event = \Mockery::mock(ValidationEvent::class);
         $event->shouldReceive('getRequest')->andReturn($request);
         $event->expects('getFile->getMimetype')->andReturn('application/pdf');
-
-        $this->fileTypeHelper->expects('getMimeTypesByUploadGroup')->with(UploadGroupId::MAIN_DOCUMENTS)->andReturn([
-            'foo/bar',
-            'application/pdf',
-        ]);
 
         $this->validator->onValidate($event);
     }

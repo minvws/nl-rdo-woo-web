@@ -1,0 +1,53 @@
+{
+    "took": 2,
+    "timed_out": false,
+    "_shards": {
+        "total": 1,
+        "successful": 1,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 16,
+            "relation": "eq"
+        },
+        "max_score": null,
+        "hits": []
+    },
+    "aggregations": {
+        "toplevel_type": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 0,
+            "buckets": [
+                {
+                    "key": "dossier",
+                    "doc_count": 11,
+                    "main_types_only": {
+                        "doc_count": 2
+                    },
+                    "sublevel_type": {
+                        "doc_count_error_upper_bound": 0,
+                        "sum_other_doc_count": 0,
+                        "buckets": [
+                            {
+                                "key": "document",
+                                "doc_count": 8,
+                                "pages": {
+                                    "doc_count": 16
+                                }
+                            },
+                            {
+                                "key": "woo_decision_main_document",
+                                "doc_count": 1,
+                                "pages": {
+                                    "doc_count": 1
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

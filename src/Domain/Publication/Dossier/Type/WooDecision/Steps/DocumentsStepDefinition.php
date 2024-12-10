@@ -7,7 +7,7 @@ namespace App\Domain\Publication\Dossier\Type\WooDecision\Steps;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Step\StepDefinition;
 use App\Domain\Publication\Dossier\Step\StepException;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 readonly class DocumentsStepDefinition extends StepDefinition

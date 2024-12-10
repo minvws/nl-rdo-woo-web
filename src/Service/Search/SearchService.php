@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Search;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Query\SearchParametersFactory;
-use App\Entity\Document;
 use App\Service\Elastic\ElasticClientInterface;
 use App\Service\Search\Object\ObjectHandler;
 use App\Service\Search\Query\QueryGenerator;

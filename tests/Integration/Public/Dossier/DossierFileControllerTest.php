@@ -8,12 +8,12 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionMainDocument;
-use App\Entity\Document;
-use App\Entity\EntityWithFileInfo;
-use App\Entity\Inventory;
-use App\Entity\Judgement;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionMainDocument;
+use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Tests\Factory\DocumentFactory;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\InventoryFactory;
@@ -60,6 +60,7 @@ final class DossierFileControllerTest extends WebTestCase
             'judgement' => Judgement::PUBLIC,
             'fileInfo' => FileInfoFactory::new([
                 'uploaded' => true,
+                'type' => 'pdf',
             ]),
         ])->_real();
 
@@ -73,7 +74,7 @@ final class DossierFileControllerTest extends WebTestCase
         );
     }
 
-    public function testDownloadingWooDecisionDocumentWithConflictingMimeTypeAndExtension(): void
+    public function testDownloadingWooDecisionDocumentUsesOriginalFileType(): void
     {
         /** @var WooDecision $dossier */
         $dossier = WooDecisionFactory::createOne()->_real();
@@ -85,6 +86,7 @@ final class DossierFileControllerTest extends WebTestCase
                 'uploaded' => true,
                 'name' => 'foobar.docx',
                 'mimetype' => 'application/pdf',
+                'type' => 'pdf',
             ]),
         ])->_real();
 

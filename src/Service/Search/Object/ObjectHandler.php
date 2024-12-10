@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Object;
 
-use App\Domain\Search\Query\SearchType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\ElasticConfig;
-use App\Entity\Document;
 use App\Service\Elastic\ElasticClientInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Jaytaph\TypeArray\TypeArray;
@@ -36,59 +35,6 @@ class ObjectHandler
 
         /** @var Elasticsearch $response */
         return $response->asBool();
-    }
-
-    public function getObjectCount(string $index, string ...$type): int
-    {
-        /** @var Elasticsearch $response */
-        $response = $this->elastic->count([
-            'index' => $index,
-            'body' => [
-                'query' => [
-                    'terms' => [
-                        'type' => $type,
-                    ],
-                ],
-            ],
-        ]);
-        $result = $response->asArray();
-
-        return $result['count'] ?? 0;
-    }
-
-    public function getTotalPageCount(string $index): int
-    {
-        /** @var Elasticsearch $response */
-        $response = $this->elastic->search([
-            'index' => $index,
-            'size' => 0,
-            'body' => [
-                'query' => [
-                    'term' => [
-                        'type' => SearchType::DOCUMENT->value,
-                    ],
-                ],
-                'aggs' => [
-                    'total_page_count' => [
-                        'nested' => [
-                            'path' => 'pages',
-                        ],
-                        'aggs' => [
-                            'page_count' => [
-                                'value_count' => [
-                                    'field' => 'pages.page_nr',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ]);
-
-        $response = new TypeArray($response->asArray());
-        $totalPageCount = $response->getInt('[aggregations][total_page_count][page_count][value]', 0);
-
-        return $totalPageCount;
     }
 
     /**

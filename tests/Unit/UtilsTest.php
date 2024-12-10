@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Entity\EntityWithFileInfo;
-use App\Entity\FileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
+use App\Domain\Publication\FileInfo;
 use App\Utils;
 use PHPUnit\Framework\Attributes\DataProvider;
 

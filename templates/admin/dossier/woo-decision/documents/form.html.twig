@@ -27,7 +27,7 @@
     {% endif %}
 </div>
 
-{% if inventoryStatus.isUploaded %}
+{% if inventoryStatus.isReadyForDocumentUpload and app.request.get('replace') is null %}
 <div class="bhr-card mt-10">
     <div class="text-lg pb-2">
         <h2 class="bhr-form-help">Stap 2</h2>
@@ -38,6 +38,7 @@
     <twig:Admin:DossierDocuments
         dossier="{{ dossier }}"
         uploadStatus="{{ uploadStatus }}"
+        mimeTypes="{{ mimeTypes }}"
     />
 
     <div class="mt-4">

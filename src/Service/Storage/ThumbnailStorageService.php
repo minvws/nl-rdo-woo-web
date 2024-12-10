@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Storage;
 
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 
 /**
  * This class is responsible for storing and retrieving thumbnails attach to entities using FileInfo. See StorageService

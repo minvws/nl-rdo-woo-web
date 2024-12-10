@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Ingest\Process\PdfPage;
 
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use Symfony\Component\Uid\Uuid;
 
 final readonly class IngestPdfPageCommand

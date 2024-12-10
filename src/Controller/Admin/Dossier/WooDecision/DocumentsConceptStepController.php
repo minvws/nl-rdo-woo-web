@@ -6,11 +6,12 @@ namespace App\Controller\Admin\Dossier\WooDecision;
 
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Form\Dossier\WooDecision\DocumentUploadType;
 use App\Form\Dossier\WooDecision\InventoryType;
-use App\ValueObject\InventoryStatus;
+use App\Service\Uploader\UploadGroupId;
+use App\ValueObject\ProductionReportStatus;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -46,8 +47,31 @@ class DocumentsConceptStepController extends AbstractController
             return $this->stepHelper->redirectToFirstOpenStep($wizardStatus);
         }
 
-        $inventoryForm = $this->createForm(InventoryType::class);
+        if ($request->query->has('confirm')) {
+            $this->dispatcher->dispatchConfirmProductionReportUpdateCommand($dossier);
+        }
+
+        if ($request->query->has('reject')) {
+            $this->dispatcher->dispatchRejectProductionReportUpdateCommand($dossier);
+
+            return $this->redirectToRoute(
+                'app_admin_dossier_woodecision_documents_concept',
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            );
+        }
+
+        $inventoryForm = $this->createForm(InventoryType::class, $dossier);
         $inventoryForm->handleRequest($request);
+
+        if ($this->stepHelper->isFormCancelled($inventoryForm)) {
+            $this->dispatcher->dispatchRejectProductionReportUpdateCommand($dossier);
+
+            return $this->redirectToRoute(
+                'app_admin_dossier_woodecision_documents_concept',
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            );
+        }
+
         if ($inventoryForm->isSubmitted() && $inventoryForm->isValid()) {
             $uploadedFile = $inventoryForm->get('inventory')->getData();
             if (! $uploadedFile instanceof UploadedFile) {
@@ -73,7 +97,8 @@ class DocumentsConceptStepController extends AbstractController
             'inventoryForm' => $inventoryForm,
             'documentForm' => $documentForm,
             'dataPath' => $dataPath,
-            'inventoryStatus' => new InventoryStatus($dossier),
+            'inventoryStatus' => new ProductionReportStatus($dossier),
+            'mimeTypes' => UploadGroupId::WOO_DECISION_DOCUMENTS->getMimeTypes(),
         ]);
     }
 
@@ -91,25 +116,6 @@ class DocumentsConceptStepController extends AbstractController
             return $this->stepHelper->redirectToFirstOpenStep($wizardStatus);
         }
 
-        return $this->documentsHelper->getInventoryProcessResponse($dossier);
-    }
-
-    #[Route(
-        path: '/balie/dossier/woodecision/documents/concept/inventory-delete/{prefix}/{dossierId}',
-        name: 'app_admin_dossier_woodecision_documents_concept_inventory_delete',
-        methods: ['GET'],
-    )]
-    #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
-    public function inventoryDelete(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
-    ): Response {
-        $wizardStatus = $this->stepHelper->getWizardStatus($dossier, StepName::DOCUMENTS);
-        if (! $wizardStatus->isCurrentStepAccessibleInConceptMode()) {
-            return $this->stepHelper->redirectToFirstOpenStep($wizardStatus);
-        }
-
-        $this->dispatcher->dispatchRemoveInventoryCommand($dossier);
-
-        return $this->stepHelper->redirectToCurrentStep($wizardStatus);
+        return $this->documentsHelper->getProductionReportProcessResponse($dossier);
     }
 }

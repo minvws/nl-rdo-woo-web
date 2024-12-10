@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier\WooDecision;
 
-use App\Entity\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;

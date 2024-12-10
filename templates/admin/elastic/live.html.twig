@@ -5,34 +5,7 @@
     <h1 class="bhr-title mb-6">{{ 'elastic.index.promote_to_live' | trans() }}: {{ details.index.name }}</h1>
 
     <div class="bhr-card">
-        <table class="bhr-table">
-            <tbody>
-                <tr>
-                    <th class="text-left" scope="col">{{ 'public.global.label' | trans() }}</th>
-                    <th class="text-right" scope="col">{{ 'public.global.expected' | trans() }}</th>
-                    <th class="text-right" scope="col">{{ 'elastic.contains' | trans() }}</th>
-                    <th class="text-right" scope="col">{{ 'elastic.percentage' | trans() }}</th>
-                </tr>
-                <tr>
-                    <td>{{ 'admin.global.dossier_count' | trans() }}</td>
-                    <td class="text-right">{{ details.expectedDossierCount }}</td>
-                    <td class="text-right">{{ details.actualDossierCount }}</td>
-                    <td class="text-right">{{ details.getDossierPercentage() }}%</td>
-                </tr>
-                <tr>
-                    <td>{{ 'admin.global.document_count' | trans() }}</td>
-                    <td class="text-right">{{ details.expectedDocCount }}</td>
-                    <td class="text-right">{{ details.actualDocCount }}</td>
-                    <td class="text-right">{{ details.getDocumentPercentage() }}%</td>
-                </tr>
-                <tr>
-                    <td>{{ 'admin.global.page_count' | trans() }}</td>
-                    <td class="text-right">{{ details.expectedPageCount }}</td>
-                    <td class="text-right">{{ details.actualPageCount }}</td>
-                    <td class="text-right">{{ details.getPagePercentage() }}%</td>
-                </tr>
-            </tbody>
-        </table>
+        {% include 'admin/elastic/counts.html.twig' %}
     </div>
 
     <div class="bhr-card mt-10">

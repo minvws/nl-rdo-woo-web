@@ -60,7 +60,7 @@ class InquiryLinkDocumentsFormType extends AbstractType
                 ],
             ])
             ->add('cancel', SubmitType::class, [
-                'label' => 'global.cancel',
+                'label' => 'admin.inquiries.back_to_overview',
                 'attr' => [
                     'class' => 'bhr-button--secondary',
                     'data-last-button' => true,

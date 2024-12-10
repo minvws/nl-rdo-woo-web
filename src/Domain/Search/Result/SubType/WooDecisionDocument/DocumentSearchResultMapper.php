@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Result\SubType\WooDecisionDocument;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\HighlightMapperTrait;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\SearchResultMapperInterface;
 use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
-use App\Repository\DocumentRepository;
-use App\Repository\WooDecisionRepository;
 use Jaytaph\TypeArray\TypeArray;
 
 readonly class DocumentSearchResultMapper implements SearchResultMapperInterface

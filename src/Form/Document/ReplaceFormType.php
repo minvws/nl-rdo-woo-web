@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Document;
 
+use App\Service\Uploader\UploadGroupId;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -17,15 +18,13 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class ReplaceFormType extends AbstractType
 {
-    protected const DOCUMENT_MIMETYPES = [
-        'application/pdf',
-    ];
-
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $mimeTypes = UploadGroupId::WOO_DECISION_DOCUMENTS->getMimeTypes();
+
         $builder
             ->add('document', FileType::class, [
                 'label' => 'Document',
@@ -33,13 +32,13 @@ class ReplaceFormType extends AbstractType
                 'mapped' => false,
                 'constraints' => [
                     new File([
-                        'mimeTypes' => self::DOCUMENT_MIMETYPES,
-                        'mimeTypesMessage' => 'Gebruik een document van het type PDF',
+                        'mimeTypes' => $mimeTypes,
+                        'mimeTypesMessage' => 'Gebruik een document van het juiste type',
                     ]),
                     new NotBlank(),
                 ],
                 'attr' => [
-                    'accept' => self::DOCUMENT_MIMETYPES,
+                    'accept' => $mimeTypes,
                 ],
             ])
             ->add('submit', SubmitType::class, [

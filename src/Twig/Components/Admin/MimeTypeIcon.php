@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Twig\Components\Admin;
 
 use App\Domain\Upload\FileType\FileType;
-use App\Domain\Upload\FileType\FileTypeHelper;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent]
@@ -18,18 +17,13 @@ class MimeTypeIcon
     public ?string $mimeType = null;
     public ?int $size = 24;
 
-    public function __construct(
-        private readonly FileTypeHelper $fileTypeHelper,
-    ) {
-    }
-
     public function getIconName(): string
     {
         if ($this->mimeType === null) {
             return self::FILE_UNKNOWN;
         }
 
-        $fileType = $this->fileTypeHelper->getFileType($this->mimeType);
+        $fileType = FileType::fromMimeType($this->mimeType);
         if ($fileType === null) {
             return self::FILE_UNKNOWN;
         }

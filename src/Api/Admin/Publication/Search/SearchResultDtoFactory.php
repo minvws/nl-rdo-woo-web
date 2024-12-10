@@ -7,10 +7,10 @@ namespace App\Api\Admin\Publication\Search;
 use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionAttachment;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Entity\DecisionAttachment;
-use App\Entity\Document;
 use App\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -104,7 +104,7 @@ readonly class SearchResultDtoFactory
         $status = $this->wizardStatusFactory
             ->getWizardStatus($entity->getDossier(), StepName::DETAILS, withAccessCheck: false);
 
-        $routeName = $entity instanceof DecisionAttachment
+        $routeName = $entity instanceof WooDecisionAttachment
             ? $status->getDecisionPath()
             : $status->getContentPath();
 

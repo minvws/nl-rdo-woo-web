@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier\WooDecision;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -29,6 +30,9 @@ class InventoryType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /** @var WooDecision $dossier */
+        $dossier = $builder->getData();
+
         $builder
             ->add('inventory', FileType::class, [
                 'label' => false,
@@ -50,5 +54,14 @@ class InventoryType extends AbstractType
             ->add('submit', SubmitType::class, [
                 'label' => 'Upload productierapport',
             ]);
+
+        if ($dossier->getProductionReport() !== null) {
+            $builder->add('cancel', SubmitType::class, [
+                'label' => 'global.cancel',
+                'attr' => [
+                    'class' => 'bhr-button--secondary',
+                ],
+            ]);
+        }
     }
 }

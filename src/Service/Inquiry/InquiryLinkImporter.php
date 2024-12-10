@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Service\Inquiry;
 
-use App\Entity\DocumentPrefix;
+use App\Domain\Publication\Dossier\DocumentPrefix;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 use App\Entity\Organisation;
 use App\Exception\FileReaderException;
 use App\Exception\InquiryLinkImportException;
 use App\Exception\InventoryReaderException;
 use App\Exception\TranslatableException;
-use App\Repository\DocumentRepository;
 use App\Service\FileReader\ColumnMapping;
 use App\Service\FileReader\ExcelReaderFactory;
 use App\Service\FileReader\FileReaderInterface;
-use App\Service\Inventory\InquiryChangeset;
 use App\Service\Inventory\InventoryDataHelper;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -34,17 +33,13 @@ class InquiryLinkImporter
     ) {
     }
 
-    /**
-     * @return array<string, array<int, mixed>>
-     */
-    public function processSpreadsheet(Organisation $activeOrganisation, UploadedFile $uploadedFile, DocumentPrefix $prefix): array
-    {
-        $errors = [
-            'generic' => [],
-            'row' => [],
-        ];
-
+    public function processSpreadsheet(
+        Organisation $activeOrganisation,
+        UploadedFile $uploadedFile,
+        DocumentPrefix $prefix,
+    ): InquiryLinkImportResult {
         $inquiryChangeset = new InquiryChangeset($activeOrganisation);
+        $result = new InquiryLinkImportResult($inquiryChangeset);
 
         try {
             if ($activeOrganisation !== $prefix->getOrganisation()) {
@@ -71,11 +66,7 @@ class InquiryLinkImporter
 
                     $inquiryChangeset->updateCaseNrsForDocument($document, $caseNrs);
                 } catch (TranslatableException $exception) {
-                    $errors['row'][$rowIdx] = [[
-                        'message' => $exception->getMessage(),
-                        'translation' => $exception->getTranslationKey(),
-                        'placeholders' => $exception->getPlaceholders(),
-                    ]];
+                    $result->addRowException($rowIdx, $exception);
                 }
             }
 
@@ -85,16 +76,10 @@ class InquiryLinkImporter
                 $exception = InventoryReaderException::forOpenSpreadsheetException($exception);
             }
 
-            $errors['generic'][] = [
-                'message' => $exception->getMessage(),
-                'translation' => $exception->getTranslationKey(),
-                'placeholders' => $exception->getPlaceholders(),
-            ];
-
-            return $errors;
+            $result->addGenericException($exception);
         }
 
-        return $errors;
+        return $result;
     }
 
     private function getReader(UploadedFile $uploadedFile): FileReaderInterface

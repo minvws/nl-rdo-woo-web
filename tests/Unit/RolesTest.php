@@ -22,4 +22,9 @@ class RolesTest extends UnitTestCase
     {
         self::assertEmpty(Roles::getRoleHierarchy(Roles::ROLE_VIEW_ACCESS));
     }
+
+    public function testRoleDescriptions(): void
+    {
+        $this->assertMatchesJsonSnapshot(Roles::roleDescriptions());
+    }
 }

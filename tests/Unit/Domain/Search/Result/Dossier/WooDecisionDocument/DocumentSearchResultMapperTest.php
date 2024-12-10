@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Result\Dossier\WooDecisionDocument;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentSearchResultMapper;
-use App\Repository\DocumentRepository;
-use App\Repository\WooDecisionRepository;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 

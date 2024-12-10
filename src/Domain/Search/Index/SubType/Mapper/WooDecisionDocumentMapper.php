@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\SubType\Mapper;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
 use App\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper;
 use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\ElasticDocumentType;
-use App\Entity\Document;
-use App\Entity\Inquiry;
 use Webmozart\Assert\Assert;
 
 readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterface

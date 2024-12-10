@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use App\Entity\DocumentPrefix;
+use App\Domain\Publication\Dossier\DocumentPrefix;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

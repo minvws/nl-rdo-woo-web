@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Domain\Publication\BatchDownload;
 use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\DocumentPrefix;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
+use App\Domain\Publication\History\History;
 use App\Domain\Publication\Subject\Subject;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
-use App\Entity\BatchDownload;
-use App\Entity\Document;
-use App\Entity\DocumentPrefix;
-use App\Entity\History;
-use App\Entity\Inquiry;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -22,6 +22,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -49,7 +50,8 @@ class CleanSheet extends Command
             ->setDefinition([
                 new InputOption('force', null, InputOption::VALUE_NONE, 'Force the operation without confirmation'),
                 new InputOption('users', 'u', InputOption::VALUE_NONE, 'Reset users'),
-                new InputOption('prefixes', 'p', InputOption::VALUE_NONE, 'Reset prefixes'),
+                new InputOption('keep-prefixes', 'p', InputOption::VALUE_NONE, 'Do not remove prefixes'),
+                new InputOption('keep-subjects', 's', InputOption::VALUE_NONE, 'Do not remove subjects'),
                 new InputOption('index', 'i', InputOption::VALUE_REQUIRED, 'ES index name', 'woopie'),
             ])
         ;
@@ -67,7 +69,8 @@ class CleanSheet extends Command
 
         $this->clearQueues($output);
 
-        $indexName = strval($input->getOption('index'));
+        $indexName = $input->getOption('index');
+        Assert::string($indexName);
         $this->removeElasticSearchIndex($indexName, $output);
         $this->createElasticSearchIndex($indexName, $output);
 
@@ -76,13 +79,16 @@ class CleanSheet extends Command
         $this->deleteAllEntities(Document::class, $output);
         $this->deleteAllEntities(Inquiry::class, $output);
         $this->deleteAllEntities(History::class, $output);
-        $this->deleteAllEntities(Subject::class, $output);
+
+        if (! $input->getOption('keep-subjects')) {
+            $this->deleteAllEntities(Subject::class, $output);
+        }
 
         if ($input->getOption('users')) {
             $this->deleteAllEntities(User::class, $output);
         }
 
-        if ($input->getOption('prefixes')) {
+        if (! $input->getOption('keep-prefixes')) {
             $this->deleteAllEntities(DocumentPrefix::class, $output);
         }
 

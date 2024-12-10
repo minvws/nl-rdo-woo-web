@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Domain\Ingest\Content;
 use App\Domain\Ingest\Content\ContentExtractCacheKeyGenerator;
 use App\Domain\Ingest\Content\ContentExtractOptions;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Symfony\Component\Uid\Uuid;
 

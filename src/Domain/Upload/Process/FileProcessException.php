@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Process;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 
 class FileProcessException extends \RuntimeException
 {

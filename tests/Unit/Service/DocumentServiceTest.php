@@ -6,11 +6,11 @@ namespace App\Tests\Unit\Service;
 
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use App\Domain\Upload\FileType\FileType;
 use App\Domain\Upload\Process\DocumentNumberExtractor;
-use App\Entity\Document;
 use App\Service\DocumentService;
 use App\Service\HistoryService;
 use App\Service\Storage\EntityStorageService;

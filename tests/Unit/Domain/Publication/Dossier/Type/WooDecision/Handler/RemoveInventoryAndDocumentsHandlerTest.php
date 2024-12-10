@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveInventoryAndDocumentsCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\Handler\RemoveInventoryAndDocumentsHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Document;
-use App\Repository\WooDecisionRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
 use App\Service\BatchDownloadService;
 use App\Service\DocumentService;
 use App\Service\DossierService;

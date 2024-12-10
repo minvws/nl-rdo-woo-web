@@ -43,7 +43,7 @@
 
             {% if shouldDisplayFileLimitations %}
             <span class="bhr-upload-area__file-limits" id="{{ this.filesLimitationsElementId }}">
-                {% if hasAllowedMimeTypes %}{{ multiple ? 'Bestanden' : 'Bestand' }} van het type PDF of Zip{% endif %}{%if hasMaxFileSize %} (max {{maxFileSize | size}} per bestand){% endif %}
+                {% if hasAllowedMimeTypes %}{{ multiple ? 'Bestanden' : 'Bestand' }} van het type PDF, Word, Excel, Powerpoint of Zip{% endif %}{%if hasMaxFileSize %} (max {{maxFileSize | size}} per bestand){% endif %}
             </span>
             {% endif %}
         </button>

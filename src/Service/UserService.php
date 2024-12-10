@@ -182,10 +182,11 @@ class UserService
     public function get2faQrCodeImage(User $user): string
     {
         $qrContent = $this->totp->getQRContent($user);
+        $builder = new Builder(
+            data: $qrContent,
+        );
 
-        return Builder::create()
-            ->data($qrContent)
-            ->build()->getDataUri();
+        return $builder->build()->getDataUri();
     }
 
     /**

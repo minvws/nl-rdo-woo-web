@@ -23,7 +23,7 @@
                 </a>
                 {% endif %}
 
-                <a class="bhr-button bhr-button--secondary mr-2" href="{{ path('app_admin_dossier_woodecision_documents_edit_replace_inventory', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" data-e2e-name="replace-report">
+                <a class="bhr-button bhr-button--secondary mr-2" href="{{ path('app_admin_dossier_woodecision_documents_edit_replace_inventory', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, replace: 1 }) }}" data-e2e-name="replace-report">
                     {{ 'admin.dossiers.replace_report' | trans }}
                 </a>
 
@@ -48,6 +48,7 @@
                         <twig:Admin:DossierDocuments
                             dossier="{{ dossier }}"
                             uploadStatus="{{ uploadStatus }}"
+                            mimeTypes="{{ mimeTypes }}"
                         />
                     </div>
                 {% endif %}

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Result\SubType\WooDecisionDocument;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
-use App\Entity\Judgement;
 use App\SourceType;
 use PHPUnit\Framework\TestCase;
 

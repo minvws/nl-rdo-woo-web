@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Entity\Judgement;
+use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\SourceType;
 
 /**

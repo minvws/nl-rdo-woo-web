@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Service\DocumentWorkflow\DocumentWorkflow;
 use App\Service\FileUploader;
 use Psr\Log\LoggerInterface;

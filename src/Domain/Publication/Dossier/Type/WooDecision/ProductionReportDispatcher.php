@@ -9,7 +9,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Command\GenerateInventoryCom
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\InitiateProductionReportUpdateCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\ProductionReportProcessRunCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\RejectProductionReportUpdateCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveInventoryCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
@@ -53,13 +53,6 @@ readonly class ProductionReportDispatcher
     {
         $this->messageBus->dispatch(
             new GenerateInventoryCommand($id),
-        );
-    }
-
-    public function dispatchRemoveInventoryCommand(WooDecision $wooDecision): void
-    {
-        $this->messageBus->dispatch(
-            new RemoveInventoryCommand($wooDecision),
         );
     }
 }

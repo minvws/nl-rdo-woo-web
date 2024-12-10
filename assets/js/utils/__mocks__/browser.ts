@@ -16,6 +16,7 @@ const documentMock: DocumentMock = {
 const locationMock = {
   assign: vi.fn(),
   origin: 'https://mocked-origin.com',
+  hash: '',
 };
 
 const windowMock = {

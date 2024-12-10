@@ -8,7 +8,7 @@ use App\Domain\Ingest\Process\Dossier\DossierIngestStrategyInterface;
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use Webmozart\Assert\Assert;
 
 readonly class WooDecisionIngestStrategy implements DossierIngestStrategyInterface
@@ -26,8 +26,7 @@ readonly class WooDecisionIngestStrategy implements DossierIngestStrategyInterfa
 
         $this->defaultDossierIngester->ingest($dossier, $refresh);
 
-        $options = new IngestProcessOptions();
-        $options->setForceRefresh($refresh);
+        $options = new IngestProcessOptions(forceRefresh: $refresh);
         foreach ($dossier->getDocuments() as $document) {
             $this->ingester->ingest($document, $options);
         }

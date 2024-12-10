@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\History;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\History\DossierEntityUpdateListener;
-use App\Entity\History;
+use App\Domain\Publication\History\History;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostUpdateEventArgs;

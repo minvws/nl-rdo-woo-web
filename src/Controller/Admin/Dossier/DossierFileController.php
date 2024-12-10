@@ -37,6 +37,6 @@ class DossierFileController extends AbstractController
     ): StreamedResponse {
         $entity = $this->fileProviderManager->getEntityForAdminUse($type, $dossier, $id);
 
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($entity, $type);
+        return $this->downloadHelper->getResponseForEntityWithFileInfo($entity);
     }
 }

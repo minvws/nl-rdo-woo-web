@@ -11,7 +11,7 @@ Test Tags           pr
 *** Test Cases ***
 Create a WooDecision
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/inquiries/productierapport4.xlsx
+  ...  production_report=tests/robot_framework/files/inquiries/productierapport4.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten4.zip
   ...  number_of_documents=3
   ...  publication_status=Openbaarmaking

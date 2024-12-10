@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload\Process;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Upload\Postprocessor\FilePostprocessor;
 use App\Domain\Upload\Postprocessor\NoMatchingFilePostprocessorException;
 use App\Domain\Upload\Preprocessor\FilePreprocessor;

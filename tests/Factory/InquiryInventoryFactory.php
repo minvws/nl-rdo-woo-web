@@ -2,7 +2,7 @@
 
 namespace App\Tests\Factory;
 
-use App\Entity\InquiryInventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\InquiryInventory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

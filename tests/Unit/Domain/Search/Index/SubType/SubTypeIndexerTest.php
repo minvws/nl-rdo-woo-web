@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\SubType;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\IndexException;
 use App\Domain\Search\Index\SubType\Mapper\ElasticSubTypeMapperInterface;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use App\Domain\Search\Index\Updater\PageIndexUpdater;
-use App\Entity\Document;
 use App\Service\Elastic\ElasticService;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

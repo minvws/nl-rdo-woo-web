@@ -1,6 +1,3 @@
-dossierPercentage: 180.49
-documentPercentage: 432.47
-pagePercentage: 504.55
 index:
     name: index-123
     health: yellow
@@ -9,9 +6,5 @@ index:
     storeSize: 69MB
     mappingVersion: '3'
     aliases: [woopie-read, woopie-write]
-expectedDossierCount: 123
-expectedDocCount: 77
-expectedPageCount: 88
-actualDossierCount: 222
-actualDocCount: 333
-actualPageCount: 444
+counts:
+    - { percentage: 200.0, type: { name: WOO_DECISION, value: dossier }, expected: 10, actual: 20, subCounts: {  } }

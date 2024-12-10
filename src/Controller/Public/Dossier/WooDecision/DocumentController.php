@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Controller\Public\Dossier\WooDecision;
 
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DocumentViewFactory;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
-use App\Entity\Document;
-use App\Repository\DocumentRepository;
 use App\Service\Security\DossierVoter;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;

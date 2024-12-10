@@ -9,7 +9,7 @@ use App\Domain\Publication\Dossier\Step\StepException;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision\Command;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use Symfony\Component\Uid\Uuid;
 
 class RemoveDocumentCommand

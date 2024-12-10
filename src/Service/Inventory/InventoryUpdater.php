@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentUpdateEvent;
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 use App\Domain\Search\SearchDispatcher;
-use App\Entity\Document;
-use App\Exception\InventoryUpdaterException;
-use App\Repository\DocumentRepository;
+use App\Exception\ProductionReportUpdaterException;
 use App\Service\DossierService;
+use App\Service\Inquiry\InquiryChangeset;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Inventory\Progress\RunProgress;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
@@ -111,7 +112,7 @@ readonly class InventoryUpdater
                 continue;
             }
 
-            throw InventoryUpdaterException::forStateMismatch();
+            throw ProductionReportUpdaterException::forStateMismatch();
         }
 
         $this->doctrine->flush();
@@ -133,7 +134,7 @@ readonly class InventoryUpdater
         foreach ($changeset->getDeleted() as $documentNr) {
             $document = $this->getDocument($documentNr);
             if (! $document instanceof Document || ! $dossier->getStatus()->isConcept()) {
-                throw InventoryUpdaterException::forStateMismatch();
+                throw ProductionReportUpdaterException::forStateMismatch();
             }
 
             // Remove the dossier-document relationship immediately, if needed the document and related files removed asynchronously
@@ -159,17 +160,11 @@ readonly class InventoryUpdater
 
             $document = $this->getDocument($documentNr);
             if (! $document instanceof Document) {
-                throw InventoryUpdaterException::forStateMismatch();
+                throw ProductionReportUpdaterException::forStateMismatch();
             }
 
             if ($action === InventoryChangeset::DELETED) {
                 $this->documentUpdater->asyncRemove($document, $dossier);
-                $this->doctrine->detach($document);
-                continue;
-            }
-
-            if ($dossier->getStatus()->isConcept() && $document->shouldBeUploaded()) {
-                // As an optimization skip indexing for concept docs, as these will be indexed during the ingest process
                 $this->doctrine->detach($document);
                 continue;
             }

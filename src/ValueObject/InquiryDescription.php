@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\ValueObject;
 
-use App\Entity\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
 
 class InquiryDescription
 {

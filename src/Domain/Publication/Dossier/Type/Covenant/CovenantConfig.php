@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\Covenant;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Step\StepDefinition;
 use App\Domain\Publication\Dossier\Step\StepDefinitionInterface;
 use App\Domain\Publication\Dossier\Step\StepName;
@@ -38,9 +37,12 @@ readonly class CovenantConfig implements DossierTypeConfigInterface
         return $this->covenantWorkflow;
     }
 
-    public function createInstance(): AbstractDossier
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getEntityClass(): string
     {
-        return new Covenant();
+        return Covenant::class;
     }
 
     /**
@@ -61,5 +63,13 @@ readonly class CovenantConfig implements DossierTypeConfigInterface
     public function getCreateRouteName(): string
     {
         return 'app_admin_dossier_covenant_details_create';
+    }
+
+    public function getSubEntityClasses(): array
+    {
+        return [
+            CovenantMainDocument::class,
+            CovenantAttachment::class,
+        ];
     }
 }

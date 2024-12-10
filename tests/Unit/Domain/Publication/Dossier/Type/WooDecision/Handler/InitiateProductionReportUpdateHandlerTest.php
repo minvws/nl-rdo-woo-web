@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\InitiateProductionReportUpdateCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\Handler\InitiateProductionReportUpdateHandler;
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\ProductionReportProcessRunRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Entity\FileInfo;
-use App\Entity\ProductionReportProcessRun;
-use App\Exception\InventoryUpdaterException;
-use App\Repository\ProductionReportProcessRunRepository;
+use App\Domain\Publication\FileInfo;
+use App\Exception\ProductionReportUpdaterException;
 use App\Service\Storage\EntityStorageService;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
@@ -108,7 +108,7 @@ class InitiateProductionReportUpdateHandlerTest extends UnitTestCase
         $run->expects('fail');
         $this->processRunRepository->expects('save')->with($run, true);
 
-        $this->expectExceptionObject(InventoryUpdaterException::forUploadCannotBeStored());
+        $this->expectExceptionObject(ProductionReportUpdaterException::forUploadCannotBeStored());
 
         $this->handler->__invoke(
             new InitiateProductionReportUpdateCommand($wooDecision, $upload)
@@ -126,6 +126,26 @@ class InitiateProductionReportUpdateHandlerTest extends UnitTestCase
             ->andThrow(new DossierWorkflowException());
 
         $this->expectException(DossierWorkflowException::class);
+
+        $this->handler->__invoke(
+            new InitiateProductionReportUpdateCommand($wooDecision, $upload)
+        );
+    }
+
+    public function testInvokeThrowsExceptionWhenExistingRunIsNotFinal(): void
+    {
+        $run = \Mockery::mock(ProductionReportProcessRun::class);
+        $run->shouldReceive('isNotFinal')->andReturnTrue();
+
+        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision->shouldReceive('getProcessRun')->andReturn($run);
+        $upload = \Mockery::mock(UploadedFile::class);
+
+        $this->dossierWorkflowManager
+            ->expects('applyTransition')
+            ->with($wooDecision, DossierStatusTransition::UPDATE_PRODUCTION_REPORT);
+
+        $this->expectException(ProductionReportUpdaterException::class);
 
         $this->handler->__invoke(
             new InitiateProductionReportUpdateCommand($wooDecision, $upload)

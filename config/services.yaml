@@ -297,19 +297,12 @@ services:
         arguments:
             $strategies: !tagged_iterator domain.upload.postprocessor.strategy
 
-    extractor.zip:
-        class: App\Domain\Upload\Extractor\Extractor
-        public: true
-        arguments:
-            $archive: '@App\Domain\ArchiveExtractor\ZipArchive'
-
     extractor.7z:
         class: App\Domain\Upload\Extractor\Extractor
         public: true
         arguments:
             $archive: '@App\Domain\ArchiveExtractor\SevenZipArchive'
 
-    App\Domain\Upload\Extractor\Extractor $zipExtractor: '@extractor.zip'
     App\Domain\Upload\Extractor\Extractor $sevenZipExtractor: '@extractor.7z'
 
     App\Domain\Search\Theme\ThemeManager:

@@ -7,7 +7,7 @@ namespace App\Domain\Publication\Dossier\Workflow;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Service\DossierService;
 use App\Service\HistoryService;
 use App\Service\Inquiry\InquiryService;

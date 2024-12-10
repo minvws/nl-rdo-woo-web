@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\BatchDownload;
-use App\Entity\Document;
+use App\Domain\Publication\BatchDownload;
+use App\Domain\Publication\BatchDownloadRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Message\GenerateArchiveMessage;
-use App\Repository\BatchDownloadRepository;
 use App\Service\ArchiveService;
 use App\Service\BatchDownloadService;
-use App\ValueObject\TranslatableMessage;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BatchDownloadServiceTest extends MockeryTestCase
 {
@@ -26,20 +24,17 @@ class BatchDownloadServiceTest extends MockeryTestCase
     private MessageBusInterface&MockInterface $messageBus;
     private ArchiveService&MockInterface $archiveService;
     private BatchDownloadService $service;
-    private TranslatorInterface&MockInterface $translator;
 
     public function setUp(): void
     {
         $this->batchRepository = \Mockery::mock(BatchDownloadRepository::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->archiveService = \Mockery::mock(ArchiveService::class);
-        $this->translator = \Mockery::mock(TranslatorInterface::class);
 
         $this->service = new BatchDownloadService(
             $this->batchRepository,
             $this->messageBus,
             $this->archiveService,
-            $this->translator,
         );
 
         parent::setUp();
@@ -63,8 +58,7 @@ class BatchDownloadServiceTest extends MockeryTestCase
         $dossier->expects('isAvailableForBatchDownload')->andReturnTrue();
         $dossier->expects('getDocuments')->andReturn(new ArrayCollection([$docA, $docB]));
         $dossier->expects('getId')->andReturn($dossierUuid);
-        $dossier->expects('getDownloadFilePrefix')->andReturn(new TranslatableMessage('x', ['y' => 'z']));
-        $this->translator->expects('trans')->with('x', ['y' => 'z'])->andReturns('foo-bar');
+        $dossier->expects('getBatchFileName')->andReturn('foo-bar-123');
 
         $batchA = \Mockery::mock(BatchDownload::class);
         $batchB = \Mockery::mock(BatchDownload::class);

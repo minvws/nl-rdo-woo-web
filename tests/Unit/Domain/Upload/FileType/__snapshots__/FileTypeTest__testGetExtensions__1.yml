@@ -1,0 +1,24 @@
+PDF:
+    - pdf
+XLS:
+    - xls
+    - xlsx
+    - ods
+    - odf
+    - csv
+DOC:
+    - doc
+    - docx
+    - odt
+TXT:
+    - txt
+    - rdf
+PPT:
+    - pps
+    - ppsx
+    - ppt
+    - pptx
+    - odp
+ZIP:
+    - zip
+    - 7z

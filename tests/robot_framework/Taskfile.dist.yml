@@ -58,6 +58,13 @@ tasks:
       - task: :up
       - source .venv/bin/activate && robot  --outputdir tests/robot_framework/results --include '{{.tag}}' -v headless:false -v RUN_LOCALLY:True tests/robot_framework
 
+  test-mobile:
+    desc: Run Robot tests with browser
+    dir: ../../
+    cmds:
+      - task: :up
+      - source .venv/bin/activate && robot  --outputdir tests/robot_framework/results --include '{{.tag}}' -v headless:false -v RUN_LOCALLY:True -v device:'iPhone 14' tests/robot_framework
+
   test-headless:
     desc: Run Robot tests with headless browser
     dir: ../../
@@ -76,3 +83,11 @@ tasks:
     dir: ../../
     cmds:
       - source .venv/bin/activate && robotidy .
+
+  cleansheet:
+    desc: Run for Robot customized cleansheet
+    cmds:
+      - task: :dc:shell
+        vars: { CLI_ARGS: "app bin/console woopie:dev:clean-sheet --force {{.CLI_ARGS}}" }
+      - task: :dc:shell
+        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --append --group subject" }

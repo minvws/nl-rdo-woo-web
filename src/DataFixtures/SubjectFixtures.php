@@ -8,11 +8,20 @@ use App\Domain\Publication\Subject\Subject;
 use App\Domain\Search\Theme\Covid19Subject;
 use App\Entity\Organisation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class SubjectFixtures extends Fixture implements DependentFixtureInterface
+class SubjectFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
+    /**
+     * @return list<string>
+     */
+    public static function getGroups(): array
+    {
+        return ['subject'];
+    }
+
     public function load(ObjectManager $manager): void
     {
         /** @var Organisation $organisation */

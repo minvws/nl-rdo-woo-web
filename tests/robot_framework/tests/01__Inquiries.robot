@@ -18,7 +18,7 @@ ${DOSSIER_REFERENCE}    ${EMPTY}
 Preview inquiry access
   [Documentation]  Verify preview access to a dossier using inquiry page
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/inquiries/productierapport4.xlsx
+  ...  production_report=tests/robot_framework/files/inquiries/productierapport4.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten4.zip
   ...  number_of_documents=3
   ...  publication_status=Gepland
@@ -40,10 +40,21 @@ Preview inquiry access
   Go To  ${document_url}
   Verify Symfony Error  not found
 
-Link inquiries using production report
-  [Documentation]  Create a WooDecision that is part of multiple inquiries using productionreport upload
+Verify download of full inquiry
+  [Documentation]  Create a test dossier for an inquiry and then donwload the full inquiry
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/inquiries/productierapport1.xlsx
+  ...  production_report=tests/robot_framework/files/inquiries/productierapport8.xlsx
+  ...  documents=tests/robot_framework/files/inquiries/documenten8.zip
+  ...  number_of_documents=5
+  ...  publication_status=Gepland
+  Click Inquiries
+  Open Inquiry  8000-01
+  Download Inquiry Archive
+
+Link inquiries using production report
+  [Documentation]  Create a WooDecision that is part of multiple inquiries using Production Report upload
+  Publish Test Dossier
+  ...  production_report=tests/robot_framework/files/inquiries/productierapport1.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten1.zip
   ...  number_of_documents=9
   Click Inquiries
@@ -69,7 +80,7 @@ Link inquiries using production report
 Manually link inquiry to decision
   [Documentation]  Create a WooDecision without inquiries and manually link the decision
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/inquiries/productierapport2.xlsx
+  ...  production_report=tests/robot_framework/files/inquiries/productierapport2.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten2.zip
   ...  number_of_documents=3
   Click Inquiries
@@ -83,7 +94,7 @@ Manually link inquiry to decision
 Manually link inquiry to documents
   [Documentation]  Create a WooDecision without inquiries and manually link the documents
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/inquiries/productierapport3.xlsx
+  ...  production_report=tests/robot_framework/files/inquiries/productierapport3.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten3.zip
   ...  number_of_documents=3
   Click Inquiries
@@ -100,18 +111,18 @@ Manually link inquiry to documents
 Production report inquiry does not unlink
   [Documentation]  Unlinking using a production report should not be possible
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/inquiries/productierapport5.xlsx
+  ...  production_report=tests/robot_framework/files/inquiries/productierapport5.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten5.zip
   ...  number_of_documents=2
   Click Publications
   Click Publication By Value  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
-  Upload Inventory  tests/robot_framework/files/inquiries/productierapport5-unlinked.xlsx  ${TRUE}
-  Verify Inventory Replace  Productierapport geüpload en gecontroleerd
-  Verify Inventory Replace  2 bestaande documenten worden aangepast.
-  Click Confirm Inventory Replacement
-  Verify Inventory Replace  De inventaris is succesvol vervangen.
+  Upload Production Report  tests/robot_framework/files/inquiries/productierapport5-unlinked.xlsx  ${TRUE}
+  Verify Production Report Replace  Productierapport geüpload en gecontroleerd
+  Verify Production Report Replace  2 bestaande documenten worden aangepast.
+  Click Confirm Production Report Replacement
+  Verify Production Report Replace  Het productierapport is succesvol vervangen.
   Click Continue To Documents
   Click Breadcrumb Element  1
   Get Text  //*[@data-e2e-name="linked-inquiries"]  contains  2021-02
@@ -121,7 +132,7 @@ Production report inquiry does not unlink
 Manual links are not overwritten when reuploading production report
   [Documentation]  Reuploading the original production report after manually linking documents should not remove the manual links
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/inquiries/productierapport6.xlsx
+  ...  production_report=tests/robot_framework/files/inquiries/productierapport6.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten6.zip
   ...  number_of_documents=2
   Click Inquiries
@@ -135,13 +146,13 @@ Manual links are not overwritten when reuploading production report
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
-  Upload Inventory  tests/robot_framework/files/inquiries/productierapport6.xlsx  ${TRUE}
-  Verify Inventory Replace  Productierapport geüpload en gecontroleerd
-  Verify Inventory Replace  2 bestaande documenten worden aangepast.
-  Click Confirm Inventory Replacement
-  Verify Inventory Replace  De inventaris is succesvol vervangen.
+  Upload Production Report  tests/robot_framework/files/inquiries/productierapport6.xlsx  ${TRUE}
+  Verify Production Report Replace  Productierapport geüpload en gecontroleerd
+  Verify Production Report Replace  2 bestaande documenten worden aangepast.
+  Click Confirm Production Report Replacement
+  Verify Production Report Replace  Het productierapport is succesvol vervangen.
   Click Continue To Documents
-  # check if the manual link is been override by the inventory again
+  # check if the manual link is been override by the Production Report again
   Open Document In Dossier  3501
   Get Text  //*[@data-e2e-name="inquiries"]  contains  2020-01
   Click Breadcrumb Element  2
@@ -151,12 +162,12 @@ Manual links are not overwritten when reuploading production report
 Inquiry with multiple dossiers
   [Documentation]  Create an inquiry with multiple dossiers
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/inquiries/productierapport7a.xlsx
+  ...  production_report=tests/robot_framework/files/inquiries/productierapport7a.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten7a.zip
   ...  number_of_documents=9
   VAR  @{dossier_ids} =  ${DOSSIER_REFERENCE}
   Publish Test Dossier
-  ...  inventory=tests/robot_framework/files/inquiries/productierapport7b.xlsx
+  ...  production_report=tests/robot_framework/files/inquiries/productierapport7b.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten7b.zip
   ...  number_of_documents=3
   Append To List  ${dossier_ids}  ${DOSSIER_REFERENCE}

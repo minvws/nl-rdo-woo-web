@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory\Reader;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Exception\InventoryReaderException;
 use App\Service\FileReader\ColumnMapping;
 use App\Service\FileReader\FileReaderInterface;

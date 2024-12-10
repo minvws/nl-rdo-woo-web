@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\ChoiceLoader;
 
-use App\Entity\DocumentPrefix;
+use App\Domain\Publication\Dossier\DocumentPrefix;
 use App\Entity\User;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\ORM\EntityManagerInterface;

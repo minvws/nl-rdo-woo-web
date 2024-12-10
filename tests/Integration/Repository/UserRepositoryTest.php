@@ -27,7 +27,7 @@ final class UserRepositoryTest extends KernelTestCase
         $this->repository = self::getContainer()->get(UserRepository::class);
     }
 
-    public function testFindAllForOrganisationQueryWithSuperAdmin(): void
+    public function testFindActiveUsersForOrganisationQuery(): void
     {
         $organisationOne = OrganisationFactory::createOne();
         $organisationTwo = OrganisationFactory::createOne();
@@ -36,12 +36,15 @@ final class UserRepositoryTest extends KernelTestCase
             ->sequence([
                 [
                     'roles' => [Roles::ROLE_SUPER_ADMIN],
+                    'enabled' => true,
                 ],
                 [
                     'roles' => [Roles::ROLE_ORGANISATION_ADMIN],
+                    'enabled' => true,
                 ],
                 [
                     'roles' => [Roles::ROLE_DOSSIER_ADMIN],
+                    'enabled' => false,
                 ],
             ])
             ->create(['organisation' => $organisationOne]);
@@ -50,30 +53,28 @@ final class UserRepositoryTest extends KernelTestCase
             ->sequence([
                 [
                     'roles' => [Roles::ROLE_SUPER_ADMIN],
+                    'enabled' => true,
                 ],
                 [
                     'roles' => [Roles::ROLE_ORGANISATION_ADMIN],
+                    'enabled' => true,
                 ],
                 [
                     'roles' => [Roles::ROLE_DOSSIER_ADMIN],
+                    'enabled' => true,
                 ],
             ])
             ->create(['organisation' => $organisationTwo]);
 
         /** @var list<User> $result */
         $result = $this->repository
-            ->findAllForOrganisationQuery($organisationOne, includeSuperAdmins: true)
+            ->findActiveUsersForOrganisationQuery($organisationOne)
             ->getResult();
 
-        $this->assertCount(4, $result);
-        foreach ($result as $user) {
-            if (! $user->hasRole(Roles::ROLE_SUPER_ADMIN)) {
-                $this->assertEquals($organisationOne->getId(), $user->getOrganisation()->getId());
-            }
-        }
+        $this->assertCount(1, $result);
     }
 
-    public function testFindAllForOrganisationQueryWithoutSuperAdmin(): void
+    public function testFindDeactivatedUsersForOrganisationQuery(): void
     {
         $organisationOne = OrganisationFactory::createOne();
         $organisationTwo = OrganisationFactory::createOne();
@@ -82,12 +83,19 @@ final class UserRepositoryTest extends KernelTestCase
             ->sequence([
                 [
                     'roles' => [Roles::ROLE_SUPER_ADMIN],
+                    'enabled' => false,
                 ],
                 [
                     'roles' => [Roles::ROLE_ORGANISATION_ADMIN],
+                    'enabled' => false,
                 ],
                 [
                     'roles' => [Roles::ROLE_DOSSIER_ADMIN],
+                    'enabled' => false,
+                ],
+                [
+                    'roles' => [Roles::ROLE_VIEW_ACCESS],
+                    'enabled' => true,
                 ],
             ])
             ->create(['organisation' => $organisationOne]);
@@ -96,24 +104,94 @@ final class UserRepositoryTest extends KernelTestCase
             ->sequence([
                 [
                     'roles' => [Roles::ROLE_SUPER_ADMIN],
+                    'enabled' => true,
                 ],
                 [
                     'roles' => [Roles::ROLE_ORGANISATION_ADMIN],
+                    'enabled' => true,
                 ],
                 [
                     'roles' => [Roles::ROLE_DOSSIER_ADMIN],
+                    'enabled' => true,
                 ],
             ])
             ->create(['organisation' => $organisationTwo]);
 
         /** @var list<User> $result */
         $result = $this->repository
-            ->findAllForOrganisationQuery($organisationTwo, includeSuperAdmins: false)
+            ->findDeactivatedUsersForOrganisationQuery($organisationOne)
             ->getResult();
 
         $this->assertCount(2, $result);
-        foreach ($result as $user) {
-            $this->assertEquals($organisationTwo->getId(), $user->getOrganisation()->getId());
-        }
+    }
+
+    public function testFindActiveAdminsQuery(): void
+    {
+        UserFactory::new()
+            ->sequence([
+                [
+                    'roles' => [Roles::ROLE_SUPER_ADMIN],
+                    'enabled' => true,
+                ],
+                [
+                    'roles' => [Roles::ROLE_GLOBAL_ADMIN],
+                    'enabled' => true,
+                ],
+                [
+                    'roles' => [Roles::ROLE_DOSSIER_ADMIN],
+                    'enabled' => true,
+                ],
+                [
+                    'roles' => [Roles::ROLE_VIEW_ACCESS],
+                    'enabled' => true,
+                ],
+                [
+                    'roles' => [Roles::ROLE_SUPER_ADMIN],
+                    'enabled' => false,
+                ],
+            ])
+            ->create();
+
+        /** @var list<User> $result */
+        $result = $this->repository
+            ->findActiveAdminsQuery()
+            ->getResult();
+
+        $this->assertCount(2, $result);
+    }
+
+    public function testFindDeactivatedAdminsQuery(): void
+    {
+        UserFactory::new()
+            ->sequence([
+                [
+                    'roles' => [Roles::ROLE_SUPER_ADMIN],
+                    'enabled' => true,
+                ],
+                [
+                    'roles' => [Roles::ROLE_GLOBAL_ADMIN],
+                    'enabled' => true,
+                ],
+                [
+                    'roles' => [Roles::ROLE_DOSSIER_ADMIN],
+                    'enabled' => true,
+                ],
+                [
+                    'roles' => [Roles::ROLE_VIEW_ACCESS],
+                    'enabled' => true,
+                ],
+                [
+                    'roles' => [Roles::ROLE_SUPER_ADMIN],
+                    'enabled' => false,
+                ],
+            ])
+            ->create();
+
+        /** @var list<User> $result */
+        $result = $this->repository
+            ->findDeactivatedAdminsQuery()
+            ->getResult();
+
+        $this->assertCount(1, $result);
     }
 }

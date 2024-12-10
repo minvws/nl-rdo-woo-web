@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Ingest\Content;
 
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 
 class ContentExtractException extends \RuntimeException
 {

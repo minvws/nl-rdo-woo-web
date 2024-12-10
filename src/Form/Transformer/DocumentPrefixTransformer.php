@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Transformer;
 
-use App\Entity\DocumentPrefix;
+use App\Domain\Publication\Dossier\DocumentPrefix;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 

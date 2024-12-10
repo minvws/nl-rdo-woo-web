@@ -13,7 +13,7 @@
         {% block department_content %}{% endblock %}
     </section>
 
-    {% if facets | default([]) | length > 0 %}
+    {% if facets.resultCount > 0 %}
         {% import "facet_macros.html.twig" as macro %}
 
         <section class="bg-woo-anti-flash-white py-8 lg:py-16">

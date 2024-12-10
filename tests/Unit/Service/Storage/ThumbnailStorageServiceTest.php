@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Storage;
 
-use App\Entity\EntityWithFileInfo;
-use App\Entity\FileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
+use App\Domain\Publication\FileInfo;
 use App\Service\Storage\LocalFilesystem;
 use App\Service\Storage\RemoteFilesystem;
 use App\Service\Storage\StorageRootPathGenerator;

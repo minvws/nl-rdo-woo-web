@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\History\WooDecision;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\Event\AllDocumentsWithDrawnEvent;
 use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentUpdateEvent;
 use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentWithDrawnEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use App\Domain\Publication\Dossier\Type\WooDecision\WithdrawReason;
 use App\Domain\Publication\History\WooDecision\DocumentHistoryHandler;
-use App\Entity\Document;
-use App\Entity\Judgement;
-use App\Entity\WithdrawReason;
 use App\Service\HistoryService;
 use App\Service\Inventory\DocumentComparator;
 use App\Service\Inventory\DocumentMetadata;

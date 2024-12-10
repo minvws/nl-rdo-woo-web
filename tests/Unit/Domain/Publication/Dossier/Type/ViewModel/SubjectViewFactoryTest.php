@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\ViewModel;
 
 use App\Domain\Publication\Dossier\Type\ViewModel\SubjectViewFactory;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Subject\Subject;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;

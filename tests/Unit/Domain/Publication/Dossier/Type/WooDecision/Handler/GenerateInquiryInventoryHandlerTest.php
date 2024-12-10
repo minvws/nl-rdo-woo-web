@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\GenerateInquiryInventoryCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\Handler\GenerateInquiryInventoryHandler;
-use App\Entity\Inquiry;
-use App\Repository\InquiryRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\InquiryRepository;
 use App\Service\Inventory\Sanitizer\DataProvider\InquiryInventoryDataProvider;
 use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
 use App\Service\Inventory\Sanitizer\InventorySanitizer;

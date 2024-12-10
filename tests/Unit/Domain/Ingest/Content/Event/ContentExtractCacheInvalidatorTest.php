@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Domain\Ingest\Content\Event;
 
 use App\Domain\Ingest\Content\Event\ContentExtractCacheInvalidator;
 use App\Domain\Ingest\Content\Event\EntityFileUpdateEvent;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Uid\Uuid;

@@ -5,34 +5,46 @@
     <h1 class="bhr-title mb-6">{{ 'elastic.index' | trans() }} {{ details.index.name }}</h1>
 
     <div class="bhr-card">
-        <table class="bhr-table">
+        <table class="bhr-table w-auto">
+            <caption class="sr-only">{{ 'elastic.rollover' | trans() }} {{ details.index.name }}</caption>
             <tbody>
                 <tr>
-                    <th class="text-left" scope="col">{{ 'public.global.label' | trans() }}</th>
-                    <th class="text-right" scope="col">{{ 'public.global.expected' | trans() }}</th>
-                    <th class="text-right" scope="col">{{ 'elastic.contains' | trans() }}</th>
-                    <th class="text-right" scope="col">{{ 'elastic.percentage' | trans() }}</th>
+                    <th class="bhr-row-head" scope="row">{{ 'global.name' | trans() }}</th>
+                    <td>{{ index.name }}</td>
                 </tr>
                 <tr>
-                    <td>{{ 'admin.global.dossier_count' | trans() }}</td>
-                    <td class="text-right">{{ details.expectedDossierCount }}</td>
-                    <td class="text-right">{{ details.actualDossierCount }}</td>
-                    <td class="text-right">{{ details.getDossierPercentage() }}%</td>
+                    <th class="bhr-row-head" scope="row">{{ 'elastic.health' | trans() }}</th>
+                    <td>{{ index.health }}</td>
                 </tr>
                 <tr>
-                    <td>{{ 'admin.global.document_count' | trans() }}</td>
-                    <td class="text-right">{{ details.expectedDocCount }}</td>
-                    <td class="text-right">{{ details.actualDocCount }}</td>
-                    <td class="text-right">{{ details.getDocumentPercentage() }}%</td>
+                    <th class="bhr-row-head" scope="row">{{ 'elastic.status' | trans() }}</th>
+                    <td>{{ index.status }}</td>
                 </tr>
                 <tr>
-                    <td>{{ 'admin.global.page_count' | trans() }}</td>
-                    <td class="text-right">{{ details.expectedPageCount }}</td>
-                    <td class="text-right">{{ details.actualPageCount }}</td>
-                    <td class="text-right">{{ details.getPagePercentage() }}%</td>
+                    <th class="bhr-row-head" scope="row">{{ 'elastic.object_count' | trans() }}</th>
+                    <td>{{ index.docsCount }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">{{ 'public.global.size' | trans() }}</th>
+                    <td>{{ index.storeSize }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">{{ 'admin.elastic.mapping_version' | trans() }}</th>
+                    <td>{{ index.mappingVersion }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">{{ 'elastic.aliases' | trans() }}</th>
+                    <td>
+                        {% for alias in index.aliases %}
+                            <span>{{ alias }}</span>{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                        {% if index.aliases | length == 0 %}-{% endif %}
+                    </td>
                 </tr>
             </tbody>
         </table>
+
+        {% include 'admin/elastic/counts.html.twig' %}
 
         {% if index.aliases | length == 0 %}
             <p class="mt-6">
@@ -48,6 +60,13 @@
                 {{ form(deleteForm) }}
             </div>
         {% endif %}
+
+        <p class="mt-6">
+            <a
+                class="bhr-button bhr-button--secondary"
+                href="{{ path('app_admin_elastic') }}"
+            >{{ "admin.elastic.back_to_overview" | trans() }}</a>
+        </p>
     </div>
 </div>
 {% endblock %}

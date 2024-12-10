@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
-use App\Entity\Document as DocumentEntity;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document as DocumentEntity;
 use App\Service\Search\SearchService;
 
 final readonly class DocumentViewFactory

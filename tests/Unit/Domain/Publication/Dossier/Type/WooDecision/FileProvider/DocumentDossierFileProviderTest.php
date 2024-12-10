@@ -7,9 +7,9 @@ namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\FileProvide
 use App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\FileProvider\DocumentDossierFileProvider;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Document;
-use App\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 use App\Service\Security\DossierVoter;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Doctrine\TimestampableTrait;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\DocumentPrefix;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Subject\Subject;
 use App\Repository\OrganisationRepository;
 use Doctrine\Common\Collections\ArrayCollection;

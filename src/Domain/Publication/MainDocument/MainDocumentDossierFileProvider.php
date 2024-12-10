@@ -8,7 +8,7 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use Symfony\Component\Uid\Uuid;
 
 readonly class MainDocumentDossierFileProvider implements DossierFileProviderInterface

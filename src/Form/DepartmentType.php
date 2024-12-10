@@ -29,9 +29,8 @@ class DepartmentType extends AbstractType
             ])
             ->add('shortTag', TextType::class, [
                 'label' => 'admin.department.abbreviation',
-                'required' => true,
+                'required' => false,
                 'help' => 'admin.department.abbreviation_help',
-                'empty_data' => '',
             ])
             ->add('slug', TextType::class, [
                 'label' => 'admin.department.slug',

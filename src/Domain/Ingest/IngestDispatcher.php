@@ -12,7 +12,7 @@ use App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand;
 use App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierRepository;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 

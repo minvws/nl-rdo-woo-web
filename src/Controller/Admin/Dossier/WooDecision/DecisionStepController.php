@@ -7,7 +7,7 @@ namespace App\Controller\Admin\Dossier\WooDecision;
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use App\Enum\ApplicationMode;
 use App\Form\Dossier\WooDecision\DecisionType;

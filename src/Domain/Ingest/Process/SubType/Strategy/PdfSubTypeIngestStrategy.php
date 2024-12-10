@@ -7,7 +7,7 @@ namespace App\Domain\Ingest\Process\SubType\Strategy;
 use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use Psr\Log\LoggerInterface;
 
 readonly class PdfSubTypeIngestStrategy implements SubTypeIngestStrategyInterface
@@ -30,7 +30,6 @@ readonly class PdfSubTypeIngestStrategy implements SubTypeIngestStrategyInterfac
 
     public function canHandle(EntityWithFileInfo $entity): bool
     {
-        // Should be removed after we support other types
         if ($entity->getFileInfo()->getMimetype() !== 'application/pdf') {
             return false;
         }

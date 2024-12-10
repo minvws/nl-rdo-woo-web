@@ -6,11 +6,12 @@ namespace App\Domain\Publication\Dossier\Type\WooDecision\Handler;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Command\InitiateProductionReportUpdateCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\ProductionReportProcessRunRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Exception\InventoryUpdaterException;
+use App\Domain\Upload\FileType\FileType;
 use App\Exception\ProcessInventoryException;
-use App\Repository\ProductionReportProcessRunRepository;
+use App\Exception\ProductionReportUpdaterException;
 use App\Service\Storage\EntityStorageService;
 use App\SourceType;
 use Psr\Log\LoggerInterface;
@@ -37,7 +38,7 @@ readonly class InitiateProductionReportUpdateHandler
         $run = $this->processRunRepository->create($command->dossier);
         $file = $run->getFileInfo();
         $file->setSourceType(SourceType::SPREADSHEET);
-        $file->setType('pdf');
+        $file->setType(FileType::XLS->value);
         $file->setName($command->upload->getClientOriginalName());
 
         $this->processRunRepository->save($run, true);
@@ -53,7 +54,7 @@ readonly class InitiateProductionReportUpdateHandler
 
             $this->processRunRepository->save($run, true);
 
-            throw InventoryUpdaterException::forUploadCannotBeStored();
+            throw ProductionReportUpdaterException::forUploadCannotBeStored();
         }
 
         $this->dispatcher->dispatchProductionReportProcessRunCommand($run->getId());
@@ -67,7 +68,7 @@ readonly class InitiateProductionReportUpdateHandler
         }
 
         if ($existingRun->isNotFinal()) {
-            throw InventoryUpdaterException::forExistingRunIsNotFinal();
+            throw ProductionReportUpdaterException::forExistingRunIsNotFinal();
         }
 
         $this->entityStorage->removeFileForEntity($existingRun);

@@ -7,18 +7,18 @@
     <div class="woo-rich-text">
         <h1>{{ page_title }}</h1>
 
-        <div class="woo-readable-width">
-            {% if batch.status == constant('App\\Entity\\BatchDownload::STATUS_PENDING') %}
+        <div class="woo-readable-width" data-e2e-name="download-status">
+            {% if batch.status == constant('App\\Domain\\Publication\\BatchDownload::STATUS_PENDING') %}
                 <p>{{ 'public.documents.archive.download_suspended' | trans }}</p>
             {% endif %}
 
-            {% if batch.status == constant('App\\Entity\\BatchDownload::STATUS_FAILED') %}
+            {% if batch.status == constant('App\\Domain\\Publication\\BatchDownload::STATUS_FAILED') %}
                 <p>{{ 'public.documents.archive.download_error' | trans }}</p>
             {% endif %}
         </div>
     </div>
 
-    {% if batch.status == constant('App\\Entity\\BatchDownload::STATUS_COMPLETED') %}
+    {% if batch.status == constant('App\\Domain\\Publication\\BatchDownload::STATUS_COMPLETED') %}
         <p class="woo-readable-width mb-6">
             {{ 'public.documents.archive.download_period' | trans({'date': batch.expiration | format_datetime('long') }) }}
         </p>

@@ -40,10 +40,10 @@
                 </a>
             </p>
 
-            <nav class="woo-main-nav" aria-label="{{ 'public.global.navigation.accessible.label' | trans }}">
+            <nav class="woo-main-nav" aria-label="{{ 'public.global.navigation.accessible.label' | trans }}"  data-e2e-name="main-nav">
                 <div class="woo-container">
                     <div class="-mx-4 relative z-10">
-                        <div class="md:hidden no-js:hidden">
+                        <div class="md:hidden no-js:hidden" data-e2e-name="hamburger">
                             <button class="px-4 py-4 sm:py-6 focus:outline-white focus:-outline-offset-2 w-full text-right" id="js-main-nav-toggle" aria-controls="main-nav-list" aria-expanded="false">
                                 <twig:Public:Icon class="js-icon-collapsed" color="fill-white" name="hamburger" />
                                 <twig:Public:Icon class="hidden js-icon-expanded" color="fill-white" name="cross" />
@@ -56,7 +56,7 @@
                         <ul class="woo-main-nav__list" id="main-nav-list" data-e2e-name="main-nav">
                             {% macro main_nav_item(route, isCurrentPage, title, iconName) %}
                                 <li>
-                                    <a class="woo-main-nav__link group" href="{{ route }}" {% if isCurrentPage %}aria-current="page"{% endif %}>
+                                    <a class="woo-main-nav__link group" href="{{ route }}" {% if isCurrentPage %}aria-current="page"{% endif %}  data-e2e-name="nav-{{ title }}">
                                         {%if iconName %}<twig:Public:Icon color="fill-white" class="woo-main-nav__icon" name="{{ iconName }}" size="22" />{% endif %}
                                         <span class="group-hover:underline group-focus:underline group-aria-current-page:group-hover:no-underline group-aria-current-page:group-focus:no-underline">{{ title }}</span>
                                     </a>
@@ -118,7 +118,7 @@
             {% endif %}
         </header>
 
-        <main class="grow py-8 lg:pt-16 lg:pb-24" id="main-content">
+        <main class="grow py-8 lg:pt-16 lg:pb-24" id="main-content" data-e2e-name="main-content">
             {% block body %}{% endblock %}
         </main>
 

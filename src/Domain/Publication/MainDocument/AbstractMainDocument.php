@@ -11,8 +11,8 @@ use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMai
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionMainDocument;
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionMainDocument;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;

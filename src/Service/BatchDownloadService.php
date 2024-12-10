@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\BatchDownload;
-use App\Entity\Document;
-use App\Entity\EntityWithBatchDownload;
-use App\Entity\Inquiry;
+use App\Domain\Publication\BatchDownload;
+use App\Domain\Publication\BatchDownloadRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\EntityWithBatchDownload;
 use App\Message\GenerateArchiveMessage;
-use App\Repository\BatchDownloadRepository;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
-class BatchDownloadService
+readonly class BatchDownloadService
 {
     public function __construct(
-        private readonly BatchDownloadRepository $batchRepository,
-        private readonly MessageBusInterface $messageBus,
-        private readonly ArchiveService $archiveService,
-        private readonly TranslatorInterface $translator,
+        private BatchDownloadRepository $batchRepository,
+        private MessageBusInterface $messageBus,
+        private ArchiveService $archiveService,
     ) {
     }
 
@@ -141,15 +139,9 @@ class BatchDownloadService
      */
     private function getFilename(EntityWithBatchDownload $entity, array $documentNrs): string
     {
-        $prefix = $entity->getDownloadFilePrefix();
-        $translatedPrefix = $this->translator->trans(
-            $prefix->getMessage(),
-            $prefix->getPlaceholders()
-        );
-
         $filename = sprintf(
             '%s-%s.zip',
-            $translatedPrefix,
+            $entity->getBatchFileName(),
             hash('sha256', $entity->getId()?->toBase58() . serialize($documentNrs))
         );
 

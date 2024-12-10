@@ -29,9 +29,9 @@ class Department
     #[Assert\Length(min: 2, max: 100)]
     private string $name;
 
-    #[ORM\Column(length: 20, unique: true)]
+    #[ORM\Column(length: 20, unique: true, nullable: true)]
     #[Assert\Length(min: 2, max: 10)]
-    private string $shortTag;
+    private ?string $shortTag = null;
 
     #[ORM\Column(length: 20, unique: true)]
     #[Assert\Sequentially([
@@ -69,12 +69,17 @@ class Department
         return $this;
     }
 
-    public function getShortTag(): string
+    public function getShortTag(): ?string
     {
         return $this->shortTag;
     }
 
-    public function setShortTag(string $shortTag): static
+    public function getShortTagOrName(): string
+    {
+        return $this->shortTag ?? $this->name;
+    }
+
+    public function setShortTag(?string $shortTag): static
     {
         $this->shortTag = $shortTag;
 

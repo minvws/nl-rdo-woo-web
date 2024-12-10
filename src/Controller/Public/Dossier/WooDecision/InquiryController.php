@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Controller\Public\Dossier\WooDecision;
 
 use App\Doctrine\DocumentConditions;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Entity\BatchDownload;
-use App\Entity\Inquiry;
+use App\Domain\Publication\BatchDownload;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\InquiryRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
 use App\Exception\ViewingNotAllowedException;
 use App\Form\Inquiry\InquiryFilterFormType;
-use App\Repository\InquiryRepository;
-use App\Repository\WooDecisionRepository;
 use App\Service\DownloadResponseHelper;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Inquiry\InquirySessionService;
@@ -132,7 +131,7 @@ class InquiryController extends AbstractController
     public function downloadInventory(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
     ): StreamedResponse {
-        return $this->downloadHelper->getResponseForEntityWithFileInfo($inquiry->getInventory(), DossierFileType::INVENTORY);
+        return $this->downloadHelper->getResponseForEntityWithFileInfo($inquiry->getInventory());
     }
 
     #[Route('/zaak/{token}/batch/{filter}', name: 'app_inquiry_batch', methods: ['POST'])]

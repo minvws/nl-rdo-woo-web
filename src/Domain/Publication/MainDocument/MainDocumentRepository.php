@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Domain\Publication\MainDocument;
 
 use App\Domain\Publication\Attachment\AbstractAttachment;
+use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Entity\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 
@@ -69,5 +71,15 @@ class MainDocumentRepository extends ServiceEntityRepository
 
         /** @var ?AbstractMainDocument */
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function getAllPublishedQuery(): Query
+    {
+        return $this
+            ->createQueryBuilder('md')
+            ->join('md.dossier', 'd')
+            ->where('d.status = :status')
+            ->setParameter('status', DossierStatus::PUBLISHED)
+            ->getQuery();
     }
 }

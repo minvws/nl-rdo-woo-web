@@ -8,8 +8,8 @@ use App\Domain\Publication\Dossier\Step\StepException;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\DossierType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\Steps\DocumentsStepDefinition;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 

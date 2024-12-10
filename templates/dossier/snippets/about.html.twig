@@ -10,6 +10,10 @@
                     <td class="font-bold min-w-64" data-e2e-name="dossier-metadata-decision">{{ dossier.decision | trans }}</td>
                 </tr>
                 <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.decision_type' | trans }}</th>
+                    <td data-e2e-name="dossier-metadata-publication-reason">{{ dossier.publicationReason | trans }}</td>
+                </tr>
+                <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.decision.reason' | trans }}</th>
                     <td>
                         <a class="woo-a" data-e2e-name="main-document-detail-link" href="{{ path('app_woodecision_document_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ dossier.mainDocument.name }}</a> ({{ dossier.mainDocument.sourceType | trans }}, {{ dossier.mainDocument.size | size }})
@@ -45,11 +49,6 @@
                     <th class="woo-table-cell-light" scope="row">{{ 'global.decision_date' | trans }}</th>
                     <td data-e2e-name="dossier-metadata-decision-date"><time datetime="{{ dossier.decisionDate | date('Y-m-d') }}">{{ dossier.decisionDate | format_date('long') }}</time></td>
                 </tr>
-                <tr>
-                    <th class="woo-table-cell-light" scope="row">{{ 'global.decision_type' | trans }}</th>
-                    <td data-e2e-name="dossier-metadata-publication-reason">{{ dossier.publicationReason | trans }}</td>
-                </tr>
-
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.scope' | trans }}</th>
                     <td  data-e2e-name="dossier-metadata-size">

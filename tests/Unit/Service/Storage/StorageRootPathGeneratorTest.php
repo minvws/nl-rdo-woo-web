@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Storage;
 
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Storage\StorageRootPathGenerator;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;

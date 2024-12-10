@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Worker;
 
-use App\Entity\EntityWithFileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Worker\Pdf\Extractor\EntityMetaDataExtractor;
 use App\Service\Worker\Pdf\Extractor\PageContentExtractor;
 use App\Service\Worker\Pdf\Extractor\PageExtractor;

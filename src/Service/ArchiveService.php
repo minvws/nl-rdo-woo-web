@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\BatchDownload;
-use App\Entity\Document;
-use App\Entity\EntityWithBatchDownload;
-use App\Repository\DocumentRepository;
+use App\Domain\Publication\BatchDownload;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\EntityWithBatchDownload;
 use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemException;
@@ -18,14 +18,15 @@ use Psr\Log\LoggerInterface;
  * This class is responsible for generated ZIP archives for batch downloads based on the BatchDownload entity given.
  * Once the ZIP has been created, the status of the batch download will be set to "completed".
  */
-class ArchiveService
+readonly class ArchiveService
 {
     public function __construct(
-        private readonly EntityManagerInterface $doctrine,
-        private readonly EntityStorageService $entityStorageService,
-        private readonly FilesystemOperator $storage,
-        private readonly LoggerInterface $logger,
-        private readonly DocumentRepository $documentRepository,
+        private EntityManagerInterface $doctrine,
+        private EntityStorageService $entityStorageService,
+        private FilesystemOperator $storage,
+        private LoggerInterface $logger,
+        private DocumentRepository $documentRepository,
+        private DownloadFilenameGenerator $filenameGenerator,
     ) {
     }
 
@@ -91,7 +92,10 @@ class ArchiveService
                 continue;
             }
 
-            $zip->addFile($localPath, $this->generateFileName($document));
+            $zip->addFile(
+                $localPath,
+                $this->filenameGenerator->getFileName($document),
+            );
 
             $localPaths[] = $localPath;
         }
@@ -208,21 +212,6 @@ class ArchiveService
         fclose($stream);
 
         return true;
-    }
-
-    private function generateFileName(Document $document): string
-    {
-        $fileName = $document->getDocumentNr() . '-' . $document->getFileInfo()->getName();
-        if (! str_ends_with(strtolower($fileName), '.pdf')) {
-            $fileName .= '.pdf';
-        }
-
-        $sanitizer = new FilenameSanitizer($fileName);
-        $sanitizer->stripAdditionalCharacters();
-        $sanitizer->stripIllegalFilesystemCharacters();
-        $sanitizer->stripRiskyCharacters();
-
-        return $sanitizer->getFilename();
     }
 
     /**
