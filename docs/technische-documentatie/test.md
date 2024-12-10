@@ -49,6 +49,8 @@ Execute the following commands. This command will automatically install the Robo
 task rf:venv
 ```
 
+Note: If you have this error ('Unable to find zbar shared library') while running `task rf:venv` you are missing a library. You can fix it with `brew install zbar` or read here for more details: https://pypi.org/project/pyzbar/
+
 ## Step 3: Initialize the application
 
 To run CI tests locally you need to create a user with 'super admin'-rights, username `email@example.org` and password `IkLoopNooitVastVandaag`.
