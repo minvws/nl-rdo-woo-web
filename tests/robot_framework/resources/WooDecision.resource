@@ -33,7 +33,7 @@ Publish Test Dossier
   Fill Out Decision Details  Openbaarmaking
   Upload Production Report  ${production_report}
   Verify Document Upload Remaining  Nog te uploaden: ${number_of_documents} van ${number_of_documents} documenten.
-  Upload Document Zip  ${documents}
+  Upload Document  ${documents}
   Verify Document Upload Completed
   Click Continue To Publish
   Publish Dossier And Return To Admin Home  ${publication_status}
@@ -58,7 +58,7 @@ Upload Besluitbrief
 Upload Documents Step
   Upload Production Report  ${PRODUCTION_REPORT}
   Verify Document Upload Remaining  Nog te uploaden: ${NUMBER_OF_DOCUMENTS} van ${NUMBER_OF_DOCUMENTS} documenten.
-  Upload Document Zip  ${DOCUMENTS}
+  Upload Document  ${DOCUMENTS}
   Verify Document Upload Completed
   Click Continue To Publish
 
@@ -81,17 +81,24 @@ Verify Production Report Error
 
 Verify Document Upload Remaining
   [Arguments]  ${expected_result}
-  Wait For Condition  Text  //*[@data-e2e-name="missingDocuments"]  contains  ${expected_result}  timeout=20s
+  Wait For Condition  Text  //h3[@data-e2e-name="missingDocuments"]  contains  ${expected_result}  timeout=20s
 
-Upload Document Zip
-  [Arguments]  ${zip_file_location}
+Upload Document
+  [Arguments]  ${file_location}
   Sleep  30ms  # sometimes the upload doesn't seem to select anything, so let's try a tiny wait here before we click
-  Upload File By Selector  id=upload-area-dossier-files  ${zip_file_location}
-  Sleep  7s
+  Upload File By Selector  id=upload-area-dossier-files  ${file_location}
+  ${path}  ${file} =  Split Path  ${file_location}
+  Wait For Condition  Text  //div[@data-e2e-name="uploaded-files"]  contains  ${file}  timeout=30s
+  Wait For Condition  Text  //div[@data-e2e-name="no-files-selected"]  contains  Geen bestand
+  Click  //button[@data-e2e-name="process-documents"]
 
 Verify Document Upload Completed
   Scroll To Element  //*[@id="inhoud"]/div/div[2]
-  Wait For Elements State  //*[@id="js-dossier-documents-completed"]  visible  timeout=40s
+  Wait For Elements State
+  ...  //*[@data-e2e-name="upload-completed"]
+  ...  visible
+  ...  timeout=30s
+  ...  message=Upload not completed within timeout
 
 Click Continue To Publish
   Click  //*[@data-e2e-name="to-next-step-link"]

@@ -33,6 +33,7 @@ final readonly class WooDecision
         public ?\DateTimeImmutable $dateFrom,
         public ?\DateTimeImmutable $dateTo,
         public PublicationReason $publicationReason,
+        public string $documentSearchUrl,
     ) {
     }
 }

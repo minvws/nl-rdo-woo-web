@@ -8,4 +8,9 @@ enum DocumentFileUpdateStatus: string
 {
     case PENDING = 'pending';
     case COMPLETED = 'completed';
+
+    public function isPending(): bool
+    {
+        return $this === self::PENDING;
+    }
 }

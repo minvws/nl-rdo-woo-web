@@ -43,6 +43,7 @@
         <div
             {% if not uploadStatus.isComplete %}class="hidden"{% endif %}
             id="js-dossier-documents-completed"
+            data-e2e-name="upload-completed"
         >
             <twig:Admin:Alert type="success">
                 <strong>Uploaden gelukt:</strong> Alle documenten uit het productierapport zijn geüpload.
@@ -50,3 +51,14 @@
         </div>
     </div>
 </div>
+
+{# <div {{ vue_component('WooDecisionAddDocumentsController', {
+    allowedFileTypes: ['PDF', 'Zip'],
+    allowedMimeTypes: mimeTypes,
+    dossierId: dossier.dossierNr,
+    expectedUploadCount: uploadStatus.expectedUploadCount,
+    isUploadComplete: uploadStatus.isComplete,
+    maxFileSize: 1024 * 1024 * 1024 * 32,
+}) }}>
+    <div class="min-h-56"></div>
+</div> #}

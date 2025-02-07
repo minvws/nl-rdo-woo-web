@@ -77,6 +77,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
         $fileEntity->shouldReceive('getFileInfo->getPageCount')->andReturn(2);
         $fileEntity->shouldReceive('getFileInfo->getType')->andReturn('pdf');
         $fileEntity->shouldReceive('getFileInfo->getSize')->andReturn(456);
+        $fileEntity->shouldReceive('getFileInfo->getHash')->andReturn($fileHash = 'fooBar');
 
         $fileType = DossierFileType::ATTACHMENT;
 
@@ -106,6 +107,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
                     'type' => $fileType->value,
                     'id' => $entityId,
                     'pageNr' => 2,
+                    'hash' => $fileHash,
                 ]
             )
             ->andReturn('thumb-url');

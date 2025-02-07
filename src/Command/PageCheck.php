@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
+use App\Domain\Search\Index\ElasticDocumentId;
 use App\Service\Elastic\ElasticService;
 use Jaytaph\TypeArray\TypeArray;
 use Symfony\Component\Console\Command\Command;
@@ -37,7 +38,9 @@ class PageCheck extends Command
         foreach ($dossiers as $dossier) {
             foreach ($dossier->getDocuments() as $document) {
                 // Get the count from elastic
-                $esDocument = $this->elasticService->getDocument($document->getDocumentNr());
+                $esDocument = $this->elasticService->getDocument(
+                    ElasticDocumentId::forObject($dossier),
+                );
 
                 for ($i = 1; $i <= $document->getpageCount(); $i++) {
                     if (! $this->pageExists($esDocument, $i)) {

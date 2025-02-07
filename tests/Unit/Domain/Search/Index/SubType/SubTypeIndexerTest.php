@@ -92,10 +92,7 @@ class SubTypeIndexerTest extends MockeryTestCase
     public function testRemove(): void
     {
         $entity = \Mockery::mock(Document::class);
-        $documentId = 'foo-123';
-
-        $this->firstMapper->expects('supports')->with($entity)->andReturnTrue();
-        $this->firstMapper->expects('getId')->with($entity)->andReturn($documentId);
+        $entity->shouldReceive('getId->toRfc4122')->andReturn($documentId = 'foo-123');
 
         $this->elasticService->expects('removeDocument')->with($documentId);
 
@@ -105,12 +102,9 @@ class SubTypeIndexerTest extends MockeryTestCase
     public function testUpdatePage(): void
     {
         $entity = \Mockery::mock(Document::class);
-        $documentId = 'foo-123';
+        $entity->shouldReceive('getId->toRfc4122')->andReturn($documentId = 'foo-123');
         $pageNr = 12;
         $content = 'foo bar';
-
-        $this->firstMapper->expects('supports')->with($entity)->andReturnTrue();
-        $this->firstMapper->expects('getId')->with($entity)->andReturn($documentId);
 
         $this->pageIndexUpdater->expects('update')->with($documentId, $pageNr, $content);
 

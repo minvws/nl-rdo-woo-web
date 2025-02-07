@@ -56,6 +56,10 @@ framework:
             App\Domain\Publication\Dossier\Type\WooDecision\Command\ReplaceDocumentCommand: high
             App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveInventoryAndDocumentsCommand: high
             App\Domain\Publication\Dossier\Command\DeleteDossierCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ProcessDocumentFileSetUploadsCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ProcessDocumentFileSetUpdatesCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ProcessDocumentFileUploadCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ProcessDocumentFileUpdateCommand: high
 
             App\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand: ingestor
             App\Domain\Ingest\Process\Dossier\IngestDossierCommand: ingestor

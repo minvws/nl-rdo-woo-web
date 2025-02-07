@@ -6,6 +6,7 @@ Library             DebugLibrary
 Resource            Admin.resource
 Resource            Public.resource
 Resource            WooDecision.resource
+Resource            Generic.resource
 
 
 *** Variables ***
@@ -52,7 +53,7 @@ Select Random Subject
 
 Generate Dossier Reference Number
   ${reference_number} =  Generate Random String  3  [NUMBERS][UPPER]
-  Set Test Variable  $DOSSIER_REFERENCE  ${reference_number}
+  VAR  ${DOSSIER_REFERENCE}  ${reference_number}  scope=suite
 
 Search For A Publication
   [Documentation]  Clicks the link with matching text, if multiple are present it will fail.
@@ -105,3 +106,11 @@ Verify Publication Confirmation
 
 Click Search Through Documents In Dossier
   Click  //*[@data-e2e-name="search-through-documents"]
+
+Verify Document Filetype
+  [Arguments]  ${document_number}  ${source_type}  ${file_type}
+  Click  //div[@data-e2e-name="documents-section"]//tbody/tr[td[contains(.,'${document_number}')]]//td//a
+  Get Text  //td[@data-e2e-name="source-type"]  contains  ${source_type}
+  Get Text  //td[@data-e2e-name="file-type"]  contains  ${file_type}
+  Generic Download Click  //a[@data-e2e-name="download-file-link"]  ${file_type}
+  Go Back

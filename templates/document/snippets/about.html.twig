@@ -22,7 +22,7 @@
                 {% if document.entity.fileInfo.sourceType is defined %}
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'categories.category.source_file' | trans }}</th>
-                    <td>
+                    <td data-e2e-name="source-type">
                         <twig:Public:FileIcon type="{{ document.entity.fileInfo.sourceType.value }}" class="mr-1 -mt-0.5" />
                         {{ document.entity.fileInfo.sourceType | trans }}{% if document.entity.isUploaded %}, {{ document.entity.pageCount }} pagina's{% endif %}
                     </td>
@@ -31,7 +31,7 @@
                 {% if document.entity.fileInfo.type is defined and document.entity.fileInfo.isUploaded %}
                     <tr>
                         <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.download_type' | trans }}</th>
-                        <td>{{ document.entity.fileInfo.type|upper}} ({{ document.entity.fileInfo.size | size }})</td>
+                        <td data-e2e-name="file-type">{{ document.entity.fileInfo.type|upper}} ({{ document.entity.fileInfo.size | size }})</td>
                     </tr>
                 {% endif %}
                 {% if document.entity.documentId is defined %}

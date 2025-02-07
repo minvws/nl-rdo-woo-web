@@ -12,18 +12,32 @@ import {
 } from '@js/admin/utils';
 import { uniqueId } from '@utils';
 import { useElementVisibility } from '@vueuse/core';
-import { onBeforeUnmount, provide, ref, watch } from 'vue';
+import {
+  computed,
+  inject,
+  onBeforeUnmount,
+  provide,
+  useSlots,
+  ref,
+  watch,
+} from 'vue';
 import AlreadyUploadedFiles from './AlreadyUploadedFiles.vue';
 import DangerousFiles from './DangerousFiles.vue';
 import InvalidFiles from './InvalidFiles.vue';
 import SelectedFiles from './SelectedFiles.vue';
 import UploadVisual from './UploadVisual.vue';
+import { UPLOAD_AREA_ENDPOINT } from './static';
 
 const uploadAreaElement = ref(null);
 const isUploadAreaVisible = useElementVisibility(uploadAreaElement);
 const uploadAreaIdentifierClass = 'vue-upload-area';
 
-const emit = defineEmits(['selected', 'uploaded', 'uploadError', 'uploading']);
+const emit = defineEmits([
+  'isUploading',
+  'selected',
+  'uploaded',
+  'uploadError',
+]);
 
 const props = defineProps({
   allowedFileTypes: {
@@ -42,7 +56,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  groupId: {
+  endpoint: {
     type: String,
   },
   id: {
@@ -54,6 +68,10 @@ const props = defineProps({
   name: {
     type: String,
   },
+  payload: {
+    type: Object,
+    default: () => ({}),
+  },
   tip: {
     type: String,
   },
@@ -63,7 +81,9 @@ const props = defineProps({
   },
 });
 
-provide('groupId', props.groupId);
+provide(UPLOAD_AREA_ENDPOINT, props.endpoint ?? inject(UPLOAD_AREA_ENDPOINT));
+
+const slots = useSlots();
 
 const createUploadedFileInfo = () => {
   if (!props.uploadedFileInfo) {
@@ -87,13 +107,21 @@ const hasFileLimitations = hasMaxFileSize || hasAllowedMimeTypes;
 const formattedFileSize = formatFileSize(props.maxFileSize);
 const formattedAllowedFileTypes = formatList(props.allowedFileTypes, 'of');
 const formattedFileOrFiles = props.allowMultiple ? 'Bestanden' : 'Bestand';
-const invalidFiles = ref([]);
+const invalidSizeFiles = ref([]);
+const invalidTypeFiles = ref([]);
 const dangerousFiles = ref([]);
 const selectedFiles = ref(new Map());
 const uploadedFile = ref(createUploadedFileInfo());
 const uploadedFiles = ref([]);
 const alreadyUploadedFiles = ref([]);
 const failedFiles = ref([]);
+const isUploading = computed(() => {
+  if (!props.enableAutoUpload) {
+    return false;
+  }
+
+  return selectedFiles.value.size > 0;
+});
 
 const buttonAriaLabelledBy = [
   idOfSelectFilesElement,
@@ -198,14 +226,15 @@ const onFilesSelected = (event) => {
 };
 
 const addFiles = (files) => {
-  const { invalidFiles: invalid, validFiles } = validateFiles(
-    files,
+  const { invalidSize, invalidType, valid } = validateFiles(
+    [...files],
     props.allowedMimeTypes,
     props.maxFileSize,
   );
-  invalidFiles.value = [...invalid.values()];
+  invalidSizeFiles.value = [...invalidSize];
+  invalidTypeFiles.value = [...invalidType];
 
-  const limitedFiles = limitFiles(validFiles);
+  const limitedFiles = limitFiles(valid);
 
   [...limitedFiles].forEach((file) => {
     if (
@@ -235,9 +264,7 @@ const addFiles = (files) => {
 
 const limitFiles = (files) => {
   if (!props.allowMultiple && files.length > 1) {
-    const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(files.item(0));
-    return dataTransfer.files;
+    return files.slice(0, 1);
   }
 
   return files;
@@ -268,10 +295,6 @@ const onUploaded = (fileId, file, uploadId, elementHasFocus) => {
   if (!props.allowMultiple) {
     dangerousFiles.value = [];
   }
-};
-
-const onUploading = (fileId, file) => {
-  emit('uploading', fileId, file);
 };
 
 const onUploadError = (fileId, file, error) => {
@@ -316,28 +339,12 @@ watch(
     uploadedFile.value = createUploadedFileInfo();
   },
 );
+
+watch(isUploading, (value) => emit('isUploading', value));
 </script>
 
 <template>
   <div>
-    <output class="block">
-      <InvalidFiles
-        :allowed-file-types="props.allowedFileTypes"
-        :allowed-mime-types="props.allowedMimeTypes"
-        :files="invalidFiles"
-        :max-file-size="props.maxFileSize"
-        class="mb-4"
-      />
-
-      <DangerousFiles
-        :allow-multiple="props.allowMultiple"
-        :files="dangerousFiles"
-        class="mb-4"
-      />
-
-      <AlreadyUploadedFiles :files="alreadyUploadedFiles" class="mb-4" />
-    </output>
-
     <div
       class="bhr-upload-area"
       :class="uploadAreaIdentifierClass"
@@ -404,12 +411,37 @@ watch(
         @select-files="selectFiles"
         @delete="onDelete"
         @uploaded="onUploaded"
-        @uploading="onUploading"
         @uploadError="onUploadError"
         :allow-multiple="props.allowMultiple"
         :enable-auto-upload="props.enableAutoUpload"
         :files="selectedFiles"
+        :payload="props.payload"
       />
+
+      <div v-if="slots.default" class="text-left pb-4">
+        <slot />
+      </div>
+
+      <output class="block text-left">
+        <InvalidFiles
+          :allowed-file-types="props.allowedFileTypes"
+          :allowed-mime-types="props.allowedMimeTypes"
+          :files="invalidTypeFiles"
+        />
+
+        <InvalidFiles
+          :files="invalidSizeFiles"
+          :max-file-size="props.maxFileSize"
+        />
+
+        <DangerousFiles
+          :allow-multiple="props.allowMultiple"
+          :files="dangerousFiles"
+          class="mb-4"
+        />
+
+        <AlreadyUploadedFiles :files="alreadyUploadedFiles" class="mb-4" />
+      </output>
 
       <div
         @dragleave.stop.prevent="onDragLeave"

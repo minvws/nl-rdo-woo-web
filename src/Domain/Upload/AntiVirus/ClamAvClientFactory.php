@@ -7,11 +7,16 @@ namespace App\Domain\Upload\AntiVirus;
 use Socket\Raw\Factory;
 use Xenolope\Quahog\Client;
 
-class ClamAvClientFactory
+readonly class ClamAvClientFactory
 {
-    public static function create(string $address): Client
+    public function __construct(
+        private string $address,
+    ) {
+    }
+
+    public function getClient(): Client
     {
-        $socket = (new Factory())->createClient($address);
+        $socket = (new Factory())->createClient($this->address);
 
         return new Client($socket);
     }

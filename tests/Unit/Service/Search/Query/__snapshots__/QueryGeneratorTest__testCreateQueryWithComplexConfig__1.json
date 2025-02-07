@@ -1111,7 +1111,7 @@
             },
             "unique_dossiers": {
                 "cardinality": {
-                    "field": "dossier_nr",
+                    "field": "prefixed_dossier_nr",
                     "precision_threshold": 40000
                 }
             }

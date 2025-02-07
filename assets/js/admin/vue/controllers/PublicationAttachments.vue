@@ -3,6 +3,8 @@ import Alert from '@admin-fe/component/Alert.vue';
 import Dialog from '@admin-fe/component/Dialog.vue';
 import AttachmentsList from '@admin-fe/component/publication/AttachmentsList.vue';
 import PublicationAttachmentsForm from '@admin-fe/component/publication/PublicationAttachmentsForm.vue';
+import { publicationFilesSchema } from '@admin-fe/component/publication/interface';
+import { validateResponse } from '@js/admin/utils';
 import { computed, ref } from 'vue';
 
 const props = defineProps({
@@ -107,13 +109,16 @@ const onSaved = (attachment) => {
 
 const retrieveAttachments = async () => {
   try {
-    const response = await fetch(props.endpoint, {
+    const request = await fetch(props.endpoint, {
       headers: {
         'Content-Type': 'application/json',
         accept: 'application/json',
       },
     });
-    const attachmentsFromApi = await response.json();
+    const attachmentsFromApi = await validateResponse(
+      request,
+      publicationFilesSchema,
+    );
     attachmentsFromApi.forEach((attachment) => {
       attachments.value.set(attachment.id, attachment);
     });

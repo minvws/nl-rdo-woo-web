@@ -59,6 +59,6 @@ enum UploadGroupId: string
             $names[] = $fileType->getTypeName();
         }
 
-        return $names;
+        return array_values(array_unique($names));
     }
 }

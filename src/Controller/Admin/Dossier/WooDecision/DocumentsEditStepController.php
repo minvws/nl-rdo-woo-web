@@ -15,7 +15,6 @@ use App\ValueObject\ProductionReportStatus;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -164,40 +163,5 @@ class DocumentsEditStepController extends AbstractController
             'inventoryStatus' => new ProductionReportStatus($dossier),
             'dataPath' => $dataPath,
         ]);
-    }
-
-    #[Route(
-        path: '/balie/dossier/woodecision/documents/edit/search/{prefix}/{dossierId}',
-        name: 'app_admin_dossier_woodecision_documents_edit_search',
-        methods: ['POST'],
-    )]
-    #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
-    public function documentSearch(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
-        Request $request,
-    ): Response {
-        $wizardStatus = $this->stepHelper->getWizardStatus($dossier, StepName::DOCUMENTS);
-        if (! $wizardStatus->isCurrentStepAccessibleInEditMode()) {
-            throw $this->createAccessDeniedException();
-        }
-
-        $searchTerm = urldecode(strval($request->getPayload()->get('q', '')));
-
-        $documents = $this->documentRepository->findForDossierBySearchTerm($dossier, $searchTerm, 4);
-
-        $ret = [
-            'results' => json_encode(
-                $this->renderView(
-                    'admin/dossier/search.html.twig',
-                    [
-                        'documents' => $documents,
-                        'searchTerm' => $searchTerm,
-                    ],
-                ),
-                JSON_THROW_ON_ERROR,
-            ),
-        ];
-
-        return new JsonResponse($ret);
     }
 }

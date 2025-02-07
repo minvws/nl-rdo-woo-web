@@ -71,7 +71,7 @@ readonly class InquiryService
                     $this->entityStorageService->removeFileForEntity($inventory);
                     $this->doctrine->remove($inventory);
                 }
-                $this->batchDownloadService->removeAllDownloadsForEntity($dossier);
+                $this->batchDownloadService->removeAllDownloadsForEntity($inquiry);
                 $this->doctrine->remove($inquiry);
             } else {
                 $this->doctrine->persist($inquiry);

@@ -46,6 +46,6 @@ trait AssembleChunksTrait
             $chunk = null;
         }
 
-        return UploadedFile::fromSplFile($stitchedFile->getFileInfo(), $originalFilename);
+        return UploadedFile::fromFile($stitchedFile->getFileInfo(), $originalFilename);
     }
 }

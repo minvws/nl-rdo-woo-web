@@ -26,7 +26,7 @@ class DossierIdParameterProvider implements ParameterProviderInterface
         $this
             ->getRequest($context)
             ->attributes
-            ->set('dossier_id_query', $this->getDossierQuery($parameter));
+            ->set('dossierIdQuery', $this->getDossierQuery($parameter));
 
         return $this->getOperation($context);
     }

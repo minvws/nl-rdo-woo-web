@@ -54,7 +54,7 @@ class ResultTransformerTest extends MockeryTestCase
     public function testTransform(): void
     {
         $facetInputs = new FacetInputCollection(...[
-            FacetKey::DOSSIER_NR->value => StringValuesFacetInput::fromParameterBag(FacetKey::DOSSIER_NR, new ParameterBag()),
+            FacetKey::PREFIXED_DOSSIER_NR->value => StringValuesFacetInput::fromParameterBag(FacetKey::PREFIXED_DOSSIER_NR, new ParameterBag()),
             FacetKey::DATE->value => DateFacetInput::fromParameterBag(FacetKey::DATE, new ParameterBag()),
         ]);
 

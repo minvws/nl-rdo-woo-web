@@ -10,10 +10,6 @@ Test Setup          Go To Public
 Test Tags           ci  themes  public-init
 
 
-*** Variables ***
-${DEVICE}   Desktop Chrome
-
-
 *** Test Cases ***
 Covid19 Theme Page Accessible
   Navigate To Covid19 Theme Page
@@ -27,7 +23,7 @@ Covid19 Theme Page Only Shows Covid19 Dossiers
 
 *** Keywords ***
 Suite Setup
-  Suite Setup - CI  cleansheet=${FALSE}  device=${DEVICE}
+  Suite Setup - CI
 
 Only One Subject Should Be Present
   Get Element Count

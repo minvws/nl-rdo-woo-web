@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload\Process;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Domain\Upload\Process\FileProcessException;
+use App\Domain\Upload\UploadedFile;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -17,21 +20,30 @@ final class DocumentNumberExtractorTest extends UnitTestCase
 {
     private LoggerInterface&MockInterface $logger;
     private WooDecision&MockInterface $dossier;
+    private DocumentRepository&MockInterface $documentRepository;
+    private DocumentNumberExtractor $extractor;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->dossier = \Mockery::mock(WooDecision::class);
+        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->documentRepository = \Mockery::mock(DocumentRepository::class);
+
+        $this->extractor = new DocumentNumberExtractor(
+            $this->logger,
+            $this->documentRepository,
+        );
     }
 
     #[DataProvider('getValidFilenameData')]
     public function testExtractWithValidFilename(string $filename, string $expectedDocNr): void
     {
-        $extractor = new DocumentNumberExtractor($this->logger);
-
-        $this->assertSame($expectedDocNr, $extractor->extract($filename, $this->dossier));
+        $this->assertSame(
+            $expectedDocNr,
+            $this->extractor->extract($filename, $this->dossier),
+        );
     }
 
     #[DataProvider('getInvalidFilenameData')]
@@ -51,11 +63,9 @@ final class DocumentNumberExtractorTest extends UnitTestCase
                 ],
             );
 
-        $extractor = new DocumentNumberExtractor($this->logger);
-
         $this->expectExceptionObject(FileProcessException::forFailingToExtractDocumentId($filename, $this->dossier));
 
-        $extractor->extract($filename, $this->dossier);
+        $this->extractor->extract($filename, $this->dossier);
     }
 
     /**
@@ -104,5 +114,37 @@ final class DocumentNumberExtractorTest extends UnitTestCase
                 'filename' => '_.pdf',
             ],
         ];
+    }
+
+    public function testMatchDocumentForFile(): void
+    {
+        $document = \Mockery::mock(Document::class);
+
+        $file = \Mockery::mock(UploadedFile::class);
+        $file->shouldReceive('getOriginalFilename')->andReturn('1234.pdf');
+
+        $this->documentRepository
+            ->expects('findOneByDossierAndDocumentId')
+            ->with($this->dossier, '1234')
+            ->andReturn($document);
+
+        self::assertSame(
+            $document,
+            $this->extractor->matchDocumentForFile($file, $this->dossier),
+        );
+    }
+
+    public function testMatchDocumentForFileReturnsNullForFileProcessException(): void
+    {
+        $this->dossier->shouldReceive('getId')->andReturn(Uuid::v6());
+
+        $file = \Mockery::mock(UploadedFile::class);
+        $file->shouldReceive('getOriginalFilename')->andReturn('.pdf');
+
+        $this->logger->expects('error');
+
+        self::assertNull(
+            $this->extractor->matchDocumentForFile($file, $this->dossier),
+        );
     }
 }

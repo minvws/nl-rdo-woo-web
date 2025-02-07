@@ -1,6 +1,6 @@
 import { getWindow } from './browser';
 
-const getCurrentOrigin = () => getWindow().location.origin;
+export const getCurrentOrigin = () => getWindow().location.origin;
 
 export const getUrlProperties = (url: string) =>
   new URL(url, getCurrentOrigin());

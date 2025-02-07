@@ -8,12 +8,12 @@ Library             ${CURDIR}/../libraries/QR.py
 
 
 *** Variables ***
-${BASE_URL_BALIE}       ${EMPTY}
-${OTP_CODE}             ${EMPTY}
-${TST_BALIE_USER}       ${EMPTY}
-${TST_BALIE_PASSWORD}   ${EMPTY}
-${ATTACHMENT_FILENAME}  ${EMPTY}
-${ATTACHMENT_LOCATION}  ${EMPTY}
+${BASE_URL_BALIE}           ${EMPTY}
+${TST_BALIE_OTP_SECRET}     ${EMPTY}
+${TST_BALIE_USER}           ${EMPTY}
+${TST_BALIE_PASSWORD}       ${EMPTY}
+${ATTACHMENT_FILENAME}      ${EMPTY}
+${ATTACHMENT_LOCATION}      ${EMPTY}
 
 
 *** Keywords ***
@@ -21,50 +21,40 @@ Go To Admin
   Go To  ${BASE_URL_BALIE}
 
 Login Admin
-  [Arguments]  ${username}=${TST_BALIE_USER}  ${password}=${TST_BALIE_PASSWORD}
+  [Documentation]  Logs in to the admin section. Will change password if it's the first login.
+  [Arguments]  ${username}=${TST_BALIE_USER}
+  ...  ${password}=${TST_BALIE_PASSWORD}
+  ...  ${otp_secret}=${TST_BALIE_OTP_SECRET}
+  ...  ${new_password}=IkLoopNooitVastVandaag
   Go To Admin
+  ${already_logged_in} =  Get Element Count  //*[@id="main-nav"][contains(.,'Uitloggen')]
+  IF  ${already_logged_in} > 0  Logout Admin
   Fill Text  id=inputEmail  ${username}
   Fill Text  id=inputPassword  ${password}
   Click  " Inloggen "
-  Log  ${OTP_CODE}
-  ${otp} =  Get Otp  ${OTP_CODE}
+  Wait For Elements State  //*[@data-e2e-name="login-error"]  detached  timeout=1s
+  ${otp} =  Get Otp  ${otp_secret}
   Fill Text  id=auth-code  ${otp}
   Click  " Controleren "
-  Get Text  //body  *=  Uitloggen
+  ${password_change_required} =  Get Element Count  //h2[contains(.,'Werk je wachtwoord bij')]
+  IF  ${password_change_required} > 0
+    Fill Text  id=change_password_current_password  ${password}
+    Fill Text  id=change_password_plainPassword_first  ${new_password}
+    Fill Text  id=change_password_plainPassword_second  ${new_password}
+    Click  " Wachtwoord aanpassen "
+    Get Text  //*[@data-e2e-name="alerts"]  contains  Wachtwoord succesvol gewijzigd
+    VAR  ${password}  ${new_password}
+  END
+  Get Text  //*[@id="main-nav"]  contains  Uitloggen
+  RETURN  ${password}
+
+Click Log Out
+  Click  //*[@data-e2e-name="logout-link"]
 
 Logout Admin
-  Click  xpath=//*[@data-e2e-name="logout-link"]
-
-Click Organisation Selector
-  Click  //*[@data-e2e-name="organisation-switcher"]
-
-Click Manage Organisations
-  Click  //*[@data-e2e-name="manage-organisations"]
-
-Add A New Organisation Prefix
-  [Arguments]  ${prefix}
-  Click  //*[@id="js-add-widget"]
-  ${element_count} =  Get Element Count
-  ...  //div[@id="js-widgets-container"]//input[starts-with(@id,'organisation_form_documentPrefixes')]
-  Fill Text  //input[starts-with(@id,'organisation_form_documentPrefixes_${element_count-1}')]  ${prefix}
-
-Click Save Prefixes
-  Click  //*[@id="organisation_form_submit"]
-  ${error_present} =  Get Element Count  //div[@id="organisation_form-error"]
-  IF  ${error_present} > 0
-    # Retry, temp workaround for https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
-    Select Responsible Department  ministerie van Volksgezondheid, Welzijn en Sport
-    Click  //*[@id="organisation_form_submit"]
-    Get Element States
-    ...  //div[@id="organisation_form-error"]
-    ...  not contains
-    ...  attached
-    ...  message=Error shown, even after retry
-  END
-
-Select Responsible Department
-  [Arguments]  ${department}
-  Select Options By  //select[@name="organisation_form[departments][0]"]  label  ${department}
+  Go To Admin
+  Click Log Out
+  Go To Admin
 
 Upload Attachment
   [Arguments]  ${type}  ${date}=01012022
@@ -93,26 +83,3 @@ Is Queue Empty
     ${value} =  Get Text  ${element}
     IF  '${value}' != '0'  Fail
   END
-
-Select Organisation
-  [Arguments]  ${organisation}=Programmadirectie Openbaarheid
-  Click  //*[@data-e2e-name="organisation-switcher"]
-  Click  //*[@data-e2e-name="organisation-switcher"]//li[contains(.,'${organisation}')]
-
-Open Organisation Details
-  [Arguments]  ${organisation}=Programmadirectie Openbaarheid
-  Click  //table[@data-e2e-name="organisations-table"]//td[contains(.,'${organisation}')]/..//a
-
-Create Random Subjects
-  Click  " Onderwerpen "
-  FOR  ${i}  IN RANGE  1  10
-    ${random_id} =  Generate Random String  3  [NUMBERS][UPPER]
-    Create New Subject  Onderwerp ${random_id}
-  END
-
-Create New Subject
-  [Arguments]  ${subject_name}
-  Click  //a[@data-e2e-name="new-subject"]
-  Fill Text  //input[@id="subject_name"]  ${subject_name}
-  Click  id=subject_submit
-  Get Text  //div[@data-e2e-name="alerts"]  contains  Het onderwerp is aangemaakt

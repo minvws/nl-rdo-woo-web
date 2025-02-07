@@ -37,11 +37,12 @@ class DossierFileController extends AbstractController
         return $this->downloadHelper->getResponseForEntityWithFileInfo($entity);
     }
 
-    #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 31536000, smaxage: 31536000, public: true)]
     #[Route(
-        '/dossier/{prefix}/{dossierId}/file/thumbnail/{type}/{id}/{pageNr}',
+        '/dossier/{prefix}/{dossierId}/file/thumbnail/{type}/{id}/{pageNr}/{hash}',
         name: 'app_dossier_file_thumbnail',
         requirements: ['pageNr' => '\d+'],
+        defaults: ['hash' => ''],
         methods: ['GET']
     )]
     public function thumbnail(

@@ -8,6 +8,9 @@ use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Facet\FacetDefinition;
 use Webmozart\Assert\Assert;
 
+/**
+ * @implements \IteratorAggregate<array-key,FacetInputInterface>
+ */
 readonly class FacetInputCollection implements \IteratorAggregate
 {
     /**

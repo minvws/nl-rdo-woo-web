@@ -20,7 +20,7 @@
 Clone the repository to your local machine:
 
 ```shell
-git clone git@github.com:minvws/nl-rdo-woo-web-private.git
+git clone git@github.com:minvws/nl-rdo-woo-web.git
 ```
 
 ## Step 2: Install dependencies
@@ -117,8 +117,9 @@ Both methods will generate a password and a 2FA token with which you can log int
 
 ## Step 4: Browse to the site
 
-When this is all done, you can goto the website at `http://localhost:8000/balie/login`. You can log in with your
-generated credentials.
+- Open the Website at `http://localhost:8000`
+- Open the Balie at `http://localhost:8000/balie/login`
+  - You can log in with your generated credentials.
 
 See [usage](usage.md) for more information on how to use the application.
 

@@ -79,7 +79,7 @@ class InventoryRunProcessorTest extends MockeryTestCase
     public function testProcessReturnsEarlyWithErrorIfThereAreNoChanges(): void
     {
         $changeset = \Mockery::mock(InventoryChangeset::class);
-        $changeset->shouldReceive('hasChanges')->andReturnTrue();
+        $changeset->shouldReceive('hasNoChanges')->andReturnTrue();
 
         $this->run->expects('addGenericException');
         $this->run->shouldReceive('hasErrors')->andReturnTrue();
@@ -110,7 +110,7 @@ class InventoryRunProcessorTest extends MockeryTestCase
     public function testProcessFinishesSuccessfully(): void
     {
         $changeset = \Mockery::mock(InventoryChangeset::class);
-        $changeset->shouldReceive('hasChanges')->andReturnFalse();
+        $changeset->shouldReceive('hasNoChanges')->andReturnFalse();
 
         $this->run->shouldReceive('hasErrors')->andReturnFalse();
         $this->run->shouldReceive('isFinal')->andReturnTrue();

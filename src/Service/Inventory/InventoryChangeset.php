@@ -39,7 +39,7 @@ class InventoryChangeset
         $this->setDocumentStatus($documentNumber->getValue(), self::UNCHANGED);
     }
 
-    public function hasChanges(): bool
+    public function hasNoChanges(): bool
     {
         $changes = array_filter(
             $this->documentStatus,

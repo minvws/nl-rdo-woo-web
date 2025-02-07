@@ -7,6 +7,7 @@ namespace App\ValueObject;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use Doctrine\Common\Collections\ReadableCollection;
+use Webmozart\Assert\Assert;
 
 readonly class DossierUploadStatus
 {
@@ -83,5 +84,20 @@ readonly class DossierUploadStatus
                     && ! array_key_exists($doc->getDocumentId(), $docIdsToIgnore);
             }
         );
+    }
+
+    /**
+     * @return ReadableCollection<array-key,string>
+     */
+    public function getMissingDocumentIds(): ReadableCollection
+    {
+        return $this
+            ->getMissingDocuments()
+            ->map(static function (Document $document): string {
+                $documentId = $document->getDocumentId();
+                Assert::string($documentId);
+
+                return $documentId;
+            });
     }
 }

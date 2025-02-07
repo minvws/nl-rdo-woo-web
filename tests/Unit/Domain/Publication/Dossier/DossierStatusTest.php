@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier;
 
 use App\Domain\Publication\Dossier\DossierStatus;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use App\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class DossierStatusTest extends MockeryTestCase
+class DossierStatusTest extends UnitTestCase
 {
     public function testIsDeleted(): void
     {
@@ -20,6 +20,19 @@ class DossierStatusTest extends MockeryTestCase
     {
         self::assertTrue(DossierStatus::CONCEPT->isNotDeleted());
         self::assertFalse(DossierStatus::DELETED->isNotDeleted());
+    }
+
+    public function testIsPubliclyAvailableOrScheduled(): void
+    {
+        $snapshot = [];
+        foreach (DossierStatus::cases() as $case) {
+            $snapshot[$case->value] = $case->isPubliclyAvailableOrScheduled();
+        }
+
+        $this->assertMatchesYamlSnapshot([
+            'test' => __FUNCTION__,
+            'results_for' => $snapshot,
+        ]);
     }
 
     public function testTrans(): void

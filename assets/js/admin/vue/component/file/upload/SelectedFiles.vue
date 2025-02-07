@@ -4,13 +4,8 @@ import SelectedFile from './SelectedFile.vue';
 import { uniqueId } from '@js/utils';
 import { computed } from 'vue';
 
-const emit = defineEmits([
-  'delete',
-  'selectFiles',
-  'uploaded',
-  'uploadError',
-  'uploading',
-]);
+const emit = defineEmits(['delete', 'selectFiles', 'uploaded', 'uploadError']);
+
 const props = defineProps({
   allowMultiple: {
     type: Boolean,
@@ -27,6 +22,9 @@ const props = defineProps({
   name: {
     type: String,
   },
+  payload: {
+    type: Object,
+  },
 });
 
 const formattedFileOrFiles = props.allowMultiple ? 'bestanden' : 'bestand';
@@ -42,10 +40,6 @@ const onDelete = (fileId) => {
 
 const onUploaded = (fileId, file, uploadId, elementHasFocus) => {
   emit('uploaded', fileId, file, uploadId, elementHasFocus);
-};
-
-const onUploading = (fileId, file) => {
-  emit('uploading', fileId, file);
 };
 
 const onUploadError = (fileId, file, error) => {
@@ -79,7 +73,6 @@ const onSelectFiles = () => {
       >
         <SelectedFile
           @delete="onDelete"
-          @uploading="onUploading"
           @uploaded="onUploaded"
           @upload-error="onUploadError"
           v-for="[fileId, file] in props.files"
@@ -87,6 +80,7 @@ const onSelectFiles = () => {
           :file="file"
           :file-id="fileId"
           :key="fileId"
+          :payload="props.payload"
         />
       </ul>
 
@@ -99,7 +93,12 @@ const onSelectFiles = () => {
       </SkipLink>
     </template>
 
-    <div @click="onSelectFiles" v-else class="bhr-upload-area__no-files">
+    <div
+      @click="onSelectFiles"
+      v-else
+      class="bhr-upload-area__no-files"
+      data-e2e-name="no-files-selected"
+    >
       Geen {{ formattedFileOrFiles }} geselecteerd
     </div>
   </div>

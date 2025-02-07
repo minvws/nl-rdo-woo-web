@@ -32,17 +32,16 @@ class NestedDossierIndexUpdaterTest extends MockeryTestCase
 
     public function testUpdate(): void
     {
-        $dossierNr = 'foo-bar-123';
         $dossier = \Mockery::mock(AbstractDossier::class);
-        $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr);
+        $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-bar-123');
 
         $dossierDoc = ['foo' => 'bar'];
 
         $this->logger->shouldReceive('debug');
 
         $this->elasticClient->expects('updateByQuery')->with(\Mockery::on(
-            static function (array $input) use ($dossierNr, $dossierDoc) {
-                return $input['body']['query']['bool']['must'][1]['match']['dossier_nr'] === $dossierNr
+            static function (array $input) use ($dossierId, $dossierDoc) {
+                return $input['body']['query']['bool']['must'][1]['nested']['query']['term']['dossiers.id'] === $dossierId
                     && $input['body']['script']['params']['dossier'] === $dossierDoc;
             }
         ));

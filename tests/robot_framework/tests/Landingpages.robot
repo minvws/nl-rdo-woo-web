@@ -56,7 +56,7 @@ Invisble landingpage is not accessible
 
 *** Keywords ***
 Suite Setup
-  Suite Setup - CI  cleansheet=${FALSE}
+  Suite Setup - CI
 
 Navigate To Individual Landingpage
   [Arguments]  ${keyword}

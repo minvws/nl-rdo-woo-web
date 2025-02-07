@@ -10,7 +10,6 @@ use App\Service\DocumentUploadQueue;
 use App\Service\HistoryService;
 use App\Service\Search\Query\Facet\FacetTwigService;
 use App\Service\Security\OrganisationSwitcher;
-use App\Service\Storage\ThumbnailStorageService;
 use App\Twig\Runtime\WooExtensionRuntime;
 use Mockery;
 use Mockery\MockInterface;
@@ -31,7 +30,6 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
 
         $this->runtime = new WooExtensionRuntime(
             $this->requestStack,
-            \Mockery::mock(ThumbnailStorageService::class),
             \Mockery::mock(FacetTwigService::class),
             $this->uploadQueue,
             \Mockery::mock(OrganisationSwitcher::class),

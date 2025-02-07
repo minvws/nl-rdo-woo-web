@@ -1,12 +1,8 @@
-import {
-  formatFileSize,
-  type InvalidFile,
-  type InvalidFilesSet,
-} from '@js/admin/utils';
+import { formatFileSize } from '@js/admin/utils';
 import { hideElement, showElement } from '@utils';
 
 export interface InvalidFiles {
-  processInvalidFiles: (invalidFiles: InvalidFilesSet) => void;
+  processInvalidFiles: (invalidFiles: File[]) => void;
 }
 
 export const initializeInvalidFiles = (
@@ -16,33 +12,31 @@ export const initializeInvalidFiles = (
     '.js-invalid-files-list',
   );
 
-  const processInvalidFiles = (invalidFiles: InvalidFilesSet) => {
-    if (invalidFiles.size === 0) {
+  const processInvalidFiles = (files: File[]) => {
+    if (files.length === 0) {
       hideElement(invalidFilesElement);
       return;
     }
 
-    displayInvalidFiles(invalidFiles);
+    displayInvalidFiles(files);
     showElement(invalidFilesElement);
   };
 
-  const displayInvalidFiles = (invalidFiles: InvalidFilesSet) => {
+  const displayInvalidFiles = (files: File[]) => {
     if (listElement) {
       listElement.innerHTML = '';
     }
 
-    invalidFiles.forEach((invalidFile) => {
+    files.forEach((file) => {
       const listItemElement = document.createElement('li');
       listItemElement.classList.add('bhr-li');
 
-      listItemElement.innerHTML = formatInvalidFile(invalidFile);
+      listItemElement.innerHTML = formatInvalidFile(file);
       listElement?.appendChild(listItemElement);
     });
   };
 
-  const formatInvalidFile = (invalidFile: InvalidFile) => {
-    const { file } = invalidFile;
-
+  const formatInvalidFile = (file: File) => {
     return `<div class="truncate">${file.name} (${formatFileSize(file.size)})</div>`;
   };
 

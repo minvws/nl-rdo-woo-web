@@ -13,7 +13,7 @@
         "aws/aws-sdk-php": "^3.279",
         "doctrine/annotations": "^2.0",
         "doctrine/doctrine-bundle": "^2.10",
-        "doctrine/doctrine-fixtures-bundle": "^3.4",
+        "doctrine/doctrine-fixtures-bundle": "^4.0",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.14",
         "elasticsearch/elasticsearch": "^8.7",
@@ -91,7 +91,7 @@
         "symfony/twig-bundle": "6.4.*",
         "symfony/uid": "6.4.*",
         "symfony/ux-twig-component": "^2.11",
-        "symfony/ux-vue": "2.21.0",
+        "symfony/ux-vue": "2.22.0",
         "symfony/validator": "6.4.*",
         "symfony/web-link": "6.4.*",
         "symfony/workflow": "6.4.*",
@@ -110,7 +110,12 @@
             "symfony/runtime": true,
             "dealerdirect/phpcodesniffer-composer-installer": true
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "audit": {
+            "ignore": {
+                "CVE-2024-36611": "See https://github.com/symfony/symfony/issues/59077"
+            }
+        }
     },
     "autoload": {
         "psr-4": {
@@ -166,7 +171,8 @@
             "@md",
             "@checktranslations",
             "@test",
-            "@checktemplates"
+            "@checktemplates",
+            "composer audit"
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",

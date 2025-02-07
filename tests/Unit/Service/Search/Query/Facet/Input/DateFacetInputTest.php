@@ -61,6 +61,24 @@ final class DateFacetInputTest extends UnitTestCase
         self::assertFalse($input->isNotActive());
     }
 
+    public function testWithoutDateCanBeUsedInCombinationWithFromAndToDate(): void
+    {
+        $this->bag->shouldReceive('all')->with($this->key->getParamName())->once()->andReturn([
+            'without_date' => '1',
+            'from' => '2021-01-01',
+            'to' => '2024-01-01',
+        ]);
+
+        $input = DateFacetInput::fromParameterBag($this->key, $this->bag);
+
+        self::assertFalse($input->isNotActive());
+        self::assertTrue($input->isWithoutDate());
+        self::assertTrue($input->hasFromDate());
+        self::assertTrue($input->hasToDate());
+        self::assertEquals('2021-01-01', $input->getPeriodFilterFrom());
+        self::assertEquals('2024-01-01', $input->getPeriodFilterTo());
+    }
+
     public function testIsNotActiveReturnsTrueWhenItHasNoValues(): void
     {
         $input = DateFacetInput::fromParameterBag($this->key, $this->bag);

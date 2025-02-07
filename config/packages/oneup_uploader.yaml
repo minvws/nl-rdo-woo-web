@@ -25,6 +25,16 @@ oneup_uploader:
             use_orphanage: true
             namer: App\Service\Uploader\UploaderNamer
 
+        woo_decision:
+            frontend: custom
+            custom_frontend:
+                class: App\Controller\Admin\CustomDropzoneController
+                name: woo_decision
+            storage:
+                directory: '%oneup_uploader.storage.directory%'
+            use_orphanage: false
+            namer: App\Service\Uploader\UploaderNamer
+
 when@test:
     parameters:
         oneup_uploader.path.prefix: 'vfs://root/'

@@ -86,6 +86,16 @@ class InventoryReaderTest extends MockeryTestCase
         self::assertEquals(InventoryReaderException::forMissingMatterInRow(3), $result[1]->getException());
     }
 
+    public function testInventoryReaderAddsExceptionsForSingleCharacterMatterCells(): void
+    {
+        $this->reader->open(__DIR__ . '/inventory-single-character-matter.xlsx');
+
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()));
+
+        self::assertEquals(InventoryReaderException::forMissingMatterInRow(2), $result[0]->getException());
+        self::assertEquals(InventoryReaderException::forMissingMatterInRow(3), $result[1]->getException());
+    }
+
     public function testInventoryWithEmptyDates(): void
     {
         $this->reader->open(__DIR__ . '/inventory-empty-date.xlsx');

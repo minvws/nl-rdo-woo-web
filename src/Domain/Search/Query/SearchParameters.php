@@ -38,6 +38,17 @@ final readonly class SearchParameters
     ) {
     }
 
+    public function hasActiveFacets(): bool
+    {
+        foreach ($this->facetInputs as $facetInput) {
+            if ($facetInput->isActive()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function withFacetInput(FacetKey $key, FacetInput $facetInput): self
     {
         return new self(

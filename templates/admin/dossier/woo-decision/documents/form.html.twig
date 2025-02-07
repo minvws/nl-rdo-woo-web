@@ -35,30 +35,19 @@
         <p class="bhr-form-help mt-2 mb-3">Upload alle documenten die met beoordeling 'openbaar' of 'deels openbaar' in het productierapport staan. Zorg dat de bestandsnamen overeenkomen met de documentnummers in het productierapport (bijvoorbeeld: 123.pdf)</p>
     </div>
 
-    <twig:Admin:DossierDocuments
-        dossier="{{ dossier }}"
-        uploadStatus="{{ uploadStatus }}"
-        mimeTypes="{{ mimeTypes }}"
-    />
-
-    <div class="mt-4">
-        <div role="status">
-            <div class="hidden" id="js-dossier-documents-can-not-continue">
-                <twig:Admin:InputErrors error="Nog niet alle documenten zijn geüpload of verwerkt. Voeg ze toe of wacht tot ze verwerkt zijn om verder te gaan." />
-            </div>
-        </div>
-
-        <a
-            href="{{ path(workflowStatus.nextStep.routeName, { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
-            class="bhr-button bhr-button--primary bhr-button--fixed-width mr-4"
-            id="js-dossier-documents-next-step"
-            data-e2e-name="to-next-step-link"
-        >{{ 'publication.dossier.to_publication' | trans }}</a>
-
-        <a
-            href="{{ path('app_admin_dossier', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
-            class="bhr-button bhr-button--secondary bhr-button--fixed-width mr-4"
-        >{{ 'admin.global.continue_later' | trans }}</a>
+    <div {{ vue_component('WooDecisionAddDocumentsController', {
+        allowedFileTypes: uploadGroupId.fileTypeNames,
+        allowedMimeTypes: uploadGroupId.mimeTypes,
+        dossierId: dossier.dossierNr,
+        isComplete: uploadStatus.isComplete,
+        maxFileSize: 1024 * 1024 * 1024 * 32,
+        nextStepUrl: path(workflowStatus.nextStep.routeName, { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }),
+        continueLaterUrl: path('app_admin_dossier', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }),
+        processEndpoint: path('api_uploader_woo_decision_process', { dossierId: dossier.id }),
+        statusEndpoint: path('api_uploader_woo_decision_status', { dossierId: dossier.id }),
+        uploadEndpoint: path('_uploader_upload_woo_decision', { dossierId: dossier.id }),
+    }) }}>
+        <div class="min-h-56"></div>
     </div>
 </div>
 {% endif %}

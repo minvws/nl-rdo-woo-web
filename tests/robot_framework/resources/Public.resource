@@ -14,10 +14,11 @@ Go To Public
   Go To  ${BASE_URL}
 
 Search On Public For
+  [Documentation]  Provide the expected search results. '0 resultaten' can be used to expect no results.
   [Arguments]  ${search_term}  ${search_results}
   Go To Public
   Initiate Search  ${search_term}
-  Get Text  //*[@id="main-content"]  *=  ${search_results}
+  Get Text  //div[@id="js-search-results"]  contains  ${search_results}
 
 Initiate Search
   [Arguments]  ${search_term}
@@ -84,6 +85,7 @@ Select Filter Options - Dossier
   ...  ${publications}=${TRUE}
   ...  ${documents}=${TRUE}
   ...  ${attachments}=${TRUE}
+  ...  ${main_document}=${TRUE}
   IF  '${dossier_type}' == 'woo-decision'
     VAR  ${id}  dossier
   ELSE IF  '${dossier_type}' == 'annual-report'
@@ -103,14 +105,16 @@ Select Filter Options - Dossier
       Wait For Elements State  //input[@data-e2e-name="input_${id}.publication"]  visible
       Uncheck Checkbox  //input[@data-e2e-name="input_${id}.publication"]
     END
-    IF  not ${documents}
+    IF  not ${main_document}
       IF  '${dossier_type}' == 'woo-decision'
-        Wait For Elements State  //input[@data-e2e-name="input_${id}.document"]  visible
-        Uncheck Checkbox  //input[@data-e2e-name="input_${id}.document"]
+        Wait For Elements State  //input[@data-e2e-name="input_${id}.woo_decision_main_document"]  visible
+        Uncheck Checkbox  //input[@data-e2e-name="input_${id}.woo_decision_main_document"]
       ELSE
-        Wait For Elements State  //input[@data-e2e-name="input_${id}._main_document"]  visible
-        Uncheck Checkbox  //input[@data-e2e-name="input_${id}._main_document"]
+        Wait For Elements State  //input[@data-e2e-name="input_${id}.${id}_main_document"]  visible
+        Uncheck Checkbox  //input[@data-e2e-name="input_${id}.${id}_main_document"]
       END
+    END
+    IF  '${dossier_type}' == 'woo-decision' and not ${documents}
       Wait For Elements State  //input[@data-e2e-name="input_${id}.document"]  visible
       Uncheck Checkbox  //input[@data-e2e-name="input_${id}.document"]
     END
@@ -126,18 +130,6 @@ Select Filter Options - Dossier
   ${total_count} =  Remove String Using Regexp  ${total_count}  [()]
   ${publication_count} =  Get Text  //span[@data-e2e-name="${id}.publication_count"]
   ${publication_count} =  Remove String Using Regexp  ${publication_count}  [()]
-  #  IF  '${dossier_type}' == 'woo-decision'
-  #  ${document_count} =  Get Text  //span[@data-e2e-name="${id}.document_count"]
-  #  ELSE
-  #  ${document_count} =  Get Text  //span[@data-e2e-name="${id}.${id}_main_document_count"]
-  #  END
-  #  ${document_count} =  Remove String Using Regexp  ${document_count}  [()]
-  #  IF  '${dossier_type}' != 'complaint-judgement'
-  #  ${attachment_count} =  Get Text  //span[@data-e2e-name="${id}.attachment_count"]
-  #  ${attachment_count} =  Remove String Using Regexp  ${attachment_count}  [()]
-  #  ELSE
-  #  VAR  ${attachment_count} =  0
-  #  END
   Sleep  2s  # Wait for page update
   RETURN  ${total_count}  ${publication_count}  #  ${document_count}  ${attachment_count}
 
@@ -169,8 +161,16 @@ Select Filter Options - Document Type
     RETURN  0
   END
 
-Click First Search Result
-  Click  //*[@id="search-results-list"]/li[1]//a
+Click First Search Result With Documents
+  ${elements} =  Get Elements  css=li[data-e2e-name="search-result"]
+  FOR  ${element}  IN  @{elements}
+    ${text} =  Get Text  ${element} >> ul li[data-e2e-name="nr-of-documents"]
+    VAR  ${text} =  ${text.strip()}
+    IF  '${text}' != '0 documenten'
+      Click  ${element} >> h3 a
+      BREAK
+    END
+  END
 
 Selecting Results Sorting
   [Arguments]  ${sorting_option}
@@ -221,3 +221,8 @@ Navigate To Covid19 Theme Page
   ${hamburger_visible} =  Get Element States  //div[@data-e2e-name="hamburger"]  then  bool(value & visible)
   IF  ${hamburger_visible}  Click  //div[@data-e2e-name="hamburger"]
   Click  //a[@data-e2e-name="nav-Thema COVID-19"]
+
+Verify Document Preview
+  [Documentation]  Should contain three items and the alt text of the images should say Pagina #
+  Get Element Count  //ol[@data-e2e-name="preview-list"]/li  >=  1
+  Get Attribute  (//ol[@data-e2e-name="preview-list"]/li)[1]//img  alt  contains  Pagina 1

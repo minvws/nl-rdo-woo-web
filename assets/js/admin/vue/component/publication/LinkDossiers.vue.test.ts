@@ -13,7 +13,6 @@ describe('The "LinkDossiers" component', () => {
 
     return mount(LinkDossiers, {
       props: {
-        endpoint: 'https://mocked-endpoint.mock',
         name: 'mocked-name',
         submitErrors,
       },

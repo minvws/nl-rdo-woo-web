@@ -162,7 +162,13 @@ final class DossierFileControllerTest extends WebTestCase
 
         $dossier->setInventory($inventory);
 
-        $this->assertDownloadEndpoint($user, $dossier, $inventory, DossierFileType::INVENTORY);
+        $this->assertDownloadEndpoint(
+            $user,
+            $dossier,
+            $inventory,
+            DossierFileType::INVENTORY,
+            expectedDisposition: 'attachment',
+        );
     }
 
     public function testAdminDownloadingProductionReport(): void
@@ -179,7 +185,13 @@ final class DossierFileControllerTest extends WebTestCase
 
         $dossier->setProductionReport($productionReport);
 
-        $this->assertDownloadEndpoint($user, $dossier, $productionReport, DossierFileType::PRODUCTION_REPORT);
+        $this->assertDownloadEndpoint(
+            $user,
+            $dossier,
+            $productionReport,
+            DossierFileType::PRODUCTION_REPORT,
+            expectedDisposition: 'attachment',
+        );
     }
 
     private function assertDownloadEndpoint(
@@ -188,6 +200,7 @@ final class DossierFileControllerTest extends WebTestCase
         EntityWithFileInfo $entityWithFileInfo,
         DossierFileType $dossierFileType,
         ?string $expectedDownloadFileName = null,
+        string $expectedDisposition = 'inline',
     ): void {
         $expectedDownloadFileName ??= $entityWithFileInfo->getFileInfo()->getName();
 
@@ -214,7 +227,7 @@ final class DossierFileControllerTest extends WebTestCase
         $this->assertResponseHeaderSame('Content-Type', $entityWithFileInfo->getFileInfo()->getMimetype() ?? '');
         $this->assertResponseHeaderSame('Content-Length', (string) $entityWithFileInfo->getFileInfo()->getSize());
         $this->assertResponseHeaderSame('Last-Modified', $entityWithFileInfo->getUpdatedAt()->format('D, d M Y H:i:s') . ' GMT');
-        $this->assertResponseHeaderSame('Content-Disposition', sprintf('attachment; filename="%s"', $expectedDownloadFileName));
+        $this->assertResponseHeaderSame('Content-Disposition', sprintf('%s; filename="%s"', $expectedDisposition, $expectedDownloadFileName));
     }
 
     private function createFileForEntityOnVfs(EntityWithFileInfo $entity): void

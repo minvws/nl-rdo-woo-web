@@ -19,10 +19,8 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
         // any value except whitespace is considered as true
         $withoutDate = isset($values['without_date']) && strlen(trim($values['without_date'])) > 0;
 
-        if (! $withoutDate) {
-            $from = CastTypes::asImmutableDate($values['from'] ?? null, DateFacetInputInterface::DATE_FORMAT)?->setTime(0, 0);
-            $to = CastTypes::asImmutableDate($values['to'] ?? null, DateFacetInputInterface::DATE_FORMAT)?->setTime(0, 0);
-        }
+        $from = CastTypes::asImmutableDate($values['from'] ?? null, DateFacetInputInterface::DATE_FORMAT)?->setTime(0, 0);
+        $to = CastTypes::asImmutableDate($values['to'] ?? null, DateFacetInputInterface::DATE_FORMAT)?->setTime(0, 0);
 
         return new self(
             withoutDate: $withoutDate,
@@ -90,5 +88,15 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
             $this->from,
             $this->to,
         );
+    }
+
+    public function hasFromDate(): bool
+    {
+        return $this->from !== null;
+    }
+
+    public function hasToDate(): bool
+    {
+        return $this->to !== null;
     }
 }

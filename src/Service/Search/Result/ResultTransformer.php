@@ -222,9 +222,9 @@ class ResultTransformer
     private function getFilterDetails(SearchParameters $searchParameters): FilterDetails
     {
         /** @var StringValuesFacetInput $facetInput */
-        $facetInput = $searchParameters->facetInputs->getByFacetKey(FacetKey::DOSSIER_NR);
+        $facetInput = $searchParameters->facetInputs->getByFacetKey(FacetKey::PREFIXED_DOSSIER_NR);
 
-        $inputClass = FacetKey::DOSSIER_NR->getInputClass();
+        $inputClass = FacetKey::PREFIXED_DOSSIER_NR->getInputClass();
         Assert::isInstanceOf($facetInput, $inputClass);
 
         return new FilterDetails(

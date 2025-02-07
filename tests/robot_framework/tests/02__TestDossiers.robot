@@ -1,13 +1,16 @@
 *** Settings ***
 Documentation       Tests that create all types of dossiers with a few variations.
+...                 This is named 02 because we want to run this before we run the 03 Public suite, so we have content to search for.
+...                 This does not run a cleansheet, so you might get errors when running this for a second time.
 Resource            ../resources/Setup.resource
 Resource            ../resources/Dossier.resource
-Resource            ../resources/Document.resource
 Resource            ../resources/Covenant.resource
 Resource            ../resources/Disposition.resource
 Resource            ../resources/AnnualReport.resource
 Resource            ../resources/InvestigationReport.resource
 Resource            ../resources/ComplaintJudgement.resource
+Resource            ../resources/Organisations.resource
+Resource            ../resources/Subjects.resource
 Library             Collections
 Library             DependencyLibrary
 Suite Setup         Suite Setup
@@ -19,10 +22,6 @@ Name                TestDossiers
 
 
 *** Variables ***
-${BASE_URL}             localhost:8000
-${BASE_URL_BALIE}       localhost:8000/balie/dossiers
-${TST_BALIE_USER}       email@example.org
-${TST_BALIE_PASSWORD}   IkLoopNooitVastVandaag
 ${PRODUCTION_REPORT}    ${EMPTY}
 ${DOCUMENTS}            ${EMPTY}
 ${NUMBER_OF_DOCUMENTS}  ${EMPTY}
@@ -60,7 +59,7 @@ Klachtoordeel, Gepland                                complaint-judgement   Gepl
 
 *** Keywords ***
 Suite Setup
-  Suite Setup - CI  cleansheet=${FALSE}
+  Suite Setup - CI
   Login Admin
   Select Organisation
   Create Random Subjects

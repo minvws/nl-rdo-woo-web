@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
+use Webmozart\Assert\Assert;
 
 #[AsEntityListener(event: Events::preUpdate, method: 'preUpdate', entity: AbstractDossier::class)]
 #[AsEntityListener(event: Events::postUpdate, method: 'postUpdate', entity: AbstractDossier::class)]
@@ -38,22 +39,28 @@ final class DossierEntityUpdateListener
             );
         }
 
-        if ($dossier->getPublicationDate() !== null && $args->hasChangedField('publicationDate')) {
+        if ($this->isFieldUpdated($args, 'publicationDate')) {
+            $date = $dossier->getPublicationDate();
+            Assert::notNull($date);
+
             $this->addHistoryEntry(
                 $dossier,
                 'dossier_update_publication_date',
                 [
-                    'date' => $dossier->getPublicationDate()->format('d-m-Y'),
+                    'date' => $date->format('d-m-Y'),
                 ],
             );
         }
 
-        if ($dossier instanceof DossierTypeWithPreview && $dossier->getPreviewDate() !== null && $args->hasChangedField('previewDate')) {
+        if ($dossier instanceof DossierTypeWithPreview && $this->isFieldUpdated($args, 'previewDate')) {
+            $date = $dossier->getPreviewDate();
+            Assert::notNull($date);
+
             $this->addHistoryEntry(
                 $dossier,
                 'dossier_update_preview_date',
                 [
-                    'date' => $dossier->getPreviewDate()->format('d-m-Y'),
+                    'date' => $date->format('d-m-Y'),
                 ],
             );
         }
@@ -92,19 +99,33 @@ final class DossierEntityUpdateListener
     {
         $changes = [];
 
-        if ($args->hasChangedField('decisionDate')) {
+        if ($this->isFieldUpdated($args, 'decisionDate')) {
             $changes[] = '%history.value.decision_date%';
         }
 
-        if ($args->hasChangedField('title')) {
+        if ($this->isFieldUpdated($args, 'title')) {
             $changes[] = '%history.value.title%';
         }
 
-        if ($args->hasChangedField('summary')) {
+        if ($this->isFieldUpdated($args, 'summary')) {
             $changes[] = '%history.value.summary%';
         }
 
         return $changes;
+    }
+
+    /**
+     * This method will return false when the old value of the given field was NULL or an empty string, assuming an
+     * initial value is being set, which is not an update.
+     * Do not use this method on fields that can be reset to NULL or an empty string by the user.
+     */
+    private function isFieldUpdated(PreUpdateEventArgs $args, string $fieldName): bool
+    {
+        if (! $args->hasChangedField($fieldName)) {
+            return false;
+        }
+
+        return $args->getOldValue($fieldName) !== null && $args->getOldValue($fieldName) !== '';
     }
 
     /**

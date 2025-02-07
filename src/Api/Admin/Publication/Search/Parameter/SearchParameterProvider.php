@@ -26,7 +26,7 @@ class SearchParameterProvider implements ParameterProviderInterface
         $this
             ->getRequest($context)
             ->attributes
-            ->set('search_query', $this->getSearchQuery($parameter));
+            ->set('searchQuery', $this->getSearchQuery($parameter));
 
         return $this->getOperation($context);
     }

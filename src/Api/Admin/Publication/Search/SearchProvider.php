@@ -7,8 +7,14 @@ namespace App\Api\Admin\Publication\Search;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Api\ContextGetter;
+use App\Domain\Publication\Attachment\AbstractAttachment;
+use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Admin\DossierSearchService;
+use App\Domain\Publication\Dossier\Admin\SearchParameters;
 use App\Domain\Publication\Dossier\Type\DossierType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\MainDocument\AbstractMainDocument;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -29,46 +35,57 @@ class SearchProvider implements ProviderInterface
         unset($operation);
         unset($uriVariables);
 
-        $attributes = $this
-            ->getRequest($context)
-            ->attributes;
+        $searchParams = $this->buildSearchParameters($this->getRequest($context)->attributes);
 
-        $searchTerm = $attributes->getString('search_query');
+        $entities = $searchParams->resultType === null
+            ? $this->searchAll($searchParams)
+            : $this->searchResult($searchParams->resultType, $searchParams);
+
+        return $this->searchResultDtoFactory
+            ->makeCollection(iterator_to_array($entities, preserve_keys: false));
+    }
+
+    /**
+     * @return list<AbstractDossier|Document|AbstractMainDocument|AbstractAttachment>
+     */
+    private function searchResult(SearchResultType $resultType, SearchParameters $searchParameters): array
+    {
+        return match ($resultType) {
+            SearchResultType::DOSSIER => $this->dossierSearchService->searchDossiers($searchParameters),
+            SearchResultType::MAIN_DOCUMENT => $this->dossierSearchService->searchMainDocuments($searchParameters),
+            SearchResultType::ATTACHMENT => $this->dossierSearchService->searchAttachments($searchParameters),
+            SearchResultType::DOCUMENT => $this->dossierSearchService->searchDocuments($searchParameters),
+        };
+    }
+
+    /**
+     * @return \Generator<int,AbstractDossier|Document|AbstractMainDocument|AbstractAttachment>
+     */
+    private function searchAll(SearchParameters $searchParameters): \Generator
+    {
+        foreach (SearchResultType::cases() as $searchResultType) {
+            yield from $this->searchResult($searchResultType, $searchParameters);
+        }
+    }
+
+    private function buildSearchParameters(ParameterBag $attributes): SearchParameters
+    {
+        $searchTerm = $attributes->getString('searchQuery');
 
         /** @var ?DossierType $dossierType */
-        $dossierType = $attributes->get('type_query');
+        $dossierType = $attributes->get('publicationTypeQuery');
 
         /** @var ?Uuid $dossierId */
-        $dossierId = $attributes->get('dossier_id_query');
+        $dossierId = $attributes->get('dossierIdQuery');
 
-        $entities = [
-            ...$this->dossierSearchService->searchDossiers(
-                $searchTerm,
-                dossierId: $dossierId,
-                dossierType: $dossierType,
-            ),
-            ...$this->dossierSearchService->searchMainDocuments(
-                $searchTerm,
-                dossierId: $dossierId,
-                dossierType: $dossierType
-            ),
-            ...$this->dossierSearchService->searchAttachments(
-                $searchTerm,
-                dossierId: $dossierId,
-                dossierType: $dossierType
-            ),
-        ];
+        /** @var ?SearchResultType $resultType */
+        $resultType = $attributes->get('resultTypeQuery');
 
-        if ($dossierType === null || $dossierType->isWooDecision()) {
-            $entities = [
-                ...$entities,
-                ...$this->dossierSearchService->searchDocuments(
-                    $searchTerm,
-                    dossierId: $dossierId,
-                ),
-            ];
-        }
-
-        return $this->searchResultDtoFactory->makeCollection($entities);
+        return new SearchParameters(
+            searchTerm: $searchTerm,
+            dossierType: $dossierType,
+            dossierId: $dossierId,
+            resultType: $resultType,
+        );
     }
 }

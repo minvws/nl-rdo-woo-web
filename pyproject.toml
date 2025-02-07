@@ -8,7 +8,8 @@ configure = [
   "sleep-keyword-used:enabled:True",
   "sleep-keyword-used:severity:I",              # TODO: Change to (W)arning
   "too-long-test-case:enabled:False",           # TODO: Enable again
-  "too-many-calls-in-test-case:enabled:False"   # TODO: Enable again
+  "too-many-calls-in-test-case:enabled:False",  # TODO: Enable again
+  "first-argument-in-new-line:enabled:False"
 ]
 
 [tool.robotidy]

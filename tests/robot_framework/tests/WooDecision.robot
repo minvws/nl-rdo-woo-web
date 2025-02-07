@@ -1,7 +1,7 @@
 *** Settings ***
 Resource            ../resources/Setup.resource
 Resource            ../resources/Dossier.resource
-Resource            ../resources/Document.resource
+Resource            ../resources/Organisations.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
@@ -23,7 +23,7 @@ Upload a production report with N public files and a zip with N-1 files
   Fill Out Decision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
-  Upload Document Zip  tests/robot_framework/files/woodecision/documenten - 10-1.zip
+  Upload Document  tests/robot_framework/files/woodecision/documenten - 10-1.zip
   Verify Document Upload Remaining  Nog te uploaden: 1 van 10 documenten.
 
 Upload a production report with N public files and a zip with N+1 files
@@ -32,7 +32,7 @@ Upload a production report with N public files and a zip with N+1 files
   Fill Out Decision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
-  Upload Document Zip  tests/robot_framework/files/woodecision/documenten - 10+1.zip
+  Upload Document  tests/robot_framework/files/woodecision/documenten - 10+1.zip
   Verify Document Upload Completed
   Click Continue To Publish
   Publish Dossier And Return To Admin Home
@@ -44,7 +44,7 @@ Upload a production report with N public files and a zip with N other files
   Fill Out Decision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
-  Upload Document Zip  tests/robot_framework/files/woodecision/documenten - 10 andere.zip
+  Upload Document  tests/robot_framework/files/woodecision/documenten - 10 andere.zip
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
 
 Upload a production report with N public files, M non-public files, and a zip with N + M files
@@ -53,7 +53,7 @@ Upload a production report with N public files, M non-public files, and a zip wi
   Fill Out Decision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 8 van 8 documenten.
-  Upload Document Zip  tests/robot_framework/files/woodecision/documenten - 10.zip
+  Upload Document  tests/robot_framework/files/woodecision/documenten - 10.zip
   Verify Document Upload Completed
   Click Continue To Publish
   Publish Dossier And Return To Admin Home
@@ -115,7 +115,7 @@ In a public dossier with N public and M non-public documents, replace the produc
   Verify Document History  Beoordeling aangepast naar niet openbaar
   Verify Document Details
   ...  download_type=niet van toepassing
-  ...  publication_status=Gepubliceerd
+  ...  publication_status=Openbaar
   Click Public URL
   Verify Notification  besloten dit document niet openbaar te maken.
 
@@ -159,8 +159,7 @@ In a public dossier with N public files, replace the production report with one 
   Click Public URL
   Verify Notification
   ...  Er loopt nog een procedure over dit document met een betrokkene. We kunnen dit document daarom nog niet tonen.
-  Verify Document History
-  ...  Opgeschort  # does not work yet?! See https://github.com/minvws/nl-rdo-woo-web-private/issues/2682
+  Verify Document History  Opgeschort
   Go To Admin  # So the teardown works..
 
 In a public dossier with N public files, retract all documents via the Danger Zone
@@ -181,7 +180,7 @@ Create a publication that becomes public in the future
   Fill Out Decision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
-  Upload Document Zip  tests/robot_framework/files/woodecision/documenten - 10.zip
+  Upload Document  tests/robot_framework/files/woodecision/documenten - 10.zip
   Verify Document Upload Completed
   Click Continue To Publish
   ${timestamp} =  Get Current Date
@@ -223,7 +222,8 @@ Retract a document that has already been published
 
 *** Keywords ***
 Suite Setup
-  Suite Setup - CI  keep_prefixes=${FALSE}
+  Cleansheet  keep_prefixes=${False}
+  Suite Setup - CI
   Login Admin
   Create Additional Prefixes
   Select Organisation

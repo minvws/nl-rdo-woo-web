@@ -8,14 +8,14 @@
 
     {% if inventoryStatus.isComparing %}
         <div class="text-lg">
-            <h2 class="font-bold pb-2">Bezig met het verwerken van het productierapport</h2>
+            <h2 class="font-bold pb-2">Bezig met het inladen van het productierapport</h2>
             <p class="bhr-text-muted">Dit duurt meestal maximaal een paar minuten. Als je wilt kan je deze pagina verlaten en later terugkomen.</p>
         </div>
     {% endif %}
 
     {% if inventoryStatus.isUpdating %}
         <div class="text-lg">
-            <h2 class="font-bold pb-2">Bezig met het toepassen van wijzigingen in het productierapport</h2>
+            <h2 class="font-bold pb-2">Bezig met het toepassen van het productierapport</h2>
             <p class="bhr-text-muted">Dit duurt meestal maximaal een paar minuten. Als je wilt kan je deze pagina verlaten en later terugkomen.</p>
         </div>
     {% endif %}
@@ -63,12 +63,15 @@
     {% if dossier.status.isConcept or app.request.get('replace') is not null %}
         {% if not inventoryStatus.needsUpload and app.request.get('replace') is null %}
             <twig:Admin:UploadedFile
-                replaceUrl="?replace"
                 downloadUrl="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
                 fileName="{{ dossier.productionReport.fileInfo.name }}"
                 fileSize="{{ dossier.productionReport.fileInfo.size }}"
                 mimeType="{{ dossier.productionReport.fileInfo.mimetype }}"
-            />
+            >
+                <a class="text-bhr-sea-blue content-center underline hover-focus:no-underline px-4" href="?replace">
+                    {{ 'admin.dossiers.replace_report' | trans }}
+                </a>
+            </twig:Admin:UploadedFile>
         {% endif %}
         {% if inventoryStatus.needsUpload or app.request.get('replace') is not null %}
             {{ form(inventoryForm) }}

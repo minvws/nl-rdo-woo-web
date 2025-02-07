@@ -26,6 +26,7 @@ use App\Enum\Department as DepartmentEnum;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\MockInterface;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Uid\Uuid;
 
 final class WooDecisionViewFactoryTest extends UnitTestCase
@@ -34,6 +35,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
     private DepartmentViewFactory&MockInterface $departmentViewFactory;
     private MainDocumentViewFactory&MockInterface $mainDocumentViewFactory;
     private CommonDossierPropertiesViewFactory&MockInterface $commonDossierPropertiesViewFactory;
+    private RouterInterface&MockInterface $router;
     private WooDecisionViewFactory $factory;
 
     protected function setUp(): void
@@ -46,12 +48,14 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->departmentViewFactory = \Mockery::mock(DepartmentViewFactory::class);
         $this->mainDocumentViewFactory = \Mockery::mock(MainDocumentViewFactory::class);
         $this->commonDossierPropertiesViewFactory = \Mockery::mock(CommonDossierPropertiesViewFactory::class);
+        $this->router = \Mockery::mock(RouterInterface::class);
 
         $this->factory = new WooDecisionViewFactory(
             $this->dossierRepository,
             $this->departmentViewFactory,
             $this->commonDossierPropertiesViewFactory,
             $this->mainDocumentViewFactory,
+            $this->router,
         );
     }
 
@@ -104,6 +108,11 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 subject: $expectedSubject = \Mockery::mock(SubjectViewModel::class),
             ));
 
+        $this->router
+            ->expects('generate')
+            ->with('app_search', ['dnr' => ['my document prefix|my dossier nr']])
+            ->andReturn($expectedDocumentSearchUrl = '/foo/var');
+
         $result = $this->factory->make($dossier);
 
         $this->assertInstanceOf(DossierCounts::class, $result->counts);
@@ -127,6 +136,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->assertTrue($result->hasSubject());
         $this->assertSame($expectedSummary, $result->getSummary());
         $this->assertSame($expectedType, $result->getType());
+        $this->assertEquals($expectedDocumentSearchUrl, $result->documentSearchUrl);
     }
 
     public function testMakeWithWooDecisionInPreviewWithNonVwsDepartment(): void
@@ -171,6 +181,11 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
             ->with($dossier, $mainDocument)
             ->andReturn($expectedMainDocumentView = \Mockery::mock(MainDocument::class));
 
+        $this->router
+            ->expects('generate')
+            ->with('app_search', ['dnr' => ['my document prefix|my dossier nr']])
+            ->andReturn($expectedDocumentSearchUrl = '/foo/var');
+
         $result = $this->factory->make($dossier);
 
         $this->assertInstanceOf(DossierCounts::class, $result->counts);
@@ -195,6 +210,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->assertTrue($result->hasSubject());
         $this->assertSame($expectedSummary, $result->getSummary());
         $this->assertSame($expectedType, $result->getType());
+        $this->assertEquals($expectedDocumentSearchUrl, $result->documentSearchUrl);
     }
 
     /**

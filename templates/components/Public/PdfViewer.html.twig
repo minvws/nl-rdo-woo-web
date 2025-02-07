@@ -9,7 +9,7 @@
 
     <div class="min-h-[333px]">
         <section class="block woo-carousel" aria-label="{{ 'public.documents.viewer.document_preview' | trans }}">
-            <ol class="woo-carousel__list">
+            <ol class="woo-carousel__list" data-e2e-name="preview-list">
                 {% for page in file.pages %}
                     <li>
                         {% if page.hasThumbnail %}

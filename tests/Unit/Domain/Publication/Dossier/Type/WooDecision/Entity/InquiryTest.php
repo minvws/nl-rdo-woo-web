@@ -24,9 +24,11 @@ final class InquiryTest extends TestCase
 
     public function testAddAndRemoveDossier(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
-
         $inquiry = new Inquiry();
+
+        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision->expects('removeInquiry')->with($inquiry);
+
         $inquiry->addDossier($wooDecision);
 
         self::assertEquals(

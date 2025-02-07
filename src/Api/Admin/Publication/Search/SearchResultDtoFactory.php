@@ -49,7 +49,8 @@ readonly class SearchResultDtoFactory
     private function fromAbstractDossierEntity(AbstractDossier $entity): SearchResultDto
     {
         return new SearchResultDto(
-            id: $entity->getDossierNr(),
+            id: $entity->getId()->__toString(),
+            number: $entity->getDossierNr(),
             type: SearchResultType::DOSSIER,
             title: $entity->getTitle() ?? '',
             link: $this->urlGenerator->generate(
@@ -65,7 +66,8 @@ readonly class SearchResultDtoFactory
         $firstDossier = $entity->getDossiers()->first();
 
         return new SearchResultDto(
-            id: $entity->getDocumentNr(),
+            id: $entity->getId()->__toString(),
+            number: $entity->getDocumentNr(),
             type: SearchResultType::DOCUMENT,
             title: $entity->getFileInfo()->getName() ?? '',
             link: $this->urlGenerator->generate(

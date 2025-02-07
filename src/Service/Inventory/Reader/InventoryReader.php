@@ -80,7 +80,7 @@ class InventoryReader implements InventoryReaderInterface
         }
 
         $matter = $this->reader->getString($rowIdx, MetadataField::MATTER->value);
-        if (empty($matter)) {
+        if (mb_strlen($matter) < 2) {
             throw InventoryReaderException::forMissingMatterInRow($rowIdx);
         }
 

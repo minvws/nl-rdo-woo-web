@@ -6,8 +6,9 @@ describe('The "PublicationSearchAndGo" component', () => {
   const createComponent = () => {
     return mount(PublicationSearchAndGo, {
       props: {
-        endpoint: 'https://mocked-endpoint.mock',
+        dossierId: 'mocked_dossier_id',
         label: 'Mocked label',
+        resultType: 'mocked_result_type',
       },
     });
   };
@@ -52,13 +53,11 @@ describe('The "PublicationSearchAndGo" component', () => {
   });
 
   test('should display an input field which retrieves search results', () => {
-    const component = createComponent();
-    const inputComponent = getInputComponent(component);
-
-    expect(inputComponent.props('ariaHaspopup')).toBe('dialog');
-    expect(inputComponent.props('endpoint')).toBe(
-      'https://mocked-endpoint.mock',
-    );
+    expect(getInputComponent(createComponent()).props()).toMatchObject({
+      ariaHaspopup: 'dialog',
+      dossierId: 'mocked_dossier_id',
+      resultType: 'mocked_result_type',
+    });
   });
 
   test('should display the search results', async () => {

@@ -286,6 +286,11 @@ class ProductionReportProcessRun implements EntityWithFileInfo
         return count($this->genericErrors) > 0 || count($this->rowErrors) > 0;
     }
 
+    public function hasNoErrors(): bool
+    {
+        return ! $this->hasErrors();
+    }
+
     public function getTmpFilename(): ?string
     {
         return $this->tmpFilename;

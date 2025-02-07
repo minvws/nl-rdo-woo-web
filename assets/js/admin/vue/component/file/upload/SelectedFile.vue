@@ -1,9 +1,10 @@
 <script setup>
+import { uploadFile } from '@js/admin/utils';
+import { computed, inject, nextTick, onBeforeUnmount, ref } from 'vue';
 import Collapsible from '../../Collapsible.vue';
 import Icon from '../../Icon.vue';
 import MimeTypeIcon from '../MimeTypeIcon.vue';
-import { computed, inject, nextTick, onBeforeUnmount, ref } from 'vue';
-import { uploadFile } from '@js/admin/utils';
+import { UPLOAD_AREA_ENDPOINT } from './static';
 
 const emit = defineEmits(['delete', 'uploaded', 'uploading', 'uploadError']);
 const props = defineProps({
@@ -20,10 +21,14 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  payload: {
+    type: Object,
+  },
 });
 
+const endpoint = inject(UPLOAD_AREA_ENDPOINT);
+
 const deleteButtonElement = ref(null);
-const groupId = inject('groupId');
 const isDeleteButtonVisible = ref(true);
 const isCollapsed = ref(false);
 const isSpinnerVisible = ref(false);
@@ -54,8 +59,9 @@ const triggerFileUpload = async () => {
   emit('uploading', props.fileId, props.file);
 
   cleanupUpload = uploadFile({
+    endpoint,
     file: props.file,
-    groupId,
+    payload: props.payload,
     onProgress: async (fileProgress) => {
       progress.value = fileProgress;
 
@@ -151,7 +157,7 @@ onBeforeUnmount(() => {
               ref="deleteButtonElement"
               type="button"
             >
-              <Icon color="fill-current" name="trash-bin" size="16" />
+              <Icon color="fill-current" name="trash-bin" :size="16" />
               <span class="sr-only">Verwijder {{ file.name }}</span>
             </button>
 

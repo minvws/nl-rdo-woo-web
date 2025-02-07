@@ -7,7 +7,10 @@ namespace App\Domain\Publication\Dossier\Type\WooDecision\Repository;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\DocumentFileSet;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileSetStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUpdateStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUploadStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -33,12 +36,56 @@ class DocumentFileSetRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('d')
             ->where('d.dossier = :dossier')
-            ->andWhere('d.status != :status')
+            ->andWhere('d.status NOT IN (:statuses)')
             ->setParameter('dossier', $dossier)
-            ->setParameter('status', DocumentFileSetStatus::COMPLETED)
+            ->setParameter('statuses', DocumentFileSetStatus::getFinalStatusValues())
         ;
 
         /** @var ?DocumentFileSet */
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function updateStatusTransactionally(DocumentFileSet $documentFileSet, DocumentFileSetStatus $status): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $entityManager->getConnection()->beginTransaction();
+        try {
+            $entityManager->lock($documentFileSet, LockMode::PESSIMISTIC_WRITE);
+
+            $documentFileSet->setStatus($status);
+            $this->save($documentFileSet, true);
+
+            $entityManager->commit();
+        } catch (\Exception $e) {
+            $entityManager->getConnection()->rollBack();
+            throw $e;
+        }
+    }
+
+    public function countUploadsToProcess(DocumentFileSet $documentFileSet): int
+    {
+        return intval($this->createQueryBuilder('d')
+            ->select('count(u.id)')
+            ->join('d.uploads', 'u')
+            ->where('d = :documentFileSet')
+            ->andWhere('u.status NOT IN(:statuses)')
+            ->setParameter('documentFileSet', $documentFileSet)
+            ->setParameter('statuses', DocumentFileUploadStatus::finalStatuses())
+            ->getQuery()
+            ->getSingleScalarResult());
+    }
+
+    public function countUpdatesToProcess(DocumentFileSet $documentFileSet): int
+    {
+        return intval($this->createQueryBuilder('d')
+            ->select('count(u.id)')
+            ->join('d.updates', 'u')
+            ->where('d = :documentFileSet')
+            ->andWhere('u.status != :status')
+            ->setParameter('documentFileSet', $documentFileSet)
+            ->setParameter('status', DocumentFileUpdateStatus::COMPLETED)
+            ->getQuery()
+            ->getSingleScalarResult());
     }
 }

@@ -70,6 +70,7 @@ readonly class DossierFileViewFactory
                 'type' => $type->value,
                 'id' => $entity->getId(),
                 'pageNr' => $pageNr,
+                'hash' => $entity->getFileInfo()->getHash(),
             ]);
             $viewUrl = $downloadUrl . '#page=' . $pageNr;
         } else {

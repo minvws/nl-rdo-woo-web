@@ -4,7 +4,7 @@
 {% set resultType = entry.dossier.publicationReason | trans %}
 
 {% block resultTypeSpecs %}
-    <li class="woo-search-result__spec">
+    <li class="woo-search-result__spec" data-e2e-name="nr-of-documents">
         {{ "global.number_of_documents" | trans({ 'count': entry.dossier.documentCount})}}</span>
     </li>
     <li class="woo-search-result__spec">

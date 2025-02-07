@@ -3,6 +3,7 @@ Documentation       Tests that focus on using the inquiry system
 Resource            ../resources/Setup.resource
 Resource            ../resources/WooDecision.resource
 Resource            ../resources/Inquiry.resource
+Resource            ../resources/Organisations.resource
 Library             Collections
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
@@ -39,6 +40,16 @@ Preview inquiry access
   # Verify the document page can't be accessed normally
   Go To  ${document_url}
   Verify Symfony Error  not found
+
+Verify PDF preview
+  [Documentation]  Depends on the previous test, since it needs a fully ingested dossier.
+  Click Inquiries
+  Open Inquiry  2021-01
+  Click First Document In Inquiry
+  Verify Document Preview
+  ${url} =  Get Attribute  (//ol[@data-e2e-name="preview-list"]/li)[1]//a  href
+  Generic Download URL  ${url}
+  Generic Download Click  //a[@data-e2e-name="download-file-link"]
 
 Verify download of full inquiry
   [Documentation]  Create a test dossier for an inquiry and then donwload the full inquiry
@@ -181,6 +192,7 @@ Inquiry with multiple dossiers
 
 *** Keywords ***
 Suite Setup
+  Cleansheet
   Suite Setup - CI
   Login Admin
   Select Organisation

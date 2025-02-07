@@ -1,3 +1,4 @@
+activeFacets: false
 queryParameters:
     q: foo
     sort: publication_date

@@ -8,8 +8,9 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\QueryParameter;
 use ApiPlatform\OpenApi\Model\Operation;
 use App\Api\Admin\Publication\Search\Parameter\DossierIdParameterProvider;
+use App\Api\Admin\Publication\Search\Parameter\PublicationTypeFilterParameterProvider;
+use App\Api\Admin\Publication\Search\Parameter\ResultTypeFilterParameterProvider;
 use App\Api\Admin\Publication\Search\Parameter\SearchParameterProvider;
-use App\Api\Admin\Publication\Search\Parameter\TypeFilterParameterProvider;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,10 +31,16 @@ use Symfony\Component\Validator\Constraints as Assert;
                 new Assert\Uuid(),
             ],
         ),
-        'filter[type]' => new QueryParameter(
-            provider: TypeFilterParameterProvider::class,
+        'filter[publicationType]' => new QueryParameter(
+            provider: PublicationTypeFilterParameterProvider::class,
             constraints: [
                 new Assert\Choice(callback: [DossierType::class, 'getAllValues']),
+            ],
+        ),
+        'filter[resultType]' => new QueryParameter(
+            provider: ResultTypeFilterParameterProvider::class,
+            constraints: [
+                new Assert\Choice(callback: [SearchResultType::class, 'getAllValues']),
             ],
         ),
     ],
@@ -44,14 +51,18 @@ use Symfony\Component\Validator\Constraints as Assert;
         tags: ['PublicationSearch']
     ),
     provider: SearchProvider::class,
+    normalizationContext: [
+        'skip_null_values' => false,
+    ],
 )]
 final readonly class SearchResultDto
 {
     public function __construct(
-        public ?string $id,
+        public string $id,
         public SearchResultType $type,
         public string $title,
         public string $link,
+        public ?string $number = null,
     ) {
     }
 }

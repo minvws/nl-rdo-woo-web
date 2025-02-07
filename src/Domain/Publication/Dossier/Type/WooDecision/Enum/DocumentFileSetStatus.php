@@ -13,4 +13,37 @@ enum DocumentFileSetStatus: string
     case REJECTED = 'rejected';
     case PROCESSING_UPDATES = 'processing_updates';
     case COMPLETED = 'completed';
+
+    /**
+     * @codeCoverageIgnore
+     *
+     * @return list<string>
+     */
+    public static function getFinalStatusValues(): array
+    {
+        return [
+            self::COMPLETED->value,
+            self::REJECTED->value,
+        ];
+    }
+
+    public function isOpenForUploads(): bool
+    {
+        return $this === self::OPEN_FOR_UPLOADS;
+    }
+
+    public function isProcessingUploads(): bool
+    {
+        return $this === self::PROCESSING_UPLOADS;
+    }
+
+    public function needsConfirmation(): bool
+    {
+        return $this === self::NEEDS_CONFIRMATION;
+    }
+
+    public function isConfirmed(): bool
+    {
+        return $this === self::CONFIRMED;
+    }
 }

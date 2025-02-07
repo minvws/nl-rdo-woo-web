@@ -93,6 +93,7 @@ final class WooDecisionTest extends UnitTestCase
             dateFrom: new \DateTimeImmutable(),
             dateTo: new \DateTimeImmutable(),
             publicationReason: PublicationReason::WOO_REQUEST,
+            documentSearchUrl: '/foo/bar',
         );
     }
 }

@@ -31,12 +31,13 @@ readonly class DownloadResponseHelper
         }
 
         $filename = $this->filenameGenerator->getFileName($entity);
+        $contentDisposition = $entity->getFileInfo()->getType() === 'pdf' ? 'inline' : 'attachment';
 
         $response = new StreamedResponse();
         $response->headers->set('Content-Type', $entity->getFileInfo()->getMimetype());
         $response->headers->set('Content-Length', (string) $entity->getFileInfo()->getSize());
         $response->headers->set('Last-Modified', $entity->getUpdatedAt()->format('D, d M Y H:i:s') . ' GMT');
-        $response->headers->set('Content-Disposition', sprintf('attachment; filename="%s"', $filename));
+        $response->headers->set('Content-Disposition', sprintf('%s; filename="%s"', $contentDisposition, $filename));
 
         $response->setCallback(function () use ($stream) {
             fpassthru($stream);

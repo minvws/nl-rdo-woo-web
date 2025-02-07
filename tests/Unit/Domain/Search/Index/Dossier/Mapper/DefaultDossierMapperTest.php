@@ -58,6 +58,7 @@ class DefaultDossierMapperTest extends UnitTestCase
         $subject->expects('getName')->andReturn($subjectName = 'dummy subject');
 
         $dossier = \Mockery::mock(Covenant::class);
+        $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
         $dossier->shouldReceive('getDossierNr')->andReturn('dos-123');
         $dossier->shouldReceive('getTitle')->andReturn('test-title');
@@ -77,10 +78,12 @@ class DefaultDossierMapperTest extends UnitTestCase
 
         self::assertEquals(
             [
+                'id' => $dossierId,
                 'type' => ElasticDocumentType::COVENANT,
                 'toplevel_type' => ElasticDocumentType::COVENANT,
                 'sublevel_type' => null,
                 'dossier_nr' => 'dos-123',
+                'prefixed_dossier_nr' => 'foo|dos-123',
                 'title' => 'test-title',
                 'status' => DossierStatus::PUBLISHED,
                 'summary' => 'test-summary',
@@ -127,6 +130,7 @@ class DefaultDossierMapperTest extends UnitTestCase
         $departmentB->expects('getId')->andReturn($departmentBid);
 
         $dossier = \Mockery::mock(Covenant::class);
+        $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
         $dossier->shouldReceive('getDossierNr')->andReturn('dos-123');
         $dossier->shouldReceive('getTitle')->andReturn('test-title');
@@ -146,10 +150,12 @@ class DefaultDossierMapperTest extends UnitTestCase
 
         self::assertEquals(
             [
+                'id' => $dossierId,
                 'type' => ElasticDocumentType::COVENANT,
                 'toplevel_type' => ElasticDocumentType::COVENANT,
                 'sublevel_type' => null,
                 'dossier_nr' => 'dos-123',
+                'prefixed_dossier_nr' => 'foo|dos-123',
                 'title' => 'test-title',
                 'status' => DossierStatus::PUBLISHED,
                 'summary' => 'test-summary',

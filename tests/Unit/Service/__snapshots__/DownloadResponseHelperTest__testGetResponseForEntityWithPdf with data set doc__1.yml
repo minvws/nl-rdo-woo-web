@@ -1,0 +1,10 @@
+cache-control:
+    - 'private, must-revalidate'
+content-type:
+    - application/msword
+content-length:
+    - '456'
+last-modified:
+    - 'Wed, 27 Nov 2024 11:56:18 GMT GMT'
+content-disposition:
+    - 'attachment; filename="123.doc"'

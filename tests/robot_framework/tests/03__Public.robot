@@ -13,7 +13,6 @@ Test Tags           ci  public  public-init
 
 *** Variables ***
 ${BASE_URL}     localhost:8000
-${DEVICE}       Desktop Chrome
 
 
 *** Test Cases ***
@@ -59,11 +58,11 @@ Filter Options For Document Types
   Compare Search Result Summary  ${result_count}  IGNORE
 
 Searching in dossier should only search in dossier
-  Select Filter Options - Dossier  woo-decision  documents=${False}  attachments=${False}
-  Click First Search Result
+  Select Filter Options - Dossier  woo-decision  documents=${False}  attachments=${False}  main_document=${FALSE}
+  Click First Search Result With Documents
   ${number_of_documents} =  Get Text  //*[@data-e2e-name="dossier-document-count"]
   ${number_of_documents} =  Remove String Using Regexp  ${number_of_documents}  \\D
-  ${number_of_attachments} =  Get Element Count  //*[@data-e2e-name="dossier-attachments-row"]//li
+  ${number_of_attachments} =  Get Element Count  //tr[@data-e2e-name="dossier-attachments-row"]
   VAR  ${decision_document}  1
   ${docs_in_dossier} =  Evaluate
   ...  ${number_of_documents} + ${number_of_attachments} + ${decision_document}
@@ -94,7 +93,7 @@ Filter on dates
 
 *** Keywords ***
 Suite Setup
-  Suite Setup - CI  cleansheet=${FALSE}  device=${DEVICE}
+  Suite Setup - CI
 
 Test Setup
   Go To Public

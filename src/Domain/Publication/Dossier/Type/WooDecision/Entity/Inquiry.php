@@ -36,7 +36,7 @@ class Inquiry implements EntityWithBatchDownload
     /** @var Collection<array-key,WooDecision> */
     #[ORM\ManyToMany(targetEntity: WooDecision::class, inversedBy: 'inquiries', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'inquiry_dossier')]
-    #[ORM\JoinColumn(name: 'inquiry_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'inquiry_id', referencedColumnName: 'id', onDelete: 'cascade')]
     #[ORM\OrderBy(['decisionDate' => 'DESC'])]
     private Collection $dossiers;
 
@@ -125,6 +125,7 @@ class Inquiry implements EntityWithBatchDownload
     public function removeDossier(WooDecision $dossier): self
     {
         $this->dossiers->removeElement($dossier);
+        $dossier->removeInquiry($this);
 
         return $this;
     }

@@ -28,7 +28,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['uploaded', 'uploadError', 'uploading']);
+const emit = defineEmits(['uploaded', 'uploadError']);
 const helpText = props.displayMaxOneFileMessage
   ? 'Je kunt maximaal 1 bestand uploaden'
   : undefined;
@@ -38,12 +38,11 @@ const helpText = props.displayMaxOneFileMessage
   <InputFile
     @uploaded="(file) => emit('uploaded', file)"
     @uploadError="() => emit('uploadError')"
-    @uploading="() => emit('uploading')"
     :allowed-file-types="props.allowedFileTypes"
     :allowed-mime-types="props.allowedMimeTypes"
     :enable-auto-upload="true"
     :help-text="helpText"
-    :group-id="props.groupId"
+    :payload="{ groupId: props.groupId }"
     :uploaded-file-info="props.fileInfo"
     :validators="[validators.required()]"
     label="Bestand"

@@ -11,7 +11,7 @@ Library             Browser
 *** Keywords ***
 Generic Download Click
   [Documentation]  Downloads a file by clicking on the selector, after which the download is verified if it's not 0 bytes.
-  [Arguments]  ${selector}
+  [Arguments]  ${selector}  ${expected_extension}=${EMPTY}
   ${download_promise} =  Promise To Wait For Download
   Click  ${selector}
   ${file_object} =  Wait For  ${download_promise}
@@ -19,6 +19,15 @@ Generic Download Click
   ${filesize} =  Get File Size  ${file_object}[saveAs]
   Log  File size of ${file_object.suggestedFilename}: ${filesize} bytes
   Should Be True  ${filesize} > 0  File size of ${file_object.suggestedFilename} should be greater than 0 bytes
+  IF  '${expected_extension}' != ''
+    ${expected_extension} =  Convert To Lower Case  ${expected_extension}
+    ${extension} =  Split Extension  ${file_object}[suggestedFilename]
+    Should Be Equal
+    ...  ${extension}[1]
+    ...  ${expected_extension}
+    ...  ignore_case=${TRUE}
+    ...  msg=Filename '${file_object}[suggestedFilename]' should contain the extension '.${expected_extension}'
+  END
 
 Generic Download URL
   [Documentation]  Downloads a file through url, after which the download is verified if it's not 0 bytes.
@@ -31,7 +40,13 @@ Generic Download URL
 
 Verify Page Error
   [Arguments]  ${error_code}
-  Get Text  //h2[@class="exception-http"]  contains  404
+  Get Text  //h2[@class="exception-http"]  contains  ${error_code}
+
+Abbreviate To First Letters
+  [Documentation]  Example: an input of 'Programmadirectie Openbaarheid' would result in 'PO'
+  [Arguments]  ${string}
+  ${abbreviated} =  Evaluate  ' '.join([word[0] for word in '${string}'.split()]).replace(" ", "")
+  RETURN  ${abbreviated}
 
 Convert Dutch To English Date
   [Documentation]  Converts a date string like '1 oktober 2024' to '1-10-2024'
@@ -52,11 +67,6 @@ Convert Dutch To English Date
   ${dutch_timestamp} =  Replace String  ${dutch_timestamp}  december  December
   ${datetime_string} =  Convert Date  date=${dutch_timestamp}  date_format=%d %B %Y  result_format=%d-%m-%Y
   RETURN  ${datetime_string}
-
-Input Date Using JavaScript
-  [Documentation]  Has/is used in 'Select Filter Options - Date' to circumvent UI flickering
-  [Arguments]  ${id}  ${value}
-  Evaluate JavaScript  id=${id}  document.getElementById('${id}').value = '${value}'
 
 Click With Reload Retry
   [Arguments]  ${selector}  ${sleep}=5s

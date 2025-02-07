@@ -2,16 +2,27 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import PublicationSearchInput from './PublicationSearchInput.vue';
 
+vi.mock('@js/admin/utils');
+vi.mock('@utils');
+
 describe('The "PublicationSearchInput" component', () => {
-  const createComponent = () =>
+  interface Options {
+    dossierId: string;
+    publicationType: string;
+    resultType: string;
+  }
+
+  const createComponent = (options: Partial<Options> = {}) =>
     mount(PublicationSearchInput, {
       props: {
         ariaAutocomplete: 'list',
         ariaHaspopup: 'dialog',
-        endpoint: 'https://mocked-endpoint.mock',
+        dossierId: options.dossierId,
         id: 'mocked-id',
         isExpanded: false,
         placeholder: 'Mocked placeholder',
+        publicationType: options.publicationType,
+        resultType: options.resultType,
       },
       shallow: true,
     });
@@ -32,8 +43,20 @@ describe('The "PublicationSearchInput" component', () => {
     setInputValue(component, 'abcd');
 
   const mockedRetrievedResults = [
-    { id: 'abc', name: 'mocked-abc' },
-    { id: 'def', name: 'mocked-def' },
+    {
+      id: 'mocked-id-abc',
+      link: 'mocked-link-abc',
+      number: null,
+      title: 'mocked-title-abc',
+      type: 'attachment',
+    },
+    {
+      id: 'mocked-id-def',
+      link: 'mocked-link-def',
+      number: null,
+      title: 'mocked-title-def',
+      type: 'document',
+    },
   ];
 
   beforeEach(() => {
@@ -100,7 +123,7 @@ describe('The "PublicationSearchInput" component', () => {
       await setInputValue(component, 'abcdefgh');
       expect(global.fetch).toHaveBeenNthCalledWith(
         1,
-        'https://mocked-endpoint.mock?q=abcdefgh',
+        'https://mocked-origin.com/balie/api/publication/search?q=abcdefgh',
       );
     });
 
@@ -123,6 +146,29 @@ describe('The "PublicationSearchInput" component', () => {
 
       await setValidInputValue(component);
       expect(component.emitted('showResults')).toBeTruthy();
+    });
+  });
+
+  describe('the endpoint', () => {
+    test('should be created with the correct parameters', async () => {
+      const component = createComponent({ dossierId: 'mocked-dossier-id' });
+
+      await setInputValue(component, 'abc');
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://mocked-origin.com/balie/api/publication/search?q=abc&dossierId=mocked-dossier-id',
+      );
+
+      await component.setProps({
+        publicationType: 'mocked-publication-type',
+        resultType: 'mocked-result-type',
+      });
+      await setInputValue(component, 'abcd');
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        encodeURI(
+          'https://mocked-origin.com/balie/api/publication/search?q=abcd&dossierId=mocked-dossier-id&filter[publicationType]=mocked-publication-type&filter[resultType]=mocked-result-type',
+        ),
+      );
     });
   });
 

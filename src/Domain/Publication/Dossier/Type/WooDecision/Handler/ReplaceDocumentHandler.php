@@ -73,7 +73,7 @@ readonly class ReplaceDocumentHandler
                 return;
             }
 
-            $this->documentFileProcessor->process($localFile, $dossier, $document);
+            $this->documentFileProcessor->process($localFile, $dossier, $document, 'pdf');
             unlink($localFile->getPathname());
 
             $this->handleIngest($document);
@@ -94,7 +94,7 @@ readonly class ReplaceDocumentHandler
 
         $localFile = new UploadedFile($localFilePath, $message->getOriginalFilename());
         try {
-            $this->documentFileProcessor->process($localFile, $dossier, $document);
+            $this->documentFileProcessor->process($localFile, $dossier, $document, 'pdf');
             $this->handleIngest($document);
         } catch (\Throwable $e) {
             throw $e;

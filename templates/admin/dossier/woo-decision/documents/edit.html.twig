@@ -34,10 +34,13 @@
                 {% endif %}
 
                 <twig:block name="right">
-                    <twig:Admin:Search:SearchPreviewsForm
-                        endpoint="{{ path('app_admin_dossier_woodecision_documents_edit_search', { prefix: dossier.documentPrefix, 'dossierId': dossier.dossierNr }) }}"
-                        label="{{ 'Zoek op documentnummer of -naam' }}"
-                    />
+                    <div {{ vue_component('PublicationSearchController', {
+                        dossierId: dossier.id,
+                        label: 'Zoek op documentnummer of -naam',
+                        resultType: 'document',
+                    }) }}>
+                        <div class="h-[50px]"></div>
+                    </div>
                 </twig:block>
             </twig:Admin:LeftAndRight>
 

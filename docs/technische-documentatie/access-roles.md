@@ -6,7 +6,6 @@
   - [Department](#department)
   - [Dossier](#dossier)
   - [Document](#document)
-  - [Prefix](#prefix)
   - [Organisation](#organisation)
   - [Inquiry](#inquiry)
   - [Misc](#misc)
@@ -51,14 +50,6 @@ Source of this information: [auth_matrix.yaml](../../config/packages/auth_matrix
 | document   | ROLE_GLOBAL_ADMIN  | create: true, read: true, update: true, delete: false   | published_dossiers: true, unpublished_dossiers: false |
 | document   | ROLE_VIEW_ACCESS   | create: false, read: true, update: false, delete: false | published_dossiers: true, unpublished_dossiers: false |
 
-## Prefix
-
-| **Prefix** | **Roles**               | **Permissions**                                         |
-|------------|-------------------------|---------------------------------------------------------|
-| prefix     | ROLE_GLOBAL_ADMIN       | create: true, read: true, update: true, delete: true    |
-| prefix     | ROLE_ORGANISATION_ADMIN | create: false, read: true, update: false, delete: false |
-| prefix     | ROLE_SUPER_ADMIN        | create: true, read: true, update: true, delete: true    |
-
 ## Organisation
 
 | **Prefix**   | **Roles**         | **Permissions**                                      |
@@ -83,5 +74,4 @@ Source of this information: [auth_matrix.yaml](../../config/packages/auth_matrix
 | stat       | ROLE_GLOBAL_ADMIN       | create: false, read: true, update: false, delete: false |
 | stat       | ROLE_ORGANISATION_ADMIN | create: false, read: true, update: false, delete: false |
 | stat       | ROLE_SUPER_ADMIN        | create: true, read: true, update: true, delete: true    |
-| token      | ROLE_SUPER_ADMIN        | create: true, read: true, update: true, delete: true    |
 | elastic    | ROLE_SUPER_ADMIN        | create: true, read: true, update: true, delete: true    |

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,17 +16,32 @@ use Webmozart\Assert\Assert;
 
 final class UploaderController extends AbstractController
 {
-    public function __construct(private CustomDropzoneController $dropzoneController)
-    {
-    }
-
     #[Route('/balie/uploader', name: '_uploader_upload_general', format: 'json', methods: ['POST', 'PUT', 'PATCH'])]
     #[IsGranted('AuthMatrix.dossier.update')]
-    public function upload(Request $request): JsonResponse
-    {
+    public function upload(
+        #[Autowire(service: 'oneup_uploader.controller.general')]
+        CustomDropzoneController $dropzoneController,
+        Request $request,
+    ): JsonResponse {
         $this->isChunkedWorkaround($request);
 
-        return $this->dropzoneController->upload();
+        return $dropzoneController->upload();
+    }
+
+    #[Route('/balie/uploader/woo-decision/{dossierId}', name: '_uploader_upload_woo_decision', format: 'json', methods: ['POST', 'PUT', 'PATCH'])]
+    #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
+    public function uploadDossier(
+        #[Autowire(service: 'oneup_uploader.controller.woo_decision')]
+        CustomDropzoneController $dropzoneController,
+        #[MapEntity(mapping: ['dossierId' => 'id'])]
+        WooDecision $dossier,
+        Request $request,
+    ): JsonResponse {
+        unset($dossier);
+
+        $this->isChunkedWorkaround($request);
+
+        return $dropzoneController->upload();
     }
 
     /**

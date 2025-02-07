@@ -103,7 +103,7 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
         self::assertJsonContains($data);
     }
 
-    public function testUpdateAnnualReportDocument(): void
+    public function testUpdateWooDecisionDocument(): void
     {
         $user = UserFactory::new()
             ->asSuperAdmin()
@@ -283,7 +283,6 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
 
         $uploadUuid = 'file-' . $this->getFaker()->uuid();
 
-        // Upload the document first
         $client->request(
             Request::METHOD_POST,
             '/balie/uploader',

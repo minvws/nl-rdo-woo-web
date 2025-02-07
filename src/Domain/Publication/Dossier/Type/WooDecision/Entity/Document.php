@@ -35,7 +35,7 @@ class Document extends AbstractPublicationItem
     /** @var Collection<array-key,WooDecision> */
     #[ORM\ManyToMany(targetEntity: WooDecision::class, inversedBy: 'documents')]
     #[ORM\JoinTable(name: 'document_dossier')]
-    #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', onDelete: 'cascade')]
     private Collection $dossiers;
 
     #[ORM\Column(length: 255, unique: true, nullable: false)]

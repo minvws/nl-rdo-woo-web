@@ -8,7 +8,7 @@ import FormHelp from './FormHelp.vue';
 import FormLabel from './FormLabel.vue';
 import InputErrors from './InputErrors.vue';
 
-const emit = defineEmits(['uploaded', 'uploadError', 'uploading']);
+const emit = defineEmits(['uploaded', 'uploadError']);
 
 const props = defineProps({
   allowedFileTypes: {
@@ -30,10 +30,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  groupId: {
-    type: String,
-    required: false,
-  },
   hasFormRow: {
     type: Boolean,
     required: false,
@@ -54,6 +50,9 @@ const props = defineProps({
   name: {
     type: String,
     required: true,
+  },
+  payload: {
+    type: Object,
   },
   tip: {
     type: String,
@@ -104,10 +103,6 @@ const formRowClass = computed(() => {
   };
 });
 
-const onUploading = (fileId, file) => {
-  emit('uploading', fileId, file);
-};
-
 const onUploaded = (file, uploadId) => {
   valueRef.value = uploadId;
   emit('uploaded', file, uploadId);
@@ -149,18 +144,16 @@ inject('form').addInput(inputStore);
     />
 
     <UploadArea
-      @selected="onSelected"
       @uploaded="onUploaded"
-      @uploading="onUploading"
       @uploadError="onUploadError"
       :allow-multiple="props.allowMultiple"
       :allowed-file-types="props.allowedFileTypes"
       :allowed-mime-types="props.allowedMimeTypes"
       :enable-auto-upload="props.enableAutoUpload"
-      :group-id="props.groupId"
       :id="inputId"
       :max-file-size="props.maxFileSize"
       :name="props.name"
+      :payload="props.payload"
       :tip="props.tip"
       :uploaded-file-info="props.uploadedFileInfo"
     />

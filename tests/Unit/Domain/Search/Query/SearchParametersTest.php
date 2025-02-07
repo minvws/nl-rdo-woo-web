@@ -66,7 +66,7 @@ class SearchParametersTest extends UnitTestCase
         $facetInputCollection = \Mockery::mock(FacetInputCollection::class);
         $facetInputCollection->expects('getIterator')->andReturn(new \ArrayIterator([
             FacetKey::DEPARTMENT->value => $enabledFacet,
-            FacetKey::DOSSIER_NR->value => $disabledFacet,
+            FacetKey::PREFIXED_DOSSIER_NR->value => $disabledFacet,
         ]));
 
         $parameters = new SearchParameters(
@@ -132,5 +132,35 @@ class SearchParametersTest extends UnitTestCase
 
         $this->assertMatchesObjectSnapshot($newParameters);
         $this->assertSame($queryConditions, $newParameters->baseQueryConditions);
+    }
+
+    public function testHasActiveFacetsReturnsTrueForFirstActiveFacet(): void
+    {
+        $facetInputA = \Mockery::mock(FacetInputInterface::class);
+        $facetInputA->expects('isActive')->andReturnTrue();
+
+        $facetInputB = \Mockery::mock(FacetInputInterface::class);
+        $facetInputB->shouldNotHaveBeenCalled();
+
+        $parameters = new SearchParameters(
+            facetInputs: new FacetInputCollection($facetInputA, $facetInputB),
+        );
+
+        self::assertTrue($parameters->hasActiveFacets());
+    }
+
+    public function testHasActiveFacetsReturnsFalseWhenAllFacetsAreInactive(): void
+    {
+        $facetInputA = \Mockery::mock(FacetInputInterface::class);
+        $facetInputA->expects('isActive')->andReturnFalse();
+
+        $facetInputB = \Mockery::mock(FacetInputInterface::class);
+        $facetInputB->expects('isActive')->andReturnFalse();
+
+        $parameters = new SearchParameters(
+            facetInputs: new FacetInputCollection($facetInputA, $facetInputB),
+        );
+
+        self::assertFalse($parameters->hasActiveFacets());
     }
 }

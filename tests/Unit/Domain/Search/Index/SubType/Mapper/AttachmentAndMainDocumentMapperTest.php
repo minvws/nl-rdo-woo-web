@@ -33,6 +33,7 @@ class AttachmentAndMainDocumentMapperTest extends UnitTestCase
     public function testMap(): void
     {
         $dossier = \Mockery::mock(WooDecision::class);
+        $dossier->shouldReceive('getDocumentPrefix')->andReturn('PREFIX');
         $dossier->shouldReceive('getDossierNr')->andReturn('foo-123');
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
 

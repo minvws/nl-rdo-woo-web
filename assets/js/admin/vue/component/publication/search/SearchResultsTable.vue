@@ -50,7 +50,7 @@ const onRowClick = (url) => {
         >
           <td class="w-48" v-if="!props.hideResultId">
             <a class="bhr-a" :href="result.link">
-              {{ result.id }}
+              {{ result.number ?? result.id }}
             </a>
           </td>
           <td>

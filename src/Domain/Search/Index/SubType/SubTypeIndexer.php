@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\SubType;
 
+use App\Domain\Search\Index\ElasticDocumentId;
 use App\Domain\Search\Index\IndexException;
 use App\Domain\Search\Index\SubType\Mapper\ElasticSubTypeMapperInterface;
 use App\Domain\Search\Index\Updater\PageIndexUpdater;
@@ -43,21 +44,14 @@ readonly class SubTypeIndexer
     public function remove(object $entity): void
     {
         $this->elasticService->removeDocument(
-            $this->getDocumentId($entity)
+            ElasticDocumentId::forObject($entity),
         );
-    }
-
-    public function getDocumentId(object $entity): string
-    {
-        return $this->getMapper($entity)->getId($entity);
     }
 
     public function updatePage(object $entity, int $pageNr, string $content): void
     {
-        $mapper = $this->getMapper($entity);
-
         $this->pageIndexUpdater->update(
-            $mapper->getId($entity),
+            ElasticDocumentId::forObject($entity),
             $pageNr,
             $content
         );

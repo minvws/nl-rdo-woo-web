@@ -31,4 +31,12 @@ class IndexException extends \RuntimeException
             $entityClass,
         ));
     }
+
+    public static function cannotGenerateDocumentIdForObject(object $object): self
+    {
+        return new self(sprintf(
+            'Cannot determine Elastic document id for object of class %s',
+            get_class($object),
+        ));
+    }
 }

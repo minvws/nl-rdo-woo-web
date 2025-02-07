@@ -52,6 +52,7 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
     {
         $dossier = \Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getDossierNr')->andReturn('dos-123');
+        $dossier->shouldReceive('getDocumentPrefix')->andReturn('PREFIX');
 
         $dossierDoc = \Mockery::mock(ElasticDocument::class);
         $dossierDoc->shouldReceive('getDocumentValues')->andReturn(['mapped-dossier-data' => 'dummy']);
@@ -70,6 +71,7 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
         $fileInfo->shouldReceive('getName')->andReturn('foo.bar');
 
         $document = \Mockery::mock(Document::class);
+        $document->shouldReceive('getId->toRfc4122')->andReturn($documentId = 'doc-456');
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossier]));
         $document->shouldReceive('getInquiries')->andReturn(new ArrayCollection([$inquiry]));
         $document->shouldReceive('getDocumentNr')->andReturn('doc-123');
@@ -91,8 +93,8 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
                 'toplevel_type' => ElasticDocumentType::WOO_DECISION,
                 'sublevel_type' => ElasticDocumentType::WOO_DECISION_DOCUMENT,
                 'document_nr' => 'doc-123',
-                'dossier_nr' => [
-                    0 => 'dos-123',
+                'prefixed_dossier_nr' => [
+                    'PREFIX|dos-123',
                 ],
                 'mime_type' => 'application/pdf',
                 'file_size' => 1234,

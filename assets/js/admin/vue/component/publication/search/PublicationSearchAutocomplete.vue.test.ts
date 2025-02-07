@@ -7,8 +7,9 @@ describe('The "PublicationSearchAutocomplete" component', () => {
   const createComponent = () => {
     return mount(PublicationSearchAutocomplete, {
       props: {
-        endpoint: 'https://mocked-endpoint.mock',
         label: 'Mocked label',
+        publicationType: 'mocked_publication_type',
+        resultType: 'mocked_result_type',
       },
     });
   };
@@ -67,9 +68,10 @@ describe('The "PublicationSearchAutocomplete" component', () => {
     const inputComponent = getInputComponent(component);
 
     expect(inputComponent.props('ariaHaspopup')).toBe('listbox');
-    expect(inputComponent.props('endpoint')).toBe(
-      'https://mocked-endpoint.mock',
+    expect(inputComponent.props('publicationType')).toBe(
+      'mocked_publication_type',
     );
+    expect(inputComponent.props('resultType')).toBe('mocked_result_type');
     expect(inputComponent.props('placeholder')).toBe('Zoeken op dossiernummer');
   });
 

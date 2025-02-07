@@ -8,7 +8,6 @@ use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Admin\DossierFilterParameters;
 use App\Domain\Publication\Dossier\Admin\DossierListingService;
-use App\Domain\Publication\Dossier\Admin\DossierSearchService;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
 use App\Domain\Publication\Dossier\Type\ViewModel\DossierTypeViewFactory;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
@@ -21,7 +20,6 @@ use App\Service\DossierWizard\WizardStatusFactory;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,7 +34,6 @@ class DossierController extends AbstractController
 
     public function __construct(
         private readonly DossierListingService $listingService,
-        private readonly DossierSearchService $searchService,
         private readonly PaginatorInterface $paginator,
         private readonly WizardStatusFactory $wizardStatusFactory,
         private readonly DossierTypeManager $dossierTypeManager,
@@ -74,51 +71,6 @@ class DossierController extends AbstractController
             'form' => $form,
             'formData' => $form->getData(),
         ]);
-    }
-
-    #[Route('/balie/dossiers/search', name: 'app_admin_dossiers_search', methods: ['POST'])]
-    #[IsGranted('AuthMatrix.dossier.read')]
-    public function search(Request $request): Response
-    {
-        $searchTerm = urldecode(strval($request->getPayload()->get('q', '')));
-
-        $ret = [
-            'results' => json_encode(
-                $this->renderView(
-                    'admin/dossier/search.html.twig',
-                    [
-                        'dossiers' => $this->searchService->searchDossiers($searchTerm),
-                        'documents' => $this->searchService->searchDocuments($searchTerm),
-                        'searchTerm' => $searchTerm,
-                    ]
-                ),
-                JSON_THROW_ON_ERROR,
-            ),
-        ];
-
-        return new JsonResponse($ret);
-    }
-
-    #[Route('/balie/dossiers/search/link', name: 'app_admin_dossiers_search_link', methods: ['POST'])]
-    #[IsGranted('AuthMatrix.dossier.read')]
-    public function searchLink(Request $request): Response
-    {
-        $searchTerm = urldecode(strval($request->getPayload()->get('q', '')));
-
-        $ret = [
-            'results' => json_encode(
-                $this->renderView(
-                    'admin/dossier/search_link.html.twig',
-                    [
-                        'dossiers' => $this->searchService->searchDossiers($searchTerm),
-                        'searchTerm' => $searchTerm,
-                    ],
-                ),
-                JSON_THROW_ON_ERROR,
-            ),
-        ];
-
-        return new JsonResponse($ret);
     }
 
     #[Route('/balie/dossier/overview/{prefix}/{dossierId}', name: 'app_admin_dossier', methods: ['GET'])]

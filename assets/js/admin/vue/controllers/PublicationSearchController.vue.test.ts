@@ -6,7 +6,7 @@ describe('The "PublicationSearchController" component', () => {
   const createComponent = () =>
     mount(PublicationSearchController, {
       props: {
-        endpoint: 'mocked_endpoint',
+        dossierId: 'mocked_dossier_id',
         label: 'mocked_label',
       },
       shallow: true,
@@ -16,14 +16,9 @@ describe('The "PublicationSearchController" component', () => {
     createComponent().findComponent({ name: 'PublicationSearchAndGo' });
 
   test('should render a <PublicationSearchAndGo /> component', async () => {
-    const publicationSearchAndGoComponent =
-      getPublicationSearchAndGoComponent();
-
-    expect(publicationSearchAndGoComponent.props('endpoint')).toEqual(
-      'mocked_endpoint',
-    );
-    expect(publicationSearchAndGoComponent.props('label')).toEqual(
-      'mocked_label',
-    );
+    expect(getPublicationSearchAndGoComponent().props()).toEqual({
+      dossierId: 'mocked_dossier_id',
+      label: 'mocked_label',
+    });
   });
 });

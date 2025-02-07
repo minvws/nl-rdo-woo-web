@@ -4,19 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\AntiVirus;
 
-use App\Entity\User;
-use App\Service\Storage\LocalFilesystem;
-use MinVWS\AuditLogger\AuditLogger;
-use MinVWS\AuditLogger\Events\Logging\FileUploadLogEvent;
+use App\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
+use App\Domain\Upload\UploadedFile;
 use Oneup\UploaderBundle\Event\ValidationEvent;
 use Oneup\UploaderBundle\Uploader\Exception\ValidationException;
 use Oneup\UploaderBundle\UploadEvents;
-use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Xenolope\Quahog\Client;
-use Xenolope\Quahog\Result;
 
 // Intentionally not enabled for the 'test' environment
 #[When(env: 'dev')]
@@ -28,54 +22,33 @@ readonly class ClamAvUploadValidator
     public const ERROR_UNSAFE = 'error.unsafe';
 
     public function __construct(
-        private Client $clamAvClient,
-        private LoggerInterface $logger,
-        private LocalFilesystem $filesystem,
-        private AuditLogger $auditLogger,
-        private Security $security,
+        private ClamAvFileScanner $scanner,
+        private SevenZipFileStrategy $sevenZipFileStrategy,
     ) {
     }
 
     public function onValidate(ValidationEvent $event): void
     {
-        $handle = $this->filesystem->createStream($event->getFile()->getPathname(), 'r');
-        if (! is_resource($handle)) {
-            $this->logger->error('Could not open stream for upload antivirus validation');
+        $result = $this->scanner->scan(
+            $event->getFile()->getPathname(),
+        );
+
+        if ($result->isMaxSizeExceeded()) {
+            // Zip archives may ignore the max size limitation for clamAv.
+            // In that case no scanning is done on the archive, only individual files within the archive are scanned.
+            if ($this->sevenZipFileStrategy->canProcess(UploadedFile::fromFile($event->getFile()))) {
+                return;
+            }
+
             throw new ValidationException(self::ERROR_TECHNICAL);
         }
 
-        try {
-            $result = $this->clamAvClient->scanResourceStream($handle);
-        } catch (\Throwable $throwable) {
-            $this->logger->error('An error occurred during upload antivirus validation: ' . $throwable->getMessage());
+        if ($result->isTechnicalError()) {
             throw new ValidationException(self::ERROR_TECHNICAL);
         }
 
-        $this->logToAuditLog($result, $event);
-
-        if ($result->hasFailed()) {
-            $this->logger->error(sprintf(
-                'Upload antivirus validation for file "%s" failed with reason: %s',
-                $event->getFile()->getBasename(),
-                $result->getReason(),
-            ));
-
+        if ($result->isNotSafe()) {
             throw new ValidationException(self::ERROR_UNSAFE);
         }
-    }
-
-    private function logToAuditLog(Result $result, ValidationEvent $event): void
-    {
-        /** @var User $user */
-        $user = $this->security->getUser();
-
-        $logEvent = (new FileUploadLogEvent())
-            ->withActor($user)
-            ->withData([
-                'filename' => $event->getFile()->getPathname(),
-            ])
-            ->withFailed($result->hasFailed(), $result->getReason() ?? '');
-
-        $this->auditLogger->log($logEvent);
     }
 }

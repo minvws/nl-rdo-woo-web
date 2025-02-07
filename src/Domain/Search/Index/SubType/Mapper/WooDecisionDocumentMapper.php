@@ -6,8 +6,10 @@ namespace App\Domain\Search\Index\SubType\Mapper;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
+use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
 use App\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper;
 use App\Domain\Search\Index\ElasticDocument;
+use App\Domain\Search\Index\ElasticDocumentId;
 use App\Domain\Search\Index\ElasticDocumentType;
 use Webmozart\Assert\Assert;
 
@@ -33,10 +35,10 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
         Assert::isInstanceOf($entity, Document::class);
 
         $dossiers = [];
-        $dossierNrs = [];
+        $prefixedDossierNrs = [];
         foreach ($entity->getDossiers() as $dossier) {
             $dossiers[] = $this->wooDecisionMapper->map($dossier)->getDocumentValues();
-            $dossierNrs[] = $dossier->getDossierNr();
+            $prefixedDossierNrs[] = PrefixedDossierNr::forDossier($dossier);
         }
 
         $inquiryIds = $entity->getInquiries()->map(
@@ -48,7 +50,6 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
         $fields = [
             'type' => 'document',
             'document_nr' => $entity->getDocumentNr(),
-            'dossier_nr' => $dossierNrs,
             'mime_type' => $file->getMimeType(),
             'file_size' => $file->getSize(),
             'file_type' => $file->getType(),
@@ -64,6 +65,7 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
             'document_pages' => $entity->getPageCount(),
             'dossiers' => $dossiers,
             'inquiry_ids' => $inquiryIds,
+            'prefixed_dossier_nr' => $prefixedDossierNrs,
         ];
 
         if ($metadata !== null) {
@@ -75,18 +77,10 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
         }
 
         return new ElasticDocument(
-            $this->getId($entity),
+            ElasticDocumentId::forObject($entity),
             ElasticDocumentType::WOO_DECISION,
             ElasticDocumentType::WOO_DECISION_DOCUMENT,
             $fields,
         );
-    }
-
-    public function getId(object $entity): string
-    {
-        /** @var Document $entity */
-        Assert::isInstanceOf($entity, Document::class);
-
-        return $entity->getDocumentNr();
     }
 }

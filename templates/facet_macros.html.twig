@@ -1,6 +1,11 @@
 {% macro inquiry_facets(result) %}
     {% for dossier_nr in result.filterDetails.dossierNumbers %}
-        {{ _self.facet_pill('admin.dossiers.decision.number' | trans({'dossier_nr': dossier_nr}), constant('App\\Service\\Search\\Model\\FacetKey::DOSSIER_NR').value ~ '[]', dossier_nr) }}
+        {% set dossier_nr_title = dossier_nr | split('|') | last %}
+        {{ _self.facet_pill(
+            'admin.dossiers.decision.number' | trans({'dossier_nr': dossier_nr_title}),
+            constant('App\\Service\\Search\\Model\\FacetKey::PREFIXED_DOSSIER_NR').value ~ '[]',
+            dossier_nr
+        ) }}
     {% endfor %}
     {% for inquiryDescription in result.filterDetails.documentInquiries %}
         {{ _self.facet_pill('admin.dossiers.documents.inquiry_number' | trans({'case_nr': inquiryDescription.casenumber}), constant('App\\Service\\Search\\Model\\FacetKey::INQUIRY_DOCUMENTS').value ~ '[]', inquiryDescription.id) }}

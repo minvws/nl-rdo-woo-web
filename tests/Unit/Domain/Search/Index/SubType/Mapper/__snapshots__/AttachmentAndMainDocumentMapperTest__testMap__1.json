@@ -9,9 +9,6 @@
         "x",
         "y"
     ],
-    "dossier_nr": [
-        "foo-123"
-    ],
     "dossiers": [
         {
             "mapped-dossier-data": "dummy",
@@ -20,6 +17,7 @@
             "sublevel_type": null
         }
     ],
+    "prefixed_dossier_nr": "PREFIX|foo-123",
     "metadata": [
         "foo"
     ],

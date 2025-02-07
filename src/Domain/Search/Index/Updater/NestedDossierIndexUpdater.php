@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Search\Index\Updater;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Search\Index\ElasticDocumentId;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
@@ -36,14 +37,19 @@ readonly class NestedDossierIndexUpdater
                         'bool' => [
                             'must' => [
                                 ['terms' => ['type' => ElasticDocumentType::getSubTypeValues()]],
-                                ['match' => ['dossier_nr' => $dossier->getDossierNr()]],
+                                ['nested' => [
+                                    'path' => 'dossiers',
+                                    'query' => [
+                                        'term' => ['dossiers.id' => ElasticDocumentId::forDossier($dossier)],
+                                    ],
+                                ]],
                             ],
                         ],
                     ],
                     'script' => [
                         'source' => <<< EOF
                             for (int i = 0; i < ctx._source.dossiers.length; i++) {
-                                if (ctx._source.dossiers[i].dossier_nr == params.dossier.dossier_nr) {
+                                if (ctx._source.dossiers[i].id == params.dossier.id) {
                                     ctx._source.dossiers[i] = params.dossier;
                                 }
                             }

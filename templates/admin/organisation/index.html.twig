@@ -9,7 +9,7 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('organisation.create') %}
-            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_user_organisation_create') }}">{{ 'admin.organisation.create' | trans() }}</a>
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_user_organisation_create') }}" data-e2e-name="create-organisation">{{ 'admin.organisation.create' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>

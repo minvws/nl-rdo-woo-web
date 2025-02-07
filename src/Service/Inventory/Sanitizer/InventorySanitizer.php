@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory\Sanitizer;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Publication\FileInfo;
 use App\Exception\InventorySanitizerException;
@@ -13,18 +11,14 @@ use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterface;
 use App\Service\Storage\EntityStorageService;
 use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
-class InventorySanitizer
+readonly class InventorySanitizer
 {
     public function __construct(
-        private readonly EntityManagerInterface $doctrine,
-        private readonly EntityStorageService $entityStorageService,
-        private readonly TranslatorInterface $translator,
-        private readonly InventoryWriterInterface $writer,
-        private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly string $publicBaseUrl,
+        private EntityManagerInterface $doctrine,
+        private EntityStorageService $entityStorageService,
+        private InventoryWriterInterface $writer,
+        private InventoryDocumentMapper $documentMapper,
     ) {
     }
 
@@ -44,13 +38,14 @@ class InventorySanitizer
             'Beoordelingsgrond',
             'Toelichting',
             'Publieke link',
-            'Locatie open.minvws.nl',
+            'Locatie document ID',
             'Opgeschort',
-            'Definitief ID',
+            'Gerelateerd ID',
+            'Locatie gerelateerd ID',
         );
 
         foreach ($dataProvider->getDocuments() as $document) {
-            $this->writer->addRow(...$this->getCellValues($document));
+            $this->writer->addRow(...$this->documentMapper->map($document));
         }
 
         $this->writer->close();
@@ -60,35 +55,6 @@ class InventorySanitizer
         if (! $this->entityStorageService->storeEntity(new \SplFileInfo($tmpFilename), $inventoryEntity)) {
             throw new InventorySanitizerException('Could not store the sanitized inventory spreadsheet.');
         }
-    }
-
-    /**
-     * @return array<int, array<string>|string>
-     */
-    private function getCellValues(Document $document): array
-    {
-        /** @var WooDecision $dossier */
-        $dossier = $document->getDossiers()->first();
-
-        return [
-            $document->getDocumentId() ?: '',
-            $document->getDocumentNr(),
-            $document->getFileInfo()->getName() ?: '',
-            $document->getJudgement() ? $this->translator->trans('public.documents.judgment.short.' . $document->getJudgement()->value) : '',
-            $document->getGrounds(),
-            $document->getRemark() ?: '',
-            implode("\n", $document->getLinks()),
-            $this->publicBaseUrl . $this->urlGenerator->generate(
-                'app_document_detail',
-                [
-                    'prefix' => $dossier->getDocumentPrefix(),
-                    'dossierId' => $dossier->getDossierNr(),
-                    'documentId' => $document->getDocumentNr(),
-                ],
-            ),
-            $document->isSuspended() ? 'ja' : '',
-            '',
-        ];
     }
 
     private function persistInventory(EntityWithFileInfo $inventoryEntity, string $filename): void

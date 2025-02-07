@@ -7,14 +7,14 @@ namespace App\Service\Inventory;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 
-class DocumentNumber
+readonly class DocumentNumber
 {
-    private readonly string $value;
+    private string $value;
 
     private function __construct(
-        string $prefix,
-        private readonly string $matter,
-        string $id,
+        public string $prefix,
+        public string $matter,
+        public string $id,
     ) {
         $value = $prefix . '-' . $matter . '-' . $id;
         if (strlen($value) > 255) {

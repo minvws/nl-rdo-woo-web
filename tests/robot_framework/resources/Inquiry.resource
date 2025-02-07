@@ -94,11 +94,11 @@ Click Manual Woo Decision Linking
 
 Link Inquiry To Decision
   [Arguments]  ${inquiry}  ${decision}
-  Fill Text  //*[@id="inquiry_link_dossier_form_map"]  ${inquiry}
+  Fill Text  //input[@id="inquiry_link_dossier_form_map"]  ${inquiry}
   Click  //*[@data-e2e-name="inquiry-decision-selector"]
-  Fill Text  //*[@data-e2e-name="inquiry-decision-search-field"]  ${decision}
-  Click  //*[@id="link-dossiers-search-results"]/ul/li[1]
-  Click  //button[@id="js-link-dossier"]
+  Fill Text  //input[@data-e2e-name="dossier-search-results"]  ${decision}
+  Click  //div[@data-e2e-name="search-previews-results"]//li[1]
+  Click  //button[@data-e2e-name="link-dossier"]
   Click  //button[@id="inquiry_link_dossier_form_link"]
 
 Link Inquiry To Documents
@@ -137,3 +137,6 @@ Download Status Not Contains Pending
   Go Back
   Click  //button[@data-e2e-name="download-documents-button"]
   Get Text  //*[@data-e2e-name="download-status"]  not contains  Het archief is nog niet gereed voor download.
+
+Click First Document In Inquiry
+  Click  (//div[@data-e2e-name="inquiry-documents"]//tbody//a)[1]

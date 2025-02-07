@@ -30,7 +30,7 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
         parent::setUp();
     }
 
-    public function testHistoryLogging(): void
+    public function testHistoryLoggingForUpdate(): void
     {
         $preUpdateArgs = \Mockery::mock(PreUpdateEventArgs::class);
         $dossier = \Mockery::mock(WooDecision::class);
@@ -38,11 +38,20 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
         $dossier->shouldReceive('getPublicationDate')->andReturn(new \DateTimeImmutable());
         $dossier->shouldReceive('getPreviewDate')->andReturn(new \DateTimeImmutable());
 
-        $preUpdateArgs->expects('hasChangedField')->with('decisionDate')->andReturnTrue();
-        $preUpdateArgs->expects('hasChangedField')->with('title')->andReturnTrue();
-        $preUpdateArgs->expects('hasChangedField')->with('summary')->andReturnTrue();
-        $preUpdateArgs->expects('hasChangedField')->with('publicationDate')->andReturnTrue();
-        $preUpdateArgs->expects('hasChangedField')->with('previewDate')->andReturnTrue();
+        $preUpdateArgs->shouldReceive('hasChangedField')->with('decisionDate')->andReturnTrue();
+        $preUpdateArgs->shouldReceive('getOldValue')->with('decisionDate')->andReturn('foo');
+
+        $preUpdateArgs->shouldReceive('hasChangedField')->with('title')->andReturnTrue();
+        $preUpdateArgs->shouldReceive('getOldValue')->with('title')->andReturn('foo');
+
+        $preUpdateArgs->shouldReceive('hasChangedField')->with('summary')->andReturnTrue();
+        $preUpdateArgs->shouldReceive('getOldValue')->with('summary')->andReturn('foo');
+
+        $preUpdateArgs->shouldReceive('hasChangedField')->with('publicationDate')->andReturnTrue();
+        $preUpdateArgs->shouldReceive('getOldValue')->with('publicationDate')->andReturn('foo');
+
+        $preUpdateArgs->shouldReceive('hasChangedField')->with('previewDate')->andReturnTrue();
+        $preUpdateArgs->shouldReceive('getOldValue')->with('previewDate')->andReturn('foo');
 
         $this->listener->preUpdate($dossier, $preUpdateArgs);
 
@@ -67,6 +76,39 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
         ));
 
         $this->entityManager->expects('flush');
+
+        $this->listener->postUpdate($dossier, $postUpdateArgs);
+    }
+
+    public function testHistoryLoggingSkipsInitialValues(): void
+    {
+        $preUpdateArgs = \Mockery::mock(PreUpdateEventArgs::class);
+        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
+        $dossier->shouldReceive('getPublicationDate')->andReturn(new \DateTimeImmutable());
+        $dossier->shouldReceive('getPreviewDate')->andReturn(new \DateTimeImmutable());
+
+        $preUpdateArgs->shouldReceive('hasChangedField')->with('decisionDate')->andReturnTrue();
+        $preUpdateArgs->shouldReceive('getOldValue')->with('decisionDate')->andReturnNull();
+
+        $preUpdateArgs->shouldReceive('hasChangedField')->with('title')->andReturnTrue();
+        $preUpdateArgs->shouldReceive('getOldValue')->with('title')->andReturn('');
+
+        $preUpdateArgs->shouldReceive('hasChangedField')->with('summary')->andReturnTrue();
+        $preUpdateArgs->shouldReceive('getOldValue')->with('summary')->andReturn('');
+
+        $preUpdateArgs->shouldReceive('hasChangedField')->with('publicationDate')->andReturnTrue();
+        $preUpdateArgs->shouldReceive('getOldValue')->with('publicationDate')->andReturnNull();
+
+        $preUpdateArgs->shouldReceive('hasChangedField')->with('previewDate')->andReturnTrue();
+        $preUpdateArgs->shouldReceive('getOldValue')->with('previewDate')->andReturnNull();
+
+        $this->listener->preUpdate($dossier, $preUpdateArgs);
+
+        $postUpdateArgs = \Mockery::mock(PostUpdateEventArgs::class);
+
+        $this->entityManager->shouldNotHaveReceived('persist');
+        $this->entityManager->shouldNotHaveReceived('flush');
 
         $this->listener->postUpdate($dossier, $postUpdateArgs);
     }

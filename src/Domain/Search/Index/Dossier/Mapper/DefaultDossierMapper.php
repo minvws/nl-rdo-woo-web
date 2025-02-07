@@ -7,6 +7,7 @@ namespace App\Domain\Search\Index\Dossier\Mapper;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Subject\Subject;
 use App\Domain\Search\Index\ElasticDocument;
+use App\Domain\Search\Index\ElasticDocumentId;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\ElasticField;
 use App\Domain\Search\Result\FacetValue\AbbreviatedValue;
@@ -23,12 +24,16 @@ readonly class DefaultDossierMapper implements ElasticDossierMapperInterface
 
     public function map(AbstractDossier $dossier): ElasticDocument
     {
+        $id = ElasticDocumentId::forDossier($dossier);
+
         return new ElasticDocument(
-            $dossier->getDossierNr(),
+            $id,
             ElasticDocumentType::fromEntity($dossier),
             null,
             [
+                'id' => $id,
                 'dossier_nr' => $dossier->getDossierNr(),
+                'prefixed_dossier_nr' => PrefixedDossierNr::forDossier($dossier),
                 'title' => $dossier->getTitle(),
                 'status' => $dossier->getStatus(),
                 'summary' => $dossier->getSummary(),

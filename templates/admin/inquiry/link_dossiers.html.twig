@@ -12,31 +12,8 @@
                 {{ form_errors(inquiry_link_form) }}
 
                 {{ form_row(inquiry_link_form.map) }}
-                {{ form_row(inquiry_link_form.dossiers) }}
 
-                <div class="bhr-form-row no-js:hidden" id="js-selected-dossiers">
-                    <label class="bhr-label" for="inquiry_link_dossier_form_dossiers">Gepubliceerde besluiten</label>
-                    <div class="js-input-errors"></div>
-                    <div class="bhr-textarea mb-8">
-                        <div role="status">
-                            <ul aria-label="Gekozen besluiten" id="js-selected-dossiers-list" class="mb-3">
-                                <li>{{ 'admin.global.no_choices' | trans }}</li>
-                            </ul>
-                        </div>
-
-                        {% set dialogId="js-link-dossiers-dialog" %}
-                        <button
-                            aria-haspopup="dialog"
-                            class="bhr-button bhr-button--secondary js-dialog-toggle"
-                            data-dialog-action="open"
-                            data-dialog-for="{{ dialogId }}"
-                            type="button"
-                            data-e2e-name="inquiry-decision-selector"
-                        >+ Kies besluit...</button>
-                    </div>
-                </div>
-
-                {# {% do inquiry_link_form.dossiers.setRendered %}
+                {% do inquiry_link_form.dossiers.setRendered %}
 
                 {% set dossier_errors = [] %}
                 {% for error in inquiry_link_form.dossiers.vars.errors %}
@@ -44,12 +21,11 @@
                 {% endfor %}
 
                 <div {{ vue_component('LinkDossiersController', {
-                    endpoint: path('app_admin_dossiers_search_link'),
                     name: 'inquiry_link_dossier_form[dossiers][]',
                     submitErrors: dossier_errors
                 }) }}>
                     <div class="min-h-36"></div>
-                </div> #}
+                </div>
 
                 {{ form_row(inquiry_link_form.link) }}
                 {{ form_row(inquiry_link_form.cancel) }}
@@ -58,37 +34,4 @@
             </div>
         </div>
     </div>
-
-    <twig:Admin:Dialog id="{{ dialogId }}" title="Kies een besluit">
-        <div class="bhr-form-row">
-            <twig:Admin:Search:SearchPreviewsForm id="js-link-dossiers-search-form" endpoint="{{ path('app_admin_dossiers_search_link') }}" >
-                <label class="bhr-label mt-4" for="link-dossiers-search-input">Te koppelen besluiten</label>
-                <div class="relative">
-                    <input
-                        aria-autocomplete="list"
-                        aria-controls="link-dossiers-search-results"
-                        aria-expanded="false"
-                        aria-haspopup="listbox"
-                        autocomplete="off"
-                        class="bhr-input-text bhr-input-text--with-icon-after text-base rounded-none js-input js-link-dossiers-search-input"
-                        id="link-dossiers-search-input"
-                        name="query"
-                        placeholder="Zoeken op dossiernummer"
-                        role="combobox"
-                        type="text"
-                        data-e2e-name="inquiry-decision-search-field"
-                    >
-                    <twig:Admin:Search:InputIcons />
-                </div>
-                <div
-                    class="mt-2 hidden js-placeholder"
-                    id="link-dossiers-search-results"
-                    role="listbox"
-                ></div>
-            </twig:Admin:Search:SearchPreviewsForm>
-        </div>
-        <input type="hidden" id="js-hidden-dossiers-input" />
-        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary" id="js-link-dossier">Koppelen</button>
-        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary js-dialog-toggle" data-dialog-for="{{ dialogId }}" data-action="close">Annuleren</button>
-    </twig:Admin:Dialog>
 {% endblock %}

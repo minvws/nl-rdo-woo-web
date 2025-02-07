@@ -1,7 +1,7 @@
 <script setup>
 import LinkDossiers from '@admin-fe/component/publication/LinkDossiers.vue';
 
-const props = defineProps(['endpoint', 'name', 'submitErrors']);
+const props = defineProps([]);
 </script>
 
 <template>

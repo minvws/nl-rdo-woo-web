@@ -12,7 +12,9 @@ use App\Tests\Factory\DocumentFactory;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\OrganisationFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Uid\Uuid;
 
 final class WooDecisionRepositoryTest extends KernelTestCase
 {
@@ -160,5 +162,21 @@ final class WooDecisionRepositoryTest extends KernelTestCase
                 $result,
             ),
         );
+    }
+
+    public function testFindOne(): void
+    {
+        $wooDecision = WooDecisionFactory::createOne()->_real();
+
+        $result = $this->getRepository()->findOne($wooDecision->getId());
+
+        $this->assertEquals($wooDecision->getId(), $result->getId());
+    }
+
+    public function testFindOneThrowsNoResultException(): void
+    {
+        self::expectExceptionObject(new NoResultException());
+
+        $this->getRepository()->findOne(Uuid::v6());
     }
 }

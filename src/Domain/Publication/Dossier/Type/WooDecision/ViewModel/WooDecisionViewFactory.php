@@ -9,6 +9,9 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision as WooDec
 use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
 use App\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
+use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use App\Service\Search\Model\FacetKey;
+use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
 
 final readonly class WooDecisionViewFactory
@@ -18,6 +21,7 @@ final readonly class WooDecisionViewFactory
         private DepartmentViewFactory $departmentViewFactory,
         private CommonDossierPropertiesViewFactory $commonDossierViewFactory,
         private MainDocumentViewFactory $mainDocumentViewFactory,
+        private RouterInterface $router,
     ) {
     }
 
@@ -48,6 +52,12 @@ final readonly class WooDecisionViewFactory
             dateFrom: $dossier->getDateFrom(),
             dateTo: $dossier->getDateTo(),
             publicationReason: $publicationReason,
+            documentSearchUrl: $this->router->generate(
+                'app_search',
+                [
+                    FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
+                ]
+            ),
         );
     }
 }

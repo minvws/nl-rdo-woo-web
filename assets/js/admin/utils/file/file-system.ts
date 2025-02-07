@@ -1,12 +1,4 @@
-import { areFilesEqual, isValidMaxFileSize } from './file';
-
-export interface InvalidFile {
-  file: File;
-  hasMimeTypeError: boolean;
-  hasSizeError: boolean;
-}
-
-export type InvalidFilesSet = Set<InvalidFile>;
+import { areFilesEqual } from './file';
 
 export const filterDataTransferFiles = async (
   dataTransfer: DataTransfer,
@@ -121,51 +113,4 @@ const addFile = (files: File[], file: File) => {
   }
 
   files.push(file);
-};
-
-export const validateFiles = (
-  files: FileList,
-  mimeTypes: string[],
-  maxFileSize?: number,
-) => {
-  const invalidFiles: InvalidFilesSet = new Set();
-  const validFiles = new DataTransfer();
-
-  const mimeTypesSet = new Set(mimeTypes);
-  const hasValidMimeTypesDefined = mimeTypesSet.size > 0;
-  const hasValidMaxFileSize = isValidMaxFileSize(maxFileSize);
-
-  const hasValidMimeType = (file: File) => {
-    if (!hasValidMimeTypesDefined) {
-      return true;
-    }
-
-    if (file.type === '') {
-      // Firefox seems to have a bug where the file type is empty for files in a dragged directory
-      return true;
-    }
-
-    return mimeTypesSet.has(file.type);
-  };
-
-  const hasValidSize = (file: File) => {
-    if (!hasValidMaxFileSize) {
-      return true;
-    }
-
-    return file.size <= (maxFileSize as number);
-  };
-
-  Array.from(files).forEach((file) => {
-    const hasMimeTypeError = !hasValidMimeType(file);
-    const hasSizeError = !hasValidSize(file);
-
-    if (hasMimeTypeError || hasSizeError) {
-      invalidFiles.add({ file, hasMimeTypeError, hasSizeError });
-    } else {
-      validFiles.items.add(file);
-    }
-  });
-
-  return { invalidFiles, validFiles: validFiles.files };
 };

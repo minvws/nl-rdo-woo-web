@@ -40,6 +40,8 @@ date:
     periodFilterFrom: null
     periodFilterTo: null
     requestParameters: { without_date: 1 }
+    fromDate: false
+    toDate: false
     notActive: false
     from: null
     to: null

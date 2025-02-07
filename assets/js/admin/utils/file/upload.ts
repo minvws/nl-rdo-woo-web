@@ -16,9 +16,9 @@ export interface Chunk {
   uploadUuid: string | undefined;
 }
 
-type Response = ResponseSuccess | ResponseError;
+type UploadResponse = UploadResponseSuccess | UploadResponseError;
 
-interface ResponseSuccess {
+interface UploadResponseSuccess extends Response {
   data: {
     groupId: string | null;
     mimeType: string;
@@ -34,7 +34,7 @@ enum UploadError {
   WhiteList = 'error.whiteList',
 }
 
-interface ResponseError {
+interface UploadResponseError extends Response {
   error: UploadError;
 }
 
@@ -47,10 +47,10 @@ interface OnUploadError {
 interface Options {
   endpoint?: string;
   file: File;
-  groupId?: string;
   onError?: (error: OnUploadError) => void;
   onProgress?: (progress: number) => void;
   onSuccess?: (uploadUuid: string | undefined) => void;
+  payload?: Record<string, string>;
   uploadName?: string;
 }
 
@@ -58,11 +58,11 @@ export const uploadFile = (options: Options) => {
   const {
     endpoint = '/balie/uploader',
     file,
-    groupId,
     onError = () => {},
     onProgress = () => {},
     onSuccess = () => {},
     uploadName = 'file',
+    payload = {},
   } = options;
 
   let cleanupUpload: () => void = () => {};
@@ -153,21 +153,16 @@ export const uploadFile = (options: Options) => {
     };
   };
 
-  const isErrorResponse = (response: Response): response is ResponseError =>
-    (response as ResponseError).error !== undefined;
-  const isSuccessResponse = (response: Response): response is ResponseSuccess =>
-    !isErrorResponse(response);
-
   const updateChunkUploadResult = (
     chunkId: number,
     isUploadSuccess: boolean,
-    response: Response,
+    response: UploadResponse,
   ) => {
     const chunk = getChunk(chunkId);
     chunk.isUploaded = true;
     chunk.isUploadSuccess = isUploadSuccess;
-    chunk.uploadUuid = isSuccessResponse(response)
-      ? response.data.uploadUuid
+    chunk.uploadUuid = isUploadSuccess
+      ? (response as UploadResponseSuccess).data.uploadUuid
       : undefined;
     store.set(chunkId, chunk);
 
@@ -176,11 +171,12 @@ export const uploadFile = (options: Options) => {
     const haveChunksFailed = getChunks().some(
       (chunkItem) => chunkItem.isUploadSuccess === false,
     );
-    if (haveChunksFailed && isErrorResponse(response)) {
+    if (haveChunksFailed) {
+      const { error } = response as UploadResponseError;
       onError({
-        isTechnialError: response.error === UploadError.Techinal,
-        isUnsafeError: response.error === UploadError.Unsafe,
-        isWhiteListError: response.error === UploadError.WhiteList,
+        isTechnialError: error === UploadError.Techinal || !error,
+        isUnsafeError: error === UploadError.Unsafe,
+        isWhiteListError: error === UploadError.WhiteList,
       });
       return;
     }
@@ -227,9 +223,10 @@ export const uploadFile = (options: Options) => {
     formData.append('chunkindex', chunk.index.toString());
     formData.append('totalchunkcount', chunk.numberOfChunks.toString());
     formData.append('uuid', fileId); // each chunk of a file should have the same uuid
-    if (groupId) {
-      formData.append('groupId', groupId);
-    }
+
+    Object.entries(payload).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
 
     const request = new XMLHttpRequest();
     request.open('POST', endpoint, true);

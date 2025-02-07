@@ -14,6 +14,7 @@ describe('The "UploadArea" component', () => {
         allowedMimeTypes: mockedAllowedMimeTypes,
         allowMultiple: true,
         enableAutoUpload: false,
+        endpoint: 'mocked-upload-endpoint',
         groupId: 'mocked-group-id',
         id: 'mocked-id',
         maxFileSize: mockedMaxFileSize,

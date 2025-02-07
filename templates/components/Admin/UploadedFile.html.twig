@@ -21,9 +21,5 @@
             </span>
         </{{ element }}>
 
-    {% if replaceUrl is defined %}
-    <a class="text-bhr-sea-blue underline" href="{{ replaceUrl }}">
-        {{ 'admin.dossiers.replace_report' | trans }}
-    </a>
-    {% endif %}
+    {% block content %}{% endblock %}
 </div>

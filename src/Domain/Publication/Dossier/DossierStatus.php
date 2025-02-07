@@ -117,6 +117,11 @@ enum DossierStatus: string implements TranslatableInterface
         return $this->isPublished() || $this->isPreview();
     }
 
+    public function isPubliclyAvailableOrScheduled(): bool
+    {
+        return $this->isPubliclyAvailable() || $this->isScheduled();
+    }
+
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
         return $translator->trans('admin.publications.status.' . $this->value, locale: $locale);

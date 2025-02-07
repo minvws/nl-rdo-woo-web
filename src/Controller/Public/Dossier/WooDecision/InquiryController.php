@@ -9,11 +9,13 @@ use App\Domain\Publication\BatchDownload;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\Repository\InquiryRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
+use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
 use App\Exception\ViewingNotAllowedException;
 use App\Form\Inquiry\InquiryFilterFormType;
 use App\Service\DownloadResponseHelper;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Inquiry\InquirySessionService;
+use App\Service\Search\Model\FacetKey;
 use App\Service\Security\DossierVoter;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -60,7 +62,7 @@ class InquiryController extends AbstractController
         if ($filter === InquiryFilterFormType::CASE) {
             $docQuery = $this->inquiryRepository->getDocumentsForPubliclyAvailableDossiers($inquiry);
             $searchUrlParams = [
-                'dci' => [$inquiry->getId()],
+                FacetKey::INQUIRY_DOCUMENTS->getParamName() => [$inquiry->getId()],
             ];
         } else {
             $dossier = $this->wooDecisionRepository->findOneBy(['dossierNr' => $filter]);
@@ -69,8 +71,8 @@ class InquiryController extends AbstractController
             }
             $docQuery = $this->inquiryRepository->getDocsForInquiryDossierQueryBuilder($inquiry, $dossier);
             $searchUrlParams = [
-                'dci' => [$inquiry->getId()],
-                'dnr' => [$dossier->getDossierNr()],
+                FacetKey::INQUIRY_DOCUMENTS->getParamName() => [$inquiry->getId()],
+                FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
             ];
         }
 

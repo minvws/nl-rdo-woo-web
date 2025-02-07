@@ -35,7 +35,7 @@ class DepartmentController extends AbstractController
     public function index(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addItem('public.global.label.departments');
+        $breadcrumbs->addItem('public.breadcrumbs.departments');
 
         return $this->render('department/index.html.twig', [
             'departments' => $this->departmentService->getPublicDepartments(),
@@ -50,7 +50,7 @@ class DepartmentController extends AbstractController
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('public.global.label.departments', 'app_departments_index');
+        $breadcrumbs->addRouteItem('public.breadcrumbs.departments', 'app_departments_index');
         $breadcrumbs->addItem($department->getShortTagOrName());
 
         $searchParameters = $this->searchParametersFactory->createForDepartment($department);

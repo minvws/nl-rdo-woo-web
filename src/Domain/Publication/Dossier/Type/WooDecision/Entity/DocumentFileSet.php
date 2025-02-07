@@ -66,11 +66,17 @@ class DocumentFileSet
         $this->status = $status;
     }
 
+    /**
+     * @return Collection<array-key,DocumentFileUpload>
+     */
     public function getUploads(): Collection
     {
         return $this->uploads;
     }
 
+    /**
+     * @return Collection<array-key,DocumentFileUpdate>
+     */
     public function getUpdates(): Collection
     {
         return $this->updates;

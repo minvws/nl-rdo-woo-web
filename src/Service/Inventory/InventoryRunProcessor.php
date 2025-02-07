@@ -79,7 +79,7 @@ class InventoryRunProcessor
 
         $changeset = $this->inventoryComparator->determineChangeset($run, $inventoryReader, $runProgress);
 
-        if ($changeset->hasChanges()) {
+        if ($changeset->hasNoChanges() && $run->hasNoErrors()) {
             $run->addGenericException(ProcessInventoryException::forNoChanges());
         }
 

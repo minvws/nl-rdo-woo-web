@@ -31,7 +31,7 @@
                                 {% elseif document.withdrawn %}
                                     <span class="bhr-badge bhr-badge--red">{{ 'admin.publications.status.withdrawn' | trans }}</span>
                                 {% else %}
-                                    <span class="bhr-badge bhr-badge--green">Gepubliceerd</span>
+                                    <span class="bhr-badge bhr-badge--green">{{ dossier.status | trans }}</span>
                                 {% endif %}
                             </td>
                         </tr>

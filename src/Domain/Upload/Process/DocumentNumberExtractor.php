@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Process;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Upload\UploadedFile;
 use Psr\Log\LoggerInterface;
 
 readonly class DocumentNumberExtractor
 {
-    public function __construct(private LoggerInterface $logger)
-    {
+    public function __construct(
+        private LoggerInterface $logger,
+        private DocumentRepository $documentRepository,
+    ) {
     }
 
     public function extract(string $originalFile, WooDecision $dossier): string
@@ -30,5 +35,19 @@ readonly class DocumentNumberExtractor
         }
 
         return $documentId;
+    }
+
+    public function matchDocumentForFile(UploadedFile $file, WooDecision $wooDecision): ?Document
+    {
+        try {
+            $documentId = $this->extract(
+                $file->getOriginalFilename(),
+                $wooDecision,
+            );
+        } catch (FileProcessException) {
+            return null;
+        }
+
+        return $this->documentRepository->findOneByDossierAndDocumentId($wooDecision, $documentId);
     }
 }

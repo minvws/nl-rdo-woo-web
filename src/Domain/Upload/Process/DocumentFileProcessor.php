@@ -22,6 +22,7 @@ final readonly class DocumentFileProcessor
         UploadedFile $file,
         WooDecision $dossier,
         Document $document,
+        string $type,
     ): void {
         $documentId = $this->documentNumberExtractor->extract($file->getOriginalFilename(), $dossier);
 
@@ -38,6 +39,6 @@ final readonly class DocumentFileProcessor
             return;
         }
 
-        $this->fileStorer->storeForDocument($file, $document, $documentId, $file->getOriginalFileExtension());
+        $this->fileStorer->storeForDocument($file, $document, $documentId, $type);
     }
 }

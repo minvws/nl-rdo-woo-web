@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Preprocessor\Strategy;
 
+use App\Domain\Upload\AntiVirus\ClamAvFileScanner;
 use App\Domain\Upload\Extractor\Extractor;
 use App\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface;
 use App\Domain\Upload\UploadedFile;
 use Symfony\Component\Mime\MimeTypesInterface;
 
-final readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInterface
+readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInterface
 {
     private const SUPPORTED_EXTENSIONS = [
         '7z',
@@ -24,6 +25,7 @@ final readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInt
     public function __construct(
         private Extractor $sevenZipExtractor,
         private MimeTypesInterface $mimeTypes,
+        private ClamAvFileScanner $scanner,
     ) {
     }
 
@@ -33,7 +35,11 @@ final readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInt
     public function process(UploadedFile $file): \Generator
     {
         foreach ($this->sevenZipExtractor->getFiles($file) as $extractedFile) {
-            yield UploadedFile::fromSplFile($extractedFile);
+            if ($this->scanner->scan($extractedFile->getPathname())->isNotSafe()) {
+                continue;
+            }
+
+            yield UploadedFile::fromFile($extractedFile);
         }
     }
 

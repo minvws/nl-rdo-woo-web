@@ -30,7 +30,6 @@ auth_matrix:
                 create: true,
                 read: true,
                 update: true,
-                delete: true,
             },
             filters: {
                 organisation_only: false,
@@ -43,7 +42,6 @@ auth_matrix:
                 create: true,
                 read: true,
                 update: true,
-                delete: true,
             },
             filters: {
                 organisation_only: false,
@@ -254,38 +252,6 @@ auth_matrix:
             }
         },
 
-      # -- Prefix ----------------------------------------------------------------------------
-        {
-            prefix: "prefix",
-            roles: [ "ROLE_GLOBAL_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-                delete: true,
-            }
-        },
-        {
-            prefix: "prefix",
-            roles: [ "ROLE_ORGANISATION_ADMIN" ],
-            permissions: {
-                create: false,
-                read: true,
-                update: false,
-                delete: false,
-            }
-        },
-        {
-            prefix: "prefix",
-            roles: [ "ROLE_SUPER_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-                delete: true,
-            }
-        },
-
       # -- Organisation ----------------------------------------------------------------------------
         {
             prefix: "organisation",
@@ -294,7 +260,6 @@ auth_matrix:
                 create: true,
                 read: true,
                 update: true,
-                delete: true,
             }
         },
         {
@@ -304,7 +269,6 @@ auth_matrix:
                 create: true,
                 read: true,
                 update: true,
-                delete: true,
             }
         },
 
@@ -317,7 +281,6 @@ auth_matrix:
                 create: true,
                 read: true,
                 update: true,
-                delete: true,
                 administration: true,
             },
             filters: {
@@ -332,11 +295,6 @@ auth_matrix:
                 create: true,
                 read: true,
                 update: true,
-                delete: false,
-            },
-            filters: {
-                published_dossiers: true,
-                unpublished_dossiers: true,
             }
         },
         {
@@ -346,11 +304,6 @@ auth_matrix:
                 create: true,
                 read: true,
                 update: true,
-                delete: false,
-            },
-            filters: {
-                published_dossiers: true,
-                unpublished_dossiers: true,
             }
         },
         {
@@ -360,11 +313,6 @@ auth_matrix:
                 create: true,
                 read: true,
                 update: true,
-                delete: false,
-            },
-            filters: {
-                published_dossiers: true,
-                unpublished_dossiers: true,
             }
         },
         {
@@ -374,7 +322,6 @@ auth_matrix:
                 create: false,
                 read: true,
                 update: false,
-                delete: false,
             }
         },
 
@@ -383,41 +330,22 @@ auth_matrix:
             prefix: "stat",
             roles: [ "ROLE_GLOBAL_ADMIN" ],
             permissions: {
-                create: false,
                 read: true,
-                update: false,
-                delete: false,
             }
         },
         {
             prefix: "stat",
             roles: [ "ROLE_ORGANISATION_ADMIN" ],
             permissions: {
-                create: false,
                 read: true,
-                update: false,
-                delete: false,
             }
         },
         {
             prefix: "stat",
             roles: [ "ROLE_SUPER_ADMIN" ],
             permissions: {
-                create: true,
                 read: true,
-                update: true,
-                delete: true,
             }
-        },
-        {
-            prefix: "token",
-            roles: [ "ROLE_SUPER_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-                delete: true,
-            },
         },
         {
             prefix: "elastic",

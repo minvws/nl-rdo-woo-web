@@ -12,9 +12,9 @@ enum Covid19Subject: string
     case RIVM = 'RIVM';
     case DIGITALE_MIDDELEN = 'Digitale middelen';
     case BESMETTELIJKE_KINDEREN = 'Besmettelijkheid kinderen';
-    case SCENARIOS_EN_MAATREGELEN = 'Scenario\'s en maatregelen';
+    case SCENARIOS_EN_MAATREGELEN = 'Scenario’s en maatregelen';
     case MEDISCHE_HULPMIDDELEN = 'Medische hulpmiddelen';
-    case CAPACITEIT_ZIEKENHUIS = 'Capaciteit ziekenhuis';
+    case CAPACITEIT_ZIEKENHUIZEN = 'Capaciteit ziekenhuizen';
     case TESTEN = 'Testen';
     case VACCINATIES_EN_MEDICATIE = 'Vaccinaties en medicatie';
     case CHATS = 'Chats';

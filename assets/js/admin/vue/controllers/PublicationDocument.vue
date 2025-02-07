@@ -4,7 +4,8 @@ import Dialog from '@admin-fe/component/Dialog.vue';
 import PublicationDocumentForm from '@admin-fe/component/publication/PublicationDocumentForm.vue';
 import UploadedAttachment from '@admin-fe/component/publication/UploadedAttachment.vue';
 import { findDocumentTypeLabelByValue } from '@admin-fe/component/publication/helper';
-import { isSuccessStatusCode } from '@js/admin/utils';
+import { publicationFileSchema } from '@admin-fe/component/publication/interface';
+import { validateResponse } from '@js/admin/utils';
 import { computed, ref } from 'vue';
 
 const props = defineProps({
@@ -129,16 +130,19 @@ const translateAction = () => {
 
 const retrieveDocument = async () => {
   try {
-    const response = await fetch(props.endpoint, {
+    const request = fetch(props.endpoint, {
       headers: {
         'Content-Type': 'application/json',
         accept: 'application/json',
       },
     });
-    if (isSuccessStatusCode(response.status)) {
-      const documentFromApi = await response.json();
-      document.value = { ...documentFromApi };
-    }
+
+    const documentFromApi = await validateResponse(
+      request,
+      publicationFileSchema,
+    );
+
+    document.value = { ...documentFromApi };
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
   } catch (error) {}
 };

@@ -205,6 +205,9 @@ services:
     App\Service\Inventory\Sanitizer\InventorySanitizer:
         arguments:
             $writer: '@App\Service\Inventory\Sanitizer\ExcelWriter'
+
+    App\Service\Inventory\Sanitizer\InventoryDocumentMapper:
+        arguments:
             $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
 
     App\Service\HistoryService:
@@ -267,10 +270,6 @@ services:
     App\Service\Uploader\UploaderNamer:
         public: true
 
-    App\Controller\Admin\UploaderController:
-        arguments:
-            App\Controller\Admin\CustomDropzoneController: '@oneup_uploader.controller.general'
-
     oneup_uploader.chunks_storage:
         class: \App\Service\Uploader\FilesystemStorage
         arguments:
@@ -282,12 +281,6 @@ services:
             - 'get'
         arguments:
             $key: 'general'
-
-    Xenolope\Quahog\Client:
-        lazy: true
-        factory: [ 'App\Domain\Upload\AntiVirus\ClamAvClientFactory', 'create' ]
-        arguments:
-            $address: '%env(CLAM_AV_ADDRESS)%'
 
     App\Domain\Upload\Preprocessor\FilePreprocessor:
         arguments:
@@ -312,6 +305,15 @@ services:
     App\Domain\Publication\Dossier\FileProvider\DossierFileProviderManager:
         arguments:
             $providers: !tagged_iterator domain.publication.dossier.file_provider
+
+
+    App\Domain\Upload\AntiVirus\ClamAvClientFactory:
+        arguments:
+            $address: '%env(CLAM_AV_ADDRESS)%'
+
+    App\Domain\Upload\AntiVirus\ClamAvFileScanner:
+        arguments:
+            $fileSizeLimit: '%env(CLAM_AV_MAX_FILESIZE)%'
 
 when@dev:
     services: &services_dev

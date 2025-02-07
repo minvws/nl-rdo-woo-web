@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Domain\Publication\Dossier\Admin;
 
 use App\Domain\Publication\Attachment\AttachmentRepository;
 use App\Domain\Publication\Dossier\Admin\DossierSearchService;
+use App\Domain\Publication\Dossier\Admin\SearchParameters;
 use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
@@ -49,65 +50,65 @@ class DossierSearchServiceTest extends MockeryTestCase
 
     public function testSearchDossiers(): void
     {
-        $searchTerm = 'foo bar';
+        $searchParameters = new SearchParameters(searchTerm: 'foo bar');
         $dossier = \Mockery::mock(WooDecision::class);
 
         $this->dossierRepository
             ->expects('findBySearchTerm')
-            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation, null, null)
+            ->with($searchParameters->searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation, null, null)
             ->andReturn([$dossier]);
 
         self::assertEquals(
             [$dossier],
-            $this->searchService->searchDossiers($searchTerm),
+            $this->searchService->searchDossiers($searchParameters),
         );
     }
 
     public function testSearchDocuments(): void
     {
-        $searchTerm = 'foo bar';
+        $searchParameters = new SearchParameters(searchTerm: 'foo bar');
         $document = \Mockery::mock(Document::class);
 
         $this->documentRepository
             ->expects('findBySearchTerm')
-            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation, null)
+            ->with($searchParameters->searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation, null)
             ->andReturn([$document]);
 
         self::assertEquals(
             [$document],
-            $this->searchService->searchDocuments($searchTerm),
+            $this->searchService->searchDocuments($searchParameters),
         );
     }
 
     public function testSearchMainDocuments(): void
     {
-        $searchTerm = 'foo bar';
+        $searchParameters = new SearchParameters(searchTerm: 'foo bar');
         $document = \Mockery::mock(Document::class);
 
         $this->abstractMainDocumentRepository
             ->expects('findBySearchTerm')
-            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation, null, null)
+            ->with($searchParameters->searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation, null, null)
             ->andReturn([$document]);
 
         self::assertEquals(
             [$document],
-            $this->searchService->searchMainDocuments($searchTerm),
+            $this->searchService->searchMainDocuments($searchParameters),
         );
     }
 
     public function testSearchAttachments(): void
     {
-        $searchTerm = 'foo bar';
+        $searchParameters = new SearchParameters(searchTerm: 'foo bar');
         $document = \Mockery::mock(Document::class);
 
         $this->abstractAttachmentRepository
             ->expects('findBySearchTerm')
-            ->with($searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation, null, null)
+            ->with($searchParameters->searchTerm, DossierSearchService::SEARCH_RESULT_LIMIT, $this->organisation, null, null)
             ->andReturn([$document]);
 
         self::assertEquals(
             [$document],
-            $this->searchService->searchAttachments($searchTerm),
+            $this->searchService->searchAttachments($searchParameters),
         );
     }
 }

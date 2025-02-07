@@ -76,21 +76,21 @@
     </div>
     {% endif %}
 </div>
-
-{% if has_facets(app.request) %}
+{% if result.searchParameters.hasActiveFacets %}
     {# Facet pills #}
     <ul class="flex flex-wrap pb-1 gap-x-2">
-        {{  macro.inquiry_facets(result) }}
+        {{ macro.inquiry_facets(result) }}
 
         {{ macro.facet_pills('', constant('App\\Service\\Search\\Model\\FacetKey::TYPE').value, result) }}
 
-        {% if is_valid_date(app.request.get('dt').from | default) %}
+        {% set dateFacet = result.searchParameters.facetInputs.getByFacetKey(constant('App\\Service\\Search\\Model\\FacetKey::DATE')) %}
+        {% if dateFacet.hasFromDate %}
             {{ macro.facet_pill('Datum vanaf: ' ~ app.request.get('dt').from | default | format_date('long'), 'dt[from]', '') }}
         {% endif %}
-        {% if is_valid_date(app.request.get('dt').to | default) %}
+        {% if dateFacet.hasToDate %}
             {{ macro.facet_pill('Datum tot: ' ~ app.request.get('dt').to | default | format_date('long'), 'dt[to]', '') }}
         {% endif %}
-        {% if app.request.get('dt').without_date | default is not empty %}
+        {% if dateFacet.isWithoutDate %}
             {{ macro.facet_pill('Datum: niet beschikbaar', 'dt[without_date]', '') }}
         {% endif %}
 

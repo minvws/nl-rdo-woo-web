@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Search\Object;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Search\Index\ElasticDocumentId;
 use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
@@ -14,13 +15,11 @@ use Jaytaph\TypeArray\TypeArray;
  * DocumentHandler would be a better Elasticsearch name
  * But that is really confusing because we also have Documents.
  */
-class ObjectHandler
+readonly class ObjectHandler
 {
-    protected ElasticClientInterface $elastic;
-
-    public function __construct(ElasticClientInterface $elastic)
-    {
-        $this->elastic = $elastic;
+    public function __construct(
+        private ElasticClientInterface $elastic,
+    ) {
     }
 
     /**
@@ -30,7 +29,7 @@ class ObjectHandler
     {
         $response = $this->elastic->exists([
             'index' => ElasticConfig::READ_INDEX,
-            'id' => $document->getDocumentNr(),
+            'id' => ElasticDocumentId::forObject($document),
         ]);
 
         /** @var Elasticsearch $response */
@@ -51,7 +50,7 @@ class ObjectHandler
                         'must' => [
                             [
                                 'term' => [
-                                    '_id' => $document->getDocumentNr(),
+                                    '_id' => ElasticDocumentId::forObject($document),
                                 ],
                             ],
                             [
@@ -81,7 +80,7 @@ class ObjectHandler
             $content = $response->getString('[hits][hits][0][inner_hits][pages][hits][hits][0][_source][content]', '');
 
             return $content;
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return '';
         }
     }

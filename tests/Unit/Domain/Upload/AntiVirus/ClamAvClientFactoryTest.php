@@ -14,7 +14,9 @@ final class ClamAvClientFactoryTest extends UnitTestCase
     {
         $address = 'tcp://foo:123';
 
+        $factory = new ClamAvClientFactory($address);
+
         $this->expectException(Exception::class);
-        ClamAvClientFactory::create($address);
+        $factory->getClient();
     }
 }

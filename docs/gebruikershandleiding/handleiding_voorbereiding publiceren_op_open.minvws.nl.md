@@ -384,21 +384,26 @@ met betrekking tot het openbaar maken van COVID-19 gerelateerde Woo-besluiten. I
 willen gaan publiceren op open.minvws.nl dan bespreken we graag of deze werkwijze werkbaar is of dat we een nieuwe uploadstraat
 moeten toevoegen in dezelfde structuur als de uploadstraten van de andere informatiecategorieën.
 
-Het productierapport bestaat ten minste uit de volgende kolommen:
+Het productierapport bestaat **ten minste** uit de volgende kolommen:
 
-| kolomnaam         | Vereist | Toelichting                                                                                                                                                                                                           |
-|-------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ID                | Ja      | Een nummer dat het document identificeert. Het ID moet uniek zijn binnen een matter.                                                                                                                                  |
-| Matter            | Ja      | Een nummer dat een verzameling van documenten identificeert. Binnen de matter moet een ID uniek zijn.                                                                                                                 |
-| Document          | Ja      | De bestandsnaam van het document                                                                                                                                                                                      |
-| Datum             | Ja      | De datum van het document. Voor e-mails is dit de datum waarop de email is verzonden. Voor andere bestandstype is dit de ‘laatst gewijzigd’-datum.                                                                    |
-| Beoordeling       | Ja      | Beoordeling van het document. Keuze uit: *reeds openbaar, openbaar, deelsopenbaar* en *niet openbaar*                                                                                                                 |
+| kolomnaam         | Vereist | Toelichting                                                                                                                                                                                                         |
+|-------------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ID                | Ja      | Een nummer dat het document identificeert. Het ID moet uniek zijn binnen een matter.                                                                                                                                |
+| Matter            | Ja      | Een nummer dat een verzameling van documenten identificeert. Binnen de matter moet een ID uniek zijn. Een matter bestaat uit minimaal 2 karakters.                                                                                                              |
+| Document          | Ja      | De bestandsnaam van het document                                                                                                                                                                                    |
+| Datum             | Ja      | De datum van het document. Voor e-mails is dit de datum waarop de email is verzonden. Voor andere bestandstype is dit de ‘laatst gewijzigd’-datum.                                                                  |
+| Beoordeling       | Ja      | Beoordeling van het document. Keuze uit: *reeds openbaar, openbaar, deelsopenbaar* en *niet openbaar*                                                                                                               |
 | Beoordelingsgrond | Nee     | De beoordelingsgrond (ook wel: weigeringsgrond) die is gebruikt in het document om gegevens te lakken. Beoordelingsgronden kunnen zowel wetsartikelen uit de woo (nieuwe besluiten) als de wob (oude besluiten) zijn. |
-| Publieke Link     | Nee     | Indien de beoordeling van het document ‘Reeds openbaar is’ kan in deze kolom de URL worden opgenomen waar het document te vinden.                                                                                     |
+| Publieke Link     | Nee     | Indien de beoordeling van het document ‘Reeds openbaar is’ kan in deze kolom de URL worden opgenomen waar het document te vinden.                                                                                   |
 
 Na het uploaden van het productierapport kunnen de documenten geüpload worden. De bestandsnaam dient gelijk te zijn aan het
 ID uit het productierapport en enkel het bestandstype .pdf kan op dit moment geüpload worden. Ons advies is om grotere aantallen
 documenten te bundelen in een .zip of .7z bestand en deze te uploaden voor een snellere verwerking van de documenten.
+
+De bestandstype die worden ondersteund zijn: Afbeelding, Chatbericht, E-mailbericht, Notitie, PDF,
+Presentatie, Spreadsheet, Video, Visitekaartje, Webpagina, Word-document, XML, Zip-bestand en .TXT.
+
+Wanneer het veld leeg is, is het type Onbekend.
 
 ## 6. Metadata per document
 

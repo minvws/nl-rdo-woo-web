@@ -65,7 +65,7 @@ trait HasFacetDefinitions
                 aggregationStrategy: new DateTermAggregationStrategy(),
             ),
             new FacetDefinition(
-                key: FacetKey::DOSSIER_NR,
+                key: FacetKey::PREFIXED_DOSSIER_NR,
                 filter: new MainTypesAndNestedMainTypesFilter(new OrTermFilter()),
                 // Intentionally no agg. strategy: only exists for filtering
             ),

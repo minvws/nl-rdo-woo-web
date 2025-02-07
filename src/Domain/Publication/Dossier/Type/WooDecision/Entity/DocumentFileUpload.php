@@ -7,12 +7,13 @@ namespace App\Domain\Publication\Dossier\Type\WooDecision\Entity;
 use App\Doctrine\TimestampableTrait;
 use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUploadError;
 use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUploadStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentFileUploadRepository;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Publication\FileInfo;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DocumentFileUploadRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class DocumentFileUpload implements EntityWithFileInfo
 {

@@ -1,17 +1,24 @@
 <script setup lang="ts">
-import { debounce } from '@utils';
+import { validateResponse } from '@js/admin/utils';
+import { debounce, getCurrentOrigin } from '@utils';
 import { computed, ref } from 'vue';
 import Icon from '../../Icon.vue';
+import {
+  type PublicationSearchResult,
+  publicationSearchResultsSchema,
+} from '../interface';
 import { PUBLICATION_SEARCH_RESULTS_ID } from './static';
 
 interface Props {
   ariaAutocomplete?: 'list';
   ariaHaspopup: 'dialog' | 'listbox';
   class?: string;
+  dossierId?: string;
   id: string;
-  endpoint: string;
   isExpanded: boolean;
   placeholder?: string;
+  publicationType?: string;
+  resultType?: string;
 }
 
 const props = defineProps<Props>();
@@ -19,7 +26,7 @@ const props = defineProps<Props>();
 const emit = defineEmits<{
   hideResults: [];
   showResults: [];
-  resultsUpdated: [results: object[]];
+  resultsUpdated: [results: PublicationSearchResult[]];
 }>();
 
 const inputElement = ref<HTMLInputElement>();
@@ -28,7 +35,7 @@ const query = ref('');
 const queryLength = computed(() => query.value.length);
 const hasValidSearchQuery = computed(() => queryLength.value >= 3);
 const isResetQueryIconVisible = computed(() => queryLength.value > 0);
-const queryResults = ref<object[]>([]);
+const queryResults = ref<PublicationSearchResult[]>([]);
 
 const handleInput = async () => {
   if (!hasValidSearchQuery.value) {
@@ -37,10 +44,28 @@ const handleInput = async () => {
     return;
   }
 
-  const response = await fetch(`${props.endpoint}?q=${query.value}`);
-  queryResults.value = await response.json();
+  const response = await validateResponse(
+    fetch(createEndpoint(query.value)),
+    publicationSearchResultsSchema,
+  );
+  queryResults.value = response;
   emit('resultsUpdated', queryResults.value);
   showResults();
+};
+
+const createEndpoint = (query: string) => {
+  const endpoint = new URL('/balie/api/publication/search', getCurrentOrigin());
+  endpoint.searchParams.set('q', query);
+  if (props.dossierId) {
+    endpoint.searchParams.set('dossierId', props.dossierId);
+  }
+  if (props.publicationType) {
+    endpoint.searchParams.set('filter[publicationType]', props.publicationType);
+  }
+  if (props.resultType) {
+    endpoint.searchParams.set('filter[resultType]', props.resultType);
+  }
+  return endpoint.toString();
 };
 
 const debouncedHandleInput = debounce(handleInput, 250);
@@ -106,6 +131,7 @@ defineExpose({
       role="combobox"
       type="text"
       v-model="query"
+      data-e2e-name="dossier-search-results"
     />
 
     <button

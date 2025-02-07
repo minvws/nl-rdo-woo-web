@@ -7,7 +7,9 @@ namespace App\Domain\Search\Index\SubType\Mapper;
 use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Search\Index\Dossier\DossierIndexer;
+use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
 use App\Domain\Search\Index\ElasticDocument;
+use App\Domain\Search\Index\ElasticDocumentId;
 use App\Domain\Search\Index\ElasticDocumentType;
 use Webmozart\Assert\Assert;
 
@@ -33,7 +35,6 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
         Assert::isInstanceOfAny($entity, [AbstractAttachment::class, AbstractMainDocument::class]);
 
         $dossierDocument = $this->dossierIndexer->map($entity->getDossier());
-        $dossierNr = $entity->getDossier()->getDossierNr();
         $file = $entity->getFileInfo();
 
         $fields = [
@@ -44,10 +45,10 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
             'date' => $entity->getFormalDate()->format(\DateTimeInterface::ATOM),
             'filename' => $file->getName(),
             'grounds' => $entity->getGrounds(),
-            'dossier_nr' => [$dossierNr],
             'dossiers' => [
                 $dossierDocument->getDocumentValues(),
             ],
+            'prefixed_dossier_nr' => PrefixedDossierNr::forDossier($entity->getDossier()),
         ];
 
         if ($metadata !== null) {
@@ -59,18 +60,10 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
         }
 
         return new ElasticDocument(
-            $this->getId($entity),
+            ElasticDocumentId::forObject($entity),
             ElasticDocumentType::fromEntity($entity->getDossier()),
             ElasticDocumentType::fromEntity($entity),
             $fields,
         );
-    }
-
-    public function getId(object $entity): string
-    {
-        /** @var AbstractAttachment|AbstractMainDocument $entity */
-        Assert::isInstanceOfAny($entity, [AbstractAttachment::class, AbstractMainDocument::class]);
-
-        return $entity->getId()->toRfc4122();
     }
 }

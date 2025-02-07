@@ -6,6 +6,7 @@ namespace App\Service\Elastic;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Search\Index\ElasticDocument;
+use App\Domain\Search\Index\ElasticDocumentId;
 use App\ElasticConfig;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
@@ -88,7 +89,7 @@ class ElasticService
             // Delete dossier document
             $this->elastic->delete([
                 'index' => ElasticConfig::WRITE_INDEX,
-                'id' => $dossier->getDossierNr(),
+                'id' => ElasticDocumentId::forDossier($dossier),
             ]);
         } catch (ClientResponseException $exception) {
             if ($exception->getCode() === 404) {

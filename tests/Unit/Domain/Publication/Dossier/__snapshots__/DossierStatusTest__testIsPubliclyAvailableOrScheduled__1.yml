@@ -1,0 +1,8 @@
+test: testIsPubliclyAvailableOrScheduled
+results_for:
+    new: false
+    concept: false
+    scheduled: true
+    preview: true
+    published: true
+    deleted: false

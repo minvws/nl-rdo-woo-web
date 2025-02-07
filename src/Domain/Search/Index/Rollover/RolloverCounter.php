@@ -171,11 +171,27 @@ readonly class RolloverCounter
         $repository = $this->entityManager->getRepository($class);
 
         /**
+         * When the pageCount is null it is a documenttype for which we don't support pagination. In that case the file
+         * contents are extracted by Tika all at once, which is indexed as one single page. So to prevent a count
+         * mismatch the count used for the sum is adjusted to 1 when the pageCount is null.
+         * Unless the file is not uploaded, in that case 0 must be used as the pageCount. This can be a valid state,
+         * for instance for WooDecision Document entities with a judgement 'already public'.
+         *
          * @var array{count: int, pages: int}
          */
         return $repository->createQueryBuilder('e')
             ->select('COUNT(e.id) as count')
-            ->addSelect('SUM(e.fileInfo.pageCount) as pages')
-            ->getQuery()->getSingleResult();
+            ->addSelect('SUM(
+                    CASE
+                        WHEN e.fileInfo.uploaded = false
+                            THEN 0
+                        WHEN e.fileInfo.pageCount IS NULL
+                            THEN 1
+                        ELSE
+                            e.fileInfo.pageCount
+                    END
+                ) as pages')
+            ->getQuery()
+            ->getSingleResult();
     }
 }

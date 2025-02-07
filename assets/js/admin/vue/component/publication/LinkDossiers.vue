@@ -5,16 +5,14 @@ import type { PublicationSearchResult } from '@admin-fe/component/publication/in
 import PublicationSearchAutocomplete from '@admin-fe/component/publication/search/PublicationSearchAutocomplete.vue';
 import { computed, ref } from 'vue';
 
-const props = withDefaults(
-  defineProps<{
-    endpoint: string;
-    name: string;
-    submitErrors: string[];
-  }>(),
-  {
-    submitErrors: () => [],
-  },
-);
+interface Props {
+  name: string;
+  submitErrors: string[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  submitErrors: () => [],
+});
 
 const isDialogOpen = ref(false);
 const selectedDossiers = ref<Map<string | undefined, PublicationSearchResult>>(
@@ -111,8 +109,9 @@ const hasSubmitErrors = computed(() => props.submitErrors.length > 0);
       <PublicationSearchAutocomplete
         ref="publicationSearchAutocomplete"
         @select="onSelect"
-        :endpoint="props.endpoint"
         label="Te koppelen besluiten"
+        publication-type="woo-decision"
+        result-type="dossier"
       />
     </div>
 
@@ -125,6 +124,7 @@ const hasSubmitErrors = computed(() => props.submitErrors.length > 0);
       @click="onAddDossier"
       class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary"
       type="button"
+      data-e2e-name="link-dossier"
     >
       Koppelen
     </button>
@@ -133,6 +133,7 @@ const hasSubmitErrors = computed(() => props.submitErrors.length > 0);
       @click="cancel"
       class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary"
       type="button"
+      data-e2e-name="cancel-linking"
     >
       Annuleren
     </button>

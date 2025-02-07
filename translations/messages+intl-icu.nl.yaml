@@ -640,6 +640,8 @@ public.documents.judgment.short.partial_public: "Deels openbaar"
 public.documents.judgment.short.already_public: "Reeds openbaar"
 public.documents.judgment.short.not_public: "Niet openbaar"
 
+public.breadcrumbs.departments: "Bestuursorganen"
+
 public.documents.related_documents: "Gerelateerde documenten"
 public.documents.strong_relationship: "Sterke relatie"
 public.documents.refers_to: "{has_or_have} een sterke relatie met dit document."
@@ -917,7 +919,7 @@ public.search_suggestion.terms: "Bedoelde u misschien een van de volgende zoekte
 history.dossier_created.private: 'Publicatie aangemaakt als concept'
 history.dossier_created.public: null
 history.dossier_updated.private: 'De volgende gegevens zijn aangepast: {changes}'
-history.dossier_updated.public: 'Informatie over het besluit bijgewerkt'
+history.dossier_updated.public: 'Informatie over de publicatie bijgewerkt'
 history.dossier_state_concept.private: 'Status aangepast naar concept'
 history.dossier_state_concept.public: null
 history.dossier_state_scheduled.private: 'Publicatie gepland'
@@ -1022,7 +1024,7 @@ publication.dossier.error.opening_inventory_file: "Er is een fout opgetreden bij
 publication.dossier.error.reading_cell: "Er is een fout opgetreden bij het lezen van het productierapport, controleer de structuur"
 publication.dossier.error.missing_document_number: "Rij {rownumber} heeft geen documentnummer"
 publication.dossier.error.invalid_document_number: "Rij {rownumber} heeft een ongeldig documentnummer"
-publication.dossier.error.missing_matter: "Rij {rownumber} heeft geen matter"
+publication.dossier.error.missing_matter: "Rij {rownumber} heeft geen matter van minimaal 2 tekens"
 publication.dossier.error.link_too_long: "Rij {rownumber} heeft een te lange link (max 2048 tekens)"
 publication.dossier.error.file_name_too_long: "Rij {rownumber} heeft een te lange bestandsnaam (max 1024 tekens)"
 publication.dossier.error.generic_document_row_exception: "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"

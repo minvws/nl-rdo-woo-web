@@ -13,7 +13,7 @@
         <h1 class="bhr-title screen:text-center mb-10 print:mb-4">{{ page_title ~ " " ~ user.name }}</h1>
         <div class="bhr-card">
             <div class="bhr-content">
-                <div class="py-6 px-8 bg-bhr-chinese-white mb-8">
+                <div class="py-6 px-8 bg-bhr-chinese-white mb-8" data-e2e-name="user-info">
                     <twig:Admin:Icon name="check-rounded-filled" color="fill-bhr-japanese-laurel" size="32" />
                     <strong class="text-lg ml-3">{{ user_info | trans() }}</strong>
                 </div>

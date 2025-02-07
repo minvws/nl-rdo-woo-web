@@ -7,13 +7,15 @@ namespace App\Domain\Publication\Dossier\Type\WooDecision\Entity;
 use App\Doctrine\TimestampableTrait;
 use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUpdateStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUpdateType;
+use App\Domain\Publication\EntityWithFileInfo;
+use App\Domain\Publication\FileInfo;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\UniqueConstraint(name: 'unique_document_for_set', columns: ['document_file_set_id', 'document_id'])]
-class DocumentFileUpdate
+class DocumentFileUpdate implements EntityWithFileInfo
 {
     use TimestampableTrait;
 
@@ -35,13 +37,17 @@ class DocumentFileUpdate
     #[ORM\Column(length: 255, nullable: false, enumType: DocumentFileUpdateStatus::class)]
     private DocumentFileUpdateStatus $status;
 
-    public function __construct(DocumentFileSet $documentFileSet, Document $document, DocumentFileUpdateType $type)
+    #[ORM\Embedded(class: FileInfo::class, columnPrefix: 'file_')]
+    protected FileInfo $fileInfo;
+
+    public function __construct(DocumentFileSet $documentFileSet, Document $document)
     {
         $this->id = Uuid::v6();
         $this->documentFileSet = $documentFileSet;
         $this->document = $document;
-        $this->type = $type;
+        $this->type = DocumentFileUpdateType::forDocument($document);
         $this->status = DocumentFileUpdateStatus::PENDING;
+        $this->fileInfo = new FileInfo();
     }
 
     public function getId(): Uuid
@@ -72,5 +78,22 @@ class DocumentFileUpdate
     public function getDocument(): Document
     {
         return $this->document;
+    }
+
+    public function getFileInfo(): FileInfo
+    {
+        return $this->fileInfo;
+    }
+
+    public function setFileInfo(FileInfo $fileInfo): self
+    {
+        $this->fileInfo = $fileInfo;
+
+        return $this;
+    }
+
+    public function getFileCacheKey(): string
+    {
+        return $this->id->toRfc4122();
     }
 }

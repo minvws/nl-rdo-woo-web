@@ -18,7 +18,7 @@
                     </td>
                 </tr>
                 {% for attachment in (attachments | default([])) %}
-                <tr>
+                <tr data-e2e-name="dossier-attachments-row">
                     <th class="woo-table-cell-light" scope="row">{{ attachment.type | trans | capitalize }}</th>
                     <td>
                         <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a> ({{ attachment.sourceType | trans }}, {{ attachment.size | size }})

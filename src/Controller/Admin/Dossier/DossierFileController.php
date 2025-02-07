@@ -8,10 +8,10 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileProviderManager;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use App\Service\DownloadResponseHelper;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
-use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -31,7 +31,7 @@ class DossierFileController extends AbstractController
     )]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function download(
-        #[ValueResolver('dossierWithAccessCheck')] AbstractDossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] AbstractDossier $dossier,
         DossierFileType $type,
         string $id,
     ): StreamedResponse {

@@ -9,6 +9,7 @@ use App\Api\Admin\Dossier\DossierReferenceDto;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Webmozart\Assert\Assert;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
@@ -34,7 +35,7 @@ abstract readonly class AbstractMainDocumentDto
         )]
         public \DateTimeImmutable $formalDate,
         public string $type,
-        public ?string $mimeType,
+        public string $mimeType,
         public int $size,
         public string $internalReference,
         public string $language,
@@ -54,12 +55,15 @@ abstract readonly class AbstractMainDocumentDto
 
     public static function fromEntity(AbstractMainDocument $entity): static
     {
+        $mimeType = $entity->getFileInfo()->getMimeType();
+        Assert::notNull($mimeType);
+
         return new static(
             DossierReferenceDto::fromEntity($entity->getDossier()),
             $entity->getFileInfo()->getName() ?? '',
             $entity->getFormalDate(),
             $entity->getType()->value,
-            $entity->getFileInfo()->getMimeType(),
+            $mimeType,
             $entity->getFileInfo()->getSize(),
             $entity->getInternalReference(),
             $entity->getLanguage()->value,

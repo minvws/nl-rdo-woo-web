@@ -15,6 +15,4 @@ interface ElasticSubTypeMapperInterface
      * @param array<int, mixed>|null $pages
      */
     public function map(object $entity, ?array $metadata = null, ?array $pages = null): ElasticDocument;
-
-    public function getId(object $entity): string;
 }

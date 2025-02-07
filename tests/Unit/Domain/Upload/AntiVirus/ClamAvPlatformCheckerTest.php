@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload\AntiVirus;
 
+use App\Domain\Upload\AntiVirus\ClamAvClientFactory;
 use App\Domain\Upload\AntiVirus\ClamAvPlatformChecker;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -13,12 +14,17 @@ use Xenolope\Quahog\Result;
 final class ClamAvPlatformCheckerTest extends MockeryTestCase
 {
     private Client&MockInterface $client;
+    private ClamAvClientFactory&MockInterface $clientFactory;
     private ClamAvPlatformChecker $checker;
 
     public function setUp(): void
     {
         $this->client = \Mockery::mock(Client::class);
-        $this->checker = new ClamAvPlatformChecker($this->client);
+
+        $this->clientFactory = \Mockery::mock(ClamAvClientFactory::class);
+        $this->clientFactory->shouldReceive('getClient')->andReturn($this->client);
+
+        $this->checker = new ClamAvPlatformChecker($this->clientFactory);
 
         parent::setUp();
     }

@@ -1,16 +1,18 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import type { PublicationSearchResult } from '../interface';
 import PublicationSearchForm from './PublicationSearchForm.vue';
 import PublicationSearchInput from './PublicationSearchInput.vue';
 import SearchResults from './SearchResults.vue';
-import { ref } from 'vue';
 import {
   PUBLICATION_SEARCH_INPUT_ID,
   PUBLICATION_SEARCH_RESULTS_ID,
 } from './static';
 
 interface Props {
-  endpoint: string;
+  dossierId?: string;
   label: string;
+  resultType?: string;
 }
 
 const props = defineProps<Props>();
@@ -18,7 +20,7 @@ const props = defineProps<Props>();
 const publicationSearchInput =
   ref<InstanceType<typeof PublicationSearchInput>>();
 const areResultsVisible = ref(false);
-const searchResults = ref<object[]>([]);
+const searchResults = ref<PublicationSearchResult[]>([]);
 
 const onFormEscape = () => {
   publicationSearchInput.value?.setFocus();
@@ -37,7 +39,7 @@ const showSearchResults = () => {
   areResultsVisible.value = true;
 };
 
-const onResultsUpdated = (results: object[]) => {
+const onResultsUpdated = (results: PublicationSearchResult[]) => {
   searchResults.value = results;
 };
 </script>
@@ -63,9 +65,10 @@ const onResultsUpdated = (results: object[]) => {
         @showResults="showSearchResults"
         ariaHaspopup="dialog"
         class="w-60 peer"
-        :endpoint="props.endpoint"
+        :dossier-id="props.dossierId"
         :id="PUBLICATION_SEARCH_INPUT_ID"
         :is-expanded="areResultsVisible"
+        :result-type="props.resultType"
       />
     </div>
 

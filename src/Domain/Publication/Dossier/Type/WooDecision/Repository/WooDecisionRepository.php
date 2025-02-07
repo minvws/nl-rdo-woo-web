@@ -14,6 +14,7 @@ use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use App\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
 use App\Entity\Organisation;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends AbstractDossierRepository<WooDecision>
@@ -107,5 +108,15 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
         ;
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findOne(Uuid $dossierId): WooDecision
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.id = :id')
+            ->setParameter('id', $dossierId);
+
+        /** @var WooDecision */
+        return $qb->getQuery()->getSingleResult();
     }
 }

@@ -2,6 +2,7 @@
 Documentation       Simple set to be run in PR's for a quick validation.
 Resource            ../resources/Setup.resource
 Resource            ../resources/WooDecision.resource
+Resource            ../resources/Organisations.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
@@ -19,6 +20,7 @@ Create a WooDecision
 
 *** Keywords ***
 Suite Setup
+  Cleansheet
   Suite Setup - CI
   Login Admin
   Select Organisation

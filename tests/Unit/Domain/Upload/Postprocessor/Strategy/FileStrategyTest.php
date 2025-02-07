@@ -17,14 +17,12 @@ use App\Domain\Upload\Process\FileStorer;
 use App\Domain\Upload\UploadedFile;
 use App\Service\HistoryService;
 use App\Tests\Unit\UnitTestCase;
-use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Uid\Uuid;
 
 final class FileStrategyTest extends UnitTestCase
 {
-    private EntityManagerInterface&MockInterface $doctrine;
     private LoggerInterface&MockInterface $logger;
     private SubTypeIngester&MockInterface $ingestService;
     private HistoryService&MockInterface $historyService;
@@ -42,11 +40,6 @@ final class FileStrategyTest extends UnitTestCase
         parent::setUp();
 
         $this->documentRepository = \Mockery::mock(DocumentRepository::class);
-        $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
-        $this->doctrine
-            ->shouldReceive('getRepository')
-            ->with(Document::class)
-            ->andReturn($this->documentRepository);
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->ingestService = \Mockery::mock(SubTypeIngester::class);
         $this->historyService = \Mockery::mock(HistoryService::class);
@@ -116,6 +109,66 @@ final class FileStrategyTest extends UnitTestCase
 
         $strategy = $this->createStrategy();
         $strategy->process($this->file, $this->dossier, $this->documentId);
+    }
+
+    public function testProcessWithGivenFileType(): void
+    {
+        $fileType = 'txt';
+
+        $this->documentRepository
+            ->shouldReceive('findOneByDossierAndDocumentId')
+            ->with($this->dossier, $this->documentId)
+            ->andReturn($this->document);
+
+        $this->document
+            ->shouldReceive('shouldBeUploaded')
+            ->once()
+            ->andReturnTrue();
+
+        $this->document
+            ->shouldReceive('getFileInfo')
+            ->andReturn($this->fileInfo);
+
+        $this->fileInfo
+            ->shouldReceive('isUploaded')
+            ->once()
+            ->andReturnFalse();
+
+        $this->fileStorer
+            ->shouldReceive('storeForDocument')
+            ->with($this->file, $this->document, $this->documentId, $fileType);
+
+        $this->ingestService
+            ->shouldReceive('ingest')
+            ->with(
+                $this->document,
+                \Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
+            );
+
+        $this->fileInfo
+            ->shouldNotHaveReceived('getType');
+
+        $this->fileInfo
+            ->shouldReceive('getSize')
+            ->andReturn(1024);
+
+        $this->fileInfo
+            ->shouldReceive('getType')
+            ->andReturn($fileType);
+
+        $this->historyService
+            ->shouldReceive('addDocumentEntry')
+            ->with(
+                $this->document,
+                'document_uploaded',
+                [
+                    'filetype' => $fileType,
+                    'filesize' => '1 KB',
+                ],
+            );
+
+        $strategy = $this->createStrategy();
+        $strategy->process($this->file, $this->dossier, $this->documentId, $fileType);
     }
 
     public function testProcessWhenFailingToFetchDocument(): void
@@ -212,7 +265,7 @@ final class FileStrategyTest extends UnitTestCase
     private function createStrategy(): FileStrategy
     {
         return new FileStrategy(
-            $this->doctrine,
+            $this->documentRepository,
             $this->logger,
             $this->ingestService,
             $this->historyService,

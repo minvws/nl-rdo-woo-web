@@ -9,7 +9,7 @@ use App\Domain\Upload\UploadedFile;
 
 interface FilePostprocessorStrategyInterface
 {
-    public function process(UploadedFile $file, WooDecision $dossier, string $documentId): void;
+    public function process(UploadedFile $file, WooDecision $dossier, string $documentId, ?string $fileType = null): void;
 
     public function canProcess(UploadedFile $file, WooDecision $dossier): bool;
 }

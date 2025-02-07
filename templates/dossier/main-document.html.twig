@@ -4,4 +4,5 @@
 {% set dateLabel = 'global.period' | trans %}
 
 {% block dossier_date %}
+    {{ period(dossier.dateFrom, dossier.dateTo) }}
 {% endblock %}

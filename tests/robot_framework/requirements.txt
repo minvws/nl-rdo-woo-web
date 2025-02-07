@@ -7,4 +7,5 @@ robotframework-tidy >= 4.14.0
 robotframework-datetime-tz >= 1.0.6
 robotframework-dependencylibrary >= 4.0.1
 pyotp >= 2.9.0
-opencv-python-headless >= 4.10.0
+pyzbar >= 0.1.9
+pillow >= 11.0.0

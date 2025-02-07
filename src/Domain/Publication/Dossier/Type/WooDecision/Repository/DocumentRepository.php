@@ -142,7 +142,7 @@ class DocumentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Document[]
+     * @return list<Document>
      */
     public function findBySearchTerm(
         string $searchTerm,

@@ -18,7 +18,7 @@ enum FacetKey: string
     case DEPARTMENT = 'department';
     case PERIOD = 'period';
     case DATE = 'date';
-    case DOSSIER_NR = 'dnr';
+    case PREFIXED_DOSSIER_NR = 'dnr';
     case INQUIRY_DOSSIERS = 'dsi';
     case INQUIRY_DOCUMENTS = 'dci';
 
@@ -36,7 +36,7 @@ enum FacetKey: string
             self::DEPARTMENT => StringValuesFacetInput::class,
             self::PERIOD => StringValuesFacetInput::class,
             self::DATE => DateFacetInput::class,
-            self::DOSSIER_NR => StringValuesFacetInput::class,
+            self::PREFIXED_DOSSIER_NR => StringValuesFacetInput::class,
             self::INQUIRY_DOSSIERS => StringValuesFacetInput::class,
             self::INQUIRY_DOCUMENTS => StringValuesFacetInput::class,
         };
@@ -53,7 +53,7 @@ enum FacetKey: string
             self::DEPARTMENT => 'department_names',
             self::PERIOD => 'date_period',
             self::DATE => 'date_filter',
-            self::DOSSIER_NR => 'dossier_nr',
+            self::PREFIXED_DOSSIER_NR => 'prefixed_dossier_nr',
             self::INQUIRY_DOSSIERS => 'inquiry_ids',
             self::INQUIRY_DOCUMENTS => 'inquiry_ids',
         };
@@ -70,7 +70,7 @@ enum FacetKey: string
             self::DEPARTMENT => 'dep',
             self::PERIOD => 'prd',
             self::DATE => 'dt',
-            self::DOSSIER_NR => 'dnr',
+            self::PREFIXED_DOSSIER_NR => 'dnr',
             self::INQUIRY_DOSSIERS => 'dsi',
             self::INQUIRY_DOCUMENTS => 'dci',
         };

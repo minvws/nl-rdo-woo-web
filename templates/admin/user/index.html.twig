@@ -17,7 +17,7 @@
     <div class="bhr-card">
         {% set alerts = app.flashes('backend') %}
         {% if alerts | length > 0 %}
-            <div class="mb-8">
+            <div class="mb-8" data-e2e-name="alerts">
                 {% for messages in alerts %}
                     {% for label, message in messages %}
                         <twig:Admin:Alert type="{{ label }}">

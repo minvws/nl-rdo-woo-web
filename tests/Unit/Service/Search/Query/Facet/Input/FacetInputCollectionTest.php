@@ -21,10 +21,10 @@ final class FacetInputCollectionTest extends UnitTestCase
         $facetInput = \Mockery::mock(FacetInput::class);
 
         $collection = new FacetInputCollection(...[
-            FacetKey::DOSSIER_NR->value => $facetInput,
+            FacetKey::PREFIXED_DOSSIER_NR->value => $facetInput,
         ]);
 
-        self::assertSame($facetInput, $collection->getByFacetKey(FacetKey::DOSSIER_NR));
+        self::assertSame($facetInput, $collection->getByFacetKey(FacetKey::PREFIXED_DOSSIER_NR));
 
         $this->expectException(InvalidArgumentException::class);
         $collection->getByFacetKey(FacetKey::DEPARTMENT);
@@ -43,11 +43,11 @@ final class FacetInputCollectionTest extends UnitTestCase
         $facetInput = \Mockery::mock(FacetInput::class);
 
         $collection = new FacetInputCollection(...[
-            FacetKey::DOSSIER_NR->value => $facetInput,
+            FacetKey::PREFIXED_DOSSIER_NR->value => $facetInput,
         ]);
 
         $facetDefinition = \Mockery::mock(FacetDefinition::class);
-        $facetDefinition->shouldReceive('getFacetKey')->andReturn(FacetKey::DOSSIER_NR);
+        $facetDefinition->shouldReceive('getFacetKey')->andReturn(FacetKey::PREFIXED_DOSSIER_NR);
 
         self::assertSame($facetInput, $collection->getByFacetDefinition($facetDefinition));
     }
@@ -69,7 +69,7 @@ final class FacetInputCollectionTest extends UnitTestCase
         $facetInputB = \Mockery::mock(FacetInput::class);
 
         $facets = [
-            FacetKey::DOSSIER_NR->value => $facetInputA,
+            FacetKey::PREFIXED_DOSSIER_NR->value => $facetInputA,
             FacetKey::DEPARTMENT->value => $facetInputB,
         ];
 
@@ -88,7 +88,7 @@ final class FacetInputCollectionTest extends UnitTestCase
         $facetInputC = \Mockery::mock(FacetInput::class);
 
         $facets = [
-            FacetKey::DOSSIER_NR->value => $facetInputA,
+            FacetKey::PREFIXED_DOSSIER_NR->value => $facetInputA,
             FacetKey::DEPARTMENT->value => $facetInputB,
         ];
 
@@ -107,7 +107,7 @@ final class FacetInputCollectionTest extends UnitTestCase
 
         self::assertEquals(
             [
-                FacetKey::DOSSIER_NR->value => $facetInputA,
+                FacetKey::PREFIXED_DOSSIER_NR->value => $facetInputA,
                 FacetKey::DEPARTMENT->value => $facetInputB,
                 FacetKey::GROUNDS->value => $facetInputC,
             ],

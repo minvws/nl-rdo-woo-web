@@ -8,13 +8,11 @@ use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Attachment\AttachmentRepository;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Publication\MainDocument\MainDocumentRepository;
 use App\Service\Security\Authorization\AuthorizationMatrix;
-use Symfony\Component\Uid\Uuid;
 
 readonly class DossierSearchService
 {
@@ -30,76 +28,69 @@ readonly class DossierSearchService
     }
 
     /**
-     * @return AbstractDossier[]
+     * @return list<AbstractDossier>
      */
-    public function searchDossiers(
-        string $searchTerm,
-        ?Uuid $dossierId = null,
-        ?DossierType $dossierType = null,
-    ): array {
+    public function searchDossiers(SearchParameters $searchParameters): array
+    {
         $organisation = $this->authorizationMatrix->getActiveOrganisation();
 
         return $this->dossierRepository->findBySearchTerm(
-            searchTerm: $searchTerm,
+            searchTerm: $searchParameters->searchTerm,
             limit: self::SEARCH_RESULT_LIMIT,
             organisation: $organisation,
-            dossierId: $dossierId,
-            dossierType: $dossierType,
+            dossierId: $searchParameters->dossierId,
+            dossierType: $searchParameters->dossierType,
         );
     }
 
     /**
-     * @return Document[]
+     * @return list<Document>
      */
-    public function searchDocuments(
-        string $searchTerm,
-        ?Uuid $dossierId = null,
-    ): array {
+    public function searchDocuments(SearchParameters $searchParameters): array
+    {
+        if ($searchParameters->shouldNotIncludeWooDecisionDocuments()) {
+            return [];
+        }
+
         $organisation = $this->authorizationMatrix->getActiveOrganisation();
 
         return $this->documentRepository->findBySearchTerm(
-            searchTerm: $searchTerm,
+            searchTerm: $searchParameters->searchTerm,
             limit: self::SEARCH_RESULT_LIMIT,
             organisation: $organisation,
-            dossierId: $dossierId,
+            dossierId: $searchParameters->dossierId,
         );
     }
 
     /**
      * @return list<AbstractMainDocument>
      */
-    public function searchMainDocuments(
-        string $searchTerm,
-        ?Uuid $dossierId = null,
-        ?DossierType $dossierType = null,
-    ): array {
+    public function searchMainDocuments(SearchParameters $searchParameters): array
+    {
         $organisation = $this->authorizationMatrix->getActiveOrganisation();
 
         return $this->mainDocumentRepository->findBySearchTerm(
-            searchTerm: $searchTerm,
+            searchTerm: $searchParameters->searchTerm,
             limit: self::SEARCH_RESULT_LIMIT,
             organisation: $organisation,
-            dossierId: $dossierId,
-            dossierType: $dossierType,
+            dossierId: $searchParameters->dossierId,
+            dossierType: $searchParameters->dossierType,
         );
     }
 
     /**
      * @return list<AbstractAttachment>
      */
-    public function searchAttachments(
-        string $searchTerm,
-        ?Uuid $dossierId = null,
-        ?DossierType $dossierType = null,
-    ): array {
+    public function searchAttachments(SearchParameters $searchParameters): array
+    {
         $organisation = $this->authorizationMatrix->getActiveOrganisation();
 
         return $this->attachmentRepository->findBySearchTerm(
-            searchTerm: $searchTerm,
+            searchTerm: $searchParameters->searchTerm,
             limit: self::SEARCH_RESULT_LIMIT,
             organisation: $organisation,
-            dossierId: $dossierId,
-            dossierType: $dossierType,
+            dossierId: $searchParameters->dossierId,
+            dossierType: $searchParameters->dossierType,
         );
     }
 }

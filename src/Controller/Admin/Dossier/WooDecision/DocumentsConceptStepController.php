@@ -98,7 +98,7 @@ class DocumentsConceptStepController extends AbstractController
             'documentForm' => $documentForm,
             'dataPath' => $dataPath,
             'inventoryStatus' => new ProductionReportStatus($dossier),
-            'mimeTypes' => UploadGroupId::WOO_DECISION_DOCUMENTS->getMimeTypes(),
+            'uploadGroupId' => UploadGroupId::WOO_DECISION_DOCUMENTS,
         ]);
     }
 

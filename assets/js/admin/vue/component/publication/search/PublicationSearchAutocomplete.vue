@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { PublicationSearchResult } from '@admin-fe/component/publication/interface';
 import { ref } from 'vue';
+import type { PublicationSearchResult } from '../interface';
 import PublicationSearchForm from './PublicationSearchForm.vue';
 import PublicationSearchInput from './PublicationSearchInput.vue';
 import SearchResultsListbox from './SearchResultsListbox.vue';
@@ -10,8 +10,9 @@ import {
 } from './static';
 
 interface Props {
-  endpoint: string;
   label: string;
+  publicationType?: string;
+  resultType?: string;
 }
 
 const props = defineProps<Props>();
@@ -23,7 +24,7 @@ const emit = defineEmits<{
 const publicationSearchInput =
   ref<InstanceType<typeof PublicationSearchInput>>();
 const areResultsVisible = ref(false);
-const searchResults = ref<object[]>([]);
+const searchResults = ref<PublicationSearchResult[]>([]);
 
 const onFormEscape = () => {
   publicationSearchInput.value?.setFocus();
@@ -42,7 +43,7 @@ const showSearchResults = () => {
   areResultsVisible.value = true;
 };
 
-const onResultsUpdated = (results: object[]) => {
+const onResultsUpdated = (results: PublicationSearchResult[]) => {
   searchResults.value = results;
 };
 
@@ -77,8 +78,9 @@ defineExpose({
       class="rounded-none"
       :id="PUBLICATION_SEARCH_INPUT_ID"
       placeholder="Zoeken op dossiernummer"
-      :endpoint="props.endpoint"
       :is-expanded="areResultsVisible"
+      :publication-type="props.publicationType"
+      :result-type="props.resultType"
     />
 
     <div

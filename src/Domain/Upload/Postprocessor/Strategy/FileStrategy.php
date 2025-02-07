@@ -6,7 +6,6 @@ namespace App\Domain\Upload\Postprocessor\Strategy;
 
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
 use App\Domain\Upload\FileType\FileType;
@@ -16,28 +15,24 @@ use App\Domain\Upload\Process\FileStorer;
 use App\Domain\Upload\UploadedFile;
 use App\Service\HistoryService;
 use App\Utils;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-final readonly class FileStrategy implements FilePostprocessorStrategyInterface
+readonly class FileStrategy implements FilePostprocessorStrategyInterface
 {
-    private DocumentRepository $documentRepository;
-
     public function __construct(
-        private EntityManagerInterface $doctrine,
+        private DocumentRepository $documentRepository,
         private LoggerInterface $logger,
         private SubTypeIngester $ingestService,
         private HistoryService $historyService,
         private FileStorer $fileStorer,
         private FileTypeHelper $fileTypeHandler,
     ) {
-        $this->documentRepository = $this->doctrine->getRepository(Document::class);
     }
 
-    public function process(UploadedFile $file, WooDecision $dossier, string $documentId): void
+    public function process(UploadedFile $file, WooDecision $dossier, string $documentId, ?string $fileType = null): void
     {
         $document = $this->documentRepository->findOneByDossierAndDocumentId($dossier, $documentId);
         if ($document === null) {
@@ -63,7 +58,12 @@ final readonly class FileStrategy implements FilePostprocessorStrategyInterface
             return;
         }
 
-        $this->fileStorer->storeForDocument($file, $document, $documentId, $file->getOriginalFileExtension());
+        $this->fileStorer->storeForDocument(
+            $file,
+            $document,
+            $documentId,
+            $fileType ?? $file->getOriginalFileExtension(),
+        );
 
         $this->ingestService->ingest($document, new IngestProcessOptions(forceRefresh: true));
 

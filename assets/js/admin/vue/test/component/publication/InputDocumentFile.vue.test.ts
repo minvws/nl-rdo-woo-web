@@ -35,8 +35,10 @@ describe('The "InputDocumentFile" component', () => {
     );
   });
 
-  test('should pass the provided group id', () => {
-    expect(getInputFileComponent().props('groupId')).toBe('mocked-group-id');
+  test('should pass a payload containing the provided group id', () => {
+    expect(getInputFileComponent().props('payload')).toEqual({
+      groupId: 'mocked-group-id',
+    });
   });
 
   test('should pass the provided allowed mime types', () => {

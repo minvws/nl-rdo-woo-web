@@ -92,19 +92,19 @@ final class SearchTest extends ApiTestCase
             'organisation' => $organisation,
         ]);
 
-        $annualReportDocument = AnnualReportMainDocumentFactory::createOne([
+        $annualReportMainDocument = AnnualReportMainDocumentFactory::createOne([
             'dossier' => $annualReport,
             'fileInfo' => FileInfoFactory::new()->createOne([
                 'name' => 'maindocument fancy document.pdf',
             ]),
-        ]);
+        ])->_real();
 
         $annualReportAttachment = AnnualReportAttachmentFactory::createOne([
             'dossier' => $annualReport,
             'fileInfo' => FileInfoFactory::new()->createOne([
                 'name' => 'attachment FANCY document.pdf',
             ]),
-        ]);
+        ])->_real();
 
         $searchQuery = '  fancy document  ';
 
@@ -122,32 +122,44 @@ final class SearchTest extends ApiTestCase
 
         self::assertResponseIsSuccessful();
         self::assertMatchesResourceCollectionJsonSchema(SearchResultDto::class);
-        self::assertCount(4, $response->toArray(false));
-        self::assertJsonContains([
+
+        $responseAsArray = $response->toArray(false);
+        usort($responseAsArray, $this->sortById(...));
+
+        self::assertCount(4, $responseAsArray);
+
+        $expected = [
             [
-                'id' => $dossiers[1]->getDossierNr(),
+                'id' => $documents[0]->getId()->__toString(),
+                'number' => $documents[0]->getDocumentNr(),
+                'type' => SearchResultType::DOCUMENT->value,
+                'title' => $documents[0]->getFileInfo()->getName(),
+            ],
+            [
+                'id' => $dossiers[1]->getId()->__toString(),
+                'number' => $dossiers[1]->getDossierNr(),
                 'type' => SearchResultType::DOSSIER->value,
                 'title' => $dossiers[1]->getTitle(),
             ],
             [
-                'id' => $annualReportDocument->_real()->getId()->__toString(),
+                'id' => $annualReportMainDocument->getId()->__toString(),
+                'number' => null,
                 'type' => SearchResultType::MAIN_DOCUMENT->value,
-                'title' => $annualReportDocument->_real()->getFileInfo()->getName(),
+                'title' => $annualReportMainDocument->getFileInfo()->getName(),
             ],
             [
-                'id' => $annualReportAttachment->_real()->getId()->__toString(),
+                'id' => $annualReportAttachment->getId()->__toString(),
+                'number' => null,
                 'type' => SearchResultType::ATTACHMENT->value,
-                'title' => $annualReportAttachment->_real()->getFileInfo()->getName(),
+                'title' => $annualReportAttachment->getFileInfo()->getName(),
             ],
-            [
-                'id' => $documents[0]->getDocumentNr(),
-                'type' => SearchResultType::DOCUMENT->value,
-                'title' => $documents[0]->getFileInfo()->getName(),
-            ],
-        ]);
+        ];
+        usort($expected, $this->sortById(...));
+
+        self::assertArraySubset($expected, $responseAsArray);
     }
 
-    public function testSearchFilteredByType(): void
+    public function testSearchFilteredByPublicationType(): void
     {
         $organisation = OrganisationFactory::createOne();
 
@@ -163,7 +175,7 @@ final class SearchTest extends ApiTestCase
             ])
             ->create(['organisation' => $organisation]);
 
-        $annualReportDocumens = AnnualReportMainDocumentFactory::new()
+        $annualReportMainDocuments = AnnualReportMainDocumentFactory::new()
             ->sequence([
                 [
                     'dossier' => $annualReports[0],
@@ -198,7 +210,7 @@ final class SearchTest extends ApiTestCase
                 [
                     'dossier' => $covenants[1],
                     'fileInfo' => FileInfoFactory::new()->createOne([
-                        'name' => 'maindocument foobar document.pdf',
+                        'name' => 'maindocument foobar 2 document.pdf',
                     ]),
                 ],
             ])
@@ -211,7 +223,7 @@ final class SearchTest extends ApiTestCase
             ->request(
                 Request::METHOD_GET,
                 sprintf(
-                    '/balie/api/publication/search?q=%s&filter[type]=%s',
+                    '/balie/api/publication/search?q=%s&filter[publicationType]=%s',
                     rawurlencode($searchQuery),
                     rawurlencode(DossierType::ANNUAL_REPORT->value),
                 ),
@@ -224,19 +236,137 @@ final class SearchTest extends ApiTestCase
 
         self::assertResponseIsSuccessful();
         self::assertMatchesResourceCollectionJsonSchema(SearchResultDto::class);
-        self::assertCount(2, $response->toArray(false));
-        self::assertJsonContains([
+
+        $responseAsArray = $response->toArray(false);
+        usort($responseAsArray, $this->sortById(...));
+
+        self::assertCount(2, $responseAsArray);
+
+        $expected = [
             [
-                'id' => $annualReports[1]->getDossierNr(),
+                'id' => $annualReports[1]->getId()->__toString(),
+                'number' => $annualReports[1]->getDossierNr(),
                 'type' => SearchResultType::DOSSIER->value,
                 'title' => $annualReports[1]->getTitle(),
             ],
             [
-                'id' => $annualReportDocumens[1]->getId()->__toString(),
+                'id' => $annualReportMainDocuments[1]->getId()->__toString(),
+                'number' => null,
                 'type' => SearchResultType::MAIN_DOCUMENT->value,
-                'title' => $annualReportDocumens[1]->getFileInfo()->getName(),
+                'title' => $annualReportMainDocuments[1]->getFileInfo()->getName(),
             ],
-        ]);
+        ];
+        usort($expected, $this->sortById(...));
+
+        self::assertArraySubset($expected, $responseAsArray);
+    }
+
+    public function testSearchFilteredByResultType(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+
+        $user = UserFactory::new()
+            ->asDossierAdmin()
+            ->isEnabled()
+            ->create(['organisation' => $organisation]);
+
+        $annualReports = AnnualReportFactory::new()
+            ->sequence([
+                ['title' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'],
+                ['title' => 'A very foobar document'], // This should be found
+            ])
+            ->create(['organisation' => $organisation]);
+
+        $annualReportMainDocuments = AnnualReportMainDocumentFactory::new()
+            ->sequence([
+                [
+                    'dossier' => $annualReports[0],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument fancy document.pdf',
+                    ]),
+                ],
+                [
+                    'dossier' => $annualReports[1],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument foobar document.pdf', // This should be found
+                    ]),
+                ],
+            ])
+            ->create();
+
+        $covenants = CovenantFactory::new()
+            ->sequence([
+                ['title' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'],
+                ['title' => 'A very foobar document'],
+            ])
+            ->create(['organisation' => $organisation]);
+
+        $covenantMainDocuments = CovenantMainDocumentFactory::new()
+            ->sequence([
+                [
+                    'dossier' => $covenants[0],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument foobar 1 document.pdf',
+                    ]),
+                ],
+                [
+                    'dossier' => $covenants[1],
+                    'fileInfo' => FileInfoFactory::new()->createOne([
+                        'name' => 'maindocument foobar 2 document.pdf',
+                    ]),
+                ],
+            ])
+            ->create();
+
+        $searchQuery = 'foobar  ';
+
+        $response = static::createClient()
+            ->loginUser($user->_real(), 'balie')
+            ->request(
+                Request::METHOD_GET,
+                sprintf(
+                    '/balie/api/publication/search?q=%s&filter[resultType]=%s',
+                    rawurlencode($searchQuery),
+                    rawurlencode(SearchResultType::MAIN_DOCUMENT->value),
+                ),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
+                ],
+            );
+
+        self::assertResponseIsSuccessful();
+        self::assertMatchesResourceCollectionJsonSchema(SearchResultDto::class);
+
+        $responseAsArray = $response->toArray(false);
+        usort($responseAsArray, $this->sortById(...));
+
+        self::assertCount(3, $responseAsArray);
+
+        $expected = [
+            [
+                'id' => $annualReportMainDocuments[1]->getId()->__toString(),
+                'number' => null,
+                'type' => SearchResultType::MAIN_DOCUMENT->value,
+                'title' => $annualReportMainDocuments[1]->getFileInfo()->getName(),
+            ],
+            [
+                'id' => $covenantMainDocuments[0]->getId()->__toString(),
+                'number' => null,
+                'type' => SearchResultType::MAIN_DOCUMENT->value,
+                'title' => $covenantMainDocuments[0]->getFileInfo()->getName(),
+            ],
+            [
+                'id' => $covenantMainDocuments[1]->getId()->__toString(),
+                'number' => null,
+                'type' => SearchResultType::MAIN_DOCUMENT->value,
+                'title' => $covenantMainDocuments[1]->getFileInfo()->getName(),
+            ],
+        ];
+        usort($expected, $this->sortById(...));
+
+        self::assertArraySubset($expected, $responseAsArray);
     }
 
     public function testSearchFilteredByUuid(): void
@@ -256,7 +386,7 @@ final class SearchTest extends ApiTestCase
             ])
             ->create(['organisation' => $organisation]);
 
-        $annualReportDocumens = AnnualReportMainDocumentFactory::new()
+        $annualReportMainDocuments = AnnualReportMainDocumentFactory::new()
             ->sequence([
                 [
                     'dossier' => $annualReports[0],
@@ -323,19 +453,29 @@ final class SearchTest extends ApiTestCase
 
         self::assertResponseIsSuccessful();
         self::assertMatchesResourceCollectionJsonSchema(SearchResultDto::class);
-        self::assertCount(2, $response->toArray(false));
-        self::assertJsonContains([
+
+        $responseAsArray = $response->toArray(false);
+        usort($responseAsArray, $this->sortById(...));
+
+        self::assertCount(2, $responseAsArray);
+
+        $expected = [
             [
-                'id' => $annualReports[1]->getDossierNr(),
+                'id' => $annualReports[1]->getId()->__toString(),
+                'number' => $annualReports[1]->getDossierNr(),
                 'type' => SearchResultType::DOSSIER->value,
                 'title' => $annualReports[1]->getTitle(),
             ],
             [
-                'id' => $annualReportDocumens[2]->getId()->__toString(),
+                'id' => $annualReportMainDocuments[2]->getId()->__toString(),
+                'number' => null,
                 'type' => SearchResultType::MAIN_DOCUMENT->value,
-                'title' => $annualReportDocumens[2]->getFileInfo()->getName(),
+                'title' => $annualReportMainDocuments[2]->getFileInfo()->getName(),
             ],
-        ]);
+        ];
+        usort($expected, $this->sortById(...));
+
+        self::assertArraySubset($expected, $responseAsArray);
     }
 
     public function testSearchQueryParamIsRequired(): void
@@ -419,5 +559,14 @@ final class SearchTest extends ApiTestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains(['violations' => $violations]);
+    }
+
+    /**
+     * @param array{id:string} $a
+     * @param array{id:string} $b
+     */
+    private function sortById(array $a, array $b): int
+    {
+        return $a['id'] <=> $b['id'];
     }
 }

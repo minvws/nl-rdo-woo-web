@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
+use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Search\Index\ElasticDocument;
 use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 use App\Service\Elastic\ElasticService;
+use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Jaytaph\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -121,5 +123,46 @@ class ElasticServiceTest extends MockeryTestCase
         ]);
 
         $this->elasticService->removeDocument($id);
+    }
+
+    public function testRemoveDossierSuccessful(): void
+    {
+        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier->shouldReceive('getId->toRfc4122')->andReturn($id = 'foo-123');
+
+        $this->elasticClient->expects('delete')->with([
+            'index' => ElasticConfig::WRITE_INDEX,
+            'id' => $id,
+        ]);
+
+        $this->elasticService->removeDossier($dossier);
+    }
+
+    public function testRemoveDossierNotFoundIsSilentlyIgnored(): void
+    {
+        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier->shouldReceive('getId->toRfc4122')->andReturn($id = 'foo-123');
+
+        $this->elasticClient->expects('delete')->with([
+            'index' => ElasticConfig::WRITE_INDEX,
+            'id' => $id,
+        ])->andThrows(new ClientResponseException('', 404));
+
+        $this->elasticService->removeDossier($dossier);
+    }
+
+    public function testRemoveDossierExceptionIsThrown(): void
+    {
+        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier->shouldReceive('getId->toRfc4122')->andReturn($id = 'foo-123');
+
+        $this->elasticClient->expects('delete')->with([
+            'index' => ElasticConfig::WRITE_INDEX,
+            'id' => $id,
+        ])->andThrows(new ClientResponseException('', 500));
+
+        $this->expectException(ClientResponseException::class);
+
+        $this->elasticService->removeDossier($dossier);
     }
 }

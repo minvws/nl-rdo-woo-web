@@ -7,7 +7,6 @@ namespace App\Twig\Runtime;
 use App\Citation;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use App\Domain\Publication\History\History;
@@ -17,20 +16,16 @@ use App\Service\HistoryService;
 use App\Service\Search\Query\Facet\FacetTwigService;
 use App\Service\Search\Query\QueryGenerator;
 use App\Service\Security\OrganisationSwitcher;
-use App\Service\Storage\ThumbnailStorageService;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 readonly class WooExtensionRuntime implements RuntimeExtensionInterface
 {
     public function __construct(
         private RequestStack $requestStack,
-        private ThumbnailStorageService $storageService,
         private FacetTwigService $facetService,
         private DocumentUploadQueue $uploadQueue,
         private OrganisationSwitcher $organisationSwitcher,
@@ -82,22 +77,6 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     public function period(?\DateTimeImmutable $from, ?\DateTimeImmutable $to): string
     {
         return DateRangeConverter::convertToString($from, $to);
-    }
-
-    /**
-     * Returns true if the given query string has any facets.
-     */
-    public function hasFacets(Request $request): bool
-    {
-        return $this->facetService->containsFacets($request->query);
-    }
-
-    /**
-     * Returns true if the given document and pagenr has a thumbnail. For non-paged documents pageNr 0 can be used.
-     */
-    public function hasThumbnail(Document $document, int $pageNr): bool
-    {
-        return $this->storageService->exists($document, $pageNr);
     }
 
     /**

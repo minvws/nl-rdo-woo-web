@@ -169,18 +169,18 @@ export const uploadArea = (
   };
 
   const updateInputFiles = (files: FileList) => {
-    const { validFiles, invalidFiles: invalid } = validateFiles(
-      files,
+    const { invalidSize, invalidType, valid } = validateFiles(
+      [...files],
       getValidMimeTypes(),
       getMaxFileSize(),
     );
-    invalidFiles.processInvalidFiles(invalid);
+    invalidFiles.processInvalidFiles([...invalidSize, ...invalidType]);
 
-    if (validFiles.length === 0) {
+    if (valid.length === 0) {
       return;
     }
 
-    setInputElementFiles(validFiles);
+    setInputElementFiles(valid);
     filesChanged();
   };
 
@@ -199,16 +199,11 @@ export const uploadArea = (
   };
 
   const onFileRemoved = (removedFile: File) => {
-    const dataTransfer = new DataTransfer();
-    getInputElementFiles().forEach((file) => {
-      if (areFilesEqual(file, removedFile)) {
-        return;
-      }
+    const remainingFiles = getInputElementFiles().filter(
+      (file) => !areFilesEqual(file, removedFile),
+    );
 
-      dataTransfer.items.add(file);
-    });
-
-    setInputElementFiles(dataTransfer.files);
+    setInputElementFiles(remainingFiles);
     filesChanged();
   };
 
@@ -220,12 +215,17 @@ export const uploadArea = (
   const getInputElementFiles = () =>
     inputElement ? Array.from(inputElement.files as FileList) : [];
 
-  const setInputElementFiles = (files: FileList) => {
+  const setInputElementFiles = (files: File[]) => {
     if (!inputElement) {
       return;
     }
 
-    inputElement.files = files;
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => {
+      dataTransfer.items.add(file);
+    });
+
+    inputElement.files = dataTransfer.files;
   };
 
   const filterDroppedFiles = (files: FileList) => {

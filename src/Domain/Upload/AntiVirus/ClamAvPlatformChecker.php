@@ -6,12 +6,11 @@ namespace App\Domain\Upload\AntiVirus;
 
 use App\Service\PlatformCheck\PlatformCheckerInterface;
 use App\Service\PlatformCheck\PlatformCheckResult;
-use Xenolope\Quahog\Client;
 
 readonly class ClamAvPlatformChecker implements PlatformCheckerInterface
 {
     public function __construct(
-        private Client $clamAvClient,
+        private ClamAvClientFactory $clientFactory,
     ) {
     }
 
@@ -29,7 +28,7 @@ readonly class ClamAvPlatformChecker implements PlatformCheckerInterface
         $maliciousData = 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
 
         try {
-            $result = $this->clamAvClient->scanStream($maliciousData);
+            $result = $this->clientFactory->getClient()->scanStream($maliciousData);
         } catch (\RuntimeException) {
             return PlatformCheckResult::error($description, 'Cannot connect to ClamAV');
         }

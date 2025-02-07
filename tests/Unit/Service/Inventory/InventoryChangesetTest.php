@@ -19,12 +19,12 @@ class InventoryChangesetTest extends MockeryTestCase
     public function testIsEmpty(): void
     {
         $changeset = new InventoryChangeset();
-        self::assertTrue($changeset->hasChanges());
+        self::assertTrue($changeset->hasNoChanges());
 
         $documentNumber = DocumentNumber::fromString('test', 'x', '123a');
         $changeset->markAsAdded($documentNumber);
 
-        self::assertFalse($changeset->hasChanges());
+        self::assertFalse($changeset->hasNoChanges());
     }
 
     public function testHandlingOfAdded(): void
@@ -118,7 +118,7 @@ class InventoryChangesetTest extends MockeryTestCase
             [$documentNumber->getValue() => InventoryChangeset::UNCHANGED],
             $changeset->getAll(),
         );
-        self::assertTrue($changeset->hasChanges());
+        self::assertTrue($changeset->hasNoChanges());
     }
 
     public function testDuplicateDocumentNumbersThrowAnException(): void

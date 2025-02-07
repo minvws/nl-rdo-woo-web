@@ -6,7 +6,12 @@ namespace App\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision\Repo
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\DocumentFileSet;
 use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileSetStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUpdateStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUploadStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentFileSetRepository;
+use App\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileSetFactory;
+use App\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileUpdateFactory;
+use App\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileUploadFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use App\Tests\Integration\IntegrationTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -71,6 +76,52 @@ final class DocumentFileSetRepositoryTest extends KernelTestCase
 
         self::assertNull(
             $this->repository->findUncompletedByDossier($dossier),
+        );
+    }
+
+    public function testCountUploadsToProcess(): void
+    {
+        $documentFileSet = DocumentFileSetFactory::createOne()->_real();
+
+        DocumentFileUploadFactory::createOne([
+            'status' => DocumentFileUploadStatus::PROCESSED,
+            'documentFileSet' => $documentFileSet,
+        ]);
+        DocumentFileUploadFactory::createOne([
+            'status' => DocumentFileUploadStatus::FAILED,
+            'documentFileSet' => $documentFileSet,
+        ]);
+        DocumentFileUploadFactory::createOne([
+            'status' => DocumentFileUploadStatus::PENDING,
+            'documentFileSet' => $documentFileSet,
+        ]);
+        DocumentFileUploadFactory::createOne([
+            'status' => DocumentFileUploadStatus::UPLOADED,
+            'documentFileSet' => $documentFileSet,
+        ]);
+
+        self::assertEquals(
+            2,
+            $this->repository->countUploadsToProcess($documentFileSet),
+        );
+    }
+
+    public function testCountUpdatesToProcess(): void
+    {
+        $documentFileSet = DocumentFileSetFactory::createOne()->_real();
+
+        DocumentFileUpdateFactory::createOne([
+            'status' => DocumentFileUpdateStatus::COMPLETED,
+            'documentFileSet' => $documentFileSet,
+        ]);
+        DocumentFileUpdateFactory::createOne([
+            'status' => DocumentFileUpdateStatus::PENDING,
+            'documentFileSet' => $documentFileSet,
+        ]);
+
+        self::assertEquals(
+            1,
+            $this->repository->countUpdatesToProcess($documentFileSet),
         );
     }
 }

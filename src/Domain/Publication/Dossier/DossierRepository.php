@@ -39,7 +39,7 @@ class DossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return AbstractDossier[]
+     * @return list<AbstractDossier>
      */
     public function findBySearchTerm(
         string $searchTerm,
@@ -76,7 +76,7 @@ class DossierRepository extends ServiceEntityRepository
                 ->setParameter('dossierType', $dossierType);
         }
 
-        /** @var AbstractDossier[] */
+        /** @var list<AbstractDossier> */
         return $qb->getQuery()->getResult();
     }
 

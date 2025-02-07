@@ -1,0 +1,23 @@
+dossierId: 00000000-0000-0000-0000-000000000001
+status: !php/const App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileSetStatus::OPEN_FOR_UPLOADS
+canProcess: true
+uploadedFiles:
+    -
+        id: null
+        name: file1.pdf
+        mimeType: application/pdf
+    -
+        id: null
+        name: archive.zip
+        mimeType: application/zip
+    -
+        id: null
+        name: file3.pdf
+        mimeType: application/pdf
+expectedDocumentsCount: 4
+currentDocumentsCount: 1
+missingDocuments:
+    - '1002'
+    - '1004'
+    - '1005'
+changes: {  }

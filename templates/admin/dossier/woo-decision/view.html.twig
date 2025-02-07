@@ -208,7 +208,7 @@
                     <twig:Admin:Definition term="{{ 'admin.dossiers.decision.public_link' | trans }}">
                         {% set publicDossierUrl = PUBLIC_BASE_URL ~ path('app_woodecision_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) %}
                         <twig:Admin:CopyToClipboardLayout copy="{{ publicDossierUrl }}">
-                            <a class="bhr-a" href="{{ publicDossierUrl }}">
+                            <a class="bhr-a" href="{{ publicDossierUrl }}" data-e2e-name="public-url">
                                 {{ publicDossierUrl }}
                             </a>
                         </twig:Admin:CopyToClipboardLayout>

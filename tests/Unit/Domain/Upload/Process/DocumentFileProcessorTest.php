@@ -41,9 +41,6 @@ final class DocumentFileProcessorTest extends UnitTestCase
         $this->file
             ->shouldReceive('getOriginalFilename')
             ->andReturn($originalFile = 'originalFile');
-        $this->file
-            ->shouldReceive('getOriginalFileExtension')
-            ->andReturn($type = 'type');
 
         $this->documentNumberExtractor
             ->shouldReceive('extract')
@@ -63,7 +60,7 @@ final class DocumentFileProcessorTest extends UnitTestCase
                 $this->file,
                 $this->document,
                 $documentId,
-                $type,
+                $type = 'type',
             );
 
         $documentFileProcessor = new DocumentFileProcessor(
@@ -75,6 +72,7 @@ final class DocumentFileProcessorTest extends UnitTestCase
             $this->file,
             $this->dossier,
             $this->document,
+            $type,
         );
     }
 
@@ -121,6 +119,7 @@ final class DocumentFileProcessorTest extends UnitTestCase
             $this->file,
             $this->dossier,
             $this->document,
+            'type',
         );
     }
 }

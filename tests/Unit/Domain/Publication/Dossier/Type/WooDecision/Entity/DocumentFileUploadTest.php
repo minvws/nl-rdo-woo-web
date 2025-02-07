@@ -26,9 +26,9 @@ class DocumentFileUploadTest extends MockeryTestCase
     {
         $documentFileSet = \Mockery::mock(DocumentFileSet::class);
         $documentFileUpload = new DocumentFileUpload($documentFileSet);
-        $documentFileUpload->setStatus(DocumentFileUploadStatus::SUCCESSFUL);
+        $documentFileUpload->setStatus(DocumentFileUploadStatus::UPLOADED);
 
-        self::assertEquals(DocumentFileUploadStatus::SUCCESSFUL, $documentFileUpload->getStatus());
+        self::assertEquals(DocumentFileUploadStatus::UPLOADED, $documentFileUpload->getStatus());
     }
 
     public function testSetAndGetError(): void
@@ -49,5 +49,6 @@ class DocumentFileUploadTest extends MockeryTestCase
         $documentFileUpload->setFileInfo($fileInfo);
 
         self::assertSame($fileInfo, $documentFileUpload->getFileInfo());
+        self::assertSame($documentFileUpload->getId()->toRfc4122(), $documentFileUpload->getFileCacheKey());
     }
 }

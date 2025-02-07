@@ -13,13 +13,13 @@ describe('The "InvalidFiles" component', () => {
   ];
   const mockedMaxFileSize = 1000;
 
-  const createComponent = (files: File[] = mockedFiles) =>
+  const createComponent = (files: File[] = mockedFiles, isTypeError = true) =>
     mount(InvalidFiles, {
       props: {
-        allowedFileTypes: mockedAllowedFileTypes,
-        allowedMimeTypes: mockedAllowedMimeTypes,
-        files: files.map((file, index) => ({ file, index })),
-        maxFileSize: mockedMaxFileSize,
+        allowedFileTypes: isTypeError ? mockedAllowedFileTypes : [],
+        allowedMimeTypes: isTypeError ? mockedAllowedMimeTypes : [],
+        files,
+        maxFileSize: isTypeError ? undefined : mockedMaxFileSize,
       },
       shallow: true,
       global: {
@@ -38,7 +38,7 @@ describe('The "InvalidFiles" component', () => {
       const component = createComponent([mockedInvalidFile]);
 
       expect(component.text()).toContain(
-        `Het bestand "mocked-file-1" (${formatFileSize(mockedInvalidFile.size)}) werd genegeerd omdat het invalide is`,
+        'Het bestand "mocked-file-1" werd genegeerd omdat het van een ongeldig type is',
       );
     });
 
@@ -60,17 +60,24 @@ describe('The "InvalidFiles" component', () => {
     });
   });
 
-  test('should display the allowed file types', () => {
-    const component = createComponent();
-    expect(component.text()).toContain(
-      `Alleen bestanden van het type ${formatList(mockedAllowedFileTypes, 'en')} zijn toegestaan.`,
+  test('should display the allowed file types when the provided files have an invalid type', () => {
+    const expectedText = `Alleen bestanden van het type ${formatList(
+      mockedAllowedFileTypes,
+      'en',
+    )} zijn toegestaan.`;
+
+    expect(createComponent().text()).toContain(expectedText);
+    expect(createComponent(undefined, false).text()).not.toContain(
+      expectedText,
     );
   });
 
-  test('should display the max allowed file size', () => {
-    const component = createComponent();
-    expect(component.text()).toContain(
-      `De maximale bestandsgrootte per bestand is ${formatFileSize(mockedMaxFileSize)}.`,
-    );
+  test('should display the max allowed file size when the provided files have an invalid size', () => {
+    const expectedText = `De maximale bestandsgrootte per bestand is ${formatFileSize(
+      mockedMaxFileSize,
+    )}.`;
+
+    expect(createComponent(undefined, false).text()).toContain(expectedText);
+    expect(createComponent(undefined, true).text()).not.toContain(expectedText);
   });
 });

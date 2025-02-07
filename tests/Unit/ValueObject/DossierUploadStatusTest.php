@@ -6,12 +6,12 @@ namespace App\Tests\Unit\ValueObject;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Tests\Unit\UnitTestCase;
 use App\ValueObject\DossierUploadStatus;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 
-class DossierUploadStatusTest extends MockeryTestCase
+class DossierUploadStatusTest extends UnitTestCase
 {
     private DossierUploadStatus $dossierUploadStatus;
     private Document&MockInterface $missingUpload;
@@ -145,5 +145,60 @@ class DossierUploadStatusTest extends MockeryTestCase
             [],
             $this->dossierUploadStatus->getDocumentsToUpload(['123'])->toArray(),
         );
+    }
+
+    public function testGetMissingDocuments(): void
+    {
+        $this->dossier->shouldReceive('getDocuments')->andReturn($this->getDocuments());
+
+        self::assertEquals(
+            [
+                '1002',
+                '1004',
+                '1005',
+            ],
+            $this->dossierUploadStatus->getMissingDocuments()
+                ->map(fn (Document $document): string => (string) $document->getDocumentId())
+                ->getValues(),
+        );
+    }
+
+    public function testGetMissingDocumentIds(): void
+    {
+        $this->dossier->shouldReceive('getDocuments')->andReturn($this->getDocuments());
+
+        self::assertEquals(
+            [
+                '1002',
+                '1004',
+                '1005',
+            ],
+            $this->dossierUploadStatus->getMissingDocumentIds()->getValues(),
+        );
+    }
+
+    /**
+     * @return ArrayCollection<array-key,Document&MockInterface>
+     */
+    private function getDocuments(): ArrayCollection
+    {
+        return new ArrayCollection([
+            $this->getDocument(documentId: '1001', shouldBeUploaded: false, isUploaded: false),
+            $this->getDocument(documentId: '1002', shouldBeUploaded: true, isUploaded: false),
+            $this->getDocument(documentId: '1003', shouldBeUploaded: true, isUploaded: true),
+            $this->getDocument(documentId: '1004', shouldBeUploaded: true, isUploaded: false),
+            $this->getDocument(documentId: '1005', shouldBeUploaded: true, isUploaded: false),
+        ]);
+    }
+
+    private function getDocument(string $documentId, bool $shouldBeUploaded, bool $isUploaded): Document&MockInterface
+    {
+        /** @var Document&MockInterface $document */
+        $document = \Mockery::mock(Document::class);
+        $document->shouldReceive('getDocumentId')->andReturn($documentId);
+        $document->shouldReceive('shouldBeUploaded')->andReturn($shouldBeUploaded);
+        $document->shouldReceive('isUploaded')->andReturn($isUploaded);
+
+        return $document;
     }
 }

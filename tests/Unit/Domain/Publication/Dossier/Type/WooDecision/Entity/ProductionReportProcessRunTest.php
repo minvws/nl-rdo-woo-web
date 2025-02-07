@@ -323,4 +323,15 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
         self::assertEquals($fileInfo, $this->productionReportProcessRun->getFileInfo());
     }
+
+    public function testHasNoErrors(): void
+    {
+        self::assertTrue($this->productionReportProcessRun->hasNoErrors());
+
+        $this->productionReportProcessRun->addGenericException(
+            ProcessInventoryException::forMaxRuntimeExceeded()
+        );
+
+        self::assertFalse($this->productionReportProcessRun->hasNoErrors());
+    }
 }

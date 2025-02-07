@@ -8,7 +8,6 @@ describe('The "LinkDossiersController" component', () => {
   const createComponent = () =>
     mount(LinkDossiersController, {
       props: {
-        endpoint: 'mocked_endpoint',
         name: 'mocked_name',
         submitErrors: mockedSubmitErrors,
       },
@@ -21,7 +20,6 @@ describe('The "LinkDossiersController" component', () => {
   test('should render a <LinkDossiers /> component', async () => {
     const linkDossiersComponent = getLinkDossiersComponent();
 
-    expect(linkDossiersComponent.props('endpoint')).toEqual('mocked_endpoint');
     expect(linkDossiersComponent.props('name')).toEqual('mocked_name');
     expect(linkDossiersComponent.props('submitErrors')).toEqual(
       mockedSubmitErrors,
