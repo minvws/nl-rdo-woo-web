@@ -1,0 +1,8 @@
+<div class="flex">
+    <div class="grow truncate">
+        {% block content %}{% endblock %}
+    </div>
+    <div class="ml-2">
+        <twig:Admin:CopyToClipboard copy="{{ copy }}" />
+    </div>
+</div>

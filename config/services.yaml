@@ -1,0 +1,329 @@
+parameters:
+    document_path: '%kernel.project_dir%/var/documents'
+    thumbnail_path: '%kernel.project_dir%/var/thumbnails'
+    batch_path: '%kernel.project_dir%/var/batches'
+    configPageLimit: '%env(int:DOCUMENT_PAGE_LIMIT)%'
+    env(DOCUMENT_PAGE_LIMIT): '0'
+
+    rabbitmq_stats_url: '%env(RABBITMQ_STATS_URL)%'
+
+    available_locales: ['en', 'nl']
+
+    default_site_name: open.minvws.nl
+
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+        bind:
+            $configPageLimit: '%configPageLimit%'
+            Psr\Log\LoggerInterface $logger: '@App\Service\Logging\EnrichedPsrLogger'
+            string $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    App\Domain\Search\Index\Rollover\MappingService:
+        arguments:
+            $rootDir: '%kernel.project_dir%'
+
+    Elastic\Elasticsearch\Client:
+        factory: ['App\Service\Elastic\ElasticClientFactory', 'create']
+        arguments:
+            $host: '%env(ELASTICSEARCH_HOST)%'
+            $username: '%env(ELASTICSEARCH_USER)%'
+            $password: '%env(ELASTICSEARCH_PASS)%'
+            $mtlsCertPath: '%env(ELASTICSEARCH_MTLS_CERT_PATH)%'
+            $mtlsKeyPath: '%env(ELASTICSEARCH_MTLS_KEY_PATH)%'
+            $mtlsCAPath: '%env(ELASTICSEARCH_MTLS_CA_PATH)%'
+
+    Elastic\Elasticsearch\ClientInterface:
+        alias: 'App\DataCollector\CollectorClient'
+
+    tika.client:
+        class: GuzzleHttp\Client
+        factory: ['App\Domain\Ingest\Content\Extractor\Tika\TikaGuzzleClientFactory', 'create']
+        arguments:
+            $tikaHost: '%env(TIKA_HOST)%'
+
+    App\Domain\Ingest\Content\Extractor\Tika\TikaService:
+        $client: '@tika.client'
+
+    App\Domain\Ingest\Process\SubType\SubTypeIngester:
+        arguments:
+            - !tagged_iterator domain.ingest.subtype.strategy
+
+    App\Service\Inventory\Reader\InventoryReaderFactory:
+        arguments:
+            $factories:
+                - '@App\Service\FileReader\ExcelCsvReaderFactory'
+
+    App\Service\Stats\WorkerStatsService:
+        arguments:
+            $handlers:
+                - '@App\Service\Stats\Handler\ElasticHandler'
+                - '@App\Service\Stats\Handler\DoctrineHandler'
+
+    _instanceof:
+        App\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface:
+            tags: ['domain.ingest.subtype.strategy']
+        App\Service\Logging\LoggingTypeInterface:
+            tags: [ 'app.logging.type' ]
+        App\Service\Stats\Handler\StatsHandlerInterface:
+            tags: [ 'app.stats.handler' ]
+        App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface:
+            tags: ['domain.publication.dossier_type_config']
+        App\Domain\Search\Index\Dossier\Mapper\ElasticDossierMapperInterface:
+            tags: [ 'domain.search.index.dossier_mapper' ]
+        App\Domain\Search\Index\SubType\Mapper\ElasticSubTypeMapperInterface:
+            tags: [ 'domain.search.index.subtype_mapper' ]
+        App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface:
+            tags: [ 'domain.publication.dossier_delete_strategy' ]
+        App\Domain\Publication\Attachment\AttachmentDeleteStrategyInterface:
+            tags: [ 'domain.publication.attachment_delete_strategy' ]
+        App\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface:
+            tags: [ 'domain.publication.main_document_delete_strategy' ]
+        App\Domain\Search\Result\SearchResultMapperInterface:
+            tags: [ 'domain.search.result_mapper' ]
+        App\Domain\Ingest\Content\Extractor\ContentExtractorInterface:
+            tags: [ 'domain.ingest.content_extractor' ]
+        App\Service\PlatformCheck\PlatformCheckerInterface:
+            tags: [ 'app.platform_checker' ]
+        App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionInterface:
+            tags: [ 'domain.publication.dossier.admin.action' ]
+        App\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface:
+            tags: [ 'domain.upload.preprocessor.strategy' ]
+        App\Domain\Upload\Postprocessor\FilePostprocessorStrategyInterface:
+            tags: [ 'domain.upload.postprocessor.strategy' ]
+        App\Domain\Search\Theme\ThemeInterface:
+            tags: [ 'domain.search.theme' ]
+        App\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface:
+            tags: [ 'domain.publication.dossier.file_provider' ]
+
+    # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
+    App\Service\Encryption\EncryptionService:
+        public: true
+        arguments:
+            $encryptionKey: '%env(DATABASE_ENCRYPTION_KEY)%'
+
+    App\Service\Storage\EntityStorageService:
+        arguments:
+            $isLocal: "@=env('STORAGE_DOCUMENT_ADAPTER')=='local' ? true : false"
+            $documentRoot: '%document_path%'
+
+    # We need to create an alias to the monolog.logger service, as these services are by default private. This means
+    # it is not possible to fetch these services from the container. This is normally a "good thing"(tm), but in this
+    # case we need it because we cannot inject these services in the DBAL types (see /App/Doctrine/Encrypted*.php files)
+    public_logger:
+        alias: 'monolog.logger'
+        public: true
+
+    App\Twig\Runtime\AppExtensionRuntime:
+        arguments:
+            $projectPath: '%kernel.project_dir%'
+
+    App\Service\ArchiveService:
+        arguments:
+            $storage: '@batch.storage'
+
+    App\EventSubscriber\LocaleListener:
+        arguments:
+            $defaultLocale: '%kernel.default_locale%'
+            $allowedLocales: '%available_locales%'
+
+    App\Service\Totp:
+        arguments:
+            $issuer: '%env(TOTP_ISSUER)%'
+
+    App\Command\CleanSheet:
+        arguments:
+            $queueDsns: [
+                '%env(HIGH_TRANSPORT_DSN)%',
+                '%env(INGESTOR_TRANSPORT_DSN)%',
+                '%env(ESUPDATER_TRANSPORT_DSN)%',
+                '%env(GLOBAL_TRANSPORT_DSN)%',
+            ]
+
+    App\Service\Logging\LoggingHelper:
+        arguments:
+            - !tagged_iterator app.logging.type
+
+    App\Controller\Public\StatsController:
+        arguments:
+            $redis: '@snc_redis.ingest'
+            $rabbitMqStatUrl: '%rabbitmq_stats_url%'
+
+
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
+        arguments:
+            $redis: '@snc_redis.session'
+
+    App\EventSubscriber\AppModeListener:
+        arguments:
+            $appMode: '%env(APP_MODE)%'
+
+    App\Session\EncryptedSessionProxy:
+        arguments:
+            - '@Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler'
+            - '%env(APP_SECRET)%'
+
+    App\Service\Logging\EnrichedPsrLogger:
+        arguments:
+            $logger: '@monolog.logger'
+
+    Aws\S3\S3Client:
+        arguments:
+            - version: '2006-03-01'
+              region: '%env(STORAGE_MINIO_REGION)%'
+              endpoint: '%env(STORAGE_MINIO_ENDPOINT)%'
+              use_path_style_endpoint: true
+              credentials:
+                key: '%env(STORAGE_MINIO_ACCESS_KEY)%'
+                secret: '%env(STORAGE_MINIO_SECRET_KEY)%'
+
+    App\EventSubscriber\SecurityHeaderSubscriber:
+        arguments:
+            $appMode: '%env(APP_MODE)%'
+
+    App\Service\Security\Authorization\AuthorizationMatrix:
+        arguments:
+            $entries: '@=service("App\\Service\\Security\\Authorization\\ConfigFactory").create()'
+
+    App\Service\Security\Authorization\ConfigFactory:
+        arguments:
+            $config: '%authorization_matrix%'
+
+    App\Service\DocumentUploadQueue:
+        arguments:
+            $redis: '@snc_redis.admin'
+
+    App\Service\Inventory\Sanitizer\InventorySanitizer:
+        arguments:
+            $writer: '@App\Service\Inventory\Sanitizer\ExcelWriter'
+
+    App\Service\Inventory\Sanitizer\InventoryDocumentMapper:
+        arguments:
+            $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
+
+    App\Service\HistoryService:
+        arguments:
+            $translator: '@translator.default'
+
+    App\Service\FileUploader:
+        arguments:
+            $redis: '@snc_redis.admin'
+
+    App\Domain\Publication\Dossier\Type\DossierTypeManager:
+        arguments:
+            $configs: !tagged_iterator domain.publication.dossier_type_config
+
+    App\Domain\Search\Index\Dossier\DossierIndexer:
+        arguments:
+            $mappers: !tagged_iterator domain.search.index.dossier_mapper
+
+    App\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper:
+        tags:
+            - { name: 'domain.search.index.dossier_mapper', priority: 100 }
+
+    App\Domain\Search\Index\SubType\SubTypeIndexer:
+        arguments:
+            $mappers: !tagged_iterator domain.search.index.subtype_mapper
+
+    App\Domain\Publication\Dossier\Handler\DeleteDossierHandler:
+        arguments:
+            $deleteStrategies: !tagged_iterator domain.publication.dossier_delete_strategy
+
+    App\Domain\Publication\Attachment\Handler\DeleteAttachmentHandler:
+        arguments:
+            $deleteStrategies: !tagged_iterator domain.publication.attachment_delete_strategy
+
+    App\Domain\Publication\MainDocument\Handler\DeleteMainDocumentHandler:
+        arguments:
+            $deleteStrategies: !tagged_iterator domain.publication.main_document_delete_strategy
+
+    App\Domain\Search\Result\ResultFactory:
+        arguments:
+            $mappers: !tagged_iterator domain.search.result_mapper
+
+    App\Domain\Ingest\Content\ContentExtractService:
+        arguments:
+            $cache: '@content_extract_cache'
+            $extractors: !tagged_iterator domain.ingest.content_extractor
+
+    App\Domain\Ingest\Content\Event\ContentExtractCacheInvalidator:
+        arguments:
+            $cache: '@content_extract_cache'
+
+    App\Command\PlatformCheck:
+        arguments:
+            $checkers: !tagged_iterator app.platform_checker
+
+    App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionService:
+        arguments:
+            $actions: !tagged_iterator domain.publication.dossier.admin.action
+
+    App\Service\Uploader\UploaderNamer:
+        public: true
+
+    oneup_uploader.chunks_storage:
+        class: \App\Service\Uploader\FilesystemStorage
+        arguments:
+            $directory: '%oneup_uploader.chunks.storage.directory%'
+
+    Oneup\UploaderBundle\Uploader\Storage\FilesystemOrphanageStorage:
+        factory:
+            - '@oneup_uploader.orphanage_manager'
+            - 'get'
+        arguments:
+            $key: 'general'
+
+    App\Domain\Upload\Preprocessor\FilePreprocessor:
+        arguments:
+            $strategies: !tagged_iterator domain.upload.preprocessor.strategy
+
+    App\Domain\Upload\Postprocessor\FilePostprocessor:
+        arguments:
+            $strategies: !tagged_iterator domain.upload.postprocessor.strategy
+
+    extractor.7z:
+        class: App\Domain\Upload\Extractor\Extractor
+        public: true
+        arguments:
+            $archive: '@App\Domain\ArchiveExtractor\SevenZipArchive'
+
+    App\Domain\Upload\Extractor\Extractor $sevenZipExtractor: '@extractor.7z'
+
+    App\Domain\Search\Theme\ThemeManager:
+        arguments:
+            $themes: !tagged_iterator domain.search.theme
+
+    App\Domain\Publication\Dossier\FileProvider\DossierFileProviderManager:
+        arguments:
+            $providers: !tagged_iterator domain.publication.dossier.file_provider
+
+
+    App\Domain\Upload\AntiVirus\ClamAvClientFactory:
+        arguments:
+            $address: '%env(CLAM_AV_ADDRESS)%'
+
+    App\Domain\Upload\AntiVirus\ClamAvFileScanner:
+        arguments:
+            $fileSizeLimit: '%env(CLAM_AV_MAX_FILESIZE)%'
+
+when@dev:
+    services: &services_dev
+        App\Tests\Factory\:
+            autowire: true
+            autoconfigure: true
+            resource: '../tests/Factory'
+
+        Faker\Generator:
+            factory: ['App\Tests\Faker\FakerFactory', 'create']
+
+when@test:
+    services: *services_dev

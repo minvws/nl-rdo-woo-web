@@ -1,0 +1,70 @@
+name: E2E Tests - CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_tag:
+        description: 'Robot Framework test tag'
+        required: true
+        type: string
+        default: 'ci'
+  workflow_call:
+    secrets:
+      REPO_READ_ONLY_TOKEN:
+        required: true
+        description: ''
+    inputs:
+      test_tag:
+        description: 'Robot Framework test tag'
+        required: true
+        type: string
+
+  schedule:
+    - cron: '0 0 * * *' # Every day at midnight UTC
+
+env:
+  CR_PAT: "${{ secrets.REPO_READ_ONLY_TOKEN }}"
+  PYTHON_VERSION: 3.12
+  TEST_TAG: ${{ inputs.test_tag || 'ci' }}
+
+jobs:
+  e2e-tests:
+    name: 'Run E2E tests'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Task
+        uses: arduino/setup-task@v2
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run up:ci task
+        run: task setup
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Initialize Robot Framework
+        run: |
+          sudo apt-get install --reinstall libpq-dev
+          sudo npx playwright install-deps
+          python -m pip install --upgrade pip
+          pip install -r tests/robot_framework/requirements.txt
+          rfbrowser init
+      - name: Run Robot Framework tests
+        run: |
+          python -m robot --outputdir tests/robot_framework/results --xunit outputxunit.xml --include ${{ env.TEST_TAG }} --variable headless:true tests/robot_framework
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports
+          path: tests/robot_framework/results
+      - name: Publish test result summary to GitHub
+        uses: minvws/nl-rdo-github-action-robotframework-test-summary@v0.4.1
+        if: always()
+        with:
+          output_file: 'tests/robot_framework/results/output.xml'

@@ -1,0 +1,65 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = 'admin.inquiries.case_numbers' | trans() %}
+
+{% block body %}
+<div class="bhr-container">
+    <twig:Admin:LeftAndRight>
+        <h1 class="bhr-title">{{ page_title }}</h1>
+
+        <twig:block name="right">
+            {% if matrix_has_permission('inquiry.update') %}
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_inquiries_link') }}" data-e2e-name="go-to-link-inquires-link">{{ 'admin.inquiries.link_case' | trans() }}</a>
+            {% endif %}
+        </twig:block>
+    </twig:Admin:LeftAndRight>
+
+    <div class="bhr-card">
+        {% set alerts = app.flashes('backend') %}
+        {% if alerts | length > 0 %}
+            <div class="mb-8" data-e2e-name="inquiry-alerts">
+                {% for messages in alerts %}
+                    {% for label, message in messages %}
+                        <twig:Admin:Alert type="{{ label }}">
+                            <strong>{{ message }}</strong>
+                        </twig:Admin:Alert>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <table class="bhr-table">
+            <thead>
+                <tr>
+                    {{ knp_pagination_sortable(pagination, 'admin.inquiries.case_number' | trans, 'inq.casenr', {}, {}, 'pagination/sort.admin.html.twig') }}
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'public.global.decisions' | trans }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.documents' | trans }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.last_update' | trans }}</th>
+                </tr>
+            </thead>
+            <tbody data-e2e-name="inquiry-list">
+                {% for row in pagination %}
+                    <tr>
+                        <td>
+                            <a class="bhr-a js-bhr-clickable-row-link" href="{{ PUBLIC_BASE_URL ~ path('app_inquiry_detail', { token: row.inquiry.token }) }}">
+                                {{ row.inquiry.casenr }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ row.dossierCount }}
+                        </td>
+                        <td>
+                            {{ row.documentCount }}
+                        </td>
+                        <td>
+                            {{ row.inquiry.updatedAt | format_datetime('medium') }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
+    </div>
+</div>
+{% endblock %}

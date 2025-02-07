@@ -1,0 +1,96 @@
+{% import 'document_macros.html.twig' as macro %}
+
+<div class="mt-16">
+    <h2 class="woo-h2 woo-h2-spacing">{{ 'public.documents.document.about' | trans }}</h2>
+
+    <div class="woo-responsive-table">
+        <table class="woo-table">
+            <caption class="sr-only">
+                {{ 'public.documents.document.about' | trans }}
+            </caption>
+            <tbody>
+                <tr>
+                    <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'public.documents.document.date' | trans }}</th>
+                    <td class="min-w-64">
+                        {% if document.entity.documentDate is not empty %}
+                            <time datetime="{{ document.entity.documentDate | date('Y-m-d') }}">{{ document.entity.documentDate | format_date('long') }}</time>
+                        {% else %}
+                            {{ 'global.not_available' | trans }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% if document.entity.fileInfo.sourceType is defined %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'categories.category.source_file' | trans }}</th>
+                    <td data-e2e-name="source-type">
+                        <twig:Public:FileIcon type="{{ document.entity.fileInfo.sourceType.value }}" class="mr-1 -mt-0.5" />
+                        {{ document.entity.fileInfo.sourceType | trans }}{% if document.entity.isUploaded %}, {{ document.entity.pageCount }} pagina's{% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+                {% if document.entity.fileInfo.type is defined and document.entity.fileInfo.isUploaded %}
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.download_type' | trans }}</th>
+                        <td data-e2e-name="file-type">{{ document.entity.fileInfo.type|upper}} ({{ document.entity.fileInfo.size | size }})</td>
+                    </tr>
+                {% endif %}
+                {% if document.entity.documentId is defined %}
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ 'global.document_number' | trans }}</th>
+                        <td>{{ document.entity.documentId }}</td>
+                    </tr>
+                {% endif %}
+                {% if document.entity.judgement is defined %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.documents.judgement' | trans }}</th>
+                    <td>{{ document.entity.judgement | trans }}</td>
+                </tr>
+                {% endif %}
+                {% set documentIsAlreadyPublic = document.entity.judgement is defined and document.entity.judgement.isAlreadyPublic %}
+                {% if document.entity.remark or (document.entity.links | length > 0 and not documentIsAlreadyPublic) %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.documents.explanation' | trans }}</th>
+                    <td>
+                        {% if document.entity.remark and document.entity.remark != document.entity.links|first  %}{{ document.entity.remark }}{% endif %}
+                        {% if document.entity.links | length > 0 and not documentIsAlreadyPublic %}
+                            {% for link in document.entity.links %}
+                                {% if not loop.first %}, {% endif %}
+                                <a class="woo-a" href="{{ link }}">{{ link }}</a>
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+
+                {% set hasGrounds = document.entity.grounds | length > 0 %}
+                {% set isDownloadable = document.entity.isUploaded and document.entity.fileInfo.size != "0" %}
+                {% if hasGrounds or isDownloadable %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ isDownloadable ? 'public.documents.redacted_data' | trans : 'global.grounds' | trans }}</th>
+                    <td>
+                        {% if hasGrounds %}
+                        <ul>
+                            {% for ground in document.entity.grounds %}
+                                <li class="py-1 leading-none">
+                                    {{ macro.document_ground(ground) }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+
+                        {% if isDownloadable %}
+                            {% include 'snippets/document/redacted-message.html.twig' with {
+                                'departmentName': dossier.mainDepartment.name,
+                                'documentId': document.entity.id,
+                                'documentName': document.entity.fileInfo.name,
+                                'isExternalDepartmentResponsible': dossier.isExternalDepartmentResponsible,
+                                'hasGrounds': hasGrounds,
+                            } %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>

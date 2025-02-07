@@ -1,0 +1,51 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = 'admin.organisation.manage' | trans() %}
+
+{% block body %}
+<div class="bhr-container">
+    <twig:Admin:LeftAndRight>
+        <h1 class="bhr-title">{{ page_title }}</h1>
+
+        <twig:block name="right">
+            {% if matrix_has_permission('organisation.create') %}
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_user_organisation_create') }}" data-e2e-name="create-organisation">{{ 'admin.organisation.create' | trans() }}</a>
+            {% endif %}
+        </twig:block>
+    </twig:Admin:LeftAndRight>
+
+    <div class="bhr-card">
+        <table class="bhr-table" data-e2e-name="organisations-table">
+            <thead>
+                <tr>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.organisation' | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.departments' | trans() }}</th>
+                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.prefixes' | trans() }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for organisation in organisations %}
+                    <tr>
+                        <td>
+                            <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_user_organisation_edit', { id: organisation.id }) }}">
+                                {{ organisation.name }}
+                            </a>
+
+                        </td>
+                        <td>
+                            {% for department in organisation.departments %}
+                                {{ department.shortTagOrName }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for prefix in organisation.documentPrefixes %}
+                                {{ prefix.prefix }}{% if not loop.last %},{% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

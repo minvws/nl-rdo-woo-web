@@ -1,0 +1,9 @@
+<a
+    class="woo-button woo-button--primary"
+    href="{{ href }}"
+    data-e2e-name="{{ e2eName }}"
+    download
+>
+    <twig:Public:Icon class="woo-button-icon-left -mt-px" name="download" />
+    {% block content %}{{ 'public.global.download_verb' | trans }}{% endblock %}
+</a>

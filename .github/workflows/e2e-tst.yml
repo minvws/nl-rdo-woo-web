@@ -1,0 +1,39 @@
+name: E2E Tests - Test
+
+on: workflow_dispatch
+
+jobs:
+  e2e-robot-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r tests/robot_framework/requirements.txt --use-deprecated=legacy-resolver
+        rfbrowser init
+    - name: Execute Robot Framework tests
+      env:
+        OTP_SECRET_WOO: ${{ secrets.OTP_SECRET_WOO }}
+        USERNAME_WOO_TEST: ${{ secrets.USERNAME_WOO_TEST }}
+        PASSWORD_WOO_TEST: ${{ secrets.PASSWORD_WOO_TEST }}
+        EMAIL_WOO_TEST_BALIE: ${{ secrets.EMAIL_WOO_TEST_BALIE }}
+        PASSWORD_WOO_TEST_BALIE: ${{ secrets.PASSWORD_WOO_TEST_BALIE }}
+        SECRET_WOO_TEST_BALIE: ${{ secrets.SECRET_WOO_TEST_BALIE }}
+      run: |
+        python -m robot -d tests/robot_framework/results -x outputxunit.xml -i tst -v headless:true tests/robot_framework
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: reports
+        path: tests/robot_framework/results
+    - name: Publish test results
+      uses: minvws/nl-rdo-github-action-robotframework-test-summary@v0.4.1
+      if: always()
+      with:
+        output_file: 'tests/robot_framework/results/output.xml'
+        endpoints: 'https://web.test.woo.rdobeheer.nl'
+        username: '${{ secrets.USERNAME_WOO_TEST }}'
+        password: '${{ secrets.PASSWORD_WOO_TEST }}'

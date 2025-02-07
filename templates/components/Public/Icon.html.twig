@@ -1,0 +1,12 @@
+{% if isRounded | default(false) %}
+<span class="inline-block bg-woo-anti-flash-white text-woo-dim-gray p-1 rounded-full leading-tight">
+{% endif %}
+    <twig:Icon
+        class="woo-icon {{ class|default('') }}"
+        color="{{ color|default('fill-current') }}"
+        size="{{ size|default(24) }}"
+        name="{{ name }}"
+    />
+{% if isRounded | default(false) %}
+</span>
+{% endif %}

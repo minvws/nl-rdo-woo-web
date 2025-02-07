@@ -1,0 +1,6 @@
+uploadGroupId: ATTACHMENTS
+fileTypeNames:
+    - PDF
+    - Excel
+    - Word
+    - PowerPoint

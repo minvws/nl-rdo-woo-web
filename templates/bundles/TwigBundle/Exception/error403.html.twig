@@ -1,0 +1,12 @@
+{% extends is_backend() ? 'admin.html.twig' : 'base.html.twig' %}
+
+{% set page_title = 'global.access_denied' | trans %}
+
+{% block body %}
+    {%
+        include "bundles/TwigBundle/Exception/error-content.html.twig" with {
+            title: page_title,
+            content: is_backend() ? 'admin.global.access_denied.message' | trans : 'public.global.access_denied.message' | trans,
+        }
+    %}
+{% endblock %}

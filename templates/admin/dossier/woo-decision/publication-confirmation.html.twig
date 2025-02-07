@@ -1,0 +1,25 @@
+{% extends 'admin/dossier/publication/confirmation.html.twig' %}
+
+{% block about_title %}
+    {{ 'admin.global.decision_on' | trans }}
+{% endblock %}
+
+{% block success_message %}
+    <twig:Admin:Alert type="success">
+        {{ 'admin.dossiers.decision.create_success' | trans | raw }}
+    </twig:Admin:Alert>
+{% endblock %}
+
+{% block preview_date %}
+    <h2 class="mt-8 font-bold">{{ 'admin.dossiers.decision.preview_date' | trans }}</h2>
+    <p data-e2e-name="dossier-preview-date">{{ dossier.previewDate | format_date('long') }}</p>
+{% endblock %}
+
+{% block available_from %}
+    {{ dossier.previewDate | format_date('long') }}
+{% endblock %}
+
+{% block edit_link %}
+    {{'admin.dossiers.decision.edit_link' | trans }}
+{% endblock %}
+

@@ -1,0 +1,32 @@
+activeFacets: true
+queryParameters:
+    q: foo
+    dt: { without_date: 1, from: '2021-01-15' }
+    sort: _score
+    sortorder: desc
+facetInputs:
+    date: { active: true, withoutDate: true, anyPeriodFilterDates: true, periodFilterFrom: '2021-01-15', periodFilterTo: null, requestParameters: { without_date: 1, from: '2021-01-15' }, fromDate: true, toDate: false, notActive: false, from: '2021-01-15T00:00:00+00:00', to: null }
+operator:
+    name: AND
+    value: and
+limit: 0
+offset: 0
+pagination: true
+aggregations: true
+query: foo
+searchType:
+    dossier: false
+    document: false
+    all: true
+    notAll: false
+    name: ALL
+    value: all
+documentInquiries: {  }
+dossierInquiries: {  }
+sortField:
+    name: SCORE
+    value: _score
+sortOrder:
+    name: DESC
+    value: desc
+baseQueryConditions: null

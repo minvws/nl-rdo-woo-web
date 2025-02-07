@@ -1,0 +1,15 @@
+- '123'
+- PREFIX-matterA-123
+- test-doc-name
+- 'deels openbaar'
+-
+    - a
+    - b
+- ''
+- |-
+    http://dummy.url
+    https://x.y.z
+- 'http://foo.bar/test-url'
+- ja
+- A;matterB_B
+- 'http://foo.bar/test-url-A;http://foo.bar/test-url-B'

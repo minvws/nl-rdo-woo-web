@@ -1,0 +1,68 @@
+{% extends 'admin.html.twig' %}
+
+{% if error %}
+    {% set page_title = 'global.sign_in.invalid' | trans() %}
+{% else %}
+    {% set page_title = 'global.sign_in' | trans() %}
+{% endif %}
+
+{% block body %}
+<div class="bhr-container bhr-container--xs">
+    <div class="bhr-card">
+        <h1 class="bhr-title-sm mb-8">{{ page_title }}</h1>
+
+        <form method="POST" action="{{ path('app_login') }}" novalidate>
+            {% if app.user and is_granted('ROLE_BALIE')%}
+                <twig:Admin:Alert type="info">
+                    {{ 'global.signed_in_as' | trans({'name': app.user.name|default('unknown user')}) }}.
+                    <a class="bhr-a bhr-a--inherit-color" href="{{ path('app_logout') }}">{{ 'global.logout' | trans() }}</a>
+                </twig:Admin:Alert>
+            {% else %}
+
+                {% if error %}
+                <div class="mb-6" data-e2e-name="login-error">
+                    <twig:Admin:FormError>
+                        Ongeldige inloggegevens. Vul een geldige combinatie van e-mailadres en wachtwoord in om in te loggen.
+                    </twig:Admin:FormError>
+                </div>
+                {% endif %}
+
+                <div class="bhr-form-row">
+                    <label class="bhr-label" for="inputEmail">{{ "global.email" | trans() }}</label>
+
+                    <input
+                        autocomplete="email"
+                        class="bhr-input-text"
+                        id="inputEmail"
+                        name="_username"
+                        required
+                        type="email"
+                        value="{{ last_username }}"
+                    >
+                </div>
+
+                <div class="bhr-form-row">
+                    <label class="bhr-label" for="inputPassword">{{ 'global.password' | trans() }}</label>
+
+                    <input
+                        autocomplete="current-password"
+                        class="bhr-input-text"
+                        id="inputPassword"
+                        name="_password"
+                        required
+                        type="password"
+                    >
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <div>
+                    <button class="bhr-button bhr-button--primary bhr-button--full-width" type="submit">{{ 'global.login' | trans() }}</button>
+                </div>
+
+                <p class="mt-6 bhr-text-muted">{{ 'admin.account.forgot_login.instructions' | trans() }}</p>
+            {% endif %}
+      </form>
+    </div>
+</div>
+{% endblock %}

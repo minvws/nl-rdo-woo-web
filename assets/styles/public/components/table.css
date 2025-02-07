@@ -1,0 +1,32 @@
+@layer components {
+    .woo-table {
+        @apply w-full leading-tight;
+    }
+
+    .woo-table th {
+        @apply text-left whitespace-nowrap;
+    }
+
+    .woo-table th,
+    .woo-table td {
+        @apply align-top border-b border-woo-platinum py-2.5 px-2 first:pl-0 last:pr-0;
+    }
+
+    .woo-table th,
+    .woo-table td {
+        @apply align-top border-b border-woo-platinum py-2.5;
+    }
+
+    .woo-table-cell-light {
+        @apply text-woo-dim-gray font-normal;
+    }
+
+    .woo-table-cell--wrap {
+        @apply flex flex-wrap gap-4;
+    }
+
+    .woo-responsive-table {
+        @apply overflow-x-auto;
+        @apply overflow-y-hidden; /* This doesn't do any harm (since there's no fixed height set) and prevents a bug with a scrollbar appearing on the right side of the table */
+    }
+}

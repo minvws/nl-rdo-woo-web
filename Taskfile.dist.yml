@@ -1,0 +1,353 @@
+# https://taskfile.dev
+version: "3"
+
+includes:
+  docs:
+    taskfile: docs/technische-documentatie/Taskfile.dist.yml
+    dir: docs
+  rf:
+    taskfile: tests/robot_framework/Taskfile.dist.yml
+    dir: tests/robot_framework
+
+vars:
+  BASE_PATH:
+    sh: pwd
+  PROJECT_NAME: nl-rdo-woo-web
+
+# env:
+#   BUILDKIT_PROGRESS: plain
+
+silent: true
+
+tasks:
+  dc:
+    vars:
+      FIXUID:
+        sh: echo ${FIXUID:-$(id -u)}
+      FIXGID:
+        sh: echo ${FIXGID:-$(id -g)}
+    cmds:
+      - 'FIXUID={{.FIXUID}} FIXGID={{.FIXGID}} docker compose {{.DOCKER_COMPOSE_ARGS}} {{.CLI_ARGS}}'
+
+  dc:run:
+    interactive: true
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "run --rm --user $(id -u):$(id -g)", CLI_ARGS: "{{.CLI_ARGS}}" }
+
+  dc:shell:
+    interactive: true
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "exec --user $(id -u):$(id -g)", CLI_ARGS: "{{.CLI_ARGS}}" }
+
+  dc:pull:
+    desc: Pull all docker images
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "pull --include-deps" }
+
+  dc:build:
+    desc: Build all docker images
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "build --build-arg USER_UID=$(id -u)" }
+
+  dc:rebuild:
+    desc: Rebuild all docker images
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "build --build-arg USER_UID=$(id -u) --no-cache" }
+
+  composer:install:
+    desc: Install composer dependencies
+    cmds:
+      - task: dc:run
+        vars: { CLI_ARGS: "app composer install" }
+
+  npm:install:
+    desc: Install node dependencies
+    cmds:
+      - task: dc:run
+        vars: { CLI_ARGS: "app npm ci --no-fund" }
+
+  npm:build:
+    desc: Build assets
+    cmds:
+      - task: dc:run
+        vars: { CLI_ARGS: "app npm run build" }
+
+  setup:
+    desc: Setup development environment
+    interactive: true
+    cmds:
+      - task: d:create-cache-volumes
+      - task: env
+      - '"{{.BASE_PATH}}/bin/auth-package-managers"'
+      - task: dc:pull
+      - task: dc:build
+      - task: composer:install
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "up -d", CLI_ARGS: "" }
+      - task: dc:run
+        vars: { CLI_ARGS: "app bash -c 'wait-for-it postgres:5432 --timeout=0 --strict -- wait-for-it rabbitmq:5672 --timeout=0 --strict -- wait-for-it elasticsearch:9200 --timeout=0 --strict -- echo \"Done waiting\"'" }
+      - task: app:migrate
+      - task: app:loadfixtures
+      - task: dc:run
+        vars: { CLI_ARGS: "app bash -c 'curl -X GET \"elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=30s\"'" }
+      - task: dc:run
+        vars: { CLI_ARGS: "app bin/console woopie:index:create woopie latest --read --write" }
+      - task: npm:install
+      - task: npm:build
+
+  setup:if-not-exist:
+    vars:
+      PROJECT_EXISTS:
+        sh: 'docker compose ps --all --services'
+    status:
+      - test ! -z "{{.PROJECT_EXISTS}}"
+    cmds:
+      - task: setup
+      - task: app:migrate:test
+
+  shell:
+    desc: Open shell in app container
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "exec app bash" }
+
+  up:
+    desc: Start development environment
+    cmds:
+      - task: setup:if-not-exist
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "up -d" }
+
+  stop:
+    desc: Stop development environment
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "stop" }
+
+  down:
+    desc: Down the development environment
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "down --volumes --remove-orphans" }
+
+  reset:
+    desc: Reset the development environment
+    cmds:
+      - task: down
+      - task: down
+      - task: dc:rebuild
+      - task: up
+
+  ps:
+    desc: Show all project containers
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "ps -a" }
+
+  env:
+    desc: Template .env
+    run: once
+    vars:
+      DATABASE_ENCRYPTION_KEY: 3140050008b203765bc6ed21721f020e8e72febd72669adcf3151098abdaedc13ddbceb53c7bea8688f9f9a20af5a8ea438528359b8f82ec6545bfa11dddb73735670403cd7495dd6726bb9d2815813d7808ec38d67cfea223113f1ab7d44f817ce6aeff
+    cmds:
+      - cp .env.development .env.local
+      - docker run --rm --volume "$(pwd)":/workspace --workdir /workspace ghcr.io/ilyes512/utils:latest
+        sed -i "s/DATABASE_ENCRYPTION_KEY=.*/DATABASE_ENCRYPTION_KEY={{.DATABASE_ENCRYPTION_KEY}}/g" .env.local
+    sources:
+      - .env.development
+    generates:
+      - .env.local
+
+  cleanup:all:
+    desc: Cleanup of almost all gitignored files, untracked files and development containers
+    prompt: This could potentially delete untracked files!! Do you want to continue?
+    summary: |
+      Cleanup of almost all gitignored files, untracked files and development containers.
+
+      The following files/dirs are excluded:
+        - /.idea
+    cmds:
+      - task: down
+      - docker volume rm woo_composer || true
+      - docker volume rm woo_npm || true
+      - git clean
+        -xd
+        --force
+        --exclude .idea
+
+  app:user:create:
+    desc: Create an user
+    cmds:
+      - task: dc:shell
+        vars:
+          CLI_ARGS: |
+            app bin/console woopie:user:create {{.CLI_ARGS | default "'email@example.org' 'full name' --super-admin"}}
+
+  app:migrate:
+    desc: Run (doctrine) database migrations
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app bin/console doctrine:migrations:migrate --no-interaction" }
+
+  app:loadfixtures:
+    desc: Load doctrine fixtures
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction" }
+
+  app:migrate:diff:
+    desc: Run (doctrine) database migrations diff
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app bin/console doctrine:migrations:diff --no-interaction" }
+
+  app:migrate:dump:
+    desc: Dump doctrine migrations to plain SQL files
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app bin/console woopie:sql:dump" }
+
+  app:migrate:test:
+    desc: Run (doctrine) database migrations in test environment
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app bin/console doctrine:database:create --if-not-exists --no-interaction --env=test" }
+      - task: dc:shell
+        vars: { CLI_ARGS: "app bin/console doctrine:schema:drop --full-database --force --no-interaction --env=test" }
+      - task: dc:shell
+        vars: { CLI_ARGS: "app bin/console doctrine:schema:create --no-interaction --env=test" }
+
+  app:cleansheet:
+    desc: Clears dossiers and inquiries (with related data) from the database. Also clears ES index and RabbitMq message queues.
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app bin/console woopie:dev:clean-sheet --force --keep-prefixes {{.CLI_ARGS}}" }
+
+  app:db:reset:
+    desc: Reset the application database including RabbitMQ queues and ElasticSearch indexes
+    prompt: Are you REALLY sure you want to clear data from the system?
+    cmds:
+      - task: app:cleansheet
+      - task: dc:shell
+        vars: { CLI_ARGS: app bin/console doctrine:schema:drop --full-database --force }
+      - task: app:migrate
+      - task: app:loadfixtures
+
+  app:checkall:
+    desc: Run all checks
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer checkall" }
+      - task: docs:lint
+
+  app:checkstyle:
+    desc: Check code style using php_codesniffer and php-cs-fixer
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer checkstyle" }
+
+  app:fixstyle:
+    desc: Fix code style using php_codesniffer and php-cs-fixer
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer fixstyle" }
+
+  app:checktype:
+    desc: Check code type using PHPStan
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer checktype" }
+
+  app:update-type-baseline:
+    desc: Update PHPStan baseline
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer update-type-baseline" }
+
+  app:md:
+    desc: Run PHPMD
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer md" }
+
+  app:test:
+    desc: Run PHPUnit
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer test" }
+
+  app:test-report:
+    desc: Run PHPUnit tests with coverage test-report
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer test-report" }
+
+  app:update-test-snapshots:
+    desc: Update PHPUnit snapshots
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer update-test-snapshots" }
+
+  app:checktranslations:
+    desc: Run YAML linting on translation files
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer checktranslations" }
+
+  app:checktemplates:
+    desc: Run Twig linting on templates
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer checktemplates" }
+
+  app:syncdotenv:
+    desc: Synchronize .env.development with .env.local
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer syncdotenv" }
+
+  app:update:
+    desc: (re) Pull dependencies, run migrations, build front-end and sync .env
+    aliases: [app:refresh]
+    cmds:
+      - task: d:create-cache-volumes
+      - task: composer:install
+      - task: app:migrate
+      - task: app:migrate:test
+      - task: npm:install
+      - task: npm:build
+      - task: app:syncdotenv
+
+  d:create-cache-volumes:
+    cmds:
+      - docker volume create woo_composer
+      - docker volume create woo_npm
+
+  worker:start:
+    desc: Start the worker
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "up -d worker" }
+
+  worker:restart:
+    desc: Restart the worker
+    cmds:
+      - task: worker:stop
+      - task: worker:start
+
+  worker:stop:
+    desc: Stop the worker
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "stop worker" }
+
+  worker:logs:
+    desc: Display last 30 lines of worker logs and follow the rest
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "logs worker --tail 30 --follow" }

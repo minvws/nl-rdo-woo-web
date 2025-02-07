@@ -1,0 +1,69 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = 'admin.department.all_departments' | trans %}
+
+{% block body %}
+<div class="bhr-container">
+    <twig:Admin:LeftAndRight>
+        <h1 class="bhr-title">{{ page_title }}</h1>
+
+        <twig:block name="right">
+            {% if matrix_has_permission('department.create') %}
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_department_create') }}" data-e2e-name="new-department">{{ 'admin.department.new_department' | trans() }}</a>
+            {% endif %}
+        </twig:block>
+    </twig:Admin:LeftAndRight>
+
+    <div class="bhr-card">
+        {% set alerts = app.flashes('backend') %}
+        {% if alerts | length > 0 %}
+            <div class="mb-8" data-e2e-name="alerts">
+                {% for messages in alerts %}
+                    {% for label, message in messages %}
+                        <twig:Admin:Alert type="{{ label }}">
+                            <strong>{{ message }}</strong>
+                        </twig:Admin:Alert>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <table class="bhr-table" data-e2e-name="departments-table">
+            <thead>
+                <tr>
+                    {{ knp_pagination_sortable(pagination, 'admin.publications.department' | trans, 'd.name', {}, {}, 'pagination/sort.admin.html.twig') }}
+                    {{ knp_pagination_sortable(pagination, 'global.acronym' | trans, 'd.shortTag', { thClassName: 'border-r-0' }, {}, 'pagination/sort.admin.html.twig') }}
+                    {{ knp_pagination_sortable(pagination, 'admin.publications.has_landingpage' | trans, 'd.public', {}, {}, 'pagination/sort.admin.html.twig') }}
+                    <th class="bhr-column-head bhr-column-head--gray border-r-1 font-bold" scope="col">{{ "admin.publications.landingpage_url" | trans() }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for department in pagination %}
+                    <tr>
+                        <td>
+                            <a class="bhr-a" href="{{ path('app_admin_department_edit', { id: department.id.toBase58 }) }}" data-e2e-name="department-details-link">
+                                {{ department.name }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ department.shortTag | default('-') }}
+                        </td>
+                        <td>
+                            {% if department.public %}
+                                {{ 'admin.global.yes' | trans }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if department.public %}
+                                {% set landingPageUrl = PUBLIC_BASE_URL ~ path('app_department_detail', {'slug': department.slug}) %}
+                                <a class="bhr-a" href="{{ landingPageUrl }}">{{ landingPageUrl }}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
+    </div>
+</div>
+{% endblock %}

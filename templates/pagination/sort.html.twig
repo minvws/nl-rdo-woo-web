@@ -1,0 +1,13 @@
+{% set targetAnchor = options.fragment|default('') %}
+{# following variables are inverted because direction is read from the target url #}
+{% set iconName = sorted ? ( direction == 'desc' ? 'sort-up' : 'sort-down' ) : 'sort-alt' %}
+{% set ariaSortValue = sorted ? ( direction == 'desc' ? 'ascending' : 'descending' ) : 'none' %}
+
+<th aria-sort="{{ ariaSortValue }}" class="{{ options.thClassName|default('') }}" scope="col">
+    <a class="block whitespace-nowrap" href="{{ options.href }}{{ targetAnchor }}">
+        {{ title }}
+        {% if iconName %}
+            <twig:Public:Icon name="{{ iconName }}" />
+        {% endif %}
+    </a>
+</th>

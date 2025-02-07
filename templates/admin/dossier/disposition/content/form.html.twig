@@ -1,0 +1,31 @@
+{{ form_start(form) }}
+    {{ form_row(form.summary) }}
+
+    <twig:Admin:Publication:ManageDocument
+        allowedFileTypes="{{ documentTypeNames }}"
+        allowedMimeTypes="{{ documentMimeTypes }}"
+        canDelete="{{ canDeleteDocument }}"
+        documentType="{{ 'admin.dossiers.disposition.document' | trans }}"
+        documentTypes="{{ documentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/disposition-document' }}"
+        formField="{{ form.document }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.disposition.form.content.document_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        title="{{ 'admin.dossiers.disposition.form.content.document_label' | trans }}"
+        uploadGroupId="main-documents"
+    />
+
+    <twig:Admin:Publication:ManageAttachments
+        allowedFileTypes="{{ attachmentTypeNames }}"
+        allowedMimeTypes="{{ attachmentMimeTypes }}"
+        canDelete="{{ canDeleteAttachments }}"
+        documentTypes="{{ attachmentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/disposition-attachments' }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.disposition.form.content.attachments_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        uploadGroupId="attachments"
+    />
+
+{{ form_end(form) }}

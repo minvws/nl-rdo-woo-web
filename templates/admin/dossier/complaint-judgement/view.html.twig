@@ -1,0 +1,19 @@
+{% extends 'admin/dossier/publication/view.html.twig' %}
+
+{% set aboutTitle = 'admin.global.complaint-judgement_on' | trans %}
+
+{% set descriptionLabel = 'admin.dossiers.complaint-judgement.description' | trans %}
+{% set internalReferenceLabel = 'admin.dossiers.complaint-judgement.form.details.ref_int' | trans %}
+
+{% set dossierTypeTitle = 'dossier.type.complaint-judgement' | trans %}
+{% set periodLabel = 'admin.dossiers.complaint-judgement.date' | trans %}
+{% set summaryLabel = 'admin.dossiers.complaint-judgement.summary' | trans %}
+{% set documentLabel = 'admin.dossiers.complaint-judgement.document' | trans %}
+{% set completeFirstOpenStepTitle = ('admin.dossiers.complaint-judgement.complete_step.' ~ workflowStatus.firstOpenStep.stepName.value | default) | trans %}
+
+{% set deleteTitle = 'admin.dossiers.complaint-judgement.delete' | trans %}
+{% set deleteBullets = [
+    'admin.dossiers.complaint-judgement.delete_bullet-1' | trans,
+    'admin.dossiers.complaint-judgement.delete_bullet-2' | trans,
+    'admin.dossiers.complaint-judgement.delete_bullet-3' | trans,
+] %}

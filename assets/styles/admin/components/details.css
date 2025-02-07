@@ -1,0 +1,9 @@
+@layer components{
+    .bhr-details summary::after {
+        content: attr(data-collapsed);
+    }
+
+    .bhr-details[open] summary::after {
+        content: attr(data-expanded);
+    }
+}

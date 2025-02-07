@@ -1,0 +1,33 @@
+@layer components {
+    .bhr-file {
+        @apply border border-bhr-platinum flex first:rounded-t-xl last:rounded-b-xl not-first:-mt-px;
+    }
+
+    .bhr-file__left {
+        @apply grow flex p-4;
+    }
+
+    .bhr-file__icon-area {
+        @apply mr-2;
+    }
+
+    .bhr-file__info-area {
+        @apply grow pt-1.5;
+    }
+
+    .bhr-file__file-name {
+        @apply block font-bold leading-none;
+    }
+
+    .bhr-file__file-info {
+        @apply text-sm text-bhr-independence;
+    }
+
+    .bhr-file__delete {
+        @apply p-4 text-bhr-dim-gray hover-focus:text-bhr-maximum-red;
+    }
+
+    .bhr-file__download {
+        @apply relative right-0.5;
+    }
+}

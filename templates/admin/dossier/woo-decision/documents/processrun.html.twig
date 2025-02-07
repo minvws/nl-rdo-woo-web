@@ -1,0 +1,84 @@
+{% if inventoryStatus.isQueued %}
+    <div class="text-center">
+        <span class="inline-block animate-spin"><twig:Admin:Icon color="fill-bhr-ocean-boat-blue" size="48" name="loader" /></span>
+        <p class="text-lg pt-4">Verwerking gaat beginnen</p>
+    </div>
+{% elseif inventoryStatus.isRunning %}
+    {% set id = 'inventory-is-running' %}
+
+    {% if inventoryStatus.isComparing %}
+        <div class="text-lg">
+            <h2 class="font-bold pb-2">Bezig met het inladen van het productierapport</h2>
+            <p class="bhr-text-muted">Dit duurt meestal maximaal een paar minuten. Als je wilt kan je deze pagina verlaten en later terugkomen.</p>
+        </div>
+    {% endif %}
+
+    {% if inventoryStatus.isUpdating %}
+        <div class="text-lg">
+            <h2 class="font-bold pb-2">Bezig met het toepassen van het productierapport</h2>
+            <p class="bhr-text-muted">Dit duurt meestal maximaal een paar minuten. Als je wilt kan je deze pagina verlaten en later terugkomen.</p>
+        </div>
+    {% endif %}
+
+    <div class="flex items-center my-6">
+        <progress class="bhr-progress" id="{{ id }}" max="100" value="{{ processRun.progress }}"></progress>
+        <span class="ml-3 text-sm w-10 text-right">{{ processRun.progress }}%</span>
+    </div>
+
+    <div class="flex items-center">
+        <span class="mr-3"><twig:Admin:MimeTypeIcon mimeType="{{ processRun.fileInfo.mimetype }}" /></span>
+        <label class="grow text-lg pt-1 truncate" for="{{ id }}">{{ processRun.fileInfo.name }}</label>
+    </div>
+{% elseif inventoryStatus.needsConfirmation %}
+    {% set changeset = inventoryStatus.getChangeset() %}
+    <div class="bhr-card">
+        <twig:Admin:Alert class="mb-8" type="success">
+            <strong>{{ 'admin.inventory.checked' | trans }}</strong>
+        </twig:Admin:Alert>
+
+        <div class="text-lg">
+            <h2 class="font-bold mb-4">{{ 'admin.inventory.warning' | trans }}</h2>
+            <p>{{ 'admin.inventory.explanation' | trans }}:</p>
+            <ul class="bhr-ul">
+                {% if changeset['create'] > 0 %}
+                    <li class="bhr-li">{{ "admin.dossiers.documents_added" | trans({'count': changeset['create']}) }}</li>
+                {% endif %}
+                {% if changeset['update'] > 0 %}
+                    <li class="bhr-li">{{ "admin.dossiers.documents_updated" | trans({'count': changeset['update']}) }}</li>
+                {% endif %}
+                {% if changeset['delete'] > 0 %}
+                    <li class="bhr-li">{{ "admin.dossiers.documents_deleted" | trans({'count': changeset['delete']}) }}</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="mt-8">
+            <a class="bhr-button bhr-button--primary bhr-button--fixed-width mr-4" href="?confirm=1" data-e2e-name="confirm-replacement">{{ 'admin.inventory.confirm_replacement' | trans }}</a>
+            <a class="bhr-button bhr-button--secondary bhr-button--fixed-width" href="?reject=1">{{ 'global.cancel' | trans }}</a>
+        </div>
+    </div>
+{% elseif inventoryStatus.hasErrors %}
+    {{ form(inventoryForm) }}
+{% else %}
+    {% if dossier.status.isConcept or app.request.get('replace') is not null %}
+        {% if not inventoryStatus.needsUpload and app.request.get('replace') is null %}
+            <twig:Admin:UploadedFile
+                downloadUrl="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
+                fileName="{{ dossier.productionReport.fileInfo.name }}"
+                fileSize="{{ dossier.productionReport.fileInfo.size }}"
+                mimeType="{{ dossier.productionReport.fileInfo.mimetype }}"
+            >
+                <a class="text-bhr-sea-blue content-center underline hover-focus:no-underline px-4" href="?replace">
+                    {{ 'admin.dossiers.replace_report' | trans }}
+                </a>
+            </twig:Admin:UploadedFile>
+        {% endif %}
+        {% if inventoryStatus.needsUpload or app.request.get('replace') is not null %}
+            {{ form(inventoryForm) }}
+        {% endif %}
+    {% else %}
+        <p>Het productierapport is succesvol vervangen.</p>
+
+        <p class="mt-6"><a class="bhr-button bhr-button--primary" href="{{ path('app_admin_dossier_woodecision_documents_edit', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" data-e2e-name="continue-to-documents">Naar documenten</a></p>
+    {% endif %}
+{% endif %}

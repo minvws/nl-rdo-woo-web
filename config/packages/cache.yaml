@@ -1,0 +1,7 @@
+framework:
+    cache:
+        pools:
+            content_extract_cache:
+                adapter: cache.adapter.redis_tag_aware
+                provider: snc_redis.ingest
+

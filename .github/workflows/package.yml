@@ -1,0 +1,50 @@
+name: Create release package
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    secrets:
+      REPO_READ_ONLY_TOKEN:
+        required: true
+        description: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          registry-url: 'https://npm.pkg.github.com'
+      - name: Install npm dependencies
+        run: npm ci --ignore-scripts
+      - name: Install PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: 8.2
+      - name: Composer install
+        env:
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.REPO_READ_ONLY_TOKEN }}"}}'
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev
+      - name: Run build task
+        run: npm run build
+      - name: Clean build
+        run: |
+          rm -r node_modules .git var/cache var/log || true
+          mkdir -p var/log
+          mkdir -p var/cache
+      - name: Create version.json
+        run: |
+          echo "{ \"version\": \"${{ env.RELEASE_VERSION }}\", \"git_ref\": \"$GITHUB_SHA\"}" > public/version.json
+      - name: Create tar
+        run: tar -czf woo-web_${{ env.RELEASE_VERSION }}.tar.gz ./config ./public/ ./src/ ./templates ./translations ./vendor/ ./.db_requirements ./var/cache ./var/log ./worker-*.conf ./bin/console
+      - name: Upload release tar
+        uses: actions/upload-artifact@v4
+        with:
+          name: woo-web_${{ env.RELEASE_VERSION }}
+          path: woo-web_${{ env.RELEASE_VERSION }}.tar.gz

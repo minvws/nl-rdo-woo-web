@@ -1,0 +1,63 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = "" | trans %}
+
+{% if authenticationError %}
+    {% set page_title = 'admin.login.2fa.invalid_code' %}
+{% else %}
+    {% set page_title = 'admin.login.2fa.enter_code' %}
+{% endif %}
+
+{% block body %}
+<div class="bhr-container bhr-container--xs">
+    <div class="bhr-card">
+        <h1 class="bhr-title-sm mb-8">{{ 'admin.login.2fa.enter_code' | trans() }}</h1>
+
+        {# Let the user select the authentication method #}
+        {% if availableTwoFactorProviders|length > 1 %}
+            <p class="mb-6">{{ 'admin.account.2fa.choose_provider' | trans() }}:
+            {% for provider in availableTwoFactorProviders %}
+                <a class="bhr-a mr-1" href="{{ path("2fa_login", {"preferProvider": provider}) }}">{{ provider }}</a>
+            {% endfor %}
+            </p>
+        {% endif %}
+
+        {% set email = app.user.email ?? '' %}
+        {% if email %}
+            <p class="mb-6"><strong>{{ email }}</strong></p>
+        {% endif %}
+
+        <p class="mb-6" id="instructions-for-2fa">{{ 'admin.login.2fa.instructions' | trans() }}</p>
+
+        <form action="{{ checkPathUrl ? checkPathUrl: path(checkPathRoute) }}" method="post" novalidate>
+            <div class="bhr-form-row {{ authenticationError ? 'bhr-form-row--invalid' : '' }}">
+                <label class="bhr-label" for="auth-code">{{ 'global.code' | trans() }}</label>
+
+                {% if authenticationError %}
+                    <twig:Admin:InputErrors id="auth-code-error" error="{{ 'admin.login.2fa.error.invalid_code' | trans() }}" />
+                {% endif %}
+
+                <input
+                    aria-describedby="{{ authenticationError ? 'auth-code-error' : 'instructions-for-2fa' }}"
+                    autofocus
+                    autocomplete="off"
+                    class="bhr-input-text {{ authenticationError ? 'bhr-input-text--invalid' : '' }}"
+                    id="auth-code"
+                    name="{{ authCodeParameterName }}"
+                    required
+                >
+            </div>
+
+            <div>
+                <button class="bhr-button bhr-button--primary bhr-button--full-width" type="submit">{{ 'global.check' | trans() }}</button>
+
+                <a class="bhr-button bhr-button--secondary bhr-button--full-width mt-4" href="{{ logoutPath }}">{{ 'global.logout' | trans() }}</a>
+            </div>
+
+            <p class="mt-6 bhr-text-muted">{{ 'admin.login.2fa.reset_instructions' | trans() }}</p>
+
+        </form>
+    </div>
+  </div>
+
+{% endblock %}

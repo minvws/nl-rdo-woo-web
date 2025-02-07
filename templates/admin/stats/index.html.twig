@@ -1,0 +1,73 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = 'admin.stats.manage' | trans() %}
+
+{% block meta %}
+    <meta http-equiv="refresh" content="10"/>
+{% endblock %}
+
+{% block body %}
+<div class="bhr-container">
+    <h1 class="bhr-title mb-6">{{ 'admin.stats.manage' | trans }}</h1>
+
+    <div class="bhr-card">
+        <table class="bhr-table">
+            <tbody>
+                <tr>
+                    <th class="text-left w-56" scope="row">{{ 'admin.stats.available_dossiers' | trans }}</th>
+                    <td>{{ "global.number_of_dossiers" | trans({'count': dossier_count}) }}</td>
+                </tr>
+                <tr>
+                    <th class="text-left" scope="row">{{ 'admin.stats.available_docs' | trans }}</th>
+                    <td>{{ "global.number_of_documents" | trans({'count': document_count}) }}</td>
+                </tr>
+                <tr>
+                    <th class="text-left" scope="row">{{ 'admin.stats.total_pages' | trans }}</th>
+                    <td>{{ "global.number_of_pages" | trans({'count': page_count}) }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        {% if rabbitmq_stats %}
+            <div class="pt-8">
+                <table class="bhr-table" data-e2e-name="rabbitmq-stats">
+                    <caption class="sr-only">{{ 'admin.stats.rabbit_mq' | trans() }}</caption>
+                    <thead>
+                        <tr>
+                            <th class="text-left" scope="col">{{ 'admin.stats.node' | trans() }}</th>
+                            <th class="text-left" scope="col">{{ 'global.name' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.messages' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.msg_ready' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.msg_unacknowledged' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.msg_published' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.msg_pub_rate' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.msg_delivered' | trans() }}</th>
+                            <th class="text-right" scope="col">{{ 'admin.stats.msg_delivered_rate' | trans() }}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for info in rabbitmq_stats %}
+                        <tr>
+                            <td>{{ info.node }}</td>
+                            <td>{{ info.name }}</td>
+                            <td class="text-right">{{ info.messages }}</td>
+                            <td class="text-right">{{ info.messages_ready }}</td>
+                            <td class="text-right">{{ info.messages_unacknowledged }}</td>
+                            <td class="text-right">{{ info.message_stats.publish | default(0) }}</td>
+                            <td class="text-right">{{ info.message_stats.publish_details.rate | default(0) }}</td>
+                            <td class="text-right">{{ info.message_stats.deliver_get | default(0) }}</td>
+                            <td class="text-right">{{ info.message_stats.deliver_get_details.rate | default(0) }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <p class="mt-6 text-right text-sm">
+                    {{ 'admin.stats.last_updated' | trans() }}: {{ "now"|format_datetime('medium') }}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

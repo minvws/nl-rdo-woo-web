@@ -1,0 +1,28 @@
+{% if is_backend() %}
+<div class="bhr-container bhr-container--sm">
+    <h1 class="bhr-title-lg mb-8">{{ title }}</h1>
+    <div class="px-11">
+        <div class="bhr-card">
+            <div class="bhr-content text-lg">
+                <!-- {{ status_code }}, {{ status_text }} -->
+
+                <p>{{ content }}</p>
+
+                <a href="{{ path('app_admin_index') }}">{{ 'global.back_to_home' | trans }}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="woo-container woo-container--sm">
+    <div class="woo-rich-text">
+        <h1>{{ title }}</h1>
+
+        <!-- {{ status_code }}, {{ status_text }} -->
+
+        <p>{{ content }}</p>
+
+        <p><a class="woo-a" href="{{ path('app_home') }}">{{ 'global.back_to_home' | trans }}</a></p>
+    </div>
+</div>
+{% endif %}

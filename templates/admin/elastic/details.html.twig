@@ -1,0 +1,72 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+<div class="bhr-container">
+    <h1 class="bhr-title mb-6">{{ 'elastic.index' | trans() }} {{ details.index.name }}</h1>
+
+    <div class="bhr-card">
+        <table class="bhr-table w-auto">
+            <caption class="sr-only">{{ 'elastic.rollover' | trans() }} {{ details.index.name }}</caption>
+            <tbody>
+                <tr>
+                    <th class="bhr-row-head" scope="row">{{ 'global.name' | trans() }}</th>
+                    <td>{{ index.name }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">{{ 'elastic.health' | trans() }}</th>
+                    <td>{{ index.health }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">{{ 'elastic.status' | trans() }}</th>
+                    <td>{{ index.status }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">{{ 'elastic.object_count' | trans() }}</th>
+                    <td>{{ index.docsCount }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">{{ 'public.global.size' | trans() }}</th>
+                    <td>{{ index.storeSize }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">{{ 'admin.elastic.mapping_version' | trans() }}</th>
+                    <td>{{ index.mappingVersion }}</td>
+                </tr>
+                <tr>
+                    <th class="bhr-row-head" scope="row">{{ 'elastic.aliases' | trans() }}</th>
+                    <td>
+                        {% for alias in index.aliases %}
+                            <span>{{ alias }}</span>{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                        {% if index.aliases | length == 0 %}-{% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        {% include 'admin/elastic/counts.html.twig' %}
+
+        {% if index.aliases | length == 0 %}
+            <p class="mt-6">
+                <a
+                    class="bhr-button bhr-button--primary"
+                    href="{{ path('app_admin_elastic_live', {indexName: index.name}) }}"
+                >{{ "admin.elastic.promote_to_live" | trans() }}</a>
+            </p>
+        {% endif %}
+
+        {% if matrix_has_permission('elastic.update') and index.aliases | length == 0 %}
+            <div class="mt-6">
+                {{ form(deleteForm) }}
+            </div>
+        {% endif %}
+
+        <p class="mt-6">
+            <a
+                class="bhr-button bhr-button--secondary"
+                href="{{ path('app_admin_elastic') }}"
+            >{{ "admin.elastic.back_to_overview" | trans() }}</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

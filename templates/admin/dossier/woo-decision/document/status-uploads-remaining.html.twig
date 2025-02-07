@@ -1,0 +1,24 @@
+{% set uploadedQueue = get_upload_queue(dossier) %}
+{% set missingDocuments = uploadStatus.getDocumentsToUpload(uploadedQueue) %}
+
+{% if missingDocuments | length > 0 %}
+<div class="bg-bhr-cornsilk p-6 max-h-80 overflow-y-auto">
+    <h3 class="mb-3 text-lg" data-e2e-name="missingDocuments">
+        Nog te uploaden: <span class="font-bold">{{ missingDocuments | length }}</span> van {{ uploadStatus.expectedUploadCount }} document{% if uploadStatus.expectedUploadCount != 1 %}en{% endif %}.
+    </h3>
+
+    <ul class="grid grid-cols-4 gap-x-4">
+        {% for document in missingDocuments | slice(0, 100) %}
+        <li class="py-1">
+            <twig:Admin:FileWithIcon fileName="{{ document.documentId }}" mimeType="" />
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% if missingDocuments|length > 100 %}
+    <p class="mt-3 text-lg">
+        En nog {{ missingDocuments | length - 100 }} documenten...
+    </p>
+    {% endif %}
+</div>
+{% endif %}

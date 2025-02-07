@@ -1,0 +1,82 @@
+{
+    "bool": {
+        "filter": [
+            {
+                "bool": {
+                    "minimum_should_match": 1,
+                    "should": [
+                        {
+                            "bool": {
+                                "filter": [
+                                    {
+                                        "nested": {
+                                            "path": "dossiers",
+                                            "query": {
+                                                "term": {
+                                                    "dossiers.type": {
+                                                        "value": "dossier"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "bool": {
+                                "filter": [
+                                    {
+                                        "term": {
+                                            "type": {
+                                                "value": "dossier"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "bool": {
+                    "minimum_should_match": 1,
+                    "should": [
+                        {
+                            "bool": {
+                                "filter": [
+                                    {
+                                        "nested": {
+                                            "path": "dossiers",
+                                            "query": {
+                                                "terms": {
+                                                    "dossiers.subject.id": [
+                                                        "1ef3ea0e-678d-6cee-9604-c962be9d60b2"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "bool": {
+                                "filter": [
+                                    {
+                                        "terms": {
+                                            "subject.id": [
+                                                "1ef3ea0e-678d-6cee-9604-c962be9d60b2"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,84 @@
+<div class="mt-16">
+    <h2 class="woo-h2 woo-h2-spacing">{{ 'public.dossiers.decision.about_decision' | trans }}</h2>
+
+    <div class="woo-responsive-table">
+        <table class="woo-table">
+            <caption class="sr-only">{{ 'public.dossiers.decision.about_decision' | trans }}</caption>
+            <tbody>
+                <tr>
+                    <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'categories.category.judgement' | trans }}</th>
+                    <td class="font-bold min-w-64" data-e2e-name="dossier-metadata-decision">{{ dossier.decision | trans }}</td>
+                </tr>
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.decision_type' | trans }}</th>
+                    <td data-e2e-name="dossier-metadata-publication-reason">{{ dossier.publicationReason | trans }}</td>
+                </tr>
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.decision.reason' | trans }}</th>
+                    <td>
+                        <a class="woo-a" data-e2e-name="main-document-detail-link" href="{{ path('app_woodecision_document_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{ dossier.mainDocument.name }}</a> ({{ dossier.mainDocument.sourceType | trans }}, {{ dossier.mainDocument.size | size }})
+                    </td>
+                </tr>
+                {% if attachments | length > 0 %}
+                <tr data-e2e-name="dossier-attachments-row">
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.additional_attachments' | trans }}</th>
+                    <td>
+                        <ul>
+                            {% for attachment in attachments %}
+                            <li>
+                                <time datetime="{{ attachment.formalDate | date('Y-m-d') }}">{{ attachment.formalDate | format_date('long') }}</time>
+                                - <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a> ({{ attachment.sourceType | trans }}, {{ attachment.size | size }})
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.responsible_parties' | trans }}</th>
+                    <td data-e2e-name="dossier-metadata-responsible">
+                        {# Only display the first entries #}
+                        {{ dossier.mainDepartment.name }}
+                    </td>
+                </tr>
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.period' | trans }}</th>
+                    <td data-e2e-name="dossier-metadata-period">{{ period(dossier.dateFrom, dossier.dateTo) }}</td>
+                </tr>
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.decision_date' | trans }}</th>
+                    <td data-e2e-name="dossier-metadata-decision-date"><time datetime="{{ dossier.decisionDate | date('Y-m-d') }}">{{ dossier.decisionDate | format_date('long') }}</time></td>
+                </tr>
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.scope' | trans }}</th>
+                    <td  data-e2e-name="dossier-metadata-size">
+                        <span>
+                        {% if dossier.counts.hasDocuments %}
+                            <span data-e2e-name="dossier-document-count">{{ 'global.number_of_documents' | trans({'count': dossier.counts.documentCount})}}</span>{% if dossier.counts.hasDocuments and dossier.counts.hasPages %},{% endif %}
+                        {% endif %}
+
+                        {% if dossier.counts.hasPages %}
+                            {{ 'global.number_of_pages' | trans({'count': dossier.counts.pageCount})}}
+                            {% endif %}
+
+                        {% if not dossier.counts.hasPages and not dossier.counts.hasDocuments %}
+                            {{ 'global.no_documents' | trans }}
+                        {% endif %}
+                        </span>
+                        {% if dossier.counts.hasDocuments or dossier.counts.hasPages %}
+                        <a class="woo-a" data-e2e-name="download-inventory-file-link" href="{{ path('app_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::INVENTORY').value}) }}" download>{{ 'public.dossiers.inventory_list' | trans }}</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% if dossier.hasSubject %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.subject' | trans }}</th>
+                    <td>
+                        <p><a class="woo-a" href="{{ dossier.subject.searchUrl }}">{{ dossier.subject.name }}</a></p>
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>

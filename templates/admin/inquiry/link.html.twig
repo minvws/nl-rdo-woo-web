@@ -1,0 +1,36 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = 'admin.dossiers.link_inquiry' | trans() %}
+
+{% block body %}
+    <div class="bhr-container bhr-container--sm">
+        <h1 class="bhr-title mb-10">{{ page_title }}</h1>
+
+        <div class="px-11">
+            <div class="bhr-card">
+                <p class="bhr-label">{{ 'admin.dossiers.inquiries.link_dossiers_documents' | trans }}</p>
+                <p class="bhr-form-help">{{ 'admin.dossiers.link_inquiries_help' | trans }}</p>
+
+                <div class="flex">
+                    <a
+                        class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary mt-6"
+                        data-e2e-name="go-to-link-documents-link"
+                        href="{{ path('app_admin_inquiries_link_documents') }}"
+                        id="placeholder_link_documents"
+                    >
+                        {{ 'admin.dossiers.link_documents' | trans }}
+                    </a>
+                    <a
+                        class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary mt-6"
+                        href="{{ path('app_admin_inquiries_link_dossiers') }}"
+                        data-e2e-name="go-to-link-dossiers-link"
+                        id="placeholder_link_dossiers"
+                    >
+                        {{ 'admin.dossiers.link_descision' | trans }}
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

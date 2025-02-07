@@ -1,0 +1,30 @@
+{
+    "mime_type": "text\/plain",
+    "file_size": 1234,
+    "file_type": "txt",
+    "source_type": "doc",
+    "date": "2024-06-18T19:31:12+00:00",
+    "filename": "foo.bar",
+    "grounds": [
+        "x",
+        "y"
+    ],
+    "dossiers": [
+        {
+            "mapped-dossier-data": "dummy",
+            "type": "covenant",
+            "toplevel_type": "covenant",
+            "sublevel_type": null
+        }
+    ],
+    "prefixed_dossier_nr": "PREFIX|foo-123",
+    "metadata": [
+        "foo"
+    ],
+    "pages": {
+        "1": "bar"
+    },
+    "type": "attachment",
+    "toplevel_type": "dossier",
+    "sublevel_type": "attachment"
+}

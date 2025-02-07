@@ -1,0 +1,11 @@
+{# following variables are inverted because direction is read from the target url #}
+{% set targetAnchor = options.fragment|default('') %}
+{% set iconName = sorted ? ( direction == 'desc' ? 'sort-up' : 'sort-down' ) : 'sort' %}
+{% set ariaSortValue = sorted ? ( direction == 'desc' ? 'ascending' : 'descending' ) : 'none' %}
+
+<th aria-sort="{{ ariaSortValue }}" class="bhr-column-head bhr-column-head--gray {{ options.thClassName|default('') }}" scope="col">
+    <a class="{{ (('block whitespace-nowrap' ~ sorted ? ' font-bold' : '') ~ ' ' ~ sortClassName|default(''))|trim }}" href="{{ options.href }}{{ targetAnchor }}">
+        {{ title }}
+        <twig:Admin:Icon name="{{ iconName }}" />
+    </a>
+</th>

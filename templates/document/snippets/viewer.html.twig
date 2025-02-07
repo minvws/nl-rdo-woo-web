@@ -1,0 +1,6 @@
+{% if document.ingested and document.entity.shouldBeUploaded and document.entity.fileInfo.isUploaded and document.entity.fileInfo.type == "pdf" and document.entity.pageCount > 0 %}
+    <twig:Public:PdfViewer
+        file="{{ file }}"
+        title="{{ "public.documents.viewer.click_on_page" | trans({ fileInfo: document.entity.fileInfo.type|upper, fileSize: document.entity.fileInfo.size != "0" ? document.entity.fileInfo.size | size : ""  }) }}"
+    />
+{% endif %}

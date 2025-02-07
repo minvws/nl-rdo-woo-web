@@ -1,0 +1,10 @@
+index:
+    name: index-123
+    health: yellow
+    status: open
+    docsCount: '65'
+    storeSize: 69MB
+    mappingVersion: '3'
+    aliases: [woopie-write]
+counts:
+    - { percentage: 0.0, type: { name: WOO_DECISION, value: dossier }, expected: 5, actual: 0, subCounts: {  } }

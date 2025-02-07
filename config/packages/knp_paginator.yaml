@@ -1,0 +1,13 @@
+knp_paginator:
+    page_range: 5
+    default_options:
+        page_name: page
+        sort_field_name: sort
+        sort_direction_name: direction
+        distinct: true
+        filter_field_name: filterField
+        filter_value_name: filterValue
+    template:
+        pagination: 'pagination/pagination.html.twig' # sliding pagination controls template
+        sortable: 'pagination/sort.html.twig' # sort link template
+        filtration: '@KnpPaginator/Pagination/bootstrap_v5_filtration.html.twig'  # filters template

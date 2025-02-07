@@ -1,0 +1,38 @@
+name: User Story
+description: Maak een nieuwe User Story aan
+projects: ["minvws/30"]
+type: User Story
+body:
+  - type: textarea
+    attributes:
+      label: Omschrijving
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Acceptatiecriteria
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Privacy & Security
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Afhankelijkheden
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: QA
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Buiten scope
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: '[Definition of Done](https://github.com/minvws/nl-rdo-woo-web-private/blob/main/docs/technische-documentatie/definition-of-done.md)'

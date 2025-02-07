@@ -1,0 +1,126 @@
+name: Release WOO-WEB
+description: Create a release ticket for WOO-WEB (in English).
+title: "Release: open.minvws.nl release [VUL TAG IN] naar PROD"
+labels: ["Release"]
+projects: ["minvws/30"]
+body:
+  - type: input
+    attributes:
+      label: "Current Production version WOO-WEB:"
+      placeholder: example 1.4.57
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Current Production version WOO_DB:"
+      placeholder: example 0.1.37
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "New release Production version WOO-WEB:"
+      placeholder: example 1.4.58
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "New release Production version WOO_DB:"
+      placeholder: example 0.1.37
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        ## Checklist for this release
+  - type: checkboxes
+    id: general
+    attributes:
+      label: General
+      description: General checks for this release
+      options:
+        - label: Are the release notes and a release summary written?
+          required: true
+        - label: Are there any changes that may have an effect on the DPIA or otherwise on privacy?
+          required: false
+        - label: Are there any changes that may have an effect on security?
+          required: false
+        - label: Have any new features been checked against accessibility guidelines?
+          required: false
+  - type: checkboxes
+    id: communication
+    attributes:
+      label: Communication
+      description: Communication checks for this release
+      options:
+        - label: Did you notify stakeholders?
+          required: false
+        - label: Is any public notification needed?
+          required: false
+        - label: Do we need to adjust the software manual?
+          required: false
+        - label: Did you notify Operations?
+          required: true
+  - type: checkboxes
+    id: qa
+    attributes:
+      label: QA
+      description: QA checks for this release
+      options:
+        - label: Does code coverage meet the specifications?
+          required: false
+        - label: Are the automated tests passing?
+          required: false
+        - label: Do the automated tests cover all new features?
+          required: false
+        - label: Test new logging items and inform SOC SIEM/CSIRT
+          required: false
+        - label: Discuss changes/issues with QA to ensure accurate/rapid testing
+          required: false
+        - label: QA has signed off on this version and has given approval for release
+          required: true
+        - label: Arrange any required post-release tests and/or monitoring.
+          required: false
+  - type: checkboxes
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Dependencies checks for this release
+      options:
+        - label: Calculate dependencies on other systems, are there any breaking changes down-/upstream?
+          required: false
+        - label: Any database changes required?
+          required: false
+        - label: Any ES rollover required?
+          required: false
+        - label: Are there (certificate/specification) changes to (API) endpoints?
+          required: false
+  - type: checkboxes
+    id: rollout
+    attributes:
+      label: Roll-out
+      description: Roll-out checks for this release
+      options:
+        - label: Rollback procedure present?
+          required: true
+        - label: Is a release date present?
+          required: false
+        - label: Are there any dependencies and/or is a specific release order required?
+          required: false
+        - label: Do we have approval from the PO?
+          required: true
+        - label: Do we have approval from the IBMF?
+          required: true
+        - label: Is an ticket created to update the Public Repository of this project?
+          required: false
+        - label: Inform RDO Operations of a new version and request a release
+          required: true
+  - type: textarea
+    attributes:
+      label: Benodigde acties voor, tijdens en (direct) na de release
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Tickets in release
+    validations:
+      required: false

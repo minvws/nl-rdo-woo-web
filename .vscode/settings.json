@@ -1,0 +1,6 @@
+{
+    "sonarlint.connectedMode.project": {
+        "connectionId": "vws",
+        "projectKey": "nl-rdo-woo-web-private"
+    }
+}

@@ -1,0 +1,28 @@
+{% extends 'admin.html.twig' %}
+
+{% import "admin/macros/facet.html.twig" as macro %}
+
+{% set page_title = 'admin.inquiries.manage_details' | trans %}
+
+{% block body %}
+<div class="bhr-container">
+    {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.admin.html.twig' }) }}
+
+    <div class="bhr-card">
+        {% set alerts = app.flashes('backend') %}
+        {% if alerts | length > 0 %}
+            <div class="mb-8">
+                {% for messages in alerts %}
+                    {% for label, message in messages %}
+                        <twig:Admin:Alert type="{{ label }}">
+                            <strong>{{ message }}</strong>
+                        </twig:Admin:Alert>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {{ form(form) }}
+    </div>
+</div>
+{% endblock %}

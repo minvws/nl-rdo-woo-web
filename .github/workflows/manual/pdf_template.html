@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <title>{{{title}}}</title>
+    <style>
+        {{{style}}}
+    </style>
+    <style>
+        img {
+            page-break-inside: avoid;
+        }
+        .page-break {
+            page-break-inside: avoid;
+            page-break-after: always;
+        }
+        html, body {
+            width: 210mm;
+            height: 297mm;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<center><img src="./images/logo-ro.svg" alt="RO Logo"></center>
+<h1>Gebruikershandleiding Woo</h1>
+Dit is de handleiding voor Woo, versie {{{version}}};
+<nav id="table-of-contents">
+    {{{toc}}}
+</nav>
+<div class="page-break"></div>
+<main>
+    {{{content}}}
+</main>
+</body>
+</html>

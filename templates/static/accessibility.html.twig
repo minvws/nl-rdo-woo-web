@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = 'global.accessibility.page_title' | trans() %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <div class="woo-rich-text woo-readable-width">
+        <h1>{{ page_title }}</h1>
+
+        <p>{{ 'public.accessibility.paragraph-1' | trans() | raw }}</p>
+        <p class="flex flex-col">
+            <span>{{ 'public.accessibility.statement' | trans() | raw }}</span>
+            <span>{{ 'public.accessibility.downloadreport' | trans() | raw }}</span>
+        </p>
+
+        <h2>{{ 'global.accessibility.sub_title-1' | trans() }}</h2>
+        <p>{{ 'public.accessibility.paragraph-2' | trans() | raw  }}</p>
+
+        <h2>{{ 'global.accessibility.sub_title-2' | trans() }}</h2>
+        <p>{{ 'global.accessibility.paragraph-3' | trans() }}</p>
+
+        <ul>
+            <li>{{ 'global.accessibility.bullet-1' | trans() }}</li>
+            <li>{{ 'global.accessibility.bullet-2' | trans() }}</li>
+            <li>{{ 'global.accessibility.bullet-3' | trans() }}</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

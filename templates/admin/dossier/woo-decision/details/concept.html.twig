@@ -1,0 +1,9 @@
+{% extends 'admin/dossier/publication/concept.html.twig' %}
+
+{% block dossier_title %}
+    {{ 'publication.dossier.new_basic_data' | trans }}
+{% endblock %}
+
+{% block form %}
+    {% include 'admin/dossier/woo-decision/details/form.html.twig' %}
+{% endblock %}

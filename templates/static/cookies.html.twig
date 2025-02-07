@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = 'public.footer.label.cookies' | trans() %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <div class="woo-rich-text woo-readable-width">
+        <h1>{{ page_title }}</h1>
+        <p>{{ 'public.cookies.paragraph-1' | trans() }}</p>
+        <p>{{ 'public.cookies.paragraph-2' | trans() }}</p>
+        <p>{{ 'public.cookies.paragraph-3' | trans() }}</p>
+        <p>{{ 'public.cookies.paragraph-4' | trans() }}
+
+        <ul>
+            <li>{{ 'public.cookies.bullet-1' | trans() }}</li>
+            <li>{{ 'public.cookies.bullet-2' | trans() }}</li>
+            <li>{{ 'public.cookies.bullet-3' | trans() }}</li>
+            <li>{{ 'public.cookies.bullet-4' | trans() }}</li>
+            <li>{{ 'public.cookies.bullet-5' | trans() }}</li>
+            <li>{{ 'public.cookies.bullet-6' | trans() }}</li>
+        </ul>
+
+        <p>{{ 'public.cookies.paragraph-5' | trans() }}</p>
+        <p>{{ 'public.cookies.paragraph-6' | trans() | raw }}</p>
+    </div>
+</div>
+{% endblock %}

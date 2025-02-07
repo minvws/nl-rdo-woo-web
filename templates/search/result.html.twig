@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = page_title is defined ? page_title : 'public.global.label.search_publications' | trans %}
+
+{% block search_form_top %}<twig:Public:SearchForm />{% endblock %}
+
+{% block body %}
+<div class="woo-container">
+    {% block search_header %}
+        <h1 class="sr-only">{{ 'public.search.label' | trans }}</h1>
+    {% endblock %}
+
+    <div class="md:flex gap-8">
+        <section class="shrink-0 md:w-56" id="js-search-filters" data-url="{{ ajaxResultsUrl }}">
+            {% include "search/facet.html.twig" with { 'result': result } %}
+        </section>
+
+        <section class="grow pt-8 md:pt-0" id="search-results">
+            <div id="js-search-results">
+                {% include "search/entries.html.twig" with { 'result': result } %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

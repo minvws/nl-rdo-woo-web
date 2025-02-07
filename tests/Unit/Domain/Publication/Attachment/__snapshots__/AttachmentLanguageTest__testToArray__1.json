@@ -1,0 +1,12 @@
+[
+    {
+        "type": "AttachmentLanguage",
+        "value": "Dutch",
+        "label": "dutch"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "English",
+        "label": "english"
+    }
+]

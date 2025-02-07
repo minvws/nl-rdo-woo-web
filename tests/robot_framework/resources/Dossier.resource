@@ -1,0 +1,116 @@
+*** Settings ***
+Documentation       Resource file containing custom keywords for Decision Dossiers in the Balie.
+Library             DateTime
+Library             Browser
+Library             DebugLibrary
+Resource            Admin.resource
+Resource            Public.resource
+Resource            WooDecision.resource
+Resource            Generic.resource
+
+
+*** Variables ***
+${CURRENT_TIME}             ${EMPTY}
+${CURRENT_DATE}             ${EMPTY}
+${CURRENT_DATE_FORMAT2}     ${EMPTY}
+${CURRENT_EPOCH}            ${EMPTY}
+${DOSSIER_REFERENCE}        ${EMPTY}
+${PREFIX_INDEX}             ${EMPTY}
+
+
+*** Keywords ***
+Fill Out Basic Details
+  [Arguments]  ${date_from}=2021-12-01T00:00:00+00:00
+  ...  ${date_to}=2023-01-31T00:00:00+00:00
+  ...  ${type}=${EMPTY}
+  ...  ${prefix}=MINVWS
+  Generate Dossier Reference Number
+  Fill Text  id=details_title  Robot ${DOSSIER_REFERENCE}
+  IF  '${type}' == 'disposition' or '${type}' == 'investigation-report' or '${type}' == 'complaint-judgement'
+    Type Text  id=details_date  01012022
+  ELSE IF  '${type}' == 'annual-report'
+    Select Options By  id=details_year  index  5
+  ELSE
+    Select Options By  id=details_date_from  value  ${date_from}
+    Select Options By  id=details_date_to  value  ${date_to}
+  END
+  Select Options By  //select[@name="details[departments][0]"]  index  1
+  IF  '${type}' == 'woo-decision'
+    Check Checkbox  id=details_publication_reason_1
+    Select Options By  id=details_subject  label  Opstart Corona
+  ELSE
+    Select Random Subject
+  END
+  Select Options By  id=details_documentPrefix_documentPrefix  text  ${prefix}
+  Fill Text  id=details_dossierNr  ${DOSSIER_REFERENCE}
+  Click  "Opslaan en verder"
+
+Select Random Subject
+  ${nr_of_subjects} =  Get Element Count  //select[@name="details[subject]"]/option
+  ${random_number} =  Evaluate  random.randint(1, ${nr_of_subjects})  random
+  ${random_index} =  Evaluate  ${random_number} - 1
+  Select Options By  //select[@name="details[subject]"]  index  ${random_index}
+
+Generate Dossier Reference Number
+  ${reference_number} =  Generate Random String  3  [NUMBERS][UPPER]
+  VAR  ${DOSSIER_REFERENCE}  ${reference_number}  scope=suite
+
+Search For A Publication
+  [Documentation]  Clicks the link with matching text, if multiple are present it will fail.
+  [Arguments]  ${search_query}
+  Type Text  //div[@data-e2e-name="dossier-search"]//input  ${search_query}  delay=50 ms  clear=Yes
+  ${search_query_lowercase} =  Convert To Lower Case  ${search_query}
+  Click  //tr[@data-e2e-name="search-previews-result"]//a[contains(@href,'${search_query_lowercase}')]
+
+Click Documents Edit
+  Click  //*[@data-e2e-name="documents-section"]//*[@data-e2e-name="edit-link"]
+
+Create New Dossier
+  [Arguments]  ${dossier_type}
+  Click  //*[@data-e2e-name="create-dossier"]
+  Choose Dossier Type  ${dossier_type}
+
+Choose Dossier Type
+  [Documentation]  Check if there is an option to choose Convenant or Woo -- This is only shown when you have super-admin permissions.
+  [Arguments]  ${dossier_type}=woo-decision
+  Click  //*[@data-e2e-name="create-dossier-type-${dossier_type}"]
+
+Publish Dossier And Return To Admin Home
+  [Arguments]  ${publication_status}=Gepubliceerd
+  IF  "${publication_status}" == "Gepubliceerd"
+    Click Save And Prepare
+    Click Publications
+  ELSE IF  "${publication_status}" == "Gepland"
+    ${timestamp} =  Get Current Date
+    ${next_year} =  Add Time To Date  ${timestamp}  730 days
+    Fill Publication Date  ${next_year}
+    Click Save And Prepare
+    Click Publications
+  ELSE IF  "${publication_status}" == "Concept"
+    Click Publications
+  END
+
+Click Publications
+  Click  "Publicaties"
+
+Click Publication By Value
+  [Arguments]  ${value}
+  ${value} =  Convert To Lower Case  ${value}
+  Click  //table[@data-e2e-name="dossiers-table"]//td[contains(.,'${value}')]//a
+
+Verify Publication Confirmation
+  [Arguments]  ${preview_date}  ${publication_date}
+  Get Text  //*[@data-e2e-name="dossier-preview-date"]  contains  ${preview_date}
+  Get Text  //*[@data-e2e-name="dossier-publication-date"]  contains  ${publication_date}
+  Get Text  //*[@data-e2e-name="dossier-publication-date-link"]  contains  ${preview_date}
+
+Click Search Through Documents In Dossier
+  Click  //*[@data-e2e-name="search-through-documents"]
+
+Verify Document Filetype
+  [Arguments]  ${document_number}  ${source_type}  ${file_type}
+  Click  //div[@data-e2e-name="documents-section"]//tbody/tr[td[contains(.,'${document_number}')]]//td//a
+  Get Text  //td[@data-e2e-name="source-type"]  contains  ${source_type}
+  Get Text  //td[@data-e2e-name="file-type"]  contains  ${file_type}
+  Generic Download Click  //a[@data-e2e-name="download-file-link"]  ${file_type}
+  Go Back

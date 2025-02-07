@@ -1,0 +1,17 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+<div class="bhr-container">
+    <h1 class="bhr-title mb-6">{{ 'elastic.index.promote_to_live' | trans() }}: {{ details.index.name }}</h1>
+
+    <div class="bhr-card">
+        {% include 'admin/elastic/counts.html.twig' %}
+    </div>
+
+    <div class="bhr-card mt-10">
+        <h2 class="bhr-title">{{ 'elastic.index.promote_confirmation' | trans() }}</h2>
+
+        {{ form(form) }}
+    </div>
+</div>
+{% endblock %}

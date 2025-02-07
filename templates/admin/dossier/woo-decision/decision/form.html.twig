@@ -1,0 +1,46 @@
+{{ form_start(form) }}
+
+{{ form_errors(form) }}
+
+{% if form.decision is defined %}
+    {{ form_row(form.decision) }}
+{% else %}
+    <div class="bhr-form-row -mt-4">
+        <h2 class="bhr-label">Soort besluit</h2>
+        {{ dossier.decision | trans }}
+    </div>
+{% endif %}
+
+{{ form_row(form.summary) }}
+
+<twig:Admin:Publication:ManageDocument
+    allowedFileTypes="{{ documentTypeNames }}"
+    allowedMimeTypes="{{ documentMimeTypes }}"
+    canDelete="{{ canDeleteDocument }}"
+    documentType="{{ 'admin.dossiers.woo-decision.document' | trans }}"
+    documentTypes="{{ documentTypes }}"
+    endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/woo-decision-main-document' }}"
+    formField="{{ form.document }}"
+    grounds="{{ grounds }}"
+    helpText="{{ 'admin.dossiers.woo-decision.form.content.document_help' | trans }}"
+    languages="{{ attachmentLanguages }}"
+    title="{{ 'admin.dossiers.woo-decision.form.content.document_label' | trans }}"
+    uploadGroupId="main-documents"
+/>
+
+{{ form_row(form.decision_date) }}
+
+<twig:Admin:Publication:ManageAttachments
+    allowedFileTypes="{{ attachmentTypeNames }}"
+    allowedMimeTypes="{{ attachmentMimeTypes }}"
+    canDelete="{{ canDeleteAttachments }}"
+    documentTypes="{{ attachmentTypes }}"
+    endpoint="{{'/balie/api/dossiers/' ~ dossier.id ~ '/decision-attachments'}}"
+    grounds="{{ grounds }}"
+    helpText="{{ 'admin.dossiers.woo-decision.form.content.attachments_help' | trans }}"
+    languages="{{ attachmentLanguages }}"
+    title="Andere officiële bijlagen"
+    uploadGroupId="attachments"
+/>
+
+{{ form_end(form) }}

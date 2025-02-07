@@ -1,0 +1,17 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = 'admin.stats.manage' | trans() %}
+
+{% block extra_scripts %}
+    {{ vite_entry_script_tags('worker-charts') }}
+{% endblock %}
+
+{% block body %}
+    <h1 class="bhr-title">{{ "admin.stats.worker_monitoring" | trans }}</h1>
+
+    <script {{ csp_nonce() }} id="chartdata" type="application/json">
+        {{ data | json_encode | raw('javascript') }}
+    </script>
+
+    <div class="w-full"><canvas id="js-workerstats"></canvas></div>
+{% endblock %}

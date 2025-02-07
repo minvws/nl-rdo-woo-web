@@ -1,0 +1,55 @@
+@layer components {
+    .bhr-upload-area {
+        @apply border border-bhr-platinum text-bhr-dim-gray rounded-xl text-center relative px-4;
+    }
+
+    .bhr-upload-area__button {
+        @apply px-4 -mx-4 py-8 w-full;
+    }
+
+    .bhr-upload-area__input {
+        @apply block border-t border-bhr-platinum cursor-pointer py-4 text-bhr-dim-gray w-full;
+    }
+
+    .bhr-upload-area__input::file-selector-button {
+        @apply sr-only;
+    }
+
+    .bhr-upload-area__tip {
+        @apply block text-left text-lg leading-tight pb-8 -mt-3;
+    }
+
+    .bhr-upload-area__select-files {
+        @apply block pt-4;
+    }
+
+    .bhr-upload-area__file-limits {
+        @apply block pt-2 text-sm;
+    }
+
+    .bhr-upload-area__files-area {
+        @apply border-t border-bhr-platinum text-left;
+    }
+
+    .bhr-upload-area__no-files {
+        @apply cursor-pointer block text-left py-4 w-full;
+    }
+
+    .bhr-upload-area__files-list {
+        @apply -mx-4 pt-2 pb-3;
+        @apply min-h-[56px];
+    }
+
+    .bhr-upload-area__progress[value] {
+        @apply absolute h-0.5 w-full;
+    }
+
+    .bhr-upload-area__progress[value]::-webkit-progress-bar {
+        @apply bg-bhr-anti-flash-white;
+    }
+
+    .bhr-upload-area__progress[value]::-webkit-progress-value,
+    .bhr-upload-area__progress[value]::-moz-progress-bar{
+        @apply bg-bhr-philippine-green;
+    }
+}

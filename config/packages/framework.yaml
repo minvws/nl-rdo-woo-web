@@ -1,0 +1,43 @@
+# see https://symfony.com/doc/current/reference/configuration/framework.html
+framework:
+    secret: '%env(APP_SECRET)%'
+    #csrf_protection: true
+    annotations: false
+    http_method_override: false
+    handle_all_throwables: true
+
+    # Enables session support. Note that the session will ONLY be started if you read or write from it.
+    # Remove or comment this section to explicitly disable session support.
+    session:
+        enabled: true
+        handler_id: App\Session\EncryptedSessionProxy
+        cookie_secure: true
+        cookie_samesite: strict
+        storage_factory_id: session.storage.factory.native
+        name: '%env(COOKIE_NAME)%'
+        cookie_httponly: true
+        cookie_lifetime: 604800
+        gc_maxlifetime: 604800
+
+    #esi: true
+    #fragments: true
+    php_errors:
+        log: true
+    exceptions:
+        App\Domain\Publication\PageProvider\PageProviderException:
+            status_code: 404
+        App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException:
+            status_code: 404
+    assets:
+        version_strategy: 'Pentatrion\ViteBundle\Asset\ViteAssetVersionStrategy'
+
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file
+
+when@dev:
+    framework:
+        session:
+            cookie_secure: auto

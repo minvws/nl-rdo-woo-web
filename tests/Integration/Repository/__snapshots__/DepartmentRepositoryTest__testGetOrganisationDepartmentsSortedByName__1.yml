@@ -1,0 +1,20 @@
+-
+    name: 'Adipiscing Elit'
+    shortTag: ae
+    slug: adipiscing-elit
+    public: true
+-
+    name: 'Amet Consectetur'
+    shortTag: ac
+    slug: amet-consectetur
+    public: true
+-
+    name: 'Dolor Sit'
+    shortTag: ds
+    slug: dolor-sit
+    public: false
+-
+    name: 'Lorem Ipsum'
+    shortTag: li
+    slug: lorem-ipsum
+    public: true

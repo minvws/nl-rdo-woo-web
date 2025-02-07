@@ -1,0 +1,57 @@
+{% extends 'admin/dossier/publication/view.html.twig' %}
+
+{% set aboutTitle = 'admin.global.convenant_on' | trans %}
+
+{% set descriptionLabel = 'admin.dossiers.covenant.description' | trans %}
+{% set internalReferenceLabel = 'admin.dossiers.covenant.form.details.ref_int' | trans %}
+
+{% set dossierTypeTitle = 'global.covenant' | trans %}
+{% set periodLabel = 'admin.dossiers.covenant.period' | trans %}
+{% set summaryLabel = 'admin.dossiers.covenant.summary' | trans %}
+{% set documentLabel = 'admin.dossiers.covenant.document' | trans %}
+{% set completeFirstOpenStepTitle = ('admin.dossiers.covenant.complete_step.' ~ workflowStatus.firstOpenStep.stepName.value | default) | trans %}
+
+{% set deleteTitle = 'admin.dossiers.covenant.delete' | trans %}
+{% set deleteBullets = [
+    'admin.dossiers.covenant.delete_bullet-1' | trans,
+    'admin.dossiers.covenant.delete_bullet-2' | trans,
+    'admin.dossiers.covenant.delete_bullet-3' | trans,
+] %}
+
+{% block dossier_period %}
+<twig:Admin:Definition term="{{ 'admin.dossiers.covenant.period' | trans }}">
+    {% if dossier.dateFrom is not empty %}
+        <twig:Date date="{{ dossier.dateFrom }}" />
+    {% else %}
+        ({{ 'admin.global.no_record' | trans | lower }})
+    {% endif %}
+    {{ 'global.from_till.abbreviation' | trans }}
+    {% if dossier.dateTo is not empty %}
+        <twig:Date date="{{ dossier.dateTo }}" />
+    {% else %}
+        ({{ 'admin.global.no_record' | trans | lower }})
+    {% endif %}
+</twig:Admin:Definition>
+{% endblock %}
+
+{% block dossier_parties %}
+<twig:Admin:Definition term="{{ 'admin.dossiers.covenant.parties' | trans }}">
+    {% if dossier.parties | length > 0 %}
+        <ul>
+        {% for party in dossier.parties %}
+            <li>{{ party }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+    <p>{{ 'admin.global.no_record' | trans }}</p>
+    {% endif %}
+</twig:Admin:Definition>
+{% endblock %}
+
+{% block dossier_previous_link %}
+    {% if dossier.previousVersionLink is not empty %}
+        <twig:Admin:Definition term="{{ 'admin.dossiers.covenant.previous_version_link' | trans }}">
+            <a class="text-bhr-sea-blue underline" href="{{ dossier.previousVersionLink }}">{{ dossier.previousVersionLink }}</a>
+        </twig:Admin:Definition>
+    {% endif %}
+{% endblock %}

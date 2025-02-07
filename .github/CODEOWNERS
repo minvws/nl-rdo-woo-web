@@ -1,0 +1,4 @@
+* @minvws/rdo-woo-codeowners
+.github/CODEOWNERS @minvws/irealisatie-operations
+
+/tests/robot_framework @minvws/rdo-robotframework-codeowners

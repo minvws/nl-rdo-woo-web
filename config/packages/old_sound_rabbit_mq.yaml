@@ -1,0 +1,8 @@
+old_sound_rabbit_mq:
+    connections:
+        default:
+            url: '%env(RABBITMQ_URL)%'
+    producers:
+        audit_logger:
+            connection:       default
+            exchange_options: { name: 'audit_logger', type: direct }

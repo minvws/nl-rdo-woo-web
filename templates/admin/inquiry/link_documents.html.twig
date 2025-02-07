@@ -1,0 +1,55 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = 'admin.dossiers.link_documents' | trans() %}
+
+{% block body %}
+    <h1 class="bhr-title bhr-title--fixed-width mx-auto mb-10">{{ page_title }}</h1>
+    <div class="bhr-container bhr-container--sm">
+        {% if result is not null %}
+            <div class="bhr-card" data-e2e-name="inquiry-alerts">
+                <twig:Admin:Alert type="{{ result.isSuccessful ? 'success' : 'danger' }}">
+                    <p class="font-bold">{{ 'admin.inquiries.number_of_cases_added' | trans({'count': result.addedRelationsCount}) }}</p>
+
+                    <twig:block name="extra">
+                        {% if result.hasGenericExceptions %}
+                            <p class="font-bold">{{ 'admin.inquiries.generic_errors_title' | trans }}:</p>
+
+                            <ul class="bhr-ul">
+                                {% for exception in result.genericExceptions %}
+                                    <li class="bhr-li">{{ exception | trans }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        {% if result.hasRowExceptions %}
+                            <p class="font-bold {{ result.hasGenericExceptions ? 'mt-4' : '' }}">{{ 'admin.inquiries.row_errors_title' | trans }}:</p>
+
+                            <ul class="bhr-ul">
+                                {% for rownumber, rowExceptions in result.rowExceptions %}
+                                    {% for exception in rowExceptions %}
+                                        <li class="bhr-li">{{ 'admin.inquiries.row' | trans }} {{ rownumber }}: {{ exception | trans }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </twig:block>
+                </twig:Admin:Alert>
+            </div>
+        {% endif %}
+        <div class="bhr-card">
+            {{ form_start(link_documents) }}
+            {{ form_errors(link_documents) }}
+            {{ form_row(link_documents.upload) }}
+
+            {% set choices = link_documents.prefix.vars.choices %}
+            {% if (choices | length) > 1 %}
+                {{ form_row(link_documents.prefix) }}
+            {% else %}
+                {{ form_row(link_documents.prefix, {row_attr: {class: 'hidden'}, value: choices.0.value } ) }}
+            {% endif %}
+            {{ form_row(link_documents.link) }}
+            {{ form_row(link_documents.cancel) }}
+            {{ form_end(link_documents) }}
+        </div>
+    </div>
+{% endblock %}

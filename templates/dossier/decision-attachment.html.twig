@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+{% import 'document_macros.html.twig' as macro %}
+
+{% set page_title = attachment.name %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-h1">
+        <twig:Public:FileIcon type="{{ attachment.sourceType.value }}" />
+        {{ attachment.name }}
+    </h1>
+    <p class="text-woo-dim-gray">{{ attachment.formalDate | format_date('short') }}</p>
+    <p>{{ 'global.attachment_of' | trans }} <a class="woo-a" href="{{ path('app_woodecision_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}">{{dossier.title}}</a></p>
+
+    {% if file.hasPages %}
+        <twig:Public:PdfViewer
+            file="{{ file }}"
+            title="{{ "public.documents.viewer.click_on_page" | trans({ fileInfo: attachment.sourceType.value|upper, fileSize: attachment.size != "0" ? attachment.size | size : ""  }) }}"
+        />
+    {% endif %}
+
+    <div class="mt-8">
+        <twig:Public:DownloadFileButton href="{{ attachment.downloadUrl }}">{{ 'global.download_attachment' | trans }} ({{ attachment.sourceType | trans }}, {{ attachment.size | size }})</twig:Public:DownloadFileButton>
+    </div>
+
+    <div class="mt-16">
+        <h2 class="woo-h2 woo-h2-spacing">{{ 'public.documents.document.about' | trans }}</h2>
+        <div class="woo-responsive-table">
+            <table class="woo-table">
+                <caption class="sr-only">
+                    {{ 'public.documents.document.about' | trans }}
+                </caption>
+                <tbody>
+                    <tr>
+                        <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'public.documents.document.date' | trans}}</th>
+                        <td>{{ attachment.formalDate | format_date('long') }}</td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.type' | trans}}</th>
+                        <td>{{ attachment.sourceType | trans }}, {{ attachment.size | size }}</td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.language' | trans}}</th>
+                        <td>{{ attachment.language | trans }}</td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">
+                            {{ 'public.documents.redacted_data' | trans }}
+                        </th>
+                        <td>
+                            {% set grounds = attachment.grounds | default([]) %}
+                            {% for ground in grounds %}
+                                {{ macro.document_ground(ground) }}
+                            {% endfor %}
+
+                            {% include 'snippets/document/redacted-message.html.twig' with {
+                                'departmentName': dossier.mainDepartment.name,
+                                'documentId': attachment.id,
+                                'documentName': attachment.name,
+                                'isExternalDepartmentResponsible': dossier.isExternalDepartmentResponsible,
+                                'hasGrounds': grounds | length > 0,
+                            } %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% include 'dossier/snippets/about.html.twig' %}
+</div>
+{% endblock %}

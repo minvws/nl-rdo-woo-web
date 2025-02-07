@@ -1,0 +1,11 @@
+when@dev: &dev
+    # See full configuration: https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#full-default-bundle-configuration
+    zenstruck_foundry:
+        make_factory:
+            default_namespace: 'App\Tests\Factory'
+        faker:
+            service: 'Faker\Generator'
+        global_state:
+            - App\Tests\Story\DepartmentStory
+
+when@test: *dev

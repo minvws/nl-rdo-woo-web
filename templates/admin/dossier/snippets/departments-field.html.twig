@@ -1,0 +1,15 @@
+<div {{ vue_component('MultiSelectController', {
+    buttonText: 'Voeg een bestuursorgaan toe',
+    buttonTextMultiple: 'Voeg nog een bestuursorgaan toe',
+    label: 'admin.publications.responsible_department' | trans,
+    legend: 'admin.publications.responsible_department' | trans,
+    minLength: 1,
+    maxLength: 1,
+    name: 'details[departments]',
+    options: departments.options,
+    submitErrors: departments.errors,
+    values: departments.values,
+}) }}>
+    <div class="min-h-14"></div>
+</div>
+{% do formField.setRendered %}

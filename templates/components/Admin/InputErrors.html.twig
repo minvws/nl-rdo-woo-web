@@ -1,0 +1,43 @@
+{% set numberOfErrors = errors | default([]) | length %}
+{% set hasError = error is defined %}
+{% if numberOfErrors > 0 or hasError %}
+<div class="flex pb-3 js-input-errors" {% if id is defined %}id="{{ id }}"{% endif %}>
+    <span class="mr-2">
+        <twig:Admin:Icon color="fill-bhr-maximum-red" name="exclamation" />
+    </span>
+
+    <div class="text-bhr-maximum-red">
+        {% if numberOfErrors > 0 %}
+            {% if numberOfErrors > 3 %}
+                <ul class="bhr-ul">
+                    {% for error in errors|slice(0, 3) %}
+                        <li class="bhr-li">{{ error.message }}</li>
+                    {% endfor %}
+                    <li>…</li>
+                </ul>
+                <details class="bhr-details">
+                    <summary
+                        class="bhr-a inline-block py-1"
+                        data-expanded="Toon minder fouten"
+                        data-collapsed="Toon nog {{ numberOfErrors - 3 }} fout(en)"
+                    >
+                    </summary>
+                    <ul class="bhr-ul">
+                        {% for error in errors|slice(3) %}
+                            <li class="bhr-li">{{ error.message }}</li>
+                        {% endfor %}
+                    </ul>
+                </details>
+            {% else %}
+                <ul class="bhr-ul">
+                    {% for error in errors %}
+                        <li class="bhr-li">{{ error.message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% elseif hasError %}
+            <div class="leading-tight">{{ error }}</div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

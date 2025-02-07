@@ -1,0 +1,59 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = 'admin.subject.manage' | trans %}
+
+{% block body %}
+<div class="bhr-container">
+    <twig:Admin:LeftAndRight>
+        <h1 class="bhr-title">{{ page_title }}</h1>
+
+        <twig:block name="right">
+            {% if matrix_has_permission('subject.create') %}
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_subject_create') }}" data-e2e-name="new-subject">{{ 'admin.subject.create' | trans() }}</a>
+            {% endif %}
+        </twig:block>
+    </twig:Admin:LeftAndRight>
+
+    <div class="bhr-card">
+        {% set alerts = app.flashes('backend') %}
+        {% if alerts | length > 0 %}
+            <div class="mb-8" data-e2e-name="alerts">
+                {% for messages in alerts %}
+                    {% for label, message in messages %}
+                        <twig:Admin:Alert type="{{ label }}">
+                            <strong>{{ message }}</strong>
+                        </twig:Admin:Alert>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if pagination | length > 0 %}
+            <table class="bhr-table">
+                <thead>
+                    <tr>
+                        {{ knp_pagination_sortable(pagination, 'admin.subject.subject' | trans, 'sub.name', {}, {}, 'pagination/sort.admin.html.twig') }}
+                    </tr>
+                </thead>
+                <tbody data-e2e-name="subject-list">
+                {% for row in pagination %}
+                    <tr>
+                        <td>
+                            <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_subject_edit', { id: row.id.toBase58 }) }}">
+                                {{ row.name }}
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
+        {% else %}
+            <p class="text-center">
+                {{ 'admin.subjects.no_subjects' | trans }}
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

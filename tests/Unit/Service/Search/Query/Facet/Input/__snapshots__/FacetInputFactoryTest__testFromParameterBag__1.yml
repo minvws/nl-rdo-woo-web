@@ -1,0 +1,62 @@
+type:
+    active: false
+    stringValues: {  }
+    requestParameters: {  }
+    notActive: true
+subject:
+    active: false
+    stringValues: {  }
+    requestParameters: {  }
+    notActive: true
+source:
+    active: false
+    stringValues: {  }
+    requestParameters: {  }
+    notActive: true
+grounds:
+    active: true
+    stringValues: [three, four]
+    requestParameters: [three, four]
+    notActive: false
+judgement:
+    active: true
+    stringValues: [one, two]
+    requestParameters: [one, two]
+    notActive: false
+department:
+    active: false
+    stringValues: {  }
+    requestParameters: {  }
+    notActive: true
+period:
+    active: false
+    stringValues: {  }
+    requestParameters: {  }
+    notActive: true
+date:
+    active: true
+    withoutDate: true
+    anyPeriodFilterDates: false
+    periodFilterFrom: null
+    periodFilterTo: null
+    requestParameters: { without_date: 1 }
+    fromDate: false
+    toDate: false
+    notActive: false
+    from: null
+    to: null
+dnr:
+    active: false
+    stringValues: {  }
+    requestParameters: {  }
+    notActive: true
+dsi:
+    active: false
+    stringValues: {  }
+    requestParameters: {  }
+    notActive: true
+dci:
+    active: false
+    stringValues: {  }
+    requestParameters: {  }
+    notActive: true

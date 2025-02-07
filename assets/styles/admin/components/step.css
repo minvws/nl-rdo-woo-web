@@ -1,0 +1,54 @@
+@layer components {
+    .bhr-steps {
+        @apply relative pb-10 lg:pb-6;
+    }
+
+    .bhr-steps__list {
+        @apply flex justify-between relative z-1;
+    }
+
+    .bhr-steps__step {
+        @apply pt-1 lg:relative;
+    }
+
+    .bhr-steps__step--current {
+        @apply pt-0;
+    }
+
+    .bhr-steps__anchor {
+        @apply block;
+    }
+
+    .bhr-steps__icon {
+        @apply rounded-full bg-bhr-ocean-boat-blue;
+    }
+
+    .bhr-steps__icon--future {
+        @apply bg-bhr-dim-gray;
+    }
+
+    .bhr-steps__step-text {
+        @apply text-black sr-only left-0 top-12;
+        @apply lg:not-sr-only lg:-translate-x-2/4 lg:absolute lg:left-4 lg:whitespace-nowrap;
+    }
+
+    .bhr-steps__step-text--current {
+        @apply not-sr-only absolute whitespace-nowrap;
+    }
+
+    .bhr-steps__step-indication {
+        @apply sr-only block;
+    }
+
+    .bhr-steps__step-indication--current {
+        @apply not-sr-only whitespace-nowrap lg:sr-only;
+    }
+
+    .bhr-steps__progress {
+        @apply absolute bg-bhr-dim-gray w-full h-0.5 top-5;
+    }
+
+    .bhr-steps__progress-bar {
+        @apply bg-bhr-ocean-boat-blue h-0.5 w-0;
+    }
+}

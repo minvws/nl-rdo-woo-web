@@ -1,0 +1,17 @@
+{% if scheduledDossiers.count > 0 %}
+    <div class="pb-8" data-e2e-name="inquiry-notifications">
+        <twig:Public:Alert>
+            <h2 class="sr-only">{{ 'public.global.warning' | trans() }}</h2>
+            <p>
+                {% set dates = '' %}
+                {% for scheduledDossier in scheduledDossiers %}
+                    {% if not loop.first %}
+                        {% set dates = dates ~ " " ~ "global.and_on" | trans ~ " " %}
+                    {% endif %}
+                    {% set dates = dates ~ scheduledDossier.previewDate | format_date('long')  %}
+                {% endfor %}
+                {{ 'public.messages.new_dossiers' | trans({'{dates}': dates}) }}
+            </p>
+        </twig:Public:Alert>
+    </div>
+{% endif %}

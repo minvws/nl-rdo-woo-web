@@ -1,0 +1,34 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = 'admin.user.managment' | trans %}
+
+{% block body %}
+<div class="bhr-container">
+    <twig:Admin:LeftAndRight>
+        <h1 class="bhr-title">{{ page_title }}</h1>
+
+        <twig:block name="right">
+            {% if matrix_has_permission('user.create') %}
+            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_user_create') }}">{{ 'admin.user.create' | trans }}</a>
+            {% endif %}
+        </twig:block>
+    </twig:Admin:LeftAndRight>
+
+    <div class="bhr-card">
+        {% set alerts = app.flashes('backend') %}
+        {% if alerts | length > 0 %}
+            <div class="mb-8" data-e2e-name="alerts">
+                {% for messages in alerts %}
+                    {% for label, message in messages %}
+                        <twig:Admin:Alert type="{{ label }}">
+                            <strong>{{ message }}</strong>
+                        </twig:Admin:Alert>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% include 'admin/user/snippets/user-tabs.html.twig' %}
+    </div>
+</div>
+{% endblock %}

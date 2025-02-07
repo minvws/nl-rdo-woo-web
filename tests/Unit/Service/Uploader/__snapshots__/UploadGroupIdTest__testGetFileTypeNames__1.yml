@@ -1,0 +1,6 @@
+uploadGroupId: MAIN_DOCUMENTS
+fileTypeNames:
+    - PDF
+    - Excel
+    - Word
+    - PowerPoint

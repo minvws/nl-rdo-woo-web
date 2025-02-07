@@ -1,0 +1,60 @@
+-
+    name: 'ministerie van Algemene Zaken'
+    shortTag: AZ
+    slug: az
+    isPublic: false
+-
+    name: 'ministerie van Buitenlandse Zaken'
+    shortTag: BZ
+    slug: bz
+    isPublic: false
+-
+    name: 'ministerie van Binnenlandse Zaken en Koninkrijksrelaties'
+    shortTag: BZK
+    slug: bzk
+    isPublic: false
+-
+    name: 'ministerie van Defensie'
+    shortTag: Def
+    slug: def
+    isPublic: false
+-
+    name: 'ministerie van Economische Zaken en Klimaat'
+    shortTag: EZK
+    slug: ezk
+    isPublic: false
+-
+    name: 'ministerie van Financiën'
+    shortTag: Fin
+    slug: fin
+    isPublic: false
+-
+    name: 'ministerie van Infrastructuur en Waterstaat'
+    shortTag: 'I&W'
+    slug: 'i&w'
+    isPublic: false
+-
+    name: 'ministerie van Justitie en Veiligheid'
+    shortTag: 'J&V'
+    slug: 'j&v'
+    isPublic: false
+-
+    name: 'ministerie van Landbouw, Natuur en Voedselkwaliteit'
+    shortTag: LNV
+    slug: lnv
+    isPublic: false
+-
+    name: 'ministerie van Onderwijs, Cultuur en Wetenschap'
+    shortTag: OCW
+    slug: ocw
+    isPublic: false
+-
+    name: 'ministerie van Sociale Zaken en Werkgelegenheid'
+    shortTag: SZW
+    slug: szw
+    isPublic: false
+-
+    name: 'ministerie van Volksgezondheid, Welzijn en Sport'
+    shortTag: VWS
+    slug: vws
+    isPublic: false

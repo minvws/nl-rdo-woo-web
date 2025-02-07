@@ -1,0 +1,24 @@
+{% extends 'admin/dossier/publication/view.html.twig' %}
+
+{% set aboutTitle = 'admin.global.annual_report_on' | trans %}
+
+{% set descriptionLabel = 'admin.dossiers.annual-report.description' | trans %}
+{% set internalReferenceLabel = 'admin.dossiers.annual-report.form.details.ref_int' | trans %}
+
+{% set dossierTypeTitle = 'global.annual_report' | trans %}
+{% set summaryLabel = 'admin.dossiers.annual-report.summary' | trans %}
+{% set documentLabel = 'admin.dossiers.annual-report.document' | trans %}
+{% set completeFirstOpenStepTitle = ('admin.dossiers.annual-report.complete_step.' ~ workflowStatus.firstOpenStep.stepName.value | default) | trans %}
+
+{% set deleteTitle = 'admin.dossiers.annual-report.delete' | trans %}
+{% set deleteBullets = [
+    'admin.dossiers.annual-report.delete_bullet-1' | trans,
+    'admin.dossiers.annual-report.delete_bullet-2' | trans,
+    'admin.dossiers.annual-report.delete_bullet-3' | trans,
+] %}
+
+{% block dossier_period %}
+    <twig:Admin:Definition term="{{ 'admin.dossiers.annual-report.period' | trans }}">
+        {{ dossier.dateFrom | date('Y') }}
+    </twig:Admin:Definition>
+{% endblock %}

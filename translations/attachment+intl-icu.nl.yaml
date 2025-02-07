@@ -1,0 +1,89 @@
+advice: advies
+request_for_advice: adviesaanvraag
+advisort_proposal: adviesvoorstel
+
+budget: begroting
+policy_note: beleidsnota
+decision_note: beslisnota
+annual_plan: jaarplan
+annual_report: jaarverslag
+
+official_message: ambtsbericht
+evaluation_report: evaluatierapport
+inspection_report: inspectierapport
+research_report: onderzoeksrapport
+accountability_report: verantwoordingsrapport
+progress_report: voortgangsrapport
+
+term_agenda: termijnagenda
+
+decision_to_impose_a_fine: beschikking tot opleggen boete
+decision_to_impose_an_order_under_administrative_enforcement: beschikking tot opleggen last onder bestuursdwang
+decision_to_impose_an_order_subject_to_penalty: beschikking tot opleggen last onder dwangsom
+
+designation_decision: aanwijzingsbeschikking
+appointment_decision: benoemingsbeschikking
+concession: concessie
+recognition_decision: erkenningsbeschikking
+consent_decision: instemmingsbeschikking
+exemption_decision: ontheffingsbeschikking
+subsidy_decision: subsidiebeschikking
+permit: vergunning
+
+letter: brief
+brochure: brochure
+circular: circulaire
+news_item: nieuwsbericht
+organization_details: organisatiegegevens
+press_release: persbericht
+speech: toespraak
+
+covenant: convenant
+
+objection: bezwaarschrift
+complaint: klacht
+complaint_judgement: klachtoordeel
+exemption_request: ontheffingsaanvraag
+subsidy_application: subsidieaanvraag
+permit_application: vergunningaanvraag
+point_of_view: zienswijze
+
+actions: handelingen
+parliamentary_document: kamerstuk
+non_dossier_document: niet-dossierstuk
+
+parliamentary_question_with_answer: kamervraag met antwoord
+parliamentary_question_without_answer: kamervraag zonder antwoord
+motion: motie
+
+government_gazette: staatsblad
+staatscourant: staatscourant
+
+policy: beleidsregel
+plan: plan
+
+agenda: agenda
+decision_list: besluitenlijst
+incoming_document: ingekomen stuk
+meeting_report: vergaderverslag
+
+decision_on_objection: beslissing op bezwaar
+judgement_on_wob_woo_request: beslissing op Wob-/Woo-verzoek
+wob_woo_request: Wob-/Woo-verzoek
+
+dutch: Nederlands
+english: Engels
+
+branch.advice_document: "adviesdocument"
+branch.policy_document: "beleidsdocument"
+branch.report: "rapport"
+branch.decision_to_impose: "beschikking"
+branch.decision_to_impose_enforcement: "forcementbeschikking tot handhaving"
+branch.communications: "communicatie-uiting"
+branch.citizen_document: "document van burger"
+branch.parliamentary_document: "parlementair document"
+branch.parliamentary_question: "kamervraag"
+branch.publication_sheet: "publicatieblad"
+branch.regulation: "regelgeving"
+branch.meeting_document: "vergaderstuk"
+branch.woo_procedure: "Woo-procedure"

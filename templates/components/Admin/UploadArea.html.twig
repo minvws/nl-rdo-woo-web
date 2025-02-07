@@ -1,0 +1,92 @@
+<div class="{{ css|default('') }} js-upload-section">
+    <div role="status">
+        <div class="mb-4 hidden js-invalid-files">
+            <twig:Admin:Alert type="danger">
+                <p>
+                    De volgende bestanden werden genegeerd.
+                    {% if hasAllowedMimeTypes %}Alleen bestanden van het type PDF en Zip zijn toegestaan.{% endif %}
+                    {% if hasMaxFileSize %}De maximale bestandsgrootte per bestand is {{ maxFileSize | size }}.{% endif %}
+                </p>
+
+                <twig:block name="extra">
+                    <ul class="bhr-ul grid grid-cols-2 gap-x-8 gap-y-1 js-invalid-files-list"></ul>
+                </twig:block>
+            </twig:Admin:Alert>
+        </div>
+    </div>
+
+    {% set shouldDisplayFileLimitations = hasAllowedMimeTypes or hasMaxFileSize %}
+    {% set shouldDisplayTip = tip is not empty %}
+    <div class="bhr-upload-area js-upload-area">
+        <button
+            aria-labelledby="{{ this.selectFilesElementId }} {{ shouldDisplayFileLimitations ? this.filesLimitationsElementId : '' }} {{ shouldDisplayTip ? this.tipElementId : '' }}"
+            class="bhr-upload-area__button js-select-files"
+            tabindex="-1"
+            type="button"
+        >
+            {% if shouldDisplayTip %}
+            <span class="bhr-upload-area__tip" id="{{ this.tipElementId }}">
+                {{ tip }}
+            </span>
+            {% endif %}
+
+            <twig:Admin:Icon name="to-top" />
+
+            <span class="bhr-upload-area__select-files" id="{{ this.selectFilesElementId }}">
+                <span
+                    class="font-bold text-bhr-sea-blue js-select-files-main"
+                    data-upload-more-text="Nog meer bestanden selecteren"
+                >
+                    {{ multiple ? 'Bestanden' : 'Bestand' }} selecteren
+                </span> <span class="no-js:hidden">of hierin slepen</span>
+            </span>
+
+            {% if shouldDisplayFileLimitations %}
+            <span class="bhr-upload-area__file-limits" id="{{ this.filesLimitationsElementId }}">
+                {% if hasAllowedMimeTypes %}{{ multiple ? 'Bestanden' : 'Bestand' }} van het type PDF, Word, Excel, Powerpoint of Zip{% endif %}{%if hasMaxFileSize %} (max {{maxFileSize | size}} per bestand){% endif %}
+            </span>
+            {% endif %}
+        </button>
+
+        <input
+            {% if hasAllowedMimeTypes %}accept="{{ accept | join(',') }}"{% endif %}
+            class="bhr-upload-area__input js:sr-only js-upload-input"
+            {% if hasMaxFileSize %}data-max-file-size="{{ maxFileSize }}"{% endif %}
+            id="{{ id }}"
+            name="{{ name }}"
+            type="file"
+            {% if multiple %}multiple{% endif %}
+        >
+
+        {% if isAutoUploadEnabled %}
+            <div class="bhr-upload-area__files-area no-js:hidden js-auto-upload-files-area" data-endpoint="{{ endpoint }}" data-name="{{ name }}">
+                <div
+                    class="bhr-upload-area__no-files js-no-files-message js-select-files"
+                >
+                    Geen {{ multiple ? 'bestanden' : 'bestand' }} aan het uploaden
+                </div>
+            </div>
+        {% else %}
+            <div class="bhr-upload-area__files-area no-js:hidden js-no-auto-upload-files-area">
+                <div
+                    class="bhr-upload-area__no-files js-no-files-message js-select-files"
+                >
+                    Geen {{ multiple ? 'bestanden' : 'bestand' }} geselecteerd
+                </div>
+            </div>
+        {% endif %}
+
+        {% if block('content') is not empty %}
+            <div class="text-left">
+                {% block content %}{% endblock %}
+            </div>
+        {% endif %}
+
+        <div class="bhr-upload-visual opacity-0 hidden js-upload-visual">
+            <div class="bhr-upload-visual__dot js-upload-visual-dot">
+                <twig:Admin:Icon color="fill-white" name="to-top" />
+                <span class="block pt-2 font-bold">Uploaden</span>
+            </div>
+        </div>
+    </div>
+</div>

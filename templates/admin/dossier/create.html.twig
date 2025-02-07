@@ -1,0 +1,25 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+<div class="bhr-container bhr-container--sm">
+    <h1 class="bhr-title text-center mb-10">{{'admin.publication.start_new_publication' | trans }}</h1>
+
+    <div class="bhr-card">
+        <h2 class="font-bold text-lg mb-4">{{ 'admin.publication.pick_a_type' | trans }}</h2>
+
+        <ul class="bhr-link-list">
+            {% for dossierType in dossierTypes %}
+                <li class="bhr-link-list__item">
+                    <a href="{{ dossierType.createUrl }}" data-e2e-name="create-dossier-type-{{ dossierType.type }}" class="bhr-link-list__link">
+                        <span class="block leading-tight">
+                            <span class="font-bold block mb-1">{{ ('dossier.type.' ~ dossierType.type) | trans }}</span>
+                            {{ ('dossier.type.' ~ dossierType.type ~ '_description') | trans }}
+                        </span>
+                        <twig:Admin:Icon name="chevron-right" />
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

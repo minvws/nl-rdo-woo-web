@@ -1,0 +1,17 @@
+@layer components {
+    .bhr-alert {
+        @apply p-6 leading-tight text-black text-lg;
+    }
+
+    .bhr-alert--danger {
+        @apply bg-bhr-cornsilk;
+    }
+
+    .bhr-alert--info {
+        @apply bg-bhr-azureish-white;
+    }
+
+    .bhr-alert--success {
+        @apply bg-bhr-chinese-white;
+    }
+}

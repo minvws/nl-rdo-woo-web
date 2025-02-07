@@ -1,0 +1,50 @@
+{{ form_start(form) }}
+    <div {{ vue_component('MultiComboboxController', {
+        buttonText: 'Voeg partij toe',
+        buttonTextMultiple: 'Voeg nog een partij toe',
+        helpText: 'Geef de namen van de juridische entiteiten waartussen de overeenkomst is gesloten. Voer geen namen van personen in.',
+        label: 'Partij',
+        legend: 'Partijen in het convenant',
+        minLength: 2,
+        name: 'content_form[parties]',
+        options: departments,
+        submitErrors: partiesErrors,
+        values: dossier.parties,
+    }) }}>
+        <div class="min-h-14"></div>
+    </div>
+
+    {{ form_row(form.summary) }}
+
+    <twig:Admin:Publication:ManageDocument
+        allowedFileTypes="{{ documentTypeNames }}"
+        allowedMimeTypes="{{ documentMimeTypes }}"
+        canDelete="{{ canDeleteDocument }}"
+        documentType="{{ 'admin.dossiers.covenant.document' | trans }}"
+        documentTypes="{{ documentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-document' }}"
+        formField="{{ form.document }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.covenant.form.content.document_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        title="{{ 'admin.dossiers.covenant.form.content.document_label' | trans }}"
+        uploadGroupId="main-documents"
+    />
+
+    {{ form_row(form.previous_version_link) }}
+
+    <twig:Admin:Publication:ManageAttachments
+        allowedFileTypes="{{ attachmentTypeNames }}"
+        allowedMimeTypes="{{ attachmentMimeTypes }}"
+        canDelete="{{ canDeleteAttachments }}"
+        documentTypes="{{ attachmentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-attachments' }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.covenant.form.content.attachments_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        uploadGroupId="attachments"
+    />
+
+    {% do form.parties.setRendered %}
+
+{{ form_end(form) }}

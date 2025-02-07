@@ -1,0 +1,38 @@
+activeFacets: false
+queryParameters:
+    type: dossier
+    q: foo
+    sort: _score
+    sortorder: desc
+    page: 13
+    dci: [doc1, doc2]
+    dsi: [dos1, dos2]
+facetInputs: {  }
+operator:
+    name: AND
+    value: and
+limit: 0
+offset: 13
+pagination: true
+aggregations: true
+query: foo
+searchType:
+    dossier: true
+    document: false
+    all: false
+    notAll: true
+    name: DOSSIER
+    value: dossier
+documentInquiries:
+    - doc1
+    - doc2
+dossierInquiries:
+    - dos1
+    - dos2
+sortField:
+    name: SCORE
+    value: _score
+sortOrder:
+    name: DESC
+    value: desc
+baseQueryConditions: {  }

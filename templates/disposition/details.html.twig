@@ -1,0 +1,15 @@
+{% extends 'publication/details.html.twig' %}
+
+{% set tagline = 'public.dossiers.disposition.tagline' | trans %}
+{% set description = 'public.dossiers.disposition.description' | trans %}
+
+{% block attachments %}
+    {% include 'publication/attachments.html.twig' with { title: 'public.dossiers.disposition.attachments_for' | trans } %}
+{% endblock %}
+
+{% block about %}
+    <twig:Public:Publication:About
+        dossier="{{ dossier }}"
+        title="{{ 'public.dossiers.disposition.about' | trans }}"
+    />
+{% endblock %}

@@ -1,0 +1,17 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+    form_themes:
+        - 'forms/admin_form_theme.html.twig'
+    globals:
+        PUBLIC_BASE_URL: '%env(PUBLIC_BASE_URL)%'
+        PIWIK_ANALYTICS_ID: '%env(PIWIK_ANALYTICS_ID)%'
+        SITE_NAME: '%env(default:default_site_name:SITE_NAME)%'
+        HAS_FEATURE_VERWERKINGSREGISTER_LINK: '%env(bool:default::HAS_FEATURE_VERWERKINGSREGISTER_LINK)%'
+        DEPARTMENTS: '@App\Domain\Department\Twig\Departments'
+    file_name_pattern: '*.twig'
+    date:
+        timezone: Europe/Amsterdam
+
+when@test:
+    twig:
+        strict_variables: true

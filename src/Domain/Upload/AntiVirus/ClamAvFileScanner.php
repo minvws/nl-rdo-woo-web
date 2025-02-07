@@ -1,0 +1,89 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domain\Upload\AntiVirus;
+
+use App\Entity\User;
+use App\Service\Storage\LocalFilesystem;
+use MinVWS\AuditLogger\AuditLogger;
+use MinVWS\AuditLogger\Events\Logging\FileUploadLogEvent;
+use Psr\Log\LoggerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
+use Xenolope\Quahog\Result;
+
+readonly class ClamAvFileScanner
+{
+    public function __construct(
+        private ClamAvClientFactory $clientFactory,
+        private LoggerInterface $logger,
+        private LocalFilesystem $filesystem,
+        private AuditLogger $auditLogger,
+        private Security $security,
+        private int $fileSizeLimit,
+    ) {
+    }
+
+    public function scan(string $path): FileScanResult
+    {
+        $handle = $this->filesystem->createStream($path, 'r');
+        if (! is_resource($handle)) {
+            $this->logger->error('Could not open stream for upload antivirus validation');
+
+            return FileScanResult::TECHNICAL_ERROR;
+        }
+
+        $fileStats = fstat($handle);
+        if ($fileStats === false || ! isset($fileStats['size']) || $fileStats['size'] < 1) {
+            $this->logger->error('Could not determine stream size for upload antivirus validation');
+
+            return FileScanResult::TECHNICAL_ERROR;
+        }
+
+        if ($fileStats['size'] > $this->fileSizeLimit) {
+            $this->logger->error('Max file size exceeded for antivirus validation');
+
+            return FileScanResult::MAX_SIZE_EXCEEDED;
+        }
+
+        try {
+            $client = $this->clientFactory->getClient();
+            $result = $client->scanResourceStream($handle);
+        } catch (\Throwable $throwable) {
+            $this->logger->error('An error occurred during upload antivirus validation: ' . $throwable->getMessage());
+
+            return FileScanResult::TECHNICAL_ERROR;
+        }
+
+        $this->logToAuditLog($result, $path);
+
+        if ($result->hasFailed()) {
+            $this->logger->error(sprintf(
+                'Upload antivirus validation for file "%s" failed with reason: %s',
+                $path,
+                $result->getReason(),
+            ));
+
+            return FileScanResult::UNSAFE;
+        }
+
+        return FileScanResult::SAFE;
+    }
+
+    private function logToAuditLog(Result $result, string $path): void
+    {
+        $logEvent = (new FileUploadLogEvent())
+            ->withData([
+                'filename' => $path,
+            ])
+            ->withFailed($result->hasFailed(), $result->getReason() ?? '');
+
+        /** @var ?User $user */
+        $user = $this->security->getUser();
+        if ($user instanceof User) {
+            $logEvent->withActor($user);
+        }
+
+        $this->auditLogger->log($logEvent);
+    }
+}

@@ -1,0 +1,93 @@
+flysystem:
+    storages:
+        document.storage:
+            adapter: 'lazy'
+            options:
+                source: 'document.storage.%env(STORAGE_DOCUMENT_ADAPTER)%'
+        thumbnail.storage:
+            adapter: 'lazy'
+            options:
+                source: 'thumbnail.storage.%env(STORAGE_THUMBNAIL_ADAPTER)%'
+        batch.storage:
+            adapter: 'lazy'
+            options:
+                source: 'batch.storage.%env(STORAGE_BATCH_ADAPTER)%'
+
+
+        #
+        # Minio storage definitions
+        #
+        document.storage.aws:
+            adapter: 'aws'
+            visibility: 'public'
+            directory_visibility: 'public'
+            options:
+                client: 'Aws\S3\S3Client'
+                bucket: '%env(STORAGE_MINIO_DOCUMENT_BUCKET)%'
+
+        thumbnail.storage.aws:
+            adapter: 'aws'
+            visibility: 'public'
+            directory_visibility: 'public'
+            options:
+                client: 'Aws\S3\S3Client'
+                bucket: '%env(STORAGE_MINIO_THUMBNAIL_BUCKET)%'
+
+        batch.storage.aws:
+            adapter: 'aws'
+            visibility: 'public'
+            directory_visibility: 'public'
+            options:
+                client: 'Aws\S3\S3Client'
+                bucket: '%env(STORAGE_MINIO_BATCH_BUCKET)%'
+
+        #
+        # Local storage definitions
+        #
+        document.storage.local: &document.storage.local
+            adapter: 'local'
+            visibility: 'public'
+            directory_visibility: 'public'
+            options: &document.storage.local.options
+                directory: '%document_path%'
+                permissions:
+                    file:
+                        public: 0o664            # We want group to be able to read the file
+                        private: 0o600
+                    dir:
+                        public: 0o775
+                        private: 0o700
+
+        document.storage.phpunit:
+            <<: *document.storage.local
+            options:
+                <<: *document.storage.local.options
+                directory: 'vfs://root/%document_path%'
+
+        thumbnail.storage.local:
+            adapter: 'local'
+            visibility: 'public'
+            directory_visibility: 'public'
+            options:
+                directory: '%thumbnail_path%'
+                permissions:
+                    file:
+                        public: 0o664            # We want group to be able to read the file
+                        private: 0o600
+                    dir:
+                        public: 0o775
+                        private: 0o700
+
+        batch.storage.local:
+            adapter: 'local'
+            visibility: 'public'
+            directory_visibility: 'public'
+            options:
+                directory: '%batch_path%'
+                permissions:
+                    file:
+                        public: 0o664            # We want group to be able to read the file
+                        private: 0o600
+                    dir:
+                        public: 0o775
+                        private: 0o700

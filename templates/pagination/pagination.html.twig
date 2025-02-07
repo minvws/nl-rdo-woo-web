@@ -1,0 +1,75 @@
+{% set targetAnchor = fragment|default("#search-results") %}
+
+{% macro previous_or_next(direction, pageNumber, query, pageParameterName, targetAnchor) %}
+    {% set isPrevious = direction == 'prev' %}
+    {% set iconName = isPrevious ? 'chevron-left-thin' : 'chevron-right-thin' %}
+    {% set iconClass = isPrevious ? 'mr-2 -ml-1' : 'ml-2 -mr-1' %}
+    {% set hasPageNumber = pageNumber is not null %}
+    <li class="absolute {{ isPrevious ? 'left-0' : 'right-0' }} top-0" {% if not hasPageNumber %}aria-hidden="true"{% endif %}>
+        {% if hasPageNumber %}
+            <a
+                class="flex items-center text-woo-sea-blue py-2 group"
+                href="?{{ query|merge({(pageParameterName): pageNumber}) | url_encode }}{{ targetAnchor }}"
+                rel="{{ direction }}"
+            >
+                {% if not isPrevious %}<span class="group-hover:underline group-focus:underline">{{ 'global.next' | trans }}</span>{% endif %}
+                <twig:Icon class="{{ iconClass }}" name="{{ iconName }}" size="20" color="fill-current" />
+                {% if isPrevious %}<span class="group-hover:underline group-focus:underline">{{ 'global.previous' | trans }}</span>{% endif %}
+            </a>
+        {% else %}
+            <span class="block py-2">
+                <twig:Icon class="{{ iconClass }}" name="{{ iconName }}" size="20" color="fill-gray-300" />
+            </span>
+        {% endif %}
+    </li>
+{% endmacro %}
+
+{% macro pagination_anchor(pageNumber, currentPageNumber, query, pageParameterName, targetAnchor) %}
+    {% set isActive = pageNumber == currentPageNumber %}
+    <a
+        {% if isActive %}aria-current="page"{% endif %}
+        class="inline-block text-sm xs:text-base px-2 xs:px-1 py-3 xs:min-w-11 text-center leading-none transition-colors hover-focus:bg-woo-sea-blue hover-focus:text-white {{ isActive ? 'bg-woo-sea-blue text-white cursor-default' : 'text-woo-sea-blue' }}"
+        data-e2e-name="page-number-{{ pageNumber }}"
+        href="?{{ query|merge({(pageParameterName): pageNumber}) | url_encode }}{{ targetAnchor }}"
+    >
+        {% if isActive %}<span class="sr-only">{{ 'global.page' | trans }}</span> {% endif %}{{ pageNumber }}
+    </a>
+{% endmacro %}
+
+{% macro empty_list_item() %}<li class="hidden xs:block md:hidden lg:block xs:min-w-11 text-center">&hellip;</li>{% endmacro %}
+
+{% if pageCount > 1 %}
+<nav aria-label="{{ 'global.pagination' | trans }}" class="border-t-2 border-woo-sea-blue text-base" data-e2e-name="pagination">
+    <ul class="flex flex-wrap relative items-center pt-11 sm:pt-0 justify-center">
+        {{ _self.previous_or_next('prev', previous|default(null), query, pageParameterName, targetAnchor) }}
+
+        {% if current > 5 %}
+            <li>{{ _self.pagination_anchor(1, current, query, pageParameterName, targetAnchor) }}</li>
+            {% if startPage == 3 %}
+                <li>{{ _self.pagination_anchor(2, current, query, pageParameterName, targetAnchor) }}</li>
+            {% elseif startPage != 2 %}
+                {{ _self.empty_list_item() }}
+            {% endif %}
+        {% endif %}
+
+        {% for pageNumber in pagesInRange %}
+            <li>
+                {{ _self.pagination_anchor(pageNumber, current, query, pageParameterName, targetAnchor) }}
+            </li>
+        {% endfor %}
+
+        {% if pageCount > endPage %}
+            {% if pageCount > (endPage + 1) %}
+                {% if pageCount > (endPage + 2) %}
+                    {{ _self.empty_list_item() }}
+                {% else %}
+                    <li>{{ _self.pagination_anchor(pageCount - 1, current, query, pageParameterName, targetAnchor) }}</li>
+                {% endif %}
+            {% endif %}
+            <li>{{ _self.pagination_anchor(pageCount, current, query, pageParameterName, targetAnchor) }}</li>
+        {% endif %}
+
+        {{ _self.previous_or_next('next', next|default(null), query, pageParameterName, targetAnchor) }}
+    </ul>
+</nav>
+{% endif %}

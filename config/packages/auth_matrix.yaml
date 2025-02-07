@@ -1,0 +1,360 @@
+auth_matrix:
+    entries: [
+      # -- User ----------------------------------------------------------------------------
+        {
+            # The prefix for this entry. This in combination with the permission is what we are checking against.
+            prefix: "user",
+            # At least one of these roles a logged-in user should have to be able to perform the action.
+            roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            # Set of permissions that are allowed for this prefix. Defaults to false if not specified.
+            permissions: {
+                # The user has create permission for this prefix.
+                create: true,
+                # The user has read permission for this prefix.
+                read: true,
+                # The user has update permission for this prefix.
+                update: true,
+                # The user has delete permission for this prefix.
+                delete: true,
+            },
+            # Filters are supplementary checks that can be performed entities.
+            filters: {
+                # The matching user can only access entities that belong to the same organisation as the user.
+                organisation_only: true,
+            }
+        },
+        {
+            prefix: "user",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        },
+        {
+            prefix: "user",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+            },
+            filters: {
+                organisation_only: false,
+            }
+        }
+
+      # -- Department ----------------------------------------------------------------------------
+        {
+            prefix: "department",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+            }
+        },
+
+      # -- Subject ----------------------------------------------------------------------------
+        {
+            prefix: "subject",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+            }
+        },
+        {
+            prefix: "subject",
+            roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+            }
+        },
+
+      # -- Dossier ----------------------------------------------------------------------------
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_DOSSIER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+            },
+            filters: {
+                published_dossiers: true,
+            }
+        },
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_DOSSIER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                published_dossiers: false,
+                unpublished_dossiers: true,
+            }
+        },
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_VIEW_ACCESS" ],
+            permissions: {
+                create: false,
+                read: true,
+                update: false,
+                delete: false,
+            },
+            filters: {
+                published_dossiers: true,
+                unpublished_dossiers: true,
+            }
+        },
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                execute: true,
+                administration: true,
+            },
+            filters: {
+                published_dossiers: true,
+                unpublished_dossiers: true,
+            }
+        },
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+                execute: true,
+            },
+            filters: {
+                published_dossiers: true,
+            }
+        },
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                execute: true,
+            },
+            filters: {
+                unpublished_dossiers: true,
+            }
+        },
+
+      # -- Document ----------------------------------------------------------------------------
+        {
+            prefix: "document",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                published_dossiers: true,
+                unpublished_dossiers: true,
+            }
+        },
+        {
+            prefix: "document",
+            roles: [ "ROLE_DOSSIER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                published_dossiers: false,
+                unpublished_dossiers: true,
+            }
+        },
+        {
+            prefix: "document",
+            roles: [ "ROLE_DOSSIER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+            },
+            filters: {
+                published_dossiers: true,
+                unpublished_dossiers: false,
+            }
+        },
+        {
+            prefix: "document",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            },
+            filters: {
+                published_dossiers: false,
+                unpublished_dossiers: true,
+            }
+        },
+        {
+            prefix: "document",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+            },
+            filters: {
+                published_dossiers: true,
+                unpublished_dossiers: false,
+            }
+        },
+        {
+            prefix: "document",
+            roles: [ "ROLE_VIEW_ACCESS" ],
+            permissions: {
+                create: false,
+                read: true,
+                update: false,
+                delete: false,
+            },
+            filters: {
+                published_dossiers: true,
+                unpublished_dossiers: false,
+            }
+        },
+
+      # -- Organisation ----------------------------------------------------------------------------
+        {
+            prefix: "organisation",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+            }
+        },
+        {
+            prefix: "organisation",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+            }
+        },
+
+      # -- Inquiry ----------------------------------------------------------------------------
+      # The (un)published_dossier filter settings are needed to filter the dossier selection during linking
+        {
+            prefix: "inquiry",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                administration: true,
+            },
+            filters: {
+                published_dossiers: true,
+                unpublished_dossiers: true,
+            }
+        },
+        {
+            prefix: "inquiry",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+            }
+        },
+        {
+            prefix: "inquiry",
+            roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+            }
+        },
+        {
+            prefix: "inquiry",
+            roles: [ "ROLE_DOSSIER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+            }
+        },
+        {
+            prefix: "inquiry",
+            roles: [ "ROLE_VIEW_ACCESS" ],
+            permissions: {
+                create: false,
+                read: true,
+                update: false,
+            }
+        },
+
+      # -- Misc ----------------------------------------------------------------------------
+        {
+            prefix: "stat",
+            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            permissions: {
+                read: true,
+            }
+        },
+        {
+            prefix: "stat",
+            roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            permissions: {
+                read: true,
+            }
+        },
+        {
+            prefix: "stat",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                read: true,
+            }
+        },
+        {
+            prefix: "elastic",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+            }
+        },
+    ]

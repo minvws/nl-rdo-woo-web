@@ -1,0 +1,54 @@
+{
+    "name": "woo",
+    "private": true,
+    "license": "EUPL-1.2",
+    "scripts": {
+        "build": "vite build",
+        "watch": "vite build --watch",
+        "jslint": "eslint ./assets/js --config eslint.config.mjs",
+        "jslint:json": "npm run jslint --  --format json --output-file reports/eslint.json",
+        "jslint:fix": "npm run jslint -- --fix",
+        "n": "vite",
+        "test": "vitest run --coverage",
+        "test:watch": "vitest watch --coverage"
+    },
+    "dependencies": {
+        "@symfony/stimulus-bridge": "^3.2.2",
+        "@symfony/ux-vue": "file:assets/vendor/ux-vue",
+        "@vueuse/core": "^12.0.0",
+        "chart.js": "^4.4.7",
+        "chartjs-adapter-moment": "^1.0.1",
+        "date-fns": "^4.1.0",
+        "moment": "^2.30.1",
+        "vue": "^3.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.16.0",
+        "@hotwired/stimulus": "^3.2.2",
+        "@vitejs/plugin-vue": "^5.2.1",
+        "@vitest/coverage-istanbul": "^2.1.8",
+        "@vue/test-utils": "^2.4.5",
+        "autoprefixer": "^10.4.20",
+        "eslint": "^9.9.1",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "eslint-plugin-vue": "^9.32.0",
+        "globals": "^15.13.0",
+        "jsdom": "^25.0.1",
+        "postcss": "^8.4.49",
+        "postcss-loader": "^7.3.4",
+        "prettier": "3.4.2",
+        "tailwindcss": "^3.4.16",
+        "typescript": "^5.7.2",
+        "typescript-eslint": "^8.17.0",
+        "vite": "^6.0.3",
+        "vite-plugin-symfony": "^7.0.5",
+        "vitest": "^2.0.4",
+        "zod": "^3.23.8"
+    },
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=8.0.0"
+    },
+    "packageManager": "npm@10.8.0+sha512.c21f77b91733829ec70e73cc88b5dc0a4bf685a81d252d3327d293ff7d5dd05a173f4dbeaa037600ec29696f397f14569229e5dab10b7cfc3e0a30575b8f3f8d"
+}

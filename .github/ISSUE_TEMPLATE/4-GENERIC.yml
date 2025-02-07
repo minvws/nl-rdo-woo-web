@@ -1,0 +1,9 @@
+name: Blanco issue
+description: Maak een blanco issue aan
+projects: ["minvws/30"]
+body:
+  - type: textarea
+    attributes:
+      label: Omschrijving
+    validations:
+      required: true

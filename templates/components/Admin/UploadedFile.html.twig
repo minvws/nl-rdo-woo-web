@@ -1,0 +1,25 @@
+<div class="bhr-file">
+    {% set canDownload = downloadUrl is defined %}
+    {% set element = canDownload ? 'a' : 'span' %}
+
+    {% if canDownload %}
+        <a class="bhr-file__left group" href="{{ downloadUrl }}">
+    {% else %}
+        <span class="bhr-file__left">
+    {% endif %}
+            <span class="bhr-file__icon-area">
+                <twig:Admin:MimeTypeIcon class="group-hover:hidden group-focus:hidden" mimeType="{{ mimeType }}" size="20" />
+                <twig:Admin:Icon class="bhr-file__download hidden group-hover:inline-block group-focus:inline-block" name="download" size="20" />
+            </span>
+            <span class="bhr-file__info-area">
+                <span class="bhr-file__file-name group-hover:text-bhr-sea-blue group-focus:text-bhr-sea-blue">
+                    {{ fileName }}
+                </span>
+                {% if fileSize is defined %}
+                <span class="bhr-file__file-info">{{ fileSize | size }}</span>
+                {% endif %}
+            </span>
+        </{{ element }}>
+
+    {% block content %}{% endblock %}
+</div>

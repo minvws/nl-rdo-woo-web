@@ -1,0 +1,13 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = 'admin.organisation.edit' | trans({'{name}': organisation.name}) %}
+
+{% block body %}
+    <div class="bhr-container bhr-container--sm">
+        <h1 class="bhr-title text-center mb-10">{{ page_title }}</h1>
+
+        <div class="bhr-card">
+            {% include 'admin/organisation/form.html.twig' %}
+        </div>
+    </div>
+{% endblock %}

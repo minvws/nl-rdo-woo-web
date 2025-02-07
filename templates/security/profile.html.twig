@@ -1,0 +1,71 @@
+{% extends 'admin.html.twig' %}
+
+{% set page_title = 'admin.account.profile' | trans() %}
+{% if hasFormErrors %}
+    {% set page_title = 'global.invalid_input' | trans() %}
+{% endif %}
+
+{% block body %}
+    <div class="bhr-container bhr-container--sm">
+        <h1 class="bhr-title-lg mb-10">{{'admin.account.profile' | trans() }}</h1>
+
+        <div class="px-11">
+            <div class="bhr-card">
+                {% set alerts = app.flashes('backend') %}
+                {% if alerts | length > 0 %}
+                    <div class="mb-8">
+                        {% for messages in alerts %}
+                            {% for label, message in messages %}
+                                <twig:Admin:Alert type="{{ label }}">
+                                    <strong>{{ message }}</strong>
+                                </twig:Admin:Alert>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <h2 class="bhr-title mb-8">{{ 'admin.account.update_password' | trans() }}</h1>
+
+                <div class="bhr-content text-lg mb-8" id="password-instructions">
+                    <p>{{ 'admin.account.password_requirements.explanation' | trans() }}</p>
+                    <ul>
+                        <li>{{ 'admin.account.password_requirements.req1' | trans() }}</li>
+                        <li>{{ 'admin.account.password_requirements.req2' | trans() }}</li>
+                        <li>{{ 'admin.account.password_requirements.req3' | trans() }}</li>
+                        <li>{{ 'admin.account.password_requirements.req4' | trans() }}</li>
+                    </ul>
+                </div>
+
+                {{ form(form) }}
+
+            </div>
+
+            <div class="bhr-card mt-10">
+                <h2 class="bhr-title mb-8">{{ 'admin.account.details' | trans() }}</h2>
+
+                <dl class="text-lg">
+                    <twig:Admin:Definition term="Volledige naam">
+                        {{ user.name }}
+                    </twig:Admin:Definition>
+
+                    <twig:Admin:Definition term="Organisatie">
+                        {{ get_organisation_switcher().activeOrganisation(app.user).name }}
+                    </twig:Admin:Definition>
+
+                    <twig:Admin:Definition term="Rollen">
+                        {% set roles = [] %}
+                        {% for user_role in user.roles %}
+                            {% set roles = roles|merge([role_descriptions[user_role]|trans]) %}
+                        {% endfor %}
+                        {{ roles|join(', ') }}
+                    </twig:Admin:Definition>
+
+                    <twig:Admin:Definition term="E-mailadres">
+                        {{ user.email }}
+                    </twig:Admin:Definition>
+                </dl>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

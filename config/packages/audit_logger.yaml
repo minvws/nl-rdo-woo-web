@@ -1,0 +1,43 @@
+parameters:
+    audit_logger.psr_logger.encrypted: '%env(bool:AUDITLOG_PSR_ENCRYPTED)%'
+    audit_logger.psr_logger.log_pii: '%env(bool:AUDITLOG_PSR_LOG_PII)%'
+    audit_logger.file_logger.encrypted: '%env(bool:AUDITLOG_FILE_ENCRYPTED)%'
+    audit_logger.file_logger.log_pii: '%env(bool:AUDITLOG_FILE_LOG_PII)%'
+    audit_logger.doctrine_logger.encrypted: '%env(bool:AUDITLOG_DOCTRINE_ENCRYPTED)%'
+    audit_logger.doctrine_logger.log_pii: '%env(bool:AUDITLOG_DOCTRINE_LOG_PII)%'
+    audit_logger.rabbitmq_logger.encrypted: '%env(bool:AUDITLOG_RABBITMQ_ENCRYPTED)%'
+    audit_logger.rabbitmq_logger.log_pii: '%env(bool:AUDITLOG_RABBITMQ_LOG_PII)%'
+
+audit_logger:
+    encryption:
+        public_key: "%env(AUDITLOG_ENCRYPTION_PUB_KEY)%"
+        private_key: "%env(AUDITLOG_ENCRYPTION_PRIV_KEY)%"
+
+    loggers:
+        psr_logger:
+            encrypted: "%audit_logger.psr_logger.encrypted%"
+            log_pii: "%audit_logger.psr_logger.log_pii%"
+        doctrine_logger:
+            encrypted: "%audit_logger.doctrine_logger.encrypted%"
+            log_pii: "%audit_logger.doctrine_logger.log_pii%"
+        rabbitmq_logger:
+            encrypted: "%audit_logger.rabbitmq_logger.encrypted%"
+            log_pii: "%audit_logger.rabbitmq_logger.log_pii%"
+            routing_key: "%env(AUDITLOG_RABBITMQ_ROUTING_KEY)%"
+            producer_service: "old_sound_rabbit_mq.audit_logger_producer"
+            additional_events: [ ]
+
+
+when@dev:
+    audit_logger:
+        loggers:
+            file_logger:
+                encrypted: "%audit_logger.file_logger.encrypted%"
+                log_pii: "%audit_logger.file_logger.log_pii%"
+                path: "%env(resolve:AUDITLOG_FILE_PATH)%"
+            psr_logger:
+                encrypted: "%audit_logger.psr_logger.encrypted%"
+                log_pii: "%audit_logger.psr_logger.log_pii%"
+            doctrine_logger:
+                encrypted: "%audit_logger.doctrine_logger.encrypted%"
+                log_pii: "%audit_logger.doctrine_logger.log_pii%"

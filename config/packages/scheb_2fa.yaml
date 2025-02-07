@@ -1,0 +1,22 @@
+# See the configuration reference at https://symfony.com/bundles/SchebTwoFactorBundle/6.x/configuration.html
+scheb_two_factor:
+    security_tokens:
+        - Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken
+        - Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken
+    totp:
+        enabled: true
+        server_name: 'WOO'
+        issuer: 'WOO'
+        leeway: 2
+        template: security/login_2fa.html.twig
+    backup_codes:
+        enabled: true
+    email:
+        enabled: false
+        digits: 6
+
+when@test:
+    scheb_two_factor:
+        ip_whitelist:
+            - localhost
+            - 127.0.0.1

@@ -1,0 +1,291 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/GenerateBatch.php
+
+		-
+			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:clear\\(\\) invoked with 1 parameter, 0 required\\.$#"
+			count: 1
+			path: src/Command/GenerateDocuments.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/GenerateDocuments.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Command/Index/Alias.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/Index/Create.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/Index/Create.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/Index/Delete.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Command/Ingest/IngestDossier.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/NormalizeDocumentGrounds.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Command/User/Create.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/User/Reset.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/User/View.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Command/Where.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Controller/Admin/Dossier/WooDecision/DocumentsEditStepController.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Controller/Admin/InquiryController.php
+
+		-
+			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
+			count: 1
+			path: src/Controller/Admin/SecurityController.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Controller/Admin/SecurityController.php
+
+		-
+			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
+			count: 3
+			path: src/Controller/Admin/UserController.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/DataFixtures/WorkerStatsFixtures.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Doctrine/EncryptedArray.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Doctrine/EncryptedString.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/EventSubscriber/LocaleListener.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Service/FileReader/CsvReader.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Service/FileReader/CsvReader.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Service/FileReader/ExcelReader.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 2
+			path: src/Service/FileReader/ExcelReader.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Service/FileReader/ExcelReaderFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Service/Inquiry/InquiryLinkImporter.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 3
+			path: src/Service/Inventory/InventoryDataHelper.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Service/Inventory/Reader/InventoryReader.php
+
+		-
+			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser\\|null is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
+			count: 2
+			path: src/Service/OrganisationService.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Service/Security/OrganisationSwitcher.php
+
+		-
+			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser\\|null is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
+			count: 2
+			path: src/Service/UserService.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Twig/Runtime/CspExtensionRuntime.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\Unit\\\\Enum\\\\DepartmentTest\\:\\:getEqualsShouldReturnFalseData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Unit/Enum/DepartmentTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\Unit\\\\Enum\\\\DepartmentTest\\:\\:getEqualsShouldReturnTrueData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Unit/Enum/DepartmentTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\Unit\\\\Enum\\\\DepartmentTest\\:\\:getTryFromNameAndShortTagData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Unit/Enum/DepartmentTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\Unit\\\\Enum\\\\DepartmentTest\\:\\:getTryFromNameData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Unit/Enum/DepartmentTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\Unit\\\\Enum\\\\DepartmentTest\\:\\:getTryFromShortTagData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Unit/Enum/DepartmentTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\Unit\\\\Service\\\\DateRangeConverterTest\\:\\:dateRangeProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Unit/Service/DateRangeConverterTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$rowIndex of method App\\\\Service\\\\FileReader\\\\CsvReader\\:\\:getDateTime\\(\\) expects int, int\\|string\\|null given\\.$#"
+			count: 2
+			path: tests/Unit/Service/FileReader/CsvReaderTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$rowIndex of method App\\\\Service\\\\FileReader\\\\CsvReader\\:\\:getDateTime\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: tests/Unit/Service/FileReader/CsvReaderTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$rowIndex of method App\\\\Service\\\\FileReader\\\\CsvReader\\:\\:getInt\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: tests/Unit/Service/FileReader/CsvReaderTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$rowIndex of method App\\\\Service\\\\FileReader\\\\CsvReader\\:\\:getOptionalDateTime\\(\\) expects int, mixed given\\.$#"
+			count: 2
+			path: tests/Unit/Service/FileReader/CsvReaderTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$rowIndex of method App\\\\Service\\\\FileReader\\\\CsvReader\\:\\:getOptionalInt\\(\\) expects int, mixed given\\.$#"
+			count: 2
+			path: tests/Unit/Service/FileReader/CsvReaderTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$rowIndex of method App\\\\Service\\\\FileReader\\\\CsvReader\\:\\:getOptionalString\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: tests/Unit/Service/FileReader/CsvReaderTest.php
+
+		-
+			message: "#^Cannot call method getRowIndex\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Worksheet\\\\Row\\|false\\.$#"
+			count: 2
+			path: tests/Unit/Service/FileReader/ExcelReaderTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\Unit\\\\Service\\\\Inventory\\\\InventoryDataHelperTest\\:\\:separateValuesProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Unit/Service/Inventory/InventoryDataHelperTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\Unit\\\\Service\\\\Inventory\\\\InventoryDataHelperTest\\:\\:toDateTimeImmutableProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Unit/Service/Inventory/InventoryDataHelperTest.php
+
+		-
+			message: "#^PHPDoc tag @return has invalid value \\(array\\<string, array\\{input\\:string, expectedResult\\:\\\\DateTimeImmutable\\[\\]\\}\\)\\: Unexpected token \"\\*/\", expected '\\>' at offset 95 on line 3$#"
+			count: 1
+			path: tests/Unit/Service/Inventory/InventoryDataHelperTest.php
+
+		-
+			message: "#^PHPDoc tag @return has invalid value \\(array\\<string, array\\{input\\:string, separator\\:string, expectedResult\\:string\\[\\]\\}\\)\\: Unexpected token \"\\*/\", expected '\\>' at offset 101 on line 3$#"
+			count: 1
+			path: tests/Unit/Service/Inventory/InventoryDataHelperTest.php
+
+		-
+			message: "#^Cannot call method getDate\\(\\) on App\\\\Service\\\\Inventory\\\\DocumentMetadata\\|null\\.$#"
+			count: 4
+			path: tests/Unit/Service/Inventory/InventoryReaderTest.php
+
+		-
+			message: "#^Cannot call method getLinks\\(\\) on App\\\\Service\\\\Inventory\\\\DocumentMetadata\\|null\\.$#"
+			count: 7
+			path: tests/Unit/Service/Inventory/InventoryReaderTest.php
+
+		-
+			message: "#^Cannot call method getRemark\\(\\) on App\\\\Service\\\\Inventory\\\\DocumentMetadata\\|null\\.$#"
+			count: 7
+			path: tests/Unit/Service/Inventory/InventoryReaderTest.php
+
+		-
+			message: "#^Cannot call method getSourceType\\(\\) on App\\\\Service\\\\Inventory\\\\DocumentMetadata\\|null\\.$#"
+			count: 2
+			path: tests/Unit/Service/Inventory/InventoryReaderTest.php
+
+		-
+			message: "#^Call to an undefined method App\\\\Service\\\\Inventory\\\\InventoryService\\:\\:expects\\(\\)\\.$#"
+			count: 2
+			path: tests/Unit/Service/Inventory/InventoryRunProcessorTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$config of class App\\\\Service\\\\Security\\\\Authorization\\\\ConfigFactory constructor expects array\\{entries\\: array\\}, array\\{\\} given\\.$#"
+			count: 1
+			path: tests/Unit/Service/Security/Authorization/ConfigFactoryTest.php
+
+		-
+			message: "#^Call to an undefined method Mockery\\\\MockInterface\\|Symfony\\\\Component\\\\HttpFoundation\\\\RequestStack\\:\\:shouldReceive\\(\\)\\.$#"
+			count: 1
+			path: tests/Unit/Twig/Runtime/WooExtensionRuntimeTest.php

@@ -1,0 +1,37 @@
+includes:
+    - phpstan-baseline.neon
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+    - vendor/phpstan/phpstan-doctrine/rules.neon
+    - vendor/phpstan/phpstan-mockery/extension.neon
+    - vendor/phpstan/phpstan-webmozart-assert/extension.neon
+    - vendor/swisnl/phpstan-faker/extension.neon
+
+parameters:
+    tmpDir: ./.phpstan.cache
+    treatPhpDocTypesAsCertain: false
+    doctrine:
+        objectManagerLoader: phpstan-doctrine-orm-bootstrap.php
+    paths:
+        - bin/
+        - config/
+        - public/
+        - src/
+        - tests/
+    excludePaths:
+        - src/Domain/Publication/Dossier/Type/**/*Workflow.php
+        - config/packages/workflow.php
+        - src/Domain/Publication/Dossier/Type/WorkflowConfigHelper.php
+    level: max
+    symfony:
+        container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml
+    faker:
+        providerClasses:
+            - App\Tests\Faker\GroundsFakerProvider
+    ignoreErrors:
+        - identifier: missingType.generics
+
+services:
+    errorFormatter.junit:
+        class: PHPStan\Command\ErrorFormatter\JUnitErrorFormatter

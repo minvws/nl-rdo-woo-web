@@ -1,0 +1,86 @@
+framework:
+    messenger:
+        buses:
+            command_bus:
+                default_middleware:
+                    allow_no_handlers: true
+                middleware:
+                    - doctrine_ping_connection
+#        failure_transport: failed
+        serializer:
+            default_serializer: messenger.transport.symfony_serializer
+            symfony_serializer:
+                format: json
+                context: { }
+
+        transports:
+            high:
+                dsn: '%env(HIGH_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+
+            esupdater:
+                dsn: '%env(ESUPDATER_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+
+            ingestor:
+                dsn: '%env(INGESTOR_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+
+            global:
+                dsn: '%env(GLOBAL_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+
+        routing:
+            App\Message\InitiateElasticRolloverMessage: high
+            App\Message\SetElasticAliasMessage: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ProductionReportProcessRunCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\GenerateInventoryCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ProcessDocumentCommand: high                   # Processes doc uploads (not the actual ingest). Higher prio for user feedback.
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\UpdateInquiryLinksCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ReplaceDocumentCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveInventoryAndDocumentsCommand: high
+            App\Domain\Publication\Dossier\Command\DeleteDossierCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ProcessDocumentFileSetUploadsCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ProcessDocumentFileSetUpdatesCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ProcessDocumentFileUploadCommand: high
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\ProcessDocumentFileUpdateCommand: high
+
+            App\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand: ingestor
+            App\Domain\Ingest\Process\Dossier\IngestDossierCommand: ingestor
+            App\Domain\Ingest\Process\Pdf\IngestPdfCommand: ingestor           # Ingests a complete PDF document and fires a message for each page
+            App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand: ingestor
+            App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand: ingestor   # Ingests a single PDF page from a PDF document
+            App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand: ingestor
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\GenerateInquiryInventoryCommand: ingestor
+            App\Message\GenerateInquiryArchivesMessage: ingestor
+
+            App\Domain\Search\Index\Dossier\IndexDossierCommand: esupdater     # Updates the dossier in the elastic index
+            App\Message\UpdateDepartmentMessage: esupdater             # Updates the dossier in the elastic index
+            App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveDocumentCommand: esupdater
+            App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent: esupdater
+            App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent: esupdater
+            App\Domain\Publication\Attachment\Event\AttachmentDeletedEvent: esupdater
+            App\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent: esupdater
+            App\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent: esupdater
+            App\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent: esupdater
+            App\Domain\Search\Index\DeleteElasticDocumentCommand: esupdater
+            App\Domain\Publication\Subject\Event\SubjectUpdatedEvent: esupdater
+
+            App\Message\GenerateArchiveMessage: global                 # Generates a ZIP archive of the dossier
+            App\Message\UpdateDossierArchivesMessage: global           # Removes existing archives for a dossier and generates a new complete archive

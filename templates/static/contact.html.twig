@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = 'global.contact' | trans() %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <div class="woo-rich-text woo-readable-width">
+        <h1>{{ page_title }}</h1>
+
+        <p>{{ 'public.contact.paragraph-1' | trans | raw }}</p>
+        <p>{{ 'public.contact.paragraph-2' | trans | raw }}</p>
+        <p>{{ 'public.contact.paragraph-3' | trans | raw }}</p>
+    </div>
+</div>
+{% endblock %}

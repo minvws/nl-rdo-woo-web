@@ -1,0 +1,7 @@
+<div class="xl:flex items-center pb-6 {{ class|default("") }}">
+    <div class="grow pb-6 xl:pb-0">
+        {% block content %}{% endblock %}
+    </div>
+
+    {% block right %}{% endblock %}
+</div>

@@ -1,0 +1,3 @@
+{% extends 'publication/attachment.html.twig' %}
+
+{% set urlToDossierPage = url('app_disposition_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr } ) %}

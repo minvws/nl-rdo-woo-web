@@ -1,0 +1,57 @@
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+.phpunit.cache
+.phpcs-cache
+hashes.json
+lib/
+
+###> pentatrion/vite-bundle ###
+/node_modules/
+/public/build/
+###< pentatrion/vite-bundle ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+### Robot Framework ###
+/tests/robot_framework/results
+/tests/robot_framework/libraries/__pycache__
+.venv
+### Robot Framework ###
+
+### Virtu ###
+/env
+### Virtu ###
+
+### Editor and private files
+/*.hidden
+### Editor and private files
+#
+
+/coverage
+/database
+/public/sitemap*
+
+Taskfile.yml
+.task
+auth.json
+.npmrc.auth
+.phpstan.cache
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
+
+phpunit.xml
+stdout.txt

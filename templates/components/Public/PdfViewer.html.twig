@@ -1,0 +1,49 @@
+<div class="mt-10">
+    <a
+        class="focus:mb-4 woo-skip-link"
+        href="#below-carousel"
+        id="above-carousel"
+    >{{ 'public.documents.viewer.skip_document_preview' | trans }}</a>
+
+    <p class="pb-1 woo-muted text-sm">{{ title }}</p>
+
+    <div class="min-h-[333px]">
+        <section class="block woo-carousel" aria-label="{{ 'public.documents.viewer.document_preview' | trans }}">
+            <ol class="woo-carousel__list" data-e2e-name="preview-list">
+                {% for page in file.pages %}
+                    <li>
+                        {% if page.hasThumbnail %}
+                            <a class="woo-carousel__a" href="{{ page.viewUrl }}">
+                                <img
+                                    alt="{{ 'global.page' | trans }} {{ page.pageNr }}"
+                                    class="woo-carousel__img"
+                                    height="285"
+                                    loading="lazy"
+                                    src="{{ page.thumbnailUrl }}"
+                                    width="204"
+                                />
+                                <span class="sr-only">{{ 'public.inquiries.document.open_or_download' | trans({ fileInfo: file.type|upper, fileSize: file.size != '0' ? file.size | size : ""  }) }} {{ page.pageNr }}</span>
+                            </a>
+                        {% else %}
+                            <div class="woo-carousel__a">
+                                <img
+                                    alt="{{ 'public.documents.viewer.page_not_yet_processed' | trans }}"
+                                    class="woo-carousel__img shadow-none"
+                                    src="{{ page.thumbnailUrl }}"
+                                    width="204"
+                                    height="285"
+                                />
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ol>
+        </section>
+    </div>
+
+    <a
+        class="focus:mt-4 woo-skip-link"
+        href="#above-carousel"
+        id="below-carousel"
+    >{{ 'public.documents.viewer.back_to_document_preview' | trans }}</a>
+</div>

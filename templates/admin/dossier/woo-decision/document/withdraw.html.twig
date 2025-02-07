@@ -1,0 +1,22 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+    <div class="bhr-container bhr-container--sm">
+        {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.admin.html.twig' }) }}
+
+        <div class="px-11">
+            <div class="bhr-card">
+                {% if workflow.canWithdraw %}
+                    <div class="bhr-form-row text-bhr-dim-gray">
+                        <p>Is het document opnieuw beoordeeld en zijn er andere lakkingen toegepast? Vervang dan het gelakte document. Let op: als andere uitzonderingsgronden zijn toegepast, vervang dan ook het productierapport bij dit besluit.</p>
+                    </div>
+                    {{ form(form) }}
+                {% elseif document.withDrawn %}
+                    <twig:Admin:Alert type="success">Het document is ingetrokken.</twig:Admin:Alert>
+                {% else %}
+                    <twig:Admin:Alert type="info">Intrekken van dit document is niet mogelijk.</twig:Admin:Alert>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

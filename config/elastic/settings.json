@@ -1,0 +1,44 @@
+{
+    "analysis": {
+        "analyzer": {
+            "autocomplete": {
+                "tokenizer": "edge_ngram",
+                "filter": [
+                    "lowercase",
+                    "dutch_stop"
+                ]
+            },
+            "dutch": {
+                "type": "custom",
+                "tokenizer": "standard",
+                "filter": [
+                    "lowercase",
+                    "dutch_stop",
+                    "dutch_keywords",
+                    "dutch_override",
+                    "dutch_stemmer"
+                ]
+            }
+        },
+        "filter": {
+            "dutch_override":  {
+                "type": "stemmer_override",
+                "rules": [
+                    "mondkapje,mondkapjes,mondkap => mondkapj"
+                ]
+            },
+            "dutch_stop": {
+                "type": "stop",
+                "stopwords": "_dutch_"
+            },
+            "dutch_keywords": {
+                "type": "keyword_marker",
+                "keywords": {}
+            },
+            "dutch_stemmer": {
+                "type": "stemmer",
+                "language": "dutch"
+            }
+        }
+    }
+}

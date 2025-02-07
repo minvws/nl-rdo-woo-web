@@ -1,0 +1,175 @@
+{% extends 'base.html.twig' %}
+{% import "document_macros.html.twig" as macro %}
+
+{% set page_title = document.name %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-h1">{{ document.name }}</h1>
+    <p>{{ 'public.documents.attachment_of' | trans }} <a class="woo-a" href="{{ urlToDossierPage }}">
+            {{ dossier.title }}
+        </a>
+    </p>
+
+    {% if file.hasPages %}
+        <twig:Public:PdfViewer
+            file="{{ file }}"
+            title="{{ "public.documents.viewer.click_on_page" | trans({ fileInfo: document.sourceType.value|upper, fileSize: document.size != "0" ? document.size | size : ""  }) }}"
+        />
+    {% endif %}
+
+    <div class="mt-8">
+        <twig:Public:DownloadFileButton href="{{ document.downloadUrl }}">{{ 'global.download_document' | trans }} ({{ document.sourceType | trans }}, {{ document.size | size }})</twig:Public:DownloadFileButton>
+    </div>
+
+    <div class="mt-16">
+        <h2 class="woo-h2 woo-h2-spacing">{{ 'public.documents.document.about' | trans }}</h2>
+        <div class="overflow-x-auto">
+            <table class="woo-table">
+                <caption class="sr-only">
+                    {{ 'public.documents.document.about' | trans }}
+                </caption>
+                <tbody>
+                    <tr>
+                        <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                            {{ 'public.documents.document.date' | trans }}
+                        </th>
+                        <td>
+                            {{ document.formalDate | format_date('long') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                            {{ 'public.documents.document.type_of' | trans }}
+                        </th>
+                        <td>
+                            {{ document.type | trans | capitalize }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.type' | trans }}</th>
+                        <td>
+                            <twig:Public:FileIcon type="{{ document.sourceType.value }}" />
+                            {{ document.sourceType | trans }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.download_type' | trans }}</th>
+                        <td>{{ document.sourceType | trans }}, {{ document.size | size }}</td>
+                    </tr>
+                    {% if dossier.hasSubject %}
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.subject' | trans }}</th>
+                        <td>
+                            <p><a class="woo-a" href="{{ dossier.subject.searchUrl }}">{{ dossier.subject.name }}</a></p>
+                        </td>
+                    </tr>
+                    {% endif %}
+
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">
+                            {{ 'public.documents.redacted_data' | trans }}
+                        </th>
+                        <td class="woo-table-cell--wrap">
+                            {% set grounds = document.grounds | default([]) %}
+                            {% for ground in grounds %}
+                                {{ macro.document_ground(ground) }}
+                            {% endfor %}
+
+                            {% include 'snippets/document/redacted-message.html.twig' with {
+                                'departmentName': dossier.mainDepartment.name,
+                                'documentId': document.id,
+                                'documentName': document.name,
+                                'isExternalDepartmentResponsible': dossier.isExternalDepartmentResponsible,
+                                'hasGrounds': grounds | length > 0,
+                            } %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        {% set attachments = attachments | default([]) | filter(attachment => attachment.id != document.id) %}
+        {% if attachments | length > 0 %}
+        <div class="mt-16">
+            <h2 class="woo-h2 woo-h2-spacing">
+                {{ 'public.documents.document.related_attachments' | trans }}
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="woo-table">
+                    <caption class="sr-only">
+                        {{ 'public.documents.document.related_attachments' | trans }}
+                    </caption>
+                    <tbody>
+                        <tr>
+                            <th class="sr-only">{{ 'global.document_name' | trans }}</th>
+                            <th class="sr-only">{{ 'global.document_date' | trans }}</th>
+                        </tr>
+                        {% for attachment in attachments %}
+                        <tr>
+                            <td>
+                                <twig:Public:FileIcon type="{{ attachment.sourceType.value }}" size="16" />
+                                <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a>
+                            </td>
+                            <td class="w-48 min-w-48 text-right">
+                                {{ attachment.formalDate | format_date('long') }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="mt-16">
+            <h2 class="woo-h2 woo-h2-spacing">
+                {{ 'public.documents.document.background' | trans }}
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="woo-table">
+                    <caption class="sr-only">
+                        {{ 'public.documents.document.related_attachments' | trans }}
+                    </caption>
+                    <tbody>
+                        <tr>
+                            <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                                {{ 'public.documents.part_of' | trans }}
+                            </th>
+                            <td>
+                                <a class="woo-a" href="{{ urlToDossierPage }}">
+                                    {{ dossier.title }}
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                                {{ 'global.responsible_parties' | trans }}
+                            </th>
+                            <td>{{ dossier.mainDepartment.name }}</td>
+                        </tr>
+                        <tr>
+                            <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                                {{ dateLabel | default('global.date' | trans) }}
+                            </th>
+                            <td>
+                                {% block dossier_date %}
+                                    <twig:Date date="{{ dossier.date }}" />
+                                {% endblock %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="woo-table-cell-light" scope="row">
+                                {{ 'public.dossiers.type' | trans }}
+                            </th>
+                            <td>
+                                {{ dossier.type | trans | capitalize}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

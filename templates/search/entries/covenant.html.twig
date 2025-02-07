@@ -1,0 +1,20 @@
+{% extends 'search/entries/base.html.twig' %}
+
+{% set resultUrl = path('app_covenant_detail', { prefix: entry.dossier.documentPrefix, dossierId: entry.dossier.dossierNr }) %}
+{% set resultType = 'public.global.covenant' | trans %}
+
+{% block resultSpecsBottom %}
+    <li class="woo-search-result__spec">
+        {% if entry.dossier.dateTo is empty %}
+            {% if entry.dossier.dateFrom is not empty %}
+                {{ 'global.date_start' | trans }} <twig:Date date="{{ entry.dossier.dateFrom }}" />
+            {% endif %}
+        {% else %}
+            {{ 'public.dossiers.covenant.period' | trans }} <twig:Date date="{{ entry.dossier.dateFrom }}" />
+            {{ 'global.from_till.abbreviation' | trans }} <twig:Date date="{{ entry.dossier.dateTo }}" />
+        {% endif %}
+    </li>
+    <li class="woo-search-result__spec">
+        {{ 'global.published_on' | trans | capitalize }} <twig:Date date="{{ entry.dossier.publicationDate }}" />
+    </li>
+{% endblock %}

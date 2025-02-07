@@ -1,0 +1,9 @@
+# config/packages/presta_sitemap.yaml
+presta_sitemap:
+    defaults:
+        priority: 1
+        changefreq: daily
+        lastmod: now
+    items_by_set: 50000
+    dump_directory: public
+    sitemap_file_prefix: sitemap

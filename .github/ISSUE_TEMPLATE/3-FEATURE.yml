@@ -1,0 +1,55 @@
+name: Feature
+description: Maak een nieuwe Feature aan
+projects: ["minvws/30"]
+type: Feature
+body:
+  - type: textarea
+    attributes:
+      label: Omschrijving
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Doel en waarde
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Achtergrond informatie
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Acceptatiecriteria - Balie/admin
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Acceptatiecriteria - Publieke website
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Links
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Buiten scope
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Non functional requirements
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Documentatie
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Security en privacy
+    validations:
+      required: false
