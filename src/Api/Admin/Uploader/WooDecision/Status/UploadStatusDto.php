@@ -7,10 +7,12 @@ namespace App\Api\Admin\Uploader\WooDecision\Status;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileSetStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUpdateType;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateType;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Attribute\Ignore;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Uid\Uuid;
 
 #[ApiResource()]
@@ -24,9 +26,9 @@ use Symfony\Component\Uid\Uuid;
 final readonly class UploadStatusDto
 {
     /**
-     * @param array<array-key,UploadedFileDto>            $uploadedFiles
-     * @param array<array-key,string>                     $missingDocuments
-     * @param array<value-of<DocumentFileUpdateType>,int> $changes
+     * @param array<array-key,UploadedFileDto>                   $uploadedFiles
+     * @param array<array-key,string>                            $missingDocuments
+     * @param \ArrayObject<value-of<DocumentFileUpdateType>,int> $changes
      */
     public function __construct(
         #[Ignore]
@@ -39,7 +41,8 @@ final readonly class UploadStatusDto
         public int $expectedDocumentsCount,
         public int $currentDocumentsCount,
         public array $missingDocuments,
-        public array $changes,
+        #[Context([Serializer::EMPTY_ARRAY_AS_OBJECT => true])]
+        public \ArrayObject $changes,
     ) {
     }
 }

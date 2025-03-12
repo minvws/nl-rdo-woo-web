@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Domain\Search\Index\Dossier\Mapper;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\ElasticDocumentType;
+use App\Domain\Search\Index\Schema\ElasticField;
 
 readonly class WooDecisionMapper implements ElasticDossierMapperInterface
 {
@@ -30,10 +31,10 @@ readonly class WooDecisionMapper implements ElasticDossierMapperInterface
         $defaultDocument = $this->defaultMapper->map($dossier);
         $fields = $defaultDocument->getFields();
 
-        $fields['publication_reason'] = $dossier->getPublicationReason();
-        $fields['decision_date'] = $dossier->getDecisionDate()?->format(\DateTimeInterface::ATOM);
-        $fields['decision'] = $dossier->getDecision();
-        $fields['inquiry_ids'] = $dossier->getInquiries()->map(
+        $fields[ElasticField::PUBLICATION_REASON->value] = $dossier->getPublicationReason();
+        $fields[ElasticField::DECISION_DATE->value] = $dossier->getDecisionDate()?->format(\DateTimeInterface::ATOM);
+        $fields[ElasticField::DECISION->value] = $dossier->getDecision();
+        $fields[ElasticField::INQUIRY_IDS->value] = $dossier->getInquiries()->map(
             fn (Inquiry $inquiry) => $inquiry->getId()
         )->toArray();
 

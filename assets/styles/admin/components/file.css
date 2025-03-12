@@ -24,7 +24,7 @@
     }
 
     .bhr-file__delete {
-        @apply p-4 text-bhr-dim-gray hover-focus:text-bhr-maximum-red;
+        @apply p-4 text-bhr-dim-gray hover-focus:text-bhr-maximum-red content-center;
     }
 
     .bhr-file__download {

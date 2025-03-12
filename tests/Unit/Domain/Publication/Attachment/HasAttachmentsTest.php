@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\AbstractAttachment;
-use App\Domain\Publication\Attachment\EntityWithAttachments;
-use App\Domain\Publication\Attachment\HasAttachments;
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use App\Domain\Publication\Attachment\Entity\HasAttachments;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Tests\Unit\UnitTestCase;

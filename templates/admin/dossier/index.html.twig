@@ -1,4 +1,4 @@
-{% extends 'admin.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
 {% import "admin/macros/facet.html.twig" as macro %}
 
@@ -33,7 +33,7 @@
 
         {% if pagination | length > 0 or (formData is not null) %}
             <twig:Admin:LeftAndRight class="pt-1">
-                {% include 'admin/dossier/snippets/filter.html.twig' with { 'form': form } %}
+                {% include 'admin/dossier/shared/snippets/filter.html.twig' with { 'form': form } %}
 
                 <twig:block name="right">
                     <div {{ vue_component('PublicationSearchController', {
@@ -65,12 +65,13 @@
                 <caption class="sr-only">Alle dossiers. Kolomkoppen met links zijn sorteerbaar.</caption>
                 <thead>
                     <tr>
-                        {{ knp_pagination_sortable(pagination, 'admin.publications.organisation_and_reference' | trans, ['dos.documentPrefix','dos.dossierNr'], {}, {}, 'pagination/sort.admin.html.twig') }}
-                        {{ knp_pagination_sortable(pagination, 'admin.publications.status' | trans, 'dos.status', {}, {}, 'pagination/sort.admin.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'admin.publications.organisation_and_reference' | trans, ['dos.documentPrefix','dos.dossierNr'], {}, {}, 'admin/layout/sort.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'admin.publications.status' | trans, 'dos.status', {}, {}, 'admin/layout/sort.html.twig') }}
                         <th class="bhr-column-head bhr-column-head--gray border-r-1 font-bold" scope="col">{{ "admin.dossiers.category" | trans() }}</th>
-                        {{ knp_pagination_sortable(pagination, 'global.created_at' | trans, 'dos.createdAt', {}, {}, 'pagination/sort.admin.html.twig') }}
-                        {{ knp_pagination_sortable(pagination, 'global.publication_date' | trans, 'dos.publicationDate', {}, {}, 'pagination/sort.admin.html.twig') }}
-                        {{ knp_pagination_sortable(pagination, 'global.description' | trans, 'dos.summary', {}, {}, 'pagination/sort.admin.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'global.created_at' | trans, 'dos.createdAt', {}, {}, 'admin/layout/sort.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'global.publication_date' | trans, 'dos.publicationDate', {}, {}, 'admin/layout/sort.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'global.description' | trans, 'dos.summary', {}, {}, 'admin/layout/sort.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'admin.global.needs_action' | trans, 'dos.completed', {}, {}, 'admin/layout/sort.html.twig') }}
                     </tr>
                 </thead>
                 <tbody>
@@ -96,12 +97,20 @@
                             <td>
                                 <span class="bhr-clamp">{{ dossier.title }}</span>
                             </td>
+                            <td>
+                                {% if not dossier.isCompleted %}
+                                    <span class="inline-block">
+                                        <twig:Admin:Icon name="exclamation" color="fill-bhr-orange-yellow" />
+                                        <span class="relative top-px">{{ 'admin.global.incomplete' | trans }}</span>
+                                    </span>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
 
-            {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
+            {{ knp_pagination_render(pagination, 'admin/layout/pagination.html.twig') }}
         {% elseif formData is not null %}
             <p class="text-center">
                 {{ 'admin.dossiers.no_matches_found' | trans }}

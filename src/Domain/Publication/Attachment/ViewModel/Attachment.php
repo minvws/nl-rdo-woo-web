@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Attachment\ViewModel;
 
-use App\Domain\Publication\Attachment\AttachmentLanguage;
-use App\Domain\Publication\Attachment\AttachmentType;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use App\Domain\Publication\Attachment\Enum\AttachmentType;
+use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
 use App\Domain\Search\Result\SubType\SubTypeViewModelInterface;
 use App\SourceType;
 
@@ -30,6 +31,9 @@ readonly class Attachment implements SubTypeViewModelInterface
         public string $downloadUrl,
         public string $detailsUrl,
         public int $pageCount,
+        public bool $withdrawn,
+        public ?AttachmentWithdrawReason $withdrawReason,
+        public ?\DateTimeImmutable $withdrawDate,
     ) {
     }
 }

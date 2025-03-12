@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Inquiry;
 
 use App\Domain\Ingest\IngestDispatcher;
+use App\Domain\Publication\BatchDownload\BatchDownloadScope;
+use App\Domain\Publication\BatchDownload\BatchDownloadService;
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\InquiryRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Domain\Search\SearchDispatcher;
 use App\Entity\Organisation;
-use App\Message\GenerateInquiryArchivesMessage;
-use App\Service\BatchDownloadService;
 use App\Service\HistoryService;
 use App\Service\Inquiry\InquiryChangeset;
 use App\Service\Inquiry\InquiryService;
@@ -25,16 +25,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Uid\UuidV6;
 
 class InquiryServiceTest extends MockeryTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
-    private MessageBusInterface&MockInterface $messageBus;
-    private BatchDownloadService&MockInterface $batchDownloads;
+    private BatchDownloadService&MockInterface $batchDownloadService;
     private MockInterface&EntityStorageService $entityStorageService;
     private HistoryService&MockInterface $historyService;
     private InquiryService $inquiryService;
@@ -50,8 +47,7 @@ class InquiryServiceTest extends MockeryTestCase
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->messageBus = \Mockery::mock(MessageBusInterface::class);
-        $this->batchDownloads = \Mockery::mock(BatchDownloadService::class);
+        $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->historyService = \Mockery::mock(HistoryService::class);
         $this->searchDispatcher = \Mockery::mock(SearchDispatcher::class);
@@ -60,8 +56,7 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->inquiryService = new InquiryService(
             $this->entityManager,
-            $this->messageBus,
-            $this->batchDownloads,
+            $this->batchDownloadService,
             $this->entityStorageService,
             $this->historyService,
             $this->searchDispatcher,
@@ -148,13 +143,31 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->wooDecisionDispatcher->expects('dispatchGenerateInquiryInventoryCommand')->with($inquiryId);
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (GenerateInquiryArchivesMessage $message) use ($inquiryId) {
-                self::assertEquals($inquiryId, $message->getUuid());
+        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+            static function (BatchDownloadScope $scope) use ($inquiryId) {
+                self::assertEquals($inquiryId, $scope->inquiry?->getId());
 
                 return true;
             }
-        ))->andReturns(new Envelope(new \stdClass()));
+        ));
+
+        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+            function (BatchDownloadScope $scope) use ($inquiryId) {
+                self::assertEquals($inquiryId, $scope->inquiry?->getId());
+                self::assertEquals($this->dossier, $scope->wooDecision);
+
+                return true;
+            }
+        ));
+
+        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+            static function (BatchDownloadScope $scope) use ($inquiryId, $newDossier) {
+                self::assertEquals($inquiryId, $scope->inquiry?->getId());
+                self::assertEquals($newDossier, $scope->wooDecision);
+
+                return true;
+            }
+        ));
 
         $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($addDoc1Id, Document::class, false);
         $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($addDoc2Id, Document::class, false);
@@ -216,13 +229,22 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->wooDecisionDispatcher->expects('dispatchGenerateInquiryInventoryCommand')->with($inquiryId);
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            function (GenerateInquiryArchivesMessage $message) use ($inquiryId) {
-                self::assertEquals($inquiryId, $message->getUuid());
+        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+            static function (BatchDownloadScope $scope) use ($inquiryId) {
+                self::assertEquals($inquiryId, $scope->inquiry?->getId());
 
                 return true;
             }
-        ))->andReturns(new Envelope(new \stdClass()));
+        ));
+
+        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+            function (BatchDownloadScope $scope) use ($inquiryId) {
+                self::assertEquals($inquiryId, $scope->inquiry?->getId());
+                self::assertEquals($this->dossier, $scope->wooDecision);
+
+                return true;
+            }
+        ));
 
         $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($addDoc1Id, Document::class, false);
         $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($addDoc2Id, Document::class, false);

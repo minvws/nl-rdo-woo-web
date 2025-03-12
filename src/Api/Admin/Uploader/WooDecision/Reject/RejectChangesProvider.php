@@ -6,8 +6,8 @@ namespace App\Api\Admin\Uploader\WooDecision\Reject;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 

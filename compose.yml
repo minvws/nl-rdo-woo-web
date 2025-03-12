@@ -14,7 +14,7 @@ networks:
 
 services:
   app:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.2.1
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.3.0
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -27,6 +27,9 @@ services:
       - ./auth.json:/home/woopie/.composer/auth.json:ro
       - woo_composer:/home/woopie/.composer
       - woo_npm:/home/woopie/.npm
+      - ./docker/app/balie-woopie.conf:/etc/apache2/sites-available/balie-woopie.conf
+      - ./docker/app/open-woopie.conf:/etc/apache2/sites-available/open-woopie.conf
+      - ./docker/app/woopie.conf:/etc/apache2/sites-available/woopie.conf
     networks:
       woopie:
         aliases:
@@ -39,19 +42,19 @@ services:
   worker:
     depends_on:
       - rabbitmq
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.2.1
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.3.0
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
     volumes:
       - ./:/var/www/html
-      - ./docker/app.ini:/usr/local/etc/php/custom.d/php.ini
+      - ./docker/app/php.ini:/usr/local/etc/php/custom.d/php.ini
     networks:
       - woopie
     environment:
       PHP_INI_SCAN_DIR: "/usr/local/etc/php/custom.d:/usr/local/etc/php/conf.d"
     stop_signal: SIGINT
-    restart: always
+    restart: unless-stopped
     command:
       [
         "bash",
@@ -71,7 +74,7 @@ services:
       - woopie
 
   elasticsearch:
-    image: elasticsearch:8.2.2
+    image: elasticsearch:7.17.26
     labels:
       com.symfony.server.service-ignore: true
     environment:
@@ -126,6 +129,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - woopie
+    command: ["postgres", "-c", "log_statement=all"]
 
   clamav:
     build:
@@ -138,3 +142,13 @@ services:
         published: 3310
     networks:
       - woopie
+
+  sphinx:
+    profiles: [build-only]
+    build:
+      context: .
+      dockerfile: docker/sphinx/Dockerfile
+    labels:
+      com.symfony.server.service-ignore: true
+    volumes:
+      - ./docs:/docs

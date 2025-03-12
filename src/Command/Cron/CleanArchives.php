@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command\Cron;
 
-use App\Domain\Publication\BatchDownloadRepository;
-use App\Service\BatchDownloadService;
+use App\Domain\Publication\BatchDownload\BatchDownloadRepository;
+use App\Domain\Publication\BatchDownload\BatchDownloadStorage;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,7 +14,7 @@ class CleanArchives extends Command
 {
     public function __construct(
         private readonly BatchDownloadRepository $batchRepository,
-        private readonly BatchDownloadService $batchDownloadService,
+        private readonly BatchDownloadStorage $storage,
     ) {
         parent::__construct();
     }
@@ -33,9 +33,10 @@ class CleanArchives extends Command
 
         $count = 0;
 
-        $batches = $this->batchRepository->findExpiredArchives();
+        $batches = $this->batchRepository->findExpiredBatchDownloads();
         foreach ($batches as $batch) {
-            $this->batchDownloadService->remove($batch);
+            $this->storage->removeFileForBatch($batch);
+            $this->batchRepository->remove($batch);
             $count++;
         }
 

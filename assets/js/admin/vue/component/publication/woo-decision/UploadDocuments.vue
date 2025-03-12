@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import Alert from '@admin-fe/component/Alert.vue';
 import UploadArea from '@admin-fe/component/file/upload/UploadArea.vue';
 import ErrorMessages from '@admin-fe/component/form/ErrorMessages.vue';
-import Icon from '@admin-fe/component/Icon.vue';
 import { validateResponse } from '@js/admin/utils';
 import { useFocusWithin } from '@vueuse/core';
 import {
@@ -18,6 +16,10 @@ import {
   WooDecisionUploadStatusResponse,
   wooDecisionUploadStatusResponseSchema,
 } from './interface';
+import DocumentChanges from './DocumentChanges.vue';
+import IsCheckingDocuments from './IsCheckingDocuments.vue';
+import IsProcessingDocuments from './IsProcessingDocuments.vue';
+import MissingDocuments from './MissingDocuments.vue';
 import UploadedDocuments from './UploadedDocuments.vue';
 
 interface Props {
@@ -26,6 +28,9 @@ interface Props {
   dossierId: string;
   isComplete: boolean;
   maxFileSize: number;
+  mode?: 'add' | 'replace';
+  confirmEndpoint: string;
+  rejectEndpoint: string;
   processEndpoint: string;
   statusEndpoint: string;
   uploadEndpoint: string;
@@ -34,15 +39,22 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   allowedFileTypes: () => [],
   allowedMimeTypes: () => [],
+  mode: 'replace',
 });
 
 const emit = defineEmits(['onComplete']);
+const isAddMode = props.mode === 'add';
+const isReplaceMode = !isAddMode;
 
 const uploadStatusResponse = ref<WooDecisionUploadStatusResponse | undefined>();
 
 const isComplete = computed(() => {
   if (props.isComplete) {
     return true;
+  }
+
+  if (isReplaceMode) {
+    return false;
   }
 
   const { value } = uploadStatusResponse;
@@ -63,18 +75,30 @@ const expectedDocumentsCount = computed(
 const missingDocuments = computed(
   () => uploadStatusResponse.value?.missingDocuments ?? [],
 );
-const missingDocumentsCount = computed(() => missingDocuments.value.length);
+const showIsChecking = computed(
+  () => uploadStatusResponse.value?.status === UploadStatus.ProcessingUploads,
+);
+const showDocumentChanges = computed(
+  () => uploadStatusResponse.value?.status === UploadStatus.NeedsConfirmation,
+);
 
-const isProcessing = computed(() => {
+const showIsProcessing = computed(() => {
   const { value } = uploadStatusResponse;
   if (!value) {
     return false;
   }
 
-  return [
-    UploadStatus.ProcessingUpdates,
-    UploadStatus.ProcessingUploads,
-  ].includes(value.status);
+  return [UploadStatus.Confirmed, UploadStatus.ProcessingUpdates].includes(
+    value.status,
+  );
+});
+
+const showMissingDocuments = computed(() => {
+  if (showIsChecking.value) {
+    return false;
+  }
+
+  return missingDocuments.value.length > 0;
 });
 
 const isUploading = ref(false);
@@ -99,26 +123,41 @@ const uploadedFiles = computed(
   () => uploadStatusResponse.value?.uploadedFiles ?? [],
 );
 const isUploadAreaVisible = computed(() => {
-  if (isProcessing.value) {
+  if (
+    showIsChecking.value ||
+    showIsProcessing.value ||
+    showDocumentChanges.value
+  ) {
     return false;
   }
 
   return isComplete.value === false;
 });
+const wrapperElement = useTemplateRef<HTMLDivElement>('wrapperElement');
 const uploadAreaComponent = useTemplateRef<ComponentPublicInstance>(
   'uploadAreaComponent',
 );
-const isProcessingElement = useTemplateRef<HTMLDivElement>(
-  'isProcessingElement',
+const processButtonElement = useTemplateRef<HTMLButtonElement>(
+  'processButtonElement',
 );
+const isCheckingComponent = useTemplateRef<
+  InstanceType<typeof IsCheckingDocuments>
+>('isCheckingComponent');
+const isProcessingComponent = useTemplateRef<
+  InstanceType<typeof IsProcessingDocuments>
+>('isProcessingComponent');
 
-const { focused: isFocusWithinIsProcessingElement } =
-  useFocusWithin(isProcessingElement);
-const { focused: isFocusWithinUploadArea } =
-  useFocusWithin(uploadAreaComponent);
+const { focused: isFocusWithinComponent } = useFocusWithin(wrapperElement);
 
 const onIsUploading = (value: boolean) => {
   isUploading.value = value;
+
+  if (value) {
+    stopCheckingStatus();
+    return;
+  }
+
+  checkStatus();
 };
 
 const processFiles = async () => {
@@ -158,7 +197,11 @@ const checkStatus = async () => {
     return;
   }
 
-  timeoutId = setTimeout(checkStatus, 2500);
+  if (showDocumentChanges.value) {
+    return;
+  }
+
+  timeoutId = setTimeout(checkStatus, 1250);
 };
 
 if (!props.isComplete) {
@@ -166,115 +209,107 @@ if (!props.isComplete) {
 }
 
 const moveFocus = async () => {
-  if (isProcessing.value && isFocusWithinUploadArea.value) {
-    await nextTick();
-    isProcessingElement.value?.focus();
+  if (!isFocusWithinComponent.value) {
     return;
   }
 
-  if (!isProcessing.value && isFocusWithinIsProcessingElement.value) {
-    const currentElementWithFocus = document.activeElement as HTMLElement;
+  if (showIsChecking.value) {
     await nextTick();
-    currentElementWithFocus?.focus();
+    isCheckingComponent.value?.setFocus();
+    return;
   }
+
+  if (showIsProcessing.value) {
+    await nextTick();
+    isProcessingComponent.value?.setFocus();
+    return;
+  }
+
+  const currentElementWithFocus = document.activeElement as HTMLElement;
+  await nextTick();
+
+  if (currentElementWithFocus) {
+    currentElementWithFocus.focus();
+    return;
+  }
+  processButtonElement.value?.focus();
 };
 
 onBeforeUnmount(() => stopCheckingStatus());
 </script>
 
 <template>
-  <label
-    v-if="isUploadAreaVisible"
-    class="sr-only"
-    for="upload-area-dossier-files"
-  >
-    Upload documenten
-  </label>
+  <div ref="wrapperElement">
+    <label
+      v-if="isUploadAreaVisible"
+      class="sr-only"
+      for="upload-area-dossier-files"
+    >
+      Upload documenten
+    </label>
 
-  <UploadArea
-    v-if="isUploadAreaVisible"
-    @is-uploading="onIsUploading"
-    :allow-multiple="true"
-    :allowed-file-types="props.allowedFileTypes"
-    :allowed-mime-types="props.allowedMimeTypes"
-    :enable-auto-upload="true"
-    :endpoint="props.uploadEndpoint"
-    id="upload-area-dossier-files"
-    :max-file-size="props.maxFileSize"
-    :payload="{ dossierId: props.dossierId, groupId: 'woo-decision-documents' }"
-    ref="uploadAreaComponent"
-    tip="Tip: je kunt meerdere documenten tegelijkertijd uploaden. Sleep je hele selectie (of een zip-bestand) naar dit venster."
-  >
+    <UploadArea
+      v-if="isUploadAreaVisible"
+      @is-uploading="onIsUploading"
+      :allow-multiple="true"
+      :allowed-file-types="props.allowedFileTypes"
+      :allowed-mime-types="props.allowedMimeTypes"
+      :enable-auto-upload="true"
+      :endpoint="props.uploadEndpoint"
+      id="upload-area-dossier-files"
+      :max-file-size="props.maxFileSize"
+      :payload="{
+        dossierId: props.dossierId,
+        groupId: 'woo-decision-documents',
+      }"
+      ref="uploadAreaComponent"
+    >
+      <output class="block">
+        <UploadedDocuments :files="uploadedFiles" />
+
+        <ErrorMessages
+          v-if="showCannotProcessMessage"
+          :messages="[cannotProcessMessage]"
+        />
+      </output>
+
+      <button
+        @click="processFiles"
+        class="bhr-button bhr-button--primary"
+        ref="processButtonElement"
+        type="button"
+        data-e2e-name="process-documents"
+        :data-e2e-is-uploading="isUploading"
+      >
+        Bestanden verwerken
+      </button>
+    </UploadArea>
+
     <output class="block">
-      <UploadedDocuments :files="uploadedFiles" />
-
-      <ErrorMessages
-        v-if="showCannotProcessMessage"
-        :messages="[cannotProcessMessage]"
+      <DocumentChanges
+        v-if="showDocumentChanges"
+        @go-back="checkStatus"
+        :add="uploadStatusResponse?.changes.add"
+        :republish="uploadStatusResponse?.changes.republish"
+        :update="uploadStatusResponse?.changes.update"
+        :confirm-endpoint="props.confirmEndpoint"
+        :reject-endpoint="props.rejectEndpoint"
       />
+
+      <IsProcessingDocuments
+        v-if="showIsProcessing"
+        ref="isProcessingComponent"
+      />
+
+      <IsCheckingDocuments v-if="showIsChecking" ref="isCheckingComponent" />
+
+      <div :class="{ 'mt-4': isUploadAreaVisible }" v-if="showMissingDocuments">
+        <MissingDocuments
+          :documents="missingDocuments"
+          :expected-count="expectedDocumentsCount"
+          :is-processing="showIsProcessing"
+        />
+      </div>
     </output>
-
-    <button
-      @click="processFiles"
-      class="bhr-button bhr-button--primary"
-      ref="processButtonElement"
-      type="button"
-      data-e2e-name="process-documents"
-    >
-      Bestanden verwerken
-    </button>
-  </UploadArea>
-
-  <output class="block">
-    <div
-      class="mb-4"
-      tabindex="-1"
-      ref="isProcessingElement"
-      v-if="isProcessing"
-    >
-      <Alert type="info">
-        <h3 class="font-bold">
-          Wacht niet langer meer na het uploaden van je bestanden
-        </h3>
-
-        <template #extra>
-          We zijn nu bezig met het verwerken van de documenten. Dit kan soms wat
-          tijd in beslag nemen. Je kunt hier later terugkomen, de documenten
-          worden op de achtergrond verwerkt.
-        </template>
-      </Alert>
-    </div>
-
-    <div
-      class="bg-bhr-cornsilk px-6 pb-6 max-h-80 overflow-y-auto"
-      :class="{ 'mt-4': isUploadAreaVisible }"
-      v-if="missingDocumentsCount > 0"
-    >
-      <Icon
-        v-if="isProcessing"
-        name="loader"
-        :size="32"
-        class="animate-spin mt-4"
-      />
-
-      <h3 class="mb-3 mt-4 text-lg" data-e2e-name="missingDocuments">
-        Nog te uploaden:
-        <span class="font-bold">{{ missingDocumentsCount }}</span> van
-        {{ expectedDocumentsCount }} document{{
-          expectedDocumentsCount !== 1 ? 'en' : ''
-        }}.
-      </h3>
-
-      <ul class="grid grid-cols-4 gap-x-4">
-        <li v-for="file in missingDocuments" :key="file" class="py-1">
-          <span class="flex">
-            <span class="mr-3">
-              <Icon name="file-unknown" :size="20" />
-            </span>
-            <span class="grow truncate pt-0.5">{{ file }}</span>
-          </span>
-        </li>
-      </ul>
-    </div>
-  </output>
+  </div>
 </template>

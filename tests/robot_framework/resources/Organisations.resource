@@ -12,6 +12,10 @@ Click Organisation Selector
 Organisation Selector Should Not Be Available
   Get Element Count  //*[@data-e2e-name="organisation-switcher"]  should not be  1
 
+Organisation Selector Visible
+  ${count} =  Get Element Count  //*[@data-e2e-name="organisation-switcher"]
+  RETURN  ${count} > 0
+
 Click Manage Organisations
   Click  //*[@data-e2e-name="manage-organisations"]
 
@@ -45,10 +49,13 @@ Select Responsible Department
 
 Select Organisation
   [Arguments]  ${organisation}=Programmadirectie Openbaarheid
-  ${already_selected} =  Get Element Count  //*[@data-e2e-name="active-organisation"][contains(.,'${organisation}')]
-  IF  not ${already_selected}
-    Click Organisation Selector
-    Click  //*[@data-e2e-name="organisation-switcher"]//li[contains(.,'${organisation}')]
+  ${count} =  Get Element Count  //*[@data-e2e-name="organisation-switcher"]
+  IF  ${count} > 0
+    ${already_selected} =  Get Element Count  //*[@data-e2e-name="active-organisation"][contains(.,'${organisation}')]
+    IF  not ${already_selected}
+      Click Organisation Selector
+      Click  //*[@data-e2e-name="organisation-switcher"]//li[contains(.,'${organisation}')]
+    END
   END
 
 Create New Organisation

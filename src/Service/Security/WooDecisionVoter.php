@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Security;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\Inquiry\InquirySessionService;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;

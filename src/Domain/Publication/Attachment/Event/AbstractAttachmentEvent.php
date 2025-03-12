@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Attachment\Event;
 
-use App\Domain\Publication\Attachment\AbstractAttachment;
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Utils;
 use Symfony\Component\Uid\Uuid;
 

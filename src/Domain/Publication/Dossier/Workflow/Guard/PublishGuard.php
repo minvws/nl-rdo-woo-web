@@ -21,12 +21,6 @@ final class PublishGuard implements EventSubscriberInterface
         $dossier = $event->getSubject();
         if ($dossier->getPublicationDate() === null || $dossier->getPublicationDate() > new \DateTimeImmutable('now midnight')) {
             $event->setBlocked(true, 'A dossier with an empty or future publication date cannot be published');
-
-            return;
-        }
-
-        if (! $dossier->isCompleted()) {
-            $event->setBlocked(true, 'A dossier that is not completed cannot be published');
         }
     }
 

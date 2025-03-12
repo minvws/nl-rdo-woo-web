@@ -1,0 +1,19 @@
+{% extends 'admin/dossier/shared/view.html.twig' %}
+
+{% set aboutTitle = 'admin.global.advice_on' | trans %}
+
+{% set descriptionLabel = 'admin.dossiers.advice.description' | trans %}
+{% set internalReferenceLabel = 'admin.dossiers.advice.form.details.ref_int' | trans %}
+
+{% set dossierTypeTitle = 'dossier.type.advice' | trans %}
+{% set periodLabel = 'admin.dossiers.advice.date' | trans %}
+{% set summaryLabel = 'admin.dossiers.advice.summary' | trans %}
+{% set documentLabel = 'admin.dossiers.advice.document' | trans %}
+{% set completeFirstOpenStepTitle = ('admin.dossiers.advice.complete_step.' ~ workflowStatus.firstOpenStep.stepName.value | default) | trans %}
+
+{% set deleteTitle = 'admin.dossiers.advice.delete' | trans %}
+{% set deleteBullets = [
+    'admin.dossiers.advice.delete_bullet-1' | trans,
+    'admin.dossiers.advice.delete_bullet-2' | trans,
+    'admin.dossiers.advice.delete_bullet-3' | trans,
+] %}

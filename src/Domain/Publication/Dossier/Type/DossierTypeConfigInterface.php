@@ -6,6 +6,7 @@ namespace App\Domain\Publication\Dossier\Type;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Step\StepDefinitionInterface;
+use App\Domain\Publication\Dossier\Step\StepName;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -33,4 +34,6 @@ interface DossierTypeConfigInterface
     public function getSteps(): array;
 
     public function getCreateRouteName(): string;
+
+    public function getAttachmentStepName(): ?StepName;
 }

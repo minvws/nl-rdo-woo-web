@@ -33,7 +33,7 @@ Additional resources:
 
 ## Install Robot Framework
 
-Make sure WOO is running locally. Read the [install](install.md) instructions first.
+Make sure WOO is running locally. Read the [development_install](development_install.md) instructions first.
 
 ## Step 1: Install Python
 
@@ -52,13 +52,13 @@ task rf:venv
 ## Step 3: Initialize the application
 
 To run CI tests locally you need to create a user with 'super admin'-rights, username `email@example.org` and password `IkLoopNooitVastVandaag`.
-To prepare for this, you should create an environment variable named `SECRET_WOO_LOCAL` in your  `~/zshrc` file, for which the value will be automatically replaced later on:
+To prepare for this, you should create an environment variable named `SECRET_WOO_LOCAL` in your  `~/.zshrc` file, for which the value will be automatically replaced later on:
 
 ```shell
 export SECRET_WOO_LOCAL=REPLACEABLE
 ```
 
-Then create the aforementioned admin user by either follow the instructions in [install](install.md) or running the following testcase:
+Then create the aforementioned admin user by either follow the instructions in [development_install](development_install.md) or running the following testcase:
 
 ```shell
 task rf:test tag=init

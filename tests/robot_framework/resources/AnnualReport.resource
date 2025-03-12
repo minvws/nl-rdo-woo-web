@@ -1,14 +1,13 @@
 *** Settings ***
-Library     Browser
-Library     DebugLibrary
-Resource    Admin.resource
+Documentation       Resource file containing custom keywords for the Annual Report information category
+Library             Browser
+Library             DebugLibrary
+Resource            Admin.resource
 
 
 *** Variables ***
 ${ANNUAL_REPORT_FILENAME}   ${EMPTY}
 ${ANNUAL_REPORT_LOCATION}   ${EMPTY}
-${ATTACHMENT_FILENAME}      ${EMPTY}
-${ATTACHMENT_LOCATION}      ${EMPTY}
 
 
 *** Keywords ***

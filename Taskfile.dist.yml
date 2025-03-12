@@ -3,7 +3,7 @@ version: "3"
 
 includes:
   docs:
-    taskfile: docs/technische-documentatie/Taskfile.dist.yml
+    taskfile: docs/Taskfile.dist.yml
     dir: docs
   rf:
     taskfile: tests/robot_framework/Taskfile.dist.yml
@@ -51,7 +51,7 @@ tasks:
     desc: Build all docker images
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "build --build-arg USER_UID=$(id -u)" }
+        vars: { DOCKER_COMPOSE_ARGS: "--profile '*' build --build-arg USER_UID=$(id -u)" }
 
   dc:rebuild:
     desc: Rebuild all docker images
@@ -237,6 +237,12 @@ tasks:
         vars: { CLI_ARGS: app bin/console doctrine:schema:drop --full-database --force }
       - task: app:migrate
       - task: app:loadfixtures
+
+  db:logs:
+    desc: Display last 30 lines of db query logs and follow the rest
+    cmds:
+      - task: dc
+        vars: { DOCKER_COMPOSE_ARGS: "logs postgres --tail 30 --follow" }
 
   app:checkall:
     desc: Run all checks

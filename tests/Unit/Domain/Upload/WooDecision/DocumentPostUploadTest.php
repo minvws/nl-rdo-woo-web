@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFileService;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Domain\Upload\WooDecision\DocumentPostUpload;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Unit\UnitTestCase;

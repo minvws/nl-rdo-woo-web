@@ -4,24 +4,21 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Attachment\Handler;
 
-use App\Domain\Publication\Attachment\AttachmentRepository;
+use App\Domain\Publication\Attachment\AttachmentDispatcher;
 use App\Domain\Publication\Attachment\Command\UpdateAttachmentCommand;
-use App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
 use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
+use App\Domain\Publication\Attachment\Handler\AttachmentEntityLoader;
 use App\Domain\Publication\Attachment\Handler\UpdateAttachmentHandler;
-use App\Domain\Publication\Dossier\DossierRepository;
+use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Domain\Publication\FileInfo;
 use App\Service\Uploader\UploaderService;
 use App\Service\Uploader\UploadGroupId;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -29,29 +26,26 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class UpdateAttachmentHandlerTest extends MockeryTestCase
 {
     private AttachmentRepository&MockInterface $attachmentRepository;
-    private MessageBusInterface&MockInterface $messageBus;
-    private DossierWorkflowManager&MockInterface $dossierWorkflowManager;
     private UpdateAttachmentHandler $handler;
-    private DossierRepository&MockInterface $dossierRepository;
+    private AttachmentEntityLoader&MockInterface $entityLoader;
+    private AttachmentDispatcher&MockInterface $dispatcher;
     private ValidatorInterface&MockInterface $validator;
     private UploaderService&MockInterface $uploaderService;
 
     public function setUp(): void
     {
         $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);
-        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
-        $this->messageBus = \Mockery::mock(MessageBusInterface::class);
-        $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
+        $this->entityLoader = \Mockery::mock(AttachmentEntityLoader::class);
+        $this->dispatcher = \Mockery::mock(AttachmentDispatcher::class);
         $this->validator = \Mockery::mock(ValidatorInterface::class);
         $this->uploaderService = \Mockery::mock(UploaderService::class);
 
         $this->handler = new UpdateAttachmentHandler(
-            $this->messageBus,
-            $this->dossierWorkflowManager,
             $this->attachmentRepository,
-            $this->dossierRepository,
             $this->validator,
             $this->uploaderService,
+            $this->entityLoader,
+            $this->dispatcher,
         );
 
         parent::setUp();
@@ -65,8 +59,10 @@ class UpdateAttachmentHandlerTest extends MockeryTestCase
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
         $dossier->shouldReceive('getAttachmentEntityClass')->andReturn(CovenantAttachment::class);
 
-        $this->dossierRepository->shouldReceive('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
-        $this->attachmentRepository->expects('findOneOrNullForDossier')->with($dossierUuid, $docUuid)->andReturnNull();
+        $this->entityLoader
+            ->expects('loadAndValidateAttachment')
+            ->with($dossierUuid, $docUuid, DossierStatusTransition::UPDATE_ATTACHMENT)
+            ->andThrows(new AttachmentNotFoundException());
 
         $this->expectException(AttachmentNotFoundException::class);
 
@@ -95,10 +91,10 @@ class UpdateAttachmentHandlerTest extends MockeryTestCase
         $attachment->shouldReceive('getDossier')->andReturn($dossier);
         $attachment->shouldReceive('getFileInfo')->andReturn(new FileInfo());
 
-        $this->dossierRepository->shouldReceive('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
-        $this->attachmentRepository->expects('findOneOrNullForDossier')->with($dossierUuid, $attachmentUuid)->andReturn($attachment);
-
-        $this->dossierWorkflowManager->expects('applyTransition')->with($dossier, DossierStatusTransition::UPDATE_ATTACHMENT);
+        $this->entityLoader
+            ->expects('loadAndValidateAttachment')
+            ->with($dossierUuid, $attachmentUuid, DossierStatusTransition::UPDATE_ATTACHMENT)
+            ->andReturn($attachment);
 
         $violations = \Mockery::mock(ConstraintViolationListInterface::class);
         $violations->expects('count')->andReturn(0);
@@ -107,13 +103,7 @@ class UpdateAttachmentHandlerTest extends MockeryTestCase
 
         $this->attachmentRepository->expects('save')->with($attachment, true);
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            static function (AttachmentUpdatedEvent $event) use ($attachmentUuid) {
-                self::assertEquals($attachmentUuid, $event->attachmentId);
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
+        $this->dispatcher->expects('dispatchAttachmentUpdatedEvent')->with($attachment);
 
         $this->uploaderService->expects('attachFileToEntity')->with($uploadRef, $attachment, UploadGroupId::ATTACHMENTS);
 

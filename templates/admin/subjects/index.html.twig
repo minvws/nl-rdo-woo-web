@@ -1,4 +1,4 @@
-{% extends 'admin.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
 {% set page_title = 'admin.subject.manage' | trans %}
 
@@ -32,7 +32,7 @@
             <table class="bhr-table">
                 <thead>
                     <tr>
-                        {{ knp_pagination_sortable(pagination, 'admin.subject.subject' | trans, 'sub.name', {}, {}, 'pagination/sort.admin.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'admin.subject.subject' | trans, 'sub.name', {}, {}, 'admin/layout/sort.html.twig') }}
                     </tr>
                 </thead>
                 <tbody data-e2e-name="subject-list">
@@ -48,7 +48,7 @@
                 </tbody>
             </table>
 
-            {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
+            {{ knp_pagination_render(pagination, 'admin/layout/pagination.html.twig') }}
         {% else %}
             <p class="text-center">
                 {{ 'admin.subjects.no_subjects' | trans }}

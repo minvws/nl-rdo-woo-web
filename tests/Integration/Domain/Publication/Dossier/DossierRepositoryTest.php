@@ -136,7 +136,7 @@ final class DossierRepositoryTest extends KernelTestCase
         self::assertContains($wooDecision->_real()->getId()->toRfc4122(), $ids);
         self::assertContains($annualReport->_real()->getId()->toRfc4122(), $ids);
         self::assertNotContains($published->_real()->getId()->toRfc4122(), $ids);
-        self::assertNotContains($uncompleted->_real()->getId()->toRfc4122(), $ids);
+        self::assertContains($uncompleted->_real()->getId()->toRfc4122(), $ids);
     }
 
     public function testGetRecentDossiersWithoutDepartmentFiltersUnpublishedAndLimitsResults(): void

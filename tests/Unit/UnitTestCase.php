@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
+use App\Tests\CarbonHelpers;
 use App\Tests\Faker\FakerFactory;
-use App\Tests\ResetCarbon;
 use Faker\Generator;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase as BaseTestCase;
@@ -15,7 +15,7 @@ abstract class UnitTestCase extends BaseTestCase
 {
     use MockeryPHPUnitIntegration;
     use MatchesSnapshots;
-    use ResetCarbon;
+    use CarbonHelpers;
 
     protected Generator $faker;
 

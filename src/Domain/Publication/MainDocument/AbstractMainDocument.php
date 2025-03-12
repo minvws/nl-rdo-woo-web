@@ -6,12 +6,14 @@ namespace App\Domain\Publication\MainDocument;
 
 use App\Domain\Publication\AttachmentAndMainDocumentEntityTrait;
 use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\Type\Advice\AdviceMainDocument;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
 use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionMainDocument;
+use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
+use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
@@ -31,6 +33,8 @@ use Webmozart\Assert\Assert;
     'disposition_main_document' => DispositionMainDocument::class,
     'complaint_judgement_main_document' => ComplaintJudgementMainDocument::class,
     'woo_decision_main_document' => WooDecisionMainDocument::class,
+    'other_publication_main_document' => OtherPublicationMainDocument::class,
+    'advice_main_document' => AdviceMainDocument::class,
 ])]
 #[ORM\HasLifecycleCallbacks]
 abstract class AbstractMainDocument implements EntityWithFileInfo

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Postprocessor;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Domain\Upload\UploadedFile;
 

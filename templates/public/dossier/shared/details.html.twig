@@ -1,0 +1,35 @@
+{% extends 'public/base.html.twig' %}
+{% import 'public/macros/document.html.twig' as macro %}
+
+{% set page_title = dossier.pageTitle %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-h1" data-e2e-name="dossier-metadata-title">
+        <span class="font-normal block">{{ tagline }}</span>
+        {{ dossier.title | capitalize }}
+    </h1>
+    <dl class="woo-muted">
+        <div>
+            <dt class="inline">
+                {{ (dossier.isPreview ? 'global.publication_date' : 'global.published_on') | trans | capitalize }}
+            </dt>
+            <dd class="inline" data-e2e-name="dossier-metadata-published-date">
+                <twig:Date date="{{ dossier.publicationDate }}" />
+            </dd>
+        </div>
+    </dl>
+
+    {% if description is defined %}
+        <p class="mt-10">{{ description }}</p>
+    {% endif %}
+
+    {% include 'public/dossier/shared/snippets/summary.html.twig' %}
+
+    {% block about %}{% endblock %}
+
+    {% block attachments %}{% endblock %}
+
+    {{ macro.history_section(get_frontend_history('dossier', dossier.dossierId), 'global.history') }}
+</div>
+{% endblock %}

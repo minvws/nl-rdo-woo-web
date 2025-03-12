@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\SubType;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\IndexException;
 use App\Domain\Search\Index\SubType\Mapper\ElasticSubTypeMapperInterface;

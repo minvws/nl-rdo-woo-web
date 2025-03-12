@@ -1,0 +1,44 @@
+{{ form_start(form) }}
+    {{ form_row(form.summary) }}
+
+    <twig:Admin:Publication:ManageDocument
+        allowedFileTypes="{{ documentTypeNames }}"
+        allowedMimeTypes="{{ documentMimeTypes }}"
+        canDelete="{{ canDeleteDocument }}"
+        documentType="{{ 'admin.dossiers.advice.document' | trans }}"
+        documentTypes="{{ documentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/advice-document' }}"
+        formField="{{ form.document }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.advice.form.content.document_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        title="{{ 'admin.dossiers.advice.form.content.document_label' | trans }}"
+    />
+
+    {% set attachmentsApiEndpoint = '/balie/api/dossiers/' ~ dossier.id ~ '/advice-attachments' %}
+
+     <twig:Admin:Publication:ManageAttachments
+        allowedFileTypes="{{ attachmentTypeNames }}"
+        allowedMimeTypes="{{ attachmentMimeTypes }}"
+        allowMultiple="{{ false }}"
+        canDelete="{{ canDeleteAttachments }}"
+        documentTypes="{{ requestForAdviceTypes }}"
+        endpoint="{{ attachmentsApiEndpoint }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.advice.form.content.attachments_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        title="{{ 'admin.dossiers.advice.form.content.request_for_advice_label' | trans }}"
+    />
+
+    <twig:Admin:Publication:ManageAttachments
+        allowedFileTypes="{{ attachmentTypeNames }}"
+        allowedMimeTypes="{{ attachmentMimeTypes }}"
+        canDelete="{{ canDeleteAttachments }}"
+        documentTypes="{{ attachmentTypes }}"
+        endpoint="{{ attachmentsApiEndpoint }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.advice.form.content.attachments_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+    />
+
+{{ form_end(form) }}

@@ -1,6 +1,6 @@
 FROM python:3.12-bookworm
 
-ARG NODE_MAJOR=18
+ARG NODE_MAJOR=20
 
 WORKDIR /workspace
 
@@ -27,6 +27,7 @@ RUN apt-get update \
         nodejs \
         docker-ce-cli \
     && npm uninstall --global npm \
+    && corepack install --global npm@10.x \
     && corepack enable npm \
     && npm install --global \
         @go-task/cli \

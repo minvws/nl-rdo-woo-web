@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Result\SubType\Attachment;
 
-use App\Domain\Publication\Attachment\AbstractAttachment;
-use App\Domain\Publication\Attachment\AttachmentRepository;
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use App\Domain\Publication\Attachment\ViewModel\Attachment;
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;

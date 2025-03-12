@@ -30,7 +30,7 @@ readonly class DossierWithAccessCheckValueResolver implements ValueResolverInter
     {
         $dossier = $this->resolveDossier($request, $argument);
         if ($dossier === null) {
-            return [];
+            throw ViewingNotAllowedException::forDossier();
         }
 
         if (! $this->authorizationChecker->isGranted(DossierVoter::VIEW, $dossier)) {

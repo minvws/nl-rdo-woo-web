@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory\Sanitizer\DataProvider;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\InquiryInventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

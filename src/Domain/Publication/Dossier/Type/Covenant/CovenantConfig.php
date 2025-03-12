@@ -72,4 +72,9 @@ readonly class CovenantConfig implements DossierTypeConfigInterface
             CovenantAttachment::class,
         ];
     }
+
+    public function getAttachmentStepName(): ?StepName
+    {
+        return StepName::CONTENT;
+    }
 }

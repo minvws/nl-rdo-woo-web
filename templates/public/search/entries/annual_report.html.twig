@@ -1,0 +1,13 @@
+{% extends 'public/search/entries/base.html.twig' %}
+
+{% set resultUrl = path('app_annualreport_detail', { prefix: entry.dossier.documentPrefix, dossierId: entry.dossier.dossierNr }) %}
+{% set resultType = 'public.global.annual_report' | trans %}
+
+{% block resultSpecsBottom %}
+    <li class="woo-search-result__spec">
+        {{ 'public.dossiers.annual_report.year' | trans }} {{ entry.dossier.year }}
+    </li>
+    <li class="woo-search-result__spec">
+        {{ 'global.published_on' | trans | capitalize }} <twig:Date date="{{ entry.dossier.publicationDate }}" />
+    </li>
+{% endblock %}

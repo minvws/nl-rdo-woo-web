@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Attachment;
 
+use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface;

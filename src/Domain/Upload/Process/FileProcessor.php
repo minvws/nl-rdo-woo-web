@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Process;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\Postprocessor\FilePostprocessor;
 use App\Domain\Upload\Postprocessor\NoMatchingFilePostprocessorException;
 use App\Domain\Upload\Preprocessor\FilePreprocessor;
@@ -22,9 +22,9 @@ readonly class FileProcessor
 
     public function process(UploadedFile $file, WooDecision $dossier): void
     {
-        foreach ($this->filePreprocessor->process($file) as $file) {
+        foreach ($this->filePreprocessor->process($file) as $subFile) {
             try {
-                $this->filePostprocessor->process($file, $dossier);
+                $this->filePostprocessor->process($subFile, $dossier);
             } catch (NoMatchingFilePostprocessorException $e) {
                 $this->logger->error('No matching file Postprocessor found', [
                     'filename' => $e->fileName,

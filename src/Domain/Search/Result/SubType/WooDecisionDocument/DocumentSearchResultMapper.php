@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Result\SubType\WooDecisionDocument;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Domain\Search\Index\ElasticDocumentType;
+use App\Domain\Search\Index\Schema\ElasticHighlights;
 use App\Domain\Search\Result\HighlightMapperTrait;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\SearchResultMapperInterface;
@@ -42,12 +43,7 @@ readonly class DocumentSearchResultMapper implements SearchResultMapperInterface
 
         $dossiers = $this->wooDecisionRepository->getDossierReferencesForDocument($documentNr);
 
-        $highlightPaths = [
-            '[highlight][pages.content]',
-            '[highlight][dossiers.title]',
-            '[highlight][dossiers.summary]',
-        ];
-        $highlightData = $this->getHighlightData($hit, $highlightPaths);
+        $highlightData = $this->getHighlightData($hit, ElasticHighlights::getPaths());
 
         return new SubTypeSearchResultEntry(
             $document,

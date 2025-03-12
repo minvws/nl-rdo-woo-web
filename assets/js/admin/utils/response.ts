@@ -10,8 +10,15 @@ export const validateResponse = async <T extends z.ZodSchema>(
   }
 
   const json = await response.json();
+  return validateData(json, schema);
+};
+
+export const validateData = <T extends z.ZodSchema>(
+  data: unknown,
+  schema: T,
+): z.infer<T> => {
   try {
-    return schema.parse(json);
+    return schema.parse(data);
   } catch (error) {
     throw new Error('The data returned does not match the expected schema', {
       cause: error,

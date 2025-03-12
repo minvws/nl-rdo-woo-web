@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Factory\Publication\Dossier\Type\Covenant;
 
-use App\Domain\Publication\Attachment\AttachmentLanguage;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Service\Storage\StorageRootPathGenerator;
 use App\Tests\Factory\FileInfoFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -15,8 +16,10 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
  */
 final class CovenantAttachmentFactory extends PersistentProxyObjectFactory
 {
-    public function __construct(private StorageRootPathGenerator $storageRootPathGenerator)
-    {
+    public function __construct(
+        private StorageRootPathGenerator $storageRootPathGenerator,
+        private EntityManagerInterface $entityManager,
+    ) {
     }
 
     /**
@@ -44,15 +47,27 @@ final class CovenantAttachmentFactory extends PersistentProxyObjectFactory
      */
     protected function initialize(): static
     {
-        return $this->afterInstantiate(function (CovenantAttachment $attachment): void {
-            $attachment
-                ->getFileInfo()
-                ->setPath(sprintf(
-                    '%s/%s',
-                    $this->storageRootPathGenerator->fromUuid($attachment->getId()),
-                    $attachment->getFileInfo()->getName(),
-                ));
-        });
+        return $this
+            ->afterInstantiate(function (CovenantAttachment $attachment, array $attributes): void {
+                $attachment
+                    ->getFileInfo()
+                    ->setPath(sprintf(
+                        '%s/%s',
+                        $this->storageRootPathGenerator->fromUuid($attachment->getId()),
+                        $attachment->getFileInfo()->getName(),
+                    ));
+
+                if (isset($attributes['overwrite_id'])) {
+                    $this->entityManager->detach($attachment);
+
+                    $reflection = new \ReflectionClass($attachment);
+                    $property = $reflection->getProperty('id');
+                    $property->setAccessible(true);
+                    $property->setValue($attachment, $attributes['overwrite_id']);
+
+                    $this->entityManager->persist($attachment);
+                }
+            });
     }
 
     public static function class(): string

@@ -14,11 +14,11 @@ Note: The published version does not include the Rijksoverheid theme used on Ope
 
 For technical info, see the [Technical](docs/technische-documentatie/technical.md) documentation.
 
-## Installation
+## Installation (for development purposes)
 
 The Woo platform is based on the Symfony framework and uses Elasticsearch as search engine.
 
-- For installing, see the [Install](docs/technische-documentatie/install.md) documentation
+- For installing, see the [Developer Installation](docs/technische-documentatie/development_install.md) documentation
 - For updating or local setup troubleshooting, see the [Update](docs/technische-documentatie/update.md) documentation
 - For Elasticsearch, see the [Elasticsearch](docs/technische-documentatie/elastic_index.md) documentation.
 - For platform console commands, see the [Commands](docs/technische-documentatie/commands.md) documentation.

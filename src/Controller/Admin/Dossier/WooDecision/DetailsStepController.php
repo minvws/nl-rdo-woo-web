@@ -9,7 +9,7 @@ use App\Domain\Publication\Dossier\DossierFactory;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierFormParamBuilder;
 use App\Form\Dossier\WooDecision\DetailsType;
 use App\Service\DossierWizard\WizardStatusFactory;

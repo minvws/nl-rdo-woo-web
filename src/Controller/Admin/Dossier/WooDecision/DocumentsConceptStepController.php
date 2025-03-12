@@ -6,8 +6,8 @@ namespace App\Controller\Admin\Dossier\WooDecision;
 
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Form\Dossier\WooDecision\DocumentUploadType;
 use App\Form\Dossier\WooDecision\InventoryType;
 use App\Service\Uploader\UploadGroupId;

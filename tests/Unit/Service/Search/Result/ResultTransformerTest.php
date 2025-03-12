@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Search\Result;
 
+use App\Domain\Search\Query\Facet\Definition\DateFacet;
+use App\Domain\Search\Query\Facet\Definition\PrefixedDossierNrFacet;
+use App\Domain\Search\Query\Facet\Input\DateFacetInput;
+use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
+use App\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Result\ResultFactory;
 use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Facet\Input\DateFacetInput;
-use App\Service\Search\Query\Facet\Input\FacetInputCollection;
-use App\Service\Search\Query\Facet\Input\StringValuesFacetInput;
 use App\Service\Search\Query\Sort\ViewModel\SortItems;
 use App\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
 use App\Service\Search\Result\AggregationMapper;
 use App\Service\Search\Result\ResultTransformer;
-use Doctrine\ORM\EntityManagerInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Knp\Component\Pager\PaginatorInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -24,7 +25,6 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 class ResultTransformerTest extends MockeryTestCase
 {
-    private EntityManagerInterface&MockInterface $entityManager;
     private LoggerInterface&MockInterface $logger;
     private PaginatorInterface&MockInterface $paginator;
     private AggregationMapper&MockInterface $aggregationMapper;
@@ -34,7 +34,6 @@ class ResultTransformerTest extends MockeryTestCase
 
     public function setUp(): void
     {
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->paginator = \Mockery::mock(PaginatorInterface::class);
         $this->aggregationMapper = \Mockery::mock(AggregationMapper::class);
@@ -42,7 +41,6 @@ class ResultTransformerTest extends MockeryTestCase
         $this->sortItemViewFactory = \Mockery::mock(SortItemViewFactory::class);
 
         $this->transformer = new ResultTransformer(
-            $this->entityManager,
             $this->logger,
             $this->paginator,
             $this->aggregationMapper,
@@ -54,8 +52,8 @@ class ResultTransformerTest extends MockeryTestCase
     public function testTransform(): void
     {
         $facetInputs = new FacetInputCollection(...[
-            FacetKey::PREFIXED_DOSSIER_NR->value => StringValuesFacetInput::fromParameterBag(FacetKey::PREFIXED_DOSSIER_NR, new ParameterBag()),
-            FacetKey::DATE->value => DateFacetInput::fromParameterBag(FacetKey::DATE, new ParameterBag()),
+            FacetKey::PREFIXED_DOSSIER_NR->value => StringValuesFacetInput::fromParameterBag(new PrefixedDossierNrFacet(), new ParameterBag()),
+            FacetKey::DATE->value => DateFacetInput::fromParameterBag(new DateFacet(), new ParameterBag()),
         ]);
 
         $searchParameters = new SearchParameters(

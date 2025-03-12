@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Twig\Runtime;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use App\Service\DocumentUploadQueue;
 use App\Service\HistoryService;
-use App\Service\Search\Query\Facet\FacetTwigService;
 use App\Service\Security\OrganisationSwitcher;
 use App\Twig\Runtime\WooExtensionRuntime;
 use Mockery;
@@ -30,7 +29,6 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
 
         $this->runtime = new WooExtensionRuntime(
             $this->requestStack,
-            \Mockery::mock(FacetTwigService::class),
             $this->uploadQueue,
             \Mockery::mock(OrganisationSwitcher::class),
             \Mockery::mock(HistoryService::class),

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Factory\Publication\Dossier\Type\InvestigationReport;
 
-use App\Domain\Publication\Attachment\AttachmentLanguage;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;

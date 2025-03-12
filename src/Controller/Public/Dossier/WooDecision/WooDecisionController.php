@@ -6,18 +6,19 @@ namespace App\Controller\Public\Dossier\WooDecision;
 
 use App\Doctrine\DocumentConditions;
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
-use App\Domain\Publication\BatchDownload;
+use App\Domain\Publication\BatchDownload\BatchDownload;
+use App\Domain\Publication\BatchDownload\BatchDownloadScope;
+use App\Domain\Publication\BatchDownload\BatchDownloadService;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionMainDocument;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use App\Domain\Search\Theme\Covid19Theme;
 use App\Exception\ViewingNotAllowedException;
-use App\Service\BatchDownloadService;
 use App\Service\DownloadResponseHelper;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -49,7 +50,7 @@ class WooDecisionController extends AbstractController
     ) {
     }
 
-    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
+    #[Cache(public: true, maxage: 600, mustRevalidate: true)]
     #[Route('/dossiers', name: 'app_woodecision_index', methods: ['GET'])]
     public function index(): Response
     {
@@ -100,7 +101,7 @@ class WooDecisionController extends AbstractController
             ['pageParameterName' => 'po'],
         );
 
-        return $this->render('dossier/details.html.twig', [
+        return $this->render('public/dossier/woo-decision/details.html.twig', [
             'publicDocs' => $publicPagination,
             'alreadyPublicDocs' => $alreadyPublicPagination,
             'notPublicDocs' => $notPublicPagination,
@@ -112,25 +113,11 @@ class WooDecisionController extends AbstractController
 
     #[Route('/dossier/{prefix}/{dossierId}/batch', name: 'app_woodecision_batch', methods: ['POST'])]
     public function createBatch(
-        Request $request,
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
     ): Response {
-        $docs = $request->request->all()['doc'] ?? [];
-        if (! is_array($docs)) {
-            $docs = [$docs];
-        }
-
-        $documents = [];
-        foreach ($docs as $documentNr) {
-            foreach ($dossier->getDocuments() as $document) {
-                if ($document->getDocumentNr() === $documentNr) {
-                    $documents[] = $document->getDocumentNr();
-                    break;
-                }
-            }
-        }
-
-        $batch = $this->batchDownloadService->findOrCreate($dossier, $documents, count($documents) > 0);
+        $batch = $this->batchDownloadService->findOrCreate(
+            BatchDownloadScope::forWooDecision($dossier),
+        );
 
         return $this->redirectToRoute('app_woodecision_batch_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
@@ -152,11 +139,11 @@ class WooDecisionController extends AbstractController
         ]);
         $breadcrumbs->addItem('public.global.download');
 
-        if ($batch->getEntity() !== $dossier) {
+        if ($batch->getDossier() !== $dossier) {
             throw ViewingNotAllowedException::forDossier();
         }
 
-        return $this->render('batchdownload/batch.html.twig', [
+        return $this->render('public/dossier/woo-decision/shared/batch-download.html.twig', [
             'batch' => $batch,
             'pageTitle' => 'public.documents.archive.download',
             'download_path' => $this->generateUrl(
@@ -170,17 +157,17 @@ class WooDecisionController extends AbstractController
         ]);
     }
 
-    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
+    #[Cache(public: true, maxage: 600, mustRevalidate: true)]
     #[Route('/dossier/{prefix}/{dossierId}/batch/{batchId}/download', name: 'app_woodecision_batch_download', methods: ['GET'])]
     public function batchDownload(
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
     ): Response {
-        if ($batch->getEntity() !== $dossier) {
+        if ($batch->getDossier() !== $dossier) {
             throw ViewingNotAllowedException::forDossier();
         }
 
-        if ($batch->getStatus() !== BatchDownload::STATUS_COMPLETED) {
+        if (! $batch->getStatus()->isDownloadable()) {
             return $this->redirectToRoute('app_woodecision_batch_detail', [
                 'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),
@@ -191,7 +178,7 @@ class WooDecisionController extends AbstractController
         return $this->downloadHelper->getResponseForBatchDownload($batch);
     }
 
-    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
+    #[Cache(public: true, maxage: 600, mustRevalidate: true)]
     #[Route(
         '/dossier/{prefix}/{dossierId}/bijlage/{attachmentId}',
         name: 'app_woodecision_attachment_detail',
@@ -212,7 +199,7 @@ class WooDecisionController extends AbstractController
         ]);
         $breadcrumbs->addItem($attachmentView->name ?? '');
 
-        return $this->render('dossier/decision-attachment.html.twig', [
+        return $this->render('public/dossier/woo-decision/attachment.html.twig', [
             'dossier' => $this->wooDecisionViewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'attachment' => $attachmentView,
@@ -224,7 +211,7 @@ class WooDecisionController extends AbstractController
         ]);
     }
 
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/dossier/{prefix}/{dossierId}/document',
         name: 'app_woodecision_document_detail',
@@ -245,7 +232,7 @@ class WooDecisionController extends AbstractController
         ]);
         $breadcrumbs->addItem($mainDocumentViewModel->name ?? '');
 
-        return $this->render('dossier/main-document.html.twig', [
+        return $this->render('public/dossier/woo-decision/document.html.twig', [
             'dossier' => $this->wooDecisionViewFactory->make($wooDecision),
             'attachments' => $this->attachmentViewFactory->makeCollection($wooDecision),
             'document' => $mainDocumentViewModel,

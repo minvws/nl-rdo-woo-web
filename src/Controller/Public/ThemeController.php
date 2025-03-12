@@ -51,12 +51,12 @@ class ThemeController extends AbstractController
         $breadcrumbs->addItem($theme->getPageTitleTranslationKey());
 
         if ($result->hasFailed()) {
-            return $this->render('search/result-failure.html.twig', [
+            return $this->render('public/search/result-failure.html.twig', [
                 'result' => $result,
             ]);
         }
 
-        return $this->render('theme/result.html.twig', [
+        return $this->render('public/theme/result.html.twig', [
             'result' => $result,
             'theme' => $this->themeManager->getView($theme),
             'ajaxResultsUrl' => $this->generateUrl(
@@ -80,7 +80,7 @@ class ThemeController extends AbstractController
         $responseData = [];
         $responseData['facets'] = json_encode(
             $this->renderView(
-                'search/facet.html.twig',
+                'public/search/facet.html.twig',
                 ['result' => $result]
             ),
             JSON_THROW_ON_ERROR,
@@ -88,9 +88,9 @@ class ThemeController extends AbstractController
 
         // If the search failed, we show a different template
         if ($result->hasFailed()) {
-            $template = 'search/result-failure-without-base.html.twig';
+            $template = 'public/search/result-failure-without-base.html.twig';
         } else {
-            $template = 'search/entries.html.twig';
+            $template = 'public/search/entries.html.twig';
         }
 
         $responseData['results'] = json_encode($this->renderView($template, [

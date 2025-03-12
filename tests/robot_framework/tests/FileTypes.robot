@@ -1,17 +1,11 @@
 *** Settings ***
-Resource        ../resources/Setup.resource
-Resource        ../resources/WooDecision.resource
-Suite Setup     Suite Setup
-Test Setup      Go To Admin
-Test Tags       filetypes
-
-
-*** Variables ***
-${BASE_URL}             localhost:8000
-${BASE_URL_BALIE}       localhost:8000/balie/dossiers
-${TST_BALIE_USER}       email@example.org
-${TST_BALIE_PASSWORD}   IkLoopNooitVastVandaag
-${DOSSIER_REFERENCE}    ${EMPTY}
+Documentation       Tests that focus on testing the different supported file types for WooDecisions.
+Resource            ../resources/Setup.resource
+Resource            ../resources/WooDecision.resource
+Resource            ../resources/Organisations.resource
+Suite Setup         Suite Setup
+Test Setup          Go To Admin
+Test Tags           ci  filetypes
 
 
 *** Test Cases ***
@@ -21,18 +15,24 @@ Create a dossier with different filetypes using individual files, zip and 7z
   Fill Out Decision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/filetypes/productierapport.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 15 van 15 documenten.
-  Upload Document  tests/robot_framework/files/filetypes/presentation.zip
+  Upload Documents  tests/robot_framework/files/filetypes/presentation.zip
   Verify Document Upload Remaining  Nog te uploaden: 10 van 15 documenten.
-  Upload Document  tests/robot_framework/files/filetypes/text.7z
+  Upload Documents  tests/robot_framework/files/filetypes/text.7z
   Verify Document Upload Remaining  Nog te uploaden: 8 van 15 documenten.
-  Upload Document  tests/robot_framework/files/filetypes/16101.docx
-  Upload Document  tests/robot_framework/files/filetypes/16102.doc
-  Upload Document  tests/robot_framework/files/filetypes/16103.odt
-  Upload Document  tests/robot_framework/files/filetypes/16109.xlsx
-  Upload Document  tests/robot_framework/files/filetypes/16110.xls
-  Upload Document  tests/robot_framework/files/filetypes/16111.csv
-  Upload Document  tests/robot_framework/files/filetypes/16112.ods
-  Upload Document  tests/robot_framework/files/filetypes/16115.pdf
+  VAR  @{files} =
+  ...  tests/robot_framework/files/filetypes/16101.docx
+  ...  tests/robot_framework/files/filetypes/16102.doc
+  ...  tests/robot_framework/files/filetypes/16103.odt
+  Upload Documents  @{files}
+  VAR  @{files} =
+  ...  tests/robot_framework/files/filetypes/16109.xlsx
+  ...  tests/robot_framework/files/filetypes/16110.xls
+  ...  tests/robot_framework/files/filetypes/16111.csv
+  Upload Documents  @{files}
+  VAR  @{files} =
+  ...  tests/robot_framework/files/filetypes/16112.ods
+  ...  tests/robot_framework/files/filetypes/16115.pdf
+  Upload Documents  @{files}
   Verify Document Upload Completed
   Click Continue To Publish
   Publish Dossier And Return To Admin Home
@@ -71,3 +71,4 @@ Suite Setup
   Cleansheet
   Suite Setup - CI
   Login Admin
+  Select Organisation  organisation=Programmadirectie Openbaarheid

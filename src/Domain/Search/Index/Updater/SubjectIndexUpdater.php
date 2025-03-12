@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Search\Index\Updater;
 
 use App\Domain\Publication\Subject\Subject;
+use App\Domain\Search\Index\Schema\ElasticNestedField;
+use App\Domain\Search\Index\Schema\ElasticPath;
 use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 
@@ -23,11 +25,14 @@ readonly class SubjectIndexUpdater
                 'query' => [
                     'bool' => [
                         'should' => [
-                            ['match' => ['subject.id' => $subject->getId()]],
+                            ['match' => [
+                                ElasticPath::subjectId()->value => $subject->getId()]],
                             ['nested' => [
-                                'path' => 'dossiers',
+                                'path' => ElasticNestedField::DOSSIERS->value,
                                 'query' => [
-                                    'term' => ['dossiers.subject.id' => $subject->getId()],
+                                    'term' => [
+                                        ElasticPath::dossiersSubjectId()->value => $subject->getId(),
+                                    ],
                                 ],
                             ]],
                         ],

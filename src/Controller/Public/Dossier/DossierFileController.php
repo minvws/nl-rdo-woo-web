@@ -25,7 +25,7 @@ class DossierFileController extends AbstractController
     ) {
     }
 
-    #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route('/dossier/{prefix}/{dossierId}/file/download/{type}/{id?""}', name: 'app_dossier_file_download', methods: ['GET'])]
     public function download(
         #[ValueResolver('dossierWithAccessCheck')] AbstractDossier $dossier,
@@ -37,7 +37,7 @@ class DossierFileController extends AbstractController
         return $this->downloadHelper->getResponseForEntityWithFileInfo($entity);
     }
 
-    #[Cache(maxage: 31536000, smaxage: 31536000, public: true)]
+    #[Cache(maxage: 600, smaxage: 600, public: true)]
     #[Route(
         '/dossier/{prefix}/{dossierId}/file/thumbnail/{type}/{id}/{pageNr}/{hash}',
         name: 'app_dossier_file_thumbnail',

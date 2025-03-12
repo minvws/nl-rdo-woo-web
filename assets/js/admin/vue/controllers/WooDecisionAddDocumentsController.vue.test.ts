@@ -2,14 +2,13 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 import WooDecisionAddDocumentsController from './WooDecisionAddDocumentsController.vue';
 
-describe('The "WooDecisionAddDocumentsController" component', () => {
+describe('The "<WooDecisionAddDocumentsController />" component', () => {
   const createComponent = () =>
     mount(WooDecisionAddDocumentsController, {
       props: {
         allowedFileTypes: ['pdf'],
         allowedMimeTypes: ['application/pdf'],
         dossierId: 'mocked-dossier-id',
-        expectedUploadCount: 1,
         isComplete: false,
         maxFileSize: 1000000,
         processEndpoint: 'mocked-process-endpoint',
@@ -17,6 +16,8 @@ describe('The "WooDecisionAddDocumentsController" component', () => {
         uploadEndpoint: 'mocked-upload-endpoint',
         nextStepUrl: '#mocked-next-step-url',
         continueLaterUrl: '#mocked-continue-later-url',
+        confirmEndpoint: 'mocked-confirm-endpoint',
+        rejectEndpoint: 'mocked-reject-endpoint',
       },
       shallow: true,
     });
@@ -29,7 +30,6 @@ describe('The "WooDecisionAddDocumentsController" component', () => {
       allowedFileTypes: ['pdf'],
       allowedMimeTypes: ['application/pdf'],
       dossierId: 'mocked-dossier-id',
-      expectedUploadCount: 1,
       isComplete: false,
       maxFileSize: 1000000,
       processEndpoint: 'mocked-process-endpoint',
@@ -37,6 +37,8 @@ describe('The "WooDecisionAddDocumentsController" component', () => {
       uploadEndpoint: 'mocked-upload-endpoint',
       nextStepUrl: '#mocked-next-step-url',
       continueLaterUrl: '#mocked-continue-later-url',
+      confirmEndpoint: 'mocked-confirm-endpoint',
+      rejectEndpoint: 'mocked-reject-endpoint',
     });
   });
 });

@@ -50,6 +50,8 @@ module.exports = {
 
         'bhr-plum': '#814081', // purple
         'bhr-cornsilk': '#fff4dc',
+
+        'bhr-orange-yellow': '#ffb71a',
       },
 
       fontFamily: {

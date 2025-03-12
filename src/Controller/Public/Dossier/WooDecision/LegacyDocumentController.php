@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Public\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Exception\ViewingNotAllowedException;
 use App\Service\Security\DossierVoter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;

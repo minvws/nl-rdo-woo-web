@@ -157,6 +157,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
     public function testDeleteAllThumbsForEntity(): void
     {
         $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo->shouldReceive('hasPages')->andReturnTrue();
         $fileInfo
             ->shouldReceive('isPaginatable')
             ->once()
@@ -168,7 +169,6 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
 
         $entity = \Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')
-            ->twice()
             ->andReturn($fileInfo);
 
         $this->rootPathGenerator

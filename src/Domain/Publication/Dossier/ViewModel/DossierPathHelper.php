@@ -26,6 +26,8 @@ readonly class DossierPathHelper
             DossierType::INVESTIGATION_REPORT => 'app_investigationreport_detail',
             DossierType::DISPOSITION => 'app_disposition_detail',
             DossierType::COMPLAINT_JUDGEMENT => 'app_complaintjudgement_detail',
+            DossierType::OTHER_PUBLICATION => 'app_otherpublication_detail',
+            DossierType::ADVICE => 'app_advice_detail',
         };
 
         return $this->router->generate(

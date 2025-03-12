@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\InquiryRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Form\ChoiceLoader\DocumentPrefixChoiceLoader;
 use App\Form\ChoiceLoader\WooDecisionChoiceLoader;
 use App\Form\Inquiry\InquiryLinkDocumentsFormType;
@@ -60,7 +60,7 @@ class InquiryController extends AbstractController
             self::MAX_ITEMS_PER_PAGE
         );
 
-        return $this->render('admin/inquiry/index.html.twig', [
+        return $this->render('admin/dossier/woo-decision/inquiry/index.html.twig', [
             'pagination' => $pagination,
         ]);
     }
@@ -69,7 +69,7 @@ class InquiryController extends AbstractController
     #[IsGranted('AuthMatrix.inquiry.create')]
     public function link(): Response
     {
-        return $this->render('admin/inquiry/link.html.twig', [
+        return $this->render('admin/dossier/woo-decision/inquiry/link.html.twig', [
             'placeholder' => '',
         ]);
     }
@@ -103,7 +103,7 @@ class InquiryController extends AbstractController
             }
         }
 
-        return $this->render('admin/inquiry/link_documents.html.twig', [
+        return $this->render('admin/dossier/woo-decision/inquiry/link_documents.html.twig', [
             'placeholder' => '',
             'link_documents' => $form->createView(),
             'result' => $result,
@@ -141,7 +141,7 @@ class InquiryController extends AbstractController
             return $this->redirectToRoute('app_admin_inquiries');
         }
 
-        return $this->render('admin/inquiry/link_dossiers.html.twig', [
+        return $this->render('admin/dossier/woo-decision/inquiry/link_dossiers.html.twig', [
             'placeholder' => '',
             'inquiry_link_form' => $form->createView(),
         ]);

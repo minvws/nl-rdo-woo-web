@@ -8,7 +8,7 @@ use App\Domain\Ingest\Process\Dossier\DossierIngestStrategyInterface;
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Webmozart\Assert\Assert;
 
 readonly class WooDecisionIngestStrategy implements DossierIngestStrategyInterface

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Attachment;
 
 use App\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
+use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
 use Symfony\Component\Messenger\MessageBusInterface;

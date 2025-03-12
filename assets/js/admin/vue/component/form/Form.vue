@@ -1,7 +1,7 @@
 <script setup>
+import { isSuccessStatusCode, validateData } from '@js/admin/utils';
 import { provide, ref } from 'vue';
 import Pending from '../Pending.vue';
-import { isSuccessStatusCode } from '@js/admin/utils';
 
 const props = defineProps({
   action: {
@@ -42,9 +42,17 @@ const onSubmit = async () => {
       props.store.getValue(),
       props.store.getDirtyValue(),
     );
-    const data = await response.json();
+    const json = await response.json();
+    let data;
+    try {
+      data = validateData(json, props.store.submitResponseSchema);
+    } catch (error) {
+      emit('submitError', error);
+      return;
+    } finally {
+      isSubmitting.value = false;
+    }
 
-    isSubmitting.value = false;
     if (isSuccessStatusCode(response.status)) {
       emit('submitSuccess', data);
       return;

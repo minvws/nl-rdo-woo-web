@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\MainDocument\ViewModel;
 
-use App\Domain\Publication\Attachment\AttachmentLanguage;
-use App\Domain\Publication\Attachment\AttachmentType;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Search\Result\SubType\SubTypeViewModelInterface;
 use App\SourceType;
 
@@ -30,6 +30,7 @@ readonly class MainDocument implements SubTypeViewModelInterface
         public string $downloadUrl,
         public string $detailsUrl,
         public int $pageCount,
+        public bool $withdrawn = false,
     ) {
     }
 }

@@ -41,7 +41,11 @@ readonly class ClamAvFileScanner
         }
 
         if ($fileStats['size'] > $this->fileSizeLimit) {
-            $this->logger->error('Max file size exceeded for antivirus validation');
+            $this->logger->warning(sprintf(
+                'Max file size exceeded for antivirus validation. Filesize: %d, scan limit: %d (bytes)',
+                $fileStats['size'],
+                $this->fileSizeLimit,
+            ));
 
             return FileScanResult::MAX_SIZE_EXCEEDED;
         }

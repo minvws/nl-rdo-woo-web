@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Public;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
@@ -16,7 +16,7 @@ class DiwooController extends AbstractController
     {
     }
 
-    #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route('/sitemap-diwoo-infocat014.xml', name: 'diwoo_sitemap', methods: ['GET'])]
     public function sitemap(): Response
     {
@@ -33,7 +33,7 @@ class DiwooController extends AbstractController
         }
 
         $response = new Response(
-            $this->renderView('diwoo/sitemap.xml.twig', ['urls' => $urls]),
+            $this->renderView('public/diwoo/sitemap.xml.twig', ['urls' => $urls]),
             200
         );
         $response->headers->set('Content-Type', 'text/xml');
@@ -41,12 +41,12 @@ class DiwooController extends AbstractController
         return $response;
     }
 
-    #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route('/sitemapindex-diwoo-infocat014.xml', name: 'diwoo_sitemapindex', methods: ['GET'])]
     public function index(): Response
     {
         $response = new Response(
-            $this->renderView('diwoo/sitemapindex.xml.twig'),
+            $this->renderView('public/diwoo/sitemapindex.xml.twig'),
             200
         );
         $response->headers->set('Content-Type', 'text/xml');

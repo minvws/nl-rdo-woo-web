@@ -1,0 +1,59 @@
+{% extends 'public/base.html.twig' %}
+{% import 'public/macros/document.html.twig' as macro %}
+
+{% set page_title = dossier.pageTitle %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-h1" data-e2e-name="dossier-metadata-title">
+        <span class="font-normal block">{{ 'admin.global.decision_on' | trans }}</span>
+        {{ dossier.title }}
+    </h1>
+
+    <dl class="woo-muted">
+        <div>
+            <dt class="inline">
+                {{ (dossier.isPreview ? 'global.publication_date' : 'global.published_on') | trans | capitalize }}
+            </dt>
+            <dd class="inline" data-e2e-name="dossier-metadata-published-date">
+                <time datetime="{{ dossier.publicationDate | date('Y-m-d') }}">
+                    {{ dossier.publicationDate | format_date('long') }}
+                </time>
+            </dd>
+        </div>
+        <div>
+            <dt class="inline">{{ 'global.decision.dossier_number' | trans }}:</dt>
+            <dd class="inline" data-e2e-name="dossier-metadata-number">{{ dossier.dossierNr }}</dd>
+        </div>
+    </dl>
+
+    {% if dossier.isExternalDepartmentResponsible %}
+    <div class="pt-10">
+        <twig:Public:Notification>
+            <p>{{ 'public.global.contact_other' | trans({ '{source}': 'public.dossier.this_dossier' | trans | capitalize, '{ministry}': dossier.mainDepartment.name }) | raw }}</p>
+        </twig:Public:Notification>
+    </div>
+    {% endif %}
+
+    <div class="mt-10">
+        <p>
+            {{ 'public.publication.woo_request_explanation' | trans }}
+        </p>
+        <p>
+            <a class="woo-a" href="{{ path('app_about') }}">{{ 'public.publication.woo_request_more' | trans }}</a>
+        </p>
+    </div>
+
+    {% include 'public/dossier/woo-decision/snippets/notifications.html.twig' %}
+
+    {% include 'public/dossier/shared/snippets/summary.html.twig' %}
+
+    {% include 'public/dossier/woo-decision/snippets/about.html.twig' %}
+
+    {% include 'public/dossier/shared/attachments.html.twig' with { title: 'public.dossiers.decision.attachments_for' | trans } %}
+
+    {% include 'public/dossier/woo-decision/snippets/documents.html.twig' %}
+
+    {{ macro.history_section(get_frontend_history('dossier', dossier.dossierId), 'global.history') }}
+</div>
+{% endblock %}

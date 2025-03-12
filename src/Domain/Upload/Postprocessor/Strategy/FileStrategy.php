@@ -6,8 +6,8 @@ namespace App\Domain\Upload\Postprocessor\Strategy;
 
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\FileType\FileType;
 use App\Domain\Upload\FileType\FileTypeHelper;
 use App\Domain\Upload\Postprocessor\FilePostprocessorStrategyInterface;
@@ -45,7 +45,7 @@ readonly class FileStrategy implements FilePostprocessorStrategyInterface
             return;
         }
 
-        if (! $document->shouldBeUploaded()) {
+        if (! $document->shouldBeUploaded($dossier->getStatus()->isPubliclyAvailable())) {
             $this->logger->warning(
                 sprintf('Document with id "%s" should not be uploaded, skipping it', $documentId),
                 [
@@ -64,6 +64,11 @@ readonly class FileStrategy implements FilePostprocessorStrategyInterface
             $documentId,
             $fileType ?? $file->getOriginalFileExtension(),
         );
+
+        if ($document->isWithdrawn() && $dossier->getStatus()->isPubliclyAvailable()) {
+            $document->republish();
+            $this->documentRepository->save($document, true);
+        }
 
         $this->ingestService->ingest($document, new IngestProcessOptions(forceRefresh: true));
 

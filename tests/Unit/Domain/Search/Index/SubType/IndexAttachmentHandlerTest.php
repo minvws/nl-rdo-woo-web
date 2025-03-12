@@ -6,8 +6,8 @@ namespace App\Tests\Unit\Domain\Search\Index\SubType;
 
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
-use App\Domain\Publication\Attachment\AbstractAttachment;
-use App\Domain\Publication\Attachment\AttachmentRepository;
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use App\Domain\Search\Index\SubType\IndexAttachmentCommand;
 use App\Domain\Search\Index\SubType\IndexAttachmentHandler;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;

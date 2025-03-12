@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Publication\History;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\HistoryService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

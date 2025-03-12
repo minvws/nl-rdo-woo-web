@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Ingest\Process\Dossier\Strategy;
 
 use App\Domain\Ingest\Process\Dossier\DossierIngestStrategyInterface;
-use App\Domain\Publication\Attachment\EntityWithAttachments;
+use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\MainDocument\EntityWithMainDocument;
 use App\Domain\Search\SearchDispatcher;
@@ -27,6 +27,10 @@ readonly class DefaultDossierIngestStrategy implements DossierIngestStrategyInte
 
         if ($dossier instanceof EntityWithAttachments) {
             foreach ($dossier->getAttachments() as $attachment) {
+                if ($attachment->isWithdrawn()) {
+                    continue;
+                }
+
                 $this->searchDispatcher->dispatchIndexAttachmentCommand($attachment->getId());
             }
         }

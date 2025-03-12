@@ -23,7 +23,7 @@ body:
     attributes:
       label: Git branch kiezen
       options:
-        - Maak een PR naar de huidige release branch
+        - Maak een PR naar de huidige release branch (vX.X.X)
         - Maak een PR naar de main branch
     validations:
       required: true

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use App\Exception\ProcessInventoryException;
 use App\Exception\TranslatableException;
 use App\Service\DossierService;

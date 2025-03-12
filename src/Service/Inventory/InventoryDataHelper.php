@@ -27,34 +27,20 @@ class InventoryDataHelper
             throw new \RuntimeException('Cannot parse empty date string');
         }
 
-        $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $value);
-        if ($date) {
-            return $date;
-        }
+        $dateFormats = [
+            '!Y-m-d',
+            '!d-m-Y',
+            '!Y/m/d',
+            '!d/m/Y',
+            'd/m/Y H:i',
+            'm/d/Y h:i a T',
+        ];
 
-        $date = \DateTimeImmutable::createFromFormat('!d-m-Y', $value);
-        if ($date) {
-            return $date;
-        }
-
-        $date = \DateTimeImmutable::createFromFormat('!Y/m/d', $value);
-        if ($date) {
-            return $date;
-        }
-
-        $date = \DateTimeImmutable::createFromFormat('!d/m/Y', $value);
-        if ($date) {
-            return $date;
-        }
-
-        $date = \DateTimeImmutable::createFromFormat('d/m/Y H:i', $value);
-        if ($date) {
-            return $date;
-        }
-
-        $date = \DateTimeImmutable::createFromFormat('m/d/Y h:i a T', $value);
-        if ($date) {
-            return $date;
+        foreach ($dateFormats as $dateFormat) {
+            $date = \DateTimeImmutable::createFromFormat($dateFormat, $value);
+            if ($date instanceof \DateTimeImmutable) {
+                return $date;
+            }
         }
 
         throw new \RuntimeException('Cannot parse empty date string');

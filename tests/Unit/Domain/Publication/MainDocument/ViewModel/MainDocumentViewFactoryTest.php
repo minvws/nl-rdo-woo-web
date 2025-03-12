@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\MainDocument\ViewModel;
 
-use App\Domain\Publication\Attachment\AttachmentLanguage;
-use App\Domain\Publication\Attachment\AttachmentType;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
 use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;

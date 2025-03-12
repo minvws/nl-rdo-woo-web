@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\AttachmentRepository;
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\OrganisationFactory;
@@ -13,29 +15,26 @@ use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use App\Tests\Integration\IntegrationTestTrait;
+use App\Tests\Story\WooIndexAnnualReportStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Attribute\WithStory;
+use Zenstruck\Foundry\Persistence\Proxy;
 
 final class AttachmentRepositoryTest extends KernelTestCase
 {
     use IntegrationTestTrait;
 
-    private function getRepository(): AttachmentRepository
-    {
-        /** @var AttachmentRepository */
-        return self::getContainer()->get(AttachmentRepository::class);
-    }
+    private AttachmentRepository $repository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        self::bootKernel();
+        $this->repository = self::getContainer()->get(AttachmentRepository::class);
     }
 
     public function testFindBySearchTerm(): void
     {
-        $repository = $this->getRepository();
-
         $organisationOne = OrganisationFactory::createOne();
         $organisationTwo = OrganisationFactory::createOne();
 
@@ -69,7 +68,7 @@ final class AttachmentRepositoryTest extends KernelTestCase
             ]),
         ]);
 
-        $result = $repository->findBySearchTerm('foobar', 10, $organisationOne->_real());
+        $result = $this->repository->findBySearchTerm('foobar', 10, $organisationOne->_real());
 
         self::assertCount(1, $result);
         self::assertEquals($attachmentA->_real()->getId(), $result[0]->getId());
@@ -77,8 +76,6 @@ final class AttachmentRepositoryTest extends KernelTestCase
 
     public function testFindBySearchTermFilteredByUuid(): void
     {
-        $repository = $this->getRepository();
-
         $organisation = OrganisationFactory::createOne();
 
         $dossierA = AnnualReportFactory::createOne([
@@ -110,7 +107,7 @@ final class AttachmentRepositoryTest extends KernelTestCase
             ]),
         ]);
 
-        $result = $repository->findBySearchTerm(
+        $result = $this->repository->findBySearchTerm(
             'foobar',
             10,
             $organisation->_real(),
@@ -123,8 +120,6 @@ final class AttachmentRepositoryTest extends KernelTestCase
 
     public function testFindBySearchTermFilteredByType(): void
     {
-        $repository = $this->getRepository();
-
         $organisation = OrganisationFactory::createOne();
 
         $dossierA = AnnualReportFactory::createOne([
@@ -156,7 +151,7 @@ final class AttachmentRepositoryTest extends KernelTestCase
             ]),
         ]);
 
-        $result = $repository->findBySearchTerm(
+        $result = $this->repository->findBySearchTerm(
             'foobar',
             10,
             $organisation->_real(),
@@ -165,5 +160,27 @@ final class AttachmentRepositoryTest extends KernelTestCase
 
         self::assertCount(1, $result);
         self::assertEquals($attachmentB->_real()->getId(), $result[0]->getId());
+    }
+
+    #[WithStory(WooIndexAnnualReportStory::class)]
+    public function testGetPublishedAttachmentsIterable(): void
+    {
+        $iterable = $this->repository->getPublishedAttachmentsIterable();
+
+        /** @var array<int,AbstractAttachment> $allAttachments */
+        $allAttachments = iterator_to_array($iterable);
+
+        /** @var non-empty-list<Proxy<AnnualReportAttachment>> $attachments */
+        $attachments = WooIndexAnnualReportStory::getPool('attachments');
+
+        $expectedAttachmentUuids = array_map(
+            fn (Proxy $attachment): string => $attachment->_real()->getId()->toRfc4122(),
+            $attachments,
+        );
+
+        $this->assertCount(3, $allAttachments);
+        foreach ($allAttachments as $attachment) {
+            $this->assertContains($attachment->getId()->toRfc4122(), $expectedAttachmentUuids);
+        }
     }
 }

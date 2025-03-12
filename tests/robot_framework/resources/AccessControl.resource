@@ -1,3 +1,7 @@
+*** Comments ***
+# robocop: off=no-suite-variable
+
+
 *** Settings ***
 Documentation       Resource file containing custom keywords for Toegangsbeheer in the Balie.
 Library             String

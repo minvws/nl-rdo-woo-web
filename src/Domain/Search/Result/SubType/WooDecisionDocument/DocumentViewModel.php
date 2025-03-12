@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Result\SubType\WooDecisionDocument;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\FileInfo;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\FileInfo;
 use App\Domain\Search\Result\SubType\SubTypeViewModelInterface;
 use App\SourceType;
 

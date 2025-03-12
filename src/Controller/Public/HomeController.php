@@ -47,7 +47,7 @@ class HomeController extends AbstractController
         $searchParameters = $this->searchParametersFactory->createDefault();
         $facetResult = $this->searchService->searchFacets($searchParameters);
 
-        return $this->render('home/index.html.twig', [
+        return $this->render('public/home/index.html.twig', [
             'facets' => $facetResult,
         ]);
     }

@@ -9,11 +9,10 @@ use App\Domain\Publication\Dossier\Step\StepDefinitionInterface;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionMainDocument;
-use App\Domain\Publication\Dossier\Type\WooDecision\Steps\DocumentsStepDefinition;
+use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentsStepDefinition;
+use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -81,5 +80,10 @@ readonly class WooDecisionConfig implements DossierTypeConfigInterface
             WooDecisionAttachment::class,
             Document::class,
         ];
+    }
+
+    public function getAttachmentStepName(): ?StepName
+    {
+        return StepName::DECISION;
     }
 }

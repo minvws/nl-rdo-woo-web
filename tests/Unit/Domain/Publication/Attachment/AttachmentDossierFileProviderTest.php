@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Attachment;
 
 use App\Domain\Publication\Attachment\AttachmentDossierFileProvider;
-use App\Domain\Publication\Attachment\AttachmentRepository;
+use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;

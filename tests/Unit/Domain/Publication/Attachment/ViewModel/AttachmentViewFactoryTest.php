@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Attachment\ViewModel;
 
-use App\Domain\Publication\Attachment\AbstractAttachment;
-use App\Domain\Publication\Attachment\AttachmentLanguage;
-use App\Domain\Publication\Attachment\AttachmentType;
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Publication\Attachment\ViewModel\Attachment;
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\AbstractDossier;
@@ -15,8 +15,8 @@ use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionAttachment;
+use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\FileInfo;
 use App\Enum\ApplicationMode;
 use App\SourceType;
@@ -82,6 +82,9 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         $attachment->shouldReceive('getLanguage')->andReturn(AttachmentLanguage::DUTCH);
         $attachment->shouldReceive('getInternalReference')->andReturn($expectedInternalReference = 'internal reference');
         $attachment->shouldReceive('getGrounds')->andReturn($expectedGrounds = ['bar', 'foo']);
+        $attachment->shouldReceive('isWithdrawn')->andReturnFalse();
+        $attachment->shouldReceive('getWithdrawReason')->andReturnNull();
+        $attachment->shouldReceive('getWithdrawDate')->andReturnNull();
 
         $dossier = \Mockery::mock(WooDecision::class); // TODO replace with AbstractDossier & EntityWithAttachments
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($expectedDocumentPrefix);

@@ -7,7 +7,7 @@ namespace App\Api\Admin\Uploader\WooDecision\Reject;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
-use App\Domain\Publication\Dossier\Type\WooDecision\Exception\DocumentFileSetException;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileSetException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 

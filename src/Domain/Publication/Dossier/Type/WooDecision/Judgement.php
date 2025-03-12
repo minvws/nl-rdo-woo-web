@@ -39,7 +39,18 @@ enum Judgement: string implements TranslatableInterface
 
     public function isAtLeastPartialPublic(): bool
     {
-        return $this === self::PARTIAL_PUBLIC || $this === self::PUBLIC;
+        return in_array($this, self::atLeastPartialPublicValues());
+    }
+
+    /**
+     * @return Judgement[]
+     */
+    public static function atLeastPartialPublicValues(): array
+    {
+        return [
+            self::PARTIAL_PUBLIC,
+            self::PUBLIC,
+        ];
     }
 
     public function trans(TranslatorInterface $translator, ?string $locale = null): string

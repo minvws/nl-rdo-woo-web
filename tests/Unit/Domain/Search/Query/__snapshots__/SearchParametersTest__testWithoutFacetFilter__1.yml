@@ -1,0 +1,30 @@
+activeFacets: true
+queryParameters:
+    q: foo
+    dt: { to: '2024-01-15' }
+    sort: _score
+    sortorder: desc
+facetInputs:
+    date: { active: true, withoutDate: false, anyPeriodFilterDates: true, periodFilterFrom: null, periodFilterTo: '2024-01-15', requestParameters: { to: '2024-01-15' }, fromDate: false, toDate: true, notActive: false, facet: { key: { paramName: dt, name: DATE, value: date }, field: { name: DATE_FILTER, value: date_filter }, requestParameter: dt, filter: {  }, aggregationStrategy: {  } }, from: null, to: '2024-01-15T00:00:00+00:00' }
+operator:
+    name: AND
+    value: and
+limit: 0
+offset: 0
+pagination: true
+aggregations: true
+query: foo
+searchType:
+    dossier: false
+    document: false
+    all: true
+    notAll: false
+    name: ALL
+    value: all
+sortField:
+    name: SCORE
+    value: _score
+sortOrder:
+    name: DESC
+    value: desc
+baseQueryConditions: null

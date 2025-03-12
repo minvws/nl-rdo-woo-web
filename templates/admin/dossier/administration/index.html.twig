@@ -1,4 +1,4 @@
-{% extends 'admin.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
 {% import "admin/macros/facet.html.twig" as macro %}
 
@@ -6,7 +6,7 @@
 
 {% block body %}
 <div class="bhr-container">
-    {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.admin.html.twig' }) }}
+    {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
 
     <h1 class="bhr-title pb-6">{{ page_title }}</h1>
 

@@ -1,8 +1,8 @@
 *** Settings ***
 Documentation       Resource file containing custom keywords for the Subjects section in the Admin portal.
+Library             String
 Library             Browser
 Library             DebugLibrary
-Library             String
 
 
 *** Keywords ***
@@ -37,7 +37,7 @@ Update Subject
 
 Create Random Subjects
   Click  " Onderwerpen "
-  FOR  ${i}  IN RANGE  1  10
+  FOR  ${_}  IN RANGE  1  10
     ${random_id} =  Generate Random String  3  [NUMBERS][UPPER]
     Create New Subject  Onderwerp ${random_id}
   END

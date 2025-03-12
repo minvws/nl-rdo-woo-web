@@ -6,8 +6,8 @@ namespace App\Tests\Unit\Controller\Admin\Dossier\WooDecision;
 
 use App\Controller\Admin\Dossier\WooDecision\DocumentsStepHelper;
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Form\Dossier\WooDecision\InventoryType;
 use App\Form\Dossier\WooDecision\TranslatableFormErrorMapper;
 use App\Tests\Unit\UnitTestCase;

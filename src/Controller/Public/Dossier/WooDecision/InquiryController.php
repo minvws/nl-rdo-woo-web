@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace App\Controller\Public\Dossier\WooDecision;
 
 use App\Doctrine\DocumentConditions;
-use App\Domain\Publication\BatchDownload;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\InquiryRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
+use App\Domain\Publication\BatchDownload\BatchDownload;
+use App\Domain\Publication\BatchDownload\BatchDownloadScope;
+use App\Domain\Publication\BatchDownload\BatchDownloadService;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
 use App\Exception\ViewingNotAllowedException;
 use App\Form\Inquiry\InquiryFilterFormType;
 use App\Service\DownloadResponseHelper;
-use App\Service\Inquiry\InquiryService;
 use App\Service\Inquiry\InquirySessionService;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Security\DossierVoter;
@@ -42,7 +43,7 @@ class InquiryController extends AbstractController
         private readonly WooDecisionRepository $wooDecisionRepository,
         private readonly InquiryRepository $inquiryRepository,
         private readonly DownloadResponseHelper $downloadHelper,
-        private readonly InquiryService $inquiryService,
+        private readonly BatchDownloadService $batchDownloadService,
     ) {
     }
 
@@ -114,7 +115,7 @@ class InquiryController extends AbstractController
             ['pageParameterName' => 'po'],
         );
 
-        return $this->render('inquiry/index.html.twig', [
+        return $this->render('public/dossier/woo-decision/inquiry/index.html.twig', [
             'inquiry' => $inquiry,
             'dossiers' => $inquiry->getPubliclyAvailableDossiers(),
             'scheduledDossiers' => $inquiry->getScheduledDossiers(),
@@ -142,19 +143,16 @@ class InquiryController extends AbstractController
         string $filter,
     ): Response {
         if ($filter === InquiryFilterFormType::CASE) {
-            $docQuery = $this->inquiryRepository->getDocumentsForPubliclyAvailableDossiers($inquiry);
+            $scope = BatchDownloadScope::forInquiry($inquiry);
         } else {
             $dossier = $this->wooDecisionRepository->findOneBy(['dossierNr' => $filter]);
             if (! $dossier || ! $this->isGranted(DossierVoter::VIEW, $dossier)) {
                 throw ViewingNotAllowedException::forDossier();
             }
-            $docQuery = $this->inquiryRepository->getDocsForInquiryDossierQueryBuilder($inquiry, $dossier);
+            $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossier);
         }
 
-        $batch = $this->inquiryService->generateBatch($inquiry, $docQuery);
-        if (! $batch) {
-            throw $this->createNotFoundException('Inquiry batch not available');
-        }
+        $batch = $this->batchDownloadService->findOrCreate($scope);
 
         return $this->redirectToRoute('app_inquiry_batch_detail', [
             'token' => $inquiry->getToken(),
@@ -168,7 +166,7 @@ class InquiryController extends AbstractController
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        if ($batch->getEntity() !== $inquiry) {
+        if ($batch->getInquiry() !== $inquiry) {
             throw $this->createNotFoundException('Inquiry download not found');
         }
 
@@ -176,7 +174,7 @@ class InquiryController extends AbstractController
         $breadcrumbs->addRouteItem($inquiry->getCasenr(), 'app_inquiry_detail', ['token' => $inquiry->getToken()]);
         $breadcrumbs->addItem('public.global.download');
 
-        return $this->render('batchdownload/batch.html.twig', [
+        return $this->render('public/dossier/woo-decision/shared/batch-download.html.twig', [
             'inquiry' => $inquiry,
             'batch' => $batch,
             'pageTitle' => 'public.documents.inquiry.download',
@@ -184,17 +182,17 @@ class InquiryController extends AbstractController
         ]);
     }
 
-    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
+    #[Cache(public: true, maxage: 600, mustRevalidate: true)]
     #[Route('/zaak/{token}/batch/{batchId}/download', name: 'app_inquiry_batch_download', methods: ['GET'])]
     public function batchDownload(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
     ): Response {
-        if ($batch->getEntity() !== $inquiry) {
+        if ($batch->getInquiry() !== $inquiry) {
             throw $this->createNotFoundException('Inquiry download not found');
         }
 
-        if ($batch->getStatus() !== BatchDownload::STATUS_COMPLETED) {
+        if ($batch->getStatus()->isNotCompleted()) {
             return $this->redirectToRoute('app_inquiry_batch_detail', [
                 'token' => $inquiry->getToken(),
                 'batchId' => $batch->getId(),

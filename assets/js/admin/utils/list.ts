@@ -21,6 +21,7 @@ export const formatList = (
     return list.join(` ${finalGlue} `);
   }
 
-  const lastItem: string | undefined = list.pop();
-  return `${list.join(regularGlue)} ${finalGlue} ${lastItem}`;
+  const listCopy = [...list];
+  const lastItem: string | undefined = listCopy.pop();
+  return `${listCopy.join(regularGlue)} ${finalGlue} ${lastItem}`;
 };

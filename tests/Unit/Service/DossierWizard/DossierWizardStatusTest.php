@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\DossierWizard;
 
 use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\DossierWizard\DossierWizardStatus;
 use App\Service\DossierWizard\StepStatus;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -29,6 +29,7 @@ class DossierWizardStatusTest extends MockeryTestCase
         $this->status = new DossierWizardStatus(
             $this->dossier,
             StepName::CONTENT,
+            StepName::DECISION,
             [
                 StepName::DETAILS->value => $this->detailsStep,
                 StepName::CONTENT->value => $this->contentStep,

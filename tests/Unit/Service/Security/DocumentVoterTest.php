@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Security;
 
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\Inquiry\InquirySessionService;
 use App\Service\Security\DocumentVoter;
 use App\Service\Security\DossierVoter;

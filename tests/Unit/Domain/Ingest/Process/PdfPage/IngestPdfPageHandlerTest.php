@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Domain\Ingest\Process\PdfPage;
 
 use App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand;
 use App\Domain\Ingest\Process\PdfPage\IngestPdfPageHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Worker\PdfProcessor;
 use App\Tests\Unit\UnitTestCase;

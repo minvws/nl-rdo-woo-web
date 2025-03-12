@@ -1,69 +1,58 @@
-<script setup>
+<script setup lang="ts">
 import Alert from '@admin-fe/component/Alert.vue';
 import Dialog from '@admin-fe/component/Dialog.vue';
-import PublicationDocumentForm from '@admin-fe/component/publication/PublicationDocumentForm.vue';
-import UploadedAttachment from '@admin-fe/component/publication/UploadedAttachment.vue';
-import { findDocumentTypeLabelByValue } from '@admin-fe/component/publication/helper';
-import { publicationFileSchema } from '@admin-fe/component/publication/interface';
+import { findFileTypeLabelByValue } from '@admin-fe/component/publication/file/helper';
+import type { SelectOptions } from '@admin-fe/form/interface';
+import {
+  publicationFileSchema,
+  type GroundOptions,
+  type PublicationFile,
+  type PublicationFileTypes,
+} from '@admin-fe/component/publication/file/interface';
+import PublicationDocumentForm from '@admin-fe/component/publication/file/PublicationDocumentForm.vue';
+import PublicationFileItem from '@admin-fe/component/publication/file/PublicationFileItem.vue';
 import { validateResponse } from '@js/admin/utils';
 import { computed, ref } from 'vue';
 
-const props = defineProps({
-  allowedFileTypes: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  allowedMimeTypes: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  canDelete: {
-    type: Boolean,
-    default: false,
-  },
-  documentLanguageOptions: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  documentType: {
-    type: String,
-    required: true,
-  },
-  documentTypeOptions: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  endpoint: {
-    type: String,
-    required: true,
-  },
-  groundOptions: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  uploadGroupId: {
-    type: String,
-  },
+interface Props {
+  allowedFileTypes: string[];
+  allowedMimeTypes: string[];
+  canDelete: boolean;
+  documentType: string;
+  endpoint: string;
+  fileTypeOptions: PublicationFileTypes;
+  groundOptions: GroundOptions;
+  languageOptions: SelectOptions;
+  uploadGroupId: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  allowedFileTypes: () => [],
+  allowedMimeTypes: () => [],
+  canDelete: false,
+  languageOptions: () => [],
+  fileTypeOptions: () => [],
+  groundOptions: () => [],
 });
 
-const createEmptyDocument = () => ({
+const createEmptyDocument = (): PublicationFile => ({
+  dossier: {
+    id: '',
+  },
   formalDate: '',
   internalReference: '',
   grounds: [],
   name: '',
   language: 'Dutch',
+  mimeType: '',
+  size: 0,
   type: '',
 });
 
-const action = ref(null);
-const addDocumentButton = ref(null);
-const currentDocument = ref(createEmptyDocument());
-const document = ref(null);
+const action = ref<string | null>(null);
+const addDocumentButton = ref<HTMLButtonElement | null>(null);
+const currentDocument = ref<PublicationFile>(createEmptyDocument());
+const document = ref<PublicationFile | null>(null);
 const hasDocument = computed(() => document.value !== null);
 const isDialogOpen = ref(false);
 const isEditMode = computed(() => Boolean(document.value));
@@ -72,12 +61,9 @@ const dialogTitle = computed(() =>
     ? `${props.documentType} bewerken`
     : `${props.documentType} toevoegen`,
 );
-const readableDocumentType = computed(() =>
+const readablePublicationFileType = computed(() =>
   document.value
-    ? findDocumentTypeLabelByValue(
-        props.documentTypeOptions,
-        document.value.type,
-      )
+    ? findFileTypeLabelByValue(props.fileTypeOptions, document.value.type)
     : props.documentType,
 );
 
@@ -94,7 +80,7 @@ const onDeleted = () => {
 
 const onEdit = () => {
   resetAction();
-  currentDocument.value = { ...document.value };
+  currentDocument.value = { ...document.value } as PublicationFile;
   isDialogOpen.value = true;
 };
 
@@ -104,13 +90,13 @@ const onAddDocument = () => {
   isDialogOpen.value = true;
 };
 
-const onSaved = (relatedDocument) => {
+const onSaved = (relatedDocument: PublicationFile) => {
   setAction(isEditMode.value ? 'edited' : 'added');
   document.value = { ...relatedDocument };
   isDialogOpen.value = false;
 };
 
-const setAction = (value) => {
+const setAction = (value: string | null) => {
   action.value = value;
 };
 
@@ -125,7 +111,7 @@ const translateAction = () => {
     edited: 'bijgewerkt',
   };
 
-  return mappings[action.value] || '';
+  return mappings[action.value as keyof typeof mappings] || '';
 };
 
 const retrieveDocument = async () => {
@@ -151,24 +137,24 @@ retrieveDocument();
 </script>
 
 <template>
-  <UploadedAttachment
+  <PublicationFileItem
     v-if="hasDocument"
     @deleted="onDeleted"
     @edit="onEdit"
     :can-delete="props.canDelete"
-    :date="document.formalDate"
-    :document-type="document.type"
-    :document-types="props.documentTypeOptions"
+    :date="document?.formalDate as string"
     :endpoint="props.endpoint"
-    :file-name="document.name"
-    :file-size="document.size"
-    :id="document.id"
-    :mimeType="document.mimeType"
+    :file-name="document?.name as string"
+    :file-size="document?.size as number"
+    :file-types="props.fileTypeOptions"
+    :file-type-value="document?.type as string"
+    :id="document?.id as string"
+    :mime-type="document?.mimeType as string"
   />
 
   <div class="py-2" v-if="action">
     <Alert type="success">
-      {{ readableDocumentType }} {{ translateAction() }}.
+      {{ readablePublicationFileType }} {{ translateAction() }}.
     </Alert>
   </div>
 
@@ -191,11 +177,11 @@ retrieveDocument();
         :allowed-file-types="props.allowedFileTypes"
         :allowed-mime-types="props.allowedMimeTypes"
         :document="currentDocument"
-        :document-language-options="props.documentLanguageOptions"
-        :document-type-options="props.documentTypeOptions"
         :endpoint="props.endpoint"
+        :file-type-options="props.fileTypeOptions"
         :ground-options="props.groundOptions"
         :is-edit-mode="isEditMode"
+        :language-options="props.languageOptions"
         :upload-group-id="props.uploadGroupId"
       />
     </Dialog>

@@ -7,10 +7,10 @@ namespace App\Tests\Unit\Domain\Publication\Dossier\Type\AnnualReport\ViewModel;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use App\Domain\Publication\Dossier\Type\AnnualReport\ViewModel\AnnualReportViewFactory;
 use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierProperties;
-use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierPropertiesViewFactory;
-use App\Domain\Publication\Dossier\Type\ViewModel\Subject;
+use App\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
+use App\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
 use App\Domain\Publication\Dossier\ViewModel\Department;
+use App\Domain\Publication\Dossier\ViewModel\Subject;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 

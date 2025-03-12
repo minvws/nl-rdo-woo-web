@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import {
   formatFileSize,
   formatList,
@@ -8,25 +8,17 @@ import { computed } from 'vue';
 import Alert from '../../Alert.vue';
 import FilesList from './FilesList.vue';
 
-const props = defineProps({
-  allowedFileTypes: {
-    type: Array,
-    required: false,
-    default: () => [],
-  },
-  allowedMimeTypes: {
-    type: Array,
-    required: false,
-    default: () => [],
-  },
-  files: {
-    type: Array,
-    default: () => [],
-  },
-  maxFileSize: {
-    type: Number,
-    required: false,
-  },
+interface Props {
+  allowedFileTypes?: string[];
+  allowedMimeTypes?: string[];
+  files?: File[];
+  maxFileSize?: number;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  allowedFileTypes: () => [],
+  allowedMimeTypes: () => [],
+  files: () => [],
 });
 
 const hasAllowedMimeTypes = props.allowedMimeTypes.length > 0;
@@ -58,7 +50,7 @@ const reason = hasMaxFileSize ? 'te groot' : 'van een ongeldig type';
         </template>
         <template v-if="hasMaxFileSize">
           De maximale bestandsgrootte per bestand is
-          {{ formatFileSize(props.maxFileSize) }}.
+          {{ formatFileSize(props.maxFileSize as number) }}.
         </template>
       </p>
 

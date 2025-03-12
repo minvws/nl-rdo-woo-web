@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Api\Admin\Publication\Search;
 
-use App\Domain\Publication\Attachment\AbstractAttachment;
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecisionAttachment;
+use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;

@@ -8,7 +8,7 @@ app_contact:
     path:          /contact
     controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
     defaults:
-        template:  'static/contact.html.twig'
+        template:  'public/static/contact.html.twig'
     options:
         sitemap:
           priority: 0.7
@@ -18,7 +18,7 @@ app_privacy:
     path:          /privacy
     controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
     defaults:
-        template:  'static/privacy.html.twig'
+        template:  'public/static/privacy.html.twig'
     options:
         sitemap:
           priority: 0.7
@@ -26,16 +26,16 @@ app_privacy:
           section: legal
 
 app_robots:
-    path: /robots.txt
+    path: /robots2.txt
     controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
     defaults:
-        template: 'static/robots.txt.twig'
+        template: 'public/static/robots.txt.twig'
 
-app_about: &app_about
+app_about:
     path:          /over-dit-platform
     controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
     defaults:
-        template:  'static/about.html.twig'
+        template:  'public/static/about.html.twig'
     options:
         sitemap:
           priority: 0.7
@@ -46,7 +46,7 @@ app_copyright:
     path:          /copyright
     controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
     defaults:
-        template:  'static/copyright.html.twig'
+        template:  'public/static/copyright.html.twig'
     options:
         sitemap:
           priority: 0.7
@@ -57,18 +57,18 @@ app_cookies:
     path:          /cookies
     controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
     defaults:
-        template:  'static/cookies.html.twig'
+        template:  'public/static/cookies.html.twig'
     options:
         sitemap:
             priority: 0.7
             changefreq: monthly
             section: legal
 
-app_accessibility: &app_accessibility
+app_accessibility:
     path:          /toegankelijkheid
     controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
     defaults:
-        template:  'static/accessibility.html.twig'
+        template:  'public/static/accessibility.html.twig'
     options:
         sitemap:
             priority: 0.7
@@ -79,7 +79,7 @@ app_report_vulnerability:
     path:          /kwetsbaarheid-melden
     controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
     defaults:
-        template:  'static/report-vulnerability.html.twig'
+        template:  'public/static/report-vulnerability.html.twig'
     options:
         sitemap:
             priority: 0.7

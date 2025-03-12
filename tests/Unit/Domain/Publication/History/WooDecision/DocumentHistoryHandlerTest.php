@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\History\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Event\AllDocumentsWithDrawnEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentUpdateEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentWithDrawnEvent;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentUpdateEvent;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\Dossier\Type\WooDecision\WithdrawReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\History\WooDecision\DocumentHistoryHandler;
 use App\Service\HistoryService;
 use App\Service\Inventory\DocumentComparator;
@@ -42,7 +42,7 @@ class DocumentHistoryHandlerTest extends UnitTestCase
     public function testHandleAllDocumentsWithdrawn(): void
     {
         $dossier = \Mockery::mock(WooDecision::class);
-        $reason = WithdrawReason::DATA_IN_DOCUMENT;
+        $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'foo bar';
 
         $event = new AllDocumentsWithDrawnEvent($dossier, $reason, $explanation);
@@ -62,10 +62,10 @@ class DocumentHistoryHandlerTest extends UnitTestCase
     public function testHandleDocumentWithdrawn(): void
     {
         $document = \Mockery::mock(Document::class);
-        $reason = WithdrawReason::DATA_IN_DOCUMENT;
+        $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'foo bar';
 
-        $event = new DocumentWithDrawnEvent($document, $reason, $explanation);
+        $event = new DocumentWithDrawnEvent($document, $reason, $explanation, false);
 
         $this->historyService->expects('addDocumentEntry')->with(
             $document,

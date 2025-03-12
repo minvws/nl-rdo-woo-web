@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\History\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Event\AllDocumentsWithDrawnEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentUpdateEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentWithDrawnEvent;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentUpdateEvent;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
 use App\Service\HistoryService;
 use App\Service\Inventory\DocumentComparator;
 use App\Service\Inventory\MetadataField;

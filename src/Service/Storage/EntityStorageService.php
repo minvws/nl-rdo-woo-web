@@ -207,17 +207,6 @@ class EntityStorageService extends StorageService
         return $this->doDeleteAllFilesForEntity($entity, $path);
     }
 
-    public function removeFileForEntity(EntityWithFileInfo $entity): bool
-    {
-        $this->messageBus->dispatch(
-            EntityFileUpdateEvent::forEntity($entity)
-        );
-
-        $path = $this->generateEntityPath($entity);
-
-        return $this->remoteFilesystem->delete($path);
-    }
-
     protected function generatePagePath(EntityWithFileInfo $entity, int $pageNr): string
     {
         $rootPath = $this->getRootPathForEntity($entity);

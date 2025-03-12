@@ -33,21 +33,22 @@
         <h2 class="bhr-form-help">Stap 2</h2>
         <p><strong>Upload documenten</strong></p>
         <p class="bhr-form-help mt-2 mb-3">Upload alle documenten die met beoordeling 'openbaar' of 'deels openbaar' in het productierapport staan. Zorg dat de bestandsnamen overeenkomen met de documentnummers in het productierapport (bijvoorbeeld: 123.pdf)</p>
+
+        <div class="text-bhr-dim-gray">
+            <p class="bhr-p mb-2">Je kunt:</p>
+
+            <ul class="bhr-ul mb-6">
+                <li class="bhr-li">Meerdere documenten tegelijkertijd uploaden.</li>
+                <li class="bhr-li">De publicatie op een later moment aanvullen met extra bestanden.</li>
+            </ul>
+        </div>
     </div>
 
-    <div {{ vue_component('WooDecisionAddDocumentsController', {
-        allowedFileTypes: uploadGroupId.fileTypeNames,
-        allowedMimeTypes: uploadGroupId.mimeTypes,
-        dossierId: dossier.dossierNr,
-        isComplete: uploadStatus.isComplete,
-        maxFileSize: 1024 * 1024 * 1024 * 32,
-        nextStepUrl: path(workflowStatus.nextStep.routeName, { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }),
-        continueLaterUrl: path('app_admin_dossier', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }),
-        processEndpoint: path('api_uploader_woo_decision_process', { dossierId: dossier.id }),
-        statusEndpoint: path('api_uploader_woo_decision_status', { dossierId: dossier.id }),
-        uploadEndpoint: path('_uploader_upload_woo_decision', { dossierId: dossier.id }),
-    }) }}>
-        <div class="min-h-56"></div>
-    </div>
+    <twig:Admin:Publication:WooDecision:AddDocuments
+        continueLaterUrl="{{ path('app_admin_dossier', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
+        dossier="{{ dossier }}"
+        nextStepUrl="{{ path(workflowStatus.nextStep.routeName, { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
+        uploadGroupId="{{ uploadGroupId }}"
+    />
 </div>
 {% endif %}

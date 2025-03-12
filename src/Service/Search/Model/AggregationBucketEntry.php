@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Model;
 
+use App\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
 use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Result\FacetValue\FacetValueInterface;
 
 readonly class AggregationBucketEntry
 {
@@ -15,7 +15,7 @@ readonly class AggregationBucketEntry
     public function __construct(
         private string $key,
         private int $count,
-        private string|FacetValueInterface $displayValue,
+        private FacetDisplayValueInterface $displayValue,
         private SearchParameters $parameters,
         private SearchParameters $parametersWithout,
         private array $subEntries = [],
@@ -32,7 +32,7 @@ readonly class AggregationBucketEntry
         return $this->count;
     }
 
-    public function getDisplayValue(): string|FacetValueInterface
+    public function getDisplayValue(): FacetDisplayValueInterface
     {
         return $this->displayValue;
     }

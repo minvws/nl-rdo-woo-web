@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFileService;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Domain\Upload\UploadedFile;
 use App\Service\Uploader\UploadGroupId;
 use Oneup\UploaderBundle\Event\PostUploadEvent;

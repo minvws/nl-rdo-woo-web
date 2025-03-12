@@ -8,6 +8,6 @@ knp_paginator:
         filter_field_name: filterField
         filter_value_name: filterValue
     template:
-        pagination: 'pagination/pagination.html.twig' # sliding pagination controls template
-        sortable: 'pagination/sort.html.twig' # sort link template
+        pagination: 'public/layout/pagination.html.twig' # sliding pagination controls template
+        sortable: 'public/layout/sort.html.twig' # sort link template
         filtration: '@KnpPaginator/Pagination/bootstrap_v5_filtration.html.twig'  # filters template

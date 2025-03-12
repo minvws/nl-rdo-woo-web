@@ -1,5 +1,11 @@
+import type {
+  GroundOptions,
+  PublicationFileTypes,
+} from '@admin-fe/component/publication/file/interface';
+import { createMockedAttachmentType } from '@js/test';
 import { flushPromises, mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { SelectOptions } from '../form/interface';
 import PublicationDocument from './PublicationDocument.vue';
 
 vi.mock('@js/admin/utils');
@@ -8,9 +14,10 @@ describe('The "PublicationDocument" component', () => {
   interface CreateComponentOptions {
     allowedFileTypes: string[];
     allowedMimeTypes: string[];
-    documentLanguageOptions: string[];
-    documentTypeOptions: string[];
-    groundOptions: string[];
+    fileTypeOptions: PublicationFileTypes;
+    documentType: string;
+    groundOptions: GroundOptions;
+    languageOptions: SelectOptions;
   }
 
   const createMockedDocument = (name = 'mocked-name') => ({
@@ -59,8 +66,8 @@ describe('The "PublicationDocument" component', () => {
     const {
       allowedFileTypes = [],
       allowedMimeTypes = [],
-      documentLanguageOptions = [],
-      documentTypeOptions = [],
+      languageOptions = [],
+      fileTypeOptions = [],
       groundOptions = [],
     } = options;
 
@@ -69,8 +76,8 @@ describe('The "PublicationDocument" component', () => {
         allowedFileTypes,
         allowedMimeTypes,
         canDelete: false,
-        documentLanguageOptions,
-        documentTypeOptions,
+        languageOptions,
+        fileTypeOptions,
         documentType: 'mocked-document-type',
         endpoint: 'https://mocked-endpoint.com',
         groundOptions,
@@ -87,14 +94,14 @@ describe('The "PublicationDocument" component', () => {
     });
   };
 
-  const getAddDocumentButton = (component = createComponent()) =>
+  const getAddFileButton = (component = createComponent()) =>
     component.find('button');
   const getChildComponent = (
     componentName: string,
     component = createComponent(),
   ) => component.findComponent({ name: componentName });
-  const getUploadedAttachmentComponent = (component = createComponent()) =>
-    getChildComponent('UploadedAttachment', component);
+  const getPublicationFileItemComponent = (component = createComponent()) =>
+    getChildComponent('PublicationFileItem', component);
   const getDialogComponent = (component = createComponent()) =>
     getChildComponent('Dialog', component);
   const getAlertComponent = (component = createComponent()) =>
@@ -125,42 +132,42 @@ describe('The "PublicationDocument" component', () => {
       mockReturnNoDocument();
     });
 
-    test('should display the currently uploaded document', async () => {
-      const documentTypeOptions = [
-        'mocked-document-type-1',
-        'mocked-document-type-2',
+    test('should display the currently uploaded file', async () => {
+      const fileTypeOptions = [
+        createMockedAttachmentType('mocked-type-1', 'Mocked label 1'),
+        createMockedAttachmentType('mocked-type-2', 'Mocked label 2'),
       ];
 
-      const component = createComponent({ documentTypeOptions });
+      const component = createComponent({ fileTypeOptions });
       await flushPromises();
 
-      const uploadedAttachmentComponent =
-        getUploadedAttachmentComponent(component);
+      const publicationFileItemComponent =
+        getPublicationFileItemComponent(component);
 
-      expect(uploadedAttachmentComponent).toBeTruthy();
-      expect(uploadedAttachmentComponent.props('canDelete')).toBe(false);
-      expect(uploadedAttachmentComponent.props('date')).toBe(
+      expect(publicationFileItemComponent).toBeTruthy();
+      expect(publicationFileItemComponent.props('canDelete')).toBe(false);
+      expect(publicationFileItemComponent.props('date')).toBe(
         mockedFetchedDocument.formalDate,
       );
-      expect(uploadedAttachmentComponent.props('documentType')).toBe(
-        mockedFetchedDocument.type,
-      );
-      expect(uploadedAttachmentComponent.props('documentTypes')).toEqual(
-        documentTypeOptions,
-      );
-      expect(uploadedAttachmentComponent.props('endpoint')).toBe(
+      expect(publicationFileItemComponent.props('endpoint')).toBe(
         'https://mocked-endpoint.com',
       );
-      expect(uploadedAttachmentComponent.props('fileName')).toBe(
+      expect(publicationFileItemComponent.props('fileName')).toBe(
         mockedFetchedDocument.name,
       );
-      expect(uploadedAttachmentComponent.props('fileSize')).toBe(
+      expect(publicationFileItemComponent.props('fileSize')).toBe(
         mockedFetchedDocument.size,
       );
-      expect(uploadedAttachmentComponent.props('id')).toBe(
+      expect(publicationFileItemComponent.props('fileTypes')).toEqual(
+        fileTypeOptions,
+      );
+      expect(publicationFileItemComponent.props('fileTypeValue')).toBe(
+        mockedFetchedDocument.type,
+      );
+      expect(publicationFileItemComponent.props('id')).toBe(
         mockedFetchedDocument.id,
       );
-      expect(uploadedAttachmentComponent.props('mimeType')).toBe(
+      expect(publicationFileItemComponent.props('mimeType')).toBe(
         mockedFetchedDocument.mimeType,
       );
     });
@@ -170,23 +177,19 @@ describe('The "PublicationDocument" component', () => {
 
       await flushPromises();
 
-      expect(getAddDocumentButton(component).exists()).toBeFalsy();
+      expect(getAddFileButton(component).exists()).toBeFalsy();
     });
 
     describe('when the document is deleted', () => {
-      test('should display a message saying the attachment was deleted', async () => {
+      test('should display a message saying the file was deleted', async () => {
         const component = createComponent();
         await flushPromises();
 
         expect(getAlertComponent(component).exists()).toBe(false);
 
-        const uploadedAttachmentComponent =
-          getUploadedAttachmentComponent(component);
-        await uploadedAttachmentComponent.vm.$emit('deleted');
+        await getPublicationFileItemComponent(component).vm.$emit('deleted');
 
-        const alertComponent = getAlertComponent(component);
-        expect(alertComponent.exists()).toBe(true);
-        expect(alertComponent.text()).toContain(
+        expect(getAlertComponent(component).text()).toContain(
           'mocked-document-type verwijderd',
         );
       });
@@ -195,18 +198,18 @@ describe('The "PublicationDocument" component', () => {
         const component = createComponent();
         await flushPromises();
 
-        const uploadedAttachmentComponent =
-          getUploadedAttachmentComponent(component);
-        await uploadedAttachmentComponent.vm.$emit('deleted');
+        const publicationFileItemComponent =
+          getPublicationFileItemComponent(component);
+        await publicationFileItemComponent.vm.$emit('deleted');
 
-        expect(uploadedAttachmentComponent.exists()).toBe(false);
+        expect(publicationFileItemComponent.exists()).toBe(false);
       });
     });
   });
 
   describe('the button to add a new document', () => {
     test('should be displayed when currently no document is uploaded yet', async () => {
-      const buttonElement = getAddDocumentButton();
+      const buttonElement = getAddFileButton();
 
       await flushPromises();
 
@@ -219,7 +222,7 @@ describe('The "PublicationDocument" component', () => {
 
     test('should make the dialog visible when pressing it', async () => {
       const component = createComponent();
-      const buttonElement = getAddDocumentButton(component);
+      const buttonElement = getAddFileButton(component);
       const dialogComponent = getDialogComponent(component);
 
       expect(dialogComponent.props('modelValue')).toBe(false);
@@ -231,20 +234,16 @@ describe('The "PublicationDocument" component', () => {
   });
 
   describe('when a document is saved', () => {
-    test('should display a message saying the attachment was saved', async () => {
+    test('should display a message saying the file was saved', async () => {
       const component = createComponent();
 
       await flushPromises();
-
-      const publicationDocumentFormComponent =
-        getPublicationDocumentFormComponent(component);
-      await publicationDocumentFormComponent.vm.$emit(
+      await getPublicationDocumentFormComponent(component).vm.$emit(
         'saved',
         createMockedDocument('mocked-new-name'),
       );
 
-      const alertComponent = getAlertComponent(component);
-      expect(alertComponent.text()).toContain('toegevoegd');
+      expect(getAlertComponent(component).text()).toContain('toegevoegd');
     });
   });
 });

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Domain\Publication\MainDocument;
 
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
 use App\Domain\Publication\Dossier\Type\DossierType;
+use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Publication\MainDocument\MainDocumentRepository;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\OrganisationFactory;
@@ -13,29 +16,27 @@ use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocu
 use App\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
 use App\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocumentFactory;
 use App\Tests\Integration\IntegrationTestTrait;
+use App\Tests\Story\WooIndexAnnualReportStory;
+use App\Tests\Story\WooIndexCovenantStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Attribute\WithStory;
+use Zenstruck\Foundry\Persistence\Proxy;
 
 final class MainDocumentRepositoryTest extends KernelTestCase
 {
     use IntegrationTestTrait;
 
-    private function getRepository(): MainDocumentRepository
-    {
-        /** @var MainDocumentRepository */
-        return self::getContainer()->get(MainDocumentRepository::class);
-    }
+    private MainDocumentRepository $repository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        self::bootKernel();
+        $this->repository = self::getContainer()->get(MainDocumentRepository::class);
     }
 
     public function testFindBySearchTerm(): void
     {
-        $repository = $this->getRepository();
-
         $organisationOne = OrganisationFactory::createOne();
         $organisationTwo = OrganisationFactory::createOne();
 
@@ -69,7 +70,7 @@ final class MainDocumentRepositoryTest extends KernelTestCase
             ]),
         ]);
 
-        $result = $repository->findBySearchTerm('foobar', 10, $organisationOne->_real());
+        $result = $this->repository->findBySearchTerm('foobar', 10, $organisationOne->_real());
 
         self::assertCount(1, $result);
         self::assertEquals($mainDocumentA->_real()->getId(), $result[0]->getId());
@@ -77,8 +78,6 @@ final class MainDocumentRepositoryTest extends KernelTestCase
 
     public function testFindBySearchTermFilteredByUuid(): void
     {
-        $repository = $this->getRepository();
-
         $organisation = OrganisationFactory::createOne();
 
         $dossierA = ComplaintJudgementFactory::createOne([
@@ -110,7 +109,7 @@ final class MainDocumentRepositoryTest extends KernelTestCase
             ]),
         ]);
 
-        $result = $repository->findBySearchTerm(
+        $result = $this->repository->findBySearchTerm(
             'foobar',
             10,
             $organisation->_real(),
@@ -123,8 +122,6 @@ final class MainDocumentRepositoryTest extends KernelTestCase
 
     public function testFindBySearchTermFilteredByType(): void
     {
-        $repository = $this->getRepository();
-
         $organisation = OrganisationFactory::createOne();
 
         $dossierA = ComplaintJudgementFactory::createOne([
@@ -156,7 +153,7 @@ final class MainDocumentRepositoryTest extends KernelTestCase
             ]),
         ]);
 
-        $result = $repository->findBySearchTerm(
+        $result = $this->repository->findBySearchTerm(
             'foobar',
             10,
             $organisation->_real(),
@@ -165,5 +162,31 @@ final class MainDocumentRepositoryTest extends KernelTestCase
 
         self::assertCount(1, $result);
         self::assertEquals($mainDocumentB->_real()->getId(), $result[0]->getId());
+    }
+
+    #[WithStory(WooIndexAnnualReportStory::class)]
+    #[WithStory(WooIndexCovenantStory::class)]
+    public function testGetPublishedMainDocumentsIterable(): void
+    {
+        $iterable = $this->repository->getPublishedMainDocumentsIterable();
+
+        /** @var array<int,AbstractMainDocument> $allMainDocuments */
+        $allMainDocuments = iterator_to_array($iterable);
+
+        /** @var Proxy<AnnualReportMainDocument> $annualReportMainDocument */
+        $annualReportMainDocument = WooIndexAnnualReportStory::get('mainDocument');
+
+        /** @var Proxy<CovenantMainDocument> $covenantMainDocument */
+        $covenantMainDocument = WooIndexCovenantStory::get('mainDocument');
+
+        $expectedMainDocumentUuids = [
+            $annualReportMainDocument->_real()->getId()->toRfc4122(),
+            $covenantMainDocument->_real()->getId()->toRfc4122(),
+        ];
+
+        $this->assertCount(2, $allMainDocuments);
+        foreach ($allMainDocuments as $attachment) {
+            $this->assertContains($attachment->getId()->toRfc4122(), $expectedMainDocumentUuids);
+        }
     }
 }

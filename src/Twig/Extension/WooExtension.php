@@ -36,8 +36,6 @@ class WooExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('facet_checked', [$this->runtime, 'facetChecked']),
-            new TwigFunction('facet2query', [$this->runtime, 'facet2query']),
             new TwigFunction('period', [$this->runtime, 'period']),
             new TwigFunction('get_citation_type', [$this->runtime, 'getCitationType']),
             new TwigFunction('query_string_without_param', [$this->runtime, 'queryStringWithoutParam']),

@@ -1,13 +1,15 @@
-activeFacets: false
+activeFacets: true
 queryParameters:
     type: dossier
     q: foo
+    dci: [doc1, doc2]
+    dsi: [doc1, doc2]
     sort: _score
     sortorder: desc
     page: 13
-    dci: [doc1, doc2]
-    dsi: [dos1, dos2]
-facetInputs: {  }
+facetInputs:
+    dci: { key: { paramName: dci, name: INQUIRY_DOCUMENTS, value: dci }, field: { name: INQUIRY_IDS, value: inquiry_ids }, requestParameter: dci, filter: null, aggregationStrategy: null }
+    dsi: { key: { paramName: dsi, name: INQUIRY_DOSSIERS, value: dsi }, field: { name: INQUIRY_IDS, value: inquiry_ids }, requestParameter: dsi, filter: null, aggregationStrategy: null }
 operator:
     name: AND
     value: and
@@ -23,12 +25,6 @@ searchType:
     notAll: true
     name: DOSSIER
     value: dossier
-documentInquiries:
-    - doc1
-    - doc2
-dossierInquiries:
-    - dos1
-    - dos2
 sortField:
     name: SCORE
     value: _score

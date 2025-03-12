@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Attachment\Command;
 
-use App\Domain\Publication\Attachment\AttachmentLanguage;
-use App\Domain\Publication\Attachment\AttachmentType;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use Symfony\Component\Uid\Uuid;
 
 readonly class CreateAttachmentCommand

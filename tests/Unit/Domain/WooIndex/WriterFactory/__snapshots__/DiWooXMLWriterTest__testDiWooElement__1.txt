@@ -1,0 +1,1 @@
+<diwoo:example>my-content</diwoo:example>

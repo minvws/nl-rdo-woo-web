@@ -11,6 +11,7 @@ use Mockery\MockInterface;
 use Oneup\UploaderBundle\Event\ValidationEvent;
 use Oneup\UploaderBundle\Uploader\Exception\ValidationException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 
 final class FileTypeValidatorTest extends MockeryTestCase
@@ -63,6 +64,48 @@ final class FileTypeValidatorTest extends MockeryTestCase
         $event = \Mockery::mock(ValidationEvent::class);
         $event->shouldReceive('getRequest')->andReturn($request);
         $event->expects('getFile->getMimetype')->andReturn('application/pdf');
+
+        $this->validator->onValidate($event);
+    }
+
+    public function testValidateFallsBackToExtensionMimetypeAndThrowsExceptionIfThisAlsoFails(): void
+    {
+        $upload = \Mockery::mock(UploadedFile::class);
+        $upload->expects('getClientOriginalName')->andReturn('foo.zip');
+
+        $request = new Request(
+            request: ['groupId' => UploadGroupId::MAIN_DOCUMENTS->value],
+            files: [
+                'file' => $upload,
+            ],
+        );
+
+        $event = \Mockery::mock(ValidationEvent::class);
+        $event->shouldReceive('getRequest')->andReturn($request);
+        $event->shouldReceive('getFile->getMimetype')->andReturn('foo/bar');
+
+        $this->logger->expects('error');
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage(FileTypeValidator::ERROR_WHITELIST);
+
+        $this->validator->onValidate($event);
+    }
+
+    public function testValidateFallsBackToExtensionMimetypeAndCanAcceptThis(): void
+    {
+        $upload = \Mockery::mock(UploadedFile::class);
+        $upload->expects('getClientOriginalName')->andReturn('foo.docx');
+
+        $request = new Request(
+            request: ['groupId' => UploadGroupId::MAIN_DOCUMENTS->value],
+            files: [
+                'file' => $upload,
+            ],
+        );
+
+        $event = \Mockery::mock(ValidationEvent::class);
+        $event->shouldReceive('getRequest')->andReturn($request);
+        $event->shouldReceive('getFile->getMimetype')->andReturn('foo/bar');
 
         $this->validator->onValidate($event);
     }

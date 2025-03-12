@@ -15,7 +15,7 @@ Deze map bevat technische documentatie om de broncode beter mee te kunnen begrij
 - [dossier-types.md](technische-documentatie/dossier-types.md)
 - [elastic_index.md](technische-documentatie/elastic_index.md)
 - [environment-settings.md](technische-documentatie/environment-settings.md)
-- [install.md](technische-documentatie/install.md)
+- [development_install.md](technische-documentatie/development_install.md)
 - [logging.md](technische-documentatie/logging.md)
 - [technical.md](technische-documentatie/technical.md)
 - [terminology.md](technische-documentatie/terminology.md)

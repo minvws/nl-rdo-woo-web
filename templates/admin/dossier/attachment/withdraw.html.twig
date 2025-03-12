@@ -1,0 +1,22 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+    <div class="bhr-container bhr-container--sm">
+        {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
+
+        <div class="px-11">
+            <div class="bhr-card">
+                {% if attachment.canWithdraw %}
+                    <div class="bhr-form-row text-bhr-dim-gray">
+                        <p>{{ 'admin.dossiers.attachment.withdraw.help' | trans }}</p>
+                    </div>
+                    {{ form(form) }}
+                {% elseif attachment.withDrawn %}
+                    <twig:Admin:Alert type="success">{{ 'admin.dossiers.attachment.withdraw.success' | trans }}</twig:Admin:Alert>
+                {% else %}
+                    <twig:Admin:Alert type="info">{{ 'admin.dossiers.attachment.withdraw.impossible' | trans }}</twig:Admin:Alert>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

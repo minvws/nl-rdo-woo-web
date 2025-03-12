@@ -10,16 +10,17 @@ import { nextTick } from 'vue';
 
 vi.mock('@js/admin/utils');
 
-describe('The "UploadDocuments" component', () => {
+describe('The "<UploadDocuments />" component', () => {
   const getUploadAreaComponent = (component: VueWrapper) =>
     component.findComponent({ name: 'UploadArea' });
 
   interface Options {
     isComplete: boolean;
+    mode: 'add' | 'replace';
   }
 
   const createComponent = (options: Partial<Options> = {}) => {
-    const { isComplete = false } = options;
+    const { isComplete = false, mode = 'add' } = options;
     return mount(UploadDocuments, {
       props: {
         allowedFileTypes: ['pdf'],
@@ -27,6 +28,9 @@ describe('The "UploadDocuments" component', () => {
         dossierId: 'mocked-dossier-id',
         isComplete,
         maxFileSize: 1000000,
+        mode,
+        confirmEndpoint: 'mocked-confirm-endpoint',
+        rejectEndpoint: 'mocked-reject-endpoint',
         processEndpoint: 'mocked-process-endpoint',
         statusEndpoint: 'mocked-status-endpoint',
         uploadEndpoint: 'mocked-upload-endpoint',
@@ -45,11 +49,17 @@ describe('The "UploadDocuments" component', () => {
     await getProcessButtonElement(component).trigger('click');
   };
 
-  const getAlertComponent = (component: VueWrapper) =>
-    component.findComponent({ name: 'Alert' });
-
   const getErrorMessagesComponent = (component: VueWrapper) =>
     component.findComponent({ name: 'ErrorMessages' });
+
+  const getIsProcessingComponent = (component: VueWrapper) =>
+    component.findComponent({ name: 'IsProcessingDocuments' });
+
+  const getIsCheckingComponent = (component: VueWrapper) =>
+    component.findComponent({ name: 'IsCheckingDocuments' });
+
+  const getMissingDocumentsComponent = (component: VueWrapper) =>
+    component.findComponent({ name: 'MissingDocuments' });
 
   const waitForNumberOfStatusResponses = async (numberOfResponses: number) => {
     for (let i = 0; i < numberOfResponses; i++) {
@@ -116,6 +126,15 @@ describe('The "UploadDocuments" component', () => {
       )
       .mockImplementationOnce(() =>
         createStatusResponse({
+          canProcess: false,
+          currentDocumentsCount: 0,
+          uploadedFiles: [],
+          missingDocuments: ['1.pdf', '2.pdf', '3.pdf'],
+          status: UploadStatus.ProcessingUpdates,
+        }),
+      )
+      .mockImplementationOnce(() =>
+        createStatusResponse({
           canProcess: true,
           currentDocumentsCount: 2,
           uploadedFiles: [
@@ -133,7 +152,9 @@ describe('The "UploadDocuments" component', () => {
 
   describe('the <UploadArea /> component', () => {
     test('should be visible when the upload status is open for uploads', () => {
-      expect(getUploadAreaComponent(createComponent()).props()).toMatchObject({
+      expect(
+        getUploadAreaComponent(createComponent({ mode: 'replace' })).props(),
+      ).toMatchObject({
         allowedFileTypes: ['pdf'],
         allowedMimeTypes: ['application/pdf'],
         allowMultiple: true,
@@ -145,7 +166,6 @@ describe('The "UploadDocuments" component', () => {
           dossierId: 'mocked-dossier-id',
           groupId: 'woo-decision-documents',
         },
-        tip: 'Tip: je kunt meerdere documenten tegelijkertijd uploaden. Sleep je hele selectie (of een zip-bestand) naar dit venster.',
       });
     });
 
@@ -182,7 +202,7 @@ describe('The "UploadDocuments" component', () => {
 
       await waitForNumberOfStatusResponses(15);
 
-      expect(global.fetch).toHaveBeenCalledTimes(5);
+      expect(global.fetch).toHaveBeenCalledTimes(6);
     });
   });
 
@@ -217,20 +237,30 @@ describe('The "UploadDocuments" component', () => {
   test('should display a list of missing documents', async () => {
     const component = createComponent();
 
-    expect(component.text()).not.toContain('Nog te uploaden:');
+    expect(getMissingDocumentsComponent(component).exists()).toBe(false);
 
     await waitForNumberOfStatusResponses(2);
 
-    expect(component.text()).toContain('Nog te uploaden:');
+    expect(getMissingDocumentsComponent(component).exists()).toBe(true);
   });
 
-  test('should display a message saying that files are being processed when they are', async () => {
+  test('should display a message saying that documents are being checked when they are', async () => {
     const component = createComponent();
 
-    expect(getAlertComponent(component).exists()).toBe(false);
+    expect(getIsCheckingComponent(component).exists()).toBe(false);
 
     await waitForNumberOfStatusResponses(3);
 
-    expect(getAlertComponent(component).exists()).toBe(true);
+    expect(getIsCheckingComponent(component).exists()).toBe(true);
+  });
+
+  test('should display a message saying that documents are being processed when they are', async () => {
+    const component = createComponent();
+
+    expect(getIsProcessingComponent(component).exists()).toBe(false);
+
+    await waitForNumberOfStatusResponses(4);
+
+    expect(getIsProcessingComponent(component).exists()).toBe(true);
   });
 });

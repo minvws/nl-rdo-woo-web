@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Domain\Publication\Dossier;
 
 use App\Domain\Publication\Dossier\DossierPublisher;
 use App\Domain\Publication\Dossier\Event\DossierPublishedEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Mockery\Adapter\Phpunit\MockeryTestCase;

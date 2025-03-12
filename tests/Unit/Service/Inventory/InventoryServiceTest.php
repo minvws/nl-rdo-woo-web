@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReport;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Exception\ProcessInventoryException;
 use App\Service\Inventory\InventoryService;
 use App\Service\Inventory\Reader\InventoryReaderFactory;
@@ -121,8 +121,8 @@ class InventoryServiceTest extends MockeryTestCase
         $dossier->expects('setInventory')->with(null);
         $dossier->expects('setProductionReport')->with(null);
 
-        $this->entityStorageService->expects('removeFileForEntity')->with($inventory);
-        $this->entityStorageService->expects('removeFileForEntity')->with($productionReport);
+        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($inventory);
+        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($productionReport);
 
         $this->entityManager->expects('remove')->with($inventory);
         $this->entityManager->expects('remove')->with($productionReport);

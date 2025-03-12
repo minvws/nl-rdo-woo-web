@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Service\DocumentWorkflow;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 
-class DocumentWorkflowStatus
+readonly class DocumentWorkflowStatus
 {
     public function __construct(
-        private readonly Document $document,
+        private Document $document,
     ) {
     }
 
@@ -21,10 +21,5 @@ class DocumentWorkflowStatus
     public function canWithdraw(): bool
     {
         return $this->document->shouldBeUploaded() && ! $this->document->isWithdrawn();
-    }
-
-    public function canReplace(): bool
-    {
-        return $this->document->shouldBeUploaded(true);
     }
 }

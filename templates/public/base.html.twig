@@ -1,0 +1,168 @@
+
+<!doctype html>
+<html lang="{{ "lang" | trans }}" class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="format-detection" content="telephone=no">
+        {% block meta %}{% endblock %}
+
+        <title>
+            {% if page_title is defined %} {{ page_title }} | {% endif %}
+            {{ 'global.domain_title' | trans() }}
+        </title>
+        <meta name="description" content="{{ 'global.meta_description' | trans() }}">
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+        {{ vite_entry_link_tags('public') }}
+
+        {{ vite_entry_script_tags('public') }}
+
+        {% include "shared/piwik-script.html.twig" %}
+    </head>
+
+    <!-- App versie: {{ app_version().version }} (Git referentie: {{ app_version().git_ref }}) -->
+
+    <body class="antialiased flex min-h-screen flex-col text-lg">
+        <header>
+            <a href="#main-content" class="woo-skip-link woo-skip-link--to-main-content">{{ 'global.skip_link' | trans() }}</a>
+
+            <p>
+                <a class="woo-logo" href="{{ path('app_home') }}">
+                    <twig:Icon
+                        class="woo-icon woo-logo__img"
+                        name="ro-logo"
+                        path="assets/img/public/non-free/icons.svg"
+                        height="100"
+                        width="50"
+                    />
+                    <span class="woo-logo__text">{{ 'public.global.logo.text' | trans }}</span><span class="sr-only">, {{ 'public.global.logo.label' | trans }}</span>
+                </a>
+            </p>
+
+            <nav class="woo-main-nav" aria-label="{{ 'public.global.navigation.accessible.label' | trans }}"  data-e2e-name="main-nav">
+                <div class="woo-container">
+                    <div class="-mx-4 relative z-10">
+                        <div class="md:hidden no-js:hidden" data-e2e-name="hamburger">
+                            <button class="px-4 py-4 sm:py-6 focus:outline-white focus:-outline-offset-2 w-full text-right" id="js-main-nav-toggle" aria-controls="main-nav-list" aria-expanded="false">
+                                <twig:Public:Icon class="js-icon-collapsed" color="fill-white" name="hamburger" />
+                                <twig:Public:Icon class="hidden js-icon-expanded" color="fill-white" name="cross" />
+                                <span class="js-text sr-only">
+                                    {{ 'global.menu_toggle.label' | trans }}
+                                </span>
+                            </button>
+                        </div>
+
+                        <ul class="woo-main-nav__list" id="main-nav-list" data-e2e-name="main-nav">
+                            {% macro main_nav_item(route, isCurrentPage, title, iconName) %}
+                                <li>
+                                    <a class="woo-main-nav__link group" href="{{ route }}" {% if isCurrentPage %}aria-current="page"{% endif %}  data-e2e-name="nav-{{ title }}">
+                                        {%if iconName %}<twig:Public:Icon color="fill-white" class="woo-main-nav__icon" name="{{ iconName }}" size="22" />{% endif %}
+                                        <span class="group-hover:underline group-focus:underline group-aria-current-page:group-hover:no-underline group-aria-current-page:group-focus:no-underline">{{ title }}</span>
+                                    </a>
+                                </li>
+                            {% endmacro %}
+
+                            {{ _self.main_nav_item(
+                                    path('app_home'),
+                                    app.request.get('_route') == 'app_home',
+                                    'public.global.label.home' | trans,
+                                    "house"
+                                )
+                            }}
+                            {{ _self.main_nav_item(
+                                    path('app_browse'),
+                                    app.request.get('_route') == 'app_browse' or (app.request.get('_route') == 'app_search' and app.request.get('type') != 'dossier'),
+                                    'public.global.label.search_publications' | trans
+                                )
+                            }}
+
+                            {% for theme in all_themes() %}
+                                {{ _self.main_nav_item(
+                                    path('app_theme', {'name': theme.urlName}),
+                                    app.request.get('_route') == 'app_theme' and app.request.get('name') == theme.urlName,
+                                    theme.menuName | trans
+                                )
+                                }}
+                            {% endfor %}
+
+                            {% if DEPARTMENTS.hasAny %}
+                            {{ _self.main_nav_item(
+                                    path('app_departments_index'),
+                                    app.request.get('_route') == 'app_departments_index',
+                                    'public.global.label.departments' | trans
+                                )
+                            }}
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            {% if app.request.get('_route') is same as('app_home') %}
+                {% include 'public/home/snippets/search-form.html.twig' %}
+            {% elseif wo_breadcrumbs_exists() %}
+                <div class="bg-woo-anti-flash-white">
+                    <div class="woo-container">
+                        {% set hasSearchForm = block('search_form_top') is not empty %}
+                        <div class="lg:grid grid-cols-9 gap-x-8">
+                            <div class="py-1 sm:py-0 {{ hasSearchForm ? 'col-span-5' : 'col-span-9' }}">{{ wo_render_breadcrumbs() }}</div>
+                            {% if hasSearchForm %}
+                                <div class="col-span-4">
+                                    <div class="pb-4 lg:pb-0 pt-3 sm:pt-0 lg:pt-3">
+                                        {% block search_form_top %}{% endblock %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </header>
+
+        <main class="grow py-8 lg:pt-16 lg:pb-24" id="main-content" data-e2e-name="main-content">
+            {% block body %}{% endblock %}
+        </main>
+
+        <footer class="bg-woo-sea-blue py-8 lg:py-16 text-white">
+            <h2 class="sr-only">Footer</h2>
+            <div class="woo-container">
+                <div class="md:flex justify-end">
+                    {% macro footer_nav_item(route, title) %}
+                        <li>
+                            <a class="woo-footer-nav__a group" href="{{ route }}">
+                                <twig:Public:Icon name="chevron-right" color="fill-white" size="12" class="mr-1 align-baseline" />
+                                <span class="group-hover:underline group-focus:underline">{{ title }}</span>
+                            </a>
+                        </li>
+                    {% endmacro %}
+
+                    <nav class="woo-footer-nav" aria-labelledby="page-footer-nav-1-heading">
+                        <h3 class="woo-footer-nav__title" id="page-footer-nav-1-heading">{{ 'public.footer.title.service' | trans }}</h3>
+                        <ul>
+                            {{ _self.footer_nav_item(path('app_contact'), 'global.footer.label.contact' | trans) }}
+                           {% if app.user %}
+                                {{ _self.footer_nav_item(path('app_admin'), 'public.footer.label.counter' | trans) }}
+                                {{ _self.footer_nav_item(path('app_logout'), 'global.logout' | trans) }}
+                            {% endif %}
+                        </ul>
+                    </nav>
+
+                    <nav class="woo-footer-nav" aria-labelledby="page-footer-nav-2-heading">
+                        <h3 class="woo-footer-nav__title" id="page-footer-nav-2-heading">{{ 'public.footer.title.about' | trans }}</h3>
+                        <ul>
+                            {{ _self.footer_nav_item(path('app_about'), 'public.footer.label.about_platform' | trans) }}
+                            {{ _self.footer_nav_item(path('app_copyright'), 'public.footer.label.copyright' | trans) }}
+                            {{ _self.footer_nav_item(path('app_privacy'), 'global.footer.label.privacy' | trans) }}
+                            {{ _self.footer_nav_item(path('app_cookies'), 'public.footer.label.cookies' | trans) }}
+                            {{ _self.footer_nav_item(path('app_accessibility'), 'global.footer.label.accessibility' | trans) }}
+                            {{ _self.footer_nav_item(path('app_report_vulnerability'), 'global.footer.label.report_vulnerability' | trans) }}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </footer>
+
+        {% include "shared/piwik-noscript.html.twig" %}
+    </body>
+</html>

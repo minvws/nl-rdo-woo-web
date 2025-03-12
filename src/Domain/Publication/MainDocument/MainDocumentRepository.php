@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\MainDocument;
 
-use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Entity\Organisation;
@@ -14,7 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 
 /**
- * @extends ServiceEntityRepository<AbstractAttachment>
+ * @extends ServiceEntityRepository<AbstractMainDocument>
  */
 class MainDocumentRepository extends ServiceEntityRepository
 {
@@ -81,5 +80,19 @@ class MainDocumentRepository extends ServiceEntityRepository
             ->where('d.status = :status')
             ->setParameter('status', DossierStatus::PUBLISHED)
             ->getQuery();
+    }
+
+    /**
+     * @return iterable<int,AbstractMainDocument>
+     */
+    public function getPublishedMainDocumentsIterable(): iterable
+    {
+        $qb = $this->createQueryBuilder('md')
+            ->join('md.dossier', 'd')
+            ->where('d.status = :status')
+            ->orderBy('md.createdAt', 'ASC')
+            ->setParameter('status', DossierStatus::PUBLISHED);
+
+        return $qb->getQuery()->toIterable();
     }
 }

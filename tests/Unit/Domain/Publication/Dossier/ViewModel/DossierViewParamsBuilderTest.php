@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Publication\Attachment\AttachmentLanguageFactory;
-use App\Domain\Publication\Attachment\AttachmentTypeFactory;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
+use App\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;

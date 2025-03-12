@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Result\SubType\Attachment;
 
-use App\Domain\Publication\Attachment\AttachmentRepository;
+use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use App\Domain\Publication\Dossier\Type\DossierReference;
 use App\Domain\Search\Index\ElasticDocumentType;
+use App\Domain\Search\Index\Schema\ElasticHighlights;
 use App\Domain\Search\Result\HighlightMapperTrait;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\SearchResultMapperInterface;
@@ -43,12 +44,7 @@ readonly class AttachmentSearchResultMapper implements SearchResultMapperInterfa
 
         $dossier = $attachment->getDossier();
 
-        $highlightPaths = [
-            '[highlight][pages.content]',
-            '[highlight][dossiers.title]',
-            '[highlight][dossiers.summary]',
-        ];
-        $highlightData = $this->getHighlightData($hit, $highlightPaths);
+        $highlightData = $this->getHighlightData($hit, ElasticHighlights::getPaths());
 
         return new SubTypeSearchResultEntry(
             $this->viewFactory->make($dossier, $attachment),

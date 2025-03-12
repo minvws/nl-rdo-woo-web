@@ -311,7 +311,7 @@ final class UploaderServiceTest extends UnitTestCase
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $entity->shouldReceive('getId')->andReturn($entityId);
 
-        $this->entityStorageService->expects('removeFileForEntity')->with($entity);
+        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($entity);
         $fileInfo->expects('removeFileProperties');
         $fileInfo->expects('setSourceType')->with(SourceType::DOC);
         $fileInfo->expects('setType')->with('doc');

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Publication\Attachment\AttachmentLanguageFactory;
-use App\Domain\Publication\Attachment\AttachmentTypeFactory;
-use App\Domain\Publication\Attachment\EntityWithAttachments;
+use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
+use App\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;

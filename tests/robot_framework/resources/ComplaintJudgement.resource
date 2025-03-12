@@ -1,6 +1,7 @@
 *** Settings ***
-Library     Browser
-Library     DebugLibrary
+Documentation       Resource file containing custom keywords for the Complaint Judgement information category
+Library             Browser
+Library             DebugLibrary
 
 
 *** Variables ***

@@ -6,8 +6,8 @@ namespace App\Api\Admin\Uploader\WooDecision\Reject;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFileService;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Webmozart\Assert\Assert;
 
 final readonly class RejectChangesProcessor implements ProcessorInterface

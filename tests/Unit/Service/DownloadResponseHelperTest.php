@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Service\ArchiveService;
+use App\Domain\Publication\BatchDownload\BatchDownload;
+use App\Domain\Publication\BatchDownload\BatchDownloadStorage;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Service\DownloadFilenameGenerator;
 use App\Service\DownloadResponseHelper;
 use App\Service\Storage\EntityStorageService;
@@ -17,19 +18,19 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class DownloadResponseHelperTest extends UnitTestCase
 {
     private DownloadResponseHelper $responseHelper;
-    private ArchiveService&MockInterface $archiveService;
+    private BatchDownloadStorage&MockInterface $batchDownloadStorage;
     private DownloadFilenameGenerator&MockInterface $filenameGenerator;
     private EntityStorageService&MockInterface $entityStorageService;
 
     public function setUp(): void
     {
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->archiveService = \Mockery::mock(ArchiveService::class);
+        $this->batchDownloadStorage = \Mockery::mock(BatchDownloadStorage::class);
         $this->filenameGenerator = \Mockery::mock(DownloadFilenameGenerator::class);
 
         $this->responseHelper = new DownloadResponseHelper(
             $this->entityStorageService,
-            $this->archiveService,
+            $this->batchDownloadStorage,
             $this->filenameGenerator,
         );
 
@@ -117,5 +118,38 @@ class DownloadResponseHelperTest extends UnitTestCase
                 'mimetype' => 'application/msword',
             ],
         ];
+    }
+
+    public function testGetResponseForBatchDownloadSuccessful(): void
+    {
+        $batch = \Mockery::mock(BatchDownload::class);
+        $batch->shouldReceive('getSize')->andReturn($size = '123');
+        $batch->shouldReceive('getFilename')->andReturn('foo.bar');
+
+        $stream = fopen('php://memory', 'r+');
+        self::assertNotFalse($stream);
+        fwrite($stream, $data = 'some dummy data');
+        rewind($stream);
+
+        $this->batchDownloadStorage->expects('getFileStreamForBatch')->with($batch)->andReturn($stream);
+
+        $response = $this->responseHelper->getResponseForBatchDownload($batch);
+
+        $this->assertEquals($size, $response->headers->get('Content-Length'));
+
+        ob_start();
+        $response->sendContent();
+        $responseData = ob_get_clean();
+        $this->assertEquals($data, $responseData);
+    }
+
+    public function testGetResponseForBatchDownloadThrowsNotFoundWhenStreamIsMissing(): void
+    {
+        $batch = \Mockery::mock(BatchDownload::class);
+
+        $this->batchDownloadStorage->expects('getFileStreamForBatch')->with($batch)->andReturnFalse();
+
+        $this->expectException(NotFoundHttpException::class);
+        $this->responseHelper->getResponseForBatchDownload($batch);
     }
 }

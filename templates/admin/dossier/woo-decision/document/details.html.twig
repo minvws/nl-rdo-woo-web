@@ -1,22 +1,32 @@
-{% extends 'admin.html.twig' %}
-{% import "admin/document_macros.html.twig" as macro %}
+{% extends 'admin/base.html.twig' %}
+{% import "admin/macros/document.html.twig" as macro %}
 
 {% block body %}
     <div class="bhr-container bhr-container--sm">
 
-        {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.admin.html.twig' }) }}
+        {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
 
         <div class="px-11">
             <div class="bhr-card">
+                {% set alerts = app.flashes('backend') %}
+                {% if alerts | length > 0 %}
+                    <div class="mb-8">
+                        {% for messages in alerts %}
+                            {% for label, message in messages %}
+                                <twig:Admin:Alert type="{{ label }}">
+                                    <strong>{{ message }}</strong>
+                                </twig:Admin:Alert>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
                 <twig:Admin:LeftAndRight>
                     <h2 class="bhr-title" data-e2e-name="document-nr">{{ document.documentNr }}</h2>
 
                     <twig:block name="right">
-                        {% if workflow.canReplace %}
-                            <a href="{{ path('app_admin_dossier_woodecision_document_replace', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}" class="bhr-button bhr-button--secondary">Document vervangen</a>
-                        {% endif %}
                         {% if workflow.canWithdraw %}
-                            <a href="{{ path('app_admin_dossier_woodecision_document_withdraw', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}" class="bhr-button bhr-button--secondary {% if workflow.canReplace %}ml-4{% endif %}" data-e2e-name="retract">Intrekken</a>
+                            <a href="{{ path('app_admin_dossier_woodecision_document_withdraw', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}" class="bhr-button bhr-button--secondary" data-e2e-name="retract">Intrekken</a>
                         {% endif %}
                     </twig:block>
                 </twig:Admin:LeftAndRight>

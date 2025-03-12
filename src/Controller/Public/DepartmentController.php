@@ -37,7 +37,7 @@ class DepartmentController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem('public.breadcrumbs.departments');
 
-        return $this->render('department/index.html.twig', [
+        return $this->render('public/department/index.html.twig', [
             'departments' => $this->departmentService->getPublicDepartments(),
         ]);
     }
@@ -69,9 +69,9 @@ class DepartmentController extends AbstractController
         $facetResult = $this->searchService->searchFacets($searchParameters);
 
         $loader = $this->twig->getLoader();
-        $template = 'department/custom/' . $department->getSlug() . '.html.twig';
+        $template = 'public/department/custom/' . $department->getSlug() . '.html.twig';
         if (! $loader->exists($template)) {
-            $template = 'department/details_default.html.twig';
+            $template = 'public/department/details_default.html.twig';
         }
 
         return $this->render($template, [

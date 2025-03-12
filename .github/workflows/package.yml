@@ -10,15 +10,17 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - uses: actions/checkout@v4
+      - name: Install Task
+        uses: arduino/setup-task@v2
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
           registry-url: 'https://npm.pkg.github.com'
       - name: Install npm dependencies
@@ -33,6 +35,8 @@ jobs:
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev
       - name: Run build task
         run: npm run build
+      - name: Build the docs
+        run: task docs:sphinx:build:ci
       - name: Clean build
         run: |
           rm -r node_modules .git var/cache var/log || true

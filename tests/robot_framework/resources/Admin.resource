@@ -5,15 +5,12 @@ Library             Browser
 Library             DebugLibrary
 Library             OTP
 Library             ${CURDIR}/../libraries/QR.py
+Resource            ../resources/Generic.resource
 
 
 *** Variables ***
-${BASE_URL_BALIE}           ${EMPTY}
-${TST_BALIE_OTP_SECRET}     ${EMPTY}
-${TST_BALIE_USER}           ${EMPTY}
-${TST_BALIE_PASSWORD}       ${EMPTY}
-${ATTACHMENT_FILENAME}      ${EMPTY}
-${ATTACHMENT_LOCATION}      ${EMPTY}
+${ATTACHMENT_FILENAME}  ${EMPTY}
+${ATTACHMENT_LOCATION}  ${EMPTY}
 
 
 *** Keywords ***
@@ -28,7 +25,10 @@ Login Admin
   ...  ${new_password}=IkLoopNooitVastVandaag
   Go To Admin
   ${already_logged_in} =  Get Element Count  //*[@id="main-nav"][contains(.,'Uitloggen')]
-  IF  ${already_logged_in} > 0  Logout Admin
+  IF  ${already_logged_in} > 0
+    Click Log Out
+    Go To Admin
+  END
   Fill Text  id=inputEmail  ${username}
   Fill Text  id=inputPassword  ${password}
   Click  " Inloggen "
@@ -46,15 +46,14 @@ Login Admin
     VAR  ${password}  ${new_password}
   END
   Get Text  //*[@id="main-nav"]  contains  Uitloggen
+  Log  Logged in as: ${username}
   RETURN  ${password}
 
 Click Log Out
   Click  //*[@data-e2e-name="logout-link"]
 
-Logout Admin
-  Go To Admin
-  Click Log Out
-  Go To Admin
+No-Click Logout
+  Go To  ${BASE_URL_BALIE}/logout
 
 Upload Attachment
   [Arguments]  ${type}  ${date}=01012022
@@ -67,7 +66,7 @@ Upload Attachment
   Wait For Condition  Text  //*[@id="inhoud"]  contains  Bijlage '${ATTACHMENT_FILENAME}' is toegevoegd.
 
 Wait For Queue To Empty
-  New Page  http://localhost:8000/balie/stats
+  New Page  ${BASE_URL_BALIE}/stats
   Wait Until Keyword Succeeds  10min  15s  Is Queue Empty
   Close Page
 

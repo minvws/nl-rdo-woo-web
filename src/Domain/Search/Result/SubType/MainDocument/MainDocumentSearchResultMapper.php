@@ -9,6 +9,7 @@ use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Publication\MainDocument\MainDocumentRepository;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use App\Domain\Search\Index\ElasticDocumentType;
+use App\Domain\Search\Index\Schema\ElasticHighlights;
 use App\Domain\Search\Result\HighlightMapperTrait;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\SearchResultMapperInterface;
@@ -45,12 +46,7 @@ readonly class MainDocumentSearchResultMapper implements SearchResultMapperInter
 
         $dossier = $mainDocument->getDossier();
 
-        $highlightPaths = [
-            '[highlight][pages.content]',
-            '[highlight][dossiers.title]',
-            '[highlight][dossiers.summary]',
-        ];
-        $highlightData = $this->getHighlightData($hit, $highlightPaths);
+        $highlightData = $this->getHighlightData($hit, ElasticHighlights::getPaths());
 
         return new SubTypeSearchResultEntry(
             $this->viewFactory->make($dossier, $mainDocument),

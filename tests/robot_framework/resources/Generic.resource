@@ -1,11 +1,21 @@
 *** Settings ***
 Documentation       Resource file with generic keywords.
+Library             Collections
 Library             DateTime
 Library             OperatingSystem
 Library             Process
 Library             String
 Library             DebugLibrary
 Library             Browser
+
+
+*** Variables ***
+${BASE_URL}                 localhost:8000
+${BASE_URL_BALIE}           localhost:8000/balie
+${TST_BALIE_USER}           email@example.org
+${TST_BALIE_PASSWORD}       IkLoopNooitVastVandaag
+${TST_BALIE_OTP_SECRET}     ${EMPTY}
+${DOSSIER_REFERENCE}        ${EMPTY}
 
 
 *** Keywords ***
@@ -77,3 +87,10 @@ Click With Reload Retry
     ${count} =  Get Element Count  ${selector}
   END
   Click  ${selector}
+
+Go To With Response
+  [Arguments]  ${url}
+  Go To  ${url}
+  ${response} =  Wait For Response  ${url}
+  ${status} =  Get From Dictionary  ${response}  status
+  RETURN  ${status}

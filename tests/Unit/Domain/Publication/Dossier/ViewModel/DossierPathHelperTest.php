@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use App\Domain\Publication\Dossier\Type\Advice\Advice;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\DossierReference;
 use App\Domain\Publication\Dossier\Type\DossierType;
+use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -94,6 +96,48 @@ final class DossierPathHelperTest extends MockeryTestCase
         self::assertEquals(
             'https://foo.bar/foo-bar',
             $this->pathHelper->getAbsoluteDetailsPath($reference),
+        );
+    }
+
+    public function testGetDetailsPathWithOtherPublication(): void
+    {
+        $dossier = \Mockery::mock(OtherPublication::class);
+        $dossier->shouldReceive('getDossierNr')->andReturn('dos-nr');
+        $dossier->shouldReceive('getDocumentPrefix')->andReturn('dos-prefix');
+        $dossier->shouldReceive('getType')->andReturn(DossierType::OTHER_PUBLICATION);
+
+        $this->router->expects('generate')->with(
+            'app_otherpublication_detail',
+            [
+                'prefix' => 'dos-prefix',
+                'dossierId' => 'dos-nr',
+            ]
+        )->andReturn('foo-bar');
+
+        self::assertEquals(
+            'foo-bar',
+            $this->pathHelper->getDetailsPath($dossier),
+        );
+    }
+
+    public function testGetDetailsPathWithAdvice(): void
+    {
+        $dossier = \Mockery::mock(Advice::class);
+        $dossier->shouldReceive('getDossierNr')->andReturn('dos-nr');
+        $dossier->shouldReceive('getDocumentPrefix')->andReturn('dos-prefix');
+        $dossier->shouldReceive('getType')->andReturn(DossierType::ADVICE);
+
+        $this->router->expects('generate')->with(
+            'app_advice_detail',
+            [
+                'prefix' => 'dos-prefix',
+                'dossierId' => 'dos-nr',
+            ]
+        )->andReturn('foo-bar');
+
+        self::assertEquals(
+            'foo-bar',
+            $this->pathHelper->getDetailsPath($dossier),
         );
     }
 }

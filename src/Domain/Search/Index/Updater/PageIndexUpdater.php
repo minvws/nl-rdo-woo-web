@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\Updater;
 
+use App\Domain\Search\Index\Schema\ElasticField;
 use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 use Psr\Log\LoggerInterface;
@@ -50,8 +51,8 @@ EOF,
                         'lang' => 'painless',
                         'params' => [
                             'page' => [
-                                'page_nr' => $pageNr,
-                                'content' => $content,
+                                ElasticField::PAGE_NR->value => $pageNr,
+                                ElasticField::CONTENT->value => $content,
                             ],
                         ],
                     ],

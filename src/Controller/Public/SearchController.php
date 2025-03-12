@@ -35,15 +35,15 @@ class SearchController extends AbstractController
 
         // We return an json with 2 html blobs: facets and result. These are loaded in the correct spots in the frontend.
         $ret = [];
-        $ret['facets'] = json_encode($this->renderView('search/facet.html.twig', [
+        $ret['facets'] = json_encode($this->renderView('public/search/facet.html.twig', [
             'result' => $result,
         ]));
 
         // If the search failed, we show a different template
         if ($result->hasFailed()) {
-            $template = 'search/result-failure-without-base.html.twig';
+            $template = 'public/search/result-failure-without-base.html.twig';
         } else {
-            $template = 'search/entries.html.twig';
+            $template = 'public/search/entries.html.twig';
         }
 
         $ret['results'] = json_encode($this->renderView($template, [
@@ -75,12 +75,12 @@ class SearchController extends AbstractController
 
         $result = $this->searchService->search($searchParameters);
         if ($result->hasFailed()) {
-            return $this->render('search/result-failure.html.twig', [
+            return $this->render('public/search/result-failure.html.twig', [
                 'result' => $result,
             ]);
         }
 
-        return $this->render('search/result.html.twig', [
+        return $this->render('public/search/result.html.twig', [
             'result' => $result,
             'ajaxResultsUrl' => $this->generateUrl('app_search_result_ajax'),
         ]);
@@ -111,12 +111,12 @@ class SearchController extends AbstractController
 
         $result = $this->searchService->retrieveExtendedFacets();
         if ($result->hasFailed()) {
-            return $this->render('search/result-failure.html.twig', [
+            return $this->render('public/search/result-failure.html.twig', [
                 'result' => $result,
             ]);
         }
 
-        return $this->render('search/browse-facets.html.twig', [
+        return $this->render('public/search/browse-facets.html.twig', [
             'result' => $result,
         ]);
     }

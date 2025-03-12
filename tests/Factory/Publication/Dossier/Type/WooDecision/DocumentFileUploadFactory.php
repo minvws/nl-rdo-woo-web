@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Factory\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\DocumentFileUpload;
-use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUploadStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUploadStatus;
 use App\Tests\Factory\FileInfoFactory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 

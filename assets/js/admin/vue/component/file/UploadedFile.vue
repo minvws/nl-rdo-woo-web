@@ -1,31 +1,27 @@
-<script setup>
-import Icon from '../Icon.vue';
-import MimeTypeIcon from './MimeTypeIcon.vue';
+<script setup lang="ts">
 import { formatFileSize } from '@js/admin/utils';
 import { computed, useSlots } from 'vue';
+import Icon from '../Icon.vue';
+import MimeTypeIcon from './MimeTypeIcon.vue';
 
-const slots = useSlots();
-const emit = defineEmits(['delete']);
+interface Props {
+  canDelete: boolean;
+  fileName: string;
+  fileSize?: number;
+  mimeType?: string;
+  withdrawUrl?: string;
+}
 
-const props = defineProps({
-  canDelete: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  fileName: {
-    type: String,
-    required: true,
-  },
-  fileSize: {
-    type: Number,
-    required: false,
-  },
-  mimeType: {
-    type: String,
-    required: false,
-  },
+interface Emits {
+  delete: [];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  canDelete: false,
 });
+
+const emit = defineEmits<Emits>();
+const slots = useSlots();
 
 const onDelete = () => {
   emit('delete');
@@ -52,9 +48,9 @@ const defaultFileInfo = computed(() => {
         >
           {{ props.fileName }}
         </span>
-        <span class="bhr-file__file-info"
-          ><slot>{{ defaultFileInfo }}</slot></span
-        >
+        <span class="bhr-file__file-info">
+          <slot>{{ defaultFileInfo }}</slot>
+        </span>
       </span>
     </span>
 
@@ -68,8 +64,17 @@ const defaultFileInfo = computed(() => {
       type="button"
       v-if="props.canDelete"
     >
-      <Icon color="fill-current" size="18" name="trash-bin" />
+      <Icon color="fill-current" :size="18" name="trash-bin" />
       <span class="sr-only">Verwijder {{ props.fileName }}</span>
     </button>
+
+    <a
+      v-else-if="props.withdrawUrl"
+      class="bhr-file__delete"
+      :href="props.withdrawUrl"
+    >
+      <Icon color="fill-current" :size="18" name="trash-bin" />
+      <span class="sr-only">{{ props.fileName }} intrekken</span>
+    </a>
   </div>
 </template>

@@ -31,7 +31,11 @@ const onRowClick = (url) => {
   <template v-if="props.results.length > 0">
     <h2 class="bhr-title mb-2" :id="titleId">{{ props.title }}</h2>
 
-    <table class="bhr-table" :aria-labelledby="titleId">
+    <table
+      class="bhr-table"
+      :aria-labelledby="titleId"
+      :data-e2e-name="`table-${props.results[0].type}`"
+    >
       <thead class="sr-only">
         <tr>
           <th v-if="!props.hideResultId" scope="col">
@@ -46,7 +50,6 @@ const onRowClick = (url) => {
           @click="onRowClick(result.link)"
           :key="result.id"
           class="bhr-clickable-row"
-          data-e2e-name="search-previews-result"
         >
           <td class="w-48" v-if="!props.hideResultId">
             <a class="bhr-a" :href="result.link">

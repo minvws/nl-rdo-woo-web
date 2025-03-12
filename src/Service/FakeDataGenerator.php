@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Department;
 use App\Entity\Organisation;
 use App\SourceType;
@@ -145,9 +145,7 @@ class FakeDataGenerator
 
     public function generateContent(): string
     {
-        /** @var string $string */
-        $string = $this->faker->sentences(random_int(20, 100), true);
-
-        return $string;
+        /** @var string */
+        return $this->faker->sentences(random_int(20, 100), true);
     }
 }

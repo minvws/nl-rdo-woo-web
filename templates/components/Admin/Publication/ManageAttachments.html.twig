@@ -2,15 +2,16 @@
     <h2 class="bhr-label">{{ title | default('Bijlagen') }} <span class="font-normal">(optioneel)</span></h2>
     <p class="bhr-form-help text-lg pb-2">{{ helpText }}</p>
 
-    <div {{ vue_component('PublicationAttachments', {
+    <div {{ vue_component('PublicationFiles', {
         allowedFileTypes: allowedFileTypes | default([]),
         allowedMimeTypes: allowedMimeTypes | default([]),
+        allowMultiple: allowMultiple ?? true,
         canDelete: canDelete,
-        documentLanguageOptions: languages,
-        documentTypeOptions: documentTypes,
         endpoint: endpoint,
+        fileTypeOptions: documentTypes,
         groundOptions: grounds,
-        uploadGroupId: uploadGroupId
+        languageOptions: languages,
+        uploadGroupId: "attachments"
     }) }}>
         <div class="min-h-14"></div>
     </div>

@@ -6,8 +6,8 @@ namespace App\Tests\Unit\Service\Security;
 
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\Inquiry\InquirySessionService;
 use App\Service\Security\DossierVoter;
 use App\Service\Security\WooDecisionVoter;

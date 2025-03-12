@@ -12,6 +12,7 @@ readonly class DossierWizardStatus
     public function __construct(
         private AbstractDossier $dossier,
         private StepName $currentStep,
+        private ?StepName $attachmentStepName,
         /** @var StepStatus[] $steps */
         private array $steps,
     ) {
@@ -179,5 +180,14 @@ readonly class DossierWizardStatus
         }
 
         return $this->steps[$stepName->value];
+    }
+
+    public function getAttachmentStep(): StepStatus
+    {
+        if ($this->attachmentStepName === null) {
+            throw new \OutOfBoundsException('No attachment step defined');
+        }
+
+        return $this->getStep($this->attachmentStepName);
     }
 }

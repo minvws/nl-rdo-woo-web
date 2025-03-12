@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Service\Search\Query\Condition;
 
 use App\Domain\Search\Index\ElasticDocumentType;
+use App\Domain\Search\Index\Schema\ElasticField;
+use App\Domain\Search\Index\Schema\ElasticNestedField;
+use App\Domain\Search\Index\Schema\ElasticPath;
+use App\Domain\Search\Query\Facet\FacetList;
 use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Query\Facet\FacetList;
 use App\Service\Search\Query\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 
@@ -36,17 +39,21 @@ class SearchTermConditions implements QueryConditions
         return Query::bool(
             should: [
                 Query::nested(
-                    path: 'dossiers',
+                    path: ElasticNestedField::DOSSIERS->value,
                     query: Query::bool(
                         should: [
                             Query::simpleQueryString(
-                                fields: ['dossiers.title'],
+                                fields: [
+                                    ElasticPath::dossiersTitle()->value,
+                                ],
                                 query: $searchParameters->query,
                             )
                                 ->setDefaultOperator($searchParameters->operator->value)
                                 ->setBoost(3),
                             Query::simpleQueryString(
-                                fields: ['dossiers.summary'],
+                                fields: [
+                                    ElasticPath::dossiersSummary()->value,
+                                ],
                                 query: $searchParameters->query,
                             )
                                 ->setDefaultOperator($searchParameters->operator->value)
@@ -55,16 +62,18 @@ class SearchTermConditions implements QueryConditions
                     )->setParams(['minimum_should_match' => 1])
                 ),
                 Query::nested(
-                    path: 'pages',
+                    path: ElasticNestedField::PAGES->value,
                     query: Query::simpleQueryString(
-                        fields: ['pages.content'],
+                        fields: [
+                            ElasticPath::pagesContent()->value,
+                        ],
                         query: $searchParameters->query,
                     )
                         ->setDefaultOperator($searchParameters->operator->value)
                         ->setBoost(1),
                 ),
                 Query::simpleQueryString(
-                    fields: ['filename'],
+                    fields: [ElasticField::FILENAME->value],
                     query: $searchParameters->query,
                 )
                     ->setDefaultOperator($searchParameters->operator->value)
@@ -72,7 +81,7 @@ class SearchTermConditions implements QueryConditions
             ],
             filter: [
                 Query::terms(
-                    field: 'type',
+                    field: ElasticField::TYPE->value,
                     values: ElasticDocumentType::getSubTypeValues(),
                 ),
             ],
@@ -84,13 +93,13 @@ class SearchTermConditions implements QueryConditions
         return Query::bool(
             should: [
                 Query::simpleQueryString(
-                    fields: ['title'],
+                    fields: [ElasticField::TITLE->value],
                     query: $searchParameters->query,
                 )
                     ->setDefaultOperator($searchParameters->operator->value)
                     ->setBoost(5),
                 Query::simpleQueryString(
-                    fields: ['summary'],
+                    fields: [ElasticField::SUMMARY->value],
                     query: $searchParameters->query,
                 )
                     ->setDefaultOperator($searchParameters->operator->value)
@@ -98,7 +107,7 @@ class SearchTermConditions implements QueryConditions
             ],
             filter: [
                 Query::terms(
-                    field: 'type',
+                    field: ElasticField::TYPE->value,
                     values: ElasticDocumentType::getMainTypeValues(),
                 ),
             ],

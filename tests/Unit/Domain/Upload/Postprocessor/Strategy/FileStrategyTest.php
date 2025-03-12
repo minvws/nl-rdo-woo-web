@@ -6,9 +6,10 @@ namespace App\Tests\Unit\Domain\Upload\Postprocessor\Strategy;
 
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\FileInfo;
 use App\Domain\Upload\FileType\FileType;
 use App\Domain\Upload\FileType\FileTypeHelper;
@@ -34,6 +35,7 @@ final class FileStrategyTest extends UnitTestCase
     private Document&MockInterface $document;
     private FileInfo&MockInterface $fileInfo;
     private string $documentId = 'documentId';
+    private FileStrategy $strategy;
 
     protected function setUp(): void
     {
@@ -49,6 +51,15 @@ final class FileStrategyTest extends UnitTestCase
         $this->dossier = \Mockery::mock(WooDecision::class);
         $this->document = \Mockery::mock(Document::class);
         $this->fileInfo = \Mockery::mock(FileInfo::class);
+
+        $this->strategy = new FileStrategy(
+            $this->documentRepository,
+            $this->logger,
+            $this->ingestService,
+            $this->historyService,
+            $this->fileStorer,
+            $this->fileTypeHelper
+        );
     }
 
     public function testProcess(): void
@@ -64,8 +75,16 @@ final class FileStrategyTest extends UnitTestCase
             ->andReturnTrue();
 
         $this->document
+            ->shouldReceive('isWithdrawn')
+            ->andReturnFalse();
+
+        $this->document
             ->shouldReceive('getFileInfo')
             ->andReturn($this->fileInfo);
+
+        $this->dossier
+            ->shouldReceive('getStatus')
+            ->andReturn(DossierStatus::PUBLISHED);
 
         $this->fileInfo
             ->shouldReceive('isUploaded')
@@ -107,8 +126,79 @@ final class FileStrategyTest extends UnitTestCase
                 ],
             );
 
-        $strategy = $this->createStrategy();
-        $strategy->process($this->file, $this->dossier, $this->documentId);
+        $this->strategy->process($this->file, $this->dossier, $this->documentId);
+    }
+
+    public function testProcessForWithdrawnDocument(): void
+    {
+        $this->documentRepository
+            ->shouldReceive('findOneByDossierAndDocumentId')
+            ->with($this->dossier, $this->documentId)
+            ->andReturn($this->document);
+
+        $this->document
+            ->shouldReceive('shouldBeUploaded')
+            ->once()
+            ->andReturnTrue();
+
+        $this->document
+            ->shouldReceive('isWithdrawn')
+            ->andReturnTrue();
+
+        $this->document
+            ->shouldReceive('getFileInfo')
+            ->andReturn($this->fileInfo);
+
+        $this->document
+            ->expects('republish');
+
+        $this->documentRepository->expects('save')->with($this->document, true);
+
+        $this->dossier
+            ->shouldReceive('getStatus')
+            ->andReturn(DossierStatus::PUBLISHED);
+
+        $this->fileInfo
+            ->shouldReceive('isUploaded')
+            ->once()
+            ->andReturnFalse();
+
+        $this->file
+            ->shouldReceive('getOriginalFileExtension')
+            ->once()
+            ->andReturn($originalExtension = 'pdf');
+
+        $this->fileStorer
+            ->shouldReceive('storeForDocument')
+            ->with($this->file, $this->document, $this->documentId, $originalExtension);
+
+        $this->ingestService
+            ->shouldReceive('ingest')
+            ->with(
+                $this->document,
+                \Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
+            );
+
+        $this->fileInfo
+            ->shouldReceive('getType')
+            ->andReturn($fileInfoType = 'pdf');
+
+        $this->fileInfo
+            ->shouldReceive('getSize')
+            ->andReturn(1024);
+
+        $this->historyService
+            ->shouldReceive('addDocumentEntry')
+            ->with(
+                $this->document,
+                'document_uploaded',
+                [
+                    'filetype' => $fileInfoType,
+                    'filesize' => '1 KB',
+                ],
+            );
+
+        $this->strategy->process($this->file, $this->dossier, $this->documentId);
     }
 
     public function testProcessWithGivenFileType(): void
@@ -124,6 +214,10 @@ final class FileStrategyTest extends UnitTestCase
             ->shouldReceive('shouldBeUploaded')
             ->once()
             ->andReturnTrue();
+
+        $this->document
+            ->shouldReceive('isWithdrawn')
+            ->andReturnFalse();
 
         $this->document
             ->shouldReceive('getFileInfo')
@@ -167,8 +261,11 @@ final class FileStrategyTest extends UnitTestCase
                 ],
             );
 
-        $strategy = $this->createStrategy();
-        $strategy->process($this->file, $this->dossier, $this->documentId, $fileType);
+        $this->dossier
+            ->shouldReceive('getStatus')
+            ->andReturn(DossierStatus::PUBLISHED);
+
+        $this->strategy->process($this->file, $this->dossier, $this->documentId, $fileType);
     }
 
     public function testProcessWhenFailingToFetchDocument(): void
@@ -195,8 +292,7 @@ final class FileStrategyTest extends UnitTestCase
                 'dossierId' => $dossierId,
             ]);
 
-        $strategy = $this->createStrategy();
-        $strategy->process($this->file, $this->dossier, $this->documentId);
+        $this->strategy->process($this->file, $this->dossier, $this->documentId);
     }
 
     public function testProcessWhenDocumentShouldNotBeUploaded(): void
@@ -214,6 +310,10 @@ final class FileStrategyTest extends UnitTestCase
             ->shouldReceive('getId')
             ->andReturn($dossierId = Uuid::v6());
 
+        $this->dossier
+            ->shouldReceive('getStatus')
+            ->andReturn(DossierStatus::PUBLISHED);
+
         $this->document
             ->shouldReceive('shouldBeUploaded')
             ->once()
@@ -230,8 +330,7 @@ final class FileStrategyTest extends UnitTestCase
                 ],
             );
 
-        $strategy = $this->createStrategy();
-        $strategy->process($this->file, $this->dossier, $this->documentId);
+        $this->strategy->process($this->file, $this->dossier, $this->documentId);
     }
 
     public function testCanProcessReturnsTrue(): void
@@ -242,8 +341,7 @@ final class FileStrategyTest extends UnitTestCase
             ->with($this->file, FileType::PDF, FileType::XLS, FileType::DOC, FileType::TXT, FileType::PPT)
             ->andReturnTrue();
 
-        $strategy = $this->createStrategy();
-        $result = $strategy->canProcess($this->file, $this->dossier);
+        $result = $this->strategy->canProcess($this->file, $this->dossier);
 
         $this->assertTrue($result);
     }
@@ -256,21 +354,8 @@ final class FileStrategyTest extends UnitTestCase
             ->with($this->file, FileType::PDF, FileType::XLS, FileType::DOC, FileType::TXT, FileType::PPT)
             ->andReturnFalse();
 
-        $strategy = $this->createStrategy();
-        $result = $strategy->canProcess($this->file, $this->dossier);
+        $result = $this->strategy->canProcess($this->file, $this->dossier);
 
         $this->assertFalse($result);
-    }
-
-    private function createStrategy(): FileStrategy
-    {
-        return new FileStrategy(
-            $this->documentRepository,
-            $this->logger,
-            $this->ingestService,
-            $this->historyService,
-            $this->fileStorer,
-            $this->fileTypeHelper,
-        );
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -18,6 +18,12 @@ readonly class TranslatableFormErrorMapper
 
     public function mapRunErrorsToForm(ProductionReportProcessRun $run, FormInterface $form): void
     {
+        $form->addError(new FormError(
+            $this->translator->trans(
+                'publication.dossier.error.date_header',
+                ['date' => $run->getEndedAt()?->setTimezone(new \DateTimeZone('Europe/Amsterdam'))->format('Y-m-d H:i')],
+            )
+        ));
         $this->mapGenericErrorsToForm($run->getGenericErrors(), $form);
         $this->mapRowErrorsToForm($run->getRowErrors(), $form);
     }

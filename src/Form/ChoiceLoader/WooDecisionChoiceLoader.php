@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Form\ChoiceLoader;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Entity\User;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Bundle\SecurityBundle\Security;

@@ -10,6 +10,7 @@ use App\Tests\Integration\IntegrationTestTrait;
 use App\Tests\Integration\Service\Storage\Streams\FailingReadStreamWrapper;
 use App\Tests\Integration\Service\Storage\Streams\FailingWriteStreamWrapper;
 use Mockery\MockInterface;
+use org\bovigo\vfs\content\LargeFileContent;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamFile;
@@ -140,6 +141,22 @@ final class LocalFilesystemTest extends KernelTestCase
         $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
         $fs->shouldReceive('uniqid')->once()->andReturn($uniqueId);
         $result = $fs->createTempDir();
+
+        $this->assertSame($expectedPath, $result);
+        $this->assertDirectoryExists($result);
+    }
+
+    public function testCreateTempDirWithSubdirs(): void
+    {
+        $tmpDir = vfsStream::newDirectory('tmp')->at($this->root);
+        $mySubdir = '/my-subdir/another-one/';
+        $uniqueId = 'woopie_random';
+        $expectedPath = sprintf('%s/%s/my-subdir/another-one', $tmpDir->url(), $uniqueId);
+
+        $fs = $this->getPartialLocalFilesystem();
+        $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
+        $fs->shouldReceive('uniqid')->once()->andReturn($uniqueId);
+        $result = $fs->createTempDir($mySubdir);
 
         $this->assertSame($expectedPath, $result);
         $this->assertDirectoryExists($result);
@@ -290,6 +307,35 @@ final class LocalFilesystemTest extends KernelTestCase
 
         $fs = new LocalFilesystem($this->logger);
         $result = $fs->createStream($nonExistingFile, $mode);
+
+        $this->assertFalse($result);
+    }
+
+    public function testGetFileSize(): void
+    {
+        $file = vfsStream::newFile('file.txt')->withContent(LargeFileContent::withMegabytes(5))->at($this->root);
+
+        $fs = new LocalFilesystem($this->logger);
+        $result = $fs->getFileSize($file->url());
+
+        $this->assertSame(5 * 1024 * 1024, $result);
+    }
+
+    public function testGetFileSizeLogsErrorOnFailure(): void
+    {
+        $nonExistingFile = $this->root->url() . '/file.txt';
+
+        $fs = $this->getPartialLocalFilesystem();
+        $fs->shouldReceive('filesize')->once()->andReturnFalse();
+
+        $this->logger
+            ->shouldReceive('error')
+            ->once()
+            ->with('Could not get file size', [
+                'local_path' => $nonExistingFile,
+            ]);
+
+        $result = $fs->getFileSize($nonExistingFile);
 
         $this->assertFalse($result);
     }

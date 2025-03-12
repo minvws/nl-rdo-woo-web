@@ -22,6 +22,11 @@ export type UploadedWooDecisionDocumentFile = z.infer<
 
 export const wooDecisionUploadStatusResponseSchema = z.object({
   canProcess: z.boolean(),
+  changes: z.object({
+    add: z.number().optional(),
+    republish: z.number().optional(),
+    update: z.number().optional(),
+  }),
   currentDocumentsCount: z.number(),
   dossierId: z.string().uuid(),
   expectedDocumentsCount: z.number(),

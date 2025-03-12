@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Api\Admin\Uploader\WooDecision\Status;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFileService;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\DocumentFileSet;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\DocumentFileUpdate;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\DocumentFileUpload;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUpdateType;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateType;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\ValueObject\DossierUploadStatus;
 
 final readonly class UploadStatusDtoFactory
@@ -47,12 +47,12 @@ final readonly class UploadStatusDtoFactory
     }
 
     /**
-     * @return array<value-of<DocumentFileUpdateType>,int> $changes
+     * @return \ArrayObject<value-of<DocumentFileUpdateType>,int> $changes
      */
-    private function getStatus(DocumentFileSet $documentFileSet): array
+    private function getStatus(DocumentFileSet $documentFileSet): \ArrayObject
     {
         if (! $documentFileSet->getStatus()->needsConfirmation()) {
-            return [];
+            return new \ArrayObject();
         }
 
         $changes = array_reduce(
@@ -65,12 +65,14 @@ final readonly class UploadStatusDtoFactory
             [],
         );
 
-        return $documentFileSet
+        $result = $documentFileSet
             ->getUpdates()
             ->reduce(function (array $carry, DocumentFileUpdate $update): array {
                 $carry[$update->getType()->value]++;
 
                 return $carry;
             }, $changes);
+
+        return new \ArrayObject($result);
     }
 }

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Service\Security;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\Type\Advice\Advice;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
+use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -29,6 +31,8 @@ class DossierVoter extends Voter
             $subject instanceof AnnualReport => true,
             $subject instanceof ComplaintJudgement => true,
             $subject instanceof Disposition => true,
+            $subject instanceof OtherPublication => true,
+            $subject instanceof Advice => true,
             default => false,
         };
     }

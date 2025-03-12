@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory\Progress;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 
 class RunProgress
 {

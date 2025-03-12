@@ -1,6 +1,6 @@
 import Collapsible from '@admin-fe/component/Collapsible.vue';
 import { VueWrapper, mount } from '@vue/test-utils';
-import { describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { h } from 'vue';
 
 describe('The "Collapsible" component', () => {
@@ -24,6 +24,14 @@ describe('The "Collapsible" component', () => {
     return wrapper;
   };
 
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   const getCollapsingElement = (component: VueWrapper) => component.find('div');
   const isCollapsed = (component: VueWrapper) => {
     const { height, overflow } = getCollapsingElement(component).element.style;
@@ -38,6 +46,7 @@ describe('The "Collapsible" component', () => {
   const collapse = async (component: VueWrapper) => {
     await component.setProps({ modelValue: true });
     await component.vm.$nextTick();
+    vi.advanceTimersByTime(100);
     getCollapsingElement(component).trigger('transitionend');
   };
   const expand = async (component: VueWrapper) => {

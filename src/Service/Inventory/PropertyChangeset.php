@@ -30,7 +30,7 @@ class PropertyChangeset
     public function isChanged(string $key): bool
     {
         if (! array_key_exists($key, $this->changes)) {
-            throw new \OutOfBoundsException(sprintf('Key %s not defined in PropertyChangeset', $key));
+            return false;
         }
 
         return $this->changes[$key];

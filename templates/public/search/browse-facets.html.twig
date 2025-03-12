@@ -1,0 +1,25 @@
+{% extends 'public/base.html.twig' %}
+
+{% set page_title = 'public.global.label.search_publications' | trans() %}
+
+{% import "public/macros/facet.html.twig" as macro %}
+
+{% block search_form_top %}<twig:Public:SearchForm />{% endblock %}
+
+{% block body %}
+<div class="woo-container">
+    <div class="woo-rich-text woo-readable-width">
+        <h1>{{ 'public.browse.facets.title' | trans }}</h1>
+        <p>{{ 'public.browse.facets.description' | trans | raw }}</p>
+    </div>
+
+    <div class="pt-8">
+        {{ macro.facet_links('categories.category.type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::TYPE'), result) }}
+        {{ macro.facet_links('categories.category.department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), result) }}
+        {{ macro.facet_links('categories.category.grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
+        {{ macro.facet_links('categories.category.source_file' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE'), result) }}
+        {{ macro.facet_links('categories.category.subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT'), result) }}
+        {{ macro.facet_links('categories.category.judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
+    </div>
+</div>
+{% endblock %}

@@ -1,14 +1,13 @@
 *** Settings ***
-Library     Browser
-Library     DebugLibrary
-Resource    Admin.resource
+Documentation       Resource file containing custom keywords for the Covenant information category
+Library             Browser
+Library             DebugLibrary
+Resource            Admin.resource
 
 
 *** Variables ***
 ${COVENANT_FILENAME}    ${EMPTY}
 ${COVENANT_LOCATION}    ${EMPTY}
-${ATTACHMENT_FILENAME}  ${EMPTY}
-${ATTACHMENT_LOCATION}  ${EMPTY}
 
 
 *** Keywords ***

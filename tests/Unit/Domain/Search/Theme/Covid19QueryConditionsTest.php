@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Search\Theme;
 
 use App\Domain\Publication\Subject\Subject;
+use App\Domain\Search\Query\Facet\FacetList;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Theme\Covid19QueryConditions;
 use App\Entity\Organisation;
 use App\Repository\OrganisationRepository;
-use App\Service\Search\Query\Facet\FacetList;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;

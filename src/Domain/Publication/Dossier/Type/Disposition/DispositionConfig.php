@@ -69,4 +69,9 @@ readonly class DispositionConfig implements DossierTypeConfigInterface
             DispositionAttachment::class,
         ];
     }
+
+    public function getAttachmentStepName(): ?StepName
+    {
+        return StepName::CONTENT;
+    }
 }

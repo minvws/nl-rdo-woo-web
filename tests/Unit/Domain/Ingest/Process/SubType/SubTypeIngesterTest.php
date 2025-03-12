@@ -8,7 +8,7 @@ use App\Domain\Ingest\Process\IngestProcessException;
 use App\Domain\Ingest\Process\IngestProcessOptions;
 use App\Domain\Ingest\Process\SubType\SubTypeIngester;
 use App\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\Uid\Uuid;

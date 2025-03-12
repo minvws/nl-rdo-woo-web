@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+ <sitemap>
+  <loc>http://localhost:8000/sitemap/woo-index/20250101_120100_000000__random-string/sitemap-00001.xml</loc>
+ </sitemap>
+ <sitemap>
+  <loc>http://localhost:8000/sitemap/woo-index/20250101_120100_000000__random-string/sitemap-00002.xml</loc>
+ </sitemap>
+ <sitemap>
+  <loc>http://localhost:8000/sitemap/woo-index/20250101_120100_000000__random-string/sitemap-00003.xml</loc>
+ </sitemap>
+ <sitemap>
+  <loc>http://localhost:8000/sitemap/woo-index/20250101_120100_000000__random-string/sitemap-00004.xml</loc>
+ </sitemap>
+ <sitemap>
+  <loc>http://localhost:8000/sitemap/woo-index/20250101_120100_000000__random-string/sitemap-00005.xml</loc>
+ </sitemap>
+ <sitemap>
+  <loc>http://localhost:8000/sitemap/woo-index/20250101_120100_000000__random-string/sitemap-00006.xml</loc>
+ </sitemap>
+ <sitemap>
+  <loc>http://localhost:8000/sitemap/woo-index/20250101_120100_000000__random-string/sitemap-00007.xml</loc>
+ </sitemap>
+ <sitemap>
+  <loc>http://localhost:8000/sitemap/woo-index/20250101_120100_000000__random-string/sitemap-00008.xml</loc>
+ </sitemap>
+ <sitemap>
+  <loc>http://localhost:8000/sitemap/woo-index/20250101_120100_000000__random-string/sitemap-00009.xml</loc>
+ </sitemap>
+</sitemapindex>

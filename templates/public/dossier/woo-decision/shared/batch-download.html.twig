@@ -1,0 +1,56 @@
+{% extends 'public/base.html.twig' %}
+
+{% set page_title = pageTitle | trans %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <div class="woo-rich-text">
+        <h1>{{ page_title }}</h1>
+
+        <div class="woo-readable-width" data-e2e-name="download-status">
+            {% if batch.status.isPending %}
+                <p>{{ 'public.documents.archive.download_suspended' | trans }}</p>
+            {% endif %}
+
+            {% if batch.status.isOutdated %}
+                {% if batch.canBeDownloaded %}
+                    <p>{{ 'public.documents.archive.download_outdated' | trans }}</p>
+                {% else %}
+                    <p>{{ 'public.documents.archive.download_outdated_no_download' | trans }}</p>
+                {% endif %}
+            {% endif %}
+
+            {% if batch.status.isFailed %}
+                <p>{{ 'public.documents.archive.download_error' | trans }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if batch.canBeDownloaded %}
+        <div class="woo-responsive-table">
+            <table class="woo-table">
+                <tbody>
+                    <tr>
+                        <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'global.file' | trans }}</th>
+                        <td class="min-w-64">
+                            <twig:Public:Icon name="zipper" color="fill-woo-dim-gray" class="mr-0.5 -mt-0.5" />
+                            <span class="sr-only">{{ 'public.documents.file_type.zip' | trans }}</span>
+                            <span class="break-all" data-e2e-name="file-name">{{ batch.filename }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ 'global.documents' | trans }}</th>
+                        <td>{{ batch.fileCount }}</td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">{{ "global.link" | trans }}</th>
+                        <td>
+                            <a class="woo-a" data-e2e-name="download-file-link" href="{{ download_path }}" download>{{ 'public.global.download_verb' | trans }}</a> ({{ batch.size | size }})
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

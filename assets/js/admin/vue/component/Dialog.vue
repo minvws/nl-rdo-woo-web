@@ -7,10 +7,15 @@ interface Props {
   title: string;
 }
 
+interface Emits {
+  close: [];
+}
+
 const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
 
 const dialogElement = ref<HTMLDialogElement | null>(null);
-const isOpen = defineModel({ default: false });
+const isOpen = defineModel<boolean>({ default: false });
 const titleId = `${uniqueId('dialog')}-title`;
 
 const onClose = () => {
@@ -19,6 +24,7 @@ const onClose = () => {
 
 const closeDialog = () => {
   dialogElement.value?.close();
+  emit('close');
 };
 
 const showDialog = () => {

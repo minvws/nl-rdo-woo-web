@@ -19,8 +19,6 @@ searchType:
     notAll: false
     name: ALL
     value: all
-documentInquiries: {  }
-dossierInquiries: {  }
 sortField:
     name: PUBLICATION_DATE
     value: publication_date

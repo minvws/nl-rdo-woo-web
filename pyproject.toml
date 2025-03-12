@@ -3,7 +3,7 @@ configure = [
   "line-too-long:line_length:160",
   "empty-line-after-section:empty_lines:1",
   "missing-doc-keyword:enabled:False",
-  "missing-doc-test-case:ignore_templated:True",
+  "missing-doc-test-case:enabled:False",
   "inconsistent-assignment:assignment_sign_type:space_and_equal_sign",
   "sleep-keyword-used:enabled:True",
   "sleep-keyword-used:severity:I",              # TODO: Change to (W)arning

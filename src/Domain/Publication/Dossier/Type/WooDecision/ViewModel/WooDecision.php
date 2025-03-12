@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\CommonDossierPropertiesAccessors;
-use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierProperties;
-use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
+use App\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
+use App\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesAccessors;
 use App\Domain\Publication\Dossier\ViewModel\Department;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use Doctrine\Common\Collections\Collection;

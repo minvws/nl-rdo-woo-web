@@ -6,14 +6,14 @@ namespace App\Tests\Unit\Api\Admin\Uploader\WooDecision\Status;
 
 use App\Api\Admin\Uploader\WooDecision\Status\UploadedFileDto;
 use App\Api\Admin\Uploader\WooDecision\Status\UploadStatusDtoFactory;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFileService;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\DocumentFileSet;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\DocumentFileUpdate;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\DocumentFileUpload;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileSetStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUpdateType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateType;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\FileInfo;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -62,7 +62,7 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
             'expectedDocumentsCount' => $result->expectedDocumentsCount,
             'currentDocumentsCount' => $result->currentDocumentsCount,
             'missingDocuments' => $result->missingDocuments,
-            'changes' => $result->changes,
+            'changes' => $result->changes->getArrayCopy(),
         ]);
     }
 
@@ -98,11 +98,7 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
             'expectedDocumentsCount' => $result->expectedDocumentsCount,
             'currentDocumentsCount' => $result->currentDocumentsCount,
             'missingDocuments' => $result->missingDocuments,
-            'changes' => [
-                DocumentFileUpdateType::ADD->value => 2,
-                DocumentFileUpdateType::UPDATE->value => 2,
-                DocumentFileUpdateType::REPUBLISH->value => 1,
-            ],
+            'changes' => $result->changes->getArrayCopy(),
         ]);
     }
 

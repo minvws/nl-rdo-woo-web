@@ -28,12 +28,6 @@ class PublishAsPreviewGuard implements EventSubscriberInterface
 
         if ($dossier->getPreviewDate() === null || $dossier->getPreviewDate() > new \DateTimeImmutable('now midnight')) {
             $event->setBlocked(true, 'A dossier with an empty or future preview date cannot be published as preview');
-
-            return;
-        }
-
-        if (! $dossier->isCompleted()) {
-            $event->setBlocked(true, 'A dossier that is not completed cannot be published as preview');
         }
     }
 

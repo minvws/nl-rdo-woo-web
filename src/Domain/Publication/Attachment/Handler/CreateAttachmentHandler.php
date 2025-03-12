@@ -4,47 +4,36 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Attachment\Handler;
 
-use App\Domain\Publication\Attachment\AbstractAttachment;
-use App\Domain\Publication\Attachment\AttachmentRepositoryInterface;
+use App\Domain\Publication\Attachment\AttachmentDispatcher;
 use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
-use App\Domain\Publication\Attachment\EntityWithAttachments;
-use App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierRepository;
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use App\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Service\Uploader\UploaderService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webmozart\Assert\Assert;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
 #[AsMessageHandler]
 readonly class CreateAttachmentHandler
 {
     public function __construct(
-        private MessageBusInterface $messageBus,
-        private DossierWorkflowManager $dossierWorkflowManager,
         private EntityManagerInterface $entityManager,
-        private DossierRepository $dossierRepository,
         private UploaderService $uploaderService,
         private ValidatorInterface $validator,
+        private AttachmentEntityLoader $entityLoader,
+        private AttachmentDispatcher $dispatcher,
     ) {
     }
 
     public function __invoke(CreateAttachmentCommand $command): AbstractAttachment
     {
-        $dossierId = $command->dossierId;
-        /** @var AbstractDossier&EntityWithAttachments $dossier */
-        $dossier = $this->dossierRepository->findOneByDossierId($dossierId);
-        Assert::isInstanceOf($dossier, EntityWithAttachments::class);
-
-        $this->dossierWorkflowManager->applyTransition($dossier, DossierStatusTransition::UPDATE_ATTACHMENT);
+        $dossier = $this->entityLoader->loadAndValidateDossier(
+            $command->dossierId,
+            DossierStatusTransition::UPDATE_ATTACHMENT,
+        );
 
         /** @var AttachmentRepositoryInterface $attachmentRepository */
         $attachmentRepository = $this->entityManager->getRepository($dossier->getAttachmentEntityClass());
@@ -67,9 +56,7 @@ readonly class CreateAttachmentHandler
 
         $attachmentRepository->save($entity, true);
 
-        $this->messageBus->dispatch(
-            AttachmentCreatedEvent::forAttachment($entity),
-        );
+        $this->dispatcher->dispatchAttachmentCreatedEvent($entity);
 
         return $entity;
     }

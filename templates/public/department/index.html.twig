@@ -1,0 +1,40 @@
+{% extends 'public/base.html.twig' %}
+
+{% set page_title = 'public.global.label.departments' | trans %}
+
+{% macro department_links(title, departments) %}
+    {% if departments | length > 0 %}
+    <div class="border-b last:border-b-0 border-woo-chinese-silver pb-8 mb-8">
+        <h2 class="woo-h3 sm:font-normal mb-6">{{ title }}</h2>
+
+        <ul class="sm:columns-2 sm:gap-x-12">
+            {% for department in departments %}
+            <li>
+                <twig:Public:ArrowedLink
+                    prefix="{{ department.tag | default('') }}"
+                    to="{{ department.url }}"
+                >
+                    {{ department.name }}
+                </twig:Public:ArrowedLink>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+{% endmacro %}
+
+{% block body %}
+    <div class="woo-container">
+        <div class="woo-rich-text woo-readable-width">
+            <h1>{{ 'public.global.label.departments' | trans }}</h1>
+            <p>{{ 'public.department.description' | trans }}</p>
+            <p>{{ 'public.department.view_by_department' | trans }}</p>
+        </div>
+
+        {% if departments | length > 0 %}
+            <div class="pt-8" data-e2e-name="departments">
+                {{ _self.department_links('categories.category.department' | trans, departments) }}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -75,6 +75,7 @@ readonly class WizardStatusFactory
         return new DossierWizardStatus(
             $dossier,
             $currentStep,
+            $typeConfig->getAttachmentStepName(),
             $stepStatuses,
         );
     }

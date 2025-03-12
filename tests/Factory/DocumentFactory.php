@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Factory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\Dossier\Type\WooDecision\WithdrawReason;
 use App\Service\Storage\StorageRootPathGenerator;
+use Doctrine\ORM\EntityManagerInterface;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -15,8 +16,10 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
  */
 final class DocumentFactory extends PersistentProxyObjectFactory
 {
-    public function __construct(private StorageRootPathGenerator $storageRootPathGenerator)
-    {
+    public function __construct(
+        private StorageRootPathGenerator $storageRootPathGenerator,
+        private EntityManagerInterface $entityManager,
+    ) {
     }
 
     /**
@@ -75,7 +78,7 @@ final class DocumentFactory extends PersistentProxyObjectFactory
 
                 return $attributes;
             })
-            ->afterInstantiate(function (Document $document): void {
+            ->afterInstantiate(function (Document $document, array $attributes): void {
                 if ($document->getFileInfo()->isUploaded()) {
                     $document
                         ->getFileInfo()
@@ -84,6 +87,17 @@ final class DocumentFactory extends PersistentProxyObjectFactory
                             $this->storageRootPathGenerator->fromUuid($document->getId()),
                             $document->getFileInfo()->getName(),
                         ));
+                }
+
+                if (isset($attributes['overwrite_id'])) {
+                    $this->entityManager->detach($document);
+
+                    $reflection = new \ReflectionClass($document);
+                    $property = $reflection->getProperty('id');
+                    $property->setAccessible(true);
+                    $property->setValue($document, $attributes['overwrite_id']);
+
+                    $this->entityManager->persist($document);
                 }
             });
     }
@@ -100,8 +114,8 @@ final class DocumentFactory extends PersistentProxyObjectFactory
         return $this
             ->removeFileProperties()
             ->afterInstantiate(function (Document $document) {
-                /** @var WithdrawReason $withdrawReason */
-                $withdrawReason = self::faker()->randomElement(WithdrawReason::cases());
+                /** @var DocumentWithdrawReason $withdrawReason */
+                $withdrawReason = self::faker()->randomElement(DocumentWithdrawReason::cases());
 
                 $document->withdraw(
                     reason: $withdrawReason,

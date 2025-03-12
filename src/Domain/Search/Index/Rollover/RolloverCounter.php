@@ -6,8 +6,9 @@ namespace App\Domain\Search\Index\Rollover;
 
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
 use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\ElasticField;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
+use App\Domain\Search\Index\Schema\ElasticField;
+use App\Domain\Search\Index\Schema\ElasticNestedField;
 use App\Service\Elastic\ElasticClientInterface;
 use App\Service\Search\Query\Aggregation;
 use App\Service\Search\Query\Query;
@@ -53,8 +54,8 @@ readonly class RolloverCounter
                     $subType,
                     $databaseCounts[$typeKey]['subtypes'][$subTypeKey]['count'] ?? 0,
                     $elasticCounts[$typeKey]['subtypes'][$subTypeKey]['count'] ?? 0,
-                    $databaseCounts[$typeKey]['subtypes'][$subTypeKey]['pages'] ?? 0,
-                    $elasticCounts[$typeKey]['subtypes'][$subTypeKey]['pages'] ?? 0,
+                    $databaseCounts[$typeKey]['subtypes'][$subTypeKey][ElasticNestedField::PAGES->value] ?? 0,
+                    $elasticCounts[$typeKey]['subtypes'][$subTypeKey][ElasticNestedField::PAGES->value] ?? 0,
                 );
             }
 
@@ -86,7 +87,7 @@ readonly class RolloverCounter
                     Aggregation::filter(
                         name: 'main_types_only',
                         query: Query::Terms(
-                            field: 'type',
+                            field: ElasticField::TYPE->value,
                             values: ElasticDocumentType::getMainTypeValues(),
                         ),
                     ),
@@ -95,8 +96,8 @@ readonly class RolloverCounter
                         fieldOrSource: ElasticField::SUBLEVEL_TYPE->value,
                         aggregations: [
                             new NestedAggregation(
-                                'pages',
-                                'pages',
+                                ElasticNestedField::PAGES->value,
+                                ElasticNestedField::PAGES->value,
                             ),
                         ]
                     ),
@@ -120,7 +121,7 @@ readonly class RolloverCounter
                 /** @var string $subTypeKey */
                 $subTypeKey = $subTypeCount->getString('[key]');
                 $counts[$dossierTypeKey]['subtypes'][$subTypeKey]['count'] = $subTypeCount->getInt('[doc_count]');
-                $counts[$dossierTypeKey]['subtypes'][$subTypeKey]['pages'] = $subTypeCount->getInt('[pages][doc_count]');
+                $counts[$dossierTypeKey]['subtypes'][$subTypeKey][ElasticNestedField::PAGES->value] = $subTypeCount->getInt('[pages][doc_count]');
             }
         }
 

@@ -15,6 +15,6 @@ readonly class MainDocumentFileDeleteStrategy implements MainDocumentDeleteStrat
 
     public function delete(AbstractMainDocument $mainDocument): void
     {
-        $this->entityStorageService->removeFileForEntity($mainDocument);
+        $this->entityStorageService->deleteAllFilesForEntity($mainDocument);
     }
 }

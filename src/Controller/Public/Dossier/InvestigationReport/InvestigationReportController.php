@@ -30,7 +30,7 @@ class InvestigationReportController extends AbstractController
     ) {
     }
 
-    #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route('/onderzoeksrapport/{prefix}/{dossierId}', name: 'app_investigationreport_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $investigationReport,
@@ -41,14 +41,14 @@ class InvestigationReportController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem(ucfirst($investigationReport->getTitle() ?? ''));
 
-        return $this->render('investigationreport/details.html.twig', [
+        return $this->render('public/dossier/investigation-report/details.html.twig', [
             'dossier' => $this->viewFactory->make($investigationReport),
             'attachments' => $this->attachmentViewFactory->makeCollection($investigationReport),
             'document' => $this->mainDocumentViewFactory->make($investigationReport, $document),
         ]);
     }
 
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/onderzoeksrapport/{prefix}/{dossierId}/document',
         name: 'app_investigationreport_document_detail',
@@ -67,7 +67,7 @@ class InvestigationReportController extends AbstractController
         ]);
         $breadcrumbs->addItem($dossier->getTitle() ?? '');
 
-        return $this->render('investigationreport/document.html.twig', [
+        return $this->render('public/dossier/investigation-report/document.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'document' => $this->mainDocumentViewFactory->make($dossier, $document),
@@ -79,7 +79,7 @@ class InvestigationReportController extends AbstractController
         ]);
     }
 
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/onderzoeksrapport/{prefix}/{dossierId}/bijlage/{attachmentId}',
         name: 'app_investigationreport_attachment_detail',
@@ -100,7 +100,7 @@ class InvestigationReportController extends AbstractController
         ]);
         $breadcrumbs->addItem($dossier->getTitle() ?? '');
 
-        return $this->render('investigationreport/attachment.html.twig', [
+        return $this->render('public/dossier/investigation-report/attachment.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'attachment' => $attachmentViewModel,

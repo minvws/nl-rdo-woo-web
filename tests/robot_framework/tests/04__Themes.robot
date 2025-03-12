@@ -1,13 +1,13 @@
 *** Settings ***
-Documentation       Tests that focus on the public pages
+Documentation       Tests that focus on the theme pages.
+...                 This is named 04 because we want to run this after the 02 TestDossiers, because we need Covid19 content in the database.
+...                 To run only this suite, run the tag 'themes-init'.
 Resource            ../resources/Setup.resource
 Resource            ../resources/Public.resource
 Resource            ../resources/Dossier.resource
-Resource            ../resources/Generic.resource
-Library             Collections
 Suite Setup         Suite Setup
 Test Setup          Go To Public
-Test Tags           ci  themes  public-init
+Test Tags           ci  themes  themes-init
 
 
 *** Test Cases ***

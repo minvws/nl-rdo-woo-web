@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Public\Dossier\WooDecision;
 
-use App\Domain\Publication\BatchDownload;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\BatchDownload\BatchDownload;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Exception\ViewingNotAllowedException;
 use App\Service\Security\DossierVoter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -55,7 +55,7 @@ class LegacyWooDecisionController extends AbstractController
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
     ): RedirectResponse {
         $this->denyAccessUnlessGranted(DossierVoter::VIEW, $dossier);
-        if ($batch->getEntity() !== $dossier) {
+        if ($batch->getDossier() !== $dossier) {
             throw ViewingNotAllowedException::forDossier();
         }
 
@@ -70,14 +70,14 @@ class LegacyWooDecisionController extends AbstractController
         );
     }
 
-    #[Cache(public: true, maxage: 172800, mustRevalidate: true)]
+    #[Cache(public: true, maxage: 600, mustRevalidate: true)]
     #[Route('/dossier/{dossierId}/batch/{batchId}/download', name: 'app_legacy_dossier_batch_download', methods: ['GET'], priority: -1)]
     public function batchDownload(
         #[MapEntity(mapping: ['dossierId' => 'dossierNr'])] WooDecision $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
     ): RedirectResponse {
         $this->denyAccessUnlessGranted(DossierVoter::VIEW, $dossier);
-        if ($batch->getEntity() !== $dossier) {
+        if ($batch->getDossier() !== $dossier) {
             throw ViewingNotAllowedException::forDossier();
         }
 

@@ -4,7 +4,7 @@
     <table class="bhr-table" data-e2e-name="user-table">
         <thead>
             <tr>
-                {{ knp_pagination_sortable(paginator, 'admin.global.user' | trans, 'u.name', { 'fragment': fragment }, {}, 'pagination/sort.admin.html.twig') }}
+                {{ knp_pagination_sortable(paginator, 'admin.global.user' | trans, 'u.name', { 'fragment': fragment }, {}, 'admin/layout/sort.html.twig') }}
                 <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.organisation' | trans }}</th>
                 <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.global.roles' | trans }}</th>
                 <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.global.last_login' | trans }}</th>
@@ -34,6 +34,6 @@
             {% endfor %}
         </tbody>
 
-        {{ knp_pagination_render(paginator, 'pagination/pagination.admin.html.twig') }}
+        {{ knp_pagination_render(paginator, 'admin/layout/pagination.html.twig') }}
     </table>
 {% endif %}

@@ -1,6 +1,7 @@
 .dockerignore
 .github
 docs
+!docs/requirements.txt
 auth.json
 .npmrc.auth
 var

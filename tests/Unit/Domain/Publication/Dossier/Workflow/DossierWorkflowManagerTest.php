@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Workflow;
 
+use App\Domain\Publication\BatchDownload\BatchDownloadScope;
+use App\Domain\Publication\BatchDownload\BatchDownloadService;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
@@ -32,6 +34,7 @@ class DossierWorkflowManagerTest extends MockeryTestCase
     private HistoryService&MockInterface $historyService;
     private DossierService&MockInterface $dossierService;
     private InquiryService&MockInterface $inquiryService;
+    private BatchDownloadService&MockInterface $batchDownloadService;
 
     public function setUp(): void
     {
@@ -49,12 +52,15 @@ class DossierWorkflowManagerTest extends MockeryTestCase
 
         $this->workflow = \Mockery::mock(WorkflowInterface::class);
 
+        $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
+
         $this->manager = new DossierWorkflowManager(
             $this->logger,
             $this->inquiryService,
             $this->historyService,
             $this->dossierTypeManager,
             $this->dossierService,
+            $this->batchDownloadService,
         );
     }
 
@@ -107,7 +113,11 @@ class DossierWorkflowManagerTest extends MockeryTestCase
         $this->logger->shouldReceive('info');
 
         $this->dossierService->expects('handleEntityUpdate')->with($this->dossier);
-        $this->dossierService->expects('generateArchives')->with($this->dossier);
+        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+            function (BatchDownloadScope $scope): bool {
+                return $scope->wooDecision === $this->dossier;
+            }
+        ));
 
         $this->historyService->expects('addDossierEntry')->with(
             $this->dossier,

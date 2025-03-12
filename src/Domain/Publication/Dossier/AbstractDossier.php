@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier;
 
 use App\Doctrine\TimestampableTrait;
+use App\Domain\Publication\Dossier\Type\Advice\Advice;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -12,7 +13,8 @@ use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Validator as DossierValidator;
 use App\Domain\Publication\Subject\Subject;
 use App\Entity\Department;
@@ -40,6 +42,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     DossierType::INVESTIGATION_REPORT->value => InvestigationReport::class,
     DossierType::DISPOSITION->value => Disposition::class,
     DossierType::COMPLAINT_JUDGEMENT->value => ComplaintJudgement::class,
+    DossierType::OTHER_PUBLICATION->value => OtherPublication::class,
+    DossierType::ADVICE->value => Advice::class,
 ])]
 #[ORM\UniqueConstraint(name: 'dossier_unique_index', columns: ['dossier_nr', 'document_prefix'])]
 #[ORM\HasLifecycleCallbacks]
@@ -100,6 +104,8 @@ abstract class AbstractDossier
             DossierValidationGroup::INVESTIGATION_REPORT_DETAILS->value,
             DossierValidationGroup::COMPLAINT_JUDGEMENT_DETAILS->value,
             DossierValidationGroup::DISPOSITION_DETAILS->value,
+            DossierValidationGroup::OTHER_PUBLICATION_DETAILS->value,
+            DossierValidationGroup::ADVICE_DETAILS->value,
         ],
     )]
     #[Assert\LessThanOrEqual(
@@ -109,6 +115,8 @@ abstract class AbstractDossier
             DossierValidationGroup::INVESTIGATION_REPORT_DETAILS->value,
             DossierValidationGroup::COMPLAINT_JUDGEMENT_DETAILS->value,
             DossierValidationGroup::DISPOSITION_DETAILS->value,
+            DossierValidationGroup::OTHER_PUBLICATION_DETAILS->value,
+            DossierValidationGroup::ADVICE_DETAILS->value,
         ],
     )]
     protected ?\DateTimeImmutable $dateFrom = null;

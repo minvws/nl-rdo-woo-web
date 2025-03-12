@@ -26,5 +26,11 @@ describe('The list utility functions', () => {
         'first, second and third',
       );
     });
+
+    test('should not adjust the provided list', () => {
+      const list = ['first', 'second', 'third'];
+      formatList(list, 'and');
+      expect(list).toEqual(['first', 'second', 'third']);
+    });
   });
 });

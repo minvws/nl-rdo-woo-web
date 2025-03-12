@@ -49,8 +49,10 @@ trait DossierFormBuilderTrait
             ]);
     }
 
-    private function addSubjectField(FormBuilderInterface $builder): void
-    {
+    private function addSubjectField(
+        FormBuilderInterface $builder,
+        string $helpLabel = 'admin.dossiers.form.details.subject_help',
+    ): void {
         /** @var AbstractDossier $dossier */
         $dossier = $builder->getData();
 
@@ -58,7 +60,7 @@ trait DossierFormBuilderTrait
             ->add('subject', EntityType::class, [
                 'class' => Subject::class,
                 'label' => 'admin.dossiers.form.details.subject_label',
-                'help' => 'admin.dossiers.form.details.subjecte_help',
+                'help' => $helpLabel,
                 'choices' => $dossier->getOrganisation()->getSubjects(),
                 'attr' => [
                     'class' => 'min-w-full',

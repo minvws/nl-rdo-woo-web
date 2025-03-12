@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Result;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
+use App\Domain\Search\Query\Facet\Input\DateFacetInput;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\ResultFactory;
@@ -12,32 +12,25 @@ use App\Service\Search\Model\Aggregation;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Model\Suggestion;
 use App\Service\Search\Model\SuggestionEntry;
-use App\Service\Search\Query\Facet\Input\DateFacetInput;
-use App\Service\Search\Query\Facet\Input\StringValuesFacetInput;
 use App\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
-use App\ValueObject\FilterDetails;
-use App\ValueObject\InquiryDescription;
-use Doctrine\ORM\EntityManagerInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Jaytaph\TypeArray\TypeArray;
 use Knp\Component\Pager\Pagination\AbstractPagination;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Psr\Log\LoggerInterface;
-use Webmozart\Assert\Assert;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class ResultTransformer
+readonly class ResultTransformer
 {
     public function __construct(
-        private readonly EntityManagerInterface $doctrine,
-        private readonly LoggerInterface $logger,
-        private readonly PaginatorInterface $paginator,
-        private readonly AggregationMapper $aggregationMapper,
-        private readonly ResultFactory $resultFactory,
-        private readonly SortItemViewFactory $sortItemViewFactory,
+        private LoggerInterface $logger,
+        private PaginatorInterface $paginator,
+        private AggregationMapper $aggregationMapper,
+        private ResultFactory $resultFactory,
+        private SortItemViewFactory $sortItemViewFactory,
     ) {
     }
 
@@ -76,7 +69,6 @@ class ResultTransformer
             $result->setPagination($pagination);
         }
 
-        $result->setFilterDetails($this->getFilterDetails($searchParameters));
         $result->setSortItems($this->sortItemViewFactory->make($searchParameters));
         $result->setSearchParameters($searchParameters);
 
@@ -202,45 +194,10 @@ class ResultTransformer
         return $ret;
     }
 
-    /**
-     * @param string[] $inquiryIds
-     *
-     * @return InquiryDescription[]
-     */
-    private function getInquiryDescriptions(array $inquiryIds): array
-    {
-        if (count($inquiryIds) === 0) {
-            return [];
-        }
-
-        return array_map(
-            static fn (Inquiry $inquiry): InquiryDescription => InquiryDescription::fromEntity($inquiry),
-            $this->doctrine->getRepository(Inquiry::class)->findBy(['id' => $inquiryIds])
-        );
-    }
-
-    private function getFilterDetails(SearchParameters $searchParameters): FilterDetails
-    {
-        /** @var StringValuesFacetInput $facetInput */
-        $facetInput = $searchParameters->facetInputs->getByFacetKey(FacetKey::PREFIXED_DOSSIER_NR);
-
-        $inputClass = FacetKey::PREFIXED_DOSSIER_NR->getInputClass();
-        Assert::isInstanceOf($facetInput, $inputClass);
-
-        return new FilterDetails(
-            $this->getInquiryDescriptions($searchParameters->dossierInquiries),
-            $this->getInquiryDescriptions($searchParameters->documentInquiries),
-            $facetInput->getStringValues(),
-        );
-    }
-
     private function displayWithoutDateMessage(SearchParameters $searchParameters, ?int $documentCountWithoutDate): bool
     {
         /** @var DateFacetInput $facetInput */
         $facetInput = $searchParameters->facetInputs->getByFacetKey(FacetKey::DATE);
-
-        $inputClass = FacetKey::DATE->getInputClass();
-        Assert::isInstanceOf($facetInput, $inputClass);
 
         if ($facetInput->isWithoutDate()) {
             return false;

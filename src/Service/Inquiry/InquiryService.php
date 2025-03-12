@@ -5,21 +5,18 @@ declare(strict_types=1);
 namespace App\Service\Inquiry;
 
 use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Publication\BatchDownload;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\InquiryInventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\BatchDownload\BatchDownloadScope;
+use App\Domain\Publication\BatchDownload\BatchDownloadService;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use App\Domain\Search\SearchDispatcher;
 use App\Entity\Organisation;
-use App\Message\GenerateInquiryArchivesMessage;
-use App\Service\BatchDownloadService;
 use App\Service\HistoryService;
 use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\QueryBuilder;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -29,7 +26,6 @@ readonly class InquiryService
 {
     public function __construct(
         private EntityManagerInterface $doctrine,
-        private MessageBusInterface $messageBus,
         private BatchDownloadService $batchDownloadService,
         private EntityStorageService $entityStorageService,
         private HistoryService $historyService,
@@ -64,14 +60,19 @@ readonly class InquiryService
         foreach ($this->doctrine->getRepository(Inquiry::class)->findByDossier($dossier) as $inquiry) {
             /** @var Inquiry $inquiry */
             $inquiry->removeDossier($dossier);
+            $this->batchDownloadService->removeAllForScope(
+                BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossier),
+            );
 
             if ($inquiry->getDossiers()->isEmpty()) {
                 $inventory = $inquiry->getInventory();
                 if ($inventory instanceof InquiryInventory) {
-                    $this->entityStorageService->removeFileForEntity($inventory);
+                    $this->entityStorageService->deleteAllFilesForEntity($inventory);
                     $this->doctrine->remove($inventory);
                 }
-                $this->batchDownloadService->removeAllDownloadsForEntity($inquiry);
+                $this->batchDownloadService->removeAllForScope(
+                    BatchDownloadScope::forInquiry($inquiry),
+                );
                 $this->doctrine->remove($inquiry);
             } else {
                 $this->doctrine->persist($inquiry);
@@ -91,28 +92,15 @@ readonly class InquiryService
 
     public function generateArchives(Inquiry $inquiry): void
     {
-        $this->messageBus->dispatch(
-            GenerateInquiryArchivesMessage::forInquiry($inquiry)
+        $this->batchDownloadService->refresh(
+            BatchDownloadScope::forInquiry($inquiry)
         );
-    }
 
-    public function generateBatch(Inquiry $inquiry, QueryBuilder $query): ?BatchDownload
-    {
-        $documentNrs = [];
-
-        /** @var Document[] $documents */
-        $documents = $query->select('doc')->getQuery()->getResult();
-        foreach ($documents as $document) {
-            if ($document->shouldBeUploaded() && $document->isUploaded()) {
-                $documentNrs[] = $document->getDocumentNr();
-            }
+        foreach ($inquiry->getDossiers() as $dossier) {
+            $this->batchDownloadService->refresh(
+                BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossier),
+            );
         }
-
-        if (count($documentNrs) === 0) {
-            return null;
-        }
-
-        return $this->batchDownloadService->findOrCreate($inquiry, $documentNrs, false);
     }
 
     /**

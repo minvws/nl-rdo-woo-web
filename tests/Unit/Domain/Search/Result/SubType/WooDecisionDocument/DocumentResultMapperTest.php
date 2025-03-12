@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Search\Result\SubType\WooDecisionDocument;
 
 use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\WooDecisionRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentSearchResultMapper;

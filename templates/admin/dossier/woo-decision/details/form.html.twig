@@ -3,7 +3,7 @@
 
     {{ form_row(form.title) }}
     {{ form_row(form.date_from) }}
-    {%  include 'admin/dossier/snippets/departments-field.html.twig' with {'formField': form.departments} %}
+    {%  include 'admin/dossier/shared/snippets/departments-field.html.twig' with {'formField': form.departments} %}
     {{ form_row(form.subject) }}
     {{ form_row(form.publication_reason) }}
 

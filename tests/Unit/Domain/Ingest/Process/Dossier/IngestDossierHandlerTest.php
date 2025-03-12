@@ -8,7 +8,7 @@ use App\Domain\Ingest\Process\Dossier\DossierIngester;
 use App\Domain\Ingest\Process\Dossier\IngestDossierCommand;
 use App\Domain\Ingest\Process\Dossier\IngestDossierHandler;
 use App\Domain\Ingest\Process\IngestProcessException;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

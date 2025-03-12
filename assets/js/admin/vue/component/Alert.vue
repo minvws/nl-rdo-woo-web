@@ -36,7 +36,7 @@ const getIconColor = () => {
 const getIconName = () => {
   switch (props.type) {
     case 'danger':
-      return 'exclamation-colored';
+      return 'exclamation-filled-colored';
     case 'info':
       return 'info-rounded-filled';
     default:
@@ -51,6 +51,10 @@ const iconName = getIconName();
 
 <template>
   <div class="bhr-alert" :class="{ [alertTypeClass]: true }">
+    <template v-if="slots.top">
+      <slot name="top"></slot>
+    </template>
+
     <div class="flex">
       <span class="mr-4">
         <Icon :color="iconColor" :name="iconName" :size="32" />

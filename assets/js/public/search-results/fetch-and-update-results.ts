@@ -1,7 +1,4 @@
-export const fetchAndUpdateResults = (
-  params: URLSearchParams,
-  callbackFunction: (previousActiveElement?: HTMLElement) => void,
-) => {
+export const fetchAndUpdateResults = async (params: URLSearchParams) => {
   const filtersElement = document.getElementById('js-search-filters');
   const resultsElement = document.getElementById('js-search-results');
 
@@ -9,17 +6,16 @@ export const fetchAndUpdateResults = (
     return;
   }
 
-  fetch(`${filtersElement.dataset.url}?${params}`)
-    .then((response) => response.text())
-    .then((json) => {
-      const data = JSON.parse(json);
-      const { activeElement: previousActiveElement } = document;
+  try {
+    const response = await fetch(`${filtersElement.dataset.url}?${params}`);
+    const json = await response.text();
+    const data = JSON.parse(json);
+    const { activeElement: previousActiveElement } = document;
 
-      filtersElement.innerHTML = JSON.parse(data.facets);
-      resultsElement.innerHTML = JSON.parse(data.results);
+    filtersElement.innerHTML = JSON.parse(data.facets);
+    resultsElement.innerHTML = JSON.parse(data.results);
 
-      if (callbackFunction) {
-        callbackFunction((previousActiveElement as HTMLElement) || undefined);
-      }
-    });
+    return previousActiveElement as HTMLElement | null;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
+  } catch (error) {}
 };

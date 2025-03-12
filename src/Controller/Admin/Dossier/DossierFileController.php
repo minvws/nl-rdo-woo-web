@@ -23,7 +23,7 @@ class DossierFileController extends AbstractController
     ) {
     }
 
-    #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/balie/dossier/{prefix}/{dossierId}/file/download/{type}/{id?""}',
         name: 'app_admin_dossier_file_download',

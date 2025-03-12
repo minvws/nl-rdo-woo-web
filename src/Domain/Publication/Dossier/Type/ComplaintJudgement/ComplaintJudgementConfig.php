@@ -68,4 +68,9 @@ readonly class ComplaintJudgementConfig implements DossierTypeConfigInterface
             ComplaintJudgementMainDocument::class,
         ];
     }
+
+    public function getAttachmentStepName(): ?StepName
+    {
+        return StepName::CONTENT;
+    }
 }

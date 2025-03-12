@@ -6,30 +6,34 @@ namespace App\Tests\Unit\Service\Search\Result;
 
 use App\Citation;
 use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\ElasticField;
+use App\Domain\Search\Index\Schema\ElasticField;
+use App\Domain\Search\Query\Facet\Definition\DepartmentFacet;
+use App\Domain\Search\Query\Facet\Definition\GroundsFacet;
+use App\Domain\Search\Query\Facet\Definition\SourceFacet;
+use App\Domain\Search\Query\Facet\Definition\TypeFacet;
+use App\Domain\Search\Query\Facet\FacetDefinitions;
+use App\Domain\Search\Query\Facet\Input\FacetInputFactory;
+use App\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
 use App\Domain\Search\Query\SearchParameters;
 use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Facet\Input\FacetInputFactory;
-use App\Service\Search\Query\Facet\Input\StringValuesFacetInput;
 use App\Service\Search\Result\AggregationMapper;
 use App\SourceType;
 use Jaytaph\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AggregationMapperTest extends MockeryTestCase
 {
-    private TranslatorInterface&MockInterface $translator;
+    private FacetDefinitions&MockInterface $facetDefinitions;
     private FacetInputFactory&MockInterface $facetInputFactory;
     private AggregationMapper $mapper;
 
     public function setUp(): void
     {
-        $this->translator = \Mockery::mock(TranslatorInterface::class);
+        $this->facetDefinitions = \Mockery::mock(FacetDefinitions::class);
         $this->facetInputFactory = \Mockery::mock(FacetInputFactory::class);
 
-        $this->mapper = new AggregationMapper($this->translator, $this->facetInputFactory);
+        $this->mapper = new AggregationMapper($this->facetInputFactory, $this->facetDefinitions);
     }
 
     public function testMapGrounds(): void
@@ -55,6 +59,8 @@ class AggregationMapperTest extends MockeryTestCase
             ->expects('withFacetInput')
             ->with(FacetKey::GROUNDS, $facetInputB)
             ->andReturn(\Mockery::mock(SearchParameters::class));
+
+        $this->facetDefinitions->expects('get')->with(FacetKey::GROUNDS)->andReturn(new GroundsFacet());
 
         $result = $this->mapper->map(
             FacetKey::GROUNDS->value,
@@ -102,6 +108,8 @@ class AggregationMapperTest extends MockeryTestCase
             ->with(FacetKey::DEPARTMENT, $facetInputB)
             ->andReturn(\Mockery::mock(SearchParameters::class));
 
+        $this->facetDefinitions->expects('get')->with(FacetKey::DEPARTMENT)->andReturn(new DepartmentFacet());
+
         $result = $this->mapper->map(
             FacetKey::DEPARTMENT->value,
             [
@@ -144,6 +152,8 @@ class AggregationMapperTest extends MockeryTestCase
             ->with(FacetKey::TYPE, $facetInputB)
             ->andReturn(\Mockery::mock(SearchParameters::class));
 
+        $this->facetDefinitions->expects('get')->with(FacetKey::TYPE)->andReturn(new TypeFacet());
+
         $result = $this->mapper->map(
             FacetKey::TYPE->value,
             [
@@ -176,7 +186,7 @@ class AggregationMapperTest extends MockeryTestCase
             ->with(FacetKey::SOURCE, $facetInputB)
             ->andReturn(\Mockery::mock(SearchParameters::class));
 
-        $this->translator->expects('trans')->with('public.documents.file_type.email', [], null, null)->andReturn('foo-bar');
+        $this->facetDefinitions->expects('get')->with(FacetKey::SOURCE)->andReturn(new SourceFacet());
 
         $result = $this->mapper->map(
             FacetKey::SOURCE->value,
@@ -236,6 +246,8 @@ class AggregationMapperTest extends MockeryTestCase
             ->with(FacetKey::TYPE, $facetInputD)
             ->andReturn(\Mockery::mock(SearchParameters::class));
 
+        $this->facetDefinitions->expects('get')->with(FacetKey::TYPE)->andReturn(new TypeFacet());
+
         $result = $this->mapper->map(
             ElasticField::TOPLEVEL_TYPE->value,
             [
@@ -267,11 +279,11 @@ class AggregationMapperTest extends MockeryTestCase
 
         $subEntries = $result->getEntries()[0]->getSubEntries();
         self::assertCount(3, $subEntries);
-        self::assertEquals('publication', $subEntries[0]->getKey());
+        self::assertEquals('dossier.publication', $subEntries[0]->getKey());
         self::assertEquals(3, $subEntries[0]->getCount());
-        self::assertEquals('document', $subEntries[1]->getKey());
+        self::assertEquals('dossier.document', $subEntries[1]->getKey());
         self::assertEquals(5, $subEntries[1]->getCount());
-        self::assertEquals('attachment', $subEntries[2]->getKey());
+        self::assertEquals('dossier.attachment', $subEntries[2]->getKey());
         self::assertEquals(1, $subEntries[2]->getCount());
     }
 
@@ -309,6 +321,8 @@ class AggregationMapperTest extends MockeryTestCase
             ->with(FacetKey::TYPE, $facetInputD)
             ->andReturn(\Mockery::mock(SearchParameters::class));
 
+        $this->facetDefinitions->expects('get')->with(FacetKey::TYPE)->andReturn(new TypeFacet());
+
         $result = $this->mapper->map(
             ElasticField::TOPLEVEL_TYPE->value,
             [
@@ -340,9 +354,9 @@ class AggregationMapperTest extends MockeryTestCase
 
         $subEntries = $result->getEntries()[0]->getSubEntries();
         self::assertCount(2, $subEntries);
-        self::assertEquals('document', $subEntries[0]->getKey());
+        self::assertEquals('dossier.document', $subEntries[0]->getKey());
         self::assertEquals(5, $subEntries[0]->getCount());
-        self::assertEquals('attachment', $subEntries[1]->getKey());
+        self::assertEquals('dossier.attachment', $subEntries[1]->getKey());
         self::assertEquals(1, $subEntries[1]->getCount());
     }
 }

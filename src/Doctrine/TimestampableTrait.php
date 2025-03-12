@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Doctrine;
 
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 trait TimestampableTrait
@@ -17,14 +18,14 @@ trait TimestampableTrait
     #[ORM\PrePersist]
     public function onPrePersist(): void
     {
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
     }
 
     #[ORM\PreUpdate]
     public function onPreUpdate(): void
     {
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = new CarbonImmutable();
     }
 
     public function getCreatedAt(): \DateTimeImmutable

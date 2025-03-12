@@ -14,9 +14,7 @@ class PropertyChangesetTest extends TestCase
         $changeset = new PropertyChangeset();
 
         self::assertFalse($changeset->hasChanges());
-
-        $this->expectException(\OutOfBoundsException::class);
-        $changeset->isChanged('foo');
+        self::assertFalse($changeset->isChanged('foo'));
     }
 
     public function testChangesetAdd(): void

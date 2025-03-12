@@ -1,11 +1,12 @@
-<script setup>
+<script setup lang="ts">
 import { formatFileSize } from '@js/admin/utils';
 
-const props = defineProps({
-  files: {
-    type: Array,
-    default: () => [],
-  },
+interface Props {
+  files: File[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  files: () => [],
 });
 </script>
 

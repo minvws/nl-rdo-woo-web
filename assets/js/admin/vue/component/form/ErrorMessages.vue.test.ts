@@ -23,10 +23,10 @@ describe('The "ErrorMessages" component', () => {
   const getList = (component: VueWrapper) => component.find('ul');
   const getParagraph = (component: VueWrapper) => component.find('p');
 
-  test('should render an exclamation icon', () => {
+  test('should render an exclamation-filled icon', () => {
     const component = createComponent();
     const iconComponent = component.findComponent({ name: 'Icon' });
-    expect(iconComponent.props('name')).toBe('exclamation');
+    expect(iconComponent.props('name')).toBe('exclamation-filled');
   });
 
   test('should display a <ul> element when there are multiple messages', () => {

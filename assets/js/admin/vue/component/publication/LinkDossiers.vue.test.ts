@@ -1,6 +1,6 @@
 import { VueWrapper, mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { PublicationSearchResult } from './interface';
+import { PublicationSearchResult } from './search/interface';
 import LinkDossiers from './LinkDossiers.vue';
 
 describe('The "LinkDossiers" component', () => {

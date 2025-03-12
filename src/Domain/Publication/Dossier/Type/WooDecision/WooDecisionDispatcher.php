@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\GenerateInquiryInventoryCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveInventoryAndDocumentsCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\UpdateDecisionCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\UpdateInquiryLinksCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawAllDocumentsCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Decision\UpdateDecisionCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawAllDocumentsCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -29,11 +29,15 @@ readonly class WooDecisionDispatcher
 
     public function dispatchWithdrawAllDocumentsCommand(
         WooDecision $wooDecision,
-        WithdrawReason $reason,
+        DocumentWithdrawReason $reason,
         string $explanation,
     ): void {
         $this->messageBus->dispatch(
-            new WithDrawAllDocumentsCommand($wooDecision, $reason, $explanation),
+            new WithDrawAllDocumentsCommand(
+                $wooDecision->getId(),
+                $reason,
+                $explanation,
+            ),
         );
     }
 
@@ -64,7 +68,13 @@ readonly class WooDecisionDispatcher
         array $dossierIdsToAdd,
     ): void {
         $this->messageBus->dispatch(
-            new UpdateInquiryLinksCommand($id, $caseNr, $docIdsToAdd, $docIdsToDelete, $dossierIdsToAdd),
+            new UpdateInquiryLinksCommand(
+                $id,
+                $caseNr,
+                $docIdsToAdd,
+                $docIdsToDelete,
+                $dossierIdsToAdd,
+            ),
         );
     }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PublicationSearchResult } from '@admin-fe/component/publication/interface';
+import type { PublicationSearchResult } from '@admin-fe/component/publication/search/interface';
 import { onOneOfKeysDown } from '@js/utils';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 

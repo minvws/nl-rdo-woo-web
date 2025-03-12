@@ -1,0 +1,20 @@
+{% extends 'public/dossier/shared/details.html.twig' %}
+
+{% set tagline = 'public.dossiers.annual_report.tagline' | trans %}
+{% set description = 'public.dossiers.annual_report.description' | trans %}
+
+{% block attachments %}
+    {% include 'public/dossier/shared/attachments.html.twig' with { title: 'public.dossiers.annual_report.attachments_for' | trans } %}
+{% endblock %}
+
+{% block about %}
+    <twig:Public:Publication:About
+        document="{{ document }}"
+        documentType="{{ document.type | trans | capitalize }}"
+        dossier="{{ dossier }}"
+        title="{{ 'public.dossiers.annual_report.about' | trans }}"
+        dateLabel="{{ 'global.year' | trans }}"
+    >
+        {{ dossier.year }}
+    </twig:Public:Publication:About>
+{% endblock %}

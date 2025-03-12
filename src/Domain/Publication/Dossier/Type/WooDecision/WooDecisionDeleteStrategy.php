@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision;
 
+use App\Domain\Publication\BatchDownload\BatchDownloadScope;
+use App\Domain\Publication\BatchDownload\BatchDownloadService;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\AbstractEntityWithFileInfoDeleteStrategy;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Service\BatchDownloadService;
 use App\Service\DocumentService;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Storage\EntityStorageService;
@@ -33,10 +33,14 @@ readonly class WooDecisionDeleteStrategy extends AbstractEntityWithFileInfoDelet
             $this->documentService->removeDocumentFromDossier($dossier, $document, false);
         }
 
-        $this->deleteFileForEntity($dossier->getInventory());
-        $this->deleteFileForEntity($dossier->getProductionReport());
+        $this->deleteAllFilesForEntity($dossier->getInventory());
+        $this->deleteAllFilesForEntity($dossier->getProductionReport());
+        $this->deleteAllFilesForEntity($dossier->getProcessRun());
 
-        $this->downloadService->removeAllDownloadsForEntity($dossier);
+        $this->downloadService->removeAllForScope(
+            BatchDownloadScope::forWooDecision($dossier),
+        );
+
         $this->inquiryService->removeDossierFromInquiries($dossier);
     }
 }

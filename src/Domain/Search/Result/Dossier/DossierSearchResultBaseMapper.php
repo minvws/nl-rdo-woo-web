@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Search\Result\Dossier;
 
 use App\Domain\Search\Index\ElasticDocumentType;
+use App\Domain\Search\Index\Schema\ElasticField;
 use App\Domain\Search\Result\HighlightMapperTrait;
 use App\Domain\Search\Result\ResultEntryInterface;
 use Jaytaph\TypeArray\TypeArray;
@@ -20,7 +21,7 @@ readonly class DossierSearchResultBaseMapper
         TypeArray $hit,
         ProvidesDossierTypeSearchResultInterface $repository,
         ElasticDocumentType $documentType,
-        array $highlightPaths = ['title', 'summary'],
+        array $highlightPaths = [ElasticField::TITLE->value, ElasticField::SUMMARY->value],
     ): ?ResultEntryInterface {
         $prefix = $hit->getStringOrNull('[fields][document_prefix][0]');
         $dossierNr = $hit->getStringOrNull('[fields][dossier_nr][0]');

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Dialog from '@admin-fe/component/Dialog.vue';
 import ErrorMessages from '@admin-fe/component/form/ErrorMessages.vue';
-import type { PublicationSearchResult } from '@admin-fe/component/publication/interface';
+import type { PublicationSearchResult } from '@admin-fe/component/publication/search/interface';
 import PublicationSearchAutocomplete from '@admin-fe/component/publication/search/PublicationSearchAutocomplete.vue';
 import { computed, ref } from 'vue';
 

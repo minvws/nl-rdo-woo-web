@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Exception\ProcessInventoryException;
 use App\Exception\TranslatableException;
 use App\Service\Inventory\Progress\RunProgress;

@@ -1,14 +1,13 @@
 *** Settings ***
-Library     Browser
-Library     DebugLibrary
-Resource    Admin.resource
+Documentation       Resource file containing custom keywords for the Disposition information category
+Library             Browser
+Library             DebugLibrary
+Resource            Admin.resource
 
 
 *** Variables ***
 ${DISPOSITION_FILENAME}     ${EMPTY}
 ${DISPOSITION_LOCATION}     ${EMPTY}
-${ATTACHMENT_FILENAME}      ${EMPTY}
-${ATTACHMENT_LOCATION}      ${EMPTY}
 
 
 *** Keywords ***

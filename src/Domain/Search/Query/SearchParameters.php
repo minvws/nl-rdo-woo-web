@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Query;
 
+use App\Domain\Search\Query\Facet\FacetDefinitionInterface;
+use App\Domain\Search\Query\Facet\Input\DateFacetInput;
+use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
+use App\Domain\Search\Query\Facet\Input\FacetInputInterface;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Condition\QueryConditions;
-use App\Service\Search\Query\Facet\Input\DateFacetInput;
-use App\Service\Search\Query\Facet\Input\FacetInput;
-use App\Service\Search\Query\Facet\Input\FacetInputCollection;
 use App\Service\Search\Query\Sort\SortField;
 use App\Service\Search\Query\Sort\SortOrder;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -16,9 +17,6 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 final readonly class SearchParameters
 {
     /**
-     * @param list<string> $documentInquiries
-     * @param list<string> $dossierInquiries
-     *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -30,8 +28,6 @@ final readonly class SearchParameters
         public bool $aggregations = true,
         public string $query = '',
         public SearchType $searchType = SearchType::DEFAULT,
-        public array $documentInquiries = [],
-        public array $dossierInquiries = [],
         public SortField $sortField = SortField::SCORE,
         public SortOrder $sortOrder = SortOrder::DESC,
         public ?QueryConditions $baseQueryConditions = null,
@@ -49,7 +45,7 @@ final readonly class SearchParameters
         return false;
     }
 
-    public function withFacetInput(FacetKey $key, FacetInput $facetInput): self
+    public function withFacetInput(FacetKey $key, FacetInputInterface $facetInput): self
     {
         return new self(
             facetInputs: $this->facetInputs->withFacetInput($key, $facetInput),
@@ -60,8 +56,6 @@ final readonly class SearchParameters
             aggregations: $this->aggregations,
             query: $this->query,
             searchType: $this->searchType,
-            documentInquiries: $this->documentInquiries,
-            dossierInquiries: $this->dossierInquiries,
             sortField: $this->sortField,
             sortOrder: $this->sortOrder,
         );
@@ -78,8 +72,6 @@ final readonly class SearchParameters
             aggregations: $this->aggregations,
             query: $query,
             searchType: $this->searchType,
-            documentInquiries: $this->documentInquiries,
-            dossierInquiries: $this->dossierInquiries,
             sortField: $this->sortField,
             sortOrder: $this->sortOrder,
         );
@@ -115,14 +107,6 @@ final readonly class SearchParameters
             $params->set('page', $this->offset);
         }
 
-        if (! empty($this->documentInquiries)) {
-            $params->set('dci', $this->documentInquiries);
-        }
-
-        if (! empty($this->documentInquiries)) {
-            $params->set('dsi', $this->dossierInquiries);
-        }
-
         return $params;
     }
 
@@ -137,8 +121,6 @@ final readonly class SearchParameters
             aggregations: $this->aggregations,
             query: $this->query,
             searchType: $this->searchType,
-            documentInquiries: $this->documentInquiries,
-            dossierInquiries: $this->dossierInquiries,
             sortField: $sortField,
             sortOrder: $sortOrder,
         );
@@ -161,8 +143,6 @@ final readonly class SearchParameters
             aggregations: $this->aggregations,
             query: $this->query,
             searchType: $this->searchType,
-            documentInquiries: $this->documentInquiries,
-            dossierInquiries: $this->dossierInquiries,
             sortField: $this->sortField,
             sortOrder: $this->sortOrder,
         );
@@ -179,11 +159,19 @@ final readonly class SearchParameters
             aggregations: $this->aggregations,
             query: $this->query,
             searchType: $this->searchType,
-            documentInquiries: $this->documentInquiries,
-            dossierInquiries: $this->dossierInquiries,
             sortField: $this->sortField,
             sortOrder: $this->sortOrder,
             baseQueryConditions: $queryConditions,
+        );
+    }
+
+    public function withoutFacetFilter(FacetDefinitionInterface $facet, string $key, string $value): self
+    {
+        return $this->withFacetInput(
+            $facet->getKey(),
+            $this->facetInputs
+                ->getByFacetKey($facet->getKey())
+                ->without($key, $value),
         );
     }
 }

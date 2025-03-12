@@ -1,0 +1,10 @@
+loc: 'http://localhost/dossier/PREF/my-annual-report-1/file/download/annual-report/1ef07bff-c035-6700-b700-2bb719c51bd0'
+lastmod: '2012-04-04T01:12:42+00:00'
+diWooDocument:
+    creatiedatum: '2012-03-30T00:00:00+00:00'
+    publisher: { resource: 'https://identifier.overheid.nl/tooi/id/ministerie/mnre1025', name: mnre1025, value: 'ministerie van Volksgezondheid, Welzijn en Sport' }
+    officieleTitel: file_name.pdf
+    informatieCategorie: { resource: 'https://identifier.overheid.nl/tooi/def/thes/kern/c_c6cd1213', name: c_c6cd1213, value: 'jaarplannen en jaarverslagen' }
+    documentHandeling: { soortHandeling: { resource: 'https://identifier.overheid.nl/tooi/def/thes/kern/c_e1ec3050e', name: c_e1ec3050e, value: ondertekening }, atTime: '2012-03-30T00:00:00+00:00' }
+changefreq: null
+priority: null

@@ -101,7 +101,7 @@ final class ClamAvFileScannerTest extends MockeryTestCase
         fwrite($stream, 'some data that is more than 10 bytes');
         $this->filesystem->expects('createStream')->with($path, 'r')->andReturn($stream);
 
-        $this->logger->expects('error');
+        $this->logger->expects('warning');
 
         self::assertEquals(
             FileScanResult::MAX_SIZE_EXCEEDED,

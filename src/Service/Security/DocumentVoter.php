@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Security;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class DocumentVoter extends WooDecisionVoter
@@ -33,11 +33,14 @@ class DocumentVoter extends WooDecisionVoter
             return true;
         }
 
-        // Check all inquiry ids from the document to see if we have one matching in our session.
+        return $this->checkForDocumentInquiryIdInSession($document);
+    }
+
+    private function checkForDocumentInquiryIdInSession(Document $document): bool
+    {
         $inquiryIds = $this->inquirySession->getInquiries();
         foreach ($document->getInquiries() as $inquiry) {
             if (in_array($inquiry->getId(), $inquiryIds)) {
-                // Inquiry id is set in the session, so allow viewing
                 return true;
             }
         }

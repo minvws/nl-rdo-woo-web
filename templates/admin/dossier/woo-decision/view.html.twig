@@ -1,5 +1,5 @@
-{% extends 'admin.html.twig' %}
-{% import "admin/document_macros.html.twig" as macro %}
+{% extends 'admin/base.html.twig' %}
+{% import "admin/macros/document.html.twig" as macro %}
 
 {% set page_title = "Dossier " | trans() ~ dossier.dossierNr %}
 {% set uploadStatus = dossier.uploadStatus %}
@@ -22,7 +22,7 @@
 
                 <twig:block name="right">
                     {% if matrix_has_permission('dossier.update') %}
-                    <a class="bhr-button bhr-button--secondary" href="{{ path(workflowStatus.detailsPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">{{ 'admin.global.edit' | trans() }} <span class="sr-only">({{ 'admin.dossiers.workflow.details' | trans() }})</span></a>
+                    <a class="bhr-button bhr-button--secondary" href="{{ path(workflowStatus.detailsPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}" data-e2e-name="edit-basic-details">{{ 'admin.global.edit' | trans() }} <span class="sr-only">({{ 'admin.dossiers.workflow.details' | trans() }})</span></a>
                     {% endif %}
                 </twig:block>
             </twig:Admin:LeftAndRight>
@@ -122,17 +122,15 @@
             <twig:Admin:LeftAndRight>
                 <h2 class="bhr-title">{{ 'global.documents' | trans }}{% if dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments and dossier.inventory is not null %} ({{ uploadStatus.actualUploadCount }}/{{ uploadStatus.expectedUploadCount }}){%endif %}</h2>
 
-                <twig:block name="right">
-                    {% if matrix_has_permission('dossier.update') %}
-                    {% if dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments %}
-                        <a
-                            class="bhr-button bhr-button--secondary"
-                            data-e2e-name="edit-link"
-                            href="{{ path(workflowStatus.documentsPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
-                        >Bewerken <span class="sr-only">(documenten)</span></a>
-                    {% endif %}
-                    {% endif %}
-                </twig:block>
+                    <twig:block name="right">
+                        {% if matrix_has_permission('dossier.update') and dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments %}
+                            <a
+                                class="bhr-button bhr-button--secondary"
+                                data-e2e-name="edit-link"
+                                href="{{ path(workflowStatus.documentsPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
+                            >Bewerken <span class="sr-only">(documenten)</span></a>
+                        {% endif %}
+                    </twig:block>
             </twig:Admin:LeftAndRight>
 
             {% if not dossier.needsInventoryAndDocuments %}
@@ -156,7 +154,7 @@
                     <twig:Admin:Definition term="{{ 'global.documents' | trans() }}">
                         <p data-e2e-name="dossier-uploadCount">{{ uploadStatus.actualUploadCount }}{% if dossier.inventory is not null  %} van {{ uploadStatus.expectedUploadCount }}{% endif %} bestanden geüpload</p>
 
-                        {% if dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments %}
+                        {% if matrix_has_permission('dossier.update') and dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments %}
                         <p class="mt-3">
                             <twig:Admin:IconLink
                                 href="{{ path(workflowStatus.documentsPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
@@ -167,6 +165,13 @@
                         {% endif %}
                     </twig:Admin:Definition>
                 </dl>
+                {% if dossier.hasWithdrawnOrSuspendedDocuments %}
+                <div class="my-4">
+                    <twig:Admin:Alert type="danger">
+                        {{ 'admin.dossiers.documents.withdrawn_or_suspended' | trans }}
+                    </twig:Admin:Alert>
+                </div>
+                {% endif %}
             {% else %}
                 <p class="font-bold text-lg text-center py-6">{{ ("admin.dossiers.woo-decision.complete_step." ~ firstOpenStep) | trans }}</p>
             {% endif %}
@@ -225,7 +230,7 @@
                             <div class="text-base text-black">
                                 <table class="bhr-table table-fixed">
                                     <thead>
-                                        {% include 'pagination/sort.admin.html.twig' with {'title': 'Zaaknummer', 'sorted': sorted, 'options': case_options, 'sortClassName': sortClassName} %}
+                                        {% include 'admin/layout/sort.html.twig' with {'title': 'Zaaknummer', 'sorted': sorted, 'options': case_options, 'sortClassName': sortClassName} %}
                                         <th class="bhr-column-head" scope="col">Link voor verzoeker</th>
                                     </thead>
                                     <tbody data-e2e-name="linked-inquiries">

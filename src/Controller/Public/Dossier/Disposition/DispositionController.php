@@ -30,7 +30,7 @@ class DispositionController extends AbstractController
     ) {
     }
 
-    #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route('/beschikking/{prefix}/{dossierId}', name: 'app_disposition_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] Disposition $dossier,
@@ -41,14 +41,14 @@ class DispositionController extends AbstractController
         $breadcrumbs->addRouteItem('Home', 'app_home');
         $breadcrumbs->addItem(ucfirst($dossier->getTitle() ?? ''));
 
-        return $this->render('disposition/details.html.twig', [
+        return $this->render('public/dossier/disposition/details.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'document' => $this->mainDocumentViewFactory->make($dossier, $document),
         ]);
     }
 
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/beschikking/{prefix}/{dossierId}/document',
         name: 'app_disposition_document_detail',
@@ -69,7 +69,7 @@ class DispositionController extends AbstractController
         ]);
         $breadcrumbs->addItem(ucfirst($dossier->getTitle() ?? ''));
 
-        return $this->render('disposition/document.html.twig', [
+        return $this->render('public/dossier/disposition/document.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'document' => $mainDocumentViewModel,
@@ -81,7 +81,7 @@ class DispositionController extends AbstractController
         ]);
     }
 
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/beschikking/{prefix}/{dossierId}/bijlage/{attachmentId}',
         name: 'app_disposition_attachment_detail',
@@ -102,7 +102,7 @@ class DispositionController extends AbstractController
         ]);
         $breadcrumbs->addItem(ucfirst($dossier->getTitle() ?? ''));
 
-        return $this->render('disposition/attachment.html.twig', [
+        return $this->render('public/dossier/disposition/attachment.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'attachment' => $attachmentViewModel,

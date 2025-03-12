@@ -1,4 +1,4 @@
-FROM php:8.2.26-apache-bookworm
+FROM php:8.2.27-apache-bookworm
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -62,7 +62,7 @@ RUN docker-php-ext-install \
     && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen \
     && rm -rf /tmp/*
 
-ARG NODE_MAJOR=18
+ARG NODE_MAJOR=20
 
 ENV COREPACK_HOME=/tmp/corepack
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0

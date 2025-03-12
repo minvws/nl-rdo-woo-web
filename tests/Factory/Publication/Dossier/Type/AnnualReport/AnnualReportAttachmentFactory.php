@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Factory\Publication\Dossier\Type\AnnualReport;
 
-use App\Domain\Publication\Attachment\AttachmentLanguage;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -15,6 +16,11 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
  */
 final class AnnualReportAttachmentFactory extends PersistentProxyObjectFactory
 {
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
+
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
@@ -40,7 +46,19 @@ final class AnnualReportAttachmentFactory extends PersistentProxyObjectFactory
      */
     protected function initialize(): static
     {
-        return $this;
+        return $this
+            ->afterInstantiate(function (AnnualReportAttachment $attachment, array $attributes): void {
+                if (isset($attributes['overwrite_id'])) {
+                    $this->entityManager->detach($attachment);
+
+                    $reflection = new \ReflectionClass($attachment);
+                    $property = $reflection->getProperty('id');
+                    $property->setAccessible(true);
+                    $property->setValue($attachment, $attributes['overwrite_id']);
+
+                    $this->entityManager->persist($attachment);
+                }
+            });
     }
 
     public static function class(): string

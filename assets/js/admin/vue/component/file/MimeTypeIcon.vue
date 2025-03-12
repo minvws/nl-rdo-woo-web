@@ -1,20 +1,16 @@
-<script setup>
-import Icon from '../Icon.vue';
-import { computed } from 'vue';
+<script setup lang="ts">
 import { getIconNameByMimeType } from '@js/admin/utils';
+import { computed } from 'vue';
+import Icon from '../Icon.vue';
 
-const props = defineProps({
-  mimeType: {
-    type: String,
-    required: false,
-  },
-  size: {
-    type: Number,
-    required: false,
-  },
-});
+interface Props {
+  mimeType?: string;
+  size?: number;
+}
 
-const name = computed(() => getIconNameByMimeType(props.mimeType));
+const props = defineProps<Props>();
+
+const name = computed(() => getIconNameByMimeType(props.mimeType ?? ''));
 </script>
 
 <template>

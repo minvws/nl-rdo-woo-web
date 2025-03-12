@@ -1,18 +1,14 @@
 *** Settings ***
-Documentation       Tests that focus on the public pages
+Documentation       Tests that focus on the public pages.
+...                 This is named 03 because we want to run this after 02, so we have content to search for.
+...                 To run only this suite, run the tag 'public-init'.
 Resource            ../resources/Setup.resource
 Resource            ../resources/Public.resource
 Resource            ../resources/Dossier.resource
-Resource            ../resources/Generic.resource
-Library             Collections
 Library             DependencyLibrary
 Suite Setup         Suite Setup
 Test Setup          Test Setup
 Test Tags           ci  public  public-init
-
-
-*** Variables ***
-${BASE_URL}     localhost:8000
 
 
 *** Test Cases ***
@@ -72,7 +68,7 @@ Searching in dossier should only search in dossier
 
 Sorting on publication date
   [Documentation]  This test is functionally working, but the testdata is all published at the same date...
-  Select Filter Options - Dossier  woo-decision  documents=${False}  attachments=${False}
+  Select Filter Options - Dossier  woo-decision  documents=${False}  attachments=${False}  main_document=${FALSE}
   Selecting Results Sorting  newest-first
   Verify Search Results Sort Order  newest-first
   Selecting Results Sorting  oldest-first
@@ -101,7 +97,7 @@ Test Setup
 
 Verify Search Results Sort Order
   [Arguments]  ${sorting_order}
-  @{search_results} =  Create List
+  VAR  @{search_results}  @{EMPTY}
   ${nr_of_elements} =  Get Element Count  //li[@data-e2e-name="search-result"]//span[@data-e2e-name="publication-date"]
   IF  ${nr_of_elements} > 0
     @{result_elements} =  Get Elements  //li[@data-e2e-name="search-result"]//span[@data-e2e-name="publication-date"]

@@ -155,6 +155,7 @@ global.decision.dossier_number: "Besluitnummer"
 global.footer.label.accessibility: "Toegankelijkheid"
 global.footer.label.privacy: "Privacy"
 global.footer.label.contact: "Contact"
+global.footer.label.documentation: "Documentatie"
 global.footer.label.report_vulnerability: "Kwetsbaarheid melden"
 
 auth.set_up.title: "Authenticator app instellen"
@@ -173,6 +174,10 @@ categories.category.source_file: "Type bronbestand"
 categories.category.judgement: "Soort besluit"
 categories.category.grounds: "Uitzonderingsgronden"
 categories.label.all-categories: "Naar alle categorieën"
+categories.category.date.from: "Datum vanaf"
+categories.category.date.to: "Datum tot"
+categories.category.date.without_date: "Datum"
+categories.category.date.without_date.value: "niet beschikbaar"
 
 elastic.label.management: "Elasticsearch beheer"
 elastic.index: "Index"
@@ -245,6 +250,8 @@ admin.global.no_choices: "Nog niets gekozen"
 admin.global.dossiers.prefix_placeholder: "Kies een prefix"
 admin.global.statistics: "Statistieken"
 admin.global.yes: "Ja"
+admin.global.needs_action: "Actie vereist"
+admin.global.incomplete: "Incompleet"
 
 admin.stats.last_updated: "Laatst bijgewerkt"
 admin.stats.msg_delivered_rate: "Msg Delivered Rate"
@@ -392,17 +399,15 @@ admin.login.2fa.error.invalid_code: "Ongeldige authenticatiecode. Vul een geldig
 admin.login.2fa.reset_instructions: "Problemen met de authenticator app? Gebruik een herstelcode uit de inloginstructies."
 
 admin.menu.dossiers: 'Publicaties'
-dossier.type.covenant.description: 'Afspraken over de samenwerking met andere organisaties'
-dossier.type.woo-decision.description: 'Reactie op een woo-verzoek van een burger, organisatie of pers'
 admin.publication.start_new_publication: 'Nieuwe publicatie voorbereiden'
 admin.publication.pick_a_type: 'Kies de informatiecategorie'
 
 dossier.type.covenant: "Convenant"
-dossier.type.covenant_description: "Afspraken over de samenwerking met andere organisaties"
+dossier.type.covenant.description: "Afspraken over de samenwerking met andere organisaties"
 dossier.type.woo-decision: "Woo-besluit"
-dossier.type.woo-decision_description: "Reactie op een woo-verzoek van een burger, organisatie of pers"
+dossier.type.woo-decision.description: "Reactie op een woo-verzoek van een burger, organisatie of pers"
 dossier.type.annual-report: "Jaarplan en Jaarverslag"
-dossier.type.annual-report_description: "Een jaarplan beschrijft, een jaarverslag rapporteert overheidsacties en resultaten"
+dossier.type.annual-report.description: "Een jaarplan beschrijft, een jaarverslag rapporteert overheidsacties en resultaten"
 
 admin.publications.department: "Bestuursorgaan"
 admin.publications.responsible_department: "Verantwoordelijk bestuursorgaan"
@@ -448,12 +453,16 @@ admin.dossiers.inquiries.help: "Scheid meerdere zaaknummers met komma's, bijvoor
 admin.dossiers.inquiries.link_documents: "Koppel zaaknummers aan eerder gepubliceerde Woo-documenten op het platform"
 admin.dossiers.inquiries.link_documents_help: "Upload een Excel document met daarin de documentnummers, matters en te koppelen zaaknummers (<a href=\"/documenten/voorbeeld_excel_extra_zaaknummers.xlsx\" class=\"bhr-a\">Bekijk voorbeeld</a>)."
 admin.dossiers.inquiries.link_dossiers_documents: "Koppel zaaknummers aan eerder gepubliceerde Woo-documenten op het platform of aan eerder gepubliceerde Woo-besluiten"
+admin.dossiers.attachment.withdraw.title: "Bijlage intrekken"
+admin.dossiers.attachment.withdraw.help: "Is er een nieuwere versie van de bijlage beschikbaar? Vervang dan de bijlage."
+admin.dossiers.attachment.withdraw.success: "De bijlage is ingetrokken."
+admin.dossiers.attachment.withdraw.impossible: "Intrekken van deze bijlage is niet mogelijk."
 
 admin.dossiers.form.details.internal_reference_label: "Interne referentie"
 admin.dossiers.form.details.internal_reference_help: "Verwijzing naar de interne vindplaats of verantwoordelijke van de brondocumentatie van deze publicatie. Wordt niet gepubliceerd."
 admin.dossiers.form.details.ref_nr_help: "Minimaal 3 en maximaal 50 karakters. Gebruik alleen letters, cijfers en verbindingstekens.<br><strong>Let op</strong>: dit nummer is na het opslaan van de basisgegevens niet meer aan te passen."
 admin.dossiers.form.details.subject_label: "Onderwerp"
-admin.dossiers.form.details.subjecte_help: "Kies het onderwerp waaronder deze publicatie valt. Het gekozen onderwerp wordt ook gekoppeld aan alle documenten."
+admin.dossiers.form.details.subject_help: "Kies het onderwerp waaronder deze publicatie valt. Het gekozen onderwerp wordt ook gekoppeld aan alle documenten."
 admin.dossiers.form.details.subject_placeholder: " Geen onderwerp"
 
 admin.dossiers.covenant.create_new: 'Nieuw convenant publiceren'
@@ -554,9 +563,11 @@ admin.dossiers.woo-decision.withdraw_decision: "Besluit verwijderen"
 admin.dossiers.woo-decision.document: "Besluitbrief"
 admin.dossiers.woo-decision.form.content.document_help: 'Upload minimaal de besluitbrief.'
 admin.dossiers.woo-decision.form.content.document_label: 'Besluitbrief'
-admin.dossiers.decision.number: "Besluit {dossier_nr}"
-admin.dossiers.decision.inquiry_number: "Besluiten voor zaaknummer {case_nr}"
-admin.dossiers.documents.inquiry_number: "Documenten met zaaknummer {case_nr} "
+admin.dossiers.decision.number: "Besluit"
+admin.dossiers.decision.inquiry_number: "Besluiten voor zaaknummer"
+admin.dossiers.documents.inquiry_number: "Documenten met zaaknummer"
+admin.dossiers.documents.withdrawn_or_suspended: "Er zijn één of meerdere documenten ingetrokken of opgeschort."
+admin.dossiers.documents.needs_upload: "Nog te uploaden"
 
 admin.dossiers.covenant.step.details: "Basisgegevens"
 admin.dossiers.covenant.complete_step.details: "Maak eerst basisgegevens compleet"
@@ -675,7 +686,7 @@ public.documents.type.dossier: "Woo-besluiten"
 public.documents.type.covenant: "Convenanten"
 public.documents.type.annual_report: "Jaarplannen en jaarverslagen"
 
-public.publication.woo_request_explanation: "Een Woo-verzoek is een verzoek om toegang tot overheidsinformatie in Nederland volgens de Wet Open Overheid. Een Wob-verzoek is een officieel verzoek aan een overheidsinstantie om specifieke informatie of documenten openbaar te maken volgens de Wet openbaarheid van bestuur."
+public.publication.woo_request_explanation: "Een Woo-verzoek is een verzoek om toegang tot overheidsinformatie in Nederland volgens de Wet open overheid. Een Wob-verzoek is een officieel verzoek aan een overheidsinstantie om specifieke informatie of documenten openbaar te maken volgens de Wet openbaarheid van bestuur."
 public.publication.woo_request_more: "Meer weten over Woo/Wob-verzoeken"
 
 public.footer.title.service: "Service"
@@ -717,8 +728,8 @@ public.about.oga.bullet-2: "COVID-19 gerelateerde besluiten kunt u vinden op dez
 public.publications.recent_publications: "Recente publicaties"
 
 public.department.public_information_by_department: "Openbaar gemaakte informatie van {department}"
-public.department.public_information_default_description: "Op deze pagina vindt u een overzicht van de informatie die door {department} openbaar gemaakt is op grond van de Wet Open Overheid."
-public.department.description: "Op dit platform vindt u informatie die openbaar is gemaakt op grond van de Wet Open Overheid door het Ministerie van Volksgezondheid, Welzijn en Sport en aan haar verwante (zelfstandig) bestuursorganen. Het platform zal de komende periode aangevuld worden met meer informatie."
+public.department.public_information_default_description: "Op deze pagina vindt u een overzicht van de informatie die door {department} openbaar gemaakt is op grond van de Wet open overheid."
+public.department.description: "Op dit platform vindt u informatie die openbaar is gemaakt op grond van de Wet open overheid door het Ministerie van Volksgezondheid, Welzijn en Sport en aan haar verwante (zelfstandig) bestuursorganen. Het platform zal de komende periode aangevuld worden met meer informatie."
 public.department.view_by_department: "Bekijk de openbaar gemaakte informatie per bestuursorgaan."
 
 public.other-publications.title: "Andere publicaties van VWS"
@@ -794,7 +805,7 @@ public.copyright.paragraph-3: "Hergebruik is toegestaan tenzij:"
 public.copyright.bullet-1: "via het copyrightteken (©) is aangegeven dat er op een foto wél copyright zit;"
 public.copyright.bullet-2: "het gaat om content van derden. Controleer daarom altijd de afzender van documenten."
 
-public.accessibility.paragraph-1: "Wij willen graag dat iedereen deze website kan gebruiken. Komt u toch een pagina tegen die niet toegankelijk is? Of heeft u een andere vraag? <a href='https://www.toegankelijkheidsverklaring.nl/register/10602/'>Neem dan contact met ons op</a>."
+public.accessibility.paragraph-1: "Wij willen graag dat iedereen deze website kan gebruiken. Komt u toch een pagina tegen die niet toegankelijk is? Of heeft u een andere vraag? <a href='https://www.toegankelijkheidsverklaring.nl/register/20338/'>Neem dan contact met ons op</a>."
 public.accessibility.paragraph-2: "Een toegankelijke website is voor alle bezoekers beter te gebruiken. Daarom gelden er functioneel-technische en redactionele <a href='https://www.digitoegankelijk.nl/'>toegankelijkheidseisen</a> of (voorheen: webrichtlijnen) voor websites van de overheid. Deze zijn beschreven in de <a href='https://www.forumstandaardisatie.nl/standaard/digitoegankelijk-en-301-549-met-wcag-21'>toegankelijkheidsstandaard Digitoegankelijk EN 301 549</a>."
 public.accessibility.statement: "<a href='https://www.toegankelijkheidsverklaring.nl/register/10602'>Toegankelijkheidsverklaring open.minvws.nl</a>."
 public.accessibility.downloadreport: "<a href='/documenten/2024-02-13.Toegankelijkheidsonderzoek.OpenVWS.open.minvws.nl.versie.2.1.pdf'>Download het toegankelijkheidsonderzoek (PDF 304 KB)</a>."
@@ -846,7 +857,8 @@ public.inquiries.document.open_or_download: " openen of downloaden ({fileInfo} {
 public.inquiry.page_title: "Besluiten en documenten voor zaaknummer {case_number}"
 public.inquiry.decisions_for_case: "Er {are_or_is} {number_of_decisions} genomen voor het verzoek om informatie te openbaren met zaaknummer {case_number}"
 
-public.documents.viewer.click_on_page: "Klik op een pagina om de {fileInfo} ({fileSize}) te openen in uw browser"
+public.documents.viewer.click_on_page: "Klik op een pagina om de {fileInfo} ({fileSize} - {pages}) te openen in uw browser"
+public.documents.viewer.more_than_50: "Pagina 1 - 50 van {total_pages}."
 public.documents.viewer.document_preview: "Pagina-voorvertoning"
 public.documents.viewer.skip_document_preview: "Sla pagina-voorvertoning over"
 public.documents.viewer.back_to_document_preview: "Ga terug naar pagina-voorvertoning"
@@ -870,7 +882,7 @@ public.documents.not_yet_processed: "Dit document is nog niet geconverteerd in o
 public.documents.document_withdrawn: "Dit document is op dit moment niet beschikbaar. Het is op {date} ingetrokken. De reden dat het document is ingetrokken: {reason}."
 public.documents.document_suspended: "Er loopt nog een procedure over dit document met een betrokkene. We kunnen dit document daarom nog niet tonen."
 public.documents.procedure_in_progress: "Er loopt een procedure"
-public.documents.why_judgement_was_made: "Die beoordeling is gedaan omdat iemand het ministerie van Volksgezondheid, Welzijn en Sport gevraagd heeft interne informatie te openbaren."
+public.documents.why_judgement_was_made: "Die beoordeling is gedaan omdat iemand heeft gevraagd om interne informatie te openbaren."
 public.documents.part_of: "Onderdeel van"
 public.documents.attachment_of: "Bijlage van"
 public.documents.judgement.public: "Dit document is door juristen beoordeeld en vervolgens openbaar gemaakt."
@@ -880,10 +892,13 @@ public.documents.judgement.already_public: "Dit document is door juristen beoord
 public.documents.archive.download: "Download document archief"
 public.documents.inquiry.download: "Download zaak archief"
 public.documents.archive.download_suspended: "Het archief is nog niet gereed voor download. Probeer het over een paar minuten opnieuw."
+public.documents.archive.download_outdated: "Dit archief wordt op dit moment vernieuwd. U kunt de huidige versie downloaden of probeer het later opnieuw voor de nieuwste versie."
+public.documents.archive.download_outdated_no_download: "Dit archief wordt op dit moment vernieuwd. Probeer het over een paar minuten opnieuw."
 public.documents.archive.download_error: "Er is iets fout gegaan tijdens het genereren van het archief. Probeer het opnieuw."
-public.documents.archive.download_period: "Het archief is gereed voor download. U kunt het archief downloaden tot {date}. Daarna moet het archief weer opnieuw worden gegenereerd."
 public.documents.exclusive_access: "U heeft t/m {date} exclusief toegang tot deze documenten"
 public.documents.document_history: "Geschiedenis van dit document"
+public.attachments.attachment_withdrawn: "Deze bijlage is op dit moment niet beschikbaar. Deze is op {date} ingetrokken. De reden dat de bijlage is ingetrokken: {reason}."
+
 
 public.dossiers.type: "Informatiecategorie"
 public.dossiers.subject: "Onderwerp"
@@ -901,6 +916,7 @@ public.dossiers.covenant.document.reference_number: "Documentnummer"
 public.dossiers.covenant.period: "Periode overeenkomst"
 public.dossiers.additional_attachments: "Aanvullende bijlagen"
 public.dossiers.decision.about_decision: "Over dit besluit"
+public.dossiers.decision.attachments_for: "Bijlagen bij dit besluit"
 public.dossiers.decision.recent_decisions: "Recente besluiten"
 public.dossiers.decision.no_title: "Geen titel beschikbaar"
 public.dossiers.decision.all_decisions: "Bekijk alle besluiten"
@@ -979,6 +995,8 @@ history.attachment_created.private: 'Nieuwe bijlage geüpload ({filename}, {file
 history.attachment_deleted.private: 'Bijlage verwijderd ({filename}, {filesize})'
 history.attachment_updated.public: 'Bijlage vervangen ({filename}, {filesize})'
 history.attachment_updated.private: 'Bijlage gewijzigd ({filename}, {filesize})'
+history.attachment_withdrawn.public: 'Bijlage ingetrokken met reden: {reason}'
+history.attachment_withdrawn.private: 'Bijlage ingetrokken met reden: {reason}, toelichting: {explanation}'
 history.covenant.main_document_added.private: 'Nieuw convenant toegevoegd ({filename})'
 history.covenant.main_document_updated.private: 'Convenant gewijzigd ({filename})'
 history.covenant.main_document_updated.public: 'Convenant vervangen'
@@ -1035,12 +1053,16 @@ publication.dossier.error.referred_document_does_not_exist: "Gerelateerd ID {doc
 publication.dossier.error.document_not_unique: "Het documentnummer {documentNumber} is niet uniek binnen het productierapport"
 publication.dossier.error.maximum_processing_time_exceeded: "De verwerking van het productierapport heeft de maximale duur overschreden"
 publication.dossier.error.file_name_does_not_match_document_number: "De bestandsnaam {filename} komt niet overeen met documentnummer {documentnr}"
+publication.dossier.error.date_header: "Onderstaande fouten zijn opgetreden op {date}"
 
 global.document.withdraw.reason.data_in_document: 'Ongelakte gegevens in het document'
 global.document.withdraw.reason.data_in_file: 'Ongelakte gegevens in de bestandsnaam'
 global.document.withdraw.reason.suspended_document: 'Document is nog opgeschort'
 global.document.withdraw.reason.unreadable_document: 'Document is onleesbaar'
 global.document.withdraw.reason.incorrect_attachment: 'De bijlage hoort niet bij het document'
+
+global.attachment.withdraw.reason.unrelated: 'De bijlage hoort niet (meer) bij de publicatie'
+global.attachment.withdraw.reason.incomplete: 'De bijlage bevat onvolledige informatie'
 
 admin.dossiers.decision.delete: "Besluit verwijderen"
 admin.dossiers.decision.delete.bullet_1: "Het besluit en alle bijlagen en documenten worden verwijderd."
@@ -1061,7 +1083,7 @@ public.dossiers.investigation-report.date: "Datum:"
 public.documents.type.investigation_report: "Onderzoeksrapporten"
 public.dossiers.investigation-report.about: "Over dit onderzoeksrapport"
 dossier.type.investigation-report: 'Onderzoeksrapport'
-dossier.type.investigation-report_description: 'Een onderzoeksrapport beantwoordt een onderzoeksvraag door gegegevens te analyseren'
+dossier.type.investigation-report.description: 'Een onderzoeksrapport beantwoordt een onderzoeksvraag door gegegevens te analyseren'
 admin.dossiers.investigation-report.step.details: 'Basisgegevens'
 admin.dossiers.investigation-report.complete_step.details: 'Maak eerst basisgegevens compleet'
 admin.dossiers.investigation-report.step.content: 'Onderzoeksrapport'
@@ -1107,7 +1129,7 @@ public.dossiers.complaint-judgement.date: "Datum:"
 public.documents.type.complaint_judgement: "Klachtoordelen"
 public.dossiers.complaint-judgement.about: "Over dit klachtoordeel"
 dossier.type.complaint-judgement: "Klachtoordeel"
-dossier.type.complaint-judgement_description: "Een klachtoordeel is de officiële brief van een overheidsorganisatie als reactie op een klacht"
+dossier.type.complaint-judgement.description: "Een klachtoordeel is de officiële brief van een overheidsorganisatie als reactie op een klacht"
 admin.dossiers.complaint-judgement.step.details: 'Basisgegevens'
 admin.dossiers.complaint-judgement.complete_step.details: 'Maak eerst basisgegevens compleet'
 admin.dossiers.complaint-judgement.step.content: 'Klachtoordeel'
@@ -1150,7 +1172,7 @@ public.documents.type.disposition: "Beschikkingen"
 public.dossiers.disposition.about: "Over deze beschikking"
 public.dossiers.disposition.attachments_for: "Bijlagen bij deze beschikking"
 dossier.type.disposition: "Beschikking"
-dossier.type.disposition_description: "Schriftelijke beslissing over specifieke gevallen (niet van algemene strekking)"
+dossier.type.disposition.description: "Schriftelijke beslissing over specifieke gevallen (niet van algemene strekking)"
 admin.dossiers.disposition.step.details: 'Basisgegevens'
 admin.dossiers.disposition.complete_step.details: 'Maak eerst basisgegevens compleet'
 admin.dossiers.disposition.step.content: 'Beschikking'
@@ -1185,6 +1207,103 @@ history.disposition.main_document_updated.public: 'Beschikking vervangen'
 history.disposition.main_document_deleted.private: 'Beschikking verwijderd ({filename})'
 #END disposition
 
+#START other publication
+public.dossiers.other-publication.tagline: "Overig informatiestuk met omschrijving:"
+public.dossiers.other-publication.description: "Dit informatiestuk is openbaar gemaakt vanuit de inspanningsverplichting uit de Wet open overheid."
+public.other-publication.disposition.date: "Datum:"
+public.documents.type.other_publication: "Overig"
+public.documents.type.other_publication_main_document: "Informatiestuk"
+public.dossiers.other-publication.about: "Over dit informatiestuk"
+public.dossiers.other-publication.attachments_for: "Bijlagen bij dit informatiestuk"
+public.dossiers.other-publication.date: "Datum:"
+dossier.type.other-publication: "Overig informatiestuk"
+dossier.type.other-publication.description: "Inspanningsverplichting artikel 3.1 Woo"
+admin.dossiers.other-publication.step.details: 'Basisgegevens'
+admin.dossiers.other-publication.complete_step.details: 'Maak eerst basisgegevens compleet'
+admin.dossiers.other-publication.step.content: 'Overig informatiestuk'
+admin.dossiers.other-publication.complete_step.content: 'Maak eerst details compleet'
+admin.dossiers.other-publication.step.publication: 'Publicatie'
+admin.dossiers.other-publication.complete_step.publication: 'De publicatie is compleet maar nog niet gepubliceerd'
+admin.dossiers.other-publication.create_new: 'Overig informatiestuk publiceren'
+admin.dossiers.other_publication.form.details.subject_help: 'Kies het onderwerp waaronder dit informatiestuk valt. Het gekozen onderwerp wordt ook gekoppeld aan alle documenten.'
+admin.dossiers.other-publication.form.details.title: 'Omschrijving van het informatiestuk'
+admin.dossiers.other-publication.form.details.date_label: 'Datum van het informatiestuk'
+admin.dossiers.other-publication.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende woorden zoals inspanningsverplichting, aangaande, etc."
+admin.dossiers.other-publication.form.details.ref_int: 'Interne referentie'
+admin.dossiers.other-publication.form.content.document_label: 'Informatiestuk'
+admin.dossiers.other-publication.form.content.document_help: 'Upload minimaal het Informatiestuk'
+admin.dossiers.other-publication.form.content.attachments_help: ''
+admin.dossiers.other-publication.form.publication.publication_date_label: 'Datum openbare publicatie'
+admin.dossiers.other-publication.form.publication.publication_date_help: 'Kies de datum waarop het informatiestuk voor iedereen publiek toegankelijk wordt.'
+admin.dossiers.other-publication.create.success: '<strong>Overig informatiestuk klaarzetten gelukt:</strong> De publicatie wordt voorbereid.'
+admin.dossiers.other-publication.edit_link: 'Hele publicatie bekijken'
+admin.dossiers.other-publication.description: 'Omschrijving van het informatiestuk'
+admin.dossiers.other-publication.delete: 'Publicatie verwijderen'
+admin.dossiers.other-publication.delete_disabled: 'Deze overige publicatie is gepubliceerd en kan daarom niet meer verwijderd worden.'
+admin.dossiers.other-publication.delete_bullet-1: 'De publicatie van het informatiestuk wordt verwijderd.'
+admin.dossiers.other-publication.delete_bullet-2: 'Het informatiestuk document en bijlagen kunnen niet meer verwijderd worden nadat het is gepubliceerd.'
+admin.dossiers.other-publication.delete_bullet-3: 'Je kan deze actie niet ongedaan maken.'
+admin.dossiers.other-publication.summary: 'Toelichting op het informatiestuk'
+admin.dossiers.other-publication.date: 'Datum'
+admin.dossiers.other-publication.document: 'Informatiestuk'
+admin.global.other-publication_on: 'Overige informatiestuk met omschrijving:'
+history.other-publication.main_document_added.private: 'Nieuw informatiestuk toegevoegd ({filename})'
+history.other-publication.main_document_updated.private: 'Informatiestuk gewijzigd ({filename})'
+history.other-publication.main_document_updated.public: 'Informatiestuk vervangen'
+history.other-publication.main_document_deleted.private: 'Informatiestuk verwijderd ({filename})'
+public.search.type_description.other_publication: 'Inspanningsverplichting Woo'
+public.search.type.other_publication_main_document: 'Informatiestuk'
+#END other publication
+
+#START advice
+public.dossiers.advice.tagline: "Advies met omschrijving:"
+public.dossiers.advice.description: "Een (on)gevraagd advies over een ontwerp van wet- of regelgeving of een ander onderwerp."
+public.advice.disposition.date: "Datum:"
+public.documents.type.advice: "Adviezen"
+public.documents.type.advice_main_document: "Advies"
+public.dossiers.advice.about: "Over dit advies"
+public.dossiers.advice.attachments_for: "Bijlagen bij dit advies"
+public.dossiers.advice.date: "Datum:"
+dossier.type.advice: "Advies"
+dossier.type.advice.description: "Adviezen over ontwerpen van wet- en regelgeving en andere onderwerpen"
+admin.dossiers.advice.step.details: 'Basisgegevens'
+admin.dossiers.advice.complete_step.details: 'Maak eerst basisgegevens compleet'
+admin.dossiers.advice.step.content: 'Advies'
+admin.dossiers.advice.complete_step.content: 'Maak eerst details compleet'
+admin.dossiers.advice.step.publication: 'Publicatie'
+admin.dossiers.advice.complete_step.publication: 'De publicatie is compleet maar nog niet gepubliceerd'
+admin.dossiers.advice.create_new: 'Advies publiceren'
+admin.dossiers.advice.form.details.subject_help: 'Kies het onderwerp waaronder dit advies valt. Het gekozen onderwerp wordt ook gekoppeld aan alle documenten.'
+admin.dossiers.advice.form.details.title: 'Omschrijving van het advies'
+admin.dossiers.advice.form.details.date_label: 'Datum van het advies'
+admin.dossiers.advice.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende woorden zoals inspanningsverplichting, aangaande, etc.<br>Minimaal 2 karakters. Toegestane karakters: letters, cijfers en tekens.<ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Advies over het aantal ziekenhuizen aangaande het aantal beschikbare IC-bedden</li><li class='bhr-form-help__do text-sm'>Wel: Advies ziekenhuizen aantal IC-bedden</li></ul>"
+admin.dossiers.advice.form.details.ref_int: 'Interne referentie'
+admin.dossiers.advice.form.content.document_label: 'Advies'
+admin.dossiers.advice.form.content.document_help: 'Upload minimaal het Advies'
+admin.dossiers.advice.form.content.request_for_advice_label: 'Adviesaanvraag'
+admin.dossiers.advice.form.content.attachments_help: ''
+admin.dossiers.advice.form.publication.publication_date_label: 'Datum openbare publicatie'
+admin.dossiers.advice.form.publication.publication_date_help: 'Kies de datum waarop het advies voor iedereen publiek toegankelijk wordt.'
+admin.dossiers.advice.create.success: '<strong>Advies klaarzetten gelukt:</strong> De publicatie wordt voorbereid.'
+admin.dossiers.advice.edit_link: 'Hele publicatie bekijken'
+admin.dossiers.advice.description: 'Omschrijving van het advies'
+admin.dossiers.advice.delete: 'Publicatie verwijderen'
+admin.dossiers.advice.delete_disabled: 'Deze overige publicatie is gepubliceerd en kan daarom niet meer verwijderd worden.'
+admin.dossiers.advice.delete_bullet-1: 'De publicatie van het advies wordt verwijderd.'
+admin.dossiers.advice.delete_bullet-2: 'Het advies document en bijlagen kunnen niet meer verwijderd worden nadat het is gepubliceerd.'
+admin.dossiers.advice.delete_bullet-3: 'Je kan deze actie niet ongedaan maken.'
+admin.dossiers.advice.summary: 'Toelichting op het advies'
+admin.dossiers.advice.date: 'Datum'
+admin.dossiers.advice.document: 'Advies'
+admin.global.advice_on: 'Overige advies met omschrijving:'
+history.advice.main_document_added.private: 'Nieuw advies toegevoegd ({filename})'
+history.advice.main_document_updated.private: 'Advies gewijzigd ({filename})'
+history.advice.main_document_updated.public: 'Advies vervangen'
+history.advice.main_document_deleted.private: 'Advies verwijderd ({filename})'
+public.search.type_description.advice: 'Over ontwerpen van wet- en regelgeving'
+public.search.type.advice_main_document: 'Advies'
+#END advice
+
 admin.dossiers.action.label.ingest: 'Volledig opnieuw indexeren (inclusief document inhoud)'
 admin.dossiers.action.label.index: 'Metadata opnieuw indexeren (exclusief document inhoud)'
 admin.dossiers.action.label.validate_completion: 'Compleet status opnieuw bepalen'
@@ -1192,6 +1311,8 @@ admin.dossiers.action.label.generate_inventory: 'Inventarislijst opnieuw generer
 admin.dossiers.action.label.generate_archives: 'Downloads opnieuw genereren'
 
 admin.dossiers.action.action_is_executed: 'De actie wordt nu op de achtergrond uitgevoerd'
+admin.dossiers.action.withdraw_all_executing: 'Alle (deels) openbare documenten worden nu ingetrokken. Het kan even duren voor dit verwerkt is.'
+admin.dossiers.action.withdraw_document_executing: 'Het document wordt nu ingetrokken. Het kan even duren voor dit verwerkt is.'
 admin.dossiers.action.column.dossier_nr: 'Dossiernummer'
 admin.dossiers.action.column.type: 'Soort'
 admin.dossiers.action.column.status: 'Status'

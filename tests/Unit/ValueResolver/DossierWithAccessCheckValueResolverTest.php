@@ -35,43 +35,37 @@ class DossierWithAccessCheckValueResolverTest extends MockeryTestCase
         parent::setUp();
     }
 
-    public function testResolverReturnsEmptyArrayForUnsupportedArgumentType(): void
+    public function testResolverThrowsExceptionForUnsupportedArgumentType(): void
     {
         $request = new Request();
         $argument = \Mockery::mock(ArgumentMetadata::class);
         $argument->shouldReceive('getType')->andReturn(__CLASS__);
 
-        self::assertEquals(
-            [],
-            $this->resolver->resolve($request, $argument),
-        );
+        $this->expectException(ViewingNotAllowedException::class);
+        $this->resolver->resolve($request, $argument);
     }
 
-    public function testResolverReturnsEmptyArrayForMissingPrefix(): void
+    public function testResolverThrowsExceptionForMissingPrefix(): void
     {
         $request = new Request(attributes: ['dossierId' => 'bar']);
         $argument = \Mockery::mock(ArgumentMetadata::class);
         $argument->shouldReceive('getType')->andReturn(Covenant::class);
 
-        self::assertEquals(
-            [],
-            $this->resolver->resolve($request, $argument),
-        );
+        $this->expectException(ViewingNotAllowedException::class);
+        $this->resolver->resolve($request, $argument);
     }
 
-    public function testResolverReturnsEmptyArrayForMissingDocumentId(): void
+    public function testResolverThrowsExceptionForMissingDocumentId(): void
     {
         $request = new Request(attributes: ['prefix' => 'foo']);
         $argument = \Mockery::mock(ArgumentMetadata::class);
         $argument->shouldReceive('getType')->andReturn(Covenant::class);
 
-        self::assertEquals(
-            [],
-            $this->resolver->resolve($request, $argument),
-        );
+        $this->expectException(ViewingNotAllowedException::class);
+        $this->resolver->resolve($request, $argument);
     }
 
-    public function testResolverReturnsEmptyArrayWhenDossierCannotBeFound(): void
+    public function testResolverThrowsExceptionWhenDossierCannotBeFound(): void
     {
         $request = new Request(attributes: ['prefix' => 'foo', 'dossierId' => 'bar']);
         $argument = \Mockery::mock(ArgumentMetadata::class);
@@ -87,13 +81,11 @@ class DossierWithAccessCheckValueResolverTest extends MockeryTestCase
 
         $this->entityManager->shouldReceive('getRepository')->with(Covenant::class)->andReturn($repository);
 
-        self::assertEquals(
-            [],
-            $this->resolver->resolve($request, $argument),
-        );
+        $this->expectException(ViewingNotAllowedException::class);
+        $this->resolver->resolve($request, $argument);
     }
 
-    public function testResolverReturnsEmptyArrayWhenDossierIsNotAccessible(): void
+    public function testResolverThrowsExceptionWhenDossierIsNotAccessible(): void
     {
         $request = new Request(attributes: ['prefix' => 'foo', 'dossierId' => 'bar']);
         $argument = \Mockery::mock(ArgumentMetadata::class);

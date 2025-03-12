@@ -10,4 +10,3 @@ export * from './string';
 export * from './url';
 
 export * from './on';
-export * from './role';

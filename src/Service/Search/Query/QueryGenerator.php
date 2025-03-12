@@ -4,18 +4,23 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query;
 
+use App\Domain\Search\Index\Schema\ElasticField;
+use App\Domain\Search\Index\Schema\ElasticPath;
+use App\Domain\Search\Query\Facet\FacetList;
+use App\Domain\Search\Query\Facet\FacetListFactory;
 use App\Domain\Search\Query\SearchParameters;
 use App\ElasticConfig;
 use App\Service\Search\Query\Condition\ContentAccessConditions;
 use App\Service\Search\Query\Condition\FacetConditions;
 use App\Service\Search\Query\Condition\QueryConditions;
 use App\Service\Search\Query\Condition\SearchTermConditions;
-use App\Service\Search\Query\Facet\FacetList;
-use App\Service\Search\Query\Facet\FacetListFactory;
 use App\Service\Search\Query\Sort\SortField;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 readonly class QueryGenerator
 {
     public const HL_START = '[[hl_start]]';
@@ -71,10 +76,10 @@ readonly class QueryGenerator
         $params = [
             'body' => [
                 'docvalue_fields' => [
-                    'type',
-                    'document_nr',
-                    'document_prefix',
-                    'dossier_nr',
+                    ElasticField::TYPE->value,
+                    ElasticField::DOCUMENT_NR->value,
+                    ElasticField::DOCUMENT_PREFIX->value,
+                    ElasticField::DOSSIER_NR->value,
                 ],
                 '_source' => false,
             ],
@@ -154,7 +159,13 @@ readonly class QueryGenerator
         // Highlighting uses a 'clean' query with additional filters like status.
         // This is very important, otherwise filter values like 'document' and statuses will be highlighted in content.
         $query = Query::simpleQueryString(
-            fields: ['title', 'summary', 'dossiers.summary', 'dossiers.title', 'pages.content'],
+            fields: [
+                ElasticField::TITLE->value,
+                ElasticField::SUMMARY->value,
+                ElasticPath::dossiersSummary()->value,
+                ElasticPath::dossiersTitle()->value,
+                ElasticPath::pagesContent()->value,
+            ],
             query: $searchParameters->query,
         )->setDefaultOperator($searchParameters->operator->value);
 
@@ -164,28 +175,28 @@ readonly class QueryGenerator
             'post_tags' => [self::HL_END],
             'fields' => [
                 // Document object
-                'pages.content' => [
+                ElasticPath::pagesContent()->value => [
                     'fragment_size' => 50,
                     'number_of_fragments' => 5,
                     'type' => 'unified',
                 ],
-                'dossiers.title' => [
+                ElasticPath::dossiersTitle()->value => [
                     'fragment_size' => 50,
                     'number_of_fragments' => 5,
                     'type' => 'unified',
                 ],
-                'dossiers.summary' => [
+                ElasticPath::dossiersSummary()->value => [
                     'fragment_size' => 50,
                     'number_of_fragments' => 5,
                     'type' => 'unified',
                 ],
                 // Dossier object
-                'title' => [
+                ElasticField::TITLE->value => [
                     'fragment_size' => 50,
                     'number_of_fragments' => 5,
                     'type' => 'unified',
                 ],
-                'summary' => [
+                ElasticField::SUMMARY->value => [
                     'fragment_size' => 50,
                     'number_of_fragments' => 5,
                     'type' => 'unified',

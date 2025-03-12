@@ -1,4 +1,4 @@
-{% extends 'admin.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
 {% set page_title = 'admin.department.all_departments' | trans %}
 
@@ -30,9 +30,9 @@
         <table class="bhr-table" data-e2e-name="departments-table">
             <thead>
                 <tr>
-                    {{ knp_pagination_sortable(pagination, 'admin.publications.department' | trans, 'd.name', {}, {}, 'pagination/sort.admin.html.twig') }}
-                    {{ knp_pagination_sortable(pagination, 'global.acronym' | trans, 'd.shortTag', { thClassName: 'border-r-0' }, {}, 'pagination/sort.admin.html.twig') }}
-                    {{ knp_pagination_sortable(pagination, 'admin.publications.has_landingpage' | trans, 'd.public', {}, {}, 'pagination/sort.admin.html.twig') }}
+                    {{ knp_pagination_sortable(pagination, 'admin.publications.department' | trans, 'd.name', {}, {}, 'admin/layout/sort.html.twig') }}
+                    {{ knp_pagination_sortable(pagination, 'global.acronym' | trans, 'd.shortTag', { thClassName: 'border-r-0' }, {}, 'admin/layout/sort.html.twig') }}
+                    {{ knp_pagination_sortable(pagination, 'admin.publications.has_landingpage' | trans, 'd.public', {}, {}, 'admin/layout/sort.html.twig') }}
                     <th class="bhr-column-head bhr-column-head--gray border-r-1 font-bold" scope="col">{{ "admin.publications.landingpage_url" | trans() }}</th>
                 </tr>
             </thead>
@@ -63,7 +63,7 @@
             </tbody>
         </table>
 
-        {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
+        {{ knp_pagination_render(pagination, 'admin/layout/pagination.html.twig') }}
     </div>
 </div>
 {% endblock %}

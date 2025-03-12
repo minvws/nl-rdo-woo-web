@@ -6,7 +6,7 @@ import Icon from '../../Icon.vue';
 import {
   type PublicationSearchResult,
   publicationSearchResultsSchema,
-} from '../interface';
+} from './interface';
 import { PUBLICATION_SEARCH_RESULTS_ID } from './static';
 
 interface Props {

@@ -26,5 +26,4 @@ Suite Setup
   Select Organisation
 
 Suite Teardown
-  Go To Admin
-  Logout Admin
+  No-Click Logout

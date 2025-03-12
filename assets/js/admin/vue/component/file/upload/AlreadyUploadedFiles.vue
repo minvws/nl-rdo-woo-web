@@ -1,14 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { formatFileSize } from '@js/admin/utils';
 import { computed } from 'vue';
 import Alert from '../../Alert.vue';
 import FilesList from './FilesList.vue';
 
-const props = defineProps({
-  files: {
-    type: Array,
-    default: () => [],
-  },
+interface Props {
+  files: File[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  files: () => [],
 });
 
 const numberOfFiles = computed(() => props.files.length);

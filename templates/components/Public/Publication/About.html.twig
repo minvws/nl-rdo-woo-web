@@ -9,6 +9,14 @@
             <tbody>
                 <tr>
                     <th class="woo-table-cell-light w-64 min-w-64" scope="row">
+                        {{ documentType | default(dossier.type | trans | capitalize) }}
+                    </th>
+                    <td>
+                        <a class="woo-a" href="{{ document.detailsUrl }}">{{ document.name }}</a> <span>({{ document.sourceType | trans }}, {{ document.size | size }})</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">
                         {{ dateLabel | default('global.date' | trans) }}
                     </th>
                     <td data-e2e-name="dossier-metadata-period">

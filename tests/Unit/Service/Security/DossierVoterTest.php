@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Service\Security;
 
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\Security\DossierVoter;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;

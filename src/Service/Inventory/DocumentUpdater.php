@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Service\Inventory;
 
 use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\Storage\EntityStorageService;
 
 /**

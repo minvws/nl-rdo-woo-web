@@ -15,6 +15,8 @@ enum DossierType: string implements TranslatableInterface
     case INVESTIGATION_REPORT = 'investigation-report'; // Onderzoeksrapport (OR)
     case DISPOSITION = 'disposition';                   // Beschikking (BES)
     case COMPLAINT_JUDGEMENT = 'complaint-judgement';   // Klachtoordeel (KO)
+    case OTHER_PUBLICATION = 'other-publication';       // Overig
+    case ADVICE = 'advice';                             // Advies
 
     public function isCovenant(): bool
     {
@@ -46,6 +48,16 @@ enum DossierType: string implements TranslatableInterface
         return $this === self::COMPLAINT_JUDGEMENT;
     }
 
+    public function isOtherPublication(): bool
+    {
+        return $this === self::OTHER_PUBLICATION;
+    }
+
+    public function isAdvice(): bool
+    {
+        return $this === self::ADVICE;
+    }
+
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
         return $translator->trans('dossier.type.' . $this->value, locale: $locale);
@@ -61,6 +73,9 @@ enum DossierType: string implements TranslatableInterface
      */
     public static function getAllValues(): array
     {
-        return array_map(fn (DossierType $type): string => $type->value, DossierType::cases());
+        return array_map(
+            static fn (self $type): string => $type->value,
+            self::cases(),
+        );
     }
 }

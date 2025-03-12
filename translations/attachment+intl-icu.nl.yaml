@@ -71,6 +71,8 @@ decision_on_objection: beslissing op bezwaar
 judgement_on_wob_woo_request: beslissing op Wob-/Woo-verzoek
 wob_woo_request: Wob-/Woo-verzoek
 
+other: overig
+
 dutch: Nederlands
 english: Engels
 
@@ -87,3 +89,4 @@ branch.publication_sheet: "publicatieblad"
 branch.regulation: "regelgeving"
 branch.meeting_document: "vergaderstuk"
 branch.woo_procedure: "Woo-procedure"
+branch.other: "overig"

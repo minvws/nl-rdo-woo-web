@@ -69,4 +69,9 @@ readonly class AnnualReportConfig implements DossierTypeConfigInterface
             AnnualReportAttachment::class,
         ];
     }
+
+    public function getAttachmentStepName(): ?StepName
+    {
+        return StepName::CONTENT;
+    }
 }

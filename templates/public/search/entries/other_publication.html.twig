@@ -1,0 +1,13 @@
+{% extends 'public/search/entries/base.html.twig' %}
+
+{% set resultUrl = path('app_otherpublication_detail', { prefix: entry.dossier.documentPrefix, dossierId: entry.dossier.dossierNr }) %}
+{% set resultType = 'dossier.type.other-publication' | trans %}
+
+{% block resultSpecsBottom %}
+    <li class="woo-search-result__spec">
+        {{ 'public.dossiers.other-publication.date' | trans }} <twig:Date date="{{ entry.dossier.date }}" />
+    </li>
+    <li class="woo-search-result__spec">
+        {{ 'global.published_on' | trans | capitalize }} <twig:Date date="{{ entry.dossier.publicationDate }}" />
+    </li>
+{% endblock %}

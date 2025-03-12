@@ -45,7 +45,7 @@ final readonly class IngestPdfPageHandler
                 'exception' => $e->getMessage(),
             ]);
 
-            // @TODO Do we want to re-throw exception? This is not done for any of the other Ingest*Handler's
+            // Rethrowing the exception ensures the message fails and is retried
             throw $e;
         }
     }

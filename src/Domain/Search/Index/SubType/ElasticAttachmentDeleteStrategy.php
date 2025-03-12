@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\SubType;
 
-use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Attachment\AttachmentDeleteStrategyInterface;
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Search\Index\ElasticDocumentId;
 use App\Domain\Search\SearchDispatcher;
 

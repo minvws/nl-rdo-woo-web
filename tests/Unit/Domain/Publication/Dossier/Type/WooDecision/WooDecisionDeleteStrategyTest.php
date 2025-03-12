@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision;
 
+use App\Domain\Publication\BatchDownload\BatchDownloadScope;
+use App\Domain\Publication\BatchDownload\BatchDownloadService;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReport;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDeleteStrategy;
-use App\Service\BatchDownloadService;
 use App\Service\DocumentService;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Storage\EntityStorageService;
@@ -70,18 +72,26 @@ class WooDecisionDeleteStrategyTest extends MockeryTestCase
         $productionReport = \Mockery::mock(ProductionReport::class);
         $dossier->shouldReceive('getProductionReport')->andReturn($productionReport);
 
+        $processRun = \Mockery::mock(ProductionReportProcessRun::class);
+        $dossier->shouldReceive('getProcessRun')->andReturn($processRun);
+
         $this->documentService->expects('removeDocumentFromDossier')->with($dossier, $document, false);
 
-        $this->entityStorageService->expects('removeFileForEntity')->with($inventory);
-        $this->entityStorageService->expects('removeFileForEntity')->with($productionReport);
+        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($inventory);
+        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($productionReport);
+        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($processRun);
 
-        $this->batchDownloadService->expects('removeAllDownloadsForEntity')->with($dossier);
+        $this->batchDownloadService->expects('removeAllForScope')->with(\Mockery::on(
+            static function (BatchDownloadScope $scope) use ($dossier): bool {
+                return $scope->wooDecision === $dossier;
+            }
+        ));
         $this->inquiryService->expects('removeDossierFromInquiries')->with($dossier);
 
         $this->strategy->delete($dossier);
     }
 
-    public function testDeleteWithoutInventory(): void
+    public function testDeleteWithoutInventoryAndProcessRun(): void
     {
         $dossier = \Mockery::mock(WooDecision::class);
 
@@ -92,15 +102,20 @@ class WooDecisionDeleteStrategyTest extends MockeryTestCase
         $dossier->shouldReceive('getAttachments')->andReturn($attachments);
 
         $dossier->shouldReceive('getInventory')->andReturnNull();
+        $dossier->shouldReceive('getProcessRun')->andReturnNull();
 
         $productionReport = \Mockery::mock(ProductionReport::class);
         $dossier->shouldReceive('getProductionReport')->andReturn($productionReport);
 
         $this->documentService->expects('removeDocumentFromDossier')->with($dossier, $document, false);
 
-        $this->entityStorageService->expects('removeFileForEntity')->with($productionReport);
+        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($productionReport);
 
-        $this->batchDownloadService->expects('removeAllDownloadsForEntity')->with($dossier);
+        $this->batchDownloadService->expects('removeAllForScope')->with(\Mockery::on(
+            static function (BatchDownloadScope $scope) use ($dossier): bool {
+                return $scope->wooDecision === $dossier;
+            }
+        ));
         $this->inquiryService->expects('removeDossierFromInquiries')->with($dossier);
 
         $this->strategy->delete($dossier);

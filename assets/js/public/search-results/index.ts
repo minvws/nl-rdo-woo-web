@@ -31,10 +31,9 @@ export const searchResults = () => {
   const { initialize: initializeResetFocus, cleanup: cleanupResetFocus } =
     resetFocus();
 
-  const executeFetchAndUpdateResults = (params: URLSearchParams) => {
-    fetchAndUpdateResults(params, (previousActiveElement?: HTMLElement) => {
-      initialize(previousActiveElement);
-    });
+  const executeFetchAndUpdateResults = async (params: URLSearchParams) => {
+    const previousActiveElement = await fetchAndUpdateResults(params);
+    initialize((previousActiveElement as HTMLElement) ?? undefined);
   };
 
   const initialize = (previousActiveElement?: HTMLElement) => {

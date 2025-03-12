@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Workflow\Guard;
 
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\Guard\PublishGuard;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -68,28 +68,10 @@ class PublishGuardTest extends MockeryTestCase
         self::assertTrue($event->isBlocked());
     }
 
-    public function testGuardPublicationBlocksIncompleteDossier(): void
-    {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $dossier->expects('getPublicationDate')->twice()->andReturn(new \DateTimeImmutable('-1 day'));
-        $dossier->expects('isCompleted')->andReturnFalse();
-
-        $event = new GuardEvent(
-            $dossier,
-            new Marking([]),
-            new Transition(DossierStatusTransition::PUBLISH->value, [], []),
-        );
-
-        $this->guard->guardPublication($event);
-
-        self::assertTrue($event->isBlocked());
-    }
-
     public function testGuardPublicationAllowsValidDossier(): void
     {
         $dossier = \Mockery::mock(WooDecision::class);
         $dossier->expects('getPublicationDate')->twice()->andReturn(new \DateTimeImmutable('-1 day'));
-        $dossier->expects('isCompleted')->andReturnTrue();
 
         $event = new GuardEvent(
             $dossier,

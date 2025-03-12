@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { PublicationSearchResult } from '../interface';
+import type { PublicationSearchResult } from './interface';
 import PublicationSearchForm from './PublicationSearchForm.vue';
 import PublicationSearchInput from './PublicationSearchInput.vue';
 import SearchResultsListbox from './SearchResultsListbox.vue';

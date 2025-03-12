@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Exception;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Exception\ProcessInventoryException;
 use App\Exception\TranslatableException;
 use PHPUnit\Framework\TestCase;

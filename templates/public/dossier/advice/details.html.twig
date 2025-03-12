@@ -1,0 +1,16 @@
+{% extends 'public/dossier/shared/details.html.twig' %}
+
+{% set tagline = 'public.dossiers.advice.tagline' | trans %}
+{% set description = 'public.dossiers.advice.description' | trans %}
+
+{% block attachments %}
+    {% include 'public/dossier/shared/attachments.html.twig' with {'title': 'public.dossiers.advice.attachments_for' | trans} %}
+{% endblock %}
+
+{% block about %}
+    <twig:Public:Publication:About
+        document="{{ document }}"
+        dossier="{{ dossier }}"
+        title="{{ 'public.dossiers.advice.about' | trans }}"
+    />
+{% endblock %}

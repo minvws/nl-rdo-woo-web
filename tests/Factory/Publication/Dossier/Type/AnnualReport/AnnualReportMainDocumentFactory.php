@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Factory\Publication\Dossier\Type\AnnualReport;
 
-use App\Domain\Publication\Attachment\AttachmentLanguage;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
 use App\Tests\Factory\FileInfoFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -14,6 +15,11 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
  */
 final class AnnualReportMainDocumentFactory extends PersistentProxyObjectFactory
 {
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
+
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
@@ -39,7 +45,19 @@ final class AnnualReportMainDocumentFactory extends PersistentProxyObjectFactory
      */
     protected function initialize(): static
     {
-        return $this;
+        return $this
+            ->afterInstantiate(function (AnnualReportMainDocument $document, array $attributes): void {
+                if (isset($attributes['overwrite_id'])) {
+                    $this->entityManager->detach($document);
+
+                    $reflection = new \ReflectionClass($document);
+                    $property = $reflection->getProperty('id');
+                    $property->setAccessible(true);
+                    $property->setValue($document, $attributes['overwrite_id']);
+
+                    $this->entityManager->persist($document);
+                }
+            });
     }
 
     public static function class(): string

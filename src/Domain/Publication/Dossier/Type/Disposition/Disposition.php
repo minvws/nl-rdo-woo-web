@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\Disposition;
 
-use App\Domain\Publication\Attachment\EntityWithAttachments;
-use App\Domain\Publication\Attachment\HasAttachments;
+use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use App\Domain\Publication\Attachment\Entity\HasAttachments;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierValidationGroup;

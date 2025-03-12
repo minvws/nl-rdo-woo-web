@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Domain\Publication\BatchDownload;
+use App\Domain\Publication\BatchDownload\BatchDownload;
+use App\Domain\Publication\BatchDownload\BatchDownloadStorage;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Storage\EntityStorageService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -14,7 +15,7 @@ readonly class DownloadResponseHelper
 {
     public function __construct(
         private EntityStorageService $entityStorageService,
-        private ArchiveService $archiveService,
+        private BatchDownloadStorage $batchDownloadStorage,
         private DownloadFilenameGenerator $filenameGenerator,
     ) {
     }
@@ -48,7 +49,7 @@ readonly class DownloadResponseHelper
 
     public function getResponseForBatchDownload(BatchDownload $batch): StreamedResponse
     {
-        $stream = $this->archiveService->getZipStream($batch);
+        $stream = $this->batchDownloadStorage->getFileStreamForBatch($batch);
         if (! $stream) {
             throw new NotFoundHttpException();
         }

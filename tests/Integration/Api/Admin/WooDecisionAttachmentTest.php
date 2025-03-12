@@ -6,8 +6,8 @@ namespace App\Tests\Integration\Api\Admin;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Api\Admin\WooDecisionAttachment\WooDecisionAttachmentDto;
-use App\Domain\Publication\Attachment\AttachmentLanguage;
-use App\Domain\Publication\Attachment\AttachmentType;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Factory\FileInfoFactory;

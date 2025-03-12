@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\DossierService;
 use App\Service\Inventory\InventoryChangeset;
 use App\Service\Inventory\InventoryComparator;

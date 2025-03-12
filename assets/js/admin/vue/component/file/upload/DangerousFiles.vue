@@ -1,16 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
 import Alert from '../../Alert.vue';
 import FilesList from './FilesList.vue';
 
-const props = defineProps({
-  allowMultiple: {
-    type: Boolean,
-  },
-  files: {
-    type: Array,
-    default: () => [],
-  },
+interface Props {
+  allowMultiple?: boolean;
+  files?: File[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  files: () => [],
 });
 
 const numberOfFiles = computed(() => props.files.length);

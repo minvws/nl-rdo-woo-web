@@ -8,9 +8,10 @@ interface Props {
   allowedFileTypes: string[];
   allowedMimeTypes: string[];
   dossierId: string;
-  expectedUploadCount: number;
   isComplete: boolean;
   maxFileSize: number;
+  confirmEndpoint: string;
+  rejectEndpoint: string;
   processEndpoint: string;
   statusEndpoint: string;
   uploadEndpoint: string;
@@ -49,6 +50,9 @@ const onComplete = () => {
     :dossier-id="props.dossierId"
     :is-complete="props.isComplete"
     :max-file-size="props.maxFileSize"
+    mode="add"
+    :confirm-endpoint="props.confirmEndpoint"
+    :reject-endpoint="props.rejectEndpoint"
     :process-endpoint="props.processEndpoint"
     :status-endpoint="props.statusEndpoint"
     :upload-endpoint="props.uploadEndpoint"

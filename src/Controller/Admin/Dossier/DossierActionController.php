@@ -8,12 +8,12 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierDispatcher;
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WithdrawReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Form\Document\WithdrawFormType;
+use App\Form\Document\WithdrawDocumentFormType;
 use App\Form\Dossier\DeleteFormType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 /**
@@ -33,6 +34,7 @@ class DossierActionController extends AbstractController
         private readonly DossierWorkflowManager $dossierWorkflowManager,
         private readonly DossierDispatcher $dossierDispatcher,
         private readonly WooDecisionDispatcher $wooDecisionDispatcher,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -82,7 +84,7 @@ class DossierActionController extends AbstractController
             return $this->stepHelper->redirectToDossier($wooDecision);
         }
 
-        $form = $this->createForm(WithdrawFormType::class);
+        $form = $this->createForm(WithdrawDocumentFormType::class);
         $form->handleRequest($request);
 
         if ($this->stepHelper->isFormCancelled($form)) {
@@ -90,13 +92,18 @@ class DossierActionController extends AbstractController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var WithdrawReason $reason */
+            /** @var DocumentWithdrawReason $reason */
             $reason = $form->get('reason')->getData();
 
             /** @var string $explanation */
             $explanation = $form->get('explanation')->getData();
 
             $this->wooDecisionDispatcher->dispatchWithDrawAllDocumentsCommand($wooDecision, $reason, $explanation);
+
+            $this->addFlash(
+                'backend',
+                ['success' => $this->translator->trans('admin.dossiers.action.withdraw_all_executing')]
+            );
 
             return $this->redirectToRoute(
                 'app_admin_dossier_woodecision_documents_edit',

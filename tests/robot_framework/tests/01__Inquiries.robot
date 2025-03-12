@@ -1,5 +1,6 @@
 *** Settings ***
 Documentation       Tests that focus on using the inquiry system
+...                 This is named 01 because we want to run this first, when the queue is empty, because the first test waits for the queue to be empty.
 Resource            ../resources/Setup.resource
 Resource            ../resources/WooDecision.resource
 Resource            ../resources/Inquiry.resource
@@ -8,11 +9,7 @@ Library             Collections
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
-Test Tags           inquiries  ci  public-init
-
-
-*** Variables ***
-${DOSSIER_REFERENCE}    ${EMPTY}
+Test Tags           ci  inquiries
 
 
 *** Test Cases ***
@@ -130,18 +127,10 @@ Production report inquiry does not unlink
   Click Documents Edit
   Click Replace Report
   Upload Production Report  tests/robot_framework/files/inquiries/productierapport5-unlinked.xlsx  ${TRUE}
-  Verify Production Report Replace  Productierapport geüpload en gecontroleerd
-  Verify Production Report Replace  2 bestaande documenten worden aangepast.
-  Click Confirm Production Report Replacement
-  Verify Production Report Replace  Het productierapport is succesvol vervangen.
-  Click Continue To Documents
-  Click Breadcrumb Element  1
-  Get Text  //*[@data-e2e-name="linked-inquiries"]  contains  2021-02
-  Click Inquiries
-  Verify Inquiry Document Count  2021-02  2
+  Verify Production Report Replace  Het nieuwe productierapport is gelijk aan het huidige rapport
 
 Manual links are not overwritten when reuploading production report
-  [Documentation]  Reuploading the original production report after manually linking documents should not remove the manual links
+  [Documentation]  Reuploading the original production report after manually linking documents should not be possible.
   Publish Test Dossier
   ...  production_report=tests/robot_framework/files/inquiries/productierapport6.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten6.zip
@@ -158,17 +147,7 @@ Manual links are not overwritten when reuploading production report
   Click Documents Edit
   Click Replace Report
   Upload Production Report  tests/robot_framework/files/inquiries/productierapport6.xlsx  ${TRUE}
-  Verify Production Report Replace  Productierapport geüpload en gecontroleerd
-  Verify Production Report Replace  2 bestaande documenten worden aangepast.
-  Click Confirm Production Report Replacement
-  Verify Production Report Replace  Het productierapport is succesvol vervangen.
-  Click Continue To Documents
-  # check if the manual link is been override by the Production Report again
-  Open Document In Dossier  3501
-  Get Text  //*[@data-e2e-name="inquiries"]  contains  2020-01
-  Click Breadcrumb Element  2
-  Open Document In Dossier  3502
-  Get Text  //*[@data-e2e-name="inquiries"]  contains  2020-01
+  Verify Production Report Replace  Het nieuwe productierapport is gelijk aan het huidige rapport
 
 Inquiry with multiple dossiers
   [Documentation]  Create an inquiry with multiple dossiers
@@ -198,5 +177,4 @@ Suite Setup
   Select Organisation
 
 Suite Teardown
-  Go To Admin
-  Logout Admin
+  No-Click Logout

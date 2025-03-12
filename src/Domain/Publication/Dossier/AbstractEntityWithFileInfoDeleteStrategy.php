@@ -15,13 +15,13 @@ abstract readonly class AbstractEntityWithFileInfoDeleteStrategy implements Doss
     ) {
     }
 
-    protected function deleteFileForEntity(?EntityWithFileInfo $entity): void
+    protected function deleteAllFilesForEntity(?EntityWithFileInfo $entity): void
     {
         if ($entity === null) {
             return;
         }
 
-        $this->entityStorageService->removeFileForEntity($entity);
+        $this->entityStorageService->deleteAllFilesForEntity($entity);
     }
 
     abstract public function delete(AbstractDossier $dossier): void;

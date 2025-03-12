@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Result\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Domain\Search\Result\Dossier\DossierTypeSearchResultInterface;
 

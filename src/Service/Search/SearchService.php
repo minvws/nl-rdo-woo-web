@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Search;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Query\SearchParametersFactory;
 use App\Service\Elastic\ElasticClientInterface;
@@ -79,8 +79,6 @@ class SearchService
                 ->setQuery($query);
         }
 
-        $result = $this->resultTransformer->transform($query, $searchParameters, $response);
-
-        return $result;
+        return $this->resultTransformer->transform($query, $searchParameters, $response);
     }
 }

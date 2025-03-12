@@ -9,6 +9,8 @@ use App\Entity\User;
 use App\Roles;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr\Orx;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -62,11 +64,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $qb->join('u.organisation', 'o')
             ->andWhere('o.id = :val')
             ->andWhere('u.enabled = true')
-            ->andWhere($qb->expr()->orX(
-                "CONTAINS(u.roles, '\"" . Roles::ROLE_VIEW_ACCESS . "\"') = true",
-                "CONTAINS(u.roles, '\"" . Roles::ROLE_DOSSIER_ADMIN . "\"') = true",
-                "CONTAINS(u.roles, '\"" . Roles::ROLE_ORGANISATION_ADMIN . "\"') = true",
-            ))
+            ->andWhere($this->oneOfGivenRolesExpression($qb, [
+                Roles::ROLE_VIEW_ACCESS,
+                Roles::ROLE_DOSSIER_ADMIN,
+                Roles::ROLE_ORGANISATION_ADMIN,
+            ]))
             ->setParameter('val', $organisation->getId())
             ->orderBy('u.id', 'ASC');
 
@@ -79,11 +81,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $qb->join('u.organisation', 'o')
             ->andWhere('o.id = :val')
             ->andWhere('u.enabled = false')
-            ->andWhere($qb->expr()->orX(
-                "CONTAINS(u.roles, '\"" . Roles::ROLE_VIEW_ACCESS . "\"') = true",
-                "CONTAINS(u.roles, '\"" . Roles::ROLE_DOSSIER_ADMIN . "\"') = true",
-                "CONTAINS(u.roles, '\"" . Roles::ROLE_ORGANISATION_ADMIN . "\"') = true",
-            ))
+            ->andWhere($this->oneOfGivenRolesExpression($qb, [
+                Roles::ROLE_VIEW_ACCESS,
+                Roles::ROLE_DOSSIER_ADMIN,
+                Roles::ROLE_ORGANISATION_ADMIN,
+            ]))
             ->setParameter('val', $organisation->getId())
             ->orderBy('u.id', 'ASC');
 
@@ -95,10 +97,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $qb = $this->createQueryBuilder('u');
         $qb->join('u.organisation', 'o')
             ->andWhere('u.enabled = true')
-            ->andWhere($qb->expr()->orX(
-                "CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = true",
-                "CONTAINS(u.roles, '\"" . Roles::ROLE_GLOBAL_ADMIN . "\"') = true",
-            ))
+            ->andWhere($this->oneOfGivenRolesExpression($qb, [
+                Roles::ROLE_SUPER_ADMIN,
+                Roles::ROLE_GLOBAL_ADMIN,
+            ]))
             ->orderBy('u.id', 'ASC');
 
         return $qb->getQuery();
@@ -109,12 +111,25 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $qb = $this->createQueryBuilder('u');
         $qb->join('u.organisation', 'o')
             ->andWhere('u.enabled = false')
-            ->andWhere($qb->expr()->orX(
-                "CONTAINS(u.roles, '\"" . Roles::ROLE_SUPER_ADMIN . "\"') = true",
-                "CONTAINS(u.roles, '\"" . Roles::ROLE_GLOBAL_ADMIN . "\"') = true",
-            ))
+            ->andWhere($this->oneOfGivenRolesExpression($qb, [
+                Roles::ROLE_SUPER_ADMIN,
+                Roles::ROLE_GLOBAL_ADMIN,
+            ]))
             ->orderBy('u.id', 'ASC');
 
         return $qb->getQuery();
+    }
+
+    /**
+     * @param string[] $roles
+     */
+    private function oneOfGivenRolesExpression(QueryBuilder $queryBuilder, array $roles): Orx
+    {
+        $conditions = [];
+        foreach ($roles as $role) {
+            $conditions[] = sprintf('CONTAINS(u.roles, \'"%s"\') = true', $role);
+        }
+
+        return $queryBuilder->expr()->orX(...$conditions);
     }
 }

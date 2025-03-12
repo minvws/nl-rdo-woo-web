@@ -1,4 +1,4 @@
-{% extends 'admin.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
 {% block body %}
 <div class="bhr-container bhr-container--sm">
@@ -13,7 +13,7 @@
                     <a href="{{ dossierType.createUrl }}" data-e2e-name="create-dossier-type-{{ dossierType.type }}" class="bhr-link-list__link">
                         <span class="block leading-tight">
                             <span class="font-bold block mb-1">{{ ('dossier.type.' ~ dossierType.type) | trans }}</span>
-                            {{ ('dossier.type.' ~ dossierType.type ~ '_description') | trans }}
+                            {{ ('dossier.type.' ~ dossierType.type ~ '.description') | trans }}
                         </span>
                         <twig:Admin:Icon name="chevron-right" />
                     </a>

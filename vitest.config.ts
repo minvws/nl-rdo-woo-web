@@ -20,6 +20,7 @@ export default defineConfig({
       reporter: ['text', 'lcov'],
       include: ['assets/js/**'],
     },
+    setupFiles: ['./vitest.setup.ts'],
   },
   plugins: [vue()],
 });

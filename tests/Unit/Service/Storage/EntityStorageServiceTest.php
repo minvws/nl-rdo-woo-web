@@ -426,37 +426,6 @@ class EntityStorageServiceTest extends UnitTestCase
         $this->assertTrue($result);
     }
 
-    public function testRemoveFileForEntity(): void
-    {
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
-
-        $service = $this->getStorageService();
-        $service
-            ->shouldReceive('generateEntityPath')
-            ->once()
-            ->withSomeOfArgs($entity)
-            ->andReturn($remotePath = 'pagePath');
-
-        $this->remoteFilesystem
-            ->shouldReceive('delete')
-            ->once()
-            ->with($remotePath)
-            ->andReturnTrue();
-
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            static function (EntityFileUpdateEvent $message) use ($entityId) {
-                self::assertEquals($entityId, $message->entityId);
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
-
-        $result = $service->removeFileForEntity($entity);
-
-        $this->assertTrue($result);
-    }
-
     public function testSetHashSuccessFul(): void
     {
         $fileInfo = \Mockery::mock(FileInfo::class);

@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Event\DocumentUpdateEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\BatchDownload\BatchDownloadScope;
+use App\Domain\Publication\BatchDownload\BatchDownloadService;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentUpdateEvent;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\SearchDispatcher;
 use App\Exception\ProductionReportUpdaterException;
-use App\Service\DossierService;
 use App\Service\Inquiry\InquiryChangeset;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Inventory\Progress\RunProgress;
@@ -31,11 +32,11 @@ readonly class InventoryUpdater
         private DocumentUpdater $documentUpdater,
         private DocumentComparator $documentComparator,
         private DocumentRepository $documentRepository,
-        private DossierService $dossierService,
         private InquiryService $inquiryService,
         private MessageBusInterface $messageBus,
         private SearchDispatcher $searchDispatcher,
         private ProductionReportDispatcher $dispatcher,
+        private BatchDownloadService $batchDownloadService,
     ) {
     }
 
@@ -148,7 +149,11 @@ readonly class InventoryUpdater
     public function sendMessagesForChangeset(InventoryChangeset $changeset, WooDecision $dossier, RunProgress $runProgress): void
     {
         $this->dispatcher->dispatchGenerateInventoryCommand($dossier->getId());
-        $this->dossierService->generateArchives($dossier);
+
+        $this->batchDownloadService->refresh(
+            BatchDownloadScope::forWooDecision($dossier),
+        );
+
         $this->searchDispatcher->dispatchIndexDossierCommand($dossier->getId());
 
         foreach ($changeset->getAll() as $documentNr => $action) {

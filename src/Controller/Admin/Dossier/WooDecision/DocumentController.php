@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Service\DocumentWorkflow\DocumentWorkflow;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Service\DocumentWorkflow\DocumentWorkflowStatus;
 use App\Service\FileUploader;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -23,7 +23,6 @@ class DocumentController extends AbstractController
     public function __construct(
         private readonly FileUploader $fileUploader,
         private readonly LoggerInterface $logger,
-        private readonly DocumentWorkflow $workflow,
     ) {
     }
 
@@ -54,7 +53,7 @@ class DocumentController extends AbstractController
             'dossier' => $dossier,
             'document' => $document,
             'breadcrumbs' => $breadcrumbs,
-            'workflow' => $this->workflow->getStatus($document),
+            'workflow' => new DocumentWorkflowStatus($document),
         ]);
     }
 

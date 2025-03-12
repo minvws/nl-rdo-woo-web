@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Type\InvestigationReport\ViewModel;
 
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport as InvestigationReportEntity;
-use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierPropertiesViewFactory;
+use App\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
 use Webmozart\Assert\Assert;
 
 final readonly class InvestigationReportViewFactory

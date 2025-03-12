@@ -6,8 +6,8 @@ namespace App\Domain\Publication;
 
 use App\Doctrine\FileCacheKeyBasedOnClassAndIdTrait;
 use App\Doctrine\TimestampableTrait;
-use App\Domain\Publication\Attachment\AttachmentLanguage;
-use App\Domain\Publication\Attachment\AttachmentType;
+use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Service\Uploader\UploadGroupId;
 use Doctrine\DBAL\Types\Types;
@@ -91,7 +91,7 @@ trait AttachmentAndMainDocumentEntityTrait
      */
     public static function getAllowedTypes(): array
     {
-        return AttachmentType::cases();
+        return AttachmentType::getCasesWithout(AttachmentType::OTHER);
     }
 
     public function getInternalReference(): string

@@ -1,0 +1,19 @@
+{% extends 'admin/dossier/shared/view.html.twig' %}
+
+{% set aboutTitle = 'admin.global.other-publication_on' | trans %}
+
+{% set descriptionLabel = 'admin.dossiers.other-publication.description' | trans %}
+{% set internalReferenceLabel = 'admin.dossiers.other-publication.form.details.ref_int' | trans %}
+
+{% set dossierTypeTitle = 'dossier.type.other-publication' | trans %}
+{% set periodLabel = 'admin.dossiers.other-publication.date' | trans %}
+{% set summaryLabel = 'admin.dossiers.other-publication.summary' | trans %}
+{% set documentLabel = 'admin.dossiers.other-publication.document' | trans %}
+{% set completeFirstOpenStepTitle = ('admin.dossiers.other-publication.complete_step.' ~ workflowStatus.firstOpenStep.stepName.value | default) | trans %}
+
+{% set deleteTitle = 'admin.dossiers.other-publication.delete' | trans %}
+{% set deleteBullets = [
+    'admin.dossiers.other-publication.delete_bullet-1' | trans,
+    'admin.dossiers.other-publication.delete_bullet-2' | trans,
+    'admin.dossiers.other-publication.delete_bullet-3' | trans,
+] %}

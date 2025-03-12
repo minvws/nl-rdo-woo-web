@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Search\Model;
 
+use App\Domain\Search\Query\Facet\DisplayValue\UntranslatedStringFacetDisplayValue;
 use App\Domain\Search\Query\SearchParameters;
 use App\Service\Search\Model\AggregationBucketEntry;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +19,7 @@ class AggregationBucketEntryTest extends TestCase
         $entry = new AggregationBucketEntry(
             $key = 'foo',
             $count = 123,
-            $value = 'bar',
+            $value = UntranslatedStringFacetDisplayValue::fromString('bar'),
             $searchParams = \Mockery::mock(SearchParameters::class),
             $searchParamsWithout = \Mockery::mock(SearchParameters::class),
             $subEntries = [$subEntry]

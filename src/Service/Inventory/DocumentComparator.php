@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 readonly class DocumentComparator
 {
@@ -70,7 +70,8 @@ readonly class DocumentComparator
 
         $newCaseNrs = $metadata->getCaseNumbers();
 
-        return count($currentCaseNrs) !== count($newCaseNrs) || array_diff($currentCaseNrs, $newCaseNrs);
+        // Case removals in the production report are intentionally ignored, only additions should be seen as a change.
+        return count(array_diff($newCaseNrs, $currentCaseNrs)) > 0;
     }
 
     public function hasRefersToUpdate(WooDecision $dossier, Document $document, DocumentMetadata $metadata): bool

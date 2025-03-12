@@ -11,22 +11,17 @@ parameters:
 
     default_site_name: open.minvws.nl
 
+imports:
+    - { resource: services/default_autowire.yaml }
+    - { resource: services/woo_index.yaml }
+
 services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
         bind:
-            $configPageLimit: '%configPageLimit%'
             Psr\Log\LoggerInterface $logger: '@App\Service\Logging\EnrichedPsrLogger'
-            string $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
-
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
 
     App\Domain\Search\Index\Rollover\MappingService:
         arguments:
@@ -69,42 +64,6 @@ services:
                 - '@App\Service\Stats\Handler\ElasticHandler'
                 - '@App\Service\Stats\Handler\DoctrineHandler'
 
-    _instanceof:
-        App\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface:
-            tags: ['domain.ingest.subtype.strategy']
-        App\Service\Logging\LoggingTypeInterface:
-            tags: [ 'app.logging.type' ]
-        App\Service\Stats\Handler\StatsHandlerInterface:
-            tags: [ 'app.stats.handler' ]
-        App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface:
-            tags: ['domain.publication.dossier_type_config']
-        App\Domain\Search\Index\Dossier\Mapper\ElasticDossierMapperInterface:
-            tags: [ 'domain.search.index.dossier_mapper' ]
-        App\Domain\Search\Index\SubType\Mapper\ElasticSubTypeMapperInterface:
-            tags: [ 'domain.search.index.subtype_mapper' ]
-        App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface:
-            tags: [ 'domain.publication.dossier_delete_strategy' ]
-        App\Domain\Publication\Attachment\AttachmentDeleteStrategyInterface:
-            tags: [ 'domain.publication.attachment_delete_strategy' ]
-        App\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface:
-            tags: [ 'domain.publication.main_document_delete_strategy' ]
-        App\Domain\Search\Result\SearchResultMapperInterface:
-            tags: [ 'domain.search.result_mapper' ]
-        App\Domain\Ingest\Content\Extractor\ContentExtractorInterface:
-            tags: [ 'domain.ingest.content_extractor' ]
-        App\Service\PlatformCheck\PlatformCheckerInterface:
-            tags: [ 'app.platform_checker' ]
-        App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionInterface:
-            tags: [ 'domain.publication.dossier.admin.action' ]
-        App\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface:
-            tags: [ 'domain.upload.preprocessor.strategy' ]
-        App\Domain\Upload\Postprocessor\FilePostprocessorStrategyInterface:
-            tags: [ 'domain.upload.postprocessor.strategy' ]
-        App\Domain\Search\Theme\ThemeInterface:
-            tags: [ 'domain.search.theme' ]
-        App\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface:
-            tags: [ 'domain.publication.dossier.file_provider' ]
-
     # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
     App\Service\Encryption\EncryptionService:
         public: true
@@ -127,9 +86,9 @@ services:
         arguments:
             $projectPath: '%kernel.project_dir%'
 
-    App\Service\ArchiveService:
+    App\Domain\Publication\BatchDownload\BatchDownloadStorage:
         arguments:
-            $storage: '@batch.storage'
+            $filesystem: '@batch.storage'
 
     App\EventSubscriber\LocaleListener:
         arguments:
@@ -238,10 +197,6 @@ services:
         arguments:
             $deleteStrategies: !tagged_iterator domain.publication.dossier_delete_strategy
 
-    App\Domain\Publication\Attachment\Handler\DeleteAttachmentHandler:
-        arguments:
-            $deleteStrategies: !tagged_iterator domain.publication.attachment_delete_strategy
-
     App\Domain\Publication\MainDocument\Handler\DeleteMainDocumentHandler:
         arguments:
             $deleteStrategies: !tagged_iterator domain.publication.main_document_delete_strategy
@@ -324,6 +279,11 @@ when@dev:
 
         Faker\Generator:
             factory: ['App\Tests\Faker\FakerFactory', 'create']
+
+        App\Tests\Story\:
+            autowire: true
+            autoconfigure: true
+            resource: '../tests/Story'
 
 when@test:
     services: *services_dev

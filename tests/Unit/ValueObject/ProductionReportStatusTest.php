@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\ValueObject;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReport;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\Inventory\InventoryChangeset;
 use App\ValueObject\ProductionReportStatus;
 use Mockery\Adapter\Phpunit\MockeryTestCase;

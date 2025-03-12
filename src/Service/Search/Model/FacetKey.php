@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Model;
 
-use App\Service\Search\Query\Facet\Input\DateFacetInput;
-use App\Service\Search\Query\Facet\Input\FacetInput;
-use App\Service\Search\Query\Facet\Input\StringValuesFacetInput;
-
 enum FacetKey: string
 {
     case TYPE = 'type';
@@ -23,42 +19,8 @@ enum FacetKey: string
     case INQUIRY_DOCUMENTS = 'dci';
 
     /**
-     * @return class-string<FacetInput>
+     * @deprecated use FacetDefinition::$requestParameter instead
      */
-    public function getInputClass(): string
-    {
-        return match ($this) {
-            self::TYPE => StringValuesFacetInput::class,
-            self::SUBJECT => StringValuesFacetInput::class,
-            self::SOURCE => StringValuesFacetInput::class,
-            self::GROUNDS => StringValuesFacetInput::class,
-            self::JUDGEMENT => StringValuesFacetInput::class,
-            self::DEPARTMENT => StringValuesFacetInput::class,
-            self::PERIOD => StringValuesFacetInput::class,
-            self::DATE => DateFacetInput::class,
-            self::PREFIXED_DOSSIER_NR => StringValuesFacetInput::class,
-            self::INQUIRY_DOSSIERS => StringValuesFacetInput::class,
-            self::INQUIRY_DOCUMENTS => StringValuesFacetInput::class,
-        };
-    }
-
-    public function getPath(): string
-    {
-        return match ($this) {
-            self::TYPE => 'type',
-            self::SUBJECT => 'subject_names',
-            self::SOURCE => 'source_type',
-            self::GROUNDS => 'grounds',
-            self::JUDGEMENT => 'judgement',
-            self::DEPARTMENT => 'department_names',
-            self::PERIOD => 'date_period',
-            self::DATE => 'date_filter',
-            self::PREFIXED_DOSSIER_NR => 'prefixed_dossier_nr',
-            self::INQUIRY_DOSSIERS => 'inquiry_ids',
-            self::INQUIRY_DOCUMENTS => 'inquiry_ids',
-        };
-    }
-
     public function getParamName(): string
     {
         return match ($this) {

@@ -1,16 +1,23 @@
 <div class="mt-10">
+    {% set formattedFileType = file.type|upper %}
+    {% set formattedFileSize = file.size != "0" ? file.size | size : ""  %}
+    {% set numberOfPages = file.pages | length %}
+    {% set maxNumberOfPagesToDisplay = 50 %}
     <a
         class="focus:mb-4 woo-skip-link"
         href="#below-carousel"
         id="above-carousel"
     >{{ 'public.documents.viewer.skip_document_preview' | trans }}</a>
 
-    <p class="pb-1 woo-muted text-sm">{{ title }}</p>
+    <p class="pb-1 woo-muted text-sm">
+        {% if numberOfPages > maxNumberOfPagesToDisplay %}{{ 'public.documents.viewer.more_than_50' | trans({ total_pages: numberOfPages }) }}{% endif %}
+        {{ "public.documents.viewer.click_on_page" | trans({ fileInfo: formattedFileType, fileSize: formattedFileSize, pages: 'global.number_of_pages' | trans({ count: numberOfPages }) }) }}
+    </p>
 
     <div class="min-h-[333px]">
         <section class="block woo-carousel" aria-label="{{ 'public.documents.viewer.document_preview' | trans }}">
             <ol class="woo-carousel__list" data-e2e-name="preview-list">
-                {% for page in file.pages %}
+                {% for page in file.pages[:maxNumberOfPagesToDisplay] %}
                     <li>
                         {% if page.hasThumbnail %}
                             <a class="woo-carousel__a" href="{{ page.viewUrl }}">
@@ -22,7 +29,7 @@
                                     src="{{ page.thumbnailUrl }}"
                                     width="204"
                                 />
-                                <span class="sr-only">{{ 'public.inquiries.document.open_or_download' | trans({ fileInfo: file.type|upper, fileSize: file.size != '0' ? file.size | size : ""  }) }} {{ page.pageNr }}</span>
+                                <span class="sr-only">{{ 'public.inquiries.document.open_or_download' | trans({ fileInfo: formattedFileType, fileSize: formattedFileSize  }) }} {{ page.pageNr }}</span>
                             </a>
                         {% else %}
                             <div class="woo-carousel__a">

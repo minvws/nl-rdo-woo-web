@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Inquiry;
 
 use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use App\Entity\Organisation;
 use App\Exception\FileReaderException;
 use App\Exception\InquiryLinkImportException;

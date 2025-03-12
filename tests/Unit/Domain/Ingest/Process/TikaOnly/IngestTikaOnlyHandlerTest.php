@@ -10,7 +10,7 @@ use App\Domain\Ingest\Content\ContentExtractService;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand;
 use App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;

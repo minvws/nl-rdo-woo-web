@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\Inventory\DocumentComparator;
 use App\Service\Inventory\DocumentMetadata;
 use App\Service\Inventory\DocumentNumber;
@@ -78,6 +79,50 @@ class DocumentComparatorTest extends MockeryTestCase
         self::assertFalse($changeset->isChanged(MetadataField::FAMILY->value));
 
         self::assertTrue($this->documentComparator->needsUpdate($this->dossier, $document, $metadata));
+    }
+
+    public function testDocumentCompareIgnoresCaseNrRemoval(): void
+    {
+        $documentNr = \Mockery::mock(DocumentNumber::class);
+        $inquiry = \Mockery::mock(Inquiry::class);
+        $inquiry->shouldReceive('getCaseNr')->andReturn('foo-123');
+
+        $document = \Mockery::mock(Document::class);
+        $document->expects('getJudgement')->twice()->andReturn(Judgement::NOT_PUBLIC);
+        $document->expects('getFamilyId')->twice()->andReturn(1);
+        $document->expects('getThreadId')->twice()->andReturn(1);
+        $document->expects('getGrounds')->twice()->andReturn([]);
+        $document->expects('getPeriod')->twice()->andReturnNull();
+        $document->expects('isSuspended')->twice()->andReturnFalse();
+        $document->expects('getLinks')->twice()->andReturn([]);
+        $document->expects('getRemark')->twice()->andReturnNull();
+        $document->expects('getDocumentDate')->twice()->andReturnNull();
+        $document->expects('getFileInfo->getSourceType')->twice()->andReturn(SourceType::EMAIL);
+        $document->expects('getFileInfo->getName')->twice()->andReturn('foo.txt');
+        $document->expects('getInquiries')->twice()->andReturn(new ArrayCollection([$inquiry]));
+        $document->expects('getRefersTo')->twice()->andReturn(new ArrayCollection());
+        $document->shouldReceive('getDocumentNr')->andReturn($documentNr);
+
+        $metadata = \Mockery::mock(DocumentMetadata::class);
+        $metadata->expects('getJudgement')->twice()->andReturn(Judgement::NOT_PUBLIC);
+        $metadata->expects('getFamilyId')->twice()->andReturn(1);
+        $metadata->expects('getThreadId')->twice()->andReturn(1);
+        $metadata->expects('getGrounds')->twice()->andReturn([]);
+        $metadata->expects('getPeriod')->twice()->andReturnNull();
+        $metadata->expects('isSuspended')->twice()->andReturnFalse();
+        $metadata->expects('getLinks')->twice()->andReturn([]);
+        $metadata->expects('getRemark')->twice()->andReturnNull();
+        $metadata->expects('getDate')->twice()->andReturnNull();
+        $metadata->expects('getSourceType')->twice()->andReturn(SourceType::EMAIL);
+        $metadata->expects('getFilename')->twice()->andReturn('foo.txt');
+        $metadata->expects('getCaseNumbers')->twice()->andReturn([]);
+        $metadata->expects('getRefersTo')->twice()->andReturn([]);
+
+        $changeset = $this->documentComparator->getChangeset($this->dossier, $document, $metadata);
+        self::assertFalse($changeset->hasChanges());
+        self::assertFalse($changeset->isChanged(MetadataField::CASENR->value));
+
+        self::assertFalse($this->documentComparator->needsUpdate($this->dossier, $document, $metadata));
     }
 
     public function testHasRefersToUpdateReturnsFalseWhenDocumentAndMetadataHaveNoReferrals(): void

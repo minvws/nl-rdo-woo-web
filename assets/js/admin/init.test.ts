@@ -19,7 +19,6 @@ let printPageInitializeSpy: MockInstance;
 let sortTablesInitializeSpy: MockInstance;
 let tabsInitializeSpy: MockInstance;
 let toggleDialogInitializeSpy: MockInstance;
-let uploadAreasInitializeSpy: MockInstance;
 let visibilityTogglerInitializeSpy: MockInstance;
 
 describe('the main "init" function for the admin', () => {
@@ -82,12 +81,6 @@ describe('the main "init" function for the admin', () => {
     }),
   }));
 
-  vi.mock('./upload-areas', () => ({
-    uploadAreas: () => ({
-      initialize: uploadAreasInitializeSpy,
-    }),
-  }));
-
   vi.mock('./visibility-toggler', () => ({
     visibilityToggler: () => ({
       initialize: visibilityTogglerInitializeSpy,
@@ -104,7 +97,6 @@ describe('the main "init" function for the admin', () => {
     sortTablesInitializeSpy = vi.fn();
     tabsInitializeSpy = vi.fn();
     toggleDialogInitializeSpy = vi.fn();
-    uploadAreasInitializeSpy = vi.fn();
     visibilityTogglerInitializeSpy = vi.fn();
   });
 
@@ -129,7 +121,6 @@ describe('the main "init" function for the admin', () => {
     expect(sortTablesInitializeSpy).not.toHaveBeenCalled();
     expect(tabsInitializeSpy).not.toHaveBeenCalled();
     expect(toggleDialogInitializeSpy).not.toHaveBeenCalled();
-    expect(uploadAreasInitializeSpy).not.toHaveBeenCalled();
     expect(visibilityTogglerInitializeSpy).not.toHaveBeenCalled();
 
     init();
@@ -142,7 +133,6 @@ describe('the main "init" function for the admin', () => {
     expect(sortTablesInitializeSpy).toHaveBeenCalled();
     expect(tabsInitializeSpy).toHaveBeenCalled();
     expect(toggleDialogInitializeSpy).toHaveBeenCalled();
-    expect(uploadAreasInitializeSpy).toHaveBeenCalled();
     expect(visibilityTogglerInitializeSpy).toHaveBeenCalled();
   });
 });

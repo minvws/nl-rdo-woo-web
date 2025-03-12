@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Attachment\ViewModel;
 
 use App\Citation;
-use App\Domain\Publication\Attachment\AbstractAttachment;
-use App\Domain\Publication\Attachment\EntityWithAttachments;
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use App\Enum\ApplicationMode;
@@ -32,6 +32,7 @@ readonly class AttachmentViewFactory
 
         return $dossier
             ->getAttachments()
+            ->filter(fn (AbstractAttachment $entity) => ! $entity->isWithdrawn())
             ->map(fn (AbstractAttachment $entity): Attachment => $this->make($dossier, $entity, $mode))
             ->toArray();
     }
@@ -75,6 +76,9 @@ readonly class AttachmentViewFactory
             downloadUrl: $this->urlGenerator->generate($downloadRouteName, $downloadRouteParameters),
             detailsUrl: $detailsUrl,
             pageCount: $attachment->getFileInfo()->getPageCount() ?? 0,
+            withdrawn: $attachment->isWithdrawn(),
+            withdrawReason: $attachment->getWithdrawReason(),
+            withdrawDate: $attachment->getWithdrawDate(),
         );
     }
 }

@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 import UploadedDocuments from './UploadedDocuments.vue';
 
-describe('The "UploadDocuments" component', () => {
+describe('The "<UploadedDocuments />" component', () => {
   const createComponent = (withFiles: boolean = true) => {
     return mount(UploadedDocuments, {
       props: {

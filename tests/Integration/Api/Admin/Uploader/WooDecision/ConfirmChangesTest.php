@@ -6,9 +6,9 @@ namespace App\Tests\Integration\Api\Admin\Uploader\WooDecision;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileSetStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentFileSetRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileSetRepository;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileSetFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileUploadFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
@@ -68,7 +68,7 @@ final class ConfirmChangesTest extends ApiTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
 
         self::assertSame(
-            DocumentFileSetStatus::CONFIRMED,
+            DocumentFileSetStatus::NO_CHANGES,
             $this->documentFileSetRepository->find($documentFileSet->getId())?->getStatus(),
         );
     }

@@ -7,7 +7,7 @@ namespace App\Domain\Ingest\Process\Dossier;
 use App\Domain\Ingest\Process\Dossier\Strategy\DefaultDossierIngestStrategy;
 use App\Domain\Ingest\Process\Dossier\Strategy\WooDecisionIngestStrategy;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 readonly class DossierIngester
 {

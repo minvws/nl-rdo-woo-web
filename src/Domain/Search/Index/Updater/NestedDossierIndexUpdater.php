@@ -7,6 +7,9 @@ namespace App\Domain\Search\Index\Updater;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Search\Index\ElasticDocumentId;
 use App\Domain\Search\Index\ElasticDocumentType;
+use App\Domain\Search\Index\Schema\ElasticField;
+use App\Domain\Search\Index\Schema\ElasticNestedField;
+use App\Domain\Search\Index\Schema\ElasticPath;
 use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
@@ -29,18 +32,19 @@ readonly class NestedDossierIndexUpdater
      */
     public function update(AbstractDossier $dossier, array $dossierDoc): void
     {
-        $this->retry(function () use ($dossier, $dossierDoc) {
+        $this->retry(fn: function () use ($dossier, $dossierDoc) {
             $this->elastic->updateByQuery([
                 'index' => ElasticConfig::WRITE_INDEX,
                 'body' => [
                     'query' => [
                         'bool' => [
                             'must' => [
-                                ['terms' => ['type' => ElasticDocumentType::getSubTypeValues()]],
+                                ['terms' => [ElasticField::TYPE->value => ElasticDocumentType::getSubTypeValues()]],
                                 ['nested' => [
-                                    'path' => 'dossiers',
+                                    'path' => ElasticNestedField::DOSSIERS->value,
                                     'query' => [
-                                        'term' => ['dossiers.id' => ElasticDocumentId::forDossier($dossier)],
+                                        'term' => [
+                                            ElasticPath::dossiersId()->value => ElasticDocumentId::forDossier($dossier)],
                                     ],
                                 ]],
                             ],

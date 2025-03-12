@@ -13,7 +13,6 @@
         helpText="{{ 'admin.dossiers.investigation-report.form.content.document_help' | trans }}"
         languages="{{ attachmentLanguages }}"
         title="{{ 'admin.dossiers.investigation-report.form.content.document_label' | trans }}"
-        uploadGroupId="main-documents"
     />
 
     <twig:Admin:Publication:ManageAttachments
@@ -25,7 +24,6 @@
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.investigation-report.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"
-        uploadGroupId="attachments"
     />
 
 {{ form_end(form) }}

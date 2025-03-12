@@ -1,0 +1,9 @@
+{% extends 'admin/dossier/shared/concept.html.twig' %}
+
+{% block dossier_title %}
+    {{ 'admin.dossiers.other-publication.create_new' | trans }}
+{% endblock %}
+
+{% block form %}
+    {% include 'admin/dossier/other-publication/details/form.html.twig' %}
+{% endblock %}

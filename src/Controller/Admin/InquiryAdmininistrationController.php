@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\InquiryRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
 use App\Form\Inquiry\AdministrationActionsType;
 use App\Service\Inquiry\InquiryService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -31,7 +31,7 @@ class InquiryAdmininistrationController extends AbstractController
         $breadcrumbs->addRouteItem('global.admin', 'app_admin');
         $breadcrumbs->addItem('global.inquiry');
 
-        return $this->render('admin/inquiry/administration/index.html.twig', [
+        return $this->render('admin/dossier/woo-decision/inquiry/administration/index.html.twig', [
             'inquiries' => $this->repository->findAll(),
             'breadcrumbs' => $breadcrumbs,
         ]);
@@ -65,7 +65,7 @@ class InquiryAdmininistrationController extends AbstractController
         $breadcrumbs->addRouteItem('global.inquiry', 'app_admin_inquiry_administration');
         $breadcrumbs->addItem($inquiry->getCasenr());
 
-        return $this->render('admin/inquiry/administration/details.html.twig', [
+        return $this->render('admin/dossier/woo-decision/inquiry/administration/details.html.twig', [
             'inquiry' => $inquiry,
             'form' => $form,
             'breadcrumbs' => $breadcrumbs,

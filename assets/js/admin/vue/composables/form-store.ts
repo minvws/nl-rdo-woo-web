@@ -1,8 +1,13 @@
-import type { InputStore } from './input-store';
+import { z } from 'zod';
 import type { FormValue } from '../form/interface';
+import type { InputStore } from './input-store';
 
 export const useFormStore = (
-  onSubmitFunction: (value: FormValue) => Promise<void>,
+  onSubmitFunction: (
+    value: FormValue,
+    dirtyValue: FormValue,
+  ) => Promise<Response>,
+  submitResponseSchema: z.ZodSchema,
 ) => {
   const inputStores: Map<string, InputStore> = new Map();
 
@@ -76,5 +81,6 @@ export const useFormStore = (
     reset,
     resetSubmitValidationErrors,
     submit: onSubmitFunction,
+    submitResponseSchema,
   };
 };

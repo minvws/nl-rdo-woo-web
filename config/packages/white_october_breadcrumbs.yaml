@@ -7,4 +7,4 @@ white_october_breadcrumbs:
     linkRel:            ''
     locale:             ~ # defaults to null, so the default locale is used
     translation_domain: ~ # defaults to null, so the default domain is used
-    viewTemplate:       'navigation/breadcrumbs.html.twig'
+    viewTemplate:       'public/layout/breadcrumbs.html.twig'

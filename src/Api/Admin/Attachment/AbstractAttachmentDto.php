@@ -6,10 +6,8 @@ namespace App\Api\Admin\Attachment;
 
 use ApiPlatform\Metadata\ApiProperty;
 use App\Api\Admin\Dossier\DossierReferenceDto;
-use App\Domain\Publication\Attachment\AbstractAttachment;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
-use Webmozart\Assert\Assert;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
@@ -52,25 +50,7 @@ abstract readonly class AbstractAttachmentDto
             ]
         )]
         public array $grounds,
+        public string $withdrawUrl,
     ) {
-    }
-
-    public static function fromEntity(AbstractAttachment $entity): static
-    {
-        $mimeType = $entity->getFileInfo()->getMimeType();
-        Assert::notNull($mimeType);
-
-        return new static(
-            $entity->getId()->toRfc4122(),
-            DossierReferenceDto::fromEntity($entity->getDossier()),
-            $entity->getFileInfo()->getName() ?? '',
-            $entity->getFormalDate(),
-            $entity->getType()->value,
-            $mimeType,
-            $entity->getFileInfo()->getSize(),
-            $entity->getInternalReference(),
-            $entity->getLanguage()->value,
-            $entity->getGrounds()
-        );
     }
 }

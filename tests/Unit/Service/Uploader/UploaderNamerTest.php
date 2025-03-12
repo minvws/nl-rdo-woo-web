@@ -69,7 +69,7 @@ class UploaderNamerTest extends UnitTestCase
 
         $name = $this->uploaderNamer->name($this->file);
 
-        self::assertNotEquals($name, $originalName);
+        self::assertNotEquals($originalName, $name);
         self::assertEquals($originalName, UploaderNamer::getOriginalName($name));
     }
 }

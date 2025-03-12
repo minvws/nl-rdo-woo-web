@@ -90,7 +90,7 @@ readonly class UploaderService
         $fileInfo = $entity->getFileInfo();
 
         if ($fileInfo->isUploaded()) {
-            $this->entityStorageService->removeFileForEntity($entity);
+            $this->entityStorageService->deleteAllFilesForEntity($entity);
             $fileInfo->removeFileProperties();
         }
 

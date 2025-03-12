@@ -7,13 +7,12 @@ namespace App\Twig\Runtime;
 use App\Citation;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use App\Domain\Publication\History\History;
 use App\Service\DateRangeConverter;
 use App\Service\DocumentUploadQueue;
 use App\Service\HistoryService;
-use App\Service\Search\Query\Facet\FacetTwigService;
 use App\Service\Search\Query\QueryGenerator;
 use App\Service\Security\OrganisationSwitcher;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -26,41 +25,11 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
 {
     public function __construct(
         private RequestStack $requestStack,
-        private FacetTwigService $facetService,
         private DocumentUploadQueue $uploadQueue,
         private OrganisationSwitcher $organisationSwitcher,
         private HistoryService $historyService,
         private DossierPathHelper $dossierPathHelper,
     ) {
-    }
-
-    /**
-     * Returns true if the given key has the given value in the request.
-     */
-    public function facetChecked(string $key, string $value): bool
-    {
-        $request = $this->requestStack->getCurrentRequest();
-        if (! $request) {
-            return false;
-        }
-
-        $facets = $request->query->all($key);
-        if (! $facets) {
-            return false;
-        }
-
-        if (! is_array($facets)) {
-            return $facets == $value;
-        }
-
-        foreach ($facets as $facet) {
-            /** @var string $facet */
-            if (urldecode($facet) == $value) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -77,14 +46,6 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     public function period(?\DateTimeImmutable $from, ?\DateTimeImmutable $to): string
     {
         return DateRangeConverter::convertToString($from, $to);
-    }
-
-    /**
-     * Converts a facet constant to its query variable. For instance: source => src, subject => sub etc.
-     */
-    public function facet2query(string $facet): string
-    {
-        return $this->facetService->getParamKeyByFacetName($facet);
     }
 
     public function getCitationType(string $citation): string

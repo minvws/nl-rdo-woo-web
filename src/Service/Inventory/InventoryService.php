@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReport;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\ProductionReportProcessRun;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Exception\ProcessInventoryException;
 use App\Service\Inventory\Reader\InventoryReaderFactory;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
@@ -64,13 +64,13 @@ class InventoryService
         }
 
         if ($inventory) {
-            $this->entityStorageService->removeFileForEntity($inventory);
+            $this->entityStorageService->deleteAllFilesForEntity($inventory);
             $this->doctrine->remove($inventory);
             $dossier->setInventory(null);
         }
 
         if ($productionReport) {
-            $this->entityStorageService->removeFileForEntity($productionReport);
+            $this->entityStorageService->deleteAllFilesForEntity($productionReport);
             $this->doctrine->remove($productionReport);
             $dossier->setProductionReport(null);
         }

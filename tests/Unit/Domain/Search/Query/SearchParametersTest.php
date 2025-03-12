@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Query;
 
+use App\Domain\Search\Query\Facet\Definition\DateFacet;
+use App\Domain\Search\Query\Facet\Definition\InquiryDocumentsFacet;
+use App\Domain\Search\Query\Facet\Definition\InquiryDossiersFacet;
+use App\Domain\Search\Query\Facet\Input\DateFacetInput;
+use App\Domain\Search\Query\Facet\Input\FacetInput;
+use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
+use App\Domain\Search\Query\Facet\Input\FacetInputInterface;
+use App\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Query\SearchType;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Condition\QueryConditions;
-use App\Service\Search\Query\Facet\Input\DateFacetInput;
-use App\Service\Search\Query\Facet\Input\FacetInput;
-use App\Service\Search\Query\Facet\Input\FacetInputCollection;
-use App\Service\Search\Query\Facet\Input\FacetInputInterface;
-use App\Service\Search\Query\Facet\Input\StringValuesFacetInput;
 use App\Service\Search\Query\Sort\SortField;
 use App\Service\Search\Query\Sort\SortOrder;
 use App\Tests\Unit\UnitTestCase;
@@ -63,10 +66,22 @@ class SearchParametersTest extends UnitTestCase
         $disabledFacet = \Mockery::mock(StringValuesFacetInput::class);
         $disabledFacet->expects('isNotActive')->andReturnTrue();
 
+        /** @var InquiryDocumentsFacet&MockInterface $documentInquiryFacet */
+        $documentInquiryFacet = \Mockery::mock(InquiryDocumentsFacet::class);
+        $documentInquiryFacet->shouldReceive('isNotActive')->andReturnFalse();
+        $documentInquiryFacet->shouldReceive('getRequestParameters')->andReturn(['doc1', 'doc2']);
+
+        /** @var InquiryDossiersFacet&MockInterface $dossierInquiryFacet */
+        $dossierInquiryFacet = \Mockery::mock(InquiryDossiersFacet::class);
+        $dossierInquiryFacet->shouldReceive('isNotActive')->andReturnFalse();
+        $dossierInquiryFacet->shouldReceive('getRequestParameters')->andReturn(['doc1', 'doc2']);
+
         $facetInputCollection = \Mockery::mock(FacetInputCollection::class);
-        $facetInputCollection->expects('getIterator')->andReturn(new \ArrayIterator([
+        $facetInputCollection->shouldReceive('getIterator')->andReturn(new \ArrayIterator([
             FacetKey::DEPARTMENT->value => $enabledFacet,
             FacetKey::PREFIXED_DOSSIER_NR->value => $disabledFacet,
+            FacetKey::INQUIRY_DOCUMENTS->value => $documentInquiryFacet,
+            FacetKey::INQUIRY_DOSSIERS->value => $dossierInquiryFacet,
         ]));
 
         $parameters = new SearchParameters(
@@ -74,8 +89,6 @@ class SearchParametersTest extends UnitTestCase
             offset: 13,
             query: 'foo',
             searchType: SearchType::DOSSIER,
-            documentInquiries: ['doc1', 'doc2'],
-            dossierInquiries: ['dos1', 'dos2'],
         );
 
         $this->assertMatchesObjectSnapshot(
@@ -85,8 +98,11 @@ class SearchParametersTest extends UnitTestCase
 
     public function testWithSort(): void
     {
+        $facetInputCollection = \Mockery::mock(FacetInputCollection::class);
+        $facetInputCollection->shouldReceive('getIterator')->andReturn(new \ArrayIterator([]));
+
         $parameters = new SearchParameters(
-            facetInputs: new FacetInputCollection(),
+            facetInputs: $facetInputCollection,
             query: 'foo',
         );
 
@@ -98,7 +114,7 @@ class SearchParametersTest extends UnitTestCase
     public function testIncludeWithoutDate(): void
     {
         $dateFacetInput = DateFacetInput::fromParameterBag(
-            FacetKey::DATE,
+            new DateFacet(),
             new ParameterBag([
                 'dt' => ['from' => '2021-01-15'],
             ])
@@ -118,13 +134,29 @@ class SearchParametersTest extends UnitTestCase
 
     public function testWithBaseQuery(): void
     {
+        /** @var InquiryDocumentsFacet&MockInterface $documentInquiryFacet */
+        $documentInquiryFacet = \Mockery::mock(InquiryDocumentsFacet::class)->makePartial();
+        $documentInquiryFacet->shouldReceive('isNotActive')->andReturnFalse();
+        $documentInquiryFacet->shouldReceive('isActive')->andReturnTrue();
+        $documentInquiryFacet->shouldReceive('getRequestParameters')->andReturn(['doc1', 'doc2']);
+
+        /** @var InquiryDossiersFacet&MockInterface $dossierInquiryFacet */
+        $dossierInquiryFacet = \Mockery::mock(InquiryDossiersFacet::class)->makePartial();
+        $dossierInquiryFacet->shouldReceive('isNotActive')->andReturnFalse();
+        $dossierInquiryFacet->shouldReceive('isActive')->andReturnTrue();
+        $dossierInquiryFacet->shouldReceive('getRequestParameters')->andReturn(['doc1', 'doc2']);
+
+        $facetInputCollection = \Mockery::mock(FacetInputCollection::class);
+        $facetInputCollection->shouldReceive('getIterator')->andReturn(new \ArrayIterator([
+            FacetKey::INQUIRY_DOCUMENTS->value => $documentInquiryFacet,
+            FacetKey::INQUIRY_DOSSIERS->value => $dossierInquiryFacet,
+        ]));
+
         $parameters = new SearchParameters(
-            facetInputs: new FacetInputCollection(),
+            facetInputs: $facetInputCollection,
             offset: 13,
             query: 'foo',
             searchType: SearchType::DOSSIER,
-            documentInquiries: ['doc1', 'doc2'],
-            dossierInquiries: ['dos1', 'dos2'],
         );
 
         $queryConditions = \Mockery::mock(QueryConditions::class);
@@ -162,5 +194,31 @@ class SearchParametersTest extends UnitTestCase
         );
 
         self::assertFalse($parameters->hasActiveFacets());
+    }
+
+    public function testWithoutFacetFilter(): void
+    {
+        $dateFacetDefinition = new DateFacet();
+
+        $dateFacetInput = DateFacetInput::fromParameterBag(
+            $dateFacetDefinition,
+            new ParameterBag([
+                'dt' => [
+                    'from' => '2021-01-15',
+                    'to' => '2024-01-15',
+                ],
+            ])
+        );
+
+        $parameters = new SearchParameters(
+            facetInputs: new FacetInputCollection(...[
+                FacetKey::DATE->value => $dateFacetInput,
+            ]),
+            query: 'foo',
+        );
+
+        $this->assertMatchesObjectSnapshot(
+            $parameters->withoutFacetFilter($dateFacetDefinition, 'from', '2021-01-15'),
+        );
     }
 }

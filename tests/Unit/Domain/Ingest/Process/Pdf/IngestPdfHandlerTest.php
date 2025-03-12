@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Domain\Ingest\Process\Pdf;
 use App\Domain\Ingest\IngestDispatcher;
 use App\Domain\Ingest\Process\Pdf\IngestPdfCommand;
 use App\Domain\Ingest\Process\Pdf\IngestPdfHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Publication\FileInfo;
 use App\Service\Worker\Pdf\Extractor\PagecountExtractor;

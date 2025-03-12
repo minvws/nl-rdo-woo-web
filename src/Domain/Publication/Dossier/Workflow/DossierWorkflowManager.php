@@ -4,16 +4,21 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Workflow;
 
+use App\Domain\Publication\BatchDownload\BatchDownloadScope;
+use App\Domain\Publication\BatchDownload\BatchDownloadService;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\DossierService;
 use App\Service\HistoryService;
 use App\Service\Inquiry\InquiryService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\Exception\TransitionException;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 readonly class DossierWorkflowManager
 {
     public function __construct(
@@ -22,6 +27,7 @@ readonly class DossierWorkflowManager
         private HistoryService $historyService,
         private DossierTypeManager $dossierTypeManager,
         private DossierService $dossierService,
+        private BatchDownloadService $batchDownloadService,
     ) {
     }
 
@@ -51,8 +57,11 @@ readonly class DossierWorkflowManager
 
         // TODO: below are mostly side-effects that should eventually be loosely coupled using events, see issue #2080
         $this->dossierService->handleEntityUpdate($dossier);
-        if ($dossier->getStatus()->isPubliclyAvailable() && $dossier instanceof WooDecision) {
-            $this->dossierService->generateArchives($dossier);
+        if ($dossier->getStatus() !== $oldState && $dossier->getStatus()->isPubliclyAvailable() && $dossier instanceof WooDecision) {
+            $this->batchDownloadService->refresh(
+                BatchDownloadScope::forWooDecision($dossier),
+            );
+
             foreach ($dossier->getInquiries() as $inquiry) {
                 $this->inquiryService->generateInventory($inquiry);
                 $this->inquiryService->generateArchives($inquiry);

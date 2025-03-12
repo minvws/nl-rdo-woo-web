@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Storage;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\EntityWithFileInfo;
 use Psr\Log\LoggerInterface;
 
@@ -79,11 +79,13 @@ abstract class StorageService implements StorageAliveInterface
             return false;
         }
 
-        $pageCount = $this->getPageCount($entity);
-        for ($pageNr = 1; $pageNr <= $pageCount; $pageNr++) {
-            $path = $this->generatePagePath($entity, $pageNr);
-            if (! $this->remoteFilesystem->delete($path)) {
-                return false;
+        if ($entity->getFileInfo()->hasPages()) {
+            $pageCount = $this->getPageCount($entity);
+            for ($pageNr = 1; $pageNr <= $pageCount; $pageNr++) {
+                $path = $this->generatePagePath($entity, $pageNr);
+                if (! $this->remoteFilesystem->delete($path)) {
+                    return false;
+                }
             }
         }
 
@@ -118,7 +120,6 @@ abstract class StorageService implements StorageAliveInterface
             ? $entity->getFileInfo()->getPageCount()
             : null;
 
-        // @TODO Remove after Document page count has been removed and replaced by FileInfo page info
         // This acts like a fallback, so if the value is set in the FileInfo it would be used instead of the one on the
         // Document it elf
         if (is_null($pageCount) && $entity instanceof Document) {

@@ -7,9 +7,9 @@ namespace App\Service\Search\Result;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Service\Search\Model\Aggregation;
+use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Model\Suggestion;
 use App\Service\Search\Query\Sort\ViewModel\SortItems;
-use App\ValueObject\FilterDetails;
 use Knp\Component\Pager\Pagination\AbstractPagination;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
@@ -99,11 +99,6 @@ final class Result
      * @var mixed[]
      */
     protected array $query;
-
-    /**
-     * Details about additional filters (non-facet).
-     */
-    protected FilterDetails $filterDetails;
 
     /**
      * Total number of result items.
@@ -253,10 +248,10 @@ final class Result
         return $this->aggregations;
     }
 
-    public function getAggregation(string $name): ?Aggregation
+    public function getAggregation(FacetKey $key): ?Aggregation
     {
         foreach ($this->aggregations as $aggregation) {
-            if ($aggregation->getName() == $name) {
+            if ($aggregation->getName() === $key->value) {
                 return $aggregation;
             }
         }
@@ -379,18 +374,6 @@ final class Result
     public function setType(string $type): self
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    public function getFilterDetails(): FilterDetails
-    {
-        return $this->filterDetails;
-    }
-
-    public function setFilterDetails(FilterDetails $filterDetails): self
-    {
-        $this->filterDetails = $filterDetails;
 
         return $this;
     }

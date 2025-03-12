@@ -30,7 +30,7 @@ class CovenantController extends AbstractController
     ) {
     }
 
-    #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route('/convenant/{prefix}/{dossierId}', name: 'app_covenant_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] Covenant $covenant,
@@ -41,14 +41,14 @@ class CovenantController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem('global.covenant');
 
-        return $this->render('covenant/details.html.twig', [
+        return $this->render('public/dossier/covenant/details.html.twig', [
             'dossier' => $this->covenantViewFactory->make($covenant),
             'attachments' => $this->attachmentViewFactory->makeCollection($covenant),
             'document' => $this->mainDocumentViewFactory->make($covenant, $covenantDocument),
         ]);
     }
 
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/convenant/{prefix}/{dossierId}/document',
         name: 'app_covenant_document_detail',
@@ -69,7 +69,7 @@ class CovenantController extends AbstractController
         ]);
         $breadcrumbs->addItem($mainDocumentViewModel->name ?? '');
 
-        return $this->render('covenant/document.html.twig', [
+        return $this->render('public/dossier/covenant/document.html.twig', [
             'dossier' => $this->covenantViewFactory->make($covenant),
             'attachments' => $this->attachmentViewFactory->makeCollection($covenant),
             'document' => $mainDocumentViewModel,
@@ -81,7 +81,7 @@ class CovenantController extends AbstractController
         ]);
     }
 
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/convenant/{prefix}/{dossierId}/bijlage/{attachmentId}',
         name: 'app_covenant_attachment_detail',
@@ -102,7 +102,7 @@ class CovenantController extends AbstractController
         ]);
         $breadcrumbs->addItem($covenantAttachmentView->name ?? '');
 
-        return $this->render('covenant/attachment.html.twig', [
+        return $this->render('public/dossier/covenant/attachment.html.twig', [
             'dossier' => $this->covenantViewFactory->make($covenant),
             'attachments' => $this->attachmentViewFactory->makeCollection($covenant),
             'attachment' => $covenantAttachmentView,

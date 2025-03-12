@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query\Filter;
 
-use App\Domain\Search\Index\ElasticField;
+use App\Domain\Search\Index\Schema\ElasticField;
+use App\Domain\Search\Index\Schema\ElasticNestedField;
+use App\Domain\Search\Query\Facet\Facet;
+use App\Domain\Search\Query\Facet\Input\DocTypeValue;
+use App\Domain\Search\Query\Facet\Input\StringValuesFacetInputInterface;
 use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Query\Facet\Facet;
-use App\Service\Search\Query\Facet\Input\StringValuesFacetInputInterface;
 use App\Service\Search\Query\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 
@@ -16,8 +18,12 @@ use Erichard\ElasticQueryBuilder\Query\BoolQuery;
  */
 class DocTypeFilter implements FilterInterface
 {
-    public function addToQuery(Facet $facet, BoolQuery $query, SearchParameters $searchParameters, string $prefix = ''): void
-    {
+    public function addToQuery(
+        Facet $facet,
+        BoolQuery $query,
+        SearchParameters $searchParameters,
+        ?ElasticNestedField $nestedPath = null,
+    ): void {
         if ($facet->isNotActive()) {
             return;
         }
@@ -29,17 +35,17 @@ class DocTypeFilter implements FilterInterface
 
         $subFilters = [];
         foreach ($input->getStringValues() as $value) {
-            $valueParts = explode('.', $value);
-            if (count($valueParts) !== 2) {
+            $docTypeValue = DocTypeValue::fromString($value);
+            if ($docTypeValue->getSubType() === null) {
                 continue;
             }
 
-            if ($valueParts[1] === 'publication') {
+            if ($docTypeValue->getSubType() === 'publication') {
                 $subFilters[] = Query::bool(
                     must: [
                         Query::term(
                             field: ElasticField::TOPLEVEL_TYPE->value,
-                            value: $valueParts[0],
+                            value: $docTypeValue->getMainType(),
                         ),
                     ],
                     mustNot: [
@@ -51,11 +57,11 @@ class DocTypeFilter implements FilterInterface
                     must: [
                         Query::term(
                             field: ElasticField::TOPLEVEL_TYPE->value,
-                            value: $valueParts[0],
+                            value: $docTypeValue->getMainType(),
                         ),
                         Query::term(
                             field: ElasticField::SUBLEVEL_TYPE->value,
-                            value: $valueParts[1],
+                            value: $docTypeValue->getSubType(),
                         ),
                     ],
                 );

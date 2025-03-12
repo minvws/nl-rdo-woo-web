@@ -1,3 +1,7 @@
+*** Comments ***
+# robocop: off=no-global-variable
+
+
 *** Settings ***
 Documentation       Resource file with generic keywords.
 Library             DateTime
@@ -17,12 +21,6 @@ ${CURRENT_DATE_FORMAT2}     ${EMPTY}
 ${CURRENT_EPOCH}            ${EMPTY}
 ${RUN_LOCALLY}              ${FALSE}
 ${HEADLESS}                 ${EMPTY}
-${TEMP_WW}                  ${EMPTY}
-${BASE_URL}                 localhost:8000
-${BASE_URL_BALIE}           localhost:8000/balie
-${TST_BALIE_OTP_SECRET}     ${EMPTY}
-${TST_BALIE_USER}           email@example.org
-${TST_BALIE_PASSWORD}       IkLoopNooitVastVandaag
 
 
 *** Keywords ***
@@ -34,9 +32,9 @@ Suite Setup - CI
   END
   # On first run of this keyword, create the user.
   IF  '${TST_BALIE_OTP_SECRET}' == '${EMPTY}'
-    Create Woo Admin User
+    ${temp_password} =  Create Woo Admin User
     Open Browser And BaseUrl
-    Login Admin  password=${TEMP_WW}
+    Login Admin  password=${temp_password}
   ELSE
     Open Browser And BaseUrl
   END
@@ -44,10 +42,10 @@ Suite Setup - CI
   Setting Global Variables
 
 Cleansheet
-  [Documentation]  In some tests we want unique prefixes, which must also be cleaned up afterwards. Also allows for removing users.
+  [Documentation]  In some tests we want unique prefixes, which must also be cleaned up afterwards. Also allows for removing users. Always keeps subjects.
   [Arguments]  ${keep_prefixes}=${TRUE}  ${include_users}=${FALSE}
   Run Process  task worker:stop  shell=True
-  VAR  ${args}  --
+  VAR  ${args}  -- --keep-subjects
   IF  ${keep_prefixes}
     ${args} =  Catenate  ${args}  --keep-prefixes
   END
@@ -61,15 +59,15 @@ Cleansheet
   Run Process  task worker:start  shell=True
 
 Setting Global Variables
-  ${current_time} =  Get Time  format=%Y-%m-%d %H:%M:%S
-  ${current_date} =  Get Current Date  result_format=%Y-%m-%d
+  ${time} =  Get Time  format=%Y-%m-%d %H:%M:%S
+  ${date} =  Get Current Date  result_format=%Y-%m-%d
   ${timestamp} =  Get Utc Timestamp
-  ${current_date_format2} =  Convert Timestamp Format  ${timestamp}  time_format=d MMMM y  locale=nl
-  ${current_epoch} =  Get Time  format=epoch
-  VAR  ${current_time}  ${current_time}  scope=global
-  VAR  ${current_date}  ${current_date}  scope=global
-  VAR  ${current_date_format2}  ${current_date_format2}  scope=global
-  VAR  ${current_epoch}  ${current_epoch}  scope=global
+  ${date2} =  Convert Timestamp Format  ${timestamp}  time_format=d MMMM y  locale=nl
+  ${epoch} =  Get Time  format=epoch
+  VAR  ${CURRENT_TIME}  ${time}  scope=global
+  VAR  ${CURRENT_DATE}  ${date}  scope=global
+  VAR  ${CURRENT_DATE_FORMAT2}  ${date2}  scope=global
+  VAR  ${CURRENT_EPOCH}  ${epoch}  scope=global
 
 Open Browser And BaseUrl
   [Arguments]  ${device}=Desktop Chrome  ${slow_mo}=50ms
@@ -88,25 +86,24 @@ Open Browser And BaseUrl
   New Page  ${BASE_URL}
 
 Create Woo Admin User
-  [Documentation]  Creates a super admin user using the CLI, that can be used for all robot tests.
+  [Documentation]  Creates a super admin user using the CLI, that can be used for all robot tests. Returns the temporary password.
   ${make_user_command} =  Set Variable
   ...  task app:user:create -- "${TST_BALIE_USER}" "Robot Admin" --super-admin
   Run Process  ${make_user_command}  shell=True  alias=create_admin
   ${stdout}  ${stderr} =  Get Process Result  create_admin  stdout=True  stderr=True
   Should Be Empty  ${stderr}  Error creating admin user: ${stdout}
-  ${regel_ww} =  Get Line  ${stdout}  1
-  ${ww} =  Get Substring  ${regel_ww}  13
+  ${regel_password} =  Get Line  ${stdout}  1
+  ${password} =  Get Substring  ${regel_password}  13
   ${otp_line} =  Get Line  ${stdout}  3
   ${otp_secret} =  Get Substring  ${otp_line}  13
   VAR  ${TST_BALIE_OTP_SECRET}  ${otp_secret}  scope=global
-  VAR  ${TEMP_WW}  ${ww}  scope=global
+  RETURN  ${password}
 
 Close Symfony Dev Bar
   ${c} =  Get Element Count  //body/div/div[3]/button
   IF  ${c}>0  Click  //body/div/div[3]/button
 
 Clear Local Secret
-  # Remove local secret
   ${command} =  Set Variable  sed -ri '' 's/SECRET_WOO_LOCAL=[0-9A-Z]*/SECRET_WOO_LOCAL=/g' ~/.zshrc
   Run Process  ${command}  shell=True  alias=clear_secret
   ${stdout}  ${stderr} =  Get Process Result  clear_secret  stdout=True  stderr=True

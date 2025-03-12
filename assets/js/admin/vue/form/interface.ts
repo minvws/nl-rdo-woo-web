@@ -1,5 +1,11 @@
 export type FormValue = Record<string, InputValueType>;
-export type InputValueType = boolean | number | string | object | Array<string>;
+export type InputValueType =
+  | boolean
+  | number
+  | string
+  | object
+  | Array<string>
+  | undefined;
 
 export const enum InputErrorId {
   DateMaxUntilToday = 'dateMaxUntilToday',
@@ -24,7 +30,9 @@ export interface SelectOption {
   value: string;
 }
 
+export type SelectOptions = SelectOption[];
+
 export interface Optgroup {
   label: string;
-  options: SelectOption[];
+  options: SelectOptions;
 }

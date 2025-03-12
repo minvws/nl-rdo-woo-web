@@ -22,7 +22,7 @@ class Alert
     public function getIconName(): string
     {
         return match ($this->type) {
-            'danger' => 'exclamation-colored',
+            'danger' => 'exclamation-filled-colored',
             'info' => 'info-rounded-filled',
             'success' => 'check-rounded-filled',
             default => 'check',

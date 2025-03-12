@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\GenerateInquiryInventoryCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\RemoveInventoryAndDocumentsCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\UpdateDecisionCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\UpdateInquiryLinksCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Command\WithDrawAllDocumentsCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WithdrawReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\Decision\UpdateDecisionCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawAllDocumentsCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
@@ -49,13 +49,16 @@ class WooDecisionDispatcherTest extends UnitTestCase
 
     public function testDispatchWithdrawAllDocumentsCommand(): void
     {
+        $wooDecisionId = Uuid::v6();
         $wooDecision = \Mockery::mock(WooDecision::class);
-        $reason = WithdrawReason::INCORRECT_ATTACHMENT;
+        $wooDecision->shouldReceive('getId')->andReturn($wooDecisionId);
+
+        $reason = DocumentWithdrawReason::INCORRECT_ATTACHMENT;
         $explanation = 'oops';
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            static function (WithDrawAllDocumentsCommand $command) use ($wooDecision, $reason, $explanation) {
-                self::assertEquals($wooDecision, $command->dossier);
+            static function (WithDrawAllDocumentsCommand $command) use ($wooDecisionId, $reason, $explanation) {
+                self::assertEquals($wooDecisionId, $command->dossierId);
                 self::assertEquals($reason, $command->reason);
                 self::assertEquals($explanation, $command->explanation);
 

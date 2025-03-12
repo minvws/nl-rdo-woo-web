@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Exception\InventoryReaderException;
 use App\Service\FileReader\ExcelReaderFactory;
 use App\Service\Inventory\Reader\InventoryReaderFactory;

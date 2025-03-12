@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Controller\Public\Dossier\WooDecision;
 
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DocumentViewFactory;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\DocumentViewFactory;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use App\Service\Security\DossierVoter;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -37,7 +37,7 @@ class DocumentController extends AbstractController
     ) {
     }
 
-    #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route('/dossier/{prefix}/{dossierId}/document/{documentId}', name: 'app_document_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
@@ -78,7 +78,7 @@ class DocumentController extends AbstractController
             ],
         );
 
-        return $this->render('document/details.html.twig', [
+        return $this->render('public/dossier/woo-decision/document/details.html.twig', [
             'dossier' => $this->wooDecisionViewFactory->make($dossier),
             'document' => $this->documentViewFactory->make($document),
             'thread' => $threadDocPaginator,

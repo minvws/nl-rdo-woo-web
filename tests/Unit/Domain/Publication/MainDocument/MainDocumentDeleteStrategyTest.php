@@ -10,12 +10,14 @@ use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
 use App\Domain\Publication\MainDocument\MainDocumentDeleteStrategy;
 use App\Domain\Search\SearchDispatcher;
 use App\Service\Storage\EntityStorageService;
+use App\Service\Storage\ThumbnailStorageService;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 
 final class MainDocumentDeleteStrategyTest extends MockeryTestCase
 {
     private EntityStorageService&MockInterface $entityStorageService;
+    private ThumbnailStorageService&MockInterface $thumbnailStorageService;
     private SearchDispatcher&MockInterface $searchDispatcher;
     private MainDocumentDeleteStrategy $strategy;
 
@@ -23,8 +25,10 @@ final class MainDocumentDeleteStrategyTest extends MockeryTestCase
     {
         $this->searchDispatcher = \Mockery::mock(SearchDispatcher::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
+        $this->thumbnailStorageService = \Mockery::mock(ThumbnailStorageService::class);
         $this->strategy = new MainDocumentDeleteStrategy(
             $this->searchDispatcher,
+            $this->thumbnailStorageService,
             $this->entityStorageService,
         );
 
@@ -47,7 +51,8 @@ final class MainDocumentDeleteStrategyTest extends MockeryTestCase
         $dossier = \Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getMainDocument')->andReturn($document);
 
-        $this->entityStorageService->expects('removeFileForEntity')->with($document);
+        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($document);
+        $this->thumbnailStorageService->expects('deleteAllThumbsForEntity')->with($document);
 
         $this->searchDispatcher->expects('dispatchDeleteElasticDocumentCommand')->with($documentId);
 

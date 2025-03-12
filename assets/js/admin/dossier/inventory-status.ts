@@ -1,5 +1,4 @@
 import { hideElement } from '@utils';
-import { uploadAreas } from '../upload-areas';
 
 export const dossierInventoryStatus = () => {
   const WAIT_FOR = 3000;
@@ -7,9 +6,6 @@ export const dossierInventoryStatus = () => {
   let abortController: AbortController | null = null;
   let placeholderElement: HTMLElement | null = null;
   let timeoutId: NodeJS.Timeout | null = null;
-
-  const { cleanup: cleanupUploadAreas, initialize: initializeUploadAreas } =
-    uploadAreas();
 
   const initialize = () => {
     placeholderElement = document.getElementById('js-inventory-status');
@@ -34,7 +30,6 @@ export const dossierInventoryStatus = () => {
       cleanup();
 
       hideContinueLaterButton();
-      initializeUploadAreas();
       return;
     }
 
@@ -49,7 +44,6 @@ export const dossierInventoryStatus = () => {
 
     timeoutId = setTimeout(() => {
       cleanupTimeout();
-      cleanupUploadAreas();
 
       updateStatus(endpoint);
     }, WAIT_FOR);
@@ -69,7 +63,6 @@ export const dossierInventoryStatus = () => {
     }
 
     cleanupTimeout();
-    cleanupUploadAreas();
   };
 
   const hideContinueLaterButton = () => {

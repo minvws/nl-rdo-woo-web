@@ -6,9 +6,9 @@ namespace App\Controller\Admin\Dossier\WooDecision;
 
 use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\Repository\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Form\Dossier\WooDecision\InventoryType;
 use App\Service\Uploader\UploadGroupId;
 use App\ValueObject\ProductionReportStatus;
@@ -50,7 +50,7 @@ class DocumentsEditStepController extends AbstractController
             return $this->stepHelper->redirectToDossier($dossier);
         }
 
-        $query = $this->documentRepository->getDossierDocumentsQueryBuilder($dossier);
+        $query = $this->documentRepository->getDossierDocumentsForPaginationQueryBuilder($dossier);
 
         $pagination = $this->stepHelper->getPaginator(
             $query,
@@ -70,7 +70,7 @@ class DocumentsEditStepController extends AbstractController
             'workflowStatus' => $wizardStatus,
             'pagination' => $pagination,
             'dataPath' => $dataPath,
-            'mimeTypes' => UploadGroupId::WOO_DECISION_DOCUMENTS->getMimeTypes(),
+            'uploadGroupId' => UploadGroupId::WOO_DECISION_DOCUMENTS,
         ]);
     }
 

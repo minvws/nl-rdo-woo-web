@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation       Resource file with generic keywords.
+Documentation       Resource file containing custom keywords for the WooDecision information category
 Library             DateTime
 Library             OperatingSystem
 Library             String
@@ -10,11 +10,7 @@ Resource            Dossier.resource
 
 
 *** Variables ***
-${CURRENT_TIME}         ${EMPTY}
-${CURRENT_EPOCH}        ${EMPTY}
 ${RUN_LOCALLY}          ${EMPTY}
-${ATTACHMENT_FILENAME}  ${EMPTY}
-${ATTACHMENT_LOCATION}  ${EMPTY}
 ${PRODUCTION_REPORT}    ${EMPTY}
 ${DOCUMENTS}            ${EMPTY}
 ${NUMBER_OF_DOCUMENTS}  ${EMPTY}
@@ -33,10 +29,11 @@ Publish Test Dossier
   Fill Out Decision Details  Openbaarmaking
   Upload Production Report  ${production_report}
   Verify Document Upload Remaining  Nog te uploaden: ${number_of_documents} van ${number_of_documents} documenten.
-  Upload Document  ${documents}
+  Upload Documents  ${documents}
   Verify Document Upload Completed
   Click Continue To Publish
   Publish Dossier And Return To Admin Home  ${publication_status}
+  Log  Dossier reference: ${DOSSIER_REFERENCE}
 
 Fill Out Decision Details
   [Arguments]  ${decision}  ${has_attachment}=${FALSE}
@@ -58,7 +55,7 @@ Upload Besluitbrief
 Upload Documents Step
   Upload Production Report  ${PRODUCTION_REPORT}
   Verify Document Upload Remaining  Nog te uploaden: ${NUMBER_OF_DOCUMENTS} van ${NUMBER_OF_DOCUMENTS} documenten.
-  Upload Document  ${DOCUMENTS}
+  Upload Documents  ${DOCUMENTS}
   Verify Document Upload Completed
   Click Continue To Publish
 
@@ -83,14 +80,26 @@ Verify Document Upload Remaining
   [Arguments]  ${expected_result}
   Wait For Condition  Text  //h3[@data-e2e-name="missingDocuments"]  contains  ${expected_result}  timeout=20s
 
-Upload Document
-  [Arguments]  ${file_location}
+Upload Documents
+  [Arguments]  @{file_locations}
   Sleep  30ms  # sometimes the upload doesn't seem to select anything, so let's try a tiny wait here before we click
-  Upload File By Selector  id=upload-area-dossier-files  ${file_location}
-  ${path}  ${file} =  Split Path  ${file_location}
-  Wait For Condition  Text  //div[@data-e2e-name="uploaded-files"]  contains  ${file}  timeout=30s
-  Wait For Condition  Text  //div[@data-e2e-name="no-files-selected"]  contains  Geen bestand
+  Scroll To Element  //button[@data-e2e-name="process-documents"]
+  Upload File By Selector  id=upload-area-dossier-files  @{file_locations}
+  Wait For Condition
+  ...  Attribute
+  ...  //button[@data-e2e-name="process-documents"]
+  ...  data-e2e-is-uploading
+  ...  equals
+  ...  false
+  ...  timeout=30s
+  ...  message=Upload did not complete within timeout. You might want to try making the archive smaller to make it faster.
+  Sleep  1s
   Click  //button[@data-e2e-name="process-documents"]
+  Wait For Elements State
+  ...  //button[@data-e2e-name="process-documents"]
+  ...  detached
+  ...  timeout=5s
+  ...  message=Click on Process Documents did not work
 
 Verify Document Upload Completed
   Scroll To Element  //*[@id="inhoud"]/div/div[2]
@@ -99,12 +108,6 @@ Verify Document Upload Completed
   ...  visible
   ...  timeout=30s
   ...  message=Upload not completed within timeout
-
-Click Continue To Publish
-  Click  //*[@data-e2e-name="to-next-step-link"]
-
-Click Save And Prepare
-  Click  //*[@id="publish_submit"]
 
 Click Replace Report
   Click  //*[@data-e2e-name="replace-report"]
@@ -121,15 +124,16 @@ Click Continue To Documents
 
 Open Document In Dossier
   [Arguments]  ${document_id}
+  Scroll To Element  //table[@data-e2e-name="dossier-documents"]
   Click  //table[@data-e2e-name="dossier-documents"]//a[contains(@href,'${document_id}')]
   Wait For Condition  Text  //*[@data-e2e-name="document-nr"]  contains  ${document_id}
 
 Retract Document
   Click  //*[@data-e2e-name="retract"]
-  Check Checkbox  id=withdraw_form_reason_0
-  Type Text  //*[@id="withdraw_form_explanation"]  Reden voor intrekken hier
-  Click  //*[@id="withdraw_form_submit"]
-  Get Text  //*[@id="inhoud"]  contains  Het document is ingetrokken.
+  Check Checkbox  id=withdraw_document_form_reason_0
+  Type Text  //*[@id="withdraw_document_form_explanation"]  Reden voor intrekken hier
+  Click  //*[@id="withdraw_document_form_submit"]
+  Get Text  //*[@id="inhoud"]  contains  Het document wordt nu ingetrokken. Het kan even duren voor dit verwerkt is.
 
 Click Breadcrumb Element
   [Arguments]  ${element_nr}
@@ -140,14 +144,19 @@ Click Public URL
 
 Verify Document Details
   [Arguments]  ${download_type}  ${publication_status}
+  Reload
   Get Text  //*[@data-e2e-name="download-type"]  contains  ${download_type}
   Get Text  //*[@data-e2e-name="publication-status"]  contains  ${publication_status}
 
 Danger Zone Withdraw All Documents
   Click  //*[@data-e2e-name="withdraw-documents-link"]
-  Check Checkbox  id=withdraw_form_reason_0
-  Type Text  //*[@id="withdraw_form_explanation"]  Reden voor intrekken hier
-  Click  //*[@id="withdraw_form_submit"]
+  Check Checkbox  id=withdraw_document_form_reason_0
+  Type Text  //*[@id="withdraw_document_form_explanation"]  Reden voor intrekken hier
+  Click  //*[@id="withdraw_document_form_submit"]
+  Get Text
+  ...  //*[@id="inhoud"]
+  ...  contains
+  ...  Alle (deels) openbare documenten worden nu ingetrokken. Het kan even duren voor dit verwerkt is.
 
 Fill Publication Date
   [Arguments]  ${date}

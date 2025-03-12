@@ -1,0 +1,26 @@
+<url>
+ <loc>https://example.com</loc>
+ <lastmod>2021-01-01</lastmod>
+ <changefreq>daily</changefreq>
+ <priority>0.8</priority>
+ <diwoo:Document>
+  <diwoo:DiWoo>
+   <diwoo:creatieDatum>2021-05-10</diwoo:creatieDatum>
+   <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
+   <diwoo:titelcollectie>
+    <diwoo:officieleTitel>Officiële titel</diwoo:officieleTitel>
+   </diwoo:titelcollectie>
+   <diwoo:classificatiecollectie>
+    <diwoo:informatiecategorieen>
+     <diwoo:informatiecategorie resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_3baef532">Woo-verzoeken en -besluiten</diwoo:informatiecategorie>
+    </diwoo:informatiecategorieen>
+   </diwoo:classificatiecollectie>
+   <diwoo:documenthandelingen>
+    <diwoo:documenthandeling>
+     <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76">vaststelling</diwoo:soortHandeling>
+     <diwoo:atTime>2021-05-10T23:59:59+00:00</diwoo:atTime>
+    </diwoo:documenthandeling>
+   </diwoo:documenthandelingen>
+  </diwoo:DiWoo>
+ </diwoo:Document>
+</url>

@@ -1,0 +1,18 @@
+{% extends 'public/department/details_base.html.twig' %}
+
+{% set logoPath = asset('assets/img/public/departments/scp.svg') %}
+
+{% block department_content %}
+    <div class="woo-readable-width">
+        <h1 class="woo-h1 woo-h1-spacing font-normal">{{ 'public.department.public_information_by_department' | trans({ department: 'het Sociaal en Cultureel Planbureau' }) }}</h1>
+
+        <div class="woo-rich-text">
+            <p>Het Sociaal en Cultureel Planbureau (SCP) volgt, verklaart en verkent hoe het met de inwoners van Nederland gaat op sociaal en cultureel gebied. Dat behelst onder meer de monitoring van de leefsituatie en kwaliteit van leven, de evaluatie van overheidsbeleid op daarvoor relevante terreinen en verkenningen ten behoeve van toekomstig (overheids)beleid.</p>
+
+            <p>Volgens de "<a href="https://wetten.overheid.nl/BWBR0031972/2012-04-01">Aanwijzingen voor de Planbureaus</a>" en de "<a href="https://www.scp.nl/binaries/scp/documenten/publicaties/2018/01/01/onafhankelijkheid-van-het-sociaal-en-cultureel-planbureau/Onafhankelijkheid+SCP+2018.pdf">Beleidsnota Onafhankelijkheid van het Sociaal en Cultureel Planbureau</a>" voert het SCP haar (onderzoek)taken in onafhankelijkheid uit. Als overheidsorganisatie valt het SCP onder het gezagsbereik en verantwoordelijkheid van de minister van VWS.</p>
+            <p>De wetenschappelijke rapporten van het SCP worden gepubliceerd op de speciale online repository: <a href="https://repository.scp.nl/">SCP Repository</a>. Deze site is openbaar en voor iedereen toegankelijk.</p>
+            <p>Op deze website kunt u overige openbare stukken van het SCP terug vinden, zoals die in de Wet open overheid vermeld staan.</p>
+            <p>Voor het indienen van een Woo-verzoek met vragen over (nog) niet gepubliceerde informatie die de werkzaamheden van het SCP betreft, verwijzen wij u graag naar de volgende pagina van het Ministerie van VWS: <a href="https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-verzoek-indienen">Woo-verzoek indienen bij het ministerie van Volksgezondheid, Welzijn en Sport | Ministerie van Volksgezondheid, Welzijn en Sport | Rijksoverheid.nl</a></p>
+        </div>
+    </div>
+{% endblock %}

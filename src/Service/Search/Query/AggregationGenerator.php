@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Query;
 
+use App\Domain\Search\Index\Schema\ElasticField;
+use App\Domain\Search\Query\Facet\Facet;
+use App\Domain\Search\Query\Facet\FacetList;
 use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Condition\ContentAccessConditions;
 use App\Service\Search\Query\Condition\FacetConditions;
 use App\Service\Search\Query\Condition\QueryConditions;
 use App\Service\Search\Query\Condition\SearchTermConditions;
-use App\Service\Search\Query\Facet\Facet;
-use App\Service\Search\Query\Facet\FacetList;
 use Erichard\ElasticQueryBuilder\Aggregation\FilterAggregation;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
 
@@ -92,7 +92,7 @@ class AggregationGenerator
         $queryBuilder->addAggregation(
             Aggregation::cardinality(
                 nameAndField: 'unique_dossiers',
-                fieldOrSource: FacetKey::PREFIXED_DOSSIER_NR->getPath(),
+                fieldOrSource: ElasticField::PREFIXED_DOSSIER_NR->value,
             )->setPrecisionThreshold(40_000),
         );
     }

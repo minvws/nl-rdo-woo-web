@@ -104,6 +104,8 @@
                                             "investigation_report_main_document",
                                             "disposition_main_document",
                                             "complaint_judgement_main_document",
+                                            "other_publication_main_document",
+                                            "advice_main_document",
                                             "attachment"
                                         ]
                                     }
@@ -145,7 +147,9 @@
                                             "annual_report",
                                             "investigation_report",
                                             "disposition",
-                                            "complaint_judgement"
+                                            "complaint_judgement",
+                                            "other_publication",
+                                            "advice"
                                         ]
                                     }
                                 }
@@ -169,7 +173,9 @@
                                                         "annual_report",
                                                         "investigation_report",
                                                         "disposition",
-                                                        "complaint_judgement"
+                                                        "complaint_judgement",
+                                                        "other_publication",
+                                                        "advice"
                                                     ]
                                                 }
                                             },
@@ -205,6 +211,8 @@
                                                         "investigation_report_main_document",
                                                         "disposition_main_document",
                                                         "complaint_judgement_main_document",
+                                                        "other_publication_main_document",
+                                                        "advice_main_document",
                                                         "attachment"
                                                     ]
                                                 }
@@ -294,6 +302,8 @@
                                             "investigation_report_main_document",
                                             "disposition_main_document",
                                             "complaint_judgement_main_document",
+                                            "other_publication_main_document",
+                                            "advice_main_document",
                                             "attachment"
                                         ]
                                     }
@@ -329,6 +339,8 @@
                                                                     "investigation_report_main_document",
                                                                     "disposition_main_document",
                                                                     "complaint_judgement_main_document",
+                                                                    "other_publication_main_document",
+                                                                    "advice_main_document",
                                                                     "attachment"
                                                                 ]
                                                             }
@@ -355,7 +367,9 @@
                                                                     "annual_report",
                                                                     "investigation_report",
                                                                     "disposition",
-                                                                    "complaint_judgement"
+                                                                    "complaint_judgement",
+                                                                    "other_publication",
+                                                                    "advice"
                                                                 ]
                                                             }
                                                         },
@@ -569,6 +583,8 @@
                                                             "investigation_report_main_document",
                                                             "disposition_main_document",
                                                             "complaint_judgement_main_document",
+                                                            "other_publication_main_document",
+                                                            "advice_main_document",
                                                             "attachment"
                                                         ]
                                                     }
@@ -610,7 +626,9 @@
                                                             "annual_report",
                                                             "investigation_report",
                                                             "disposition",
-                                                            "complaint_judgement"
+                                                            "complaint_judgement",
+                                                            "other_publication",
+                                                            "advice"
                                                         ]
                                                     }
                                                 }
@@ -634,7 +652,9 @@
                                                                         "annual_report",
                                                                         "investigation_report",
                                                                         "disposition",
-                                                                        "complaint_judgement"
+                                                                        "complaint_judgement",
+                                                                        "other_publication",
+                                                                        "advice"
                                                                     ]
                                                                 }
                                                             },
@@ -670,6 +690,8 @@
                                                                         "investigation_report_main_document",
                                                                         "disposition_main_document",
                                                                         "complaint_judgement_main_document",
+                                                                        "other_publication_main_document",
+                                                                        "advice_main_document",
                                                                         "attachment"
                                                                     ]
                                                                 }
@@ -734,6 +756,8 @@
                                                                     "investigation_report_main_document",
                                                                     "disposition_main_document",
                                                                     "complaint_judgement_main_document",
+                                                                    "other_publication_main_document",
+                                                                    "advice_main_document",
                                                                     "attachment"
                                                                 ]
                                                             }
@@ -769,6 +793,8 @@
                                                                                             "investigation_report_main_document",
                                                                                             "disposition_main_document",
                                                                                             "complaint_judgement_main_document",
+                                                                                            "other_publication_main_document",
+                                                                                            "advice_main_document",
                                                                                             "attachment"
                                                                                         ]
                                                                                     }
@@ -795,7 +821,9 @@
                                                                                             "annual_report",
                                                                                             "investigation_report",
                                                                                             "disposition",
-                                                                                            "complaint_judgement"
+                                                                                            "complaint_judgement",
+                                                                                            "other_publication",
+                                                                                            "advice"
                                                                                         ]
                                                                                     }
                                                                                 },
@@ -904,6 +932,8 @@
                                                                                             "investigation_report_main_document",
                                                                                             "disposition_main_document",
                                                                                             "complaint_judgement_main_document",
+                                                                                            "other_publication_main_document",
+                                                                                            "advice_main_document",
                                                                                             "attachment"
                                                                                         ]
                                                                                     }
@@ -930,7 +960,9 @@
                                                                                             "annual_report",
                                                                                             "investigation_report",
                                                                                             "disposition",
-                                                                                            "complaint_judgement"
+                                                                                            "complaint_judgement",
+                                                                                            "other_publication",
+                                                                                            "advice"
                                                                                         ]
                                                                                     }
                                                                                 },
@@ -1018,6 +1050,8 @@
                                                                     "investigation_report_main_document",
                                                                     "disposition_main_document",
                                                                     "complaint_judgement_main_document",
+                                                                    "other_publication_main_document",
+                                                                    "advice_main_document",
                                                                     "attachment"
                                                                 ]
                                                             }
@@ -1055,6 +1089,8 @@
                                                                             "investigation_report_main_document",
                                                                             "disposition_main_document",
                                                                             "complaint_judgement_main_document",
+                                                                            "other_publication_main_document",
+                                                                            "advice_main_document",
                                                                             "attachment"
                                                                         ]
                                                                     }
@@ -1080,7 +1116,9 @@
                                                                             "annual_report",
                                                                             "investigation_report",
                                                                             "disposition",
-                                                                            "complaint_judgement"
+                                                                            "complaint_judgement",
+                                                                            "other_publication",
+                                                                            "advice"
                                                                         ]
                                                                     }
                                                                 }

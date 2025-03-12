@@ -1,0 +1,15 @@
+{% extends 'admin/dossier/shared/confirmation.html.twig' %}
+
+{% block about_title %}
+    {{ 'admin.global.other-publication_on' | trans }}
+{% endblock %}
+
+{% block success_message %}
+    <twig:Admin:Alert type="success">
+        {{ 'admin.dossiers.other-publication.create.success' | trans | raw }}
+    </twig:Admin:Alert>
+{% endblock %}
+
+{% block edit_link %}
+    {{'admin.dossiers.other-publication.edit_link' | trans }}
+{% endblock %}

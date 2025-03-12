@@ -25,7 +25,7 @@ class ElasticCollector extends AbstractDataCollector
 
     public static function getTemplate(): ?string
     {
-        return 'elasticsearch/template.html.twig';
+        return 'profiler/elastic-search.html.twig';
     }
 
     /**

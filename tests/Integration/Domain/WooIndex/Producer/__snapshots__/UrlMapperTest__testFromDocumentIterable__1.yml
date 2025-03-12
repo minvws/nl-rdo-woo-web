@@ -1,0 +1,10 @@
+-
+    lastmod: '2012-03-04T05:06:07+00:00'
+    diWooDocument: { creatiedatum: '2010-05-15T13:37:42+00:00', publisher: { resource: 'https://identifier.overheid.nl/tooi/id/ministerie/mnre1025', name: mnre1025, value: 'ministerie van Volksgezondheid, Welzijn en Sport' }, officieleTitel: document-1337.pdf, informatieCategorie: { resource: 'https://identifier.overheid.nl/tooi/def/thes/kern/c_3baef532', name: c_3baef532, value: 'Woo-verzoeken en -besluiten' }, documentHandeling: { soortHandeling: { resource: 'https://identifier.overheid.nl/tooi/def/thes/kern/c_e1ec3050e', name: c_e1ec3050e, value: ondertekening }, atTime: '2010-05-15T13:37:42+00:00' } }
+    changefrew: null
+    priority: null
+-
+    lastmod: '2012-03-04T05:06:07+00:00'
+    diWooDocument: { creatiedatum: '2015-01-12T11:12:33+00:00', publisher: { resource: 'https://identifier.overheid.nl/tooi/id/ministerie/mnre1025', name: mnre1025, value: 'ministerie van Volksgezondheid, Welzijn en Sport' }, officieleTitel: document-1001.pdf, informatieCategorie: { resource: 'https://identifier.overheid.nl/tooi/def/thes/kern/c_3baef532', name: c_3baef532, value: 'Woo-verzoeken en -besluiten' }, documentHandeling: { soortHandeling: { resource: 'https://identifier.overheid.nl/tooi/def/thes/kern/c_e1ec3050e', name: c_e1ec3050e, value: ondertekening }, atTime: '2015-01-12T11:12:33+00:00' } }
+    changefrew: null
+    priority: null

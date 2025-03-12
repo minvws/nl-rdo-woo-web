@@ -35,6 +35,18 @@ final class DossierTypeTest extends MockeryTestCase
         $this->assertFalse(DossierType::COVENANT->isInvestigationReport());
     }
 
+    public function testIsOtherPublication(): void
+    {
+        $this->assertTrue(DossierType::OTHER_PUBLICATION->isOtherPublication());
+        $this->assertFalse(DossierType::COVENANT->isInvestigationReport());
+    }
+
+    public function testIsAdvice(): void
+    {
+        $this->assertTrue(DossierType::ADVICE->isAdvice());
+        $this->assertFalse(DossierType::ADVICE->isInvestigationReport());
+    }
+
     public function testIsDisposition(): void
     {
         $this->assertTrue(DossierType::DISPOSITION->isDisposition());

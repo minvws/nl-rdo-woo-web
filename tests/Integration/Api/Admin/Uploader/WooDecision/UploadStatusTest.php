@@ -6,9 +6,9 @@ namespace App\Tests\Integration\Api\Admin\Uploader\WooDecision;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileSetStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Enum\DocumentFileUpdateType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateType;
 use App\Tests\Factory\DocumentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileSetFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileUpdateFactory;
@@ -85,6 +85,8 @@ final class UploadStatusTest extends ApiTestCase
             ],
             'changes' => [],
         ]);
+        // Ugly check to make sure an empty changes object is returned instead of an empty array
+        self::assertStringContainsString('"changes":{}', $client->getResponse()?->getContent() ?? '');
     }
 
     public function testFetchingUploadStatusWithChanges(): void

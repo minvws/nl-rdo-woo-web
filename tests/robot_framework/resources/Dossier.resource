@@ -1,3 +1,7 @@
+*** Comments ***
+# robocop: off=no-suite-variable,line-too-long
+
+
 *** Settings ***
 Documentation       Resource file containing custom keywords for Decision Dossiers in the Balie.
 Library             DateTime
@@ -6,7 +10,6 @@ Library             DebugLibrary
 Resource            Admin.resource
 Resource            Public.resource
 Resource            WooDecision.resource
-Resource            Generic.resource
 
 
 *** Variables ***
@@ -14,7 +17,6 @@ ${CURRENT_TIME}             ${EMPTY}
 ${CURRENT_DATE}             ${EMPTY}
 ${CURRENT_DATE_FORMAT2}     ${EMPTY}
 ${CURRENT_EPOCH}            ${EMPTY}
-${DOSSIER_REFERENCE}        ${EMPTY}
 ${PREFIX_INDEX}             ${EMPTY}
 
 
@@ -26,7 +28,7 @@ Fill Out Basic Details
   ...  ${prefix}=MINVWS
   Generate Dossier Reference Number
   Fill Text  id=details_title  Robot ${DOSSIER_REFERENCE}
-  IF  '${type}' == 'disposition' or '${type}' == 'investigation-report' or '${type}' == 'complaint-judgement'
+  IF  '${type}' == 'disposition' or '${type}' == 'investigation-report' or '${type}' == 'complaint-judgement' or '${type}' == 'other-publication' or '${type}' == 'advice'
     Type Text  id=details_date  01012022
   ELSE IF  '${type}' == 'annual-report'
     Select Options By  id=details_year  index  5
@@ -60,10 +62,14 @@ Search For A Publication
   [Arguments]  ${search_query}
   Type Text  //div[@data-e2e-name="dossier-search"]//input  ${search_query}  delay=50 ms  clear=Yes
   ${search_query_lowercase} =  Convert To Lower Case  ${search_query}
-  Click  //tr[@data-e2e-name="search-previews-result"]//a[contains(@href,'${search_query_lowercase}')]
+  Click
+  ...  //div[@data-e2e-name="search-previews-results"]//table[@data-e2e-name="table-dossier"]//a[contains(@href,'${search_query_lowercase}')]
 
 Click Documents Edit
   Click  //*[@data-e2e-name="documents-section"]//*[@data-e2e-name="edit-link"]
+
+Documents Edit Button Should Not Exist
+  Get Element Count  //*[@data-e2e-name="documents-section"]//*[@data-e2e-name="edit-link"]  equal  0
 
 Create New Dossier
   [Arguments]  ${dossier_type}
@@ -114,3 +120,12 @@ Verify Document Filetype
   Get Text  //td[@data-e2e-name="file-type"]  contains  ${file_type}
   Generic Download Click  //a[@data-e2e-name="download-file-link"]  ${file_type}
   Go Back
+
+Select Openbaar Dossier
+  Click  //table[@data-e2e-name="dossiers-table"]/tbody/tr[td[contains(.,'Openbaar')]]//td//a
+
+Click Continue To Publish
+  Click  //*[@data-e2e-name="to-next-step-link"]
+
+Click Save And Prepare
+  Click  //*[@id="publish_submit"]

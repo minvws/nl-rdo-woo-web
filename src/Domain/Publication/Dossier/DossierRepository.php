@@ -53,7 +53,7 @@ class DossierRepository extends ServiceEntityRepository
             ->where('ILIKE(d.title, :searchTerm) = true')
             ->orWhere('d.id IN (
                 SELECT w.id
-                FROM Domain:Publication\Dossier\Type\WooDecision\Entity\WooDecision w
+                FROM Domain:Publication\Dossier\Type\WooDecision\WooDecision w
                 LEFT JOIN w.inquiries i
                 WHERE ILIKE(i.casenr, :searchTerm) = true
             )')
@@ -97,7 +97,6 @@ class DossierRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('d')
             ->where('d.status IN (:statuses)')
-            ->andWhere('d.completed = true')
             ->setParameter('statuses', [
                 DossierStatus::CONCEPT,
                 DossierStatus::SCHEDULED,

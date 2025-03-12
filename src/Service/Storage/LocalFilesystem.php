@@ -65,10 +65,12 @@ readonly class LocalFilesystem
         return $path;
     }
 
-    public function createTempDir(): string|false
+    public function createTempDir(?string $subdir = null): string|false
     {
-        $path = sprintf('%s/%s', $this->sysGetTempDir(), $this->uniqid());
-        if (! mkdir($path)) {
+        $subdir = $subdir === null ? '' : sprintf('/%s', trim($subdir, '/'));
+
+        $path = sprintf('%s/%s%s', $this->sysGetTempDir(), $this->uniqid(), $subdir);
+        if (! mkdir($path, recursive: true)) {
             $this->logger->error('Could not create temporary dir', [
                 'tempDir' => $path,
             ]);
@@ -149,6 +151,18 @@ readonly class LocalFilesystem
         return $stream;
     }
 
+    public function getFileSize(string $localPath): int|false
+    {
+        $filesize = $this->filesize($localPath);
+        if ($filesize === false) {
+            $this->logger->error('Could not get file size', [
+                'local_path' => $localPath,
+            ]);
+        }
+
+        return $filesize;
+    }
+
     /**
      * Glob that is safe with streams (vfs for example).
      *
@@ -188,6 +202,11 @@ readonly class LocalFilesystem
     protected function uniqid(): string
     {
         return uniqid('woopie_', true);
+    }
+
+    protected function filesize(string $filename): int|false
+    {
+        return filesize($filename);
     }
     // @codeCoverageIgnoreEnd
 }

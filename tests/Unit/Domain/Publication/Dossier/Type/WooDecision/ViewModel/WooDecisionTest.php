@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
 use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\ViewModel\CommonDossierProperties;
-use App\Domain\Publication\Dossier\Type\WooDecision\DecisionType;
+use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecision;
+use App\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
 use App\Domain\Publication\Dossier\ViewModel\Department;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use App\Enum\Department as DepartmentEnum;

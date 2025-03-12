@@ -1,13 +1,26 @@
-{% extends 'admin.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
 {% block body %}
     {% set hasDocuments = pagination | length > 0 %}
     <div class="bhr-container bhr-container--sm">
-        {{ wo_render_breadcrumbs({viewTemplate: 'navigation/breadcrumbs.admin.html.twig' }) }}
+        {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
     </div>
 
     <div class="bhr-container">
         <div class="bhr-card">
+            {% set alerts = app.flashes('backend') %}
+            {% if alerts | length > 0 %}
+                <div class="mb-8">
+                    {% for messages in alerts %}
+                        {% for label, message in messages %}
+                            <twig:Admin:Alert type="{{ label }}">
+                                <strong>{{ message }}</strong>
+                            </twig:Admin:Alert>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             {% set uploadStatus = dossier.uploadStatus %}
             <h2 class="font-bold mb-6">{{ uploadStatus.actualUploadCount }}/{{ uploadStatus.expectedUploadCount }} {{ 'global.added' | trans}}</h2>
 
@@ -45,28 +58,22 @@
             </twig:Admin:LeftAndRight>
 
             {% if dossier.needsInventoryAndDocuments %}
-                {% set uploadStatus = dossier.uploadStatus %}
-                {% if not uploadStatus.isComplete %}
-                    <div id="edit-documents">
-                        <twig:Admin:DossierDocuments
-                            dossier="{{ dossier }}"
-                            uploadStatus="{{ uploadStatus }}"
-                            mimeTypes="{{ mimeTypes }}"
-                        />
-                    </div>
-                {% endif %}
+                <div class="mb-6">
+                    <twig:Admin:Publication:WooDecision:ReplaceDocuments
+                        dossier="{{ dossier }}"
+                        uploadGroupId="{{ uploadGroupId }}"
+                    />
+                </div>
 
                 {% if hasDocuments %}
                     <table class="bhr-table" id="resultaten" data-e2e-name="dossier-documents">
                         <caption class="sr-only">{{ 'admin.dossiers.documents_sortable' | trans }}</caption>
                         <thead>
                             <tr>
-                                {{ knp_pagination_sortable(pagination, 'global.document_number' | trans, 'doc.documentNr', { thClassName: 'w-40' }, {}, 'pagination/sort.admin.html.twig') }}
-                                {{ knp_pagination_sortable(pagination, 'global.document_name' | trans, 'doc.fileInfo.name', { thClassName: 'w-2/5' }, {}, 'pagination/sort.admin.html.twig') }}
-                                {{ knp_pagination_sortable(pagination, 'global.document_judgement' | trans, 'doc.judgement', {}, {}, 'pagination/sort.admin.html.twig') }}
-                                <th class="bhr-column-head bhr-column-head--gray" scope="col">
-                                    {{ 'global.document_particular' | trans }}
-                                </th>
+                                {{ knp_pagination_sortable(pagination, 'global.document_number' | trans, 'doc.documentNr', { thClassName: 'w-40' }, {}, 'admin/layout/sort.html.twig') }}
+                                {{ knp_pagination_sortable(pagination, 'global.document_name' | trans, 'doc.fileInfo.name', { thClassName: 'w-2/5' }, {}, 'admin/layout/sort.html.twig') }}
+                                {{ knp_pagination_sortable(pagination, 'global.document_judgement' | trans, 'doc.judgement', {}, {}, 'admin/layout/sort.html.twig') }}
+                                {{ knp_pagination_sortable(pagination, 'global.document_particular' | trans, 'hasNotice', {}, {}, 'admin/layout/sort.html.twig') }}
                             </tr>
                         </thead>
                         <tbody>
@@ -88,13 +95,14 @@
                                     <td>
                                         {% if document.withdrawn %}{{ "global.withdrawn" | trans }}{% endif %}
                                         {% if document.suspended %}{{ "global.suspended" | trans }}{% endif %}
+                                        {% if document.shouldBeUploaded and not document.isUploaded %}{{ "admin.dossiers.documents.needs_upload" | trans }}{% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
 
-                    {{ knp_pagination_render(pagination, 'pagination/pagination.admin.html.twig') }}
+                    {{ knp_pagination_render(pagination, 'admin/layout/pagination.html.twig') }}
                 {% else %}
                     <p class="text-center">Er zijn nog geen documenten aan dit besluit gekoppeld.</p>
                 {% endif %}

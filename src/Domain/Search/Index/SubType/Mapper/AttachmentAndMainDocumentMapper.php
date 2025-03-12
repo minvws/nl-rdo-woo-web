@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\SubType\Mapper;
 
-use App\Domain\Publication\Attachment\AbstractAttachment;
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Search\Index\Dossier\DossierIndexer;
 use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
 use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\ElasticDocumentId;
 use App\Domain\Search\Index\ElasticDocumentType;
+use App\Domain\Search\Index\Schema\ElasticField;
+use App\Domain\Search\Index\Schema\ElasticNestedField;
 use Webmozart\Assert\Assert;
 
 readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperInterface
@@ -38,25 +40,25 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
         $file = $entity->getFileInfo();
 
         $fields = [
-            'mime_type' => $file->getMimeType(),
-            'file_size' => $file->getSize(),
-            'file_type' => $file->getType(),
-            'source_type' => $file->getSourceType(),
-            'date' => $entity->getFormalDate()->format(\DateTimeInterface::ATOM),
-            'filename' => $file->getName(),
-            'grounds' => $entity->getGrounds(),
-            'dossiers' => [
+            ElasticField::MIME_TYPE->value => $file->getMimeType(),
+            ElasticField::FILE_SIZE->value => $file->getSize(),
+            ElasticField::FILE_TYPE->value => $file->getType(),
+            ElasticField::SOURCE_TYPE->value => $file->getSourceType(),
+            ElasticField::DATE->value => $entity->getFormalDate()->format(\DateTimeInterface::ATOM),
+            ElasticField::FILENAME->value => $file->getName(),
+            ElasticField::GROUNDS->value => $entity->getGrounds(),
+            ElasticNestedField::DOSSIERS->value => [
                 $dossierDocument->getDocumentValues(),
             ],
-            'prefixed_dossier_nr' => PrefixedDossierNr::forDossier($entity->getDossier()),
+            ElasticField::PREFIXED_DOSSIER_NR->value => PrefixedDossierNr::forDossier($entity->getDossier()),
         ];
 
         if ($metadata !== null) {
-            $fields['metadata'] = $metadata;
+            $fields[ElasticField::METADATA->value] = $metadata;
         }
 
         if ($pages !== null) {
-            $fields['pages'] = $pages;
+            $fields[ElasticNestedField::PAGES->value] = $pages;
         }
 
         return new ElasticDocument(

@@ -1,0 +1,13 @@
+{% extends 'public/department/details_base.html.twig' %}
+
+{% set logoPath = asset('assets/img/public/departments/zin.svg') %}
+
+{% block department_content %}
+    <div class="woo-readable-width">
+        <h1 class="woo-h1 woo-h1-spacing font-normal">{{ 'public.department.public_information_by_department' | trans({ department: department.name }) }}</h1>
+
+        <div class="woo-rich-text">
+            <p>Iedereen die in Nederland woont of werkt, is verplicht om een zorgverzekering te hebben. Zorginstituut Nederland is een overheidsorganisatie met als belangrijkste taak het samenstellen van het basispakket van de zorgverzekering. Hierbij maken we ingewikkelde, maar noodzakelijke keuzes om ervoor te zorgen dat iedereen in Nederland goede zorg kan krijgen. Nu en in de toekomst.</p>
+        </div>
+    </div>
+{% endblock %}

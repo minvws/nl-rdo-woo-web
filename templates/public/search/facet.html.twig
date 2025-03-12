@@ -1,0 +1,105 @@
+{% import "public/macros/facet.html.twig" as macro %}
+
+<h2 class="woo-h2 woo-h2-spacing">Filters</h2>
+
+<form class="form-filters" method="post" action="">
+    <fieldset>
+        <legend class="woo-legend">{{ 'public.global.date' | trans }}</legend>
+
+        {% macro date_input(fromOrTo, label) %}
+            <label class="block text-base mb-0.5" for="date-{{ fromOrTo }}">{{ label }}</label>
+            <input class="woo-input-text" id="date-{{ fromOrTo }}" name="dt[{{ fromOrTo }}]" type="date" value="{{ app.request.get('dt')[fromOrTo] | default }}">
+        {% endmacro %}
+
+        <div class="grid gap-4 xs:grid-cols-2 md:grid-cols-1">
+            <div>
+                {{ _self.date_input('from', 'public.global.from' | trans) }}
+            </div>
+
+            <twig:Public:InputError css="hidden" id="filter-dates-error">
+                {{ 'public.search.invalid_date_period' | trans }}
+            </twig:Public:InputError>
+
+            <div>
+                {{ _self.date_input('to', 'public.global.to' | trans) }}
+            </div>
+        </div>
+    </fieldset>
+
+    {% set facetInput = result.searchParameters.facetInputs.getByFacetKey(constant('App\\Service\\Search\\Model\\FacetKey::TYPE')) %}
+    {% set facet = facetInput.facet %}
+    {% set entries = result.aggregation(facet.key).entries|default([]) %}
+
+    {% if entries|length > 0 %}
+        <fieldset class="mt-4 js-filters-group" data-key="{{ facet.key.value }}">
+            <legend class="w-full">
+                <button
+                    class="woo-legend w-full text-left relative border-b border-woo-chinese-silver py-2 leading-5 js-toggle-filters-group-button"
+                    type="button"
+                >
+                    <span class="absolute left-0 -mt-0.5">
+                        <twig:Public:IconBackground>
+                            <twig:Public:Icon name="topic" size="16" />
+                        </twig:Public:IconBackground>
+                    </span>
+                    <span class="pl-8">Zoeken in ...</span>
+                    <twig:Public:Icon class="absolute right-0 js-toggle-filters-group-button-icon" name="chevron-up-thin" />
+                </button>
+            </legend>
+
+            <div class="js-filters-group-collapsible" id="filters-group-{{ facet.key.value }}">
+                {% for entry in entries %}
+                    <div class="pb-2 js-search-filter-checkbox-group">
+                        {{ macro.facet_entry(entry, facetInput) }}
+                        <div class="text-base text-woo-dim-gray leading-snug">
+                            {{ ('public.search.type_description.' ~ entry.key) | trans }}
+                        </div>
+
+                        {% if entry.subEntries|length > 0 %}
+                            <div class="pl-5 pt-1 {% if not facetInput.contains(entry.key) %} hidden{% endif %}">
+                                <fieldset>
+                                    <legend class="sr-only">Subcategorieën van "{{ entry.displayValue | trans }}"</legend>
+                                    {% for subentry in entry.subEntries %}
+                                        {% set inputKey = 'subtype_' ~ subentry.key %}
+                                        {% set inputValue = subentry.key %}
+                                        <div class="woo-choice-row py-1">
+                                            <span>
+                                                <input
+                                                    class="woo-choice-input js-search-filter-checkbox"
+                                                    id="input_{{ subentry.key|url_encode }}"
+                                                    name="{{ facet.requestParameter }}[]"
+                                                    type="checkbox"
+                                                    value="{{ inputValue }}"
+                                                    {% if facetInput.contains(inputValue) %}checked{% endif %}
+                                                    data-e2e-name="input_{{ subentry.key|url_encode }}"
+                                                >
+                                            </span>
+                                            <label class="grow cursor-pointer" for="input_{{ subentry.key|url_encode }}">
+                                                <span class="flex">
+                                                    <span class="grow mr-2 text-base leading-tight">{{ subentry.displayValue | trans }}</span>
+                                                    <span class="woo-muted text-sm" data-e2e-name="{{ subentry.key|url_encode }}_count">({{ subentry.count }})</span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </fieldset>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </fieldset>
+    {% endif %}
+
+    {{ macro.facet_select('categories.category.department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), result) }}
+    {{ macro.facet_select('categories.category.subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT'), result) }}
+    {{ macro.facet_select('categories.category.source_file' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE'), result) }}
+    {{ macro.facet_select('categories.category.judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
+    {{ macro.facet_select('categories.category.grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
+
+    <input type="hidden" name="q" value="{{ app.request.get('q') }}"/>
+
+    <div class="pt-8 js:hidden">
+        <button class="woo-button woo-button--primary" type="submit">{{ 'public.search.filter_results' | trans() }}</button>
+    </div>
+</form>

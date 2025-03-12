@@ -27,7 +27,7 @@ class ComplaintJudgementController extends AbstractController
     ) {
     }
 
-    #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route('/klachtoordeel/{prefix}/{dossierId}', name: 'app_complaintjudgement_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] ComplaintJudgement $dossier,
@@ -38,13 +38,13 @@ class ComplaintJudgementController extends AbstractController
         $breadcrumbs->addRouteItem('Home', 'app_home');
         $breadcrumbs->addItem(ucfirst($dossier->getTitle() ?? ''));
 
-        return $this->render('complaintjudgement/details.html.twig', [
+        return $this->render('public/dossier/complaint-judgement/details.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
             'document' => $this->mainDocumentViewFactory->make($dossier, $document),
         ]);
     }
 
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/klachtoordeel/{prefix}/{dossierId}/document',
         name: 'app_complaintjudgement_document_detail',
@@ -65,7 +65,7 @@ class ComplaintJudgementController extends AbstractController
         ]);
         $breadcrumbs->addItem(ucfirst($dossier->getTitle() ?? ''));
 
-        return $this->render('complaintjudgement/document.html.twig', [
+        return $this->render('public/dossier/complaint-judgement/document.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
             'document' => $mainDocumentViewModel,
             'file' => $this->dossierFileViewFactory->make(

@@ -7,11 +7,12 @@ namespace App\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Subject\Subject;
 use App\Domain\Search\Index\Dossier\Mapper\DefaultDossierMapper;
 use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\ElasticField;
+use App\Domain\Search\Index\Schema\ElasticField;
+use App\Domain\Search\Index\Schema\ElasticObjectField;
 use App\Entity\Department;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -106,9 +107,9 @@ class DefaultDossierMapperTest extends UnitTestCase
                 ],
                 'date_period' => 'April 2023 - april 2025',
                 'publication_date' => '2024-04-16T11:30:22+00:00',
-                ElasticField::SUBJECT->value => [
-                    ElasticField::SUBJECT_ID->value => $subjectId,
-                    ElasticField::SUBJECT_NAME->value => $subjectName,
+                ElasticObjectField::SUBJECT->value => [
+                    ElasticField::ID->value => $subjectId,
+                    ElasticField::NAME->value => $subjectName,
                 ],
             ],
             $doc->getDocumentValues(),

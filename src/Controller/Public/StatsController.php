@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Public;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Search\Query\SearchParametersFactory;
 use App\Service\Search\SearchService;
 use App\Service\Storage\EntityStorageService;
@@ -37,7 +37,7 @@ class StatsController extends AbstractController
     #[Route('/prometheus', name: 'app_prometheus', methods: ['GET'])]
     public function prometheus(): Response
     {
-        $response = $this->render('stats/prometheus.txt.twig', [
+        $response = $this->render('public/stats/prometheus.txt.twig', [
             'app' => [
                 'document_count' => $this->doctrine->getRepository(Document::class)->count([]),
                 'dossier_count' => $this->doctrine->getRepository(AbstractDossier::class)->count([]),

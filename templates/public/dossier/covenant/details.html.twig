@@ -1,0 +1,12 @@
+{% extends 'public/dossier/shared/details.html.twig' %}
+
+{% set tagline = 'public.dossiers.covenant.tagline' | trans %}
+{% set description = 'public.dossiers.covenant.description' | trans %}
+
+{% block attachments %}
+    {% include 'public/dossier/shared/attachments.html.twig' %}
+{% endblock %}
+
+{% block about %}
+    {% include 'public/dossier/covenant/snippets/about.html.twig' %}
+{% endblock %}

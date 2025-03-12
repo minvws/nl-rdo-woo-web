@@ -1,0 +1,8 @@
+{% extends 'public/dossier/shared/document.html.twig' %}
+
+{% set urlToDossierPage = url('app_covenant_detail', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr } ) %}
+{% set dateLabel = 'global.period' | trans %}
+
+{% block dossier_date %}
+    {% include 'public/dossier/covenant/snippets/dossier-period.html.twig' %}
+{% endblock %}

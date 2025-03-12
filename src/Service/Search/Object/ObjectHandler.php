@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Object;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Search\Index\ElasticDocumentId;
+use App\Domain\Search\Index\Schema\ElasticNestedField;
+use App\Domain\Search\Index\Schema\ElasticPath;
 use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
@@ -55,14 +57,14 @@ readonly class ObjectHandler
                             ],
                             [
                                 'nested' => [
-                                    'path' => 'pages',
+                                    'path' => ElasticNestedField::PAGES->value,
                                     'query' => [
                                         'term' => [
-                                            'pages.page_nr' => $pageNr,
+                                            ElasticPath::pagesPageNr()->value => $pageNr,
                                         ],
                                     ],
                                     'inner_hits' => [
-                                        '_source' => 'pages.content',
+                                        '_source' => ElasticPath::pagesContent()->value,
                                     ],
                                 ],
                             ],
@@ -77,9 +79,7 @@ readonly class ObjectHandler
             $response = $this->elastic->search($params);
             $response = new TypeArray($response->asArray());
 
-            $content = $response->getString('[hits][hits][0][inner_hits][pages][hits][hits][0][_source][content]', '');
-
-            return $content;
+            return $response->getString('[hits][hits][0][inner_hits][pages][hits][hits][0][_source][content]', '');
         } catch (\Throwable) {
             return '';
         }

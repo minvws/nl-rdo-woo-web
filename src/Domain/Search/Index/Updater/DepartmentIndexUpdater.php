@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\Updater;
 
-use App\Domain\Search\Result\FacetValue\AbbreviatedValue;
+use App\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
+use App\Domain\Search\Index\Schema\ElasticNestedField;
+use App\Domain\Search\Index\Schema\ElasticPath;
 use App\ElasticConfig;
 use App\Entity\Department;
 use App\Service\Elastic\ElasticClientInterface;
@@ -24,11 +26,15 @@ readonly class DepartmentIndexUpdater
                 'query' => [
                     'bool' => [
                         'should' => [
-                            ['match' => ['departments.id' => $department->getId()]],
+                            ['match' => [
+                                ElasticPath::departmentsId()->value => $department->getId(),
+                            ]],
                             ['nested' => [
-                                'path' => 'dossiers',
+                                'path' => ElasticNestedField::DOSSIERS->value,
                                 'query' => [
-                                    'term' => ['dossiers.departments.id' => $department->getId()],
+                                    'term' => [
+                                        ElasticPath::dossiersDepartmentsId()->value,
+                                    ],
                                 ],
                             ]],
                         ],
@@ -60,7 +66,7 @@ EOF,
                     'lang' => 'painless',
                     'params' => [
                         'department' => [
-                            'name' => AbbreviatedValue::fromDepartment($department)->getIndexValue(),
+                            'name' => DepartmentFieldMapper::fromDepartment($department)->getIndexValue(),
                             'id' => $department->getId(),
                         ],
                     ],

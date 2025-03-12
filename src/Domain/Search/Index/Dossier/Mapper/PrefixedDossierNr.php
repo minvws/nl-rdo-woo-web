@@ -12,4 +12,16 @@ readonly class PrefixedDossierNr
     {
         return $dossier->getDocumentPrefix() . '|' . $dossier->getDossierNr();
     }
+
+    public static function withoutPrefix(string $input): string
+    {
+        $input = trim($input);
+
+        $separatorPosition = strpos($input, '|');
+        if ($separatorPosition === false) {
+            return $input;
+        }
+
+        return substr($input, $separatorPosition + 1);
+    }
 }

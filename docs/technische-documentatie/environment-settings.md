@@ -22,11 +22,11 @@ The following environment variables are used by the application:
 ### Global settings
 
 | Variable             | Description                                                   | Default value           |
-|----------------------|---------------------------------------------------------------|-------------------------|
+| -------------------- | ------------------------------------------------------------- | ----------------------- |
 | `APP_ENV`            | The application environment.                                  | `prod`                  |
 | `APP_DEBUG`          | Whether the application is in debug mode.                     | `false`                 |
 | `APP_SECRET`         | Unique secret for creating signatures (rememberme, CSRF etc). | `null`                  |
-| `SITE_NAME`          | The name of the site. Used only for displaying purposes.      | open.minvws.nl          |
+| `SITE_NAME`          | The name of the site. Used only for displaying purposes.      | het publicatieplatform  |
 | `COOKIE_NAME`        | The name of session cookie to use.                            | `WOOPID`                |
 | `TOTP_ISSUER`        | Issuer of the TOTP tokens, used in 2fa for the totp URI       | `localhost`             |
 | `APP_MODE`           | Application mode (see below)                                  | `BOTH`                  |
@@ -43,7 +43,7 @@ When `BACKEND` is used, the instance will only run as a backend and the frontend
 ### Database settings
 
 | Variable                  | Description                                                                              | Default value |
-|---------------------------|------------------------------------------------------------------------------------------|---------------|
+| ------------------------- | ---------------------------------------------------------------------------------------- | ------------- |
 | `DATABASE_URL`            | The DSN of the database connection.                                                      | `null`        |
 | `DATABASE_ENCRYPTION_KEY` | Database at-rest encryption key (generated with "php bin/console generate:database-key") | `null`        |
 
@@ -54,7 +54,7 @@ can also be configured to use the database, redis or any other
 storage system.
 
 | Variable                  | Description                            | Default value                                      |
-|---------------------------|----------------------------------------|----------------------------------------------------|
+| ------------------------- | -------------------------------------- | -------------------------------------------------- |
 | `HIGH_TRANSPORT_DSN`      | DSN for high priority work             | `amqp://guest:guest@localhost:5672/%2f/high`       |
 | `INGESTOR_TRANSPORT_DSN`  | DSN for ingesting documents            | `amqp://guest:guest@localhost:5672/%2f/ingestor`   |
 | `ESUPDATER_TRANSPORT_DSN` | DSN for updates on the elastic search  | `amqp://guest:guest@localhost:5672/%2f/es_updates` |
@@ -67,7 +67,7 @@ These settings are in order of priority. So if there is a message in the high pr
 Settings to connect to the elastic search cluster. If user/pass/mtls settings are empty, no authentication will be used.
 
 | Variable                       | Description                              | Default value           |
-|--------------------------------|------------------------------------------|-------------------------|
+| ------------------------------ | ---------------------------------------- | ----------------------- |
 | `ELASTICSEARCH_HOST`           | Url to cluster                           | `http://127.0.0.1:9200` |
 | `ELASTICSEARCH_USER`           | Username for authentication (if any)     | `null`                  |
 | `ELASTICSEARCH_PASS`           | Password for authentication (if any)     | `null`                  |
@@ -81,7 +81,7 @@ Redis is used for storing cached information about documents. This is used for e
 extracted when ingesting the same document multiple times. It will also store the sessions of the users.
 
 | Variable               | Description                              | Default value            |
-|------------------------|------------------------------------------|--------------------------|
+| ---------------------- | ---------------------------------------- | ------------------------ |
 | `REDIS_URL`            | URL to redis                             | `redis://localhost:6379` |
 | `REDIS_TLS_CAFILE`     | CA path for mTLS authentication          | `null`                   |
 | `REDIS_TLS_LOCAL_CERT` | Certificate path for mTLS authentication | `null`                   |
@@ -93,7 +93,7 @@ Storage settings defines how documents, pages and thumbnails are stored and retr
 to create your own storage adapter since internally it will be using flysystem.
 
 | Variable                         | Description                                                   | Default value  |
-|----------------------------------|---------------------------------------------------------------|----------------|
+| -------------------------------- | ------------------------------------------------------------- | -------------- |
 | `STORAGE_DOCUMENT_ADAPTER`       | Which adapter to use for document storage (`aws` or `local`)  | `local`        |
 | `STORAGE_THUMBNAIL_ADAPTER`      | Which adapter to use for thumbnail storage (`aws` or `local`) | `local`        |
 | `STORAGE_BATCH_ADAPTER`          | Which adapter to use for archive storage (`aws` or `local`)   | `local`        |
@@ -134,7 +134,7 @@ and copy the output to the env vars.
 The following settings are available:
 
 | Variable                        | Description                                      | Default value                 |
-|---------------------------------|--------------------------------------------------|-------------------------------|
+| ------------------------------- | ------------------------------------------------ | ----------------------------- |
 | `AUDITLOG_ENCRYPTION_PUB_KEY`   | The public key for encrypting audit data         | `null`                        |
 | `AUDITLOG_ENCRYPTION_PRIV_KEY`  | The private key for encrypting audit data        | `null`                        |
 | `AUDITLOG_PSR_ENCRYPTED`        | True when PSR logging should encrypted           | `false`                       |
@@ -151,7 +151,7 @@ The following settings are available:
 ### Miscellaneous settings
 
 | Variable               | Description                                                                                                            | Default value                        |
-|------------------------|------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | `RABBITMQ_STATS_URL`   | Url to the RabbitMQ management interface for statistics. This needs to have the management plugin enabled on rabbitmq. | `http://guest:guest@127.0.0.1:15672` |
 | `TIKA_HOST`            | Url on which Tika is running. Used for the workers that extract content through tika                                   | `http://127.0.0.1:9998`              |
 | `RABBITMQ_URL`         | Default rabbitMQ entrypoint. This is used for the audit logger functionality.                                          | `amqp://guest:guest@localhost:5672`  |

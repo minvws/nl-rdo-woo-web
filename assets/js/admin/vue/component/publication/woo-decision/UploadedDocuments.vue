@@ -21,7 +21,7 @@ const numberOfFiles = computed(() => props.files.length);
     v-if="numberOfFiles > 0"
     data-e2e-name="uploaded-files"
   >
-    <h3 class="font-bold">Geüploade bestanden</h3>
+    <h3 class="sr-only">Geüploade bestanden</h3>
 
     <ul
       class="bg-bhr-cornsilk max-h-28 overflow-y-auto"

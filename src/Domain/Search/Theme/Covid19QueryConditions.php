@@ -6,13 +6,19 @@ namespace App\Domain\Search\Theme;
 
 use App\Domain\Publication\Subject\Subject;
 use App\Domain\Search\Index\ElasticDocumentType;
+use App\Domain\Search\Index\Schema\ElasticField;
+use App\Domain\Search\Index\Schema\ElasticNestedField;
+use App\Domain\Search\Index\Schema\ElasticPath;
+use App\Domain\Search\Query\Facet\FacetList;
 use App\Domain\Search\Query\SearchParameters;
 use App\Repository\OrganisationRepository;
 use App\Service\Search\Query\Condition\QueryConditions;
-use App\Service\Search\Query\Facet\FacetList;
 use App\Service\Search\Query\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 readonly class Covid19QueryConditions implements QueryConditions
 {
     public function __construct(
@@ -34,9 +40,9 @@ readonly class Covid19QueryConditions implements QueryConditions
                     Query::bool(
                         filter: [
                             Query::nested(
-                                path: 'dossiers',
+                                path: ElasticNestedField::DOSSIERS->value,
                                 query: Query::term(
-                                    field: 'dossiers.type',
+                                    field: ElasticPath::dossiersType()->value,
                                     value: ElasticDocumentType::WOO_DECISION->value,
                                 ),
                             ),
@@ -45,7 +51,7 @@ readonly class Covid19QueryConditions implements QueryConditions
                     Query::bool(
                         filter: [
                             Query::term(
-                                field: 'type',
+                                field: ElasticField::TYPE->value,
                                 value: ElasticDocumentType::WOO_DECISION->value,
                             ),
                         ]
@@ -65,9 +71,9 @@ readonly class Covid19QueryConditions implements QueryConditions
                     Query::bool(
                         filter: [
                             Query::nested(
-                                path: 'dossiers',
+                                path: ElasticNestedField::DOSSIERS->value,
                                 query: Query::terms(
-                                    field: 'dossiers.subject.id',
+                                    field: ElasticPath::dossiersSubjectId()->value,
                                     values: $subjectIds,
                                 ),
                             ),
@@ -76,7 +82,7 @@ readonly class Covid19QueryConditions implements QueryConditions
                     Query::bool(
                         filter: [
                             Query::terms(
-                                field: 'subject.id',
+                                field: ElasticPath::subjectId()->value,
                                 values: $subjectIds,
                             ),
                         ]

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Type\WooDecision;
 
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Entity\WooDecision;
 use App\Domain\Publication\Dossier\Type\WorkflowConfigHelper;
 use App\Domain\Publication\Dossier\Workflow\DossierMarkingStore;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;

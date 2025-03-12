@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xmlns:diwoo="https://standaarden.overheid.nl/diwoo/metadata/" xsi:schemaLocation="https://www.sitemaps.org/schemas/sitemap/0.9 https://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd https://standaarden.overheid.nl/diwoo/metadata/ https://standaarden.overheid.nl/diwoo/metadata/0.9.4/xsd/diwoo-metadata.xsd">
+ <url>
+  <loc>http://localhost/dossier/PREF/my-annual-report-1/file/download/annual-report/1ef09525-0d6d-6700-b700-2bb719c51bd0</loc>
+  <lastmod>2010-05-03</lastmod>
+  <diwoo:Document>
+   <diwoo:DiWoo>
+    <diwoo:creatieDatum>2010-04-23</diwoo:creatieDatum>
+    <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
+    <diwoo:titelcollectie>
+     <diwoo:officieleTitel>file_name.pdf</diwoo:officieleTitel>
+    </diwoo:titelcollectie>
+    <diwoo:classificatiecollectie>
+     <diwoo:informatiecategorieen>
+      <diwoo:informatiecategorie resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_c6cd1213">jaarplannen en jaarverslagen</diwoo:informatiecategorie>
+     </diwoo:informatiecategorieen>
+    </diwoo:classificatiecollectie>
+    <diwoo:documenthandelingen>
+     <diwoo:documenthandeling>
+      <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_e1ec3050e">ondertekening</diwoo:soortHandeling>
+      <diwoo:atTime>2010-04-23T13:37:42+00:00</diwoo:atTime>
+     </diwoo:documenthandeling>
+    </diwoo:documenthandelingen>
+   </diwoo:DiWoo>
+  </diwoo:Document>
+ </url>
+ <url>
+  <loc>http://localhost/dossier/PREF/my-covenant-1/file/download/covenant/1ef09525-0d6d-6700-82b2-09e15b3f6ce0</loc>
+  <lastmod>2010-05-03</lastmod>
+  <diwoo:Document>
+   <diwoo:DiWoo>
+    <diwoo:creatieDatum>2010-04-23</diwoo:creatieDatum>
+    <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
+    <diwoo:titelcollectie>
+     <diwoo:officieleTitel>file_name.pdf</diwoo:officieleTitel>
+    </diwoo:titelcollectie>
+    <diwoo:classificatiecollectie>
+     <diwoo:informatiecategorieen>
+      <diwoo:informatiecategorie resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_8fc2335c">convenanten</diwoo:informatiecategorie>
+     </diwoo:informatiecategorieen>
+    </diwoo:classificatiecollectie>
+    <diwoo:documenthandelingen>
+     <diwoo:documenthandeling>
+      <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_e1ec3050e">ondertekening</diwoo:soortHandeling>
+      <diwoo:atTime>2010-04-23T13:37:42+00:00</diwoo:atTime>
+     </diwoo:documenthandeling>
+    </diwoo:documenthandelingen>
+   </diwoo:DiWoo>
+  </diwoo:Document>
+ </url>
+</urlset>

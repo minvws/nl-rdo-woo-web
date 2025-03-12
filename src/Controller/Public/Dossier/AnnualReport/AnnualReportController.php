@@ -30,7 +30,7 @@ class AnnualReportController extends AbstractController
     ) {
     }
 
-    #[Cache(maxage: 3600, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route('/jaarplan-jaarverslag/{prefix}/{dossierId}', name: 'app_annualreport_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] AnnualReport $annualReport,
@@ -41,14 +41,14 @@ class AnnualReportController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem('public.dossiers.annual_report.breadcrumb');
 
-        return $this->render('annualreport/details.html.twig', [
+        return $this->render('public/dossier/annual-report/details.html.twig', [
             'dossier' => $this->viewFactory->make($annualReport),
             'attachments' => $this->attachmentViewFactory->makeCollection($annualReport),
             'document' => $this->mainDocumentViewFactory->make($annualReport, $document),
         ]);
     }
 
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/jaarplan-jaarverslag/{prefix}/{dossierId}/document',
         name: 'app_annualreport_document_detail',
@@ -69,7 +69,7 @@ class AnnualReportController extends AbstractController
         ]);
         $breadcrumbs->addItem($mainDocumentViewModel->name ?? '');
 
-        return $this->render('annualreport/document.html.twig', [
+        return $this->render('public/dossier/annual-report/document.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'document' => $mainDocumentViewModel,
@@ -81,7 +81,7 @@ class AnnualReportController extends AbstractController
         ]);
     }
 
-    #[Cache(maxage: 172800, public: true, mustRevalidate: true)]
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/jaarplan-jaarverslag/{prefix}/{dossierId}/bijlage/{attachmentId}',
         name: 'app_annualreport_attachment_detail',
@@ -102,7 +102,7 @@ class AnnualReportController extends AbstractController
         ]);
         $breadcrumbs->addItem($attachmentViewModel->name ?? '');
 
-        return $this->render('annualreport/attachment.html.twig', [
+        return $this->render('public/dossier/annual-report/attachment.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
             'attachment' => $attachmentViewModel,

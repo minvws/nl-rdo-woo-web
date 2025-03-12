@@ -6,11 +6,7 @@ Resource            ../resources/Generic.resource
 Resource            ../resources/Departments.resource
 Suite Setup         Suite Setup
 Test Setup          Go To Public
-Test Tags           landingpages  ci
-
-
-*** Variables ***
-${BASE_URL}     localhost:8000
+Test Tags           ci  landingpages
 
 
 *** Test Cases ***

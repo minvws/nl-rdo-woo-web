@@ -69,4 +69,9 @@ readonly class InvestigationReportConfig implements DossierTypeConfigInterface
             InvestigationReportAttachment::class,
         ];
     }
+
+    public function getAttachmentStepName(): ?StepName
+    {
+        return StepName::CONTENT;
+    }
 }

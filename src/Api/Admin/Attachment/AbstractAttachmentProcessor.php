@@ -10,10 +10,10 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
-use App\Domain\Publication\Attachment\AbstractAttachment;
 use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
 use App\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
 use App\Domain\Publication\Attachment\Command\UpdateAttachmentCommand;
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -28,8 +28,10 @@ abstract class AbstractAttachmentProcessor implements ProcessorInterface
 {
     use HandleTrait;
 
-    public function __construct(MessageBusInterface $messageBus)
-    {
+    public function __construct(
+        protected readonly AttachmentDtoFactory $dtoFactory,
+        MessageBusInterface $messageBus,
+    ) {
         $this->messageBus = $messageBus;
     }
 
