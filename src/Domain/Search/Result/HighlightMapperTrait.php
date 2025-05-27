@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Result;
 
-use Jaytaph\TypeArray\TypeArray;
+use MinVWS\TypeArray\TypeArray;
 
 trait HighlightMapperTrait
 {

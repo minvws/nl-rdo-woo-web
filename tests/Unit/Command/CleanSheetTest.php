@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Command;
 
 use App\Command\CleanSheet;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
+use App\Domain\WooIndex\WooIndexSitemapService;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -22,6 +23,7 @@ class CleanSheetTest extends MockeryTestCase
     private ElasticIndexManager&MockInterface $indexService;
     private EntityManagerInterface&MockInterface $entityManager;
     private HttpClientInterface&MockInterface $client;
+    private WooIndexSitemapService&MockInterface $wooIndexSitemapService;
     private Command&MockInterface $cacheClearCommand;
 
     public function setUp(): void
@@ -29,6 +31,7 @@ class CleanSheetTest extends MockeryTestCase
         $this->indexService = \Mockery::mock(ElasticIndexManager::class);
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->client = \Mockery::mock(HttpClientInterface::class);
+        $this->wooIndexSitemapService = \Mockery::mock(WooIndexSitemapService::class);
 
         $helperSet = \Mockery::mock(HelperSet::class);
         $helperSet->shouldReceive('getIterator')->andReturn(new \ArrayIterator());
@@ -48,6 +51,7 @@ class CleanSheetTest extends MockeryTestCase
                 $this->entityManager,
                 $this->indexService,
                 $this->client,
+                $this->wooIndexSitemapService,
             ),
         );
         $application->add($this->cacheClearCommand);
@@ -61,6 +65,8 @@ class CleanSheetTest extends MockeryTestCase
 
         $this->indexService->expects('delete')->with('woopie');
         $this->indexService->expects('createLatestWithAliases')->with('woopie');
+
+        $this->wooIndexSitemapService->shouldReceive('cleanupAllSitemaps')->once();
 
         $this->cacheClearCommand->expects('run');
 

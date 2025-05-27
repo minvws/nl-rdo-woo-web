@@ -22,6 +22,7 @@ class CovenantMainDocumentRepository extends AbstractMainDocumentRepository impl
         parent::__construct($registry, CovenantMainDocument::class);
     }
 
+    #[\Override]
     public function create(AbstractDossier $dossier, CreateMainDocumentCommand $command): AbstractMainDocument
     {
         Assert::isInstanceOf($dossier, Covenant::class);

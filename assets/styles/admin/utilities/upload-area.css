@@ -1,0 +1,58 @@
+@utility bhr-upload-area {
+  @apply border border-bhr-platinum text-bhr-dim-gray rounded-xl text-center relative px-4;
+}
+
+@utility bhr-upload-area__button {
+  @apply px-4 -mx-4 py-8 w-full;
+}
+
+@utility bhr-upload-area__input {
+  @apply block border-t border-bhr-platinum cursor-pointer py-4 text-bhr-dim-gray w-full;
+
+  &::file-selector-button {
+    @apply sr-only;
+  }
+}
+
+@utility bhr-upload-area__tip {
+  @apply block text-left text-lg leading-tight pb-8 -mt-3;
+}
+
+@utility bhr-upload-area__select-files {
+  @apply block pt-4;
+}
+
+@utility bhr-upload-area__file-limits {
+  @apply block pt-2 text-sm;
+}
+
+@utility bhr-upload-area__files-area {
+  @apply border-t border-bhr-platinum text-left;
+}
+
+@utility bhr-upload-area__no-files {
+  @apply cursor-pointer block text-left py-4 w-full;
+}
+
+@utility bhr-upload-area__files-list {
+  @apply -mx-4 pt-2 pb-3;
+  @apply min-h-[56px];
+}
+
+@utility bhr-upload-area__progress {
+  &[value] {
+    @apply absolute h-0.5 w-full;
+  }
+
+  &[value]::-webkit-progress-bar {
+    @apply bg-bhr-anti-flash-white;
+  }
+
+  &[value]::-webkit-progress-value {
+    @apply bg-bhr-philippine-green;
+  }
+
+  &[value]::-moz-progress-bar {
+    @apply bg-bhr-philippine-green;
+  }
+}

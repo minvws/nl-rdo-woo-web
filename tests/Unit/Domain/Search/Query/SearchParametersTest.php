@@ -15,7 +15,7 @@ use App\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Query\SearchType;
 use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Condition\QueryConditions;
+use App\Service\Search\Query\Condition\QueryConditionBuilderInterface;
 use App\Service\Search\Query\Sort\SortField;
 use App\Service\Search\Query\Sort\SortOrder;
 use App\Tests\Unit\UnitTestCase;
@@ -159,7 +159,7 @@ class SearchParametersTest extends UnitTestCase
             searchType: SearchType::DOSSIER,
         );
 
-        $queryConditions = \Mockery::mock(QueryConditions::class);
+        $queryConditions = \Mockery::mock(QueryConditionBuilderInterface::class);
         $newParameters = $parameters->withBaseQueryConditions($queryConditions);
 
         $this->assertMatchesObjectSnapshot($newParameters);

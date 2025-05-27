@@ -17,6 +17,7 @@ class AuthMatrixExtension extends Extension
         $container->setParameter('authorization_matrix', $config);
     }
 
+    #[\Override]
     public function getAlias(): string
     {
         return 'auth_matrix';

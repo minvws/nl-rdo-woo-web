@@ -42,14 +42,36 @@ readonly class DocumentFileService
             throw DocumentFileSetException::forCannotAddUpload($documentFileSet);
         }
 
-        $documentFileUpload = new DocumentFileUpload($documentFileSet);
-        $documentFileUpload->getFileInfo()->setName($upload->getOriginalFilename());
-        $this->documentFileUploadRepository->save($documentFileUpload);
+        $documentFileUpload = $this->createNewUpload($documentFileSet, $upload->getOriginalFilename());
 
         $this->entityStorageService->storeEntity($upload, $documentFileUpload);
 
-        $documentFileUpload->setStatus(DocumentFileUploadStatus::UPLOADED);
-        $this->documentFileUploadRepository->save($documentFileUpload, true);
+        $this->finishUpload($documentFileSet, $documentFileUpload);
+    }
+
+    public function createNewUpload(DocumentFileSet $documentFileSet, string $fileName): DocumentFileUpload
+    {
+        if (! $documentFileSet->getStatus()->isOpenForUploads()) {
+            throw DocumentFileSetException::forCannotAddUpload($documentFileSet);
+        }
+
+        $documentFileUpload = new DocumentFileUpload($documentFileSet);
+        $documentFileUpload->getFileInfo()->setName($fileName);
+
+        $this->documentFileUploadRepository->save($documentFileUpload);
+
+        return $documentFileUpload;
+    }
+
+    public function finishUpload(DocumentFileSet $documentFileSet, DocumentFileUpload $upload): DocumentFileUpload
+    {
+        $documentFileSet->getUploads()->add($upload);
+        $this->documentFileSetRepository->save($documentFileSet, true);
+
+        $upload->setStatus(DocumentFileUploadStatus::UPLOADED);
+        $this->documentFileUploadRepository->save($upload, true);
+
+        return $upload;
     }
 
     public function startProcessingUploads(WooDecision $wooDecision): void
@@ -81,7 +103,7 @@ readonly class DocumentFileService
         }
 
         $documentFileSet = $this->getDocumentFileSet($wooDecision);
-        if (! $documentFileSet->getStatus()->needsConfirmation()) {
+        if (! $documentFileSet->canConfirm()) {
             throw DocumentFileSetException::forCannotConfirmUpdates($documentFileSet);
         }
 
@@ -116,11 +138,11 @@ readonly class DocumentFileService
             return;
         }
 
-        $this->updateStatus($documentFileSet, DocumentFileSetStatus::NEEDS_CONFIRMATION);
-
         // For concept dossiers no manual confirmation is needed, immediately confirm and start execution of updates
-        if ($documentFileSet->getDossier()->getStatus()->isConcept()) {
+        if ($documentFileSet->canConfirm()) {
             $this->confirmUpdates($documentFileSet->getDossier());
+        } else {
+            $this->updateStatus($documentFileSet, DocumentFileSetStatus::NEEDS_CONFIRMATION);
         }
     }
 

@@ -33,7 +33,20 @@
 
     <rule ref="Generic.PHP.ForbiddenFunctions">
         <properties>
-            <property name="forbiddenFunctions" type="array" value="eval=>null,dd=>null,dump=>null,debug_backtrace=>null,phpinfo=>null,print_r=>null,die=>null,exit=>null,var_dump=>null,sizeof=>count,delete=>unset,create_function=>null"/>
+            <property name="forbiddenFunctions" type="array" >
+                <element key="eval" value="null"/>
+                <element key="dd" value="null"/>
+                <element key="dump" value="null"/>
+                <element key="debug_backtrace" value="null"/>
+                <element key="phpinfo" value="null"/>
+                <element key="print_r" value="null"/>
+                <element key="die" value="null"/>
+                <element key="exit" value="null"/>
+                <element key="var_dump" value="null"/>
+                <element key="sizeof" value="count"/>
+                <element key="delete" value="unset"/>
+                <element key="create_function" value="null"/>
+            </property>
         </properties>
     </rule>
 </ruleset>

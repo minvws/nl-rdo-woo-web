@@ -28,6 +28,10 @@ framework:
             status_code: 404
         App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException:
             status_code: 404
+        App\Domain\WooIndex\Exception\WooIndexFileNotFoundException:
+            status_code: 404
+        App\Domain\Department\Exception\DepartmentAssetNotFound:
+            status_code: 404
     assets:
         version_strategy: 'Pentatrion\ViteBundle\Asset\ViteAssetVersionStrategy'
 

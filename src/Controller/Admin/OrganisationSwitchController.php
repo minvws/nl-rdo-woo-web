@@ -17,7 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class OrganisationSwitchController extends AbstractController
 {
-    private const ROUTE_WHITELIST = [
+    private const array ROUTE_WHITELIST = [
         'app_admin_dossiers',
         'app_admin_inquiries',
         'app_admin_departments',
@@ -25,7 +25,7 @@ class OrganisationSwitchController extends AbstractController
         'app_admin_users',
     ];
 
-    private const FALLBACK_ROUTE = 'app_admin_index';
+    private const string FALLBACK_ROUTE = 'app_admin_index';
 
     public function __construct(
         private readonly OrganisationSwitcher $organisationSwitcher,

@@ -8,46 +8,28 @@
 
     <div class="bhr-container">
         <div class="bhr-card">
-            {% set alerts = app.flashes('backend') %}
-            {% if alerts | length > 0 %}
-                <div class="mb-8">
-                    {% for messages in alerts %}
-                        {% for label, message in messages %}
-                            <twig:Admin:Alert type="{{ label }}">
-                                <strong>{{ message }}</strong>
-                            </twig:Admin:Alert>
-                        {% endfor %}
-                    {% endfor %}
-                </div>
-            {% endif %}
-
-            {% set uploadStatus = dossier.uploadStatus %}
-            <h2 class="font-bold mb-6">{{ uploadStatus.actualUploadCount }}/{{ uploadStatus.expectedUploadCount }} {{ 'global.added' | trans}}</h2>
+            {% include 'admin/shared/flash-messages.html.twig' %}
 
             <twig:Admin:LeftAndRight class="pt-1">
                 {% if dossier.productionReport is not null  %}
                 <a
-                    class="bhr-button bhr-button--primary bhr-button--with-icon-right mr-2"
+                    class="bhr-btn-filled-primary mr-2"
                     href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
                 >
                     {{ 'admin.dossiers.download_report' | trans }}
 
-                    <twig:Admin:Icon class="bhr-button__icon bhr-button__icon--right right-4 -mt-0.5" color="fill-white" size="16" name="download" />
+                    <twig:Admin:Button:Icon isRight="{{ true }}" name="download" />
                 </a>
                 {% endif %}
 
-                <a class="bhr-button bhr-button--secondary mr-2" href="{{ path('app_admin_dossier_woodecision_documents_edit_replace_inventory', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, replace: 1 }) }}" data-e2e-name="replace-report">
+                <a class="bhr-btn-bordered-primary mr-2" href="{{ path('app_admin_dossier_woodecision_documents_edit_replace_inventory', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, replace: 1 }) }}" data-e2e-name="replace-report">
                     {{ 'admin.dossiers.replace_report' | trans }}
                 </a>
 
-                {% if dossier.needsInventoryAndDocuments and not dossier.uploadStatus.isComplete %}
-                <button type="button" class="bhr-button bhr-button--secondary js-visibility-toggler" aria-controls="edit-documents" aria-expanded="true">
-                    {{ 'admin.dossiers.replace_files' | trans }}
-                </button>
-                {% endif %}
-
                 <twig:block name="right">
-                    <div {{ vue_component('PublicationSearchController', {
+                    <div {{ vue_component('GenericController', {
+                        componentName: 'PublicationSearchAndGo',
+
                         dossierId: dossier.id,
                         label: 'Zoek op documentnummer of -naam',
                         resultType: 'document',

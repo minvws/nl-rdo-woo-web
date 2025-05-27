@@ -10,6 +10,7 @@ use App\Roles;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\PngWriter;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\AuditUser;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
@@ -25,34 +26,21 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 /**
  * This class handles user management.
  *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class UserService
 {
-    protected EntityManagerInterface $doctrine;
-    protected UserPasswordHasherInterface $passwordHasher;
-    protected TotpAuthenticatorInterface $totp;
     protected HorseBattery $passwordGenerator;
-    protected LoggerInterface $logger;
-    protected AuditLogger $auditLogger;
-    protected TokenStorageInterface $tokenStorage;
 
     public function __construct(
-        EntityManagerInterface $doctrine,
-        UserPasswordHasherInterface $passwordHasher,
-        TotpAuthenticatorInterface $totp,
-        LoggerInterface $logger,
-        AuditLogger $auditLogger,
-        TokenStorageInterface $tokenStorage,
+        protected EntityManagerInterface $doctrine,
+        protected UserPasswordHasherInterface $passwordHasher,
+        protected TotpAuthenticatorInterface $totp,
+        protected LoggerInterface $logger,
+        protected AuditLogger $auditLogger,
+        protected TokenStorageInterface $tokenStorage,
     ) {
-        $this->doctrine = $doctrine;
-        $this->passwordHasher = $passwordHasher;
-        $this->totp = $totp;
-
         $this->passwordGenerator = new HorseBattery();
-        $this->logger = $logger;
-        $this->auditLogger = $auditLogger;
-        $this->tokenStorage = $tokenStorage;
     }
 
     public function resetCredentials(User $user, bool $resetPassword, bool $reset2fa): string
@@ -183,6 +171,7 @@ class UserService
     {
         $qrContent = $this->totp->getQRContent($user);
         $builder = new Builder(
+            writerOptions: [PngWriter::WRITER_OPTION_NUMBER_OF_COLORS => null],
             data: $qrContent,
         );
 

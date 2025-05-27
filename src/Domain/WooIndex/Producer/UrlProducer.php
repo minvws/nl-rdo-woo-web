@@ -4,22 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domain\WooIndex\Producer;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\MainDocumentRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Domain\WooIndex\Producer\Mapper\UrlMapper;
+use App\Domain\WooIndex\Producer\Repository\RawUrlDto;
+use App\Domain\WooIndex\Producer\Repository\UrlRepository;
 
 final readonly class UrlProducer
 {
     public function __construct(
-        private DocumentRepository $documentRepository,
-        private AttachmentRepository $attachmentRepository,
-        private MainDocumentRepository $mainDocumentRepository,
+        private UrlRepository $urlRepository,
         private UrlMapper $urlMapper,
-        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -28,10 +21,8 @@ final readonly class UrlProducer
      */
     public function getAll(): \Generator
     {
-        foreach ($this->fetchData() as $document) {
-            yield $this->urlMapper->fromEntity($document);
-
-            $this->entityManager->detach($document);
+        foreach ($this->fetchData() as $rawUrl) {
+            yield $this->urlMapper->fromRawUrl($rawUrl);
         }
     }
 
@@ -72,12 +63,12 @@ final readonly class UrlProducer
     }
 
     /**
-     * @return iterable<int,Document|AbstractAttachment|AbstractMainDocument>
+     * @return iterable<int,RawUrlDto>
      */
     private function fetchData(): iterable
     {
-        yield from $this->documentRepository->getPublishedDocumentsIterable();
-        yield from $this->attachmentRepository->getPublishedAttachmentsIterable();
-        yield from $this->mainDocumentRepository->getPublishedMainDocumentsIterable();
+        yield from $this->urlRepository->getPublishedDocuments();
+        yield from $this->urlRepository->getPublishedAttachments();
+        yield from $this->urlRepository->getPublishedMainDocuments();
     }
 }

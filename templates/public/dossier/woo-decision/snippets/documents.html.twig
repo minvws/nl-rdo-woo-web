@@ -1,14 +1,19 @@
-{% import 'public/macros/document.html.twig' as macro %}
-
 {% if dossier.needsInventoryAndDocuments and (publicDocs.count > 0 or alreadyPublicDocs.count > 0 or notPublicDocs.count > 0 or notOnlineDocs.count > 0) %}
 <div class="mt-16" data-e2e-name="documents-section">
     <h2 class="woo-h2 woo-h2-spacing" id="documenten">{{ 'global.documents' | trans }}</h2>
+
     <twig:Public:DownloadFilesForm
         action="{{ path('app_woodecision_batch', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
         canDownload="{{ dossier.counts.hasUploads and publicDocs.count > 0 }}"
         searchUrl="{{ dossier.documentSearchUrl }}"
     />
 
-    {{ macro.document_tabs(publicDocs, alreadyPublicDocs, notPublicDocs, notOnlineDocs, '#documenten', dossier) }}
+    <twig:Public:Publication:WooDecision:DocumentTabs
+        alreadyPublicDocuments="{{ alreadyPublicDocs }}"
+        dossier="{{ dossier }}"
+        publicDocuments="{{ publicDocs }}"
+        notOnlineDocuments="{{ notOnlineDocs }}"
+        notPublicDocuments="{{ notPublicDocs }}"
+    />
 </div>
 {% endif %}

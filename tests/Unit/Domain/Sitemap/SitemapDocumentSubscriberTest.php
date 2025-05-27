@@ -11,6 +11,7 @@ use App\Domain\Sitemap\SitemapDocumentSubscriber;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
@@ -53,10 +54,17 @@ class SitemapDocumentSubscriberTest extends MockeryTestCase
 
         $urlContainer = \Mockery::mock(UrlContainerInterface::class);
 
+        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+        $queryBuilder->shouldReceive('select')->andReturnSelf();
+        $queryBuilder->shouldReceive('where')->andReturnSelf();
+        $queryBuilder->shouldReceive('andWhere')->andReturnSelf();
+        $queryBuilder->shouldReceive('setParameter')->andReturnSelf();
+        $queryBuilder->shouldReceive('setParameter')->andReturnSelf();
+        $queryBuilder->shouldReceive('getQuery')->andReturn($query);
+
         $this->dossierRepository
-            ->expects('createQueryBuilder->select->where->andWhere->setParameter->setParameter->getQuery')
-            ->once()
-            ->andReturn($query);
+            ->shouldReceive('createQueryBuilder')
+            ->andReturn($queryBuilder);
 
         $urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
         $urlGenerator->expects('generate')->with(

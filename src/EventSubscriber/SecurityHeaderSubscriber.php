@@ -15,16 +15,13 @@ use Webmozart\Assert\Assert;
  */
 class SecurityHeaderSubscriber implements EventSubscriberInterface
 {
-    private string $appMode;
-
-    private const CSP_SELF = "'self'";
-    private const CSP_DATA = 'data:';
-    private const CSP_STATS = 'https://statistiek.rijksoverheid.nl';
+    private const string CSP_SELF = "'self'";
+    private const string CSP_DATA = 'data:';
+    private const string CSP_STATS = 'https://statistiek.rijksoverheid.nl';
 
     /** @var array|string[] */
     protected array $fields = [
         'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains; preload',
-        'X-Frame-Options' => 'SAMEORIGIN',
         'X-Content-Type-Options' => 'nosniff',
         'Referrer-Policy' => 'same-origin',
         'Permissions-Policy' => 'accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), ' .
@@ -76,9 +73,8 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
         ],
     ];
 
-    public function __construct(string $appMode)
+    public function __construct(private readonly string $appMode)
     {
-        $this->appMode = $appMode;
     }
 
     public function onKernelRequest(RequestEvent $event): void

@@ -1,0 +1,39 @@
+@theme {
+    --color-bhr-blue-800: #1971c2;
+    --color-bhr-blue-900: #1864ab;
+    --color-bhr-grey-200: #CED4DA;
+    --color-bhr-red-800: #e03131;
+    --color-bhr-red-900: #c92a2a;
+
+    /** Deprecated colors */
+    --color-bhr-anti-flash-white: #f3f3f3;
+    --color-bhr-black-olive: #404040;
+    --color-bhr-chinese-silver: #ccc;
+    --color-bhr-dim-gray: #696969;
+    --color-bhr-independence: #475467;
+    --color-bhr-light-silver: #d0d5dd;
+    --color-bhr-platinum: #e6e6e6;
+    --color-bhr-spanish-gray: #949494;
+    --color-bhr-sea-blue: #01689b; /* link color */
+    --color-bhr-ateneo-blue: #004161; /* link hover color */
+    --color-bhr-blue-sapphire: #085585; /* primary button border color */
+    --color-bhr-lavender-web: #e5f0f9;
+    --color-bhr-azureish-white: #d9ebf7;
+    --color-bhr-eerie-black: #1d1d1d; /* top bar bg color */
+    --color-bhr-davys-grey: #535353; /* top bar active link bg color */
+    --color-bhr-maximum-red: #d52a1e;
+    --color-bhr-philippine-green: #027a48;
+    --color-bhr-japanese-laurel: #348834; /* confirmation icon fill color */
+    --color-bhr-chinese-white: #e1eddb; /* confirmation icon fill color */
+    --color-bhr-pale-pink: #f9dfdd;
+    --color-bhr-plum: #814081; /* purple */
+    --color-bhr-cornsilk: #fff4dc;
+    --color-bhr-orange-yellow: #ffb71a;
+
+    --font-sans: 'RO Sans Web', 'system-ui', 'sans-serif';
+
+    --img-bhr-check: url(/public/img/admin/check.svg);
+    --img-bhr-cross: url(/public/img/admin/cross.svg);
+
+    --list-style-type-square: square;
+  }

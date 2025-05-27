@@ -117,6 +117,11 @@ readonly class DossierWizardStatus
         return $this->getStep(StepName::PUBLICATION)->getRouteName();
     }
 
+    public function getPublicationStep(): StepStatus
+    {
+        return $this->getStep(StepName::PUBLICATION);
+    }
+
     public function getFirstOpenStep(): ?StepStatus
     {
         if (! $this->dossier->getStatus()->isNewOrConcept()) {

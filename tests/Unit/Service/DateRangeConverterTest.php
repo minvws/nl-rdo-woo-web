@@ -22,27 +22,27 @@ class DateRangeConverterTest extends TestCase
             'Spanning a single year' => [
                 'from' => new \DateTimeImmutable('01-01-2020'),
                 'to' => new \DateTimeImmutable('31-12-2020'),
-                'expectedResult' => 'Heel 2020',
+                'expectedResult' => 'Januari t/m december 2020',
             ],
             'Spanning a single year by first of December' => [
                 'from' => new \DateTimeImmutable('01-01-2020'),
                 'to' => new \DateTimeImmutable('01-12-2020'),
-                'expectedResult' => 'Heel 2020',
+                'expectedResult' => 'Januari t/m december 2020',
             ],
             'Spanning two months by end day and first day' => [
                 'from' => new \DateTimeImmutable('30-01-2020'),
                 'to' => new \DateTimeImmutable('01-02-2020'),
-                'expectedResult' => 'Januari - februari 2020',
+                'expectedResult' => 'Januari t/m februari 2020',
             ],
             'Spanning two months by first days' => [
                 'from' => new \DateTimeImmutable('01-04-2020'),
                 'to' => new \DateTimeImmutable('01-08-2020'),
-                'expectedResult' => 'April - augustus 2020',
+                'expectedResult' => 'April t/m augustus 2020',
             ],
             'Spanning specific months over two years' => [
                 'from' => new \DateTimeImmutable('01-04-2020'),
                 'to' => new \DateTimeImmutable('01-08-2021'),
-                'expectedResult' => 'April 2020 - augustus 2021',
+                'expectedResult' => 'April 2020 t/m augustus 2021',
             ],
             'All up to a specific year and month' => [
                 'from' => null,

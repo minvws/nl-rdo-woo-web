@@ -19,16 +19,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityController extends AbstractController
 {
-    protected EntityManagerInterface $doctrine;
-    protected UserPasswordHasherInterface $passwordEncoder;
-
     public function __construct(
-        EntityManagerInterface $doctrine,
-        UserPasswordHasherInterface $passwordEncoder,
+        protected EntityManagerInterface $doctrine,
+        protected UserPasswordHasherInterface $passwordEncoder,
         private readonly TranslatorInterface $translator,
     ) {
-        $this->doctrine = $doctrine;
-        $this->passwordEncoder = $passwordEncoder;
     }
 
     #[Route(path: '/balie/login', name: 'app_login')]

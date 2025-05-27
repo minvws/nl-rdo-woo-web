@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class DocumentVoter extends WooDecisionVoter
 {
+    #[\Override]
     protected function supports(string $attribute, mixed $subject): bool
     {
         return $attribute === DossierVoter::VIEW
@@ -18,8 +19,9 @@ class DocumentVoter extends WooDecisionVoter
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
+    #[\Override]
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $document = $subject;

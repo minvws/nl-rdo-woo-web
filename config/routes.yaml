@@ -25,12 +25,6 @@ app_privacy:
           changefreq: monthly
           section: legal
 
-app_robots:
-    path: /robots2.txt
-    controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
-    defaults:
-        template: 'public/static/robots.txt.twig'
-
 app_about:
     path:          /over-dit-platform
     controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController

@@ -43,7 +43,7 @@ class BatchDownloadTest extends MockeryTestCase
 
         $entity->complete(
             $fileName = 'foo.zip',
-            $fileSize = '123',
+            $fileSize = 123,
             $fileCount = 456,
         );
 
@@ -56,7 +56,7 @@ class BatchDownloadTest extends MockeryTestCase
         $entity->markAsOutdated();
 
         $this->assertEquals(BatchDownloadStatus::OUTDATED, $entity->getStatus());
-        $this->assertTrue($entity->getExpiration() < new \DateTimeImmutable('+3 hours'));
+        $this->assertTrue($entity->getExpiration() < new \DateTimeImmutable('+1 hour'));
         $this->assertTrue($entity->canBeDownloaded()); // Still possible due to grace period of two hours!
     }
 
@@ -93,7 +93,7 @@ class BatchDownloadTest extends MockeryTestCase
 
         $entity->complete(
             $fileName = 'foo.zip',
-            $fileSize = '123',
+            $fileSize = 123,
             $fileCount = 456,
         );
 

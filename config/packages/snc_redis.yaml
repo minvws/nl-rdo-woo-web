@@ -29,18 +29,3 @@ snc_redis:
                         'local_cert': '%env(REDIS_TLS_LOCAL_CERT)%',
                         'local_pk': '%env(REDIS_TLS_LOCAL_PK)%'
                     }
-
-        admin:
-            type: predis
-            alias: admin
-            dsn: '%env(REDIS_URL)%'
-            options:
-                parameters:
-                    ssl_context: {
-                        'verify_peer': true,
-                        'allow_self_signed': false,
-                        'verify_peer_name': true,
-                        'cafile': '%env(REDIS_TLS_CAFILE)%',
-                        'local_cert': '%env(REDIS_TLS_LOCAL_CERT)%',
-                        'local_pk': '%env(REDIS_TLS_LOCAL_PK)%'
-                    }

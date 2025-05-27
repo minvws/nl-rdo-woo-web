@@ -6,7 +6,7 @@ namespace App\Controller\Public;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Search\Query\SearchParametersFactory;
+use App\Service\Search\Query\Definition\BrowseMainAggregationsQueryDefinition;
 use App\Service\Search\SearchService;
 use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
@@ -18,8 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.LongVariable)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ * @SuppressWarnings("PHPMD.LongVariable")
  */
 class StatsController extends AbstractController
 {
@@ -30,7 +30,7 @@ class StatsController extends AbstractController
         private readonly string $rabbitMqStatUrl,
         private readonly EntityStorageService $entityStorageService,
         private readonly ThumbnailStorageService $thumbnailStorageService,
-        private readonly SearchParametersFactory $searchParametersFactory,
+        private readonly BrowseMainAggregationsQueryDefinition $aggregationsQueryDefinition,
     ) {
     }
 
@@ -121,8 +121,8 @@ class StatsController extends AbstractController
     protected function isElasticAlive(): bool
     {
         try {
-            $result = $this->searchService->search(
-                $this->searchParametersFactory->createDefault()
+            $result = $this->searchService->getResult(
+                $this->aggregationsQueryDefinition,
             );
 
             return $result->hasFailed() === false;

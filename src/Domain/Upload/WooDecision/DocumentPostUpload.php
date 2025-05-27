@@ -9,6 +9,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Domain\Upload\UploadedFile;
 use App\Service\Uploader\UploadGroupId;
 use Oneup\UploaderBundle\Event\PostUploadEvent;
+use Oneup\UploaderBundle\Uploader\Exception\ValidationException;
 use Oneup\UploaderBundle\UploadEvents;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
@@ -28,7 +29,7 @@ final readonly class DocumentPostUpload
     {
         $uploaderGroupId = UploadGroupId::from($event->getRequest()->getPayload()->getString('groupId'));
         if ($uploaderGroupId !== UploadGroupId::WOO_DECISION_DOCUMENTS) {
-            return;
+            throw new ValidationException('error.invalid_group');
         }
 
         $wooDecisionId = Uuid::fromString($event->getRequest()->attributes->getString('dossierId'));

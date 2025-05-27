@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Result\Dossier\OtherPublication;
 
-use App\Domain\Search\Result\Dossier\DossierTypeSearchResultInterface;
+use App\Domain\Search\Result\Dossier\AbstractDossierTypeSearchResult;
+use Symfony\Component\Uid\Uuid;
 
-readonly class OtherPublicationSearchResult implements DossierTypeSearchResultInterface
+readonly class OtherPublicationSearchResult extends AbstractDossierTypeSearchResult
 {
-    public \DateTimeImmutable $date;
-
     public function __construct(
-        public string $dossierNr,
-        public string $documentPrefix,
+        Uuid $id,
+        string $dossierNr,
+        string $documentPrefix,
         public string $title,
-        public string $summary,
-        public \DateTimeImmutable $publicationDate,
+        public ?string $summary,
+        public ?\DateTimeImmutable $publicationDate,
         // This count is actually the attachment count + 1 (for the main document)
         public int $documentCount,
-        \DateTimeImmutable $dateFrom,
+        public ?\DateTimeImmutable $date,
     ) {
-        $this->date = $dateFrom;
+        parent::__construct($id, $dossierNr, $documentPrefix);
     }
 }

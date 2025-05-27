@@ -14,11 +14,8 @@ use Symfony\Component\Validator\ConstraintValidator;
  */
 class SimilarityEmailValidator extends ConstraintValidator
 {
-    protected TokenStorageInterface $tokenStorage;
-
-    public function __construct(TokenStorageInterface $tokenStorage)
+    public function __construct(protected TokenStorageInterface $tokenStorage)
     {
-        $this->tokenStorage = $tokenStorage;
     }
 
     /**

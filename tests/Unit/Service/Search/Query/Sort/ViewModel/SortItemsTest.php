@@ -50,7 +50,7 @@ class SortItemsTest extends TestCase
     {
         self::assertEquals(
             [$this->sortItemA, $this->sortItemB],
-            iterator_to_array($this->sortItems)
+            iterator_to_array($this->sortItems, false)
         );
     }
 }

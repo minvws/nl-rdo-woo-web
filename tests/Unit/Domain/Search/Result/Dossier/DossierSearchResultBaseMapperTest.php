@@ -9,7 +9,8 @@ use App\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
 use App\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use App\Domain\Search\Result\Dossier\DossierSearchResultEntry;
 use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
-use Jaytaph\TypeArray\TypeArray;
+use App\Enum\ApplicationMode;
+use MinVWS\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 
@@ -40,9 +41,20 @@ class DossierSearchResultBaseMapperTest extends MockeryTestCase
         $this->hit->shouldReceive('getStringOrNull')->with('[fields][document_prefix][0]')->andReturn('foo');
         $this->hit->shouldReceive('getStringOrNull')->with('[fields][dossier_nr][0]')->andReturn('bar');
 
-        $this->repository->shouldReceive('getSearchResultViewModel')->with('foo', 'bar')->andReturnNull();
+        $this->repository
+            ->shouldReceive('getSearchResultViewModel')
+            ->with('foo', 'bar', ApplicationMode::ADMIN)
+            ->andReturnNull();
 
-        $this->assertNull($this->mapper->map($this->hit, $this->repository, ElasticDocumentType::ANNUAL_REPORT));
+        $this->assertNull(
+            $this->mapper->map(
+                $this->hit,
+                $this->repository,
+                ElasticDocumentType::ANNUAL_REPORT,
+                [],
+                ApplicationMode::ADMIN,
+            ),
+        );
     }
 
     public function testMapSuccessful(): void
@@ -56,7 +68,10 @@ class DossierSearchResultBaseMapperTest extends MockeryTestCase
 
         $viewModel = \Mockery::mock(CovenantSearchResult::class);
 
-        $this->repository->shouldReceive('getSearchResultViewModel')->with('foo', 'bar')->andReturn($viewModel);
+        $this->repository
+            ->shouldReceive('getSearchResultViewModel')
+            ->with('foo', 'bar', ApplicationMode::PUBLIC)
+            ->andReturn($viewModel);
 
         $entry = $this->mapper->map($this->hit, $this->repository, ElasticDocumentType::COVENANT);
 

@@ -16,10 +16,12 @@ use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handler\Process
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUpdateRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUploadRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Upload\FileType\MimeTypeHelper;
 use App\Domain\Upload\Preprocessor\FilePreprocessor;
 use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Domain\Upload\UploadedFile;
 use App\Service\Storage\EntityStorageService;
+use App\Service\Uploader\UploadGroupId;
 use App\Tests\Unit\Domain\Upload\IterableToGenerator;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
@@ -37,6 +39,7 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
     private EntityStorageService&MockInterface $entityStorageService;
     private DocumentNumberExtractor&MockInterface $documentNumberExtractor;
     private DocumentFileService&MockInterface $documentFileService;
+    private MimeTypeHelper&MockInterface $mimeTypeHelper;
     private ProcessDocumentFileUploadHandler $handler;
 
     public function setUp(): void
@@ -48,6 +51,7 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->documentNumberExtractor = \Mockery::mock(DocumentNumberExtractor::class);
         $this->documentFileService = \Mockery::mock(DocumentFileService::class);
+        $this->mimeTypeHelper = \Mockery::mock(MimeTypeHelper::class);
 
         $this->handler = new ProcessDocumentFileUploadHandler(
             $this->documentFileUploadRepository,
@@ -57,6 +61,7 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
             $this->entityStorageService,
             $this->documentNumberExtractor,
             $this->documentFileService,
+            $this->mimeTypeHelper,
         );
 
         parent::setUp();
@@ -78,6 +83,7 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $upload->shouldReceive('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
         $upload->shouldReceive('getDocumentFileSet')->andReturn($documentFileSet);
         $upload->shouldReceive('getFileInfo->getName')->andReturn('upload.zip');
+        $upload->expects('getFileInfo->removeFileProperties');
 
         $this->documentFileUploadRepository->expects('find')->with($id)->andReturn($upload);
 
@@ -93,6 +99,26 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $document->shouldReceive('isWithdrawn')->andReturnFalse();
         $document->shouldReceive('isUploaded')->andReturnFalse();
         $document->shouldReceive('shouldBeUploaded')->with(true)->andReturnTrue();
+
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($fileA)
+            ->andReturn('application/pdf');
+
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($fileB)
+            ->andReturn('application/pdf');
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->andReturnTrue();
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->andReturnTrue();
 
         $this->documentNumberExtractor->expects('matchDocumentForFile')->with($fileA, $wooDecision)->andReturnNull();
 
@@ -113,10 +139,8 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
             ->andReturnFalse();
 
         $this->documentFileUpdateRepository->expects('save')->with(
-            \Mockery::on(static function (DocumentFileUpdate $update) {
-                return $update->getFileInfo()->getName() === '456.pdf'
-                    && $update->getFileInfo()->getType() === 'pdf';
-            }),
+            \Mockery::on(static fn (DocumentFileUpdate $update) => $update->getFileInfo()->getName() === '456.pdf'
+                && $update->getFileInfo()->getType() === 'pdf'),
             true,
         );
 
@@ -140,6 +164,7 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $upload->shouldReceive('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
         $upload->shouldReceive('getDocumentFileSet')->andReturn($documentFileSet);
         $upload->shouldReceive('getFileInfo->getName')->andReturn('upload.zip');
+        $upload->expects('getFileInfo->removeFileProperties');
 
         $this->documentFileUploadRepository->expects('find')->with($id)->andReturn($upload);
 
@@ -154,6 +179,26 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $document = \Mockery::mock(Document::class);
         $document->shouldReceive('isWithdrawn')->andReturnFalse();
         $document->shouldReceive('isUploaded')->andReturnFalse();
+
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($fileA)
+            ->andReturn('application/pdf');
+
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($fileB)
+            ->andReturn('application/pdf');
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->andReturnTrue();
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->andReturnTrue();
 
         $this->documentNumberExtractor->expects('matchDocumentForFile')->with($fileA, $wooDecision)->andReturnNull();
         $this->documentNumberExtractor->expects('matchDocumentForFile')->with($fileB, $wooDecision)->andReturn($document);
@@ -194,6 +239,7 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $upload->shouldReceive('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
         $upload->shouldReceive('getDocumentFileSet')->andReturn($documentFileSet);
         $upload->shouldReceive('getFileInfo->getName')->andReturn('upload.zip');
+        $upload->expects('getFileInfo->removeFileProperties');
 
         $this->documentFileUploadRepository->expects('find')->with($id)->andReturn($upload);
 
@@ -209,6 +255,26 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $document->shouldReceive('isWithdrawn')->andReturnFalse();
         $document->shouldReceive('isUploaded')->andReturnFalse();
         $document->shouldReceive('shouldBeUploaded')->with(true)->andReturnFalse();
+
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($fileA)
+            ->andReturn('application/pdf');
+
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($fileB)
+            ->andReturn('application/pdf');
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->andReturnTrue();
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->andReturnTrue();
 
         $this->documentNumberExtractor->expects('matchDocumentForFile')->with($fileA, $wooDecision)->andReturnNull();
         $this->documentNumberExtractor->expects('matchDocumentForFile')->with($fileB, $wooDecision)->andReturn($document);
@@ -271,6 +337,76 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $this->entityStorageService->expects('downloadEntity')->with($upload)->andReturnFalse();
 
         $this->logger->expects('warning');
+
+        $this->handler->__invoke(
+            new ProcessDocumentFileUploadCommand($id),
+        );
+    }
+
+    public function testInvokeSkipsFileWithUnsupportedMimeType(): void
+    {
+        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision->shouldReceive('getId')->andReturn(Uuid::v6());
+        $wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+
+        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet
+            ->shouldReceive('getDossier')
+            ->andReturn($wooDecision);
+
+        $id = Uuid::v6();
+        $upload = \Mockery::mock(DocumentFileUpload::class);
+        $upload->shouldReceive('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
+        $upload->shouldReceive('getDocumentFileSet')->andReturn($documentFileSet);
+        $upload->shouldReceive('getFileInfo->getName')->andReturn('upload.zip');
+        $upload->expects('getFileInfo->removeFileProperties');
+
+        $this->documentFileUploadRepository->expects('find')->with($id)->andReturn($upload);
+
+        $this->entityStorageService->expects('downloadEntity')->with($upload)->andReturn($localFile = '/foo/bar.baz');
+
+        $fileIterator = $this->iterableToGenerator([
+            $fileA = new UploadedFile('tmp/foo', '123.pdf'),
+            $fileB = new UploadedFile('tmp/bar', '456.pdf'),
+        ]);
+        $this->filePreProcessor->expects('process')->andReturn($fileIterator);
+
+        $document = \Mockery::mock(Document::class);
+        $document->shouldReceive('isWithdrawn')->andReturnFalse();
+        $document->shouldReceive('isUploaded')->andReturnFalse();
+        $document->shouldReceive('shouldBeUploaded')->with(true)->andReturnFalse();
+
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($fileA)
+            ->andReturn('application/pdf');
+
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($fileB)
+            ->andReturn('application/pdf');
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->andReturnTrue();
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->andReturnFalse();
+
+        $this->documentNumberExtractor->expects('matchDocumentForFile')->with($fileA, $wooDecision)->andReturnNull();
+
+        $upload->expects('markAsProcessed');
+        $this->documentFileUploadRepository->expects('save')->with($upload, true);
+
+        $this->documentFileService->expects('checkProcessingUploadsCompletion')->with($documentFileSet);
+
+        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($upload);
+        $this->entityStorageService->expects('removeDownload')->with($localFile);
+
+        $this->logger->expects('info');
 
         $this->handler->__invoke(
             new ProcessDocumentFileUploadCommand($id),

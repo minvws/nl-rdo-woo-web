@@ -9,6 +9,7 @@
   - [Step 3: Initialize the application](#step-3-initialize-the-application)
   - [Step 4: Run tests locally](#step-4-run-tests-locally)
     - [CI tests](#ci-tests)
+    - [Any other testsuite](#any-other-testsuite)
     - [Test and Acceptance tests](#test-and-acceptance-tests)
 
 ## All use cases
@@ -40,6 +41,7 @@ Make sure WOO is running locally. Read the [development_install](development_ins
 - Download and install Python 3.12.x <https://www.python.org/downloads/>
 - Download and install pip <https://pypi.org/project/pip/>
 - Download and install npm
+- Download and install zbar
 
 ## Step 2: Install Robot Framework
 
@@ -61,7 +63,7 @@ export SECRET_WOO_LOCAL=REPLACEABLE
 Then create the aforementioned admin user by either follow the instructions in [development_install](development_install.md) or running the following testcase:
 
 ```shell
-task rf:test tag=init
+task rf:run-local tag=init
 ```
 
 Note that you have to restart your shell for any following `task rf:test` calls, otherwise it won't know the new secret.
@@ -69,7 +71,7 @@ Note that you have to restart your shell for any following `task rf:test` calls,
 If you ever need an OTP code to login manually, use the following testcase:
 
 ```shell
-task rf:test tag=otp
+task rf:run-local tag=otp
 ```
 
 ## Step 4: Run tests locally
@@ -79,11 +81,15 @@ task rf:test tag=otp
 To execute the CI tests use the following command:
 
 ```shell
-# with visible browser
-task rf:test tag=ci
+task rf:run-local tag=ci
+```
 
-# or without; headless
-task rf:test-headless tag=ci
+### Any other testsuite
+
+To execute any other testsuite locally, provide the testsuite's tag as parameter to the command mentioned above. The testsuite's tag can be found at the top of each `.robot` file, as can be seen here: [https://github.com/minvws/nl-rdo-woo-web-private/blob/13d615779580699d743ff24a1f7ff45ae2eb9111/tests/robot_framework/tests/02__TestDossiers.robot#L26](https://github.com/minvws/nl-rdo-woo-web-private/blob/13d615779580699d743ff24a1f7ff45ae2eb9111/tests/robot_framework/tests/02__TestDossiers.robot#L26)
+
+```shell
+task rf:run-local tag=testdossiers
 ```
 
 ### Test and Acceptance tests
@@ -91,25 +97,26 @@ task rf:test-headless tag=ci
 TST and ACC requires basic authentication to access it. To run this tests locally You need to have the following environment variables set locally. You only need to do this once. Ask a teammember for the values.
 
 ```shell
- export USERNAME_WOO_STAGING=
- export PASSWORD_WOO_STAGING=
- export USERNAME_WOO_TEST=
- export PASSWORD_WOO_TEST=
- export EMAIL_WOO_TEST_BALIE=
- export PASSWORD_WOO_TEST_BALIE=
- export SECRET_WOO_TEST_BALIE=
+export USERNAME_WOO_TEST=
+export PASSWORD_WOO_TEST=
+export EMAIL_WOO_TEST_BALIE=
+export PASSWORD_WOO_TEST_BALIE=
+export SECRET_WOO_TEST_BALIE=
+export USERNAME_WOO_STAGING=
+export PASSWORD_WOO_STAGING=
+export EMAIL_WOO_STAGING_BALIE=
+export PASSWORD_WOO_STAGING_BALIE=
+export SECRET_WOO_STAGING_BALIE=
 ```
 
 To execute the TST tests use the following command:
 
 ```shell
-task rf:test tag=tst
-task rf:test-headless tag=tst
+task rf:run-test tag=pr
 ```
 
 To execute the ACC tests use the following command:
 
 ```shell
-task rf:test tag=acc
-task rf:test-headless tag=acc
+task rf:run-acc tag=pr
 ```

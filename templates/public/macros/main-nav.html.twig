@@ -1,0 +1,12 @@
+{% macro main_nav_anchor(route, isCurrentPage, title, iconName) %}
+    <a class="woo-main-nav__anchor {{ route == path('app_home') ? 'woo-main-nav__anchor--home' : '' }} group" href="{{ route }}" {% if isCurrentPage %}aria-current="page"{% endif %}  data-e2e-name="nav-{{ title }}">
+        {%if iconName %}<twig:Public:Icon color="fill-white" class="woo-main-nav__icon" name="{{ iconName }}" size="22" />{% endif %}
+        <span class="group-hover:underline group-focus:underline group-aria-current-page:group-hover:no-underline group-aria-current-page:group-focus:no-underline">{{ title }}</span>
+    </a>
+{% endmacro %}
+
+{% macro main_nav_item(route, isCurrentPage, title, iconName) %}
+    <li class="woo-main-nav__list-item">
+        {{ _self.main_nav_anchor(route, isCurrentPage, title, iconName) }}
+    </li>
+{% endmacro %}

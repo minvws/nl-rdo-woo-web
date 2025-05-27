@@ -14,25 +14,24 @@ use Twig\TwigFunction;
  */
 class AppExtension extends AbstractExtension
 {
-    protected AppExtensionRuntime $runtime;
-
-    public function __construct(AppExtensionRuntime $runtime)
+    public function __construct(protected AppExtensionRuntime $runtime)
     {
-        $this->runtime = $runtime;
     }
 
+    #[\Override]
     public function getFilters(): array
     {
         return [
-            new TwigFilter('size', [$this->runtime, 'size']),
+            new TwigFilter('size', $this->runtime->size(...)),
         ];
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('app_version', [$this->runtime, 'appVersion']),
-            new TwigFunction('is_backend', [$this->runtime, 'isBackend']),
+            new TwigFunction('app_version', $this->runtime->appVersion(...)),
+            new TwigFunction('is_backend', $this->runtime->isBackend(...)),
         ];
     }
 }

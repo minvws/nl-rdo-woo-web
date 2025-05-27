@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:diwoo="https://standaarden.overheid.nl/diwoo/metadata/" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd https://standaarden.overheid.nl/diwoo/metadata/ https://standaarden.overheid.nl/diwoo/metadata/0.9.4/xsd/diwoo-metadata.xsd">
+ <url>
+  <loc>http://localhost:8000/dossier/PREF/my-annual-report-1/file/download/main_document/1ec83642-1485-6700-b700-2bb719c51bd0</loc>
+  <lastmod>2022-02-04</lastmod>
+  <diwoo:Document>
+   <diwoo:DiWoo>
+    <diwoo:creatiedatum>2022-01-30</diwoo:creatiedatum>
+    <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
+    <diwoo:titelcollectie>
+     <diwoo:officieleTitel>file_name.pdf</diwoo:officieleTitel>
+    </diwoo:titelcollectie>
+    <diwoo:classificatiecollectie>
+     <diwoo:informatiecategorieen>
+      <diwoo:informatiecategorie resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_c6cd1213">jaarplannen en jaarverslagen</diwoo:informatiecategorie>
+     </diwoo:informatiecategorieen>
+    </diwoo:classificatiecollectie>
+    <diwoo:documenthandelingen>
+     <diwoo:documenthandeling>
+      <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76">vaststelling</diwoo:soortHandeling>
+      <diwoo:atTime>2022-01-30T00:00:00+00:00</diwoo:atTime>
+     </diwoo:documenthandeling>
+    </diwoo:documenthandelingen>
+    <diwoo:hasParts>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-annual-report-1/file/download/attachment/1ec842d4-bb21-6700-b700-2bb719c51bd0">file_name.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-annual-report-1/file/download/attachment/1ec84f67-61bd-6700-b700-2bb719c51bd0">file_name.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-annual-report-1/file/download/attachment/1ec85bfa-0859-6700-b700-2bb719c51bd0">file_name.pdf</diwoo:hasPart>
+    </diwoo:hasParts>
+   </diwoo:DiWoo>
+  </diwoo:Document>
+ </url>
+ <url>
+  <loc>http://localhost:8000/dossier/PREF/my-covenant-1/file/download/main_document/1edb8363-da01-6700-82b2-09e15b3f6ce0</loc>
+  <lastmod>2023-03-04</lastmod>
+  <diwoo:Document>
+   <diwoo:DiWoo>
+    <diwoo:creatiedatum>2023-02-27</diwoo:creatiedatum>
+    <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
+    <diwoo:titelcollectie>
+     <diwoo:officieleTitel>file_name.pdf</diwoo:officieleTitel>
+    </diwoo:titelcollectie>
+    <diwoo:classificatiecollectie>
+     <diwoo:informatiecategorieen>
+      <diwoo:informatiecategorie resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_8fc2335c">convenanten</diwoo:informatiecategorie>
+     </diwoo:informatiecategorieen>
+    </diwoo:classificatiecollectie>
+    <diwoo:documenthandelingen>
+     <diwoo:documenthandeling>
+      <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76">vaststelling</diwoo:soortHandeling>
+      <diwoo:atTime>2023-02-27T00:00:00+00:00</diwoo:atTime>
+     </diwoo:documenthandeling>
+    </diwoo:documenthandelingen>
+    <diwoo:hasParts>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-covenant-1/file/download/attachment/1edb8ff6-809d-6700-82b2-09e15b3f6ce0">file_name.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-covenant-1/file/download/attachment/1edb9c89-2739-6700-82b2-09e15b3f6ce0">file_name.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-covenant-1/file/download/attachment/1edba91b-cdd5-6700-82b2-09e15b3f6ce0">file_name.pdf</diwoo:hasPart>
+    </diwoo:hasParts>
+   </diwoo:DiWoo>
+  </diwoo:Document>
+ </url>
+</urlset>

@@ -12,13 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Alias extends Command
 {
-    protected ElasticIndexManager $indexService;
-
-    public function __construct(ElasticIndexManager $indexService)
+    public function __construct(protected ElasticIndexManager $indexService)
     {
         parent::__construct();
-
-        $this->indexService = $indexService;
     }
 
     protected function configure(): void

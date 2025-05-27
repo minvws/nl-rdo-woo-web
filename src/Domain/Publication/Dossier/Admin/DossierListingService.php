@@ -100,9 +100,7 @@ readonly class DossierListingService
 
         usort(
             $types,
-            function (DossierType $a, DossierType $b): int {
-                return strnatcmp($a->trans($this->translator), $b->trans($this->translator));
-            }
+            fn (DossierType $a, DossierType $b): int => strnatcmp($a->trans($this->translator), $b->trans($this->translator))
         );
 
         return $types;

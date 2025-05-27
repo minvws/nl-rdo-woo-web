@@ -13,7 +13,7 @@ use Symfony\Config\FrameworkConfig;
 class WooDecisionWorkflow
 {
     /**
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @SuppressWarnings("PHPMD.ExcessiveMethodLength")
      */
     public static function configure(FrameworkConfig $framework): void
     {
@@ -66,6 +66,7 @@ class WooDecisionWorkflow
             [
                 DossierStatus::CONCEPT,
                 DossierStatus::SCHEDULED,
+                DossierStatus::PREVIEW,
                 DossierStatus::PUBLISHED,
             ],
         );

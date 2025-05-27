@@ -60,7 +60,7 @@ describe('The "PublicationSearchInput" component', () => {
   ];
 
   beforeEach(() => {
-    global.fetch = vi.fn().mockImplementation(() =>
+    window.fetch = vi.fn().mockImplementation(() =>
       Promise.resolve({
         json: () => Promise.resolve(mockedRetrievedResults),
       }),
@@ -118,10 +118,10 @@ describe('The "PublicationSearchInput" component', () => {
       const component = createComponent();
 
       await setInvalidInputValue(component);
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(window.fetch).not.toHaveBeenCalled();
 
       await setInputValue(component, 'abcdefgh');
-      expect(global.fetch).toHaveBeenNthCalledWith(
+      expect(window.fetch).toHaveBeenNthCalledWith(
         1,
         'https://mocked-origin.com/balie/api/publication/search?q=abcdefgh',
       );
@@ -154,7 +154,7 @@ describe('The "PublicationSearchInput" component', () => {
       const component = createComponent({ dossierId: 'mocked-dossier-id' });
 
       await setInputValue(component, 'abc');
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(window.fetch).toHaveBeenCalledWith(
         'https://mocked-origin.com/balie/api/publication/search?q=abc&dossierId=mocked-dossier-id',
       );
 
@@ -164,7 +164,7 @@ describe('The "PublicationSearchInput" component', () => {
       });
       await setInputValue(component, 'abcd');
 
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(window.fetch).toHaveBeenCalledWith(
         encodeURI(
           'https://mocked-origin.com/balie/api/publication/search?q=abcd&dossierId=mocked-dossier-id&filter[publicationType]=mocked-publication-type&filter[resultType]=mocked-result-type',
         ),

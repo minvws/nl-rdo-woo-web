@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Publication\MainDocument;
 
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Entity\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
@@ -20,42 +18,6 @@ class MainDocumentRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, AbstractMainDocument::class);
-    }
-
-    /**
-     * @return list<AbstractMainDocument>
-     */
-    public function findBySearchTerm(
-        string $searchTerm,
-        int $limit,
-        Organisation $organisation,
-        ?Uuid $dossierId = null,
-        ?DossierType $dossierType = null,
-    ): array {
-        $qb = $this
-            ->createQueryBuilder('md')
-            ->join('md.dossier', 'd')
-            ->andWhere('ILIKE(md.fileInfo.name, :searchTerm) = true')
-            ->andWhere('d.organisation = :organisation')
-            ->orderBy('md.updatedAt', 'DESC')
-            ->setMaxResults($limit)
-            ->setParameter('searchTerm', '%' . $searchTerm . '%')
-            ->setParameter('organisation', $organisation);
-
-        if ($dossierId !== null) {
-            $qb = $qb
-                ->andWhere('d.id = :dossierId')
-                ->setParameter('dossierId', $dossierId);
-        }
-
-        if ($dossierType !== null) {
-            $qb = $qb
-                ->andWhere('d INSTANCE OF :dossierType')
-                ->setParameter('dossierType', $dossierType);
-        }
-
-        /** @var list<AbstractMainDocument> */
-        return $qb->getQuery()->getResult();
     }
 
     public function findOneOrNullForDossier(Uuid $dossierId, Uuid $id): ?AbstractMainDocument
@@ -90,6 +52,7 @@ class MainDocumentRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('md')
             ->join('md.dossier', 'd')
             ->where('d.status = :status')
+            ->andWhere('md.fileInfo.uploaded = true')
             ->orderBy('md.createdAt', 'ASC')
             ->setParameter('status', DossierStatus::PUBLISHED);
 

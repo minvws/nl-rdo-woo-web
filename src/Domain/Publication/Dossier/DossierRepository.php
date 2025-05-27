@@ -38,53 +38,23 @@ class DossierRepository extends ServiceEntityRepository
             ->andWhere('dos INSTANCE OF :types')->setParameter('types', $types);
     }
 
-    /**
-     * @return list<AbstractDossier>
-     */
-    public function findBySearchTerm(
-        string $searchTerm,
-        int $limit,
-        Organisation $organisation,
-        ?Uuid $dossierId = null,
-        ?DossierType $dossierType = null,
-    ): array {
-        $qb = $this
-            ->createQueryBuilder('d')
-            ->where('ILIKE(d.title, :searchTerm) = true')
-            ->orWhere('d.id IN (
-                SELECT w.id
-                FROM Domain:Publication\Dossier\Type\WooDecision\WooDecision w
-                LEFT JOIN w.inquiries i
-                WHERE ILIKE(i.casenr, :searchTerm) = true
-            )')
-            ->orWhere('ILIKE(d.dossierNr, :searchTerm) = true')
-            ->andWhere('d.organisation = :organisation')
-            ->orderBy('d.updatedAt', 'DESC')
-            ->setMaxResults($limit)
-            ->setParameter('searchTerm', '%' . $searchTerm . '%')
-            ->setParameter('organisation', $organisation);
-
-        if ($dossierId !== null) {
-            $qb = $qb
-                ->andWhere('d.id = :dossierId')
-                ->setParameter('dossierId', $dossierId);
-        }
-
-        if ($dossierType !== null) {
-            $qb = $qb
-                ->andWhere('d INSTANCE OF :dossierType')
-                ->setParameter('dossierType', $dossierType);
-        }
-
-        /** @var list<AbstractDossier> */
-        return $qb->getQuery()->getResult();
-    }
-
     public function findOneByDossierId(Uuid $dossierId): AbstractDossier
     {
         $qb = $this->createQueryBuilder('d')
             ->where('d.id = :dossierId')
             ->setParameter('dossierId', $dossierId);
+
+        /** @var AbstractDossier */
+        return $qb->getQuery()->getSingleResult();
+    }
+
+    public function findOneByPrefixAndDossierNr(string $prefix, string $dossierNr): AbstractDossier
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.documentPrefix = :prefix')
+            ->andWhere('d.dossierNr = :dossierNr')
+            ->setParameter('prefix', $prefix)
+            ->setParameter('dossierNr', $dossierNr);
 
         /** @var AbstractDossier */
         return $qb->getQuery()->getSingleResult();

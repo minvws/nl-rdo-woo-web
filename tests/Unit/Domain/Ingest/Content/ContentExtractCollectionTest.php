@@ -60,7 +60,7 @@ class ContentExtractCollectionTest extends TestCase
 
         self::assertEquals(
             [$extractA, $extractB],
-            iterator_to_array($extracts)
+            iterator_to_array($extracts, false)
         );
     }
 }

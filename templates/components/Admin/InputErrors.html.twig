@@ -1,5 +1,5 @@
 {% set numberOfErrors = errors | default([]) | length %}
-{% set hasError = error is defined %}
+{% set hasError = error is not null %}
 {% if numberOfErrors > 0 or hasError %}
 <div class="flex pb-3 js-input-errors" {% if id is defined %}id="{{ id }}"{% endif %}>
     <span class="mr-2">

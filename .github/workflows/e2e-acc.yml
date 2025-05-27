@@ -1,25 +1,48 @@
 name: E2E Tests - Acceptance
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      test_tag:
+        description: 'Robot Framework test tag'
+        required: true
+        type: string
+        default: 'testdossiers'
+
+env:
+  CR_PAT: "${{ secrets.REPO_READ_ONLY_TOKEN }}"
+  PYTHON_VERSION: 3.12
+  TEST_TAG: ${{ inputs.test_tag || 'testdossiers' }}
 
 jobs:
   e2e-robot-tests:
-    runs-on: ubuntu-latest
-
+    name: 'Run E2E tests on Acceptance'
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
-    - name: Install python dependencies
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    - name: Initialize Robot Framework
       run: |
+        sudo apt-get install --reinstall libpq-dev
+        sudo npx playwright install-deps
         python -m pip install --upgrade pip
-        pip install -r tests/robot_framework/requirements.txt --use-deprecated=legacy-resolver
+        pip install -r tests/robot_framework/requirements.txt
         rfbrowser init
-    - name: Execute Robot Framework tests
+    - name: Run Robot Framework tests
       env:
-        OTP_SECRET_WOO: ${{ secrets.OTP_SECRET_WOO }}
+        URL_PUBLIC: web.acc.woo.rdobeheer.nl
+        URL_ADMIN: balie.acc.woo.rdobeheer.nl/balie
+        HEADLESS: true
         USERNAME_WOO_STAGING: ${{ secrets.USERNAME_WOO_STAGING }}
         PASSWORD_WOO_STAGING: ${{ secrets.PASSWORD_WOO_STAGING }}
+        EMAIL_WOO_STAGING_BALIE: ${{ secrets.EMAIL_WOO_STAGING_BALIE }}
+        PASSWORD_WOO_STAGING_BALIE: ${{ secrets.PASSWORD_WOO_STAGING_BALIE }}
+        SECRET_WOO_STAGING_BALIE: ${{ secrets.SECRET_WOO_STAGING_BALIE }}
       run: |
-        python -m robot -d tests/robot_framework/results -x outputxunit.xml -i acc -v headless:true tests/robot_framework
+        python -m robot --outputdir tests/robot_framework/results --xunit outputxunit.xml --include ${{ env.TEST_TAG }} --variable ENVIRONMENT:acc tests/robot_framework
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()

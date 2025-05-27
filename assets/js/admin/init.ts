@@ -5,7 +5,6 @@ import { clickOnSelector } from './click-on-selector';
 import { copyToClipboard } from './copy-to-clipboard';
 import { toggleDialog } from './dialog';
 import { dossierInventoryStatus } from './dossier';
-import { manageWidget } from './manage-widget';
 import { printPage } from './print';
 import { sortTables } from './sort-tables';
 import { visibilityToggler } from './visibility-toggler';
@@ -20,7 +19,6 @@ export const init = () => {
       copyToClipboard(),
       detailsComponents(),
       dossierInventoryStatus(),
-      manageWidget(),
       printPage(),
       sortTables(),
       tabs(),

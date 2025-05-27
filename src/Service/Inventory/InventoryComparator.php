@@ -21,7 +21,7 @@ class InventoryComparator
     }
 
     /**
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings("PHPMD.CyclomaticComplexity")
      */
     public function determineChangeset(
         ProductionReportProcessRun $run,
@@ -52,7 +52,7 @@ class InventoryComparator
 
             try {
                 $documentNr = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
-                $document = $this->documentRepository->findByDocumentNumber($documentNr);
+                $document = $this->documentRepository->findOneByDocumentNrCaseInsensitive($documentNr->getValue());
 
                 if ($document === null) {
                     $changeset->markAsAdded($documentNr);

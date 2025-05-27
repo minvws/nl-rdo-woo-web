@@ -2,15 +2,15 @@
     <label for="{{ id }}" class="sr-only">{{ 'public.search.hint' | trans }}</label>
     <div class="flex">
         <input
-            class="woo-input-text mr-4"
+            class="woo-input-text focus:-outline-offset-4"
             id="{{ id }}"
             name="q"
             placeholder="{{ 'public.search.hint' | trans }}"
             type="text"
             value="{{ app.request.get('q') }}"
         />
-        <button class="woo-button woo-button--primary" type="submit">
-            <span class="sr-only md:not-sr-only md:mr-3">{{ 'public.search.label' | trans }}</span>
+        <button class="woo-btn-filled-pink px-3 h-auto" type="submit">
+            <span class="sr-only">{{ 'public.search.label' | trans }}</span>
             <twig:Public:Icon name="magnifier" color="fill-white" size="20" />
         </button>
     </div>

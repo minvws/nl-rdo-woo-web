@@ -17,7 +17,7 @@ class ElasticCollector extends AbstractDataCollector
     protected bool $enabled = true;
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
     {

@@ -12,7 +12,7 @@ enum SoortHandeling: string
 {
     private const BASE_URI = 'https://identifier.overheid.nl/tooi/def/thes/kern/';
 
-    case c_e1ec3050e = 'ondertekening';
+    case c_e1ec050e = 'ondertekening';
 
     case c_dfcee535 = 'ontvangst';
 

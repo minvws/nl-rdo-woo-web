@@ -13,8 +13,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 readonly class DocumentsStepDefinition extends StepDefinition
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
+    #[\Override]
     public function isCompleted(AbstractDossier $dossier, ValidatorInterface $validator): bool
     {
         if (! $dossier instanceof WooDecision) {

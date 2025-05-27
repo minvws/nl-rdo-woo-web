@@ -1,10 +1,11 @@
 <div class="w-1/2">
     {{ form_start(organisationForm) }}
 
-
     {{ form_row(organisationForm.name) }}
 
-    <div {{ vue_component('MultiSelectController', {
+    <div {{ vue_component('GenericController', {
+        componentName: 'MultiSelect',
+
         buttonText: 'Voeg een bestuursorgaan toe',
         buttonTextMultiple: 'Voeg nog een bestuursorgaan toe',
         label: 'Verantwoordelijke bestuursorganen',
@@ -21,31 +22,27 @@
 
     <div class="my-8">
         {{ form_errors(organisationForm) }}
-        <fieldset>
-            <legend class="bhr-legend mb-0">
-                Prefixes
-            </legend>
-            <div id="js-widgets-container">
-                {% for widgetForm in organisationForm.documentPrefixes %}
-                    <div class="bhr-widget flex items-center relative mb-4">
-                        {{ form_errors(widgetForm) }}
-                        {{ form_widget(widgetForm) }}
-                    </div>
-                {% endfor %}
-            </div>
-        </fieldset>
-        <button type="button" id="js-add-widget" class="font-bold text-bhr-davys-grey">+ {{ 'admin.organisation.add_prefix' |trans() }}
-        </button>
+    </div>
+
+     <div {{ vue_component('GenericController', {
+        componentName: 'MultiText',
+
+        buttonText: 'Voeg een prefix toe',
+        buttonTextMultiple: 'Voeg nog een prefix toe',
+        e2eName: 'add-prefix',
+        immutableValues: prefixValues,
+        label: 'Prefix',
+        legend: 'Prefix',
+        minChars: 5,
+        minLength: 1,
+        name: 'organisation_form[documentPrefixes][0][prefix]',
+        submitErrors: prefixErrors,
+    }) }}>
+        <div class="min-h-14"></div>
     </div>
 
     {% do organisationForm.documentPrefixes.setRendered %}
     {{ form_row(organisationForm.submit) }}
 
     {{ form_end(organisationForm) }}
-</div>
-<div id="js-widget-prototype" class="hidden">
-    <div class="bhr-widget flex items-center relative mb-4">
-        {{ form_widget(organisationForm.documentPrefixes.vars.prototype)|raw }}
-        <twig:Admin:ClearButton label="{{ 'admin.global.input_delete' | trans() }}" />
-    </div>
 </div>

@@ -68,9 +68,7 @@ final class PageContentExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->andReturnUsing(function (string $key, \Closure $closure) {
-                return $closure();
-            });
+            ->andReturnUsing(fn (string $key, \Closure $closure) => $closure());
 
         $this->statsService
             ->shouldReceive('measure')
@@ -126,9 +124,7 @@ final class PageContentExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->andReturnUsing(function (string $key, \Closure $closure) {
-                return $closure();
-            });
+            ->andReturnUsing(fn (string $key, \Closure $closure) => $closure());
 
         $this->statsService
             ->shouldReceive('measure')

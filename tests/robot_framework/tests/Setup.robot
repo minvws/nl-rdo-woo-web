@@ -9,8 +9,13 @@ Initiate local environment
   [Tags]  init
   ${temp_password} =  Create Woo Admin User
   Write Otp Secret To Zshrc  ${TST_BALIE_OTP_SECRET}
+  Set URL Variables
   Open Browser And BaseUrl
-  Login Admin  ${TST_BALIE_USER}  ${temp_password}  new_password=${TST_BALIE_PASSWORD}
+  Login Admin
+  ...  username=${TST_BALIE_USER}
+  ...  password=${temp_password}
+  ...  otp_secret=${TST_BALIE_OTP_SECRET}
+  ...  new_password=${TST_BALIE_PASSWORD}
 
 Get Local OTP Code
   [Documentation]  Generate OTP code using local secret
@@ -18,10 +23,9 @@ Get Local OTP Code
   ${otp} =  Get Otp  %{SECRET_WOO_LOCAL}
   Log To Console  OTP code: ${otp}
 
-Login
-  [Tags]  login
-  Suite Setup - CI
-  Login Admin
+Cleansheet
+  [Tags]  cleansheet
+  Cleansheet
 
 
 *** Keywords ***

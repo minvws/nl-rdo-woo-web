@@ -10,7 +10,7 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 #[AsTwigComponent]
 class InputErrors
 {
-    public ?string $id;
-    public ?string $error;
-    public ?FormErrorIterator $errors;
+    public ?string $id = null;
+    public ?string $error = null;
+    public ?FormErrorIterator $errors = null;
 }

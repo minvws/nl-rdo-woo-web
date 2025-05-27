@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Domain\Department\DepartmentService;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Entity\Department;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -16,6 +18,11 @@ use Webmozart\Assert\Assert;
 
 final class UploaderController extends AbstractController
 {
+    public function __construct(
+        private readonly DepartmentService $departmentService,
+    ) {
+    }
+
     #[Route('/balie/uploader', name: '_uploader_upload_general', format: 'json', methods: ['POST', 'PUT', 'PATCH'])]
     #[IsGranted('AuthMatrix.dossier.update')]
     public function upload(
@@ -38,6 +45,24 @@ final class UploaderController extends AbstractController
         Request $request,
     ): JsonResponse {
         unset($dossier);
+
+        $this->isChunkedWorkaround($request);
+
+        return $dropzoneController->upload();
+    }
+
+    #[Route('/balie/uploader/department/{departmentId}', name: '_uploader_upload_department', format: 'json', methods: ['POST', 'PUT', 'PATCH'])]
+    #[IsGranted('AuthMatrix.department_landing_page.update')]
+    public function uploadDepartment(
+        #[Autowire(service: 'oneup_uploader.controller.department')]
+        CustomDropzoneController $dropzoneController,
+        #[MapEntity(mapping: ['departmentId' => 'id'])]
+        Department $department,
+        Request $request,
+    ): JsonResponse {
+        if (! $this->departmentService->userCanEditLandingpage($department)) {
+            throw $this->createAccessDeniedException();
+        }
 
         $this->isChunkedWorkaround($request);
 

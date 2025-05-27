@@ -19,7 +19,7 @@ use App\Service\Search\Query\Filter\PeriodFilter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 readonly class DateFacet implements FacetDefinitionInterface
 {

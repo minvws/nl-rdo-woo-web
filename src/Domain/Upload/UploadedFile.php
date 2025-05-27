@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class UploadedFile extends \SplFileInfo
 {
-    public function __construct(string $filename, private ?string $originalFilename = null)
+    public function __construct(string $filename, private readonly ?string $originalFilename = null)
     {
         parent::__construct($filename);
     }

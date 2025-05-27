@@ -13,7 +13,7 @@ use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use Doctrine\Common\Collections\Collection;
 
 /**
- * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+ * @SuppressWarnings("PHPMD.ExcessiveParameterList")
  */
 final readonly class WooDecision
 {

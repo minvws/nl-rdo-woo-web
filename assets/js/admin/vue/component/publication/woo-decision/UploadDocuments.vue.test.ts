@@ -95,7 +95,7 @@ describe('The "<UploadDocuments />" component', () => {
           }),
       });
 
-    global.fetch = vi
+    window.fetch = vi
       .fn()
       .mockImplementation(() => createStatusResponse())
       .mockImplementationOnce(() =>
@@ -189,12 +189,12 @@ describe('The "<UploadDocuments />" component', () => {
   describe('checking the status', () => {
     test('should be done by making a request to the status endpoint', () => {
       createComponent();
-      expect(global.fetch).toHaveBeenNthCalledWith(1, 'mocked-status-endpoint');
+      expect(window.fetch).toHaveBeenNthCalledWith(1, 'mocked-status-endpoint');
     });
 
     test('should not occur when the uploads are already complete', () => {
       createComponent({ isComplete: true });
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(window.fetch).not.toHaveBeenCalled();
     });
 
     test('should stop when the status returns that all documents are uploaded', async () => {
@@ -202,7 +202,7 @@ describe('The "<UploadDocuments />" component', () => {
 
       await waitForNumberOfStatusResponses(15);
 
-      expect(global.fetch).toHaveBeenCalledTimes(6);
+      expect(window.fetch).toHaveBeenCalledTimes(6);
     });
   });
 
@@ -221,14 +221,14 @@ describe('The "<UploadDocuments />" component', () => {
       const component = createComponent();
 
       await clickProcessButton(component);
-      expect(global.fetch).not.toHaveBeenCalledWith('mocked-process-endpoint', {
+      expect(window.fetch).not.toHaveBeenCalledWith('mocked-process-endpoint', {
         method: 'POST',
       });
 
       await waitForNumberOfStatusResponses(2);
       await clickProcessButton(component);
 
-      expect(global.fetch).toHaveBeenCalledWith('mocked-process-endpoint', {
+      expect(window.fetch).toHaveBeenCalledWith('mocked-process-endpoint', {
         method: 'POST',
       });
     });

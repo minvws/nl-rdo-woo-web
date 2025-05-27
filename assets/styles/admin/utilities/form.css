@@ -1,0 +1,116 @@
+@utility bhr-label {
+  @apply block
+            font-bold
+            leading-tight
+            mb-2
+            text-lg;
+}
+
+@utility bhr-legend {
+  @apply block
+            font-bold
+            leading-tight
+            mt-0
+            mb-2
+            text-lg;
+}
+
+@utility bhr-input-text {
+  @apply border
+            border-bhr-dim-gray
+            leading-none
+            p-3
+            text-lg
+            rounded-lg
+            transition-opacity
+            w-full
+
+            placeholder:text-bhr-dim-gray;
+}
+
+@utility bhr-input-text--disabled {
+  @apply opacity-40;
+}
+
+@utility bhr-input-text--invalid {
+  @apply border-2 border-bhr-maximum-red;
+}
+
+@utility bhr-input-text--with-icon-after {
+  @apply pr-10;
+}
+
+@utility bhr-input-date {
+  @apply bhr-input-text;
+}
+
+@utility bhr-select {
+  &::after {
+    @apply bg-bhr-dim-gray content-[''] pointer-events-none absolute -ml-8 mt-3 w-6 h-6;
+    mask-image: url(@img/admin/chevron-down.svg);
+  }
+}
+
+@utility bhr-select__select {
+  @apply appearance-none bhr-input-text w-auto pr-8 placeholder:text-bhr-dim-gray bg-white;
+}
+
+@utility bhr-select__select--invalid {
+  @apply bhr-input-text--invalid;
+}
+
+@utility bhr-textarea {
+  @apply bhr-input-text leading-tight;
+}
+
+@utility bhr-textarea--invalid {
+  @apply bhr-input-text--invalid;
+}
+
+@utility bhr-choice-row {
+  @apply flex py-0.5;
+}
+
+@utility bhr-choice-label {
+  /* label next to a radio or checkbox input */
+  @apply inline-block font-normal text-base leading-5;
+}
+
+@utility bhr-choice-input {
+  /* radio or checkbox input */
+  @apply border border-bhr-dim-gray h-4 w-4 mr-2 mt-px;
+}
+
+@utility bhr-input-icon {
+  @apply absolute right-3 top-3;
+}
+
+@utility bhr-input-icon--after {
+  @apply right-3;
+}
+
+@utility bhr-value {
+  @apply bg-bhr-anti-flash-white inline-block min-w-[66%] py-4 px-6 print:py-2 print:px-3 print:bg-none print:border-2;
+}
+
+@utility bhr-form-row {
+  @apply mb-8 relative;
+}
+
+@utility bhr-form-row--invalid {
+  @apply border-l-2 border-bhr-maximum-red pl-4;
+}
+
+@utility bhr-form-help {
+  @apply text-bhr-dim-gray;
+}
+
+@utility bhr-form-help__do {
+  @apply bg-no-repeat pl-8;
+  @apply bg-(image:--img-bhr-check);
+}
+
+@utility bhr-form-help__dont {
+  @apply bg-no-repeat pl-8;
+  @apply bg-(image:--img-bhr-cross);
+}

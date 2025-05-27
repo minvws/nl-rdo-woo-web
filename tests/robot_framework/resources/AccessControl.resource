@@ -63,7 +63,7 @@ Set Credentials By Role
 
 Edit User
   [Arguments]  ${username}  ${new_username}  ${extra_role}
-  Click  //div[@data-e2e-name="tab1"]//a[contains(.,'${username}')]
+  Click  //div[@data-e2e-name="tabs-gebruikers-content-1"]//a[contains(.,'${username}')]
   Fill Text  id=user_info_form_name  ${new_username}
   Check Checkbox  //input[@value="${extra_role}"]
   Click  //button[@id="user_info_form_submit"]
@@ -71,19 +71,16 @@ Edit User
   IF  ${error_present} > 0
     # Retry on CSRF error, another instance of https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
     Click  //button[@id="user_info_form_submit"]
-    Get Text
-    ...  //div[@data-e2e-name="alerts"]/div[contains(@class, 'bhr-alert--success')]
-    ...  contains
-    ...  De gebruiker is gewijzigd
+    Success Alert Is Visible  De gebruiker is gewijzigd
   END
 
 Deactivate User
   [Arguments]  ${username}
-  Click  //div[@data-e2e-name="tab1"]//a[contains(.,'${username}')]
+  Click  //div[@data-e2e-name="tabs-gebruikers-content-1"]//a[contains(.,'${username}')]
   Click  //button[@id="disable_user_form_submit"]
-  Get Text  //*[@data-e2e-name="alerts"]  contains  Account van ${username} is gedeactiveerd.
+  Success Alert Is Visible  Account van ${username} is gedeactiveerd.
   Select Access Control Tab  Deactivated users
-  Get Text  //div[@data-e2e-name="tab2"]//tbody//th[contains(.,'${username}')]
+  Get Text  //div[@data-e2e-name="tabs-gebruikers-content-2"]//tbody//th[contains(.,'${username}')]
 
 Create Test User
   [Arguments]  ${role}  ${organisation}=Programmadirectie Openbaarheid
@@ -104,4 +101,4 @@ Select Access Control Tab
   ELSE IF  '${tab}' == 'Deactivated users'
     VAR  ${tab_index}  4
   END
-  Click  //button[@data-e2e-name="tab-button-${tab_index}"]
+  Click  //button[@data-e2e-name="tabs-gebruikers-button-${tab_index}"]

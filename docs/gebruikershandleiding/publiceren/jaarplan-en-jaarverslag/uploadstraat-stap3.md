@@ -1,4 +1,4 @@
-# Uploadstraat stap 3: Jaarplan/Jaarverslag publiceren
+# Stap 3: Jaarplan/Jaarverslag publiceren
 
 ![Afbeelding toont de laatste stap van de uploadstraat waar de datum van publicatie wordt ingesteld](img/jaarplan_jaarverslag_5.png)
 

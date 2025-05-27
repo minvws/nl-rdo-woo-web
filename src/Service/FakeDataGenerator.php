@@ -24,17 +24,15 @@ use Symfony\Component\DependencyInjection\Attribute\When;
  *
  * @codeCoverageIgnore
  *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 #[When('dev')]
 class FakeDataGenerator
 {
     protected Generator $faker;
-    protected EntityManagerInterface $doctrine;
 
-    public function __construct(EntityManagerInterface $doctrine)
+    public function __construct(protected EntityManagerInterface $doctrine)
     {
-        $this->doctrine = $doctrine;
         $this->faker = FakerFactory::create();
     }
 
@@ -81,7 +79,7 @@ class FakeDataGenerator
         $a = new \DateTimeImmutable('01-' . random_int(1, 12) . '-' . random_int(2010, 2023));
         $b = new \DateTimeImmutable('01-' . random_int(1, 12) . '-' . random_int(2010, 2023));
         if ($b < $a) {
-            list($a, $b) = [$b, $a];
+            [$a, $b] = [$b, $a];
         }
         $dossier->setDateFrom($a);
         $dossier->setDateTo($b);

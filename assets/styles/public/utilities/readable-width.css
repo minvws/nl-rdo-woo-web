@@ -1,0 +1,3 @@
+@utility woo-readable-width {
+  @apply max-w-[48rem];
+}

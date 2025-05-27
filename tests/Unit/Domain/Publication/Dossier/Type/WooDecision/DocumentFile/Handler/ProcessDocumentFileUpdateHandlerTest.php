@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handler;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentFileProcessor;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUpdateCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
@@ -13,7 +14,6 @@ use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFi
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handler\ProcessDocumentFileUpdateHandler;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUpdateRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Upload\Postprocessor\Strategy\FileStrategy;
 use App\Domain\Upload\UploadedFile;
 use App\Service\Storage\EntityStorageService;
 use App\Tests\Unit\Domain\Upload\IterableToGenerator;
@@ -30,7 +30,7 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
     private LoggerInterface&MockInterface $logger;
     private EntityStorageService&MockInterface $entityStorageService;
     private DocumentFileService&MockInterface $documentFileService;
-    private FileStrategy&MockInterface $fileStrategy;
+    private DocumentFileProcessor&MockInterface $fileProcessor;
     private ProcessDocumentFileUpdateHandler $handler;
 
     public function setUp(): void
@@ -39,14 +39,14 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->documentFileService = \Mockery::mock(DocumentFileService::class);
-        $this->fileStrategy = \Mockery::mock(FileStrategy::class);
+        $this->fileProcessor = \Mockery::mock(DocumentFileProcessor::class);
 
         $this->handler = new ProcessDocumentFileUpdateHandler(
             $this->documentFileUpdateRepository,
             $this->logger,
             $this->entityStorageService,
             $this->documentFileService,
-            $this->fileStrategy,
+            $this->fileProcessor,
         );
 
         parent::setUp();
@@ -79,9 +79,12 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
         $update
             ->shouldReceive('getDocument')
             ->andReturn($document);
+
         $update
-            ->shouldReceive('getFileInfo->getType')
-            ->andReturn($fileType = 'txt');
+            ->shouldReceive('getFileInfo->getName')
+            ->andReturn('foo.bar');
+
+        $update->expects('getFileInfo->removeFileProperties');
 
         $this->documentFileUpdateRepository
             ->expects('find')
@@ -93,9 +96,9 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
             ->with($update)
             ->andReturn($localPath = '/foo/bar.baz');
 
-        $this->fileStrategy
+        $this->fileProcessor
             ->expects('process')
-            ->with(\Mockery::type(UploadedFile::class), $wooDecision, $documentId, $fileType);
+            ->with(\Mockery::type(UploadedFile::class), $wooDecision, $documentId);
 
         $update->expects('setStatus')->with(DocumentFileUpdateStatus::COMPLETED);
         $this->documentFileUpdateRepository->expects('save')->with($update, true);

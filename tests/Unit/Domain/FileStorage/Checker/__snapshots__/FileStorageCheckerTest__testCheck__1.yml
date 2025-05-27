@@ -1,0 +1,10 @@
+orphanedPaths:
+    paths: { document: [/doc/orphan], batch: [/batch/orphan] }
+    totalCount: 2
+    totalSize: 1000010000
+    name: Orphaned
+pathSets:
+    - { remainingPaths: { /doc/a/missing: uuid_a_missing }, totalSize: 11, totalCount: 2, name: doc_a, fileStorageType: { name: DOCUMENT, value: document } }
+    - { remainingPaths: { /batch/a/missing: uuid_a_missing }, totalSize: 1100000, totalCount: 2, name: batch_a, fileStorageType: { name: BATCH, value: batch } }
+    - { remainingPaths: { doc/b/missing: uuid_b_missing }, totalSize: 1100, totalCount: 2, name: doc_b, fileStorageType: { name: DOCUMENT, value: document } }
+    - { remainingPaths: { batch/b/missing: uuid_b_missing }, totalSize: 110000000, totalCount: 2, name: batch_b, fileStorageType: { name: BATCH, value: batch } }

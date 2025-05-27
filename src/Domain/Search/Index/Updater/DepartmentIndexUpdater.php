@@ -33,7 +33,7 @@ readonly class DepartmentIndexUpdater
                                 'path' => ElasticNestedField::DOSSIERS->value,
                                 'query' => [
                                     'term' => [
-                                        ElasticPath::dossiersDepartmentsId()->value,
+                                        ElasticPath::dossiersDepartmentsId()->value => $department->getId(),
                                     ],
                                 ],
                             ]],

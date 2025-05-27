@@ -87,7 +87,7 @@ class ExcelReaderTest extends MockeryTestCase
 
     public function testGetDateTimeReturnsValueForExistingColumnWhenFilledAndThrowsExceptionForMissingValue(): void
     {
-        $rows = iterator_to_array($this->excelReader);
+        $rows = iterator_to_array($this->excelReader, false);
 
         // First row has a valid date
         self::assertEquals(

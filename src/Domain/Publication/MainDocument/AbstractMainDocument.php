@@ -21,6 +21,8 @@ use Webmozart\Assert\Assert;
 
 /**
  * @template TDossier of AbstractDossier&EntityWithMainDocument
+ *
+ * @property TDossier $dossier
  */
 #[ORM\Entity(repositoryClass: MainDocumentRepository::class)]
 #[ORM\Table(name: 'main_document')]

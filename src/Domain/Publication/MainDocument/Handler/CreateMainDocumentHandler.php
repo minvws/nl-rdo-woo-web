@@ -16,6 +16,7 @@ use App\Domain\Publication\MainDocument\MainDocumentAlreadyExistsException;
 use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use App\Service\Uploader\UploaderService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -23,7 +24,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webmozart\Assert\Assert;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 #[AsMessageHandler]
 readonly class CreateMainDocumentHandler
@@ -51,7 +52,7 @@ readonly class CreateMainDocumentHandler
 
         $this->dossierWorkflowManager->applyTransition($dossier, DossierStatusTransition::UPDATE_MAIN_DOCUMENT);
 
-        /** @var MainDocumentRepositoryInterface $documentRepository */
+        /** @var EntityRepository<MainDocumentRepositoryInterface> $documentRepository */
         $documentRepository = $this->entityManager->getRepository($dossier->getMainDocumentEntityClass());
         Assert::isInstanceOf($documentRepository, MainDocumentRepositoryInterface::class);
 

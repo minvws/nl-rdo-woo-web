@@ -1,33 +1,30 @@
-<script setup>
+<script setup lang="ts">
 import Icon from '@admin-fe/component/Icon.vue';
+import type { ValidatorMessages } from '@admin-fe/form';
+import type { InputValidationErrors } from '@admin-fe/form/interface';
 import InputErrors from './InputErrors.vue';
 
-const emit = defineEmits(['delete']);
+interface Props {
+  areErrorsVisible: boolean;
+  canDelete: boolean;
+  errors: InputValidationErrors;
+  id: string;
+  label: string;
+}
 
-const props = defineProps({
-  areErrorsVisible: {
-    type: Boolean,
-    default: false,
-  },
-  canDelete: {
-    type: Boolean,
-    default: false,
-  },
-  errors: {
-    type: Array,
-    default: () => [],
-  },
-  id: {
-    type: String,
-    required: true,
-  },
-  label: {
-    type: String,
-    required: true,
-  },
+interface Emits {
+  delete: [];
+}
+
+const emit = defineEmits<Emits>();
+
+const props = withDefaults(defineProps<Props>(), {
+  areErrorsVisible: false,
+  canDelete: false,
+  errors: () => [],
 });
 
-const validatorMessages = {
+const validatorMessages: ValidatorMessages = {
   forbidden: () => 'Deze waarde is meerdere keren ingevuld.',
 };
 
@@ -49,18 +46,18 @@ const onDelete = () => {
     />
 
     <div class="flex">
-      <div class="grow">
+      <div class="grow mr-2">
         <slot />
       </div>
 
       <button
         v-if="props.canDelete"
         @click="onDelete"
-        class="bhr-button cursor-pointer shadow-none text-bhr-independence hover-focus:text-bhr-maximum-red"
+        class="bhr-btn-ghost-danger w-10 h-10 mt-0.5"
         type="button"
       >
         <span class="sr-only">Verwijder {{ props.label }}</span>
-        <Icon color="fill-current" name="trash-bin" :size="18" />
+        <Icon color="fill-current" name="trash-bin" :size="24" />
       </button>
     </div>
   </div>

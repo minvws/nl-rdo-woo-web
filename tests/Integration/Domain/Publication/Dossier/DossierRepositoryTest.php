@@ -7,9 +7,7 @@ namespace App\Tests\Integration\Domain\Publication\Dossier;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Tests\Factory\DepartmentFactory;
-use App\Tests\Factory\OrganisationFactory;
 use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use App\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
@@ -44,65 +42,6 @@ final class DossierRepositoryTest extends KernelTestCase
 
         $this->expectException(NoResultException::class);
         $this->repository->findOneByDossierId($dossier->_real()->getId());
-    }
-
-    public function testFindBySearchTerm(): void
-    {
-        $covenant = CovenantFactory::createOne();
-
-        $result = $this->repository->findBySearchTerm(
-            $covenant->_real()->getDossierNr(),
-            10,
-            $covenant->_real()->getOrganisation(),
-        );
-
-        self::assertCount(1, $result);
-    }
-
-    public function testFindBySearchTermFilteredByType(): void
-    {
-        $organisation = OrganisationFactory::createOne();
-
-        $covenant = CovenantFactory::createOne([
-            'title' => 'A Convenant Foobar',
-            'organisation' => $organisation,
-        ]);
-        AnnualReportFactory::createOne([
-            'title' => 'An AnnualReport Foobar',
-            'organisation' => $organisation,
-        ]);
-
-        $result = $this->repository->findBySearchTerm(
-            'FooBAR',
-            10,
-            $covenant->_real()->getOrganisation(),
-            dossierType: DossierType::COVENANT,
-        );
-
-        self::assertCount(1, $result);
-    }
-
-    public function testFindBySearchTermFilteredByUuid(): void
-    {
-        $organisation = OrganisationFactory::createOne();
-
-        $covenant = CovenantFactory::createOne([
-            'title' => 'A Convenant Foobar',
-            'organisation' => $organisation,
-        ]);
-        CovenantFactory::createOne([
-            'title' => 'An AnnualReport Foobar',
-            'organisation' => $organisation,
-        ]);
-
-        $result = $this->repository->findBySearchTerm(
-            'FooBAR',
-            10,
-            $covenant->_real()->getOrganisation(),
-            dossierId: $covenant->_real()->getId(),
-        );
-
-        self::assertCount(1, $result);
     }
 
     public function testGetDossiersForOrganisationQueryBuilder(): void

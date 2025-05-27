@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\WooIndex\Builder;
 
-use App\Domain\WooIndex\DiWooInvalidArgumentException;
+use App\Domain\WooIndex\Exception\WooIndexInvalidArgumentException;
 use App\Domain\WooIndex\Producer\DiWooDocument;
 use App\Domain\WooIndex\Producer\Url;
-use App\Domain\WooIndex\WriterFactory\DiWooXMLWriter;
 
 final readonly class SitemapUrlBuilder
 {
@@ -41,7 +40,7 @@ final readonly class SitemapUrlBuilder
         }
 
         if ($url->priority < 0.0 || $url->priority > 1.0) {
-            throw DiWooInvalidArgumentException::invalidPriority($url->priority);
+            throw WooIndexInvalidArgumentException::invalidPriority($url->priority);
         }
 
         $writer->writeElement(name: 'priority', content: (string) $url->priority);
@@ -52,11 +51,13 @@ final readonly class SitemapUrlBuilder
         $writer->startDiWooElement(name: 'Document');
         $writer->startDiWooElement(name: 'DiWoo');
 
-        $writer->writeDiWooElement(name: 'creatieDatum', content: $document->creatiedatum->toDateString());
+        $writer->writeDiWooElement(name: 'creatiedatum', content: $document->creatiedatum->toDateString());
         $this->writePublisher($writer, $document);
         $this->writeOfficieleTitel($writer, $document);
         $this->writeInformatieCategorie($writer, $document);
         $this->writeDocumentHandeling($writer, $document);
+        $this->writeIsPartOf($writer, $document);
+        $this->writeHasParts($writer, $document);
 
         $writer->endElement(); // closes DiWoo-element
         $writer->endElement(); // closes Document-element
@@ -107,5 +108,39 @@ final readonly class SitemapUrlBuilder
 
         $writer->endElement(); // closes documenthandeling-element
         $writer->endElement(); // closes documenthandelingen-element
+    }
+
+    private function writeIsPartOf(DiWooXMLWriter $writer, DiWooDocument $document): void
+    {
+        if ($document->isPartOf === null) {
+            return;
+        }
+
+        $writer->startDiWooElement('isPartOf');
+
+        $writer->writeAttribute(name: 'resource', value: $document->isPartOf->resource);
+        $writer->text($document->isPartOf->officieleTitel);
+
+        $writer->endElement();
+    }
+
+    private function writeHasParts(DiWooXMLWriter $writer, DiWooDocument $document): void
+    {
+        if ($document->hasParts === null || $document->hasParts->isEmpty()) {
+            return;
+        }
+
+        $writer->startDiWooElement('hasParts');
+
+        foreach ($document->hasParts as $urlReference) {
+            $writer->startDiWooElement('hasPart');
+
+            $writer->writeAttribute(name: 'resource', value: $urlReference->resource);
+            $writer->text($urlReference->officieleTitel);
+
+            $writer->endElement(); // closes hasPart-element
+        }
+
+        $writer->endElement(); // closes hasParts-element
     }
 }

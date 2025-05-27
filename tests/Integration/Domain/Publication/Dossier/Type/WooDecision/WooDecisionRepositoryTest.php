@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision;
 
+use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierReference;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use App\Enum\ApplicationMode;
 use App\Tests\Factory\DocumentFactory;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\OrganisationFactory;
@@ -124,6 +126,7 @@ final class WooDecisionRepositoryTest extends KernelTestCase
         $result = $this->getRepository()->getSearchResultViewModel(
             $wooDecision->_real()->getDocumentPrefix(),
             $wooDecision->_real()->getDossierNr(),
+            ApplicationMode::PUBLIC,
         );
 
         $this->assertNotNull($result);
@@ -155,13 +158,13 @@ final class WooDecisionRepositoryTest extends KernelTestCase
 
         $this->assertCount(2, $result);
 
-        $this->assertEquals(
-            [$wooDecisionA->getDossierNr(), $wooDecisionC->getDossierNr()],
-            array_map(
-                static fn (WooDecision $decision): string => $decision->getDossierNr(),
-                $result,
-            ),
+        $dosserNrResults = array_map(
+            static fn (WooDecision $decision): string => $decision->getDossierNr(),
+            $result,
         );
+
+        $this->assertContains($wooDecisionA->getDossierNr(), $dosserNrResults);
+        $this->assertContains($wooDecisionC->getDossierNr(), $dosserNrResults);
     }
 
     public function testFindOne(): void
@@ -226,5 +229,26 @@ final class WooDecisionRepositoryTest extends KernelTestCase
             $document->_real()->getId(),
             $result[0]->getId(),
         );
+    }
+
+    public function testGetPubliclyAvailableDoesNotReturnConceptDossier(): void
+    {
+        $wooDecisionA = WooDecisionFactory::createOne([
+            'status' => DossierStatus::CONCEPT,
+        ]);
+
+        $wooDecisionB = WooDecisionFactory::createOne([
+            'status' => DossierStatus::PUBLISHED,
+        ]);
+
+        $result = $this->getRepository()->getPubliclyAvailable();
+
+        $dosserNrResults = array_map(
+            static fn (WooDecision $decision): string => $decision->getDossierNr(),
+            $result,
+        );
+
+        $this->assertNotContains($wooDecisionA->getDossierNr(), $dosserNrResults);
+        $this->assertContains($wooDecisionB->getDossierNr(), $dosserNrResults);
     }
 }

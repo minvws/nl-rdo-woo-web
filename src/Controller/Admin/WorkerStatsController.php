@@ -13,11 +13,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class WorkerStatsController extends AbstractController
 {
-    protected EntityManagerInterface $doctrine;
-
-    public function __construct(EntityManagerInterface $doctrine)
+    public function __construct(protected EntityManagerInterface $doctrine)
     {
-        $this->doctrine = $doctrine;
     }
 
     #[Route('/balie/workerstats', name: 'app_admin_worker_stats', methods: ['GET'])]

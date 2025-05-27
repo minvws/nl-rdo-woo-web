@@ -8,7 +8,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\SourceType;
 
 /**
- * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+ * @SuppressWarnings("PHPMD.ExcessiveParameterList")
  */
 class DocumentMetadata
 {

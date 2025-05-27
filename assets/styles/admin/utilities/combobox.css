@@ -1,0 +1,35 @@
+@utility bhr-combobox__input {
+  @apply cursor-pointer
+            flex
+            gap-2
+            items-center
+            relative;
+}
+
+@utility bhr-combobox__options {
+  @apply absolute
+            bg-white
+            border
+            border-current
+            inset-x-0
+            max-h-64
+            mt-2
+            overflow-y-auto
+            overscroll-contain
+            rounded-lg
+            z-2;
+}
+
+@utility bhr-combobox__option {
+  @apply border-y
+            border-transparent
+            cursor-pointer
+            hover:bhr-combobox__option--active
+            -mt-px
+            p-3;
+}
+
+@utility bhr-combobox__option--active {
+  @apply bg-gray-100
+            border-gray-300;
+}

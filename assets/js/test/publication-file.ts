@@ -11,6 +11,7 @@ export const createMockedPublicationFile = (
   },
   formalDate: options.formalDate ?? 'mocked-formal-date',
   grounds: options.grounds ?? ['mocked-ground-1', 'mocked-ground-2'],
+  id: options.id ?? 'mocked-id',
   internalReference: options.internalReference ?? 'mocked-internal-reference',
   language: options.language ?? 'Dutch',
   mimeType: options.mimeType ?? 'mocked-mime-type',

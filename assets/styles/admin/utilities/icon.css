@@ -1,0 +1,7 @@
+@utility bhr-icon {
+  @apply inline-block;
+
+  &.hidden {
+    @apply hidden;
+  }
+}

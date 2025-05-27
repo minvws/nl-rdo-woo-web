@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class AppModeListener implements EventSubscriberInterface
 {
-    private const BALIE_PATH = '/balie';
+    private const string BALIE_PATH = '/balie';
 
     protected string $appMode;
     protected const APP_MODES = ['BALIE', 'FRONTEND', 'BOTH'];

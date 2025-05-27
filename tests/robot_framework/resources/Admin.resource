@@ -11,17 +11,20 @@ Resource            ../resources/Generic.resource
 *** Variables ***
 ${ATTACHMENT_FILENAME}  ${EMPTY}
 ${ATTACHMENT_LOCATION}  ${EMPTY}
+${ADMIN_USER}           ${EMPTY}
+${ADMIN_PASSWORD}       ${EMPTY}
+${ADMIN_OTP_SECRET}     ${EMPTY}
 
 
 *** Keywords ***
 Go To Admin
-  Go To  ${BASE_URL_BALIE}
+  Go To  ${URL_ADMIN}
 
 Login Admin
   [Documentation]  Logs in to the admin section. Will change password if it's the first login.
-  [Arguments]  ${username}=${TST_BALIE_USER}
-  ...  ${password}=${TST_BALIE_PASSWORD}
-  ...  ${otp_secret}=${TST_BALIE_OTP_SECRET}
+  [Arguments]  ${username}=${ADMIN_USER}
+  ...  ${password}=${ADMIN_PASSWORD}
+  ...  ${otp_secret}=${ADMIN_OTP_SECRET}
   ...  ${new_password}=IkLoopNooitVastVandaag
   Go To Admin
   ${already_logged_in} =  Get Element Count  //*[@id="main-nav"][contains(.,'Uitloggen')]
@@ -42,7 +45,7 @@ Login Admin
     Fill Text  id=change_password_plainPassword_first  ${new_password}
     Fill Text  id=change_password_plainPassword_second  ${new_password}
     Click  " Wachtwoord aanpassen "
-    Get Text  //*[@data-e2e-name="alerts"]  contains  Wachtwoord succesvol gewijzigd
+    Success Alert Is Visible  Wachtwoord succesvol gewijzigd
     VAR  ${password}  ${new_password}
   END
   Get Text  //*[@id="main-nav"]  contains  Uitloggen
@@ -53,11 +56,15 @@ Click Log Out
   Click  //*[@data-e2e-name="logout-link"]
 
 No-Click Logout
-  Go To  ${BASE_URL_BALIE}/logout
+  IF  '${ENVIRONMENT}' == 'docker-local' or '${ENVIRONMENT}' == 'docker-ci'
+    Go To  %{URL_ADMIN}/logout
+  ELSE
+    Go To  https://%{URL_ADMIN}/logout
+  END
 
 Upload Attachment
   [Arguments]  ${type}  ${date}=01012022
-  Click  " + Bijlage toevoegen... "
+  Click  " Bijlage toevoegen... "
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${ATTACHMENT_LOCATION}
   Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${ATTACHMENT_FILENAME}  timeout=10s
   Select Options By  //dialog[@open]//select[@name="type"]  text  ${type}
@@ -66,7 +73,7 @@ Upload Attachment
   Wait For Condition  Text  //*[@id="inhoud"]  contains  Bijlage '${ATTACHMENT_FILENAME}' is toegevoegd.
 
 Wait For Queue To Empty
-  New Page  ${BASE_URL_BALIE}/stats
+  New Page  %{URL_ADMIN}/stats
   Wait Until Keyword Succeeds  10min  15s  Is Queue Empty
   Close Page
 

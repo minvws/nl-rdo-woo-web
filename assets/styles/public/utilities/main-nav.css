@@ -1,0 +1,43 @@
+@utility woo-main-nav {
+  @apply woo-container lg:woo-no-container;
+}
+
+@utility woo-main-nav__anchors {
+  @apply leading-none md:flex;
+
+  .woo-main-nav__list {
+    @apply no-js:h-0 no-js:overflow-hidden;
+    @apply no-js:md:h-auto no-js:md:overflow-visible;
+  }
+
+  &:focus-within {
+    .woo-main-nav__list {
+      @apply no-js:h-auto no-js:overflow-visible;
+    }
+  }
+}
+
+@utility woo-main-nav__list {
+  @apply bg-woo-sea-blue;
+  @apply no-js:absolute no-js:left-0 no-js:right-0;
+  @apply md:!static md:!flex md:!h-auto md:!overflow-visible;
+}
+
+@utility woo-main-nav__list-item {
+  @apply border-t border-white;
+  @apply md:border-t-0;
+}
+
+@utility woo-main-nav__anchor {
+  @apply block px-4 py-5 md:py-7 text-white;
+  @apply focus:outline-white -outline-offset-2;
+  @apply aria-current-page:font-bold aria-current-page:cursor-default;
+}
+
+@utility woo-main-nav__anchor--home {
+  @apply js:mr-15 js:md:mr-0;
+}
+
+@utility woo-main-nav__icon {
+  @apply align-middle -ml-0.5 -mt-1 mr-1;
+}

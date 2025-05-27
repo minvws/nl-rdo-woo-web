@@ -26,6 +26,14 @@ describe('The file utility functions', () => {
   });
 
   describe('the "getIconNameByMimeType" function', () => {
+    test('should return "file-audio" for audio mimetypes', () => {
+      ['audio/aac', 'audio/mp3', 'audio/ogg', 'audio/vnd.wav'].forEach(
+        (mimeType) => {
+          expect(getIconNameByMimeType(mimeType)).toBe('file-audio');
+        },
+      );
+    });
+
     test('should return "file-csv" for csv mimetypes', () => {
       expect(
         getIconNameByMimeType(
@@ -91,6 +99,7 @@ describe('The file utility functions', () => {
   describe('the "getFileTypeByMimeType" function', () => {
     test('should return the correct file type based on the mime type', () => {
       expect(getFileTypeByMimeType('application/acrobat')).toBe('pdf');
+      expect(getFileTypeByMimeType('audio/mp3')).toBe('audio');
       expect(getFileTypeByMimeType('application/vnd.ms-powerpoint')).toBe(
         'presentatie',
       );

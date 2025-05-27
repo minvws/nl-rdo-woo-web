@@ -2,8 +2,13 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            string $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
 
-    App\Domain\WooIndex\Producer\UrlMapper:
+    App\Domain\WooIndex\Producer\Mapper\UrlMapper:
+        public: true
+
+    App\Domain\WooIndex\Producer\Repository\UrlRepository:
         public: true
 
     App\Domain\WooIndex\Producer\UrlProducer:
@@ -11,29 +16,9 @@ services:
 
     App\Domain\WooIndex\Builder\SitemapIndexBuilder:
         public: true
-        arguments:
-            $writerFactory: '@App\Domain\WooIndex\WriterFactory\FileWriterFactory'
 
     App\Domain\WooIndex\Builder\SitemapBuilder:
         public: true
-        arguments:
-            $writerFactory: '@App\Domain\WooIndex\WriterFactory\FileWriterFactory'
 
     App\Domain\WooIndex\WooIndex:
         public: true
-        arguments:
-            $sitemapBaseUrl: '%env(PUBLIC_BASE_URL)%/sitemap/woo-index'
-
-    App\Domain\WooIndex\WooIndexFileManager:
-        arguments:
-            $wooIndexDir: '%kernel.project_dir%/public/sitemap/woo-index'
-
-when@test:
-    services:
-        _defaults:
-            autowire: true
-            autoconfigure: true
-
-        App\Domain\WooIndex\WooIndexFileManager:
-            arguments:
-                $wooIndexDir: 'vfs://root/var/www/html/public/sitemap/woo-index'

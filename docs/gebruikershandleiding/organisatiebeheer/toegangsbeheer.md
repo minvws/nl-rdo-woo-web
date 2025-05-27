@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD024 -->
 
 # Toegangsbeheer
 
@@ -41,7 +42,7 @@ zien zonder dat er wijzigingen kunnen worden aangebracht.
 Het e-mailadres wordt gebruikt om in te loggen.
 
 :::{admonition} Let op!
-:class: tip
+:class: attention
 Het is niet mogelijk om het e-mailadres achteraf te wijzigen.
 :::
 
@@ -50,7 +51,7 @@ Wanneer het account succesvol is aangemaakt is het mogelijk om de inlog-instruct
 gebruiker te sturen.
 
 :::{admonition} Let op!
-:class: tip
+:class: attention
 Dit is het enige moment dat deze instructies gedownload kunnen worden.
 :::
 
@@ -71,26 +72,31 @@ In een dergelijk geval kunnen de herstelcodes worden gebruikt om alsnog in te lo
 
 ![Gebruikers beheer scherm](img/organisatiebeheer_5.png)
 
-Voor- en achternaam
-: De voor – en achternaam kan altijd aangepast worden.
+### Voor- en achternaam
 
-E-mailadres
-: Het is niet mogelijk het e-mailadres achteraf aan te passen. Het is daarom belangrijk dat het juiste e-mailadres wordt
+De voor – en achternaam kan altijd aangepast worden.
+
+### E-mailadres
+
+Het is niet mogelijk het e-mailadres achteraf aan te passen. Het is daarom belangrijk dat het juiste e-mailadres wordt
 gebruikt tijdens de registratie.
 
-Toegangsrollen
-: De toegangsrollen kunnen achteraf nog aangepast of bijgevoegd worden. Indien een gebruiker andere toegangsrechten
+### Toegangsrollen
+
+De toegangsrollen kunnen achteraf nog aangepast of bijgevoegd worden. Indien een gebruiker andere toegangsrechten
 nodig heeft is het niet nodig een nieuw account aan te maken.
 
 ## Inlogproblemen
 
-Wachtwoord resetten
-: In het geval een gebruiker het wachtwoord is vergeten is het mogelijk een nieuw tijdelijk wachtwoord te genereren.
+### Wachtwoord resetten
+
+In het geval een gebruiker het wachtwoord is vergeten is het mogelijk een nieuw tijdelijk wachtwoord te genereren.
 Dit wachtwoord kan dan gebruikt worden als tijdelijk wachtwoord en moet worden aangepast wanneer de gebruiker daarna
 weer voor de eerste keer inlogt.
 
-2-Factor Authenticatie
-: In het geval een gebruiker een nieuwe telefoon heeft of een nieuwe authenticatie app gebruikt is het mogelijk om de de
+### 2-Factor Authenticatie
+
+In het geval een gebruiker een nieuwe telefoon heeft of een nieuwe authenticatie app gebruikt is het mogelijk om de de
 2FA te resetten. De gebruiker krijgt dan weer opnieuw een QR-code die gescand moet worden in de authenticatie app.
 
 ## Gebruiker deactiveren

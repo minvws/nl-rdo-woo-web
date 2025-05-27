@@ -8,7 +8,7 @@ export interface MultiInputStore
     'addSubmitValidationError' | 'submitValidationErrors'
   > {
   addInputStore: (inputStore: InputStore) => void;
-  addSubmitValidationError: (path: string, error: string) => void;
+  addSubmitValidationError: (error: string, path?: string) => void;
   findInputStore: (path: string) => InputStore | undefined;
   makeDirty: () => void;
   removeInputStore: (inputStore: InputStore) => void;
@@ -89,11 +89,9 @@ export const useMultiInputStore = (
     get value() {
       return value.value;
     },
-    addSubmitValidationError(path: string, error: string) {
-      const foundInputStore = findInputStore(path);
-      if (foundInputStore) {
-        foundInputStore.addSubmitValidationError(error);
-      }
+    addSubmitValidationError(error: string, path?: string) {
+      const foundInputStore = path ? findInputStore(path) : undefined;
+      foundInputStore?.addSubmitValidationError(error, path);
     },
     findInputStore,
     makeDirty() {

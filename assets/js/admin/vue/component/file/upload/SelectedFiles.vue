@@ -1,31 +1,31 @@
-<script setup>
-import SkipLink from '../../SkipLink.vue';
-import SelectedFile from './SelectedFile.vue';
+<script setup lang="ts">
+import type { OnUploadError, UploadSuccessData } from '@js/admin/utils';
 import { uniqueId } from '@js/utils';
 import { computed } from 'vue';
+import SkipLink from '../../SkipLink.vue';
+import SelectedFile from './SelectedFile.vue';
 
-const emit = defineEmits(['delete', 'selectFiles', 'uploaded', 'uploadError']);
+interface Props {
+  allowMultiple: boolean;
+  enableAutoUpload?: boolean;
+  files: Map<string, File>;
+  payload?: Record<string, string>;
+}
 
-const props = defineProps({
-  allowMultiple: {
-    type: Boolean,
-  },
-  enableAutoUpload: {
-    type: Boolean,
-    default: false,
-  },
-  files: {
-    type: Map,
-    required: true,
-    default: () => new Map(),
-  },
-  name: {
-    type: String,
-  },
-  payload: {
-    type: Object,
-  },
+interface Emits {
+  delete: [string];
+  selectFiles: [];
+  uploaded: [string, File, string, UploadSuccessData, boolean];
+  uploadError: [string, File, OnUploadError];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  enableAutoUpload: false,
+  files: () => new Map(),
+  payload: () => ({}),
 });
+
+const emit = defineEmits<Emits>();
 
 const formattedFileOrFiles = props.allowMultiple ? 'bestanden' : 'bestand';
 const numberFiles = computed(() => props.files.size);
@@ -34,15 +34,21 @@ const id = uniqueId('upload-area-files');
 const idOfAboveSkipLink = `${id}-above-list`;
 const idOfBelowSkipLink = `${id}-below-list`;
 
-const onDelete = (fileId) => {
+const onDelete = (fileId: string) => {
   emit('delete', fileId);
 };
 
-const onUploaded = (fileId, file, uploadId, elementHasFocus) => {
-  emit('uploaded', fileId, file, uploadId, elementHasFocus);
+const onUploaded = (
+  fileId: string,
+  file: File,
+  uploadId: string,
+  uploadSuccessData: UploadSuccessData,
+  elementHasFocus: boolean,
+) => {
+  emit('uploaded', fileId, file, uploadId, uploadSuccessData, elementHasFocus);
 };
 
-const onUploadError = (fileId, file, error) => {
+const onUploadError = (fileId: string, file: File, error: OnUploadError) => {
   emit('uploadError', fileId, file, error);
 };
 

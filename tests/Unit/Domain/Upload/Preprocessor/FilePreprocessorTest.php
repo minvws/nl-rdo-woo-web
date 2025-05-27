@@ -50,7 +50,7 @@ final class FilePreprocessorTest extends UnitTestCase
         $preprocessor = new FilePreprocessor([$this->firstPreprocessor, $this->secondPreprocessor]);
         $result = $preprocessor->process($this->file);
 
-        $this->assertEquals($expectedResult, iterator_to_array($result));
+        $this->assertEquals($expectedResult, iterator_to_array($result, false));
     }
 
     public function testProcessPassingTraversableOfStrategies(): void
@@ -71,7 +71,7 @@ final class FilePreprocessorTest extends UnitTestCase
         $preprocessor = new FilePreprocessor(new \ArrayIterator([$this->firstPreprocessor, $this->secondPreprocessor]));
         $result = $preprocessor->process($this->file);
 
-        $this->assertEquals($expectedResult, iterator_to_array($result));
+        $this->assertEquals($expectedResult, iterator_to_array($result, false));
     }
 
     public function testProcessReturningOriginalFile(): void
@@ -93,6 +93,6 @@ final class FilePreprocessorTest extends UnitTestCase
         $preprocessor = new FilePreprocessor([$this->firstPreprocessor, $this->secondPreprocessor]);
         $result = $preprocessor->process($this->file);
 
-        $this->assertEquals([$this->file], iterator_to_array($result));
+        $this->assertEquals([$this->file], iterator_to_array($result, false));
     }
 }

@@ -5,12 +5,12 @@
 
 {% if isFormUseful %}
 <details class="js-details">
-    <summary class="bhr-button bhr-button--secondary bhr-button--with-icon-left">
-        <span class="bhr-button__icon bhr-button__icon--left"><twig:Admin:Icon name="filter" size="20" /></span>
+    <summary class="bhr-btn-bordered-primary">
+        <twig:Admin:Button:Icon name="filter" isLeft="{{ true }}" />
         {{ 'admin.publications.filters' | trans }}
     </summary>
 
-    <div class="bhr-overlay-card max-w-xs mt-20">
+    <div class="bhr-overlay-card max-w-xs mt-4">
         {{ form_start(form) }}
 
         {% if hasVisibleDepartmentFilters %}

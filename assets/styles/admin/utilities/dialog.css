@@ -1,0 +1,19 @@
+@utility bhr-dialog {
+  @apply mx-4 my-auto sm:mx-auto sm:max-w-screen-sm w-full rounded-lg;
+
+  &::backdrop {
+    @apply bg-black/70 transition-opacity backdrop-blur-sm;
+  }
+}
+
+@utility bhr-dialog__content {
+  @apply bhr-card p-6 relative;
+}
+
+@utility bhr-dialog__title {
+  @apply bhr-title-sm mb-6 mr-24;
+}
+
+@utility bhr-dialog__close-btn {
+  @apply absolute top-0 right-0 p-6;
+}

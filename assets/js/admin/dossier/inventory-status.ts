@@ -65,18 +65,11 @@ export const dossierInventoryStatus = () => {
     cleanupTimeout();
   };
 
-  const hideContinueLaterButton = () => {
-    hideElement(getContinueLaterButton());
-  };
+  const hideContinueLaterButton = () =>
+    hideElement(getContinueLaterButton() ?? null);
 
-  const getContinueLaterButton = (): HTMLElement | null => {
-    const wrapperElement = getWrapperElement();
-    if (!wrapperElement) {
-      return null;
-    }
-
-    return wrapperElement.querySelector('.js-inventory-status-continue-later');
-  };
+  const getContinueLaterButton = () =>
+    getWrapperElement()?.querySelector('.js-inventory-status-continue-later');
 
   const getWrapperElement = () =>
     placeholderElement?.closest('.js-inventory-status-wrapper');

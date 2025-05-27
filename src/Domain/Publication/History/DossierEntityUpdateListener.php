@@ -77,7 +77,7 @@ final class DossierEntityUpdateListener
      * See the restrictions for preUpdate documented here:
      * https://www.doctrine-project.org/projects/doctrine-orm/en/3.2/reference/events.html#preupdate
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function postUpdate(AbstractDossier $dossier, PostUpdateEventArgs $event): void
     {

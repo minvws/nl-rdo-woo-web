@@ -7,33 +7,21 @@ namespace App\Service\Inquiry;
 use App\Domain\Publication\Dossier\DocumentPrefix;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use App\Entity\Organisation;
-use App\Exception\FileReaderException;
 use App\Exception\InquiryLinkImportException;
 use App\Exception\InventoryReaderException;
 use App\Exception\TranslatableException;
-use App\Service\FileReader\ColumnMapping;
-use App\Service\FileReader\ExcelReaderFactory;
-use App\Service\FileReader\FileReaderInterface;
-use App\Service\Inventory\InventoryDataHelper;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
-class InquiryLinkImporter
+readonly class InquiryLinkImporter
 {
-    private const COLUMN_CASE_NR = 'caseNr';
-    private const COLUMN_MATTER = 'matter';
-    private const COLUMN_DOCUMENT_ID = 'documentId';
-
     public function __construct(
-        private readonly InquiryService $inquiryService,
-        private readonly DocumentRepository $documentRepository,
-        private readonly ExcelReaderFactory $readerFactory,
+        private InquiryService $inquiryService,
+        private DocumentRepository $documentRepository,
+        private InquiryLinkImportParser $parser,
     ) {
     }
 
-    public function processSpreadsheet(
+    public function import(
         Organisation $activeOrganisation,
         UploadedFile $uploadedFile,
         DocumentPrefix $prefix,
@@ -43,32 +31,10 @@ class InquiryLinkImporter
 
         try {
             if ($activeOrganisation !== $prefix->getOrganisation()) {
-                throw new \RuntimeException('Cannot link to prefixes outside of the active organisation');
+                throw InquiryLinkImportException::forOrganisationMismatch();
             }
 
-            $reader = $this->getReader($uploadedFile);
-            foreach ($reader as $rowIdx => $row) {
-                unset($row);
-                $rowIdx = intval($rowIdx);
-                $documentId = $reader->getString($rowIdx, self::COLUMN_DOCUMENT_ID);
-                $matter = $reader->getString($rowIdx, self::COLUMN_MATTER);
-                $caseNrs = InventoryDataHelper::separateValues(
-                    $reader->getString($rowIdx, self::COLUMN_CASE_NR),
-                    [',', ';']
-                );
-
-                $documentNr = sprintf('%s-%s-%s', $prefix->getPrefix(), $matter, $documentId);
-                try {
-                    $document = $this->documentRepository->findOneBy(['documentNr' => $documentNr]);
-                    if (! $document) {
-                        throw InquiryLinkImportException::forMissingDocument($documentNr);
-                    }
-
-                    $inquiryChangeset->updateCaseNrsForDocument($document, $caseNrs);
-                } catch (TranslatableException $exception) {
-                    $result->addRowException($rowIdx, $exception);
-                }
-            }
+            $this->processUploadedFile($uploadedFile, $prefix, $inquiryChangeset, $result);
 
             $this->inquiryService->applyChangesetAsync($inquiryChangeset);
         } catch (\Exception $exception) {
@@ -82,29 +48,25 @@ class InquiryLinkImporter
         return $result;
     }
 
-    private function getReader(UploadedFile $uploadedFile): FileReaderInterface
-    {
-        try {
-            return $this->readerFactory->createReader(
-                $uploadedFile->getRealPath(),
-                new ColumnMapping(
-                    name: self::COLUMN_MATTER,
-                    required: true,
-                    columnNames: ['matter', 'matter id', 'matterid'],
-                ),
-                new ColumnMapping(
-                    name: self::COLUMN_DOCUMENT_ID,
-                    required: true,
-                    columnNames: ['id', 'documentid', 'document', 'document id', 'documentnr', 'document nr', 'documentnr.', 'document nr.'],
-                ),
-                new ColumnMapping(
-                    name: self::COLUMN_CASE_NR,
-                    required: true,
-                    columnNames: ['zaaknr', 'casenr', 'zaak', 'case', 'zaaknummer', 'zaaknummers', 'zaaknummer(s)'],
-                ),
-            );
-        } catch (\Exception $exception) {
-            throw FileReaderException::forOpenSpreadsheetException($exception);
+    private function processUploadedFile(
+        UploadedFile $uploadedFile,
+        DocumentPrefix $prefix,
+        InquiryChangeset $inquiryChangeset,
+        InquiryLinkImportResult $result,
+    ): void {
+        $rowNr = 0;
+        foreach ($this->parser->parse($uploadedFile, $prefix) as $documentNr => $caseNrs) {
+            $rowNr++;
+            try {
+                $documentCaseNrs = $this->documentRepository->getDocumentCaseNrs($documentNr);
+                if ($documentCaseNrs->isDocumentNotFound()) {
+                    throw InquiryLinkImportException::forMissingDocument($documentNr);
+                }
+
+                $inquiryChangeset->updateCaseNrsForDocument($documentCaseNrs, $caseNrs);
+            } catch (TranslatableException $exception) {
+                $result->addRowException($rowNr, $exception);
+            }
         }
     }
 }

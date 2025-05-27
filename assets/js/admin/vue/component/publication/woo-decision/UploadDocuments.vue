@@ -266,16 +266,18 @@ onBeforeUnmount(() => stopCheckingStatus());
     >
       <output class="block">
         <UploadedDocuments :files="uploadedFiles" />
+      </output>
 
+      <div aria-live="assertive">
         <ErrorMessages
           v-if="showCannotProcessMessage"
           :messages="[cannotProcessMessage]"
         />
-      </output>
+      </div>
 
       <button
         @click="processFiles"
-        class="bhr-button bhr-button--primary"
+        class="bhr-btn-filled-primary"
         ref="processButtonElement"
         type="button"
         data-e2e-name="process-documents"

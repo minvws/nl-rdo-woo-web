@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class InquiryLinkDossierFormType extends AbstractType
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -61,7 +61,7 @@ class InquiryLinkDossierFormType extends AbstractType
             ->add('cancel', SubmitType::class, [
                 'label' => 'global.cancel',
                 'attr' => [
-                    'class' => 'bhr-button--secondary',
+                    'class' => 'bhr-btn-bordered-primary',
                     'data-last-button' => true,
                 ],
             ]);

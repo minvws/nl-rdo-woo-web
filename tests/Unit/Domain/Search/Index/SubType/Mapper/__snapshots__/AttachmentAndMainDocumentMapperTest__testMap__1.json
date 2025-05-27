@@ -18,6 +18,9 @@
         }
     ],
     "prefixed_dossier_nr": "PREFIX|foo-123",
+    "organisation_ids": [
+        "1ef3ea0e-678d-6cee-9604-c962be9d60b2"
+    ],
     "metadata": [
         "foo"
     ],

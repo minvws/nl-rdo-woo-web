@@ -23,7 +23,7 @@ Covid19 Theme Page Only Shows Covid19 Dossiers
 
 *** Keywords ***
 Suite Setup
-  Suite Setup - CI
+  Suite Setup Generic
 
 Only One Subject Should Be Present
   Get Element Count

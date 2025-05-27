@@ -1,17 +1,20 @@
-<script setup>
+<script setup lang="ts">
+import { nextTick, onBeforeUnmount, reactive, ref } from 'vue';
 import Icon from '../../Icon.vue';
-import { onBeforeUnmount, nextTick, reactive, ref } from 'vue';
 
-let slideOutTimeoutId;
+let slideOutTimeoutId: ReturnType<typeof setTimeout>;
 
 const TRANSITION_DURATION = 150;
 
 const isVisible = ref(false);
-const elementClassNames = reactive({ animation: [], position: 'absolute' });
-const dotElementClassNames = ref([]);
+const elementClassNames = reactive<{ animation: string[]; position: string }>({
+  animation: [],
+  position: 'absolute',
+});
+const dotElementClassNames = ref<string[]>([]);
 
-const coverWholePage = (wholePage) => {
-  elementClassNames.position = wholePage ? 'fixed' : 'absolute';
+const coverWholePage = (shouldCoverWholePage: boolean) => {
+  elementClassNames.position = shouldCoverWholePage ? 'fixed' : 'absolute';
 };
 
 const slideInUp = async () => {
@@ -19,11 +22,11 @@ const slideInUp = async () => {
 
   await nextTick();
 
-  elementClassNames.animation = ['backdrop-blur-sm'];
+  elementClassNames.animation = ['backdrop-blur-xs'];
   dotElementClassNames.value = ['bhr-upload-visual__dot--slide-in-up'];
 };
 
-const slideOut = async (direction) => {
+const slideOut = async (direction: 'up' | 'down') => {
   elementClassNames.animation = ['delay-100', 'opacity-0'];
   dotElementClassNames.value = [
     direction === 'up'

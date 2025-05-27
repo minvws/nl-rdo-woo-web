@@ -9,16 +9,13 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class AuthExtensionRuntime implements RuntimeExtensionInterface
 {
-    protected AuthorizationMatrix $authorizationMatrix;
-
-    public function __construct(AuthorizationMatrix $authorizationMatrix)
+    public function __construct(protected AuthorizationMatrix $authorizationMatrix)
     {
-        $this->authorizationMatrix = $authorizationMatrix;
     }
 
     public function hasPermission(string $permission): bool
     {
-        list($prefix, $permission) = explode('.', $permission, 2);
+        [$prefix, $permission] = explode('.', $permission, 2);
         if (! $permission) {
             $permission = '';
         }

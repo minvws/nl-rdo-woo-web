@@ -1,14 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { useSlots } from 'vue';
 import Icon from './Icon.vue';
 
-const props = defineProps({
-  type: {
-    type: String,
-    required: false,
-    default: 'success',
-  },
+interface Props {
+  type?: 'success' | 'info' | 'danger';
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  type: 'success',
 });
+
 const slots = useSlots();
 
 const getAlertTypeClass = () => {
@@ -27,7 +28,7 @@ const getIconColor = () => {
     case 'danger':
       return 'fill-current';
     case 'info':
-      return 'fill-bhr-ocean-boat-blue';
+      return 'fill-bhr-blue-800';
     default:
       return 'fill-bhr-philippine-green';
   }

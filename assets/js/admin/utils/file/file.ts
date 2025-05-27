@@ -1,25 +1,8 @@
 import { formatNumber, isNumber } from '@utils';
 
-const enum MimeType {
-  Csv = 'application/csv',
-  Pdf = 'application/pdf',
-  PdfX = 'application/x-pdf',
-  MsExcel = 'application/vnd.ms-excel',
-  OpenDocumentSpeadsheet = 'application/vnd.oasis.opendocument.spreadsheet',
-  OfficeDocumentSpreadsheet = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  SevenZip = 'application/x-7z-compressed',
-  VideoMp4 = 'video/mp4',
-  Word = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  Zip = 'application/zip',
-}
-
 export const MimeTypes: Readonly<Record<string, string[]>> = {
-  Csv: [
-    'application/vnd.ms-excel',
-    'application/msexcel',
-    'application/x-msexcel',
-    'zz-application/zz-winassoc-xls',
-  ],
+  Audio: ['audio/aac', 'audio/mp3', 'audio/ogg', 'audio/vnd.wav'],
+  Csv: ['application/vnd.ms-excel', 'application/msexcel'],
   Pdf: [
     'application/pdf',
     'application/acrobat',
@@ -46,7 +29,7 @@ export const MimeTypes: Readonly<Record<string, string[]>> = {
     'application/vnd.oasis.opendocument.formula',
   ],
   Text: ['text/plain', 'text/rdf'],
-  Video: [MimeType.VideoMp4],
+  Video: ['video/mp4'],
   Word: [
     'application/msword',
     'application/vnd.ms-word',
@@ -56,7 +39,7 @@ export const MimeTypes: Readonly<Record<string, string[]>> = {
     'application/vnd.oasis.opendocument.text',
   ],
   Xml: ['application/rdf+xml'],
-  Zip: [MimeType.Zip, MimeType.SevenZip],
+  Zip: ['application/zip', 'application/x-7z-compressed'],
 };
 
 export const formatFileSize = (bytes: number): string => {
@@ -74,6 +57,7 @@ export const formatFileSize = (bytes: number): string => {
 
 export const getIconNameByMimeType = (mimeType: string) => {
   const mappings = {
+    'file-audio': MimeTypes.Audio,
     'file-csv': [...MimeTypes.Csv, ...MimeTypes.Spreadsheet],
     'file-pdf': MimeTypes.Pdf,
     'file-presentation': MimeTypes.Presentation,
@@ -93,6 +77,7 @@ export const getIconNameByMimeType = (mimeType: string) => {
 
 export const getFileTypeByMimeType = (mimeType: string) => {
   const mappings = {
+    audio: MimeTypes.Audio,
     csv: MimeTypes.Csv,
     spreadsheet: MimeTypes.Spreadsheet,
     pdf: MimeTypes.Pdf,

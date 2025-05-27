@@ -36,10 +36,8 @@ class DepartmentIndexUpdaterTest extends MockeryTestCase
         $department->shouldReceive('getShortTag')->andReturn('FB');
 
         $this->elasticClient->expects('updateByQuery')->with(\Mockery::on(
-            static function (array $input) use ($departmentId) {
-                return $input['body']['query']['bool']['should'][0]['match']['departments.id'] === $departmentId
-                    && $input['body']['script']['params']['department']['name'] === 'FB|Foo Bar';
-            }
+            static fn (array $input) => $input['body']['query']['bool']['should'][0]['match']['departments.id'] === $departmentId
+                && $input['body']['script']['params']['department']['name'] === 'FB|Foo Bar'
         ));
 
         $this->indexUpdater->update($department);

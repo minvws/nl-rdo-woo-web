@@ -20,7 +20,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Uid\Uuid;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 readonly class InquiryService
 {
@@ -70,15 +70,12 @@ readonly class InquiryService
                     $this->entityStorageService->deleteAllFilesForEntity($inventory);
                     $this->doctrine->remove($inventory);
                 }
-                $this->batchDownloadService->removeAllForScope(
-                    BatchDownloadScope::forInquiry($inquiry),
-                );
+
                 $this->doctrine->remove($inquiry);
             } else {
                 $this->doctrine->persist($inquiry);
 
                 $this->generateInventory($inquiry);
-                $this->generateArchives($inquiry);
             }
         }
 
@@ -88,19 +85,6 @@ readonly class InquiryService
     public function generateInventory(Inquiry $inquiry): void
     {
         $this->wooDecisionDispatcher->dispatchGenerateInquiryInventoryCommand($inquiry->getId());
-    }
-
-    public function generateArchives(Inquiry $inquiry): void
-    {
-        $this->batchDownloadService->refresh(
-            BatchDownloadScope::forInquiry($inquiry)
-        );
-
-        foreach ($inquiry->getDossiers() as $dossier) {
-            $this->batchDownloadService->refresh(
-                BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossier),
-            );
-        }
     }
 
     /**
@@ -142,7 +126,6 @@ readonly class InquiryService
 
         if ($result->needsFileUpdate()) {
             $this->generateInventory($inquiry);
-            $this->generateArchives($inquiry);
         }
 
         $this->dispatchDocumentUpdates($result);

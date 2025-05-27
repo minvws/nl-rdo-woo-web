@@ -110,15 +110,22 @@ export const dateFilters = () => {
   };
 
   const markDateElementAsInvalid = (dateElement: HTMLInputElement) => {
-    dateElement.setAttribute(
-      'aria-describedby',
-      [
-        dateElement.getAttribute('aria-describedby') ?? '',
-        ID_OF_INPUT_ERROR_ELEMENT,
-      ]
-        .join(' ')
-        .trim(),
-    );
+    if (
+      !dateElement
+        .getAttribute('aria-describedby')
+        ?.includes(ID_OF_INPUT_ERROR_ELEMENT)
+    ) {
+      dateElement.setAttribute(
+        'aria-describedby',
+        [
+          dateElement.getAttribute('aria-describedby') ?? '',
+          ID_OF_INPUT_ERROR_ELEMENT,
+        ]
+          .join(' ')
+          .trim(),
+      );
+    }
+
     dateElement.setAttribute('aria-invalid', 'true');
     dateElement.classList.add('woo-input-text--invalid');
   };

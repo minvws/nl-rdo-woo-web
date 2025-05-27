@@ -9,6 +9,9 @@
     - [Ingestion](#ingestion)
     - [User management](#user-management)
     - [Document location](#document-location)
+    - [Woo-index](#woo-index)
+    - [File-storage check](#file-storage-check)
+    - [BatchDownload refresh](#batchdownload-refresh)
 <!-- TOC -->
 
 ## Woo platform console commands
@@ -101,3 +104,50 @@ Document : 1ee069e4-70b6-6a54-b3a9-95eaef3bc6c6
 Filename : 1729902-208789-PG Nota voor brief aan RIVM betreft opdrachtbrief wetenschappelijk adviespanel COVID vaccin.pdf.pdf
 Path     : /dd/19ba3eda7104b4041da826c5a8f9562abd548b3aa1968ca30112d4ebdc2006/5034.pdf
 ```
+
+### Woo-index
+
+```shell
+bin/console woo-index:generate
+```
+
+Generates a new Woo-index in `/var/woo_index` on local/dev environments. This will be changed to an S3 bucket once we implement minio locally.
+Will not cleanup old woo-indexes, for that you need to add `--cleanup`.
+
+### File-storage check
+
+```shell
+bin/console woopie:check:storage
+```
+
+Checks if files in storage can be matched to the database. Outputs number of files and used storage per entity type.
+Also reports details for missing files (entities that should have a file, but the file could not be found)
+
+When executed in verbose mode (`-v` flag) the orphaned files will all be listed, otherwise just the count and total size.
+Depending on the environment this might result in a lot of output.
+
+### BatchDownload refresh
+
+```shell
+bin/console woopie:batchdownload:refresh
+```
+
+All BatchDownloads for woo-decisions and inquiries will be refreshed. Any existing batches will be marked as outdated and generation of a new archive is triggered for each one.
+The actual generation of the archives will be executed async in message queue workers.
+
+### Upload cleanup
+
+```shell
+bin/console woopie:cron:clean-uploads
+```
+
+Cleans up outdated or orphaned upload entities and files. Should be executed at least daily.
+
+### Move orphaned files
+
+```shell
+bin/console woopie:move-orphaned-files
+```
+
+Moves orphaned files into a separate ("trash") bucket. Orphaned files are files in storage that are no longer related to any of the existing entities.
+Asks for the name of the destination bucket during execution.

@@ -19,19 +19,15 @@ use Symfony\Component\Uid\Uuid;
  */
 class DocumentPrefixChoiceLoader implements ChoiceLoaderInterface
 {
-    protected EntityManagerInterface $doctrine;
-    protected AuthorizationMatrix $authorizationMatrix;
-    protected Security $security;
-
-    public function __construct(EntityManagerInterface $doctrine, AuthorizationMatrix $authorizationMatrix, Security $security)
-    {
-        $this->doctrine = $doctrine;
-        $this->authorizationMatrix = $authorizationMatrix;
-        $this->security = $security;
+    public function __construct(
+        protected EntityManagerInterface $doctrine,
+        protected AuthorizationMatrix $authorizationMatrix,
+        protected Security $security,
+    ) {
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function loadChoiceList(?callable $value = null): ChoiceListInterface
     {
@@ -52,7 +48,7 @@ class DocumentPrefixChoiceLoader implements ChoiceLoaderInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function loadChoicesForValues(array $values, ?callable $value = null): array
     {
@@ -68,7 +64,7 @@ class DocumentPrefixChoiceLoader implements ChoiceLoaderInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function loadValuesForChoices(array $choices, ?callable $value = null): array
     {

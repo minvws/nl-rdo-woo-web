@@ -42,8 +42,6 @@ services:
             tags: [ 'domain.publication.dossier.admin.action' ]
         App\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface:
             tags: [ 'domain.upload.preprocessor.strategy' ]
-        App\Domain\Upload\Postprocessor\FilePostprocessorStrategyInterface:
-            tags: [ 'domain.upload.postprocessor.strategy' ]
         App\Domain\Search\Theme\ThemeInterface:
             tags: [ 'domain.search.theme' ]
         App\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface:

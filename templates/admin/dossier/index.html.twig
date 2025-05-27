@@ -12,31 +12,22 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('dossier.create') %}
-            <a class="bhr-button bhr-button--secondary" data-e2e-name="create-dossier" href="{{ path('app_admin_dossier_create') }}">{{ 'admin.dossiers.new_dossier' | trans() }}</a>
+            <a class="bhr-btn-filled-primary" data-e2e-name="create-dossier" href="{{ path('app_admin_dossier_create') }}">{{ 'admin.dossiers.new_dossier' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>
 
     <div class="bhr-card">
-        {% set alerts = app.flashes('backend') %}
-        {% if alerts | length > 0 %}
-            <div class="mb-8" data-e2e-name="alerts">
-                {% for messages in alerts %}
-                    {% for label, message in messages %}
-                        <twig:Admin:Alert type="{{ label }}">
-                            <strong>{{ message }}</strong>
-                        </twig:Admin:Alert>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include 'admin/shared/flash-messages.html.twig' %}
 
         {% if pagination | length > 0 or (formData is not null) %}
             <twig:Admin:LeftAndRight class="pt-1">
                 {% include 'admin/dossier/shared/snippets/filter.html.twig' with { 'form': form } %}
 
                 <twig:block name="right">
-                    <div {{ vue_component('PublicationSearchController', {
+                    <div {{ vue_component('GenericController', {
+                        componentName: 'PublicationSearchAndGo',
+
                         endpoint: '/balie/api/publication/search',
                         label: 'admin.publications.search_within' | trans,
                     }) }} data-e2e-name="dossier-search">
@@ -79,7 +70,7 @@
                         <tr>
                             <td>
                                 <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">
-                                    {{ dossier.documentPrefix }} / {{ dossier.dossierNr }}
+                                    <span class="break-all">{{ dossier.documentPrefix }} / {{ dossier.dossierNr }}</span>
                                 </a>
                             </td>
                             <td>
@@ -95,7 +86,7 @@
                                 {{ dossier.publicationDate  is empty ? "-" : dossier.publicationDate|format_date('medium') }}
                             </td>
                             <td>
-                                <span class="bhr-clamp">{{ dossier.title }}</span>
+                                <span class="bhr-clamp break-all">{{ dossier.title }}</span>
                             </td>
                             <td>
                                 {% if not dossier.isCompleted %}

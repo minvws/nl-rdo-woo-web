@@ -24,6 +24,7 @@ class EncryptedSessionProxy extends SessionHandlerProxy
         $this->key = new EncryptionKey(new HiddenString($key));
     }
 
+    #[\Override]
     public function read($sessionId): string
     {
         $data = parent::read($sessionId);
@@ -34,6 +35,7 @@ class EncryptedSessionProxy extends SessionHandlerProxy
         return Crypto::decrypt($data, $this->key)->getString();
     }
 
+    #[\Override]
     public function write($sessionId, $data): bool
     {
         $data = Crypto::encrypt(new HiddenString($data), $this->key);

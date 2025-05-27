@@ -7,14 +7,5 @@
     {{ form_row(form.subject) }}
     {{ form_row(form.internal_reference) }}
 
-    {% if form.children.dossier_nr is defined %}
-        {{ form_row(form.dossier_nr) }}
-    {% elseif dossier.dossierNr %}
-        <div class="bhr-form-row">
-            {% if form.children.dossierNr is not defined %}
-                <h2 class="bhr-label">{{ 'global.ref_number' | trans }}</h2>
-            {% endif %}
-            {{ dossier.dossierNr }}
-        </div>
-    {% endif %}
+    {%  include 'admin/dossier/shared/snippets/reference-number.html.twig' with {'form': form, 'dossier': dossier} %}
 {{ form_end(form) }}

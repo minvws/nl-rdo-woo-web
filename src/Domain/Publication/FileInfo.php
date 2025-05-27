@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Publication;
 
 use App\SourceType;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -15,13 +16,13 @@ class FileInfo
     private ?string $mimetype = null;
 
     #[ORM\Column(length: 1024, nullable: true)]
-    private ?string $path;
+    private ?string $path = null;
 
     #[ORM\Column(length: 128, nullable: true)]
     private ?string $hash = null;
 
-    #[ORM\Column(nullable: false)]
-    private int $size = 0;
+    #[ORM\Column(type: Types::BIGINT, nullable: false)]
+    private string $size = '0';
 
     /* The type of the local file on disk. This is mostly a PDF. These are the types that can be ingested by the workers */
     #[ORM\Column(length: 255, nullable: true)]
@@ -87,12 +88,12 @@ class FileInfo
 
     public function getSize(): int
     {
-        return $this->size;
+        return intval($this->size);
     }
 
     public function setSize(int $size): self
     {
-        $this->size = $size;
+        $this->size = strval($size);
 
         return $this;
     }
@@ -102,7 +103,7 @@ class FileInfo
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -126,7 +127,7 @@ class FileInfo
         return $this->type;
     }
 
-    public function setType(string $type): self
+    public function setType(?string $type): self
     {
         $this->type = $type;
 
@@ -173,7 +174,6 @@ class FileInfo
     {
         $this->setMimetype(null);
         $this->setUploaded(false);
-        $this->setSize(0);
         $this->setPath(null);
         $this->setPageCount(null);
     }

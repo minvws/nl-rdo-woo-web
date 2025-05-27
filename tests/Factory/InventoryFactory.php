@@ -14,7 +14,7 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
  */
 final class InventoryFactory extends PersistentProxyObjectFactory
 {
-    public function __construct(private StorageRootPathGenerator $storageRootPathGenerator)
+    public function __construct(private readonly StorageRootPathGenerator $storageRootPathGenerator)
     {
     }
 
@@ -46,6 +46,7 @@ final class InventoryFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
         return $this->afterInstantiate(function (Inventory $inventory): void {

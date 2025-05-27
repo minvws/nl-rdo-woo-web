@@ -9,24 +9,14 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('department.create') %}
-            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_department_create') }}" data-e2e-name="new-department">{{ 'admin.department.new_department' | trans() }}</a>
+            <a class="bhr-btn-filled-primary" href="{{ path('app_admin_department_create') }}" data-e2e-name="new-department">{{ 'admin.department.new_department' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>
 
     <div class="bhr-card">
-        {% set alerts = app.flashes('backend') %}
-        {% if alerts | length > 0 %}
-            <div class="mb-8" data-e2e-name="alerts">
-                {% for messages in alerts %}
-                    {% for label, message in messages %}
-                        <twig:Admin:Alert type="{{ label }}">
-                            <strong>{{ message }}</strong>
-                        </twig:Admin:Alert>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include 'admin/shared/flash-messages.html.twig' %}
+
         <table class="bhr-table" data-e2e-name="departments-table">
             <thead>
                 <tr>
@@ -40,16 +30,29 @@
                 {% for department in pagination %}
                     <tr>
                         <td>
-                            <a class="bhr-a" href="{{ path('app_admin_department_edit', { id: department.id.toBase58 }) }}" data-e2e-name="department-details-link">
+                            {% if matrix_has_permission('department.update') %}
+                                <a class="bhr-a" href="{{ path('app_admin_department_edit', { id: department.id.toBase58 }) }}" data-e2e-name="department-details-link">
+                                    {{ department.name }}
+                                </a>
+                            {% else %}
                                 {{ department.name }}
-                            </a>
+                            {% endif %}
                         </td>
                         <td>
                             {{ department.shortTag | default('-') }}
                         </td>
                         <td>
                             {% if department.public %}
-                                {{ 'admin.global.yes' | trans }}
+                                {{ 'admin.global.yes' | trans }} -
+                                {% if user_can_edit_landingpage(department) %}
+                                    <a class="bhr-a" href="{{ path('app_admin_department_landing_page_edit', { id: department.id }) }}" data-e2e-name="update-landing-page">
+                                        {{ 'admin.global.edit' | trans | lower }}<span class="sr-only"> ({{ department.shortTag | default(department.name) }})</span>
+                                    </a>
+                                {% else %}
+                                    {{ "admin.department.landingpage_not_editable" | trans }}
+                                {% endif %}
+                            {% else %}
+                                {{ 'admin.global.no' | trans }}
                             {% endif %}
                         </td>
                         <td>

@@ -7,7 +7,7 @@ namespace App\Domain\Publication\Dossier\ViewModel;
 use App\Domain\Publication\Dossier\Type\DossierType as DossierTypeEnum;
 
 /**
- * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+ * @SuppressWarnings("PHPMD.ExcessiveParameterList")
  */
 final readonly class CommonDossierProperties
 {

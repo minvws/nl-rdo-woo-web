@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Search;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Query\SearchParametersFactory;
 use App\Service\Elastic\ElasticClientInterface;
 use App\Service\Search\Object\ObjectHandler;
-use App\Service\Search\Query\QueryGenerator;
+use App\Service\Search\Query\Definition\QueryDefinitionInterface;
 use App\Service\Search\Result\Result;
 use App\Service\Search\Result\ResultTransformer;
 use App\Service\Search\SearchService;
@@ -18,12 +19,14 @@ use Erichard\ElasticQueryBuilder\QueryBuilder;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class SearchServiceTest extends MockeryTestCase
 {
+    use MatchesSnapshots;
+
     private ElasticClientInterface&MockInterface $elasticClient;
     private LoggerInterface&MockInterface $logger;
-    private QueryGenerator&MockInterface $queryGenerator;
     private ObjectHandler&MockInterface $objectHandler;
     private ResultTransformer&MockInterface $resultTransformer;
     private SearchParametersFactory&MockInterface $searchParametersFactory;
@@ -33,7 +36,6 @@ class SearchServiceTest extends MockeryTestCase
     {
         $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->queryGenerator = \Mockery::mock(QueryGenerator::class);
         $this->objectHandler = \Mockery::mock(ObjectHandler::class);
         $this->resultTransformer = \Mockery::mock(ResultTransformer::class);
         $this->searchParametersFactory = \Mockery::mock(SearchParametersFactory::class);
@@ -41,50 +43,88 @@ class SearchServiceTest extends MockeryTestCase
         $this->searchService = new SearchService(
             $this->elasticClient,
             $this->logger,
-            $this->queryGenerator,
             $this->objectHandler,
             $this->resultTransformer,
             $this->searchParametersFactory,
         );
     }
 
-    public function testSearchFacets(): void
+    public function testGetResultUsesProvidedSearchParameters(): void
     {
-        $facetsQuery = \Mockery::mock(QueryBuilder::class);
-        $facetsQuery->expects('build')->andReturn($queryArray = ['foo' => 'bar']);
+        $searchParameters = new SearchParameters(
+            new FacetInputCollection(),
+            limit: 1,
+            offset: 2,
+        );
 
-        $params = \Mockery::mock(SearchParameters::class);
-        $this->queryGenerator->expects('createFacetsQuery')->with($params)->andReturn($facetsQuery);
+        $queryDefinition = \Mockery::mock(QueryDefinitionInterface::class);
+        $queryDefinition->expects('configure')->with(
+            \Mockery::type(QueryBuilder::class),
+            $searchParameters,
+        );
 
         $elasticResponse = \Mockery::mock(Elasticsearch::class);
-        $this->elasticClient->expects('search')->with($queryArray)->andReturn($elasticResponse);
+        $this->elasticClient->expects('search')->with(\Mockery::on(
+            function (array $searchData): bool {
+                $this->assertMatchesJsonSnapshot($searchData);
+
+                return true;
+            }
+        ))->andReturn($elasticResponse);
 
         $result = Result::create();
-        $this->resultTransformer->expects('transform')->with($queryArray, $params, $elasticResponse)->andReturn($result);
+        $this->resultTransformer->expects('transform')->with(
+            ['body' => [], 'index' => 'woopie-read', 'from' => 2, 'size' => 1],
+            $searchParameters,
+            $elasticResponse,
+        )->andReturn($result);
 
-        self::assertEquals(
+        self::assertSame(
             $result,
-            $this->searchService->searchFacets($params),
+            $this->searchService->getResult(
+                $queryDefinition,
+                $searchParameters,
+            ),
         );
     }
 
-    public function testSearch(): void
+    public function testGetResultFallsBackToDefaultParameters(): void
     {
-        $facetsQuery = \Mockery::mock(QueryBuilder::class);
-        $facetsQuery->expects('build')->andReturn($queryArray = ['foo' => 'bar']);
+        $searchParameters = new SearchParameters(
+            new FacetInputCollection(),
+            limit: 1,
+            offset: 2,
+        );
 
-        $params = \Mockery::mock(SearchParameters::class);
-        $this->queryGenerator->expects('createQuery')->with($params)->andReturn($facetsQuery);
+        $this->searchParametersFactory->expects('createDefault')->andReturn($searchParameters);
+
+        $queryDefinition = \Mockery::mock(QueryDefinitionInterface::class);
+        $queryDefinition->expects('configure')->with(
+            \Mockery::type(QueryBuilder::class),
+            $searchParameters,
+        );
 
         $elasticResponse = \Mockery::mock(Elasticsearch::class);
-        $this->elasticClient->expects('search')->with($queryArray)->andReturn($elasticResponse);
+        $this->elasticClient->expects('search')->with(\Mockery::on(
+            function (array $searchData): bool {
+                $this->assertMatchesJsonSnapshot($searchData);
+
+                return true;
+            }
+        ))->andReturn($elasticResponse);
 
         $result = Result::create();
-        $this->resultTransformer->expects('transform')->with($queryArray, $params, $elasticResponse)->andReturn($result);
+        $this->resultTransformer->expects('transform')->with(
+            ['body' => [], 'index' => 'woopie-read', 'from' => 2, 'size' => 1],
+            $searchParameters,
+            $elasticResponse,
+        )->andReturn($result);
 
-        self::assertEquals(
+        self::assertSame(
             $result,
-            $this->searchService->search($params),
+            $this->searchService->getResult(
+                $queryDefinition,
+            ),
         );
     }
 
@@ -104,28 +144,6 @@ class SearchServiceTest extends MockeryTestCase
         self::assertEquals(
             $expectedResult,
             $this->searchService->getPageContent($document, 123),
-        );
-    }
-
-    public function testRetrieveExtendedFacets(): void
-    {
-        $facetsQuery = \Mockery::mock(QueryBuilder::class);
-        $facetsQuery->expects('build')->andReturn($queryArray = ['foo' => 'bar']);
-
-        $params = \Mockery::mock(SearchParameters::class);
-        $this->queryGenerator->expects('createExtendedFacetsQuery')->with($params)->andReturn($facetsQuery);
-
-        $this->searchParametersFactory->expects('createDefault')->andReturn($params);
-
-        $elasticResponse = \Mockery::mock(Elasticsearch::class);
-        $this->elasticClient->expects('search')->with($queryArray)->andReturn($elasticResponse);
-
-        $result = Result::create();
-        $this->resultTransformer->expects('transform')->with($queryArray, $params, $elasticResponse)->andReturn($result);
-
-        self::assertEquals(
-            $result,
-            $this->searchService->retrieveExtendedFacets(),
         );
     }
 }

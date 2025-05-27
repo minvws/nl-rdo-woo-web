@@ -60,7 +60,7 @@ final class SevenZipFileStrategyTest extends UnitTestCase
         $this->scanner->shouldReceive('scan')->with($pathOne)->andReturn(FileScanResult::SAFE);
         $this->scanner->shouldReceive('scan')->with($pathTwo)->andReturn(FileScanResult::SAFE);
 
-        $result = iterator_to_array($this->strategy->process($file));
+        $result = iterator_to_array($this->strategy->process($file), false);
 
         $this->assertCount(2, $result);
 
@@ -98,7 +98,7 @@ final class SevenZipFileStrategyTest extends UnitTestCase
         $this->scanner->shouldReceive('scan')->with($pathTwo)->andReturn(FileScanResult::SAFE);
         $this->scanner->shouldReceive('scan')->with($pathThree)->andReturn(FileScanResult::TECHNICAL_ERROR);
 
-        $result = iterator_to_array($this->strategy->process($file));
+        $result = iterator_to_array($this->strategy->process($file), false);
 
         $this->assertCount(1, $result);
 
@@ -112,6 +112,13 @@ final class SevenZipFileStrategyTest extends UnitTestCase
         /** @var UploadedFile&MockInterface $file */
         $file = \Mockery::mock(UploadedFile::class);
         $file->shouldReceive('getOriginalFileExtension')->andReturn('7z');
+        $file->shouldReceive('getPathname')->andReturn($path = 'test.7z');
+
+        $this->mimeTypes
+            ->shouldReceive('guessMimeType')
+            ->once()
+            ->with($path)
+            ->andReturn('application/x-7z-compressed');
 
         $this->assertTrue($this->strategy->canProcess($file));
     }
@@ -121,6 +128,13 @@ final class SevenZipFileStrategyTest extends UnitTestCase
         /** @var UploadedFile&MockInterface $file */
         $file = \Mockery::mock(UploadedFile::class);
         $file->shouldReceive('getOriginalFileExtension')->andReturn('zip');
+        $file->shouldReceive('getPathname')->andReturn($path = 'test.zip');
+
+        $this->mimeTypes
+            ->shouldReceive('guessMimeType')
+            ->once()
+            ->with($path)
+            ->andReturn('application/zip');
 
         $this->assertTrue($this->strategy->canProcess($file));
     }

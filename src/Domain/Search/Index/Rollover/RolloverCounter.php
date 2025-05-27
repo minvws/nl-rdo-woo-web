@@ -10,16 +10,16 @@ use App\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
 use App\Domain\Search\Index\Schema\ElasticField;
 use App\Domain\Search\Index\Schema\ElasticNestedField;
 use App\Service\Elastic\ElasticClientInterface;
-use App\Service\Search\Query\Aggregation;
-use App\Service\Search\Query\Query;
+use App\Service\Search\Query\Dsl\Aggregation;
+use App\Service\Search\Query\Dsl\Query;
 use Doctrine\ORM\EntityManagerInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Erichard\ElasticQueryBuilder\Aggregation\NestedAggregation;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
-use Jaytaph\TypeArray\TypeArray;
+use MinVWS\TypeArray\TypeArray;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 readonly class RolloverCounter
 {

@@ -17,17 +17,18 @@ vi.mock('@js/admin/utils', async (importOriginal) => {
 
 describe('The "<Form />" component', () => {
   let store: ReturnType<typeof useFormStore>;
-  const submitSchema = z.object({});
+  const mockedSubmitSchema = z.object({});
 
-  const createComponent = () => {
+  const createComponent = (statusCode = 200) => {
     store = useFormStore(
       () =>
         Promise.resolve({
           ok: true,
           statusText: 'OK',
-          json: () => Promise.resolve({}),
+          status: statusCode,
+          json: () => Promise.resolve({ name: 'John', age: 25 }),
         } as Response),
-      submitSchema,
+      mockedSubmitSchema,
     );
     store.addInput(useInputStore('name', 'Name', ref('John')));
     store.addInput(useInputStore('age', 'Age', ref(25)));
@@ -46,8 +47,10 @@ describe('The "<Form />" component', () => {
   };
 
   const getFormElement = (component: VueWrapper) => component.find('form');
-  const triggerSubmit = (formElement: DOMWrapper<HTMLFormElement>) => {
+  const triggerSubmit = async (formElement: DOMWrapper<HTMLFormElement>) => {
+    await nextTick();
     formElement.trigger('submit');
+    await flushPromises();
   };
 
   afterEach(() => {
@@ -61,23 +64,45 @@ describe('The "<Form />" component', () => {
   });
 
   describe('when the form is submitted', () => {
-    test('should tell the store it can display errors', () => {
+    test('should tell the store it can display errors', async () => {
       const formElement = getFormElement(createComponent());
 
       expect(store.markAsShouldDisplayErrors).not.toHaveBeenCalled();
 
-      triggerSubmit(formElement);
+      await triggerSubmit(formElement);
       expect(store.markAsShouldDisplayErrors).toHaveBeenCalled();
     });
 
-    test('should emit an "pristineSubmit" event when the form is pristine', () => {
+    test('should emit an "pristineSubmit" event when the form is pristine', async () => {
       const component = createComponent();
       const formElement = getFormElement(component);
 
       expect(component.emitted('pristineSubmit')).toBeUndefined();
 
-      triggerSubmit(formElement);
+      await triggerSubmit(formElement);
       expect(component.emitted('pristineSubmit')).toBeDefined();
+    });
+
+    test('should emit a "submitError" event when validating the response fails', async () => {
+      const component = createComponent(300);
+      const formElement = getFormElement(component);
+
+      expect(component.emitted('submitError')).toBeUndefined();
+
+      store.getInputStore('name')?.setValue('Ben');
+      await triggerSubmit(formElement);
+      expect(component.emitted('submitError')).toBeDefined();
+    });
+
+    test('should emit a "submitSuccess" event when the response is valid', async () => {
+      const component = createComponent();
+      const formElement = getFormElement(component);
+
+      expect(component.emitted('submitSuccess')).toBeUndefined();
+
+      store.getInputStore('name')?.setValue('Ben');
+      await triggerSubmit(formElement);
+      expect(component.emitted('submitSuccess')).toBeDefined();
     });
 
     test('should tell the store to reset submit validation errors', async () => {
@@ -87,8 +112,7 @@ describe('The "<Form />" component', () => {
       expect(store.resetSubmitValidationErrors).not.toHaveBeenCalled();
 
       store.getInputStore('name')?.setValue('Ben');
-      await nextTick();
-      triggerSubmit(formElement);
+      await triggerSubmit(formElement);
       expect(store.resetSubmitValidationErrors).toHaveBeenCalled();
     });
 
@@ -99,10 +123,33 @@ describe('The "<Form />" component', () => {
       expect(validateData).not.toHaveBeenCalled();
 
       store.getInputStore('name')?.setValue('Ben');
-      await nextTick();
-      triggerSubmit(formElement);
-      await flushPromises();
-      expect(validateData).toHaveBeenNthCalledWith(1, {}, submitSchema);
+      await triggerSubmit(formElement);
+      expect(validateData).toHaveBeenNthCalledWith(
+        1,
+        { name: 'John', age: 25 },
+        mockedSubmitSchema,
+      );
+    });
+
+    test('should inform the store about violations if there are any', async () => {
+      vi.mocked(validateData).mockImplementationOnce(() => ({
+        violations: [{ propertyPath: 'name', message: 'Name is required' }],
+      }));
+
+      const component = createComponent(422);
+      const formElement = getFormElement(component);
+
+      vi.spyOn(store, 'addSubmitValidationError');
+
+      expect(store.addSubmitValidationError).not.toHaveBeenCalled();
+
+      store.getInputStore('name')?.setValue('Ben');
+      await triggerSubmit(formElement);
+      expect(store.addSubmitValidationError).toHaveBeenNthCalledWith(
+        1,
+        'Name is required',
+        'name',
+      );
     });
   });
 });

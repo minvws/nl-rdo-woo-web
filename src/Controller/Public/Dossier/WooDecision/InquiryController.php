@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Controller\Public\Dossier\WooDecision;
 
 use App\Doctrine\DocumentConditions;
-use App\Domain\Publication\BatchDownload\BatchDownload;
 use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
+use App\Domain\Publication\BatchDownload\OnDemandZipGenerator;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
@@ -25,12 +24,11 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Annotation\Route;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class InquiryController extends AbstractController
 {
@@ -43,7 +41,7 @@ class InquiryController extends AbstractController
         private readonly WooDecisionRepository $wooDecisionRepository,
         private readonly InquiryRepository $inquiryRepository,
         private readonly DownloadResponseHelper $downloadHelper,
-        private readonly BatchDownloadService $batchDownloadService,
+        private readonly OnDemandZipGenerator $onDemandZipGenerator,
     ) {
     }
 
@@ -59,12 +57,14 @@ class InquiryController extends AbstractController
         $form = $this->createForm(InquiryFilterFormType::class, $inquiry, ['filterParam' => $request->query->getString('filter')]);
         $form->handleRequest($request);
 
+        $caseSearchParams = [
+            FacetKey::INQUIRY_DOCUMENTS->getParamName() => [$inquiry->getId()],
+        ];
+
         $filter = $form->isSubmitted() && $form->isValid() ? $form->get('filter')->getData() : InquiryFilterFormType::CASE;
         if ($filter === InquiryFilterFormType::CASE) {
             $docQuery = $this->inquiryRepository->getDocumentsForPubliclyAvailableDossiers($inquiry);
-            $searchUrlParams = [
-                FacetKey::INQUIRY_DOCUMENTS->getParamName() => [$inquiry->getId()],
-            ];
+            $searchUrlParams = $caseSearchParams;
         } else {
             $dossier = $this->wooDecisionRepository->findOneBy(['dossierNr' => $filter]);
             if (! $dossier || ! $this->isGranted(DossierVoter::VIEW, $dossier)) {
@@ -78,7 +78,7 @@ class InquiryController extends AbstractController
         }
 
         $downloadUrl = $this->generateUrl(
-            'app_inquiry_batch',
+            'app_inquiry_download_zip_details',
             [
                 'token' => $inquiry->getToken(),
                 'filter' => $filter,
@@ -86,6 +86,7 @@ class InquiryController extends AbstractController
         );
 
         $searchUrl = $this->generateUrl('app_search', $searchUrlParams);
+        $searchAllUrl = $this->generateUrl('app_search', $caseSearchParams);
 
         $publicPagination = $this->paginator->paginate(
             DocumentConditions::onlyPubliclyAvailable($docQuery),
@@ -125,6 +126,7 @@ class InquiryController extends AbstractController
             'not_online_docs' => $notOnlinePagination,
             'form' => $form,
             'searchUrl' => $searchUrl,
+            'searchAllUrl' => $searchAllUrl,
             'downloadUrl' => $downloadUrl,
             'documentCount' => $documentCount,
         ]);
@@ -137,68 +139,32 @@ class InquiryController extends AbstractController
         return $this->downloadHelper->getResponseForEntityWithFileInfo($inquiry->getInventory());
     }
 
-    #[Route('/zaak/{token}/batch/{filter}', name: 'app_inquiry_batch', methods: ['POST'])]
-    public function createBatch(
-        #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
-        string $filter,
-    ): Response {
-        if ($filter === InquiryFilterFormType::CASE) {
-            $scope = BatchDownloadScope::forInquiry($inquiry);
-        } else {
-            $dossier = $this->wooDecisionRepository->findOneBy(['dossierNr' => $filter]);
-            if (! $dossier || ! $this->isGranted(DossierVoter::VIEW, $dossier)) {
-                throw ViewingNotAllowedException::forDossier();
-            }
-            $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossier);
-        }
-
-        $batch = $this->batchDownloadService->findOrCreate($scope);
-
-        return $this->redirectToRoute('app_inquiry_batch_detail', [
-            'token' => $inquiry->getToken(),
-            'batchId' => $batch->getId(),
-        ]);
-    }
-
-    #[Route('/zaak/{token}/batch/detail/{batchId}', name: 'app_inquiry_batch_detail', methods: ['GET'])]
+    #[Route('/zaak/{token}/download/{filter}/details', name: 'app_inquiry_download_zip_details', methods: ['GET'])]
     public function batch(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
-        #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
+        string $filter,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        if ($batch->getInquiry() !== $inquiry) {
-            throw $this->createNotFoundException('Inquiry download not found');
-        }
-
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem($inquiry->getCasenr(), 'app_inquiry_detail', ['token' => $inquiry->getToken()]);
         $breadcrumbs->addItem('public.global.download');
 
-        return $this->render('public/dossier/woo-decision/shared/batch-download.html.twig', [
+        return $this->render('public/dossier/woo-decision/shared/streaming-download.html.twig', [
             'inquiry' => $inquiry,
-            'batch' => $batch,
-            'pageTitle' => 'public.documents.inquiry.download',
-            'download_path' => $this->generateUrl('app_inquiry_batch_download', ['token' => $inquiry->getToken(), 'batchId' => $batch->getId()]),
+            'download' => $this->onDemandZipGenerator->getDetails(BatchDownloadScope::forInquiry($inquiry)),
+            'download_path' => $this->generateUrl('app_inquiry_download_zip', ['token' => $inquiry->getToken(), 'filter' => $filter]),
         ]);
     }
 
-    #[Cache(public: true, maxage: 600, mustRevalidate: true)]
-    #[Route('/zaak/{token}/batch/{batchId}/download', name: 'app_inquiry_batch_download', methods: ['GET'])]
-    public function batchDownload(
+    #[Route('/zaak/{token}/download/{filter}', name: 'app_inquiry_download_zip', methods: ['GET'])]
+    public function downloadZip(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
-        #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
+        string $filter,
     ): Response {
-        if ($batch->getInquiry() !== $inquiry) {
-            throw $this->createNotFoundException('Inquiry download not found');
-        }
+        unset($filter);
 
-        if ($batch->getStatus()->isNotCompleted()) {
-            return $this->redirectToRoute('app_inquiry_batch_detail', [
-                'token' => $inquiry->getToken(),
-                'batchId' => $batch->getId(),
-            ]);
-        }
-
-        return $this->downloadHelper->getResponseForBatchDownload($batch);
+        return $this->onDemandZipGenerator->getStreamedResponse(
+            BatchDownloadScope::forInquiry($inquiry),
+        );
     }
 }

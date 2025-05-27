@@ -1,0 +1,79 @@
+{% extends 'admin/base.html.twig' %}
+
+{% import "admin/macros/facet.html.twig" as macro %}
+
+{% set page_title = 'admin.decisions.downloads_details' | trans %}
+
+{% block body %}
+<div class="bhr-container">
+    {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
+
+    <h1 class="bhr-title pb-6">{{ page_title }}</h1>
+
+    <div class="bhr-card">
+        {% if dossiers | length > 0 %}
+            <table class="bhr-table">
+                <thead>
+                    <tr>
+                        <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.dossiers.downloads.column.dossier_nr' | trans }}</th>
+                        <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.dossiers.downloads.column.expected_count' | trans }}</th>
+                        <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.dossiers.downloads.column.file_count' | trans }}</th>
+                        <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.dossiers.downloads.column.status' | trans }}</th>
+                        <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.dossiers.downloads.column.expiration' | trans }}</th>
+                        <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.dossiers.downloads.column.size' | trans }}</th>
+                        <th class="bhr-column-head bhr-column-head--gray" scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dossier in dossiers %}
+                        <tr>
+                            <td>
+                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier', {prefix: dossier.prefix, dossierId: dossier.dossierNr}) }}">
+                                    {{ dossier.dossierNr }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ dossier.expectedDownloadCount }}
+                            </td>
+                            <td>
+                                {% if dossier.downloadFileCount is null %}
+                                    {{ 'admin.dossiers.downloads.missing' | trans }}
+                                {% else %}
+                                    {{ dossier.downloadFileCount }}
+                                {% endif %}
+                                {% if dossier.downloadFileCount != dossier.expectedDownloadCount %}
+                                    <twig:Admin:Icon name="exclamation" color="fill-bhr-orange-yellow" />
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if dossier.downloadStatus is not null %}
+                                    {{ dossier.downloadStatus.value }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if dossier.downloadExpiration is not null %}
+                                    {{ dossier.downloadExpiration | format_date }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if dossier.downloadSize is not null %}
+                                    {{ dossier.downloadSize | size }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_administration_details', {prefix: dossier.prefix, dossierId: dossier.dossierNr}) }}">
+                                    {{ 'admin.dossiers.downloads.actions' | trans }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-center">
+                {{ 'admin.dossiers.action.no_dossiers' | trans }}
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

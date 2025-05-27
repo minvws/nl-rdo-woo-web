@@ -19,6 +19,7 @@ final class FilesystemStorage extends OneupFilesystemStorage
     /**
      * @param \IteratorAggregate $chunks
      */
+    #[\Override]
     public function assembleChunks($chunks, bool $removeChunk, bool $renameChunk): File
     {
         if (! ($chunks instanceof \IteratorAggregate)) {

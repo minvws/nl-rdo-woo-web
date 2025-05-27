@@ -5,7 +5,7 @@
  <priority>0.8</priority>
  <diwoo:Document>
   <diwoo:DiWoo>
-   <diwoo:creatieDatum>2021-05-10</diwoo:creatieDatum>
+   <diwoo:creatiedatum>2021-05-10</diwoo:creatiedatum>
    <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
    <diwoo:titelcollectie>
     <diwoo:officieleTitel>Officiële titel</diwoo:officieleTitel>
@@ -21,6 +21,11 @@
      <diwoo:atTime>2021-05-10T23:59:59+00:00</diwoo:atTime>
     </diwoo:documenthandeling>
    </diwoo:documenthandelingen>
+   <diwoo:isPartOf resource="https://example2.com">Officiële titel 2</diwoo:isPartOf>
+   <diwoo:hasParts>
+    <diwoo:hasPart resource="https://example3.com">Officiële titel 3</diwoo:hasPart>
+    <diwoo:hasPart resource="https://example4.com">Officiële titel 4</diwoo:hasPart>
+   </diwoo:hasParts>
   </diwoo:DiWoo>
  </diwoo:Document>
 </url>

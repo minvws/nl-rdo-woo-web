@@ -1,0 +1,17 @@
+fileType: Audio
+mimes:
+    - audio/aac
+    - audio/x-aac
+    - audio/x-hx-aac-adts
+    - audio/mpeg
+    - audio/mp3
+    - audio/x-mp3
+    - audio/x-mpeg
+    - audio/x-mpg
+    - audio/wav
+    - audio/vnd.wave
+    - audio/wave
+    - audio/x-wav
+    - audio/ogg
+    - audio/x-ogg
+    - audio/x-opus+ogg

@@ -28,6 +28,13 @@ Source of this information: [auth_matrix.yaml](../../config/packages/auth_matrix
 | department | ROLE_GLOBAL_ADMIN | create: false, read: true, update: true |                          |
 | department | ROLE_SUPER_ADMIN  | create: true, read: true, update: true  |                          |
 
+## Department landing page
+
+| **Prefix**              | **Roles**               | **Permissions** |
+|-------------------------|-------------------------|-----------------|
+| department_landing_page | ROLE_ORGANISATION_ADMIN | update: true    |
+| department_landing_page | ROLE_SUPER_ADMIN        | update: true    |
+
 ## Dossier
 
 | **Prefix** | **Roles**          | **Permissions**                                                                           | **Filters**                                           |

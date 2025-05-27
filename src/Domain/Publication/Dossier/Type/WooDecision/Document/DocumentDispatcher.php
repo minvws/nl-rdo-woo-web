@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision\Document;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\ProcessDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\RemoveDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
@@ -19,26 +18,6 @@ readonly class DocumentDispatcher
     public function __construct(
         private MessageBusInterface $messageBus,
     ) {
-    }
-
-    public function dispatchProcessDocumentCommand(
-        Uuid $dossierUuid,
-        string $remotePath,
-        string $originalFilename,
-        bool $chunked = false,
-        string $chunkUuid = '',
-        int $chunkCount = 0,
-    ): void {
-        $this->messageBus->dispatch(
-            new ProcessDocumentCommand(
-                $dossierUuid,
-                $remotePath,
-                $originalFilename,
-                $chunked,
-                $chunkUuid,
-                $chunkCount,
-            ),
-        );
     }
 
     public function dispatchRemoveDocumentCommand(Uuid $dossierId, Uuid $documentId): void

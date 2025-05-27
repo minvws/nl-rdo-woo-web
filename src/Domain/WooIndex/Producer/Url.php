@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\WooIndex\Producer;
 
-use App\Domain\WooIndex\Changefreq;
+use App\Domain\WooIndex\Builder\Changefreq;
 use Carbon\CarbonInterface;
 
 final readonly class Url

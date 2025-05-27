@@ -1,57 +1,46 @@
-<script setup>
+<script setup lang="ts">
+import { uniqueId } from '@js/utils';
+import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 import ErrorMessages from './ErrorMessages.vue';
 import FormHelp from './FormHelp.vue';
-import { uniqueId } from '@js/utils';
-import { computed, onMounted, ref, watch } from 'vue';
+import ImmutableInputs from './ImmutableInputs.vue';
+import ImmutableValues from './ImmutableValues.vue';
+import Icon from '../Icon.vue';
+import type { MultiInputItem } from './interface';
 
-const emit = defineEmits(['update']);
+interface Props {
+  buttonText: string;
+  buttonTextMultiple?: string;
+  e2eName?: string;
+  errors: string[];
+  helpText?: string;
+  immutableValues?: string[];
+  isInvalid: boolean;
+  legend: string;
+  minLength?: number;
+  maxLength?: number;
+  name?: string;
+  options: string[];
+  values: string[];
+}
 
-const props = defineProps({
-  buttonText: {
-    type: String,
-    required: true,
-  },
-  buttonTextMultiple: {
-    type: String,
-    required: false,
-  },
-  errors: {
-    type: Array,
-    default: () => [],
-  },
-  helpText: {
-    type: String,
-    required: false,
-  },
-  isInvalid: {
-    type: Boolean,
-    default: false,
-  },
-  legend: {
-    type: String,
-    required: true,
-  },
-  minLength: {
-    type: Number,
-    required: false,
-    default: 0,
-  },
-  maxLength: {
-    type: Number,
-    required: false,
-  },
-  options: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  values: {
-    type: Array,
-    default: () => [],
-  },
+interface Emits {
+  update: [MultiInputItem[]];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  errors: () => [],
+  immutableValues: () => [],
+  isInvalid: false,
+  minLength: 0,
+  name: '',
+  options: () => [],
+  values: () => [],
 });
 
-const createItem = (value = '') => ({
+const emit = defineEmits<Emits>();
+
+const createItem = (value = ''): MultiInputItem => ({
   id: uniqueId(),
   value,
 });
@@ -61,10 +50,12 @@ const getItemsFromProps = () => {
     return props.values.map((value) => createItem(value));
   }
 
-  return Array.from({ length: props.minLength }).map(() => createItem());
+  return Array.from({
+    length: Math.max(props.minLength - props.immutableValues.length, 0),
+  }).map(() => createItem());
 };
 
-const addItemElement = ref(null);
+const addItemElement = useTemplateRef<HTMLButtonElement>('addItemElement');
 const items = ref(getItemsFromProps());
 
 const addItem = () => {
@@ -72,13 +63,13 @@ const addItem = () => {
   emitUpdate();
 };
 
-const deleteItem = (itemId) => {
+const deleteItem = (itemId: string) => {
   items.value = items.value.filter((item) => item.id !== itemId);
   emitUpdate();
   addItemElement.value?.focus();
 };
 
-const updateItem = (value, itemId) => {
+const updateItem = (value: string, itemId: string) => {
   items.value.map((item) => {
     if (item.id === itemId) {
       // eslint-disable-next-line no-param-reassign
@@ -89,19 +80,28 @@ const updateItem = (value, itemId) => {
   emitUpdate();
 };
 
-const canDeleteItem = computed(() => items.value.length > props.minLength);
+const canDeleteItem = computed(
+  () => items.value.length + props.immutableValues.length > props.minLength,
+);
 const canAddItem = computed(() => {
-  if (items.value.length === props.options.length) {
+  const optionsLength = props.options.length;
+  const itemsLength = items.value.length;
+  const immutableValuesLength = props.immutableValues.length;
+
+  if (
+    optionsLength > 0 &&
+    itemsLength + immutableValuesLength >= optionsLength
+  ) {
     return false;
   }
 
   if (props.maxLength) {
-    return items.value.length < props.maxLength;
+    return itemsLength + immutableValuesLength < props.maxLength;
   }
 
   return true;
 });
-const getOtherValues = (itemId) =>
+const getOtherValues = (itemId: string) =>
   items.value.filter((item) => item.id !== itemId).map((item) => item.value);
 
 const emitUpdate = () => {
@@ -109,12 +109,16 @@ const emitUpdate = () => {
 };
 
 const buttonText = computed(() => {
-  if (items.value.length > 0) {
-    return props.buttonTextMultiple || props.buttonText;
+  if (items.value.length + props.immutableValues.length > 0) {
+    return props.buttonTextMultiple ?? props.buttonText;
   }
 
   return props.buttonText;
 });
+
+const buttonE2eName = computed(() =>
+  props.e2eName ? `${props.e2eName}-button` : undefined,
+);
 
 watch(
   () => props.values,
@@ -151,7 +155,13 @@ defineExpose({
 
       <FormHelp v-if="props.helpText">{{ props.helpText }}</FormHelp>
 
-      <ErrorMessages :messages="props.errors" />
+      <ImmutableValues :values="props.immutableValues" />
+
+      <ImmutableInputs :name="props.name" :values="props.immutableValues" />
+
+      <div aria-live="assertive">
+        <ErrorMessages :messages="props.errors" />
+      </div>
 
       <slot />
     </fieldset>
@@ -159,11 +169,18 @@ defineExpose({
     <button
       v-if="canAddItem"
       @click="addItem"
-      class="font-bold text-bhr-davys-grey text-lg mt-2"
+      :data-e2e-name="buttonE2eName"
+      class="bhr-btn-ghost-primary mt-2"
       ref="addItemElement"
       type="button"
     >
-      + {{ buttonText }}
+      <Icon
+        class="bhr-btn__icon-left"
+        color="fill-current"
+        name="plus"
+        :size="24"
+      />
+      {{ buttonText }}
     </button>
   </div>
 </template>

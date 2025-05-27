@@ -128,7 +128,7 @@ class UploadArea
         $extensions = [];
 
         foreach ($this->accept as $mimeType) {
-            $extension = isset($mimeTypeToExtension[$mimeType]) ? $mimeTypeToExtension[$mimeType] : null;
+            $extension = $mimeTypeToExtension[$mimeType] ?? null;
             if ($extension !== null) {
                 $extensions[] = $extension;
             }

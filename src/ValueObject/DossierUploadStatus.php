@@ -79,10 +79,8 @@ readonly class DossierUploadStatus
         }
 
         return $this->getMissingDocuments()->filter(
-            static function (Document $doc) use ($docIdsToIgnore): bool {
-                return $doc->getDocumentId() !== null
-                    && ! array_key_exists($doc->getDocumentId(), $docIdsToIgnore);
-            }
+            static fn (Document $doc): bool => $doc->getDocumentId() !== null
+                && ! array_key_exists($doc->getDocumentId(), $docIdsToIgnore)
         );
     }
 

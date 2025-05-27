@@ -9,11 +9,8 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class CspExtensionRuntime implements RuntimeExtensionInterface
 {
-    protected RequestStack $requestStack;
-
-    public function __construct(RequestStack $requestStack)
+    public function __construct(protected RequestStack $requestStack)
     {
-        $this->requestStack = $requestStack;
     }
 
     public function getCspNonce(): string

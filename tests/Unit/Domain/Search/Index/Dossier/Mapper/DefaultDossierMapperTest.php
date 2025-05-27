@@ -74,6 +74,7 @@ class DefaultDossierMapperTest extends UnitTestCase
             $departmentA,
             $departmentB,
         ]));
+        $dossier->shouldReceive('getOrganisation->getId')->andReturn($organisationId = Uuid::v6());
 
         $doc = $this->mapper->map($dossier);
 
@@ -105,12 +106,13 @@ class DefaultDossierMapperTest extends UnitTestCase
                     'gte' => '2023-04-16T10:54:15+00:00',
                     'lte' => '2025-04-16T10:54:15+00:00',
                 ],
-                'date_period' => 'April 2023 - april 2025',
+                'date_period' => 'April 2023 t/m april 2025',
                 'publication_date' => '2024-04-16T11:30:22+00:00',
                 ElasticObjectField::SUBJECT->value => [
                     ElasticField::ID->value => $subjectId,
                     ElasticField::NAME->value => $subjectName,
                 ],
+                'organisation_ids' => [$organisationId],
             ],
             $doc->getDocumentValues(),
         );
@@ -146,6 +148,7 @@ class DefaultDossierMapperTest extends UnitTestCase
             $departmentA,
             $departmentB,
         ]));
+        $dossier->shouldReceive('getOrganisation->getId')->andReturn($organisationId = Uuid::v6());
 
         $doc = $this->mapper->map($dossier);
 
@@ -177,9 +180,10 @@ class DefaultDossierMapperTest extends UnitTestCase
                     'gte' => '2023-04-16T10:54:15+00:00',
                     'lte' => '2025-04-16T10:54:15+00:00',
                 ],
-                'date_period' => 'April 2023 - april 2025',
+                'date_period' => 'April 2023 t/m april 2025',
                 'publication_date' => '2024-04-16T11:30:22+00:00',
                 'subject' => null,
+                'organisation_ids' => [$organisationId],
             ],
             $doc->getDocumentValues(),
         );

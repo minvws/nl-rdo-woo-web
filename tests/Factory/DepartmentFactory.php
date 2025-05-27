@@ -27,12 +27,16 @@ final class DepartmentFactory extends PersistentProxyObjectFactory
             'shortTag' => self::faker()->word(),
             'slug' => self::faker()->word(),
             'public' => true,
+            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'fileInfo' => FileInfoFactory::new(),
         ];
     }
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
         return $this;

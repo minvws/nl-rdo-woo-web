@@ -44,7 +44,7 @@ readonly class DepartmentFieldMapper
 
     public function getValue(): string
     {
-        return $this->abbreviation ?? '';
+        return $this->abbreviation ?? $this->value;
     }
 
     public function getDescription(): string

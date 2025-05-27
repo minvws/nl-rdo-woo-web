@@ -14,15 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Reset extends Command
 {
-    protected UserService $userService;
-    protected EntityManagerInterface $doctrine;
-
-    public function __construct(UserService $userService, EntityManagerInterface $doctrine)
+    public function __construct(protected UserService $userService, protected EntityManagerInterface $doctrine)
     {
         parent::__construct();
-
-        $this->userService = $userService;
-        $this->doctrine = $doctrine;
     }
 
     protected function configure(): void

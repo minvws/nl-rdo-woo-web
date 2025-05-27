@@ -1,0 +1,19 @@
+/**
+ * Check `./rich-text.css` if you want to apply the style below to every list in a certain element
+ */
+
+@utility woo-ul {
+  @apply leading-snug list-disc ml-5;
+}
+
+@utility woo-ul--circle {
+  @apply list-circle;
+}
+
+@utility woo-ol {
+  @apply leading-snug ml-5 list-decimal;
+}
+
+@utility woo-li {
+  @apply py-1;
+}

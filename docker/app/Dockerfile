@@ -1,4 +1,6 @@
-FROM php:8.2.27-apache-bookworm
+FROM minio/mc:RELEASE.2025-02-15T10-36-16Z AS mc
+
+FROM php:8.3.21-apache-bookworm
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -62,7 +64,7 @@ RUN docker-php-ext-install \
     && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen \
     && rm -rf /tmp/*
 
-ARG NODE_MAJOR=20
+ARG NODE_MAJOR=22
 
 ENV COREPACK_HOME=/tmp/corepack
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
@@ -101,10 +103,12 @@ RUN groupadd --gid "$USER_GID" "$USER" \
         "/home/$USER/.composer" \
         "/home/$USER/.npm" \
         "/home/$USER/.symfony5" \
+        "/home/$USER/.mc" \
     && chown -R "$USER_UID":"$USER_GID" \
         "/home/$USER/.composer" \
         "/home/$USER/.npm" \
         "/home/$USER/.symfony5" \
+        "/home/$USER/.mc" \
         "$COREPACK_HOME" \
     && echo "$USER" ALL=\(root\) NOPASSWD:ALL > "/etc/sudoers.d/$USER" \
     && chmod 0440 "/etc/sudoers.d/$USER"
@@ -130,5 +134,6 @@ RUN curl -fsSLo /tmp/fixuid.tar.gz "https://github.com/boxboat/fixuid/releases/d
     && printf "user: $USER\ngroup: $USER\npaths:\n  - /var/www/html\n  - /home/$USER\n  - /home/$USER/.composer\n  - /home/$USER/.npm\n  - $COREPACK_HOME\n\n" > /etc/fixuid/config.yml
 
 COPY docker/app/docker-php-entrypoint /usr/local/bin/
+COPY --from=mc /usr/bin/mc /usr/local/bin/mc
 
 USER woopie

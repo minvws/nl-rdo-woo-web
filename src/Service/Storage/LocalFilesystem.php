@@ -14,7 +14,7 @@ readonly class LocalFilesystem
     }
 
     /**
-     * @SuppressWarnings(ErrorControlOperator)
+     * @SuppressWarnings("ErrorControlOperator")
      *
      * @param resource $source
      * @param resource $target
@@ -111,7 +111,7 @@ readonly class LocalFilesystem
     }
 
     /**
-     * @SuppressWarnings(ErrorControlOperator)
+     * @SuppressWarnings("ErrorControlOperator")
      */
     public function deleteFile(string $localPath): bool
     {
@@ -132,7 +132,7 @@ readonly class LocalFilesystem
     }
 
     /**
-     * @SuppressWarnings(ErrorControlOperator)
+     * @SuppressWarnings("ErrorControlOperator")
      *
      * @return resource|false
      */

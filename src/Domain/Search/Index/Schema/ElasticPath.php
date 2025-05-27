@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Search\Index\Schema;
 
 /**
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings("PHPMD.TooManyPublicMethods")
  */
 readonly class ElasticPath
 {
@@ -116,6 +116,14 @@ readonly class ElasticPath
         return new self(
             ElasticNestedField::DOSSIERS,
             ElasticField::INQUIRY_IDS,
+        );
+    }
+
+    public static function dossiersInquiryCaseNrs(): self
+    {
+        return new self(
+            ElasticNestedField::DOSSIERS,
+            ElasticField::INQUIRY_CASE_NRS,
         );
     }
 }

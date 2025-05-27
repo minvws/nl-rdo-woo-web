@@ -4,19 +4,28 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\WooIndex\WriterFactory;
 
-use App\Domain\WooIndex\WriterFactory\DiWooXMLWriter;
+use App\Domain\WooIndex\Builder\DiWooXMLWriter;
 use App\Tests\Unit\UnitTestCase;
+use Webmozart\Assert\Assert;
 
 final class DiWooXMLWriterTest extends UnitTestCase
 {
+    /**
+     * @var resource
+     */
+    protected $stream;
+
     private DiWooXMLWriter $writer;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->writer = new DiWooXMLWriter();
-        $this->writer->openMemory();
+        $stream = fopen('php://temp', 'wb+');
+        Assert::notFalse($stream);
+        $this->stream = $stream;
+
+        $this->writer = DiWooXMLWriter::toStream($this->stream);
         $this->writer->setIndent(true);
     }
 
@@ -25,13 +34,19 @@ final class DiWooXMLWriterTest extends UnitTestCase
         $this->writer->startDiWooElement('example');
         $this->writer->endElement();
 
-        $this->assertMatchesTextSnapshot($this->writer->flush());
+        $this->writer->flush();
+        rewind($this->stream);
+
+        $this->assertMatchesTextSnapshot(stream_get_contents($this->stream));
     }
 
     public function testDiWooElement(): void
     {
         $this->writer->writeDiWooElement('example', 'my-content');
 
-        $this->assertMatchesTextSnapshot($this->writer->flush());
+        $this->writer->flush();
+        rewind($this->stream);
+
+        $this->assertMatchesTextSnapshot(stream_get_contents($this->stream));
     }
 }

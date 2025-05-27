@@ -57,7 +57,7 @@ class ThemeManagerTest extends UnitTestCase
 
         self::assertEquals(
             [$viewA, $viewB],
-            iterator_to_array($this->themeManager->getViewsForAllThemes())
+            iterator_to_array($this->themeManager->getViewsForAllThemes(), false)
         );
     }
 }

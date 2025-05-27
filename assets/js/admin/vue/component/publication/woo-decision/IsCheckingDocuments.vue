@@ -13,7 +13,7 @@ defineExpose({
   <div class="mb-4 text-center" tabindex="-1" ref="wrapperElement">
     <Icon
       class="animate-spin"
-      color="fill-bhr-ocean-boat-blue"
+      color="fill-bhr-blue-800"
       name="loader"
       :size="48"
     />

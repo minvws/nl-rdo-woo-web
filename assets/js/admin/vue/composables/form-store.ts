@@ -1,6 +1,25 @@
 import { z } from 'zod';
 import type { FormValue } from '../form/interface';
 import type { InputStore } from './input-store';
+import type { MultiInputStore } from './multi-input-store';
+
+export interface FormStore {
+  addInput: (inputStore: InputStore | MultiInputStore) => void;
+  addSubmitValidationError: (error: string, path?: string) => void;
+  deleteInput: (name: string) => void;
+  getDirtyValue: () => FormValue;
+  getInputStore: (name: string) => InputStore | MultiInputStore | undefined;
+  getValue: () => FormValue;
+  isDirty: () => boolean;
+  isPristine: () => boolean;
+  isInvalid: () => boolean;
+  isValid: () => boolean;
+  markAsShouldDisplayErrors: () => void;
+  reset: () => void;
+  resetSubmitValidationErrors: () => void;
+  submit: (value: FormValue, dirtyValue: FormValue) => Promise<Response>;
+  submitResponseSchema: z.ZodSchema;
+}
 
 export const useFormStore = (
   onSubmitFunction: (
@@ -8,10 +27,10 @@ export const useFormStore = (
     dirtyValue: FormValue,
   ) => Promise<Response>,
   submitResponseSchema: z.ZodSchema,
-) => {
-  const inputStores: Map<string, InputStore> = new Map();
+): FormStore => {
+  const inputStores: Map<string, InputStore | MultiInputStore> = new Map();
 
-  const addInput = (inputStore: InputStore) => {
+  const addInput = (inputStore: InputStore | MultiInputStore) => {
     inputStores.set(inputStore.name, inputStore);
   };
 
@@ -40,11 +59,9 @@ export const useFormStore = (
       return accumulated;
     }, {});
 
-  const addSubmitValidationError = (path: string, error: string) => {
-    const foundInputStore = getInputStore(path);
-    if (foundInputStore) {
-      foundInputStore.addSubmitValidationError(error);
-    }
+  const addSubmitValidationError = (error: string, path?: string) => {
+    const foundInputStore = path ? getInputStore(path) : undefined;
+    foundInputStore?.addSubmitValidationError(error, path);
   };
 
   const resetSubmitValidationErrors = () => {

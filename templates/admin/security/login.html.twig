@@ -22,7 +22,7 @@
                 {% if error %}
                 <div class="mb-6" data-e2e-name="login-error">
                     <twig:Admin:FormError>
-                        Ongeldige inloggegevens. Vul een geldige combinatie van e-mailadres en wachtwoord in om in te loggen.
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
                     </twig:Admin:FormError>
                 </div>
                 {% endif %}
@@ -57,10 +57,10 @@
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
                 <div>
-                    <button class="bhr-button bhr-button--primary bhr-button--full-width" type="submit">{{ 'global.login' | trans() }}</button>
+                    <button class="bhr-btn-filled-primary" type="submit">{{ 'global.login' | trans() }}</button>
                 </div>
 
-                <p class="mt-6 bhr-text-muted">{{ 'admin.account.forgot_login.instructions' | trans() }}</p>
+                <p class="mt-6 bhr-text-muted">{{ 'admin.account.login_help.forgot_password_instructions' | trans() }}</p>
             {% endif %}
       </form>
     </div>

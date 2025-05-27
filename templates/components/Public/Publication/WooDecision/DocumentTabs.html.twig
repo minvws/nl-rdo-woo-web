@@ -1,0 +1,40 @@
+{% set hasPublicDocuments = publicDocuments | length > 0 %}
+{% set hasAlreadyPublicDocuments = alreadyPublicDocuments | length > 0 %}
+{% set hasNotPublicDocuments = notPublicDocuments | length > 0 %}
+{% set hasNotOnlineDocuments = notOnlineDocuments | length > 0 %}
+
+{% set tabPaginators = [] %}
+{% set tabPaginators = tabPaginators | merge(hasPublicDocuments ? [publicDocuments] : []) %}
+{% set tabPaginators = tabPaginators | merge(hasAlreadyPublicDocuments ? [alreadyPublicDocuments] : []) %}
+{% set tabPaginators = tabPaginators | merge(hasNotPublicDocuments ? [notPublicDocuments] : []) %}
+{% set tabPaginators = tabPaginators | merge(hasNotOnlineDocuments ? [notOnlineDocuments] : []) %}
+
+{% set tabButtonTitles = [] %}
+{% set tabButtonTitles = tabButtonTitles | merge(hasPublicDocuments ? ['public.documents.match_request' | trans] : []) %}
+{% set tabButtonTitles = tabButtonTitles | merge(hasAlreadyPublicDocuments ? ['public.documents.already_public_short' | trans] : []) %}
+{% set tabButtonTitles = tabButtonTitles | merge(hasNotPublicDocuments ? ['public.documents.not_made_public' | trans] : []) %}
+{% set tabButtonTitles = tabButtonTitles | merge(hasNotOnlineDocuments ? ['public.documents.not_yet_online' | trans] : []) %}
+
+{% set tabsName = 'documenten' %}
+<twig:Public:Tabs
+    buttonTitles="{{ tabButtonTitles }}"
+    name="{{ tabsName }}"
+    title="{{ 'global.documents' | trans }}"
+>
+    {% for paginator in tabPaginators %}
+        <twig:Tab:Content
+            numberOfTabs="{{ tabPaginators | length }}"
+            tabNumber="{{ loop.index }}"
+            tabsName="{{ tabsName }}"
+            isHidden="{{ not loop.first }}"
+        >
+            <twig:Public:Publication:WooDecision:DocumentsTable
+                documents="{{ paginator }}"
+                dossier="{{ dossier | default(null) }}"
+                fragment="{{ '#tabs-' ~ tabsName ~ '-button-' ~ loop.index }}"
+                isSortable="{{ true }}"
+                title="{{ buttonTitles[loop.index0] }}"
+            />
+        </twig:Tab:Content>
+    {% endfor %}
+</twig:Public:Tabs>

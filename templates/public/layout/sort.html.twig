@@ -1,11 +1,17 @@
-{% set targetAnchor = options.fragment|default('') %}
-{# following variables are inverted because direction is read from the target url #}
-{% set iconName = sorted ? ( direction == 'desc' ? 'sort-up' : 'sort-down' ) : 'sort-alt' %}
-{% set ariaSortValue = sorted ? ( direction == 'desc' ? 'ascending' : 'descending' ) : 'none' %}
+{% set sorted = sorted ?? false %}
+
+{# "direction" indicates the *next* sort direction (applied on click of the target anchor), not the current one #}
+{% set direction = direction ?? 'desc' %}
+{% set nextDirection = direction %}
+{% set currentDirection = sorted ? (direction == 'asc' ? 'desc' : 'asc') : 'none' %}
+
+{% set ariaSortValue = currentDirection == 'none' ? 'none' : (currentDirection == 'asc' ? 'ascending' : 'descending' ) %}
+{% set translatedNextDirection = nextDirection == 'asc' ? 'global.sort.direction.sort_asc' | trans : 'global.sort.direction.sort_desc' | trans %}
+{% set iconName = currentDirection == 'none' ? 'sort-alt' : (currentDirection == 'asc' ? 'sort-up' : 'sort-down') %}
 
 <th aria-sort="{{ ariaSortValue }}" class="{{ options.thClassName|default('') }}" scope="col">
-    <a class="block whitespace-nowrap" href="{{ options.href }}{{ targetAnchor }}">
-        {{ title }}
+    <a class="block whitespace-nowrap" href="{{ options.href }}{{ options.fragment|default('') }}">
+        <span class="sr-only">{{ translatedNextDirection }}:</span> {{ title }}
         {% if iconName %}
             <twig:Public:Icon name="{{ iconName }}" />
         {% endif %}

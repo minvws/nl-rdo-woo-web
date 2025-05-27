@@ -8,6 +8,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\FileInfo;
 use App\Domain\Upload\Process\FileProcessException;
 use App\Domain\Upload\Process\FileStorer;
+use App\Domain\Upload\UploadedFile;
 use App\Service\Storage\EntityStorageService;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,8 +21,9 @@ final class FileStorerTest extends UnitTestCase
     private EntityManagerInterface&MockInterface $doctrine;
     private EntityStorageService&MockInterface $entityStorageService;
     private FileInfo&MockInterface $fileInfo;
-    private \SplFileInfo&MockInterface $file;
+    private UploadedFile&MockInterface $file;
     private Document&MockInterface $document;
+    private FileStorer $fileStorer;
 
     protected function setUp(): void
     {
@@ -31,9 +33,15 @@ final class FileStorerTest extends UnitTestCase
         $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->fileInfo = \Mockery::mock(FileInfo::class);
-        $this->file = \Mockery::mock(\SplFileInfo::class);
+        $this->file = \Mockery::mock(UploadedFile::class);
         $this->document = \Mockery::mock(Document::class);
         $this->document->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
+
+        $this->fileStorer = new FileStorer(
+            $this->logger,
+            $this->doctrine,
+            $this->entityStorageService,
+        );
     }
 
     public function testStoreForDocument(): void
@@ -44,19 +52,29 @@ final class FileStorerTest extends UnitTestCase
             ->with($this->file, $this->document)
             ->andReturnTrue();
 
+        $this->file
+            ->shouldReceive('getOriginalFileExtension')
+            ->andReturn('pdf');
+
         $this->fileInfo
-            ->shouldReceive('setType')
-            ->once()
-            ->with($expectedType = 'type');
+            ->expects('setType')
+            ->with('pdf');
+
+        $this->fileInfo
+            ->expects('setPageCount')
+            ->with(null);
+
+        $this->document
+            ->expects('setPageCount')
+            ->with(0);
 
         $this->doctrine->shouldReceive('persist')->once()->with($this->document);
         $this->doctrine->shouldReceive('flush')->once();
 
-        $fileStorer = new FileStorer($this->logger, $this->doctrine, $this->entityStorageService);
-        $fileStorer->storeForDocument($this->file, $this->document, 'documentId', $expectedType);
+        $this->fileStorer->storeForDocument($this->file, $this->document, 'documentId');
     }
 
-    public function testStoreForDorcumentWithFailure(): void
+    public function testStoreForDocumentWithFailure(): void
     {
         $this->entityStorageService
             ->shouldReceive('storeEntity')
@@ -76,7 +94,6 @@ final class FileStorerTest extends UnitTestCase
 
         $this->expectExceptionObject(FileProcessException::forFailingToStoreDocument($this->file, $expectedDocumentId));
 
-        $fileStorer = new FileStorer($this->logger, $this->doctrine, $this->entityStorageService);
-        $fileStorer->storeForDocument($this->file, $this->document, $expectedDocumentId, 'type');
+        $this->fileStorer->storeForDocument($this->file, $this->document, $expectedDocumentId);
     }
 }

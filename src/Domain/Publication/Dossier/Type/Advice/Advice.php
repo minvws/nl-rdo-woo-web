@@ -46,6 +46,7 @@ class Advice extends AbstractDossier implements EntityWithAttachments, EntityWit
         $this->document = null;
     }
 
+    #[\Override]
     public function setDateFrom(?\DateTimeImmutable $dateFrom): static
     {
         $this->dateFrom = $dateFrom;

@@ -11,6 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ChoiceTypeWithHelp extends ChoiceType
 {
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
@@ -22,6 +23,7 @@ class ChoiceTypeWithHelp extends ChoiceType
     /**
      * @param mixed[] $options
      */
+    #[\Override]
     public function finishView(FormView $view, FormInterface $form, array $options): void
     {
         parent::finishView($view, $form, $options);

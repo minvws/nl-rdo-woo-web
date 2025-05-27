@@ -9,43 +9,8 @@ use App\Tests\Unit\UnitTestCase;
 
 final class UploadGroupIdTest extends UnitTestCase
 {
-    public function testGetFileTypes(): void
+    public function testUploadGroupId(): void
     {
-        foreach (UploadGroupId::cases() as $uploadGroupId) {
-            self::assertMatchesYamlSnapshot([
-                'uploadGroupId' => $uploadGroupId->name,
-                'types' => $uploadGroupId->getFileTypes(),
-            ]);
-        }
-    }
-
-    public function testGetExtensions(): void
-    {
-        foreach (UploadGroupId::cases() as $uploadGroupId) {
-            self::assertMatchesYamlSnapshot([
-                'uploadGroupId' => $uploadGroupId->name,
-                'extensions' => $uploadGroupId->getExtensions(),
-            ]);
-        }
-    }
-
-    public function testGetMimeTypes(): void
-    {
-        foreach (UploadGroupId::cases() as $uploadGroupId) {
-            self::assertMatchesYamlSnapshot([
-                'uploadGroupId' => $uploadGroupId->name,
-                'mimeTypes' => $uploadGroupId->getMimeTypes(),
-            ]);
-        }
-    }
-
-    public function testGetFileTypeNames(): void
-    {
-        foreach (UploadGroupId::cases() as $uploadGroupId) {
-            self::assertMatchesYamlSnapshot([
-                'uploadGroupId' => $uploadGroupId->name,
-                'fileTypeNames' => $uploadGroupId->getFileTypeNames(),
-            ]);
-        }
+        $this->assertMatchesObjectSnapshot(UploadGroupId::cases());
     }
 }

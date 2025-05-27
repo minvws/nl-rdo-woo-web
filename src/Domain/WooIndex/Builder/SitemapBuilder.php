@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\WooIndex\Builder;
 
-use App\Domain\WooIndex\WriterFactory\DiWooXMLWriter;
-use App\Domain\WooIndex\WriterFactory\WriterFactory;
+use Webmozart\Assert\Assert;
 
 final class SitemapBuilder
 {
@@ -14,38 +13,40 @@ final class SitemapBuilder
      */
     private ?\Closure $writerFactoryConfigurator = null;
 
-    public function __construct(
-        private readonly WriterFactory $writerFactory,
-    ) {
-    }
-
-    public function open(string $path): DiWooXMLWriter
+    /**
+     * @param resource $stream
+     */
+    public function open($stream): DiWooXMLWriter
     {
-        $writer = $this->getWriter($path);
+        Assert::resource($stream);
+
+        $writer = $this->getWriter($stream);
 
         $writer->startDocument(version: '1.0', encoding: 'utf-8');
 
         $schemaLocations = implode(separator: ' ', array: [
-            'https://www.sitemaps.org/schemas/sitemap/0.9',
-            'https://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd',
+            'http://www.sitemaps.org/schemas/sitemap/0.9',
+            'http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd',
             'https://standaarden.overheid.nl/diwoo/metadata/',
             'https://standaarden.overheid.nl/diwoo/metadata/0.9.4/xsd/diwoo-metadata.xsd',
         ]);
 
         $writer->startElement(name: 'urlset');
-        $writer->writeAttribute(name: 'xmlns', value: 'https://www.sitemaps.org/schemas/sitemap/0.9');
-        $writer->writeAttribute(name: 'xmlns:xsi', value: 'https://www.w3.org/2001/XMLSchema-instance');
+        $writer->writeAttribute(name: 'xmlns', value: 'http://www.sitemaps.org/schemas/sitemap/0.9');
+        $writer->writeAttribute(name: 'xmlns:xsi', value: 'http://www.w3.org/2001/XMLSchema-instance');
         $writer->writeAttribute(name: 'xmlns:diwoo', value: 'https://standaarden.overheid.nl/diwoo/metadata/');
         $writer->writeAttribute(name: 'xsi:schemaLocation', value: $schemaLocations);
 
         return $writer;
     }
 
-    public function close(DiWooXMLWriter $writer): void
+    public function closeFlush(DiWooXMLWriter $writer): void
     {
         $writer->endElement(); // closes urlset-element
 
         $writer->endDocument();
+
+        $writer->flush();
     }
 
     /**
@@ -58,9 +59,12 @@ final class SitemapBuilder
         return $this;
     }
 
-    private function getWriter(string $path): DiWooXMLWriter
+    /**
+     * @param resource $stream
+     */
+    private function getWriter($stream): DiWooXMLWriter
     {
-        $writer = $this->writerFactory->create($path);
+        $writer = DiWooXMLWriter::toStream($stream);
 
         if ($this->writerFactoryConfigurator !== null) {
             $this->writerFactoryConfigurator->call($this, $writer);

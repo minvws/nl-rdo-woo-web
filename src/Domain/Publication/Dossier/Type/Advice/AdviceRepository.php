@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\Advice;
 
-use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
 use App\Domain\Search\Result\Dossier\Advice\AdviceSearchResult;
 use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
+use App\Enum\ApplicationMode;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -20,11 +20,15 @@ class AdviceRepository extends AbstractDossierRepository implements ProvidesDoss
         parent::__construct($registry, Advice::class);
     }
 
-    public function getSearchResultViewModel(string $prefix, string $dossierNr): ?AdviceSearchResult
-    {
+    public function getSearchResultViewModel(
+        string $prefix,
+        string $dossierNr,
+        ApplicationMode $mode,
+    ): ?AdviceSearchResult {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(
                 'new %s(
+                    dos.id,
                     dos.dossierNr,
                     dos.documentPrefix,
                     dos.title,
@@ -42,7 +46,7 @@ class AdviceRepository extends AbstractDossierRepository implements ProvidesDoss
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', DossierStatus::PUBLISHED)
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
         ;
 
         /** @var ?AdviceSearchResult */

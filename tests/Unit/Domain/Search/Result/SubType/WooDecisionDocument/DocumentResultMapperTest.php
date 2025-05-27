@@ -11,7 +11,7 @@ use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentSearchResultMapper;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
-use Jaytaph\TypeArray\TypeArray;
+use MinVWS\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 

@@ -1,0 +1,17 @@
+@utility woo-tab-list {
+  @apply flex flex-nowrap w-full overflow-x-auto mb-2 relative;
+
+  &::before {
+    @apply content-[''] absolute h-px bottom-0 inset-x-0 bg-woo-spanish-gray;
+  }
+}
+
+@utility woo-tab-list__item {
+  @apply flex-none;
+}
+
+@utility woo-tab-button {
+  @apply text-woo-dim-gray font-bold leading-tight p-2 border-b-2 border-transparent transition-colors hover-focus:text-woo-ateneo-blue hover-focus:border-woo-ateneo-blue relative z-1;
+  @apply aria-selected:text-woo-ateneo-blue aria-selected:border-woo-ateneo-blue;
+  @apply focus:-outline-offset-2;
+}

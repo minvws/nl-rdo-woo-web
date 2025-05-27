@@ -49,7 +49,7 @@ class DepartmentFieldMapperTest extends MockeryTestCase
         return [
             'simple-string-without-abbreviation' => [
                 'rawValue' => 'abc',
-                'expectedValue' => null,
+                'expectedValue' => 'abc',
                 'expectedDescription' => 'abc',
             ],
             'simple-string-with-abbreviation' => [

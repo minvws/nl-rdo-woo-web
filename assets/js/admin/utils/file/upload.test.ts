@@ -6,10 +6,12 @@ import {
   vi,
   afterEach,
   Mock,
+  MockInstance,
 } from 'vitest';
-import { uploadFile } from './upload';
+import { uploadFile, UploadStatus } from './upload';
 
 describe('The "uploadFile" function', () => {
+  let fetchSpy: MockInstance;
   let xmlHttpRequestMock1: XMLHttpRequest;
   let xmlHttpRequestMock2: XMLHttpRequest;
 
@@ -28,6 +30,7 @@ describe('The "uploadFile" function', () => {
       status: 200,
       response: {
         data: {
+          mimeType: 'mocked/mime-type',
           uploadUuid: 'mocked-upload-uuid',
         },
       },
@@ -131,6 +134,13 @@ describe('The "uploadFile" function', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     createXmlHttpRequestMocks();
+
+    fetchSpy = vi.spyOn(window, 'fetch').mockResolvedValue({
+      status: 200,
+      json: vi.fn().mockResolvedValue({
+        status: UploadStatus.Stored,
+      }),
+    } as unknown as Response);
   });
 
   afterEach(() => {
@@ -193,6 +203,107 @@ describe('The "uploadFile" function', () => {
     expect(onProgressSpy).toHaveBeenCalledTimes(4);
   });
 
+  describe('when the file is uploaded', () => {
+    test('should make a request to the status endpoint', async () => {
+      await triggerUploadFile();
+      await vi.advanceTimersByTimeAsync(6000);
+
+      expect(fetchSpy).toHaveBeenNthCalledWith(
+        1,
+        '/balie/api/uploader/upload/mocked-upload-uuid/status',
+      );
+    });
+
+    describe('handling the response from the status endpoint', () => {
+      test('should call the provided onSuccess callback when the request fails since we can assume this endpoint is not implemented yet', async () => {
+        fetchSpy.mockResolvedValue(new Error('Not implemented'));
+
+        await triggerUploadFile();
+        await vi.advanceTimersByTimeAsync(6000);
+
+        expect(onSuccessSpy).toHaveBeenCalledWith('mocked-upload-uuid', {
+          mimeType: 'mocked/mime-type',
+          uploadUuid: 'mocked-upload-uuid',
+        });
+      });
+
+      test('should call the provided onSuccess callback when the response says the file is stored', async () => {
+        await triggerUploadFile();
+        await vi.advanceTimersByTimeAsync(6000);
+
+        expect(onSuccessSpy).toHaveBeenCalledWith('mocked-upload-uuid', {
+          mimeType: 'mocked/mime-type',
+          uploadUuid: 'mocked-upload-uuid',
+        });
+      });
+
+      test('should call the provided onError callback when the response says the file is aborted', async () => {
+        fetchSpy.mockResolvedValue({
+          status: 200,
+          json: vi.fn().mockResolvedValue({
+            status: UploadStatus.Aborted,
+          }),
+        } as unknown as Response);
+
+        await triggerUploadFile();
+        await vi.advanceTimersByTimeAsync(6000);
+
+        expect(onErrorSpy).toHaveBeenCalledWith({
+          isTechnialError: true,
+          isUnsafeError: false,
+          isWhiteListError: false,
+        });
+      });
+
+      test('should call the provided onError callback when the response says the file failed validation', async () => {
+        fetchSpy.mockResolvedValue({
+          status: 200,
+          json: vi.fn().mockResolvedValue({
+            status: UploadStatus.ValidationFailed,
+          }),
+        } as unknown as Response);
+
+        await triggerUploadFile();
+        await vi.advanceTimersByTimeAsync(6000);
+
+        expect(onErrorSpy).toHaveBeenCalledWith({
+          isTechnialError: false,
+          isUnsafeError: true,
+          isWhiteListError: false,
+        });
+      });
+
+      test('should recheck the status if the response says the file passed validation (it should in the end be stored)', async () => {
+        fetchSpy.mockResolvedValueOnce({
+          status: 200,
+          json: vi.fn().mockResolvedValue({
+            status: UploadStatus.ValidationPassed,
+          }),
+        } as unknown as Response);
+
+        fetchSpy.mockResolvedValueOnce({
+          status: 200,
+          json: vi.fn().mockResolvedValue({
+            status: UploadStatus.Stored,
+          }),
+        } as unknown as Response);
+
+        await triggerUploadFile();
+        await vi.advanceTimersByTimeAsync(6000);
+
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        expect(onSuccessSpy).not.toHaveBeenCalled();
+
+        await vi.advanceTimersByTimeAsync(250);
+        expect(fetchSpy).toHaveBeenCalledTimes(2);
+        expect(onSuccessSpy).toHaveBeenCalledWith('mocked-upload-uuid', {
+          mimeType: 'mocked/mime-type',
+          uploadUuid: 'mocked-upload-uuid',
+        });
+      });
+    });
+  });
+
   test('should call the provided onSuccess callback with the returned uploadUuid when uploading succeeds', async () => {
     await triggerUploadFile();
 
@@ -202,7 +313,10 @@ describe('The "uploadFile" function', () => {
     expect(onSuccessSpy).not.toHaveBeenCalled();
 
     await vi.advanceTimersByTimeAsync(3000);
-    expect(onSuccessSpy).toHaveBeenCalledWith('mocked-upload-uuid');
+    expect(onSuccessSpy).toHaveBeenCalledWith('mocked-upload-uuid', {
+      mimeType: 'mocked/mime-type',
+      uploadUuid: 'mocked-upload-uuid',
+    });
   });
 
   test('should call the provided onError callback when uploading fails', async () => {

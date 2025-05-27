@@ -6,7 +6,7 @@
 
 This repository contains the source code and the technical documentation of the website <https://open.minvws.nl/>.
 
-**Design, context and contribution information of the project OpenMinVWS can be found [here](https://github.com/minvws/nl-rdo-woo-coordination)).**
+**Design, context and contribution information of the project OpenMinVWS can be found in the [nl-rdo-woo-coordination](https://github.com/minvws/nl-rdo-woo-coordination)-repository.**
 
 Note: The published version does not include the Rijksoverheid theme used on OpenMinVWS. The site look and feel is very minimal out of the box.
 

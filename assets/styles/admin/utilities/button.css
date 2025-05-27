@@ -1,0 +1,116 @@
+@utility bhr-btn_generic_ {
+    @apply
+        cursor-pointer
+        font-bold
+        inline-flex
+        items-center
+        justify-center
+        leading-none
+        rounded-sm
+        transition-colors;
+}
+
+@utility bhr-btn_filled_or_bordered_ {
+    @apply bhr-btn_generic_;
+    @apply
+        border-1
+        border-transparent
+        h-10
+        px-4;
+}
+
+@utility bhr-btn-filled_ {
+    @apply bhr-btn_filled_or_bordered_;
+    @apply text-white;
+}
+
+@utility bhr-btn-bordered_ {
+    @apply bhr-btn_filled_or_bordered_;
+    @apply bg-white;
+}
+
+@utility bhr-btn-filled-primary {
+    @apply bhr-btn-filled_;
+    @apply
+        bg-bhr-blue-800
+        border-bhr-blue-800;
+
+    &:active,
+    &:focus,
+    &:hover {
+        @apply bg-bhr-blue-900 border-bhr-blue-900;
+    }
+}
+
+@utility bhr-btn-filled-danger {
+    @apply bhr-btn-filled_;
+    @apply
+        bg-bhr-red-800
+        border-bhr-red-800;
+
+    &:active,
+    &:focus,
+    &:hover {
+        @apply bg-bhr-red-900 border-bhr-red-900;
+    }
+}
+
+@utility bhr-btn-bordered-primary {
+    @apply bhr-btn-bordered_;
+    @apply
+        border-bhr-grey-200
+        text-bhr-blue-800;
+
+    &:active,
+    &:focus,
+    &:hover {
+        @apply border-bhr-blue-900 text-bhr-blue-900;
+    }
+}
+
+@utility bhr-btn-bordered-danger {
+    @apply bhr-btn-bordered_;
+    @apply
+        border-bhr-red-800
+        text-bhr-red-800;
+
+    &:active,
+    &:focus,
+    &:hover {
+        @apply border-bhr-red-900 text-bhr-red-900;
+    }
+}
+
+@utility bhr-btn-ghost-primary {
+    @apply bhr-btn_generic_;
+    @apply text-bhr-blue-800;
+
+    &:active,
+    &:focus,
+    &:hover {
+        @apply text-bhr-blue-900;
+    }
+}
+
+@utility bhr-btn-ghost-danger {
+    @apply bhr-btn_generic_;
+    @apply text-bhr-red-800;
+
+    &:active,
+    &:focus,
+    &:hover {
+        @apply text-bhr-red-900;
+    }
+}
+
+@utility bhr-btn--icon-only {
+    @apply px-0 w-10;
+}
+
+@utility bhr-btn__icon-left {
+    @apply mr-2;
+}
+
+@utility bhr-btn__icon-right {
+    @apply ml-2;
+}

@@ -31,12 +31,16 @@ class Inquiry
 
     /** @var Collection<array-key,Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'inquiries', cascade: ['persist'])]
+    #[ORM\JoinTable(name: 'inquiry_document')]
     private Collection $documents;
 
     /** @var Collection<array-key,WooDecision> */
     #[ORM\ManyToMany(targetEntity: WooDecision::class, inversedBy: 'inquiries', cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'inquiry_dossier')]
-    #[ORM\JoinColumn(name: 'inquiry_id', referencedColumnName: 'id', onDelete: 'cascade')]
+    #[ORM\JoinTable(
+        name: 'inquiry_dossier',
+        joinColumns: new ORM\JoinColumn(onDelete: 'cascade'),
+        inverseJoinColumns: new ORM\JoinColumn(onDelete: 'cascade'),
+    )]
     #[ORM\OrderBy(['decisionDate' => 'DESC'])]
     private Collection $dossiers;
 
@@ -94,7 +98,7 @@ class Inquiry
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function removeDocument(Document $document): self
     {

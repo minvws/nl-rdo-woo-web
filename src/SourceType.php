@@ -23,6 +23,7 @@ enum SourceType: string implements TranslatableInterface
     case VIDEO = 'video';
     case VCARD = 'vcard';
     case CHAT = 'chat';
+    case AUDIO = 'audio';
     case UNKNOWN = 'unknown';
 
     // Finds the given source type in the list of known types
@@ -60,6 +61,9 @@ enum SourceType: string implements TranslatableInterface
             FileType::XLS => self::SPREADSHEET,
             FileType::PPT => self::PRESENTATION,
             FileType::ZIP => self::UNKNOWN,
+            FileType::AUDIO => self::AUDIO,
+            FileType::VIDEO => self::VIDEO,
+            FileType::VECTOR_IMAGE => self::IMAGE,
         };
     }
 

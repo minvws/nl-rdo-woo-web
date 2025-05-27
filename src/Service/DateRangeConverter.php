@@ -8,8 +8,8 @@ namespace App\Service;
  * This class will convert a date range into a human-readable string.
  *
  * Examples:
- *    2020-01-01 - 2020-12-31 => Heel 2020
- *    2020-01-01 - 2021-08-31 => Januari 2020 - Augustus 2021
+ *    2020-01-01 - 2020-12-31 => Januari t/m december 2020
+ *    2020-01-01 - 2021-08-31 => Januari 2020 t/m augustus 2021
  *    2020-03-01 - 2020-03-31 => Maart 2020
  */
 class DateRangeConverter
@@ -61,14 +61,9 @@ class DateRangeConverter
 
     protected static function handleRangeWithTwoDates(\DateTimeImmutable $from, \DateTimeImmutable $to): string
     {
-        // Spanning a single year
-        if ($from->format('m') === '01' && $to->format('m') === '12' && $from->format('y') === $to->format('y')) {
-            return 'Heel ' . self::getYear($from);
-        }
-
         // Spanning multiple years
         if ($from->format('y') !== $to->format('y')) {
-            return ucfirst(self::getMonthAndYear($from) . ' - ' . self::getMonthAndYear($to));
+            return ucfirst(self::getMonthAndYear($from) . ' t/m ' . self::getMonthAndYear($to));
         }
 
         // Single month
@@ -77,6 +72,6 @@ class DateRangeConverter
         }
 
         // Spanning multiple months within a single year
-        return ucfirst(self::getMonth($from) . ' - ' . self::getMonthAndYear($to));
+        return ucfirst(self::getMonth($from) . ' t/m ' . self::getMonthAndYear($to));
     }
 }

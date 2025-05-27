@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Domain\Search\Theme;
 use App\Domain\Publication\Subject\Subject;
 use App\Domain\Search\Query\Facet\FacetList;
 use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Theme\Covid19QueryConditions;
+use App\Domain\Search\Theme\Covid19QueryConditionBuilder;
 use App\Entity\Organisation;
 use App\Repository\OrganisationRepository;
 use App\Tests\Unit\UnitTestCase;
@@ -19,13 +19,13 @@ use Symfony\Component\Uid\Uuid;
 class Covid19QueryConditionsTest extends UnitTestCase
 {
     private OrganisationRepository&MockInterface $organisationRepository;
-    private Covid19QueryConditions $conditions;
+    private Covid19QueryConditionBuilder $conditions;
 
     public function setUp(): void
     {
         $this->organisationRepository = \Mockery::mock(OrganisationRepository::class);
 
-        $this->conditions = new Covid19QueryConditions(
+        $this->conditions = new Covid19QueryConditionBuilder(
             $this->organisationRepository,
         );
 

@@ -6,17 +6,11 @@ namespace App\Service\Search\Model;
 
 class Suggestion
 {
-    protected string $name;
-    /** @var SuggestionEntry[] */
-    protected array $entries;
-
     /**
      * @param SuggestionEntry[] $entries
      */
-    public function __construct(string $name, array $entries)
+    public function __construct(protected string $name, protected array $entries)
     {
-        $this->name = $name;
-        $this->entries = $entries;
     }
 
     public function getName(): string

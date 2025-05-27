@@ -14,10 +14,10 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @SuppressWarnings(PHPMD.TooManyFields)
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
- * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
- * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings("PHPMD.TooManyFields")
+ * @SuppressWarnings("PHPMD.TooManyPublicMethods")
+ * @SuppressWarnings("PHPMD.ExcessiveClassComplexity")
+ * @SuppressWarnings("PHPMD.ExcessivePublicCount")
  */
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -35,8 +35,11 @@ class Document extends AbstractPublicationItem
 
     /** @var Collection<array-key,WooDecision> */
     #[ORM\ManyToMany(targetEntity: WooDecision::class, inversedBy: 'documents')]
-    #[ORM\JoinTable(name: 'document_dossier')]
-    #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', onDelete: 'cascade')]
+    #[ORM\JoinTable(
+        name: 'document_dossier',
+        joinColumns: new ORM\JoinColumn(onDelete: 'cascade'),
+        inverseJoinColumns: new ORM\JoinColumn(onDelete: 'cascade'),
+    )]
     private Collection $dossiers;
 
     #[ORM\Column(length: 255, unique: true, nullable: false)]

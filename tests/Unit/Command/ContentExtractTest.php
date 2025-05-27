@@ -91,9 +91,7 @@ class ContentExtractTest extends MockeryTestCase
         $this->contentExtractService
             ->expects('getExtracts')
             ->with($covenantDocument, \Mockery::on(
-                static function (ContentExtractOptions $options) {
-                    return count($options->getEnabledExtractors()) === count(ContentExtractorKey::cases());
-                }
+                static fn (ContentExtractOptions $options) => count($options->getEnabledExtractors()) === count(ContentExtractorKey::cases())
             ))
             ->andReturn($collection);
 

@@ -16,7 +16,7 @@ use Knp\Component\Pager\Pagination\PaginationInterface;
 /**
  * This class is the result that is returned after a search has been performed.
  *
- * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings("PHPMD.TooManyFields")
  */
 final class Result
 {

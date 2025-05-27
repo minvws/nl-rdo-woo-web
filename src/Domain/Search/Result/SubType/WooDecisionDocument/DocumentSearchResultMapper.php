@@ -12,7 +12,8 @@ use App\Domain\Search\Result\HighlightMapperTrait;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\SearchResultMapperInterface;
 use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
-use Jaytaph\TypeArray\TypeArray;
+use App\Enum\ApplicationMode;
+use MinVWS\TypeArray\TypeArray;
 
 readonly class DocumentSearchResultMapper implements SearchResultMapperInterface
 {
@@ -29,7 +30,7 @@ readonly class DocumentSearchResultMapper implements SearchResultMapperInterface
         return $type === ElasticDocumentType::WOO_DECISION_DOCUMENT;
     }
 
-    public function map(TypeArray $hit): ?ResultEntryInterface
+    public function map(TypeArray $hit, ApplicationMode $mode = ApplicationMode::PUBLIC): ?ResultEntryInterface
     {
         $documentNr = $hit->getStringOrNull('[fields][document_nr][0]');
         if (is_null($documentNr)) {

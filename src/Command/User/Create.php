@@ -20,21 +20,16 @@ use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class Create extends Command
 {
-    protected UserService $userService;
-    protected Totp $totp;
-    protected EntityManagerInterface $doctrine;
-
-    public function __construct(UserService $userService, Totp $totp, EntityManagerInterface $doctrine)
-    {
+    public function __construct(
+        protected UserService $userService,
+        protected Totp $totp,
+        protected EntityManagerInterface $doctrine,
+    ) {
         parent::__construct();
-
-        $this->userService = $userService;
-        $this->totp = $totp;
-        $this->doctrine = $doctrine;
     }
 
     protected function configure(): void

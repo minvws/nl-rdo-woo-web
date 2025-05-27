@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\Exception\TransitionException;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 readonly class DossierWorkflowManager
 {
@@ -64,7 +64,6 @@ readonly class DossierWorkflowManager
 
             foreach ($dossier->getInquiries() as $inquiry) {
                 $this->inquiryService->generateInventory($inquiry);
-                $this->inquiryService->generateArchives($inquiry);
             }
         }
 

@@ -53,7 +53,7 @@ final class InquiryRepositoryTest extends KernelTestCase
         $documentsForWooDecisionTwo = DocumentFactory::createMany(2, ['dossiers' => [$wooDecisions[1]]]);
         $documentsForWooDecisionThree = DocumentFactory::createMany(2, ['dossiers' => [$wooDecisions[2]]]);
 
-        $inquiry = InquiryFactory::new([
+        $inquiry = InquiryFactory::createOne([
             'organisation' => $organisation,
             'dossiers' => $wooDecisions,
             'documents' => [
@@ -61,9 +61,9 @@ final class InquiryRepositoryTest extends KernelTestCase
                 ...$documentsForWooDecisionTwo,
                 ...$documentsForWooDecisionThree,
             ],
-        ])->create();
+        ])->_real();
 
-        $result = $this->repository->getDocCountsByDossier($inquiry->_real());
+        $result = $this->repository->getDocCountsByDossier($inquiry);
 
         self::assertCount(3, $result);
         self::assertSame($result[0]['dossierNr'], $wooDecisions[2]->_real()->getDossierNr());

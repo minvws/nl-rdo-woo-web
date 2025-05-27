@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints\Required;
 class InquiryLinkDocumentsFormType extends AbstractType
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -62,7 +62,7 @@ class InquiryLinkDocumentsFormType extends AbstractType
             ->add('cancel', SubmitType::class, [
                 'label' => 'admin.inquiries.back_to_overview',
                 'attr' => [
-                    'class' => 'bhr-button--secondary',
+                    'class' => 'bhr-btn-bordered-primary',
                     'data-last-button' => true,
                 ],
             ]);

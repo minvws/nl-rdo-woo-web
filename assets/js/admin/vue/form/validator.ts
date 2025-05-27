@@ -42,13 +42,18 @@ export const email = (): Validator => (value: InputValueType) => {
 };
 
 export const forbidden =
-  (forbiddenValues: InputValueType[]): Validator =>
+  (forbiddenValues: string[]): Validator =>
   (value: InputValueType) => {
     if (!value) {
       return undefined;
     }
 
-    if (forbiddenValues.includes(value)) {
+    if (
+      forbiddenValues.some(
+        (forbiddenValue) =>
+          forbiddenValue.toLowerCase() === (value as string).toLowerCase(),
+      )
+    ) {
       return { id: InputErrorId.Forbidden };
     }
 

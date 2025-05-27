@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
 final class WooDecisionMainDocumentTest extends ApiTestCase
 {
     use IntegrationTestTrait;
+    use TestFileTrait;
 
     private vfsStreamDirectory $root;
 
@@ -37,7 +38,7 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
         self::bootKernel();
     }
 
-    public function testGetWooDecisionMainDocumentReturns404UntilCreated(): void
+    public function testGetWooDecisionMainDocumentReturnsEmptySetUntilCreated(): void
     {
         $user = UserFactory::new()
             ->asSuperAdmin()
@@ -51,7 +52,7 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
         $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         // There should be no main document yet, so 404
-        $client->request(
+        $response = $client->request(
             Request::METHOD_GET,
             sprintf('/balie/api/dossiers/%s/woo-decision-main-document', $dossier->getId()),
             [
@@ -60,7 +61,7 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
                 ],
             ],
         );
-        self::assertResponseStatusCodeSame(404);
+        $this->assertCount(0, $response->toArray(), 'Expected no main documents yet');
 
         $uploadUuid = $this->uploadDocument($client);
 
@@ -88,7 +89,7 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
         self::assertResponseStatusCodeSame(201);
 
         // Now it should be possible to fetch the data
-        $client->request(
+        $response = $client->request(
             Request::METHOD_GET,
             sprintf('/balie/api/dossiers/%s/woo-decision-main-document', $dossier->getId()),
             [
@@ -98,9 +99,10 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
             ],
         );
         self::assertResponseIsSuccessful();
+        $this->assertCount(1, $response->toArray(), 'Expected one main document');
 
         unset($data['uploadUuid']); // This is only used for processing and not returned in the response
-        self::assertJsonContains($data);
+        self::assertJsonContains([$data]);
     }
 
     public function testUpdateWooDecisionDocument(): void
@@ -117,13 +119,17 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
             'dossier' => WooDecisionFactory::createOne([
                 'organisation' => $user->getOrganisation(),
             ]),
-        ]);
+        ])->_disableAutoRefresh();
 
         $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         $response = $client->request(
             Request::METHOD_PUT,
-            sprintf('/balie/api/dossiers/%s/woo-decision-main-document', $document->getDossier()->getId()),
+            sprintf(
+                '/balie/api/dossiers/%s/woo-decision-main-document/%s',
+                $document->getDossier()->getId(),
+                $document->getId(),
+            ),
             [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -140,7 +146,11 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
 
         $response2 = $client->request(
             Request::METHOD_GET,
-            sprintf('/balie/api/dossiers/%s/woo-decision-main-document', $document->getDossier()->getId()),
+            sprintf(
+                '/balie/api/dossiers/%s/woo-decision-main-document/%s',
+                $document->getDossier()->getId(),
+                $document->getId(),
+            ),
             [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -167,18 +177,6 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
         ]);
 
         $client = static::createClient()->loginUser($user->_real(), 'balie');
-
-        // There should be no main document yet, so 404
-        $client->request(
-            Request::METHOD_DELETE,
-            sprintf('/balie/api/dossiers/%s/woo-decision-main-document', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-            ],
-        );
-        self::assertResponseStatusCodeSame(404);
 
         $uploadUuid = $this->uploadDocument($client);
 
@@ -208,7 +206,11 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
         // Now it should be possible to delete it
         $client->request(
             Request::METHOD_DELETE,
-            sprintf('/balie/api/dossiers/%s/woo-decision-main-document', $dossier->getId()),
+            sprintf(
+                '/balie/api/dossiers/%s/woo-decision-main-document/%s',
+                $dossier->getId(),
+                $dossier->getMainDocument()?->getId(),
+            ),
             [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -260,7 +262,11 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
         // It should not be possible to delete it
         $client->request(
             Request::METHOD_DELETE,
-            sprintf('/balie/api/dossiers/%s/woo-decision-main-document', $dossier->getId()),
+            sprintf(
+                '/balie/api/dossiers/%s/woo-decision-main-document/%s',
+                $dossier->getId(),
+                $dossier->getMainDocument()?->getId(),
+            ),
             [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -272,9 +278,7 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
 
     private function uploadDocument(Client $client): string
     {
-        vfsStream::newFile('test_file.pdf')
-            ->withContent('This is a test file.')
-            ->at($this->root);
+        $this->createPdfTestFile();
 
         $uploadFile = new UploadedFile(
             path: $this->root->url() . '/test_file.pdf',

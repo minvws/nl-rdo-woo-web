@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type;
 
 use App\Domain\Publication\Dossier\Type\DossierType;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use App\Tests\Unit\UnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final class DossierTypeTest extends MockeryTestCase
+final class DossierTypeTest extends UnitTestCase
 {
+    public function testDossierType(): void
+    {
+        $this->assertMatchesObjectSnapshot(DossierType::cases());
+    }
+
     public function testIsCovenant(): void
     {
         $this->assertTrue(DossierType::COVENANT->isCovenant());

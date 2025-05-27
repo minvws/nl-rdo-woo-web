@@ -5,7 +5,7 @@
         <h2 class="bhr-form-help">Stap 1</h2>
         <p><strong>Upload productierapport</strong></p>
         <p class="bhr-form-help mt-2 mb-3">
-            Upload de Zylab rapportage die bij dit besluit hoort. Dit is een Excel-bestand.
+            Upload de Zylab rapportage die bij dit besluit hoort. Zie de <a target="_blank" class="bhr-a" href="{{ PUBLIC_BASE_URL }}/documentatie/publiceren/woo-besluit/productierapport.html" data-e2e-name="doc-link">documentatie</a> voor een voorbeeldrapport en meer toelichting.
         </p>
     </div>
 
@@ -22,7 +22,7 @@
 
     {% if inventoryStatus.isQueued or inventoryStatus.isRunning %}
         <div class="pt-8 js-inventory-status-continue-later">
-            <a href="{{ path('app_admin_dossiers') }}" class="bhr-button bhr-button--secondary bhr-button--fixed-width">{{ 'admin.global.continue_later' | trans }}</a>
+            <a href="{{ path('app_admin_dossiers') }}" class="bhr-btn-bordered-primary ">{{ 'admin.global.continue_later' | trans }}</a>
         </div>
     {% endif %}
 </div>

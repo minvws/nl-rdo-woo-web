@@ -1,39 +1,47 @@
 <div class="bg-woo-anti-flash-white p-6">
     <div class="woo-readable-width" data-e2e-name="inquiry-info">
     {% if dossiers.count > 0 %}
-        <div class="woo-rich-text">
-            <p class="font-bold">
-                {{
-                    'public.inquiry.decisions_for_case' | trans({
-                        '{are_or_is}': 'public.global.are_or_is' | trans({ 'count': dossiers.count }),
-                        '{number_of_decisions}': 'public.inquiries.number_of_decisions' | trans({ 'count': dossiers.count }),
-                        '{case_number}': inquiry.casenr,
-                    })
-                }}:
-            </p>
+        <p class="woo-p font-bold">
+            {{
+                'public.inquiry.decisions_for_case' | trans({
+                    '{are_or_is}': 'public.global.are_or_is' | trans({ 'count': dossiers.count }),
+                    '{number_of_decisions}': 'public.inquiries.number_of_decisions' | trans({ 'count': dossiers.count }),
+                    '{case_number}': inquiry.casenr,
+                })
+            }}:
+        </p>
 
-            {% set hasListItems = documentCount.public > 0 or documentCount.partial_public > 0 or documentCount.already_public > 0 or documentCount.not_public > 0 %}
-            {% if hasListItems %}
-            <ul class="!-mt-2">
-                {% if documentCount.public > 0 %}
-                    <li>{{ "public.inquiries.documents_made_public" | trans({ 'count': documentCount.public }) }}</li>
-                {% endif %}
-                {% if documentCount.partial_public > 0 %}
-                    <li>{{ "public.inquiries.documents_made_partially_public" | trans({ 'count': documentCount.partial_public}) }}</li>
-                {% endif %}
-                {% if documentCount.already_public > 0 %}
-                    <li>{{ "public.inquiries.documents_were_already_public" | trans({ 'count': documentCount.already_public}) }}</li>
-                {% endif %}
-                {% if documentCount.not_public > 0 %}
-                    <li>{{ "public.inquiries.documents_wont_be_published" | trans({ 'count': documentCount.not_public}) }}</li>
-                {% endif %}
-            </ul>
+        {% set hasListItems = documentCount.public > 0 or documentCount.partial_public > 0 or documentCount.already_public > 0 or documentCount.not_public > 0 %}
+        {% if hasListItems %}
+        <ul class="woo-ul">
+            {% if documentCount.public > 0 %}
+                <li class="woo-li">{{ "public.inquiries.documents_made_public" | trans({ 'count': documentCount.public }) }}</li>
             {% endif %}
+            {% if documentCount.partial_public > 0 %}
+                <li class="woo-li">{{ "public.inquiries.documents_made_partially_public" | trans({ 'count': documentCount.partial_public}) }}</li>
+            {% endif %}
+            {% if documentCount.already_public > 0 %}
+                <li class="woo-li">{{ "public.inquiries.documents_were_already_public" | trans({ 'count': documentCount.already_public}) }}</li>
+            {% endif %}
+            {% if documentCount.not_public > 0 %}
+                <li class="woo-li">{{ "public.inquiries.documents_wont_be_published" | trans({ 'count': documentCount.not_public}) }}</li>
+            {% endif %}
+        </ul>
+        {% endif %}
 
-            <p>
-                <a href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}">{{ 'public.inquiries.download_inventory' | trans({'{casenumber}': inquiry.casenr}) }}</a>
-            </p>
-        </div>
+        <ul class="mt-4">
+            <li>
+                <a class="woo-a" href="{{ searchAllUrl }}">{{ 'global.search_through_all' | trans }}</a>
+            </li>
+            <li>
+                <a class="woo-a" href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}">{{ 'public.inquiries.download_inventory' | trans({'{casenumber}': inquiry.casenr}) }}</a>
+            </li>
+            {% if public_docs.count > 0 %}
+            <li>
+                <a class="woo-a" href="{{ downloadUrl }}" data-e2e-name="download-documents">{{ 'public.documents.archive.download' | trans }}</a>
+            </li>
+            {% endif %}
+        </ul>
     {% else %}
         <p>
             {{ 'public.inquiries.no_docs_available' | trans({'casenumber': inquiry.casenr}) }}

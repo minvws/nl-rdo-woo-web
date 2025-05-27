@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Twig\Runtime;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use App\Service\DocumentUploadQueue;
 use App\Service\HistoryService;
 use App\Service\Security\OrganisationSwitcher;
 use App\Twig\Runtime\WooExtensionRuntime;
@@ -19,17 +17,14 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
 {
     private RequestStack|MockInterface $requestStack;
-    private DocumentUploadQueue&MockInterface $uploadQueue;
     private WooExtensionRuntime $runtime;
 
     public function setUp(): void
     {
         $this->requestStack = \Mockery::mock(RequestStack::class);
-        $this->uploadQueue = \Mockery::mock(DocumentUploadQueue::class);
 
         $this->runtime = new WooExtensionRuntime(
             $this->requestStack,
-            $this->uploadQueue,
             \Mockery::mock(OrganisationSwitcher::class),
             \Mockery::mock(HistoryService::class),
             \Mockery::mock(DossierPathHelper::class),
@@ -85,22 +80,5 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
                 'expectedQuery' => '?a=1&dt[to]=b',
             ],
         ];
-    }
-
-    public function testGetUploadQueue(): void
-    {
-        $wooDecision = \Mockery::mock(WooDecision::class);
-
-        $filenames = [
-            'foo.pdf',
-            'bar.pdf',
-        ];
-
-        $this->uploadQueue->expects('getFilenames')->with($wooDecision)->andReturn($filenames);
-
-        self::assertEquals(
-            $filenames,
-            $this->runtime->getUploadQueue($wooDecision),
-        );
     }
 }

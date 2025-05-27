@@ -3,3 +3,8 @@ export interface FileInfo {
   size: number;
   type: string;
 }
+
+export interface MultiInputItem {
+  id: string;
+  value: string;
+}

@@ -34,4 +34,13 @@ class BatchDownloadScope
     {
         return new self($batch->getDossier(), $batch->getInquiry());
     }
+
+    /**
+     * @phpstan-assert-if-true !null $this->wooDecision
+     * @phpstan-assert-if-true !null $this->inquiry
+     */
+    public function containsBothInquiryAndWooDecision(): bool
+    {
+        return $this->wooDecision !== null && $this->inquiry !== null;
+    }
 }

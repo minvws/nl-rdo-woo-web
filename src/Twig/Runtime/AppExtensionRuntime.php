@@ -11,13 +11,8 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class AppExtensionRuntime implements RuntimeExtensionInterface
 {
-    protected string $projectPath;
-    protected RequestStack $requestStack;
-
-    public function __construct(string $projectPath, RequestStack $requestStack)
+    public function __construct(protected string $projectPath, protected RequestStack $requestStack)
     {
-        $this->projectPath = $projectPath;
-        $this->requestStack = $requestStack;
     }
 
     public function size(string $value): string

@@ -4,16 +4,14 @@
     <div class="bhr-container bhr-container--sm">
         {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
 
-        <div class="px-11">
-            <div class="bhr-card">
-                {% if success %}
-                    <p class="bhr-form-help text-lg mb-4">{{ 'admin.dossier.delete.started' | trans }}</p>
-                    <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_dossiers') }}">{{ 'admin.dossier.delete.back_to_overview' | trans }}</a>
-                {% else %}
-                    <p class="bhr-form-help text-lg mb-4">{{ 'admin.dossier.delete.confirm' | trans }}</p>
-                    {{ form(form) }}
-                {% endif %}
-            </div>
+        <div class="bhr-card">
+            {% if success %}
+                <p class="bhr-form-help text-lg mb-4">{{ 'admin.dossier.delete.started' | trans }}</p>
+                <a class="bhr-btn-bordered-primary" href="{{ path('app_admin_dossiers') }}">{{ 'admin.dossier.delete.back_to_overview' | trans }}</a>
+            {% else %}
+                <p class="bhr-form-help text-lg mb-4">{{ 'admin.dossier.delete.confirm' | trans }}</p>
+                {{ form(form) }}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

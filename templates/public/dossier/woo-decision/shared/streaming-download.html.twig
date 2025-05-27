@@ -1,0 +1,42 @@
+{% extends 'public/base.html.twig' %}
+
+{% set page_title = pageTitle | default('public.documents.archive.download') | trans %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <div class="woo-rich-text">
+        <h1>{{ page_title }}</h1>
+    </div>
+    <div class="woo-responsive-table">
+        <table class="woo-table">
+            <tbody>
+                <tr>
+                    <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'global.file' | trans }}</th>
+                    <td class="min-w-64">
+                        <twig:Public:Icon name="zipper" color="fill-woo-dim-gray" class="mr-0.5 -mt-0.5" />
+                        <span class="sr-only">{{ 'public.documents.file_type.zip' | trans }}</span>
+                        <span class="break-all" data-e2e-name="file-name">{{ download.name }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.download.document_count' | trans }}</th>
+                    <td data-e2e-name="nr-of-documents">{{ download.documentCount }}</td>
+                </tr>
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.download.total_document_size' | trans }}</th>
+                    <td>{{ download.totalDocumentSize | size }} {{ 'global.download.total_document_size_explanation' | trans }}</td>
+                </tr>
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ "global.link" | trans }}</th>
+                    <td>
+                        <a class="woo-a no-underline mr-1" data-e2e-name="download-file-link" href="{{ download_path }}" download>
+                            <twig:Public:Icon name="download" class="mr-0.5 relative -top-0.5" />
+                            <span class="underline">{{ 'public.global.download_verb' | trans }}</span>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

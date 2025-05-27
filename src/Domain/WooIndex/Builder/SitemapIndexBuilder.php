@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\WooIndex\Builder;
 
-use App\Domain\WooIndex\WriterFactory\DiWooXMLWriter;
-use App\Domain\WooIndex\WriterFactory\WriterFactory;
+use Webmozart\Assert\Assert;
 
 final class SitemapIndexBuilder
 {
@@ -14,20 +13,20 @@ final class SitemapIndexBuilder
      */
     protected ?\Closure $writerFactoryConfigurator = null;
 
-    public function __construct(
-        private readonly WriterFactory $writerFactory,
-    ) {
-    }
-
-    public function open(string $path): DiWooXMLWriter
+    /**
+     * @param resource $stream
+     */
+    public function open($stream): DiWooXMLWriter
     {
-        $writer = $this->getWriter($path);
+        Assert::resource($stream);
+
+        $writer = $this->getWriter($stream);
 
         $writer->startDocument(version: '1.0', encoding: 'utf-8');
 
         $writer->startElement(name: 'sitemapindex');
 
-        $writer->writeAttribute(name: 'xmlns', value: 'https://www.sitemaps.org/schemas/sitemap/0.9');
+        $writer->writeAttribute(name: 'xmlns', value: 'http://www.sitemaps.org/schemas/sitemap/0.9');
 
         return $writer;
     }
@@ -41,11 +40,13 @@ final class SitemapIndexBuilder
         $writer->endElement(); // closes sitemap-element
     }
 
-    public function close(DiWooXMLWriter $writer): void
+    public function closeFlush(DiWooXMLWriter $writer): void
     {
         $writer->endElement(); // closes sitemapindex-element
 
         $writer->endDocument();
+
+        $writer->flush();
     }
 
     /**
@@ -58,9 +59,12 @@ final class SitemapIndexBuilder
         return $this;
     }
 
-    protected function getWriter(string $path): DiWooXMLWriter
+    /**
+     * @param resource $stream
+     */
+    protected function getWriter($stream): DiWooXMLWriter
     {
-        $writer = $this->writerFactory->create($path);
+        $writer = DiWooXMLWriter::toStream($stream);
 
         if ($this->writerFactoryConfigurator !== null) {
             $this->writerFactoryConfigurator->call($this, $writer);

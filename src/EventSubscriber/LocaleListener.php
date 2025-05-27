@@ -15,17 +15,11 @@ class LocaleListener implements EventSubscriberInterface
 {
     protected const LOCALE_KEY = '_locale';
 
-    /** @var string[] */
-    protected array $allowedLocales;
-    protected string $defaultLocale;
-
     /**
      * @param string[] $allowedLocales
      */
-    public function __construct(array $allowedLocales, string $defaultLocale)
+    public function __construct(protected array $allowedLocales, protected string $defaultLocale)
     {
-        $this->allowedLocales = $allowedLocales;
-        $this->defaultLocale = $defaultLocale;
     }
 
     public static function getSubscribedEvents(): array

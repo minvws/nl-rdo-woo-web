@@ -10,7 +10,7 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 #[AsTwigComponent]
 class MimeTypeIcon
 {
-    private const FILE_UNKNOWN = 'file-unknown';
+    private const string FILE_UNKNOWN = 'file-unknown';
 
     public ?string $class = '';
     public ?string $color = 'fill-bhr-dim-gray';
@@ -35,6 +35,9 @@ class MimeTypeIcon
             FileType::TXT => 'file-text',
             FileType::ZIP => 'file-zip',
             FileType::PDF => 'file-pdf',
+            FileType::AUDIO => 'file-audio',
+            FileType::VIDEO => 'file-video',
+            FileType::VECTOR_IMAGE => 'file-image',
         };
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Doctrine\TimestampableTrait;
+use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DocumentPrefix;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -36,6 +37,7 @@ class Organisation
 
     /** @var Collection<array-key,Department> */
     #[ORM\ManyToMany(targetEntity: Department::class, inversedBy: 'organisations')]
+    #[ORM\JoinTable(name: 'organisation_department')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\Count(min: 1, minMessage: 'at_least_one_department_required')]
     private Collection $departments;
@@ -54,8 +56,8 @@ class Organisation
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Inquiry::class)]
     private Collection $inquiries;
 
-    /** @var Collection<array-key,WooDecision> */
-    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: WooDecision::class)]
+    /** @var Collection<array-key,AbstractDossier> */
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: AbstractDossier::class)]
     private Collection $dossiers;
 
     /** @var Collection<array-key,Subject> */
@@ -206,7 +208,7 @@ class Organisation
     }
 
     /**
-     * @return Collection<WooDecision>
+     * @return Collection<AbstractDossier>
      */
     public function getDossiers(): Collection
     {
@@ -219,5 +221,10 @@ class Organisation
     public function getSubjects(): Collection
     {
         return $this->subjects;
+    }
+
+    public function hasDepartment(Department $department): bool
+    {
+        return $this->departments->contains($department);
     }
 }

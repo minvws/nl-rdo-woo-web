@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inquiry;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Entity\Organisation;
+use App\Service\Inquiry\DocumentCaseNumbers;
 use App\Service\Inquiry\InquiryChangeset;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -36,14 +35,14 @@ class InquiryChangesetTest extends MockeryTestCase
         // Has no linked inquiries yet, so should be linked twice
         $docId123 = Uuid::v6();
         $this->changeset->updateCaseNrsForDocument(
-            $this->createDocument($docId123, []),
+            new DocumentCaseNumbers($docId123, []),
             ['case-1', 'case-2'],
         );
 
         // Has two new inquiry links (case-1 and case-3), one unmodified/existing (case-2) and one removed ('case-4')
         $docId456 = Uuid::v6();
         $this->changeset->updateCaseNrsForDocument(
-            $this->createDocument($docId456, ['case-2', 'case-4']),
+            new DocumentCaseNumbers($docId456, ['case-2', 'case-4']),
             ['case-1', 'case-2', 'case-3']
         );
 
@@ -79,24 +78,5 @@ class InquiryChangesetTest extends MockeryTestCase
             ],
             $this->changeset->getChanges()
         );
-    }
-
-    /**
-     * @param string[] $caseNumbers
-     */
-    private function createDocument(Uuid $id, array $caseNumbers): Document
-    {
-        $inquiries = new ArrayCollection();
-        foreach ($caseNumbers as $caseNumber) {
-            $inquiry = \Mockery::mock(Inquiry::class);
-            $inquiry->expects('getCasenr')->andReturn($caseNumber);
-            $inquiries->add($inquiry);
-        }
-
-        $document = \Mockery::mock(Document::class);
-        $document->expects('getInquiries')->andReturn($inquiries);
-        $document->shouldReceive('getId')->andReturn($id);
-
-        return $document;
     }
 }

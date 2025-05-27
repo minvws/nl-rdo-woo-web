@@ -26,6 +26,7 @@ class YearMonthType extends ChoiceType
     public const REVERSE = 'reverse';
     public const DOSSIER = 'dossier';
 
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $options['choices'] = $this->getChoices(...$this->getChoicesArgsFromOptions($options));
@@ -58,7 +59,7 @@ class YearMonthType extends ChoiceType
         foreach ($period->getIterator() as $date) {
             Assert::notNull($date);
 
-            $year = $date->format('Y');
+            $year = (int) $date->format('Y');
             if (! array_key_exists($year, $options)) {
                 $options[$year] = [];
             }
@@ -78,6 +79,7 @@ class YearMonthType extends ChoiceType
         return $options;
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);

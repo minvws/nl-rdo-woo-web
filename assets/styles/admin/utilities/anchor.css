@@ -1,0 +1,13 @@
+@utility bhr-a {
+  @apply text-bhr-sea-blue
+            underline
+            hover-focus:text-bhr-ateneo-blue
+            visited:text-bhr-plum;
+}
+
+@utility bhr-a--inherit-color {
+  @apply text-inherit
+            hover-focus:text-inherit
+            hover-focus:no-underline
+            visited:text-inherit;
+}

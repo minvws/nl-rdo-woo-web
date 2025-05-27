@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ExportRevokedUrls extends Command
 {
     public function __construct(
-        private RevokedUrlService $revokedUrlService,
+        private readonly RevokedUrlService $revokedUrlService,
     ) {
         parent::__construct();
     }

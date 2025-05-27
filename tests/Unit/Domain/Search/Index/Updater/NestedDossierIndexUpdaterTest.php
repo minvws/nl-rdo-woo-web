@@ -40,10 +40,8 @@ class NestedDossierIndexUpdaterTest extends MockeryTestCase
         $this->logger->shouldReceive('debug');
 
         $this->elasticClient->expects('updateByQuery')->with(\Mockery::on(
-            static function (array $input) use ($dossierId, $dossierDoc) {
-                return $input['body']['query']['bool']['must'][1]['nested']['query']['term']['dossiers.id'] === $dossierId
-                    && $input['body']['script']['params']['dossier'] === $dossierDoc;
-            }
+            static fn (array $input) => $input['body']['query']['bool']['must'][1]['nested']['query']['term']['dossiers.id'] === $dossierId
+                && $input['body']['script']['params']['dossier'] === $dossierDoc
         ));
 
         $this->indexUpdater->update($dossier, $dossierDoc);

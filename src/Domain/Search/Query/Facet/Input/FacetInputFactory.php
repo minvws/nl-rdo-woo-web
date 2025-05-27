@@ -45,4 +45,9 @@ readonly class FacetInputFactory
             ])
         );
     }
+
+    public function createEmpty(): FacetInputCollection
+    {
+        return new FacetInputCollection();
+    }
 }

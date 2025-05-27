@@ -11,6 +11,7 @@ class MatchAllQuery extends BoolQuery
     /**
      * @return array<string, mixed>
      */
+    #[\Override]
     public function build(): array
     {
         return ['match_all' => new \stdClass()];

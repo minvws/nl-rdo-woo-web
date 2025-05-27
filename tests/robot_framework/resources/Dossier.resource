@@ -60,8 +60,8 @@ Generate Dossier Reference Number
 Search For A Publication
   [Documentation]  Clicks the link with matching text, if multiple are present it will fail.
   [Arguments]  ${search_query}
-  Type Text  //div[@data-e2e-name="dossier-search"]//input  ${search_query}  delay=50 ms  clear=Yes
   ${search_query_lowercase} =  Convert To Lower Case  ${search_query}
+  Type Text  //div[@data-e2e-name="dossier-search"]//input  ${search_query_lowercase}  delay=50 ms  clear=${TRUE}
   Click
   ...  //div[@data-e2e-name="search-previews-results"]//table[@data-e2e-name="table-dossier"]//a[contains(@href,'${search_query_lowercase}')]
 
@@ -118,6 +118,7 @@ Verify Document Filetype
   Click  //div[@data-e2e-name="documents-section"]//tbody/tr[td[contains(.,'${document_number}')]]//td//a
   Get Text  //td[@data-e2e-name="source-type"]  contains  ${source_type}
   Get Text  //td[@data-e2e-name="file-type"]  contains  ${file_type}
+  Get Text  //a[@data-e2e-name="download-file-link"]  contains  ${file_type.lower()}
   Generic Download Click  //a[@data-e2e-name="download-file-link"]  ${file_type}
   Go Back
 
@@ -129,3 +130,9 @@ Click Continue To Publish
 
 Click Save And Prepare
   Click  //*[@id="publish_submit"]
+
+Click Edit Details
+  Click  //a[@data-e2e-name="edit-details"]
+
+Edit Main Document
+  Click  //*[@data-e2e-name="main-document"]//*[@data-e2e-name="edit-file"]

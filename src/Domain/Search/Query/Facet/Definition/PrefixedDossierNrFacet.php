@@ -20,7 +20,7 @@ use App\Service\Search\Query\Filter\OrTermFilter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 readonly class PrefixedDossierNrFacet implements FacetDefinitionInterface
 {

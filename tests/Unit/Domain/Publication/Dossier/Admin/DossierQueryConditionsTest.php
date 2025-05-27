@@ -8,7 +8,7 @@ use App\Domain\Publication\Dossier\Admin\DossierQueryConditions;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Entity\Department;
-use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\QueryBuilder;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
@@ -25,7 +25,7 @@ class DossierQueryConditionsTest extends MockeryTestCase
     {
         $statuses = [DossierStatus::CONCEPT, DossierStatus::PUBLISHED];
 
-        $expression = \Mockery::mock(Expr::class);
+        $expression = \Mockery::mock(Func::class);
 
         $queryBuilder = \Mockery::mock(QueryBuilder::class);
         $queryBuilder->expects('expr->in')->with('dos.status', ':statuses')->andReturn($expression);
@@ -53,7 +53,7 @@ class DossierQueryConditionsTest extends MockeryTestCase
             \Mockery::mock(Department::class),
         ];
 
-        $expression = \Mockery::mock(Expr::class);
+        $expression = \Mockery::mock(Func::class);
 
         $queryBuilder = \Mockery::mock(QueryBuilder::class);
         $queryBuilder->expects('expr->in')->with('dep.id', ':departments')->andReturn($expression);

@@ -6,8 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Woo'
-author = 'Woo team'
+project = 'Woo publicatieplatform'
+author = 'The Woo team'
+#release = "2.0.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -22,7 +23,6 @@ language = 'nl'
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-# html_theme = 'alabaster' # Default theme
 html_theme = 'sphinx_book_theme'
 # html_static_path = ['_static']
 

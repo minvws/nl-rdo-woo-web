@@ -1,0 +1,7 @@
+@utility woo-icon {
+  @apply inline-block;
+
+  &.hidden {
+    @apply hidden;
+  }
+}

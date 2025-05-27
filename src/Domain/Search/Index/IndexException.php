@@ -36,7 +36,7 @@ class IndexException extends \RuntimeException
     {
         return new self(sprintf(
             'Cannot determine Elastic document id for object of class %s',
-            get_class($object),
+            $object::class,
         ));
     }
 }

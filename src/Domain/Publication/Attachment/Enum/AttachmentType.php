@@ -132,4 +132,9 @@ enum AttachmentType: string implements TranslatableInterface
             ),
         );
     }
+
+    public function isRequestForAdvice(): bool
+    {
+        return $this === self::REQUEST_FOR_ADVICE;
+    }
 }

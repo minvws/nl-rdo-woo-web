@@ -47,16 +47,10 @@ class InquiryAdmininistrationController extends AbstractController
         $form = $this->createForm(AdministrationActionsType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            switch ($form->get('action')->getData()) {
-                case AdministrationActionsType::ACTION_REGENERATE_INVENTORY:
-                    $this->inquiryService->generateInventory($inquiry);
-                    break;
-                case AdministrationActionsType::ACTION_REGENERATE_ARCHIVES:
-                    $this->inquiryService->generateArchives($inquiry);
-                    break;
-                default:
-                    throw new \OutOfBoundsException('Unknown inquiry administration action');
-            }
+            match ($form->get('action')->getData()) {
+                AdministrationActionsType::ACTION_REGENERATE_INVENTORY => $this->inquiryService->generateInventory($inquiry),
+                default => throw new \OutOfBoundsException('Unknown inquiry administration action'),
+            };
 
             $this->addFlash('backend', ['success' => 'The action has been scheduled for execution']);
         }

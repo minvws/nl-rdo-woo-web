@@ -1,286 +1,1087 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:clear\\(\\) invoked with 1 parameter, 0 required\\.$#"
+			message: '#^Parameter \#1 \$environment of class App\\Kernel constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: public/index.php
+
+		-
+			message: '#^Parameter \$title of class App\\Api\\Admin\\Publication\\Search\\SearchResultDto constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Api/Admin/Publication/Search/SearchResultDtoFactory.php
+
+		-
+			message: '#^Cannot use \+\+ on mixed\.$#'
+			identifier: postInc.type
+			count: 1
+			path: src/Api/Admin/Uploader/WooDecision/Status/UploadStatusDtoFactory.php
+
+		-
+			message: '#^Method App\\Api\\Admin\\Uploader\\WooDecision\\Status\\UploadStatusDtoFactory\:\:getStatus\(\) should return ArrayObject\<''add''\|''republish''\|''update'', int\> but returns ArrayObject\<\(int\|string\), mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Api/Admin/Uploader/WooDecision/Status/UploadStatusDtoFactory.php
+
+		-
+			message: '#^Method Doctrine\\Persistence\\ObjectManager\:\:clear\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
 			count: 1
 			path: src/Command/GenerateDocuments.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Command/GenerateDocuments.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/Command/Index/Alias.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Command/Index/Create.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Command/Index/Create.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Command/Index/Delete.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/Command/Ingest/IngestDossier.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/Command/NormalizeDocumentGrounds.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Cannot access offset 1 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Command/NormalizeDocumentGrounds.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Command/NormalizeDocumentGrounds.php
+
+		-
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Command/NormalizeDocumentGrounds.php
+
+		-
+			message: '#^Parameter \#2 \$string of function explode expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Command/NormalizeDocumentGrounds.php
+
+		-
+			message: '#^Cannot call method getInt\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Command/PageCheck.php
+
+		-
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/Command/User/Create.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Command/User/Reset.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Command/User/View.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Command/Where.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Part \$match\[''_route''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Command/Where.php
+
+		-
+			message: '#^Part \$match\[''dossierId''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Command/Where.php
+
+		-
+			message: '#^Parameter \#1 \$file of method Oneup\\UploaderBundle\\Controller\\AbstractChunkedController\:\:handleChunkedUpload\(\) expects Symfony\\Component\\HttpFoundation\\File\\UploadedFile, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Admin/CustomDropzoneController.php
+
+		-
+			message: '#^Parameter \#1 \$file of method Oneup\\UploaderBundle\\Controller\\AbstractController\:\:handleUpload\(\) expects Oneup\\UploaderBundle\\Uploader\\File\\FileInterface\|Symfony\\Component\\HttpFoundation\\File\\File, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/Admin/CustomDropzoneController.php
+
+		-
+			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/Controller/Admin/Dossier/WooDecision/DocumentsEditStepController.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Controller/Admin/InquiryController.php
 
 		-
-			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
+			message: '#^PHPDoc tag @var with type MinVWS\\AuditLogger\\Contracts\\LoggableUser is not subtype of native type Symfony\\Component\\Security\\Core\\User\\UserInterface\|null\.$#'
+			identifier: varTag.nativeType
 			count: 1
 			path: src/Controller/Admin/SecurityController.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/Controller/Admin/SecurityController.php
 
 		-
-			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
+			message: '#^PHPDoc tag @var with type MinVWS\\AuditLogger\\Contracts\\LoggableUser is not subtype of native type Symfony\\Component\\Security\\Core\\User\\UserInterface\|null\.$#'
+			identifier: varTag.nativeType
 			count: 3
 			path: src/Controller/Admin/UserController.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$params of method Elastic\\Elasticsearch\\Client\:\:count\(\) expects array\{index\?\: array\<string\>\|string, ignore_unavailable\?\: bool, ignore_throttled\?\: bool, allow_no_indices\?\: bool, expand_wildcards\?\: string, min_score\?\: int, preference\?\: string, routing\?\: array\<string\>\|string, \.\.\.\}\|null, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/DataCollector/CollectorClient.php
+
+		-
+			message: '#^Parameter \#3 \$response of method App\\DataCollector\\ElasticCollector\:\:addCall\(\) expects Elastic\\Elasticsearch\\Response\\Elasticsearch, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/DataCollector/CollectorClient.php
+
+		-
+			message: '#^Cannot access an offset on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/DataCollector/ElasticCollector.php
+
+		-
+			message: '#^Method App\\DataCollector\\ElasticCollector\:\:getCalls\(\) should return array\<mixed\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/DataCollector/ElasticCollector.php
+
+		-
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/DataFixtures/WorkerStatsFixtures.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Doctrine/EncryptedArray.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/Doctrine/EncryptedString.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Method App\\Domain\\Ingest\\Content\\LazyFileReference\:\:getPath\(\) should return string but returns string\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Domain/Ingest/Content/LazyFileReference.php
+
+		-
+			message: '#^Property App\\Domain\\Ingest\\Content\\LazyFileReference\:\:\$path \(string\|null\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Domain/Ingest/Content/LazyFileReference.php
+
+		-
+			message: '#^Method App\\Domain\\Publication\\Dossier\\ViewModel\\DossierTypeViewFactory\:\:makeCollection\(\) should return list\<App\\Domain\\Publication\\Dossier\\ViewModel\\DossierType\> but returns list\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Domain/Publication/Dossier/ViewModel/DossierTypeViewFactory.php
+
+		-
+			message: '#^Parameter \#2 \$dossierDoc of method App\\Domain\\Search\\Index\\Updater\\NestedDossierIndexUpdater\:\:update\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Search/Index/Dossier/DossierIndexer.php
+
+		-
+			message: '#^Cannot access offset ''_meta'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Cannot access offset ''docs\.count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Cannot access offset ''health'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Cannot access offset ''index'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Cannot access offset ''mappings'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Cannot access offset ''store\.size'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Cannot access offset ''version'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Method App\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexManager\:\:listAlias\(\) should return array\<int, array\<string, array\<string, mixed\>\>\> but returns array\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Parameter \$docsCount of class App\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexDetails constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Parameter \$health of class App\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexDetails constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Parameter \$name of class App\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexDetails constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Parameter \$status of class App\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexDetails constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Parameter \$storeSize of class App\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexDetails constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
+
+		-
+			message: '#^Cannot call method getInt\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
+
+		-
+			message: '#^Cannot call method getIterable\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
+
+		-
+			message: '#^Cannot call method getString\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
+
+		-
+			message: '#^Method App\\Domain\\Search\\Index\\Rollover\\RolloverCounter\:\:getElasticCounts\(\) should return array\<string, array\{count\: int, subtypes\?\: non\-empty\-array\<string, array\{count\: int, pages\: int\}\>\}\> but returns array\<string, array\{count\: mixed, subtypes\?\: non\-empty\-array\<string, array\{count\: mixed, pages\: mixed\}\>\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Search/Query/Facet/Input/DateFacetInput.php
+
+		-
+			message: '#^Parameter \$values of static method Erichard\\ElasticQueryBuilder\\Query\\Query\:\:terms\(\) expects array\<int, bool\|float\|int\|string\>, array\<string\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Domain/Search/Theme/Covid19QueryConditionBuilder.php
+
+		-
+			message: '#^Generator expects value type Generator\<int, T, mixed, mixed\>, Generator\<int, mixed, mixed, void\> given\.$#'
+			identifier: generator.valueType
+			count: 1
+			path: src/Domain/WooIndex/Producer/UrlProducer.php
+
+		-
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/EventSubscriber/LocaleListener.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Cannot access offset ''help'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Form/ChoiceTypeWithHelp.php
+
+		-
+			message: '#^Cannot access offset ''value'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Form/ChoiceTypeWithHelp.php
+
+		-
+			message: '#^Cannot access offset mixed on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Form/ChoiceTypeWithHelp.php
+
+		-
+			message: '#^Parameter \#3 \$options of method Symfony\\Component\\Form\\Extension\\Core\\Type\\ChoiceType\:\:finishView\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/ChoiceTypeWithHelp.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Form/User/RoleType.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_map expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Form/User/RoleType.php
+
+		-
+			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/User/RoleType.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Kernel.php
+
+		-
+			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/Service/FileReader/CsvReader.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/Service/FileReader/CsvReader.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$headers of method App\\Service\\FileReader\\CsvReaderFactory\:\:resolveHeaderMapping\(\) expects array\<string\>, list\<string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Service/FileReader/CsvReaderFactory.php
+
+		-
+			message: '#^Parameter \#1 \$headers of method App\\Service\\FileReader\\ExcelCsvReaderFactory\:\:resolveHeaderMapping\(\) expects array\<string\>, list\<string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Service/FileReader/ExcelCsvReaderFactory.php
+
+		-
+			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Service/FileReader/ExcelReader.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: src/Service/FileReader/ExcelReader.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Service/FileReader/ExcelReaderFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Cannot use \+\+ on mixed\.$#'
+			identifier: postInc.type
 			count: 1
-			path: src/Service/Inquiry/InquiryLinkImporter.php
+			path: src/Service/Inventory/InventoryChangeset.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Method App\\Service\\Inventory\\InventoryChangeset\:\:getCounts\(\) should return array\<string, int\> but returns array\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Service/Inventory/InventoryChangeset.php
+
+		-
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 3
 			path: src/Service/Inventory/InventoryDataHelper.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function intval expects array\\|bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Service/Inventory/Reader/InventoryReader.php
 
 		-
-			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser\\|null is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
+			message: '#^PHPDoc tag @var with type MinVWS\\AuditLogger\\Contracts\\LoggableUser\|null is not subtype of native type Symfony\\Component\\Security\\Core\\User\\UserInterface\|null\.$#'
+			identifier: varTag.nativeType
 			count: 2
 			path: src/Service/OrganisationService.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \$values of static method Erichard\\ElasticQueryBuilder\\Query\\Query\:\:terms\(\) expects array\<int, bool\|float\|int\|string\>, array\<string\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Service/Search/Query/Condition/ContentAccessConditionBuilder.php
+
+		-
+			message: '#^Method App\\Service\\Search\\Query\\Dsl\\GlobalAggregation\:\:build\(\) should return array\<string, mixed\> but returns array\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Service/Search/Query/Dsl/GlobalAggregation.php
+
+		-
+			message: '#^Method App\\Service\\Search\\Query\\Dsl\\TermsAggregationWithMinDocCount\:\:buildAggregation\(\) should return array\<string, string\> but returns array\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Service/Search/Query/Dsl/TermsAggregationWithMinDocCount.php
+
+		-
+			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Service/Search/Result/AggregationMapper.php
+
+		-
+			message: '#^Cannot call method getInt\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Service/Search/Result/AggregationMapper.php
+
+		-
+			message: '#^Cannot call method getString\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Service/Search/Result/AggregationMapper.php
+
+		-
+			message: '#^Parameter \#2 \$count of class App\\Service\\Search\\Model\\AggregationBucketEntry constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Service/Search/Result/AggregationMapper.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of method App\\Domain\\Search\\Query\\Facet\\Input\\FacetInputFactory\:\:createStringFacetInputForValue\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Service/Search/Result/AggregationMapper.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Service/Search/Result/ResultTransformer.php
+
+		-
+			message: '#^Cannot call method toArray\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Service/Search/Result/ResultTransformer.php
+
+		-
+			message: '#^Parameter \#1 \$data of class MinVWS\\TypeArray\\TypeArray constructor expects array\<mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Service/Search/Result/ResultTransformer.php
+
+		-
+			message: '#^Parameter \#1 \$hit of method App\\Domain\\Search\\Result\\ResultFactory\:\:map\(\) expects MinVWS\\TypeArray\\TypeArray, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Service/Search/Result/ResultTransformer.php
+
+		-
+			message: '#^Parameter \#2 \$buckets of method App\\Service\\Search\\Result\\AggregationMapper\:\:map\(\) expects iterable\<\(int\|string\), MinVWS\\TypeArray\\TypeArray\>, iterable\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Service/Search/Result/ResultTransformer.php
+
+		-
+			message: '#^Parameter \#1 \$query of method App\\Service\\Search\\Result\\ResultTransformer\:\:transform\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Service/Search/SearchService.php
+
+		-
+			message: '#^Property App\\Service\\Security\\Authorization\\Entry\:\:\$filters \(array\<string, bool\>\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Service/Security/Authorization/Entry.php
+
+		-
+			message: '#^Property App\\Service\\Security\\Authorization\\Entry\:\:\$permissions \(array\<string, bool\>\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Service/Security/Authorization/Entry.php
+
+		-
+			message: '#^Property App\\Service\\Security\\Authorization\\Entry\:\:\$prefix \(string\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Service/Security/Authorization/Entry.php
+
+		-
+			message: '#^Property App\\Service\\Security\\Authorization\\Entry\:\:\$roles \(array\<string\>\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Service/Security/Authorization/Entry.php
+
+		-
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Service/Security/OrganisationSwitcher.php
 
 		-
-			message: "#^PHPDoc tag @var with type MinVWS\\\\AuditLogger\\\\Contracts\\\\LoggableUser\\|null is not subtype of native type Symfony\\\\Component\\\\Security\\\\Core\\\\User\\\\UserInterface\\|null\\.$#"
+			message: '#^Method App\\Service\\Uploader\\UploaderService\:\:confirmUpload\(\) should return array\<Symfony\\Component\\HttpFoundation\\File\\File\> but returns array\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Service/Uploader/UploaderService.php
+
+		-
+			message: '#^PHPDoc tag @var with type MinVWS\\AuditLogger\\Contracts\\LoggableUser\|null is not subtype of native type Symfony\\Component\\Security\\Core\\User\\UserInterface\|null\.$#'
+			identifier: varTag.nativeType
 			count: 2
 			path: src/Service/UserService.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of function strval expects bool\\|float\\|int\\|resource\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Twig/Runtime/CspExtensionRuntime.php
 
 		-
-			message: "#^Method App\\\\Tests\\\\Unit\\\\Enum\\\\DepartmentTest\\:\\:getEqualsShouldReturnFalseData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method App\\Tests\\Faker\\GroundsFakerProvider\:\:ground\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Faker/GroundsFakerProvider.php
+
+		-
+			message: '#^Method App\\Tests\\Faker\\GroundsFakerProvider\:\:grounds\(\) should return list\<string\> but returns list\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Faker/GroundsFakerProvider.php
+
+		-
+			message: '#^Method App\\Tests\\Faker\\GroundsFakerProvider\:\:groundsBetween\(\) should return list\<string\> but returns list\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Faker/GroundsFakerProvider.php
+
+		-
+			message: '#^Anonymous function should return bool but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Unit/Domain/Department/Twig/DepartmentsTest.php
+
+		-
+			message: '#^Cannot call method andReturnTrue\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Unit/Domain/Ingest/Process/Pdf/IngestPdfHandlerTest.php
+
+		-
+			message: '#^Cannot call method once\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Unit/Domain/Ingest/Process/Pdf/IngestPdfHandlerTest.php
+
+		-
+			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: tests/Unit/Domain/Publication/Attachment/Enum/AttachmentTypeBranchTest.php
+
+		-
+			message: '#^Cannot call method once\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: tests/Unit/Domain/Publication/Attachment/Enum/AttachmentTypeBranchTest.php
+
+		-
+			message: '#^Cannot call method with\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: tests/Unit/Domain/Publication/Attachment/Enum/AttachmentTypeBranchTest.php
+
+		-
+			message: '#^Cannot access offset ''bool'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/DepartmentIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''department'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/DepartmentIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''departments\.id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/DepartmentIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''match'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/DepartmentIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/DepartmentIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''params'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/DepartmentIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''query'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/DepartmentIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''script'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/DepartmentIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''should'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/DepartmentIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/DepartmentIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''bool'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/NestedDossierIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''dossier'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/NestedDossierIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''dossiers\.id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/NestedDossierIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''must'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/NestedDossierIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''nested'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/NestedDossierIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''params'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/NestedDossierIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''query'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Domain/Search/Index/Updater/NestedDossierIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''script'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/NestedDossierIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''term'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/NestedDossierIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset 1 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/NestedDossierIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''content'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/PageIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''page'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Domain/Search/Index/Updater/PageIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''page_nr'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/PageIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''params'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Domain/Search/Index/Updater/PageIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''script'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Domain/Search/Index/Updater/PageIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''bool'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/SubjectIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''match'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/SubjectIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/SubjectIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''params'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/SubjectIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''query'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/SubjectIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''script'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/SubjectIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''should'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/SubjectIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''subject'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/SubjectIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset ''subject\.id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/SubjectIndexUpdaterTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domain/Search/Index/Updater/SubjectIndexUpdaterTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Enum\\DepartmentTest\:\:getEqualsShouldReturnFalseData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Unit/Enum/DepartmentTest.php
 
 		-
-			message: "#^Method App\\\\Tests\\\\Unit\\\\Enum\\\\DepartmentTest\\:\\:getEqualsShouldReturnTrueData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method App\\Tests\\Unit\\Enum\\DepartmentTest\:\:getEqualsShouldReturnTrueData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Unit/Enum/DepartmentTest.php
 
 		-
-			message: "#^Method App\\\\Tests\\\\Unit\\\\Enum\\\\DepartmentTest\\:\\:getTryFromNameAndShortTagData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method App\\Tests\\Unit\\Enum\\DepartmentTest\:\:getTryFromNameAndShortTagData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Unit/Enum/DepartmentTest.php
 
 		-
-			message: "#^Method App\\\\Tests\\\\Unit\\\\Enum\\\\DepartmentTest\\:\\:getTryFromNameData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method App\\Tests\\Unit\\Enum\\DepartmentTest\:\:getTryFromNameData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Unit/Enum/DepartmentTest.php
 
 		-
-			message: "#^Method App\\\\Tests\\\\Unit\\\\Enum\\\\DepartmentTest\\:\\:getTryFromShortTagData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method App\\Tests\\Unit\\Enum\\DepartmentTest\:\:getTryFromShortTagData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Unit/Enum/DepartmentTest.php
 
 		-
-			message: "#^Method App\\\\Tests\\\\Unit\\\\Service\\\\DateRangeConverterTest\\:\\:dateRangeProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method App\\Tests\\Unit\\Service\\DateRangeConverterTest\:\:dateRangeProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Unit/Service/DateRangeConverterTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$rowIndex of method App\\\\Service\\\\FileReader\\\\CsvReader\\:\\:getDateTime\\(\\) expects int, int\\|string\\|null given\\.$#"
+			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getDateTime\(\) expects int, int\|string\|null given\.$#'
+			identifier: argument.type
 			count: 2
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$rowIndex of method App\\\\Service\\\\FileReader\\\\CsvReader\\:\\:getDateTime\\(\\) expects int, mixed given\\.$#"
+			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getDateTime\(\) expects int, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$rowIndex of method App\\\\Service\\\\FileReader\\\\CsvReader\\:\\:getInt\\(\\) expects int, mixed given\\.$#"
+			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getInt\(\) expects int, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$rowIndex of method App\\\\Service\\\\FileReader\\\\CsvReader\\:\\:getOptionalDateTime\\(\\) expects int, mixed given\\.$#"
+			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getOptionalDateTime\(\) expects int, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$rowIndex of method App\\\\Service\\\\FileReader\\\\CsvReader\\:\\:getOptionalInt\\(\\) expects int, mixed given\\.$#"
+			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getOptionalInt\(\) expects int, mixed given\.$#'
+			identifier: argument.type
 			count: 2
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$rowIndex of method App\\\\Service\\\\FileReader\\\\CsvReader\\:\\:getOptionalString\\(\\) expects int, mixed given\\.$#"
+			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getOptionalString\(\) expects int, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php
 
 		-
-			message: "#^Cannot call method getRowIndex\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Worksheet\\\\Row\\|false\\.$#"
+			message: '#^Cannot call method getRowIndex\(\) on PhpOffice\\PhpSpreadsheet\\Worksheet\\Row\|false\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: tests/Unit/Service/FileReader/ExcelReaderTest.php
 
 		-
-			message: "#^Method App\\\\Tests\\\\Unit\\\\Service\\\\Inventory\\\\InventoryDataHelperTest\\:\\:separateValuesProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method App\\Tests\\Unit\\Service\\Inventory\\InventoryDataHelperTest\:\:separateValuesProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Unit/Service/Inventory/InventoryDataHelperTest.php
 
 		-
-			message: "#^Method App\\\\Tests\\\\Unit\\\\Service\\\\Inventory\\\\InventoryDataHelperTest\\:\\:toDateTimeImmutableProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method App\\Tests\\Unit\\Service\\Inventory\\InventoryDataHelperTest\:\:toDateTimeImmutableProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Unit/Service/Inventory/InventoryDataHelperTest.php
 
 		-
-			message: "#^PHPDoc tag @return has invalid value \\(array\\<string, array\\{input\\:string, expectedResult\\:\\\\DateTimeImmutable\\[\\]\\}\\)\\: Unexpected token \"\\*/\", expected '\\>' at offset 95 on line 3$#"
+			message: '#^PHPDoc tag @return has invalid value \(array\<string, array\{input\:string, expectedResult\:\\DateTimeImmutable\[\]\}\)\: Unexpected token "\*/", expected ''\>'' at offset 95 on line 3$#'
+			identifier: phpDoc.parseError
 			count: 1
 			path: tests/Unit/Service/Inventory/InventoryDataHelperTest.php
 
 		-
-			message: "#^PHPDoc tag @return has invalid value \\(array\\<string, array\\{input\\:string, separator\\:string, expectedResult\\:string\\[\\]\\}\\)\\: Unexpected token \"\\*/\", expected '\\>' at offset 101 on line 3$#"
+			message: '#^PHPDoc tag @return has invalid value \(array\<string, array\{input\:string, separator\:string, expectedResult\:string\[\]\}\)\: Unexpected token "\*/", expected ''\>'' at offset 101 on line 3$#'
+			identifier: phpDoc.parseError
 			count: 1
 			path: tests/Unit/Service/Inventory/InventoryDataHelperTest.php
 
 		-
-			message: "#^Cannot call method getDate\\(\\) on App\\\\Service\\\\Inventory\\\\DocumentMetadata\\|null\\.$#"
+			message: '#^Cannot call method getDate\(\) on App\\Service\\Inventory\\DocumentMetadata\|null\.$#'
+			identifier: method.nonObject
 			count: 4
 			path: tests/Unit/Service/Inventory/InventoryReaderTest.php
 
 		-
-			message: "#^Cannot call method getLinks\\(\\) on App\\\\Service\\\\Inventory\\\\DocumentMetadata\\|null\\.$#"
+			message: '#^Cannot call method getLinks\(\) on App\\Service\\Inventory\\DocumentMetadata\|null\.$#'
+			identifier: method.nonObject
 			count: 7
 			path: tests/Unit/Service/Inventory/InventoryReaderTest.php
 
 		-
-			message: "#^Cannot call method getRemark\\(\\) on App\\\\Service\\\\Inventory\\\\DocumentMetadata\\|null\\.$#"
+			message: '#^Cannot call method getRemark\(\) on App\\Service\\Inventory\\DocumentMetadata\|null\.$#'
+			identifier: method.nonObject
 			count: 7
 			path: tests/Unit/Service/Inventory/InventoryReaderTest.php
 
 		-
-			message: "#^Cannot call method getSourceType\\(\\) on App\\\\Service\\\\Inventory\\\\DocumentMetadata\\|null\\.$#"
+			message: '#^Cannot call method getSourceType\(\) on App\\Service\\Inventory\\DocumentMetadata\|null\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: tests/Unit/Service/Inventory/InventoryReaderTest.php
 
 		-
-			message: "#^Call to an undefined method App\\\\Service\\\\Inventory\\\\InventoryService\\:\\:expects\\(\\)\\.$#"
+			message: '#^Call to an undefined method App\\Service\\Inventory\\InventoryService\:\:expects\(\)\.$#'
+			identifier: method.notFound
 			count: 2
 			path: tests/Unit/Service/Inventory/InventoryRunProcessorTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$config of class App\\\\Service\\\\Security\\\\Authorization\\\\ConfigFactory constructor expects array\\{entries\\: array\\}, array\\{\\} given\\.$#"
+			message: '#^Cannot call method with\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Unit/Service/Inventory/InventoryRunProcessorTest.php
+
+		-
+			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/Service/PaginatorFactoryTest.php
+
+		-
+			message: '#^Cannot call method with\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/Service/PaginatorFactoryTest.php
+
+		-
+			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Unit/Service/Search/Model/AggregationBucketEntryTest.php
+
+		-
+			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 14
+			path: tests/Unit/Service/Search/Result/AggregationMapperTest.php
+
+		-
+			message: '#^Cannot call method with\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 14
+			path: tests/Unit/Service/Search/Result/AggregationMapperTest.php
+
+		-
+			message: '#^Parameter \#1 \$config of class App\\Service\\Security\\Authorization\\ConfigFactory constructor expects array\{entries\: array\<mixed\>\}, array\{\} given\.$#'
+			identifier: argument.type
 			count: 1
 			path: tests/Unit/Service/Security/Authorization/ConfigFactoryTest.php
 
 		-
-			message: "#^Call to an undefined method Mockery\\\\MockInterface\\|Symfony\\\\Component\\\\HttpFoundation\\\\RequestStack\\:\\:shouldReceive\\(\\)\\.$#"
+			message: '#^Call to an undefined method Mockery\\MockInterface\|Symfony\\Component\\HttpFoundation\\RequestStack\:\:shouldReceive\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: tests/Unit/Twig/Runtime/WooExtensionRuntimeTest.php

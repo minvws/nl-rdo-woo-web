@@ -1,12 +1,7 @@
-<button
-    aria-controls="tab{{ tabNumber }}"
-    aria-label="{{ title }}"
-    {% if isActive %}
-        aria-selected="true"
-    {% endif %}
+<twig:Tab:Button
     class="bhr-tab-button"
-    data-e2e-name="tab-button-{{ tabNumber }}"
-    data-tab-target="#tabcontrol-{{ tabNumber }}"
-    id="tabcontrol-{{ tabNumber }}"
-    role="tab"
->{{ title }}</button>
+    isActive="{{ isActive }}"
+    tabNumber="{{ tabNumber }}"
+    tabsName="{{ tabsName }}"
+    title="{{ title }}"
+/>

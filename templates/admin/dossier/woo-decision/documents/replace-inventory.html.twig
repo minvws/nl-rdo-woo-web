@@ -4,16 +4,14 @@
     <div class="bhr-container bhr-container--sm">
         {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
 
-        <div class="px-11">
-            <div class="bhr-card">
-                <div
-                    {% if dataPath is not empty %}
-                        id="js-inventory-status"
-                        data-endpoint="{{ path(dataPath, { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
-                        role="status"
-                    {% endif %}>
-                    {% include 'admin/dossier/woo-decision/documents/processrun.html.twig' with { dossier: dossier, inventoryStatus: inventoryStatus } %}
-                </div>
+        <div class="bhr-card">
+            <div
+                {% if dataPath is not empty %}
+                    id="js-inventory-status"
+                    data-endpoint="{{ path(dataPath, { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
+                    role="status"
+                {% endif %}>
+                {% include 'admin/dossier/woo-decision/documents/processrun.html.twig' with { dossier: dossier, inventoryStatus: inventoryStatus } %}
             </div>
         </div>
     </div>

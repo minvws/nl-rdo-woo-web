@@ -1,0 +1,6 @@
+@custom-variant aria-current-page (&[aria-current="page"]);
+@custom-variant hover-focus (&:hover, &:focus);
+@custom-variant js (.js &);
+@custom-variant no-js (.no-js &);
+@custom-variant not-first (&:not(:first-child));
+@custom-variant not-last (&:not(:last-child));

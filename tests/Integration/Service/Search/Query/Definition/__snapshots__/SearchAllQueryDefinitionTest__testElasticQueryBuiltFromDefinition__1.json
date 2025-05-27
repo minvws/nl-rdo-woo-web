@@ -1,0 +1,421 @@
+{
+    "body": {
+        "docvalue_fields": [
+            "type",
+            "document_nr",
+            "document_prefix",
+            "dossier_nr"
+        ],
+        "_source": false,
+        "suggest": {
+            "search-input": {
+                "text": "foo",
+                "term": {
+                    "field": "content_for_suggestions",
+                    "size": 3,
+                    "sort": "frequency",
+                    "suggest_mode": "popular",
+                    "string_distance": "jaro_winkler"
+                }
+            }
+        },
+        "sort": [
+            {
+                "decision_date": {
+                    "missing": "_last",
+                    "order": "desc"
+                }
+            }
+        ],
+        "query": {
+            "bool": {
+                "minimum_should_match": 1,
+                "should": [
+                    {
+                        "bool": {
+                            "minimum_should_match": 1,
+                            "should": [
+                                {
+                                    "nested": {
+                                        "path": "dossiers",
+                                        "query": {
+                                            "bool": {
+                                                "minimum_should_match": 1,
+                                                "should": [
+                                                    {
+                                                        "simple_query_string": {
+                                                            "query": "foo",
+                                                            "fields": [
+                                                                "dossiers.title"
+                                                            ],
+                                                            "default_operator": "and",
+                                                            "boost": 3
+                                                        }
+                                                    },
+                                                    {
+                                                        "simple_query_string": {
+                                                            "query": "foo",
+                                                            "fields": [
+                                                                "dossiers.summary"
+                                                            ],
+                                                            "default_operator": "and",
+                                                            "boost": 2
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "nested": {
+                                        "path": "pages",
+                                        "query": {
+                                            "simple_query_string": {
+                                                "query": "foo",
+                                                "fields": [
+                                                    "pages.content"
+                                                ],
+                                                "default_operator": "and",
+                                                "boost": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "simple_query_string": {
+                                        "query": "foo",
+                                        "fields": [
+                                            "filename"
+                                        ],
+                                        "default_operator": "and",
+                                        "boost": 4
+                                    }
+                                },
+                                {
+                                    "term": {
+                                        "document_nr": {
+                                            "value": "foo",
+                                            "boost": 5,
+                                            "case_insensitive": true
+                                        }
+                                    }
+                                },
+                                {
+                                    "term": {
+                                        "document_id": {
+                                            "value": "foo",
+                                            "boost": 5,
+                                            "case_insensitive": true
+                                        }
+                                    }
+                                }
+                            ],
+                            "filter": [
+                                {
+                                    "terms": {
+                                        "type": [
+                                            "document",
+                                            "woo_decision_main_document",
+                                            "covenant_main_document",
+                                            "annual_report_main_document",
+                                            "investigation_report_main_document",
+                                            "disposition_main_document",
+                                            "complaint_judgement_main_document",
+                                            "other_publication_main_document",
+                                            "advice_main_document",
+                                            "attachment"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "bool": {
+                            "minimum_should_match": 1,
+                            "should": [
+                                {
+                                    "simple_query_string": {
+                                        "query": "foo",
+                                        "fields": [
+                                            "title"
+                                        ],
+                                        "default_operator": "and",
+                                        "boost": 5
+                                    }
+                                },
+                                {
+                                    "simple_query_string": {
+                                        "query": "foo",
+                                        "fields": [
+                                            "summary"
+                                        ],
+                                        "default_operator": "and",
+                                        "boost": 4
+                                    }
+                                },
+                                {
+                                    "term": {
+                                        "prefixed_dossier_nr": {
+                                            "value": "foo",
+                                            "boost": 5,
+                                            "case_insensitive": true
+                                        }
+                                    }
+                                },
+                                {
+                                    "term": {
+                                        "dossier_nr": {
+                                            "value": "foo",
+                                            "boost": 5,
+                                            "case_insensitive": true
+                                        }
+                                    }
+                                }
+                            ],
+                            "filter": [
+                                {
+                                    "terms": {
+                                        "type": [
+                                            "dossier",
+                                            "covenant",
+                                            "annual_report",
+                                            "investigation_report",
+                                            "disposition",
+                                            "complaint_judgement",
+                                            "other_publication",
+                                            "advice"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "filter": [
+                    {
+                        "bool": {
+                            "minimum_should_match": 1,
+                            "should": [
+                                {
+                                    "bool": {
+                                        "filter": [
+                                            {
+                                                "terms": {
+                                                    "type": [
+                                                        "dossier",
+                                                        "covenant",
+                                                        "annual_report",
+                                                        "investigation_report",
+                                                        "disposition",
+                                                        "complaint_judgement",
+                                                        "other_publication",
+                                                        "advice"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "terms": {
+                                                    "status": [
+                                                        "published"
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "bool": {
+                                        "filter": [
+                                            {
+                                                "terms": {
+                                                    "type": [
+                                                        "document",
+                                                        "woo_decision_main_document",
+                                                        "covenant_main_document",
+                                                        "annual_report_main_document",
+                                                        "investigation_report_main_document",
+                                                        "disposition_main_document",
+                                                        "complaint_judgement_main_document",
+                                                        "other_publication_main_document",
+                                                        "advice_main_document",
+                                                        "attachment"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "nested": {
+                                                    "path": "dossiers",
+                                                    "query": {
+                                                        "terms": {
+                                                            "dossiers.status": [
+                                                                "published"
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "highlight": {
+            "max_analyzed_offset": 1000000,
+            "pre_tags": [
+                "[[hl_start]]"
+            ],
+            "post_tags": [
+                "[[hl_end]]"
+            ],
+            "fields": {
+                "pages.content": {
+                    "fragment_size": 50,
+                    "number_of_fragments": 5,
+                    "type": "unified"
+                },
+                "dossiers.title": {
+                    "fragment_size": 50,
+                    "number_of_fragments": 5,
+                    "type": "unified"
+                },
+                "dossiers.summary": {
+                    "fragment_size": 50,
+                    "number_of_fragments": 5,
+                    "type": "unified"
+                },
+                "title": {
+                    "fragment_size": 50,
+                    "number_of_fragments": 5,
+                    "type": "unified"
+                },
+                "summary": {
+                    "fragment_size": 50,
+                    "number_of_fragments": 5,
+                    "type": "unified"
+                }
+            },
+            "require_field_match": true,
+            "highlight_query": {
+                "simple_query_string": {
+                    "query": "foo",
+                    "fields": [
+                        "title",
+                        "summary",
+                        "dossiers.summary",
+                        "dossiers.title",
+                        "pages.content"
+                    ],
+                    "default_operator": "and"
+                }
+            }
+        },
+        "aggs": {
+            "department": {
+                "terms": {
+                    "field": "department_names",
+                    "size": 25,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
+                }
+            },
+            "grounds": {
+                "terms": {
+                    "field": "grounds",
+                    "size": 25,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
+                }
+            },
+            "judgement": {
+                "terms": {
+                    "field": "judgement",
+                    "size": 25,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
+                }
+            },
+            "dossiers-period": {
+                "nested": {
+                    "path": "dossiers"
+                },
+                "aggs": {
+                    "period": {
+                        "terms": {
+                            "field": "dossiers.date_period",
+                            "size": 25,
+                            "order": {
+                                "_count": "desc"
+                            },
+                            "min_doc_count": 1
+                        }
+                    }
+                }
+            },
+            "source": {
+                "terms": {
+                    "field": "source_type",
+                    "size": 25,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
+                }
+            },
+            "subject": {
+                "terms": {
+                    "field": "subject_names",
+                    "size": 25,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
+                }
+            },
+            "toplevel_type": {
+                "terms": {
+                    "field": "toplevel_type",
+                    "size": 10,
+                    "min_doc_count": 1
+                },
+                "aggs": {
+                    "sublevel_type": {
+                        "terms": {
+                            "field": "sublevel_type",
+                            "size": 25,
+                            "order": {
+                                "_count": "desc"
+                            },
+                            "min_doc_count": 1
+                        }
+                    },
+                    "publication": {
+                        "missing": {
+                            "field": "sublevel_type"
+                        }
+                    }
+                }
+            },
+            "unique_dossiers": {
+                "cardinality": {
+                    "field": "prefixed_dossier_nr",
+                    "precision_threshold": 40000
+                }
+            }
+        }
+    },
+    "index": "woopie-read",
+    "from": 20,
+    "size": 10
+}

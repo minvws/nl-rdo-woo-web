@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\ProcessDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\RemoveDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawDocumentCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -31,38 +30,6 @@ class DocumentDispatcherTest extends UnitTestCase
 
         $this->dispatcher = new DocumentDispatcher(
             $this->messageBus,
-        );
-    }
-
-    public function testDispatchProcessDocumentCommand(): void
-    {
-        $id = Uuid::v6();
-        $remotePath = '/foo/prefix-bar.pdf';
-        $originalFileName = 'bar.pdf';
-        $chunked = true;
-        $chunkUuid = Uuid::v6()->toRfc4122();
-        $chunkCount = 3;
-
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            static function (ProcessDocumentCommand $command) use ($id, $remotePath, $originalFileName, $chunked, $chunkUuid, $chunkCount) {
-                self::assertEquals($id, $command->getDossierUuid());
-                self::assertEquals($remotePath, $command->getRemotePath());
-                self::assertEquals($originalFileName, $command->getOriginalFilename());
-                self::assertEquals($chunked, $command->isChunked());
-                self::assertEquals($chunkUuid, $command->getChunkUuid());
-                self::assertEquals($chunkCount, $command->getChunkCount());
-
-                return true;
-            }
-        ))->andReturns(new Envelope(new \stdClass()));
-
-        $this->dispatcher->dispatchProcessDocumentCommand(
-            $id,
-            $remotePath,
-            $originalFileName,
-            $chunked,
-            $chunkUuid,
-            $chunkCount,
         );
     }
 

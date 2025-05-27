@@ -22,7 +22,7 @@ use Symfony\Component\Security\Http\Event\LogoutEvent;
 /**
  * This listener will log successful and failed login attempts.
  *
- * @SuppressWarnings(CouplingBetweenObjects)
+ * @SuppressWarnings("CouplingBetweenObjects")
  */
 class LoginLoggerSubscriber implements EventSubscriberInterface
 {
@@ -74,9 +74,9 @@ class LoginLoggerSubscriber implements EventSubscriberInterface
     {
         $exception = $event->getException();
         $loginName = $event->getPassport()?->getBadge(UserBadge::class)?->getUserIdentifier() ?? 'unknown_user';
-
         $this->logger->error('Login failure', [
-            'exception' => $exception->getMessage(),
+            'exception_message_key' => $exception->getMessageKey(),
+            'exception_message_data' => $exception->getMessageData(),
             'login_name' => $loginName,
         ]);
 
@@ -96,6 +96,8 @@ class LoginLoggerSubscriber implements EventSubscriberInterface
             ->withData([
                 'user_id' => $event->getPassport()?->getBadge(UserBadge::class)?->getUserIdentifier(),
                 'partial_password_hash' => $pwhash,
+                'exception_message_key' => $exception->getMessageKey(),
+                'exception_message_data' => $exception->getMessageData(),
             ]));
     }
 

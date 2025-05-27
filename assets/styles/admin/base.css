@@ -1,10 +1,3 @@
-@config "../../../tailwind.config.admin.js";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-
 @layer base {
     @font-face {
         font-family: "RO Sans Web";
@@ -53,6 +46,10 @@
         @apply overflow-hidden;
     }
 
+    button {
+        @apply cursor-pointer;
+    }
+
     /* Overwrite the Tailwind defaults */
     b,
     strong {
@@ -68,10 +65,4 @@
         /* Also don't show it in Safari */
         @apply hidden;
     }
-
-    /* Not all buttons are clickable, so override the pointer cursor set by Tailwind on all buttons */
-    button[tabindex="-1"] {
-        @apply cursor-auto;
-    }
-
 }

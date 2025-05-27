@@ -18,7 +18,7 @@ use Doctrine\ORM\EntityManagerInterface;
  * This class will process an inventory and generates document entities from the given data.
  * Note that this class does not handle the content of the documents itself, just the metadata.
  *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class InventoryRunProcessor
 {

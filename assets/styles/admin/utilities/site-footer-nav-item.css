@@ -1,0 +1,3 @@
+@utility bhr-site-footer-nav-item {
+  @apply inline-block p-2 text-sm bhr-a;
+}

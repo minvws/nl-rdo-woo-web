@@ -12,13 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateKey extends Command
 {
-    protected EncryptionService $service;
-
-    public function __construct(EncryptionService $service)
+    public function __construct(protected EncryptionService $service)
     {
         parent::__construct();
-
-        $this->service = $service;
     }
 
     protected function configure(): void

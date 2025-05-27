@@ -8,7 +8,7 @@ use App\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
 
 readonly class ExecutablePlatformChecker implements PlatformCheckerInterface
 {
-    private const REQUIRED_EXECUTABLES = [
+    private const array REQUIRED_EXECUTABLES = [
         '/usr/bin/tesseract',
         PdftkService::PDFTK_PATH,
         '/usr/bin/pdfseparate',

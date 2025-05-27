@@ -64,28 +64,25 @@ const onComplete = () => {
   </Alert>
 
   <div class="mt-4">
-    <output class="block">
+    <div aria-live="assertive">
       <ErrorMessages
         :messages="[
           'Nog niet alle documenten zijn geüpload of verwerkt. Voeg ze toe of wacht tot ze verwerkt zijn om verder te gaan.',
         ]"
         v-if="showCannotContinueMessage"
       />
-    </output>
+    </div>
 
     <a
       @click="clickNextStep"
       :href="props.nextStepUrl"
-      class="bhr-button bhr-button--primary bhr-button--fixed-width mr-4"
+      class="bhr-btn-filled-primary mr-4"
       data-e2e-name="to-next-step-link"
     >
       Verder naar publiceren
     </a>
 
-    <a
-      :href="props.continueLaterUrl"
-      class="bhr-button bhr-button--secondary bhr-button--fixed-width mr-4"
-    >
+    <a :href="props.continueLaterUrl" class="bhr-btn-bordered-primary">
       Later verdergaan
     </a>
   </div>

@@ -42,7 +42,7 @@
         {% endmacro %}
 
         <header class="bg-bhr-eerie-black print:hidden">
-            <div class="mx-auto max-w-[1152px] lg:px-4">
+            <div class="bhr-container">
                 {% if isAuthenticated %}
                 <button class="p-4 lg:hidden js-visibility-toggler" aria-controls="main-nav" aria-expanded="false">
                     <twig:Admin:Icon color="fill-white" name="hamburger" class="" />
@@ -136,13 +136,13 @@
 
         <footer class="pb-8 pt-16 px-4 two-thirds-one-third print:hidden">
             {% if isAuthenticated %}
-                <div class="leading-tight pb-4 screen:pt-24 screen:text-center text-bhr-dim-gray print:border-b print:border-gray-900">
+                <div class="leading-tight pb-4 pt-24 text-center text-bhr-dim-gray">
                     <h2 class="font-bold text-2xl">{{ SITE_NAME }}</h2>
                     <em>Publicatie/document management</em>
                 </div>
             {% endif %}
 
-            <ul class="flex justify-center print:hidden">
+            <ul class="flex justify-center">
                 <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_privacy') }}">{{ 'global.footer.label.privacy' | trans() }}</a></li>
                 <li><a class="bhr-site-footer-nav-item" href="{{ path('app_admin_contact') }}">{{ 'global.footer.label.contact' | trans() }}</a></li>
                 <li><a class="bhr-site-footer-nav-item" href="{{ PUBLIC_BASE_URL }}/documentatie">{{ 'global.footer.label.documentation' | trans() }}</a></li>

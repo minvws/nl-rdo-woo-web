@@ -6,10 +6,12 @@ namespace App\Tests\Unit\Domain\Search\Result\Dossier\OtherPublication;
 
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationRepository;
 use App\Domain\Search\Index\ElasticDocumentType;
+use App\Domain\Search\Index\Schema\ElasticField;
 use App\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use App\Domain\Search\Result\Dossier\OtherPublication\OtherPublicationSearchResultMapper;
 use App\Domain\Search\Result\ResultEntryInterface;
-use Jaytaph\TypeArray\TypeArray;
+use App\Enum\ApplicationMode;
+use MinVWS\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 
@@ -44,12 +46,18 @@ class OtherPublicationSearchResultMapperTest extends MockeryTestCase
 
         $this->baseMapper
             ->expects('map')
-            ->with($hit, $this->repository, ElasticDocumentType::OTHER_PUBLICATION)
+            ->with(
+                $hit,
+                $this->repository,
+                ElasticDocumentType::OTHER_PUBLICATION,
+                [ElasticField::TITLE->value, ElasticField::SUMMARY->value],
+                ApplicationMode::ADMIN,
+            )
             ->andReturn($expectedResult);
 
         $this->assertEquals(
             $expectedResult,
-            $this->mapper->map($hit),
+            $this->mapper->map($hit, ApplicationMode::ADMIN),
         );
     }
 }

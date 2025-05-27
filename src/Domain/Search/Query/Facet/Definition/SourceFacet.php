@@ -21,7 +21,7 @@ use App\SourceType;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 readonly class SourceFacet implements FacetDefinitionInterface
 {

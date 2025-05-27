@@ -49,7 +49,7 @@
         {% if index.aliases | length == 0 %}
             <p class="mt-6">
                 <a
-                    class="bhr-button bhr-button--primary"
+                    class="bhr-btn-filled-primary"
                     href="{{ path('app_admin_elastic_live', {indexName: index.name}) }}"
                 >{{ "admin.elastic.promote_to_live" | trans() }}</a>
             </p>
@@ -63,7 +63,7 @@
 
         <p class="mt-6">
             <a
-                class="bhr-button bhr-button--secondary"
+                class="bhr-btn-bordered-primary"
                 href="{{ path('app_admin_elastic') }}"
             >{{ "admin.elastic.back_to_overview" | trans() }}</a>
         </p>

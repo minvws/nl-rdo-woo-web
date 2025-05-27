@@ -67,12 +67,8 @@ class Citation
             return self::$wobCitations[$canonical];
         }
 
-        if (isset(self::$wooCitations[$canonical])) {
-            return self::$wooCitations[$canonical];
-        }
-
         // Unknown citations get no classification intentionally
-        return '';
+        return self::$wooCitations[$canonical] ?? '';
     }
 
     /**

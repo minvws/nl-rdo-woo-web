@@ -47,6 +47,7 @@ class AnnualReport extends AbstractDossier implements EntityWithAttachments, Ent
         $this->document = null;
     }
 
+    #[\Override]
     public function setDateFrom(?\DateTimeImmutable $dateFrom): static
     {
         $carbonDate = new CarbonImmutable($dateFrom);

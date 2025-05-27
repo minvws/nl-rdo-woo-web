@@ -1,0 +1,24 @@
+@utility woo-h1 {
+  @apply text-2xl sm:text-3xl md:text-[2rem] font-bold leading-tight;
+  word-break: break-word;
+}
+
+@utility woo-h2 {
+  @apply text-xl sm:text-2xl md:text-3xl font-bold leading-tight;
+}
+
+@utility woo-h3 {
+  @apply text-lg sm:text-xl md:text-2xl font-bold leading-tight;
+}
+
+@utility woo-h1-spacing {
+  @apply mb-6 md:mb-8;
+}
+
+@utility woo-h2-spacing {
+  @apply mb-4 md:mb-6;
+}
+
+@utility woo-h3-spacing {
+  @apply mb-1 md:mb-2;
+}

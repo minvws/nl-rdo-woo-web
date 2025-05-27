@@ -23,10 +23,6 @@ class DocumentFileSet
     #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
     private Uuid $id;
 
-    #[ORM\ManyToOne(targetEntity: WooDecision::class)]
-    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private WooDecision $dossier;
-
     #[ORM\Column(length: 255, nullable: false, enumType: DocumentFileSetStatus::class)]
     private DocumentFileSetStatus $status;
 
@@ -38,10 +34,12 @@ class DocumentFileSet
     #[ORM\OneToMany(mappedBy: 'documentFileSet', targetEntity: DocumentFileUpdate::class, cascade: ['remove'])]
     private Collection $updates;
 
-    public function __construct(WooDecision $dossier)
-    {
+    public function __construct(
+        #[ORM\ManyToOne(targetEntity: WooDecision::class)]
+        #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
+        private WooDecision $dossier,
+    ) {
         $this->id = Uuid::v6();
-        $this->dossier = $dossier;
         $this->status = DocumentFileSetStatus::OPEN_FOR_UPLOADS;
         $this->uploads = new ArrayCollection();
         $this->updates = new ArrayCollection();
@@ -81,5 +79,19 @@ class DocumentFileSet
     public function getUpdates(): Collection
     {
         return $this->updates;
+    }
+
+    public function canConfirm(): bool
+    {
+        if ($this->status->needsConfirmation()) {
+            return true;
+        }
+
+        if ($this->status->isProcessingUploads() && $this->dossier->getStatus()->isConcept()) {
+            // Skipping directly from processing_uploads to confirmed is allowed for concept dossiers
+            return true;
+        }
+
+        return false;
     }
 }

@@ -1,0 +1,36 @@
+@utility woo-input-text {
+  @apply border
+            border-woo-dim-gray
+            leading-none
+            p-3
+            text-lg
+            w-full
+
+            placeholder:text-woo-dim-gray;
+}
+
+@utility woo-input-text--invalid {
+  @apply border-2 border-woo-maximum-red;
+}
+
+@utility woo-legend {
+  @apply block
+            font-bold
+            leading-tight
+            mt-0
+            mb-2;
+}
+
+@utility woo-choice-row {
+  @apply flex py-1.5;
+}
+
+@utility woo-choice-label {
+  /* label next to a radio or checkbox input */
+  @apply inline-block font-normal leading-5 pt-px;
+}
+
+@utility woo-choice-input {
+  /* radio or checkbox input */
+  @apply border border-woo-dim-gray block cursor-pointer h-4 w-4 mr-2 mt-0.5 rounded-sm;
+}

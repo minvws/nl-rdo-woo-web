@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Domain\Publication\Dossier\Type\Advice;
 
 use App\Domain\Publication\Dossier\Type\Advice\AdviceRepository;
+use App\Enum\ApplicationMode;
 use App\Tests\Factory\Publication\Dossier\Type\Advice\AdviceFactory;
 use App\Tests\Integration\IntegrationTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -32,7 +33,12 @@ final class AdviceRepositoryTest extends KernelTestCase
             'dateFrom' => new \DateTimeImmutable(),
         ]);
 
-        $result = $this->getRepository()->getSearchResultViewModel($dossier->getDocumentPrefix(), $dossier->getDossierNr());
+        $result = $this->getRepository()->getSearchResultViewModel(
+            $dossier->getDocumentPrefix(),
+            $dossier->getDossierNr(),
+            ApplicationMode::PUBLIC,
+        );
+
         self::assertNotNull($result);
         self::assertEquals($dossier->getDossierNr(), $result->dossierNr);
     }

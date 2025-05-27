@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\WooIndex\Producer;
 
-use App\Domain\WooIndex\DiWooException;
+use App\Domain\WooIndex\Exception\WooIndexException;
 
-final class InvalidChunkSizeException extends \InvalidArgumentException implements DiWooException
+final class InvalidChunkSizeException extends \InvalidArgumentException implements WooIndexException
 {
     public static function create(): self
     {

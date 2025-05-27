@@ -1,3 +1,4 @@
+queryString: true
 activeFacets: true
 queryParameters:
     type: dossier
@@ -32,3 +33,6 @@ sortOrder:
     name: DESC
     value: desc
 baseQueryConditions: {  }
+mode:
+    accessibleDossierStatuses: [{ new: false, concept: false, scheduled: false, preview: true, published: false, newOrConcept: false, conceptOrScheduled: false, publiclyAvailable: true, publiclyAvailableOrScheduled: true, deleted: false, notDeleted: true, name: PREVIEW, value: preview }, { new: false, concept: false, scheduled: false, preview: false, published: true, newOrConcept: false, conceptOrScheduled: false, publiclyAvailable: true, publiclyAvailableOrScheduled: true, deleted: false, notDeleted: true, name: PUBLISHED, value: published }]
+    name: PUBLIC

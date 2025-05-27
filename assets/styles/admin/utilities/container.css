@@ -1,0 +1,14 @@
+@utility bhr-container {
+  @apply max-w-7xl mx-auto;
+  @apply print:max-w-none;
+}
+
+@utility bhr-container--sm {
+  @apply max-w-[846px];
+  @apply print:max-w-none;
+}
+
+@utility bhr-container--xs {
+  @apply max-w-sm;
+  @apply print:max-w-none;
+}

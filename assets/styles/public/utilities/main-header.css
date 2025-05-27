@@ -1,0 +1,12 @@
+@utility woo-main-header__nav-search {
+  @apply bg-woo-sea-blue;
+}
+
+@utility woo-main-header__nav-search-container {
+  @apply lg:woo-container;
+}
+
+@utility woo-main-header__nav-search-wrapper {
+  @apply lg:flex lg:justify-between;
+}
+

@@ -19,18 +19,16 @@ class InventoryReader implements InventoryReaderInterface
     /**
      * @var ColumnMapping[]
      */
-    private array $mappings;
-    private ReaderFactoryInterface $readerFactory;
+    private readonly array $mappings;
     private FileReaderInterface $reader;
 
     public const MAX_LINK_SIZE = 2048;
     public const MAX_FILE_SIZE = 1024;
 
     public function __construct(
-        ReaderFactoryInterface $readerFactory,
+        private readonly ReaderFactoryInterface $readerFactory,
         ColumnMapping ...$mappings,
     ) {
-        $this->readerFactory = $readerFactory;
         $this->mappings = $mappings;
     }
 

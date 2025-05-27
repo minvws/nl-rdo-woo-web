@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\Covenant;
 
-use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
 use App\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
 use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
+use App\Enum\ApplicationMode;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -20,11 +20,15 @@ class CovenantRepository extends AbstractDossierRepository implements ProvidesDo
         parent::__construct($registry, Covenant::class);
     }
 
-    public function getSearchResultViewModel(string $prefix, string $dossierNr): ?CovenantSearchResult
-    {
+    public function getSearchResultViewModel(
+        string $prefix,
+        string $dossierNr,
+        ApplicationMode $mode,
+    ): ?CovenantSearchResult {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(
                 'new %s(
+                    dos.id,
                     dos.dossierNr,
                     dos.documentPrefix,
                     dos.title,
@@ -43,7 +47,7 @@ class CovenantRepository extends AbstractDossierRepository implements ProvidesDo
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', DossierStatus::PUBLISHED)
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
         ;
 
         /** @var ?CovenantSearchResult */

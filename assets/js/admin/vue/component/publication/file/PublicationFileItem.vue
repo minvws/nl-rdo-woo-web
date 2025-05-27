@@ -8,7 +8,7 @@ import {
   isSuccessStatusCode,
 } from '@js/admin/utils';
 import { formatDate } from '@utils';
-import { computed, ref } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 import { findFileTypeLabelByValue } from './helper';
 import { PublicationFileTypes } from './interface';
 
@@ -39,6 +39,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>();
 
+const editButtonElement = useTemplateRef<HTMLButtonElement>('editButton');
 const hasDeleteError = ref(false);
 const isPending = ref(false);
 const formattedDate = computed(() => formatDate(props.date));
@@ -69,6 +70,12 @@ const onDelete = async () => {
 const onEdit = () => {
   emit('edit', props.id);
 };
+
+defineExpose({
+  setFocus: () => {
+    editButtonElement.value?.focus();
+  },
+});
 </script>
 
 <template>
@@ -97,6 +104,8 @@ const onEdit = () => {
           aria-haspopup="dialog"
           class="bhr-a"
           :class="{ 'pr-4': !props.canDelete && !props.withdrawUrl }"
+          data-e2e-name="edit-file"
+          ref="editButtonElement"
           type="button"
         >
           <span class="sr-only">{{ props.fileName }}</span> Aanpassen

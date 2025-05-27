@@ -11,7 +11,6 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -35,29 +34,17 @@ class DocumentEventHandlerTest extends MockeryTestCase
 
     public function testHandleDocumentWithdrawn(): void
     {
-        $inquiry = \Mockery::mock(Inquiry::class);
-
         $dossierA = \Mockery::mock(WooDecision::class);
         $dossierB = \Mockery::mock(WooDecision::class);
 
         $document = \Mockery::mock(Document::class);
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossierA, $dossierB]));
-        $document->shouldReceive('getInquiries')->andReturn(new ArrayCollection([$inquiry]));
 
         $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
             static fn (BatchDownloadScope $scope) => $scope->wooDecision === $dossierA,
         ));
         $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
             static fn (BatchDownloadScope $scope) => $scope->wooDecision === $dossierB,
-        ));
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
-            static fn (BatchDownloadScope $scope) => $scope->inquiry === $inquiry,
-        ));
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
-            static fn (BatchDownloadScope $scope) => $scope->wooDecision === $dossierA && $scope->inquiry === $inquiry,
-        ));
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
-            static fn (BatchDownloadScope $scope) => $scope->wooDecision === $dossierB && $scope->inquiry === $inquiry,
         ));
 
         $event = new DocumentWithDrawnEvent($document, DocumentWithdrawReason::DATA_IN_DOCUMENT, 'foo', false);

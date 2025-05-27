@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Public;
 
-use App\Domain\Search\Query\SearchParametersFactory;
+use App\Service\Search\Query\Definition\BrowseMainAggregationsQueryDefinition;
 use App\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -18,7 +18,7 @@ class HomeController extends AbstractController
 {
     public function __construct(
         private readonly SearchService $searchService,
-        private readonly SearchParametersFactory $searchParametersFactory,
+        private readonly BrowseMainAggregationsQueryDefinition $queryDefinition,
     ) {
     }
 
@@ -44,11 +44,8 @@ class HomeController extends AbstractController
             return new RedirectResponse($this->generateUrl('app_search', ['q' => $q]));
         }
 
-        $searchParameters = $this->searchParametersFactory->createDefault();
-        $facetResult = $this->searchService->searchFacets($searchParameters);
-
         return $this->render('public/home/index.html.twig', [
-            'facets' => $facetResult,
+            'facets' => $this->searchService->getResult($this->queryDefinition),
         ]);
     }
 }

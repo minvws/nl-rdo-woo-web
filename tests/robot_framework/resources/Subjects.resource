@@ -3,6 +3,7 @@ Documentation       Resource file containing custom keywords for the Subjects se
 Library             String
 Library             Browser
 Library             DebugLibrary
+Resource            ../resources/Generic.resource
 
 
 *** Keywords ***
@@ -19,7 +20,7 @@ Create New Subject
   Click  //a[@data-e2e-name="new-subject"]
   Fill Text  id=subject_name  ${name}
   Click  id=subject_submit
-  Get Text  //*[@data-e2e-name="alerts"]  contains  Het onderwerp is aangemaakt
+  Success Alert Is Visible  Het onderwerp is aangemaakt
   RETURN  ${name}
 
 Update Subject
@@ -33,11 +34,13 @@ Update Subject
   END
   Fill Text  id=subject_name  ${updated_name}
   Click  id=subject_submit
-  Get Text  //*[@data-e2e-name="alerts"]  contains  Het onderwerp is aangepast
+  Success Alert Is Visible  Het onderwerp is aangepast
 
-Create Random Subjects
+Ensure There Are More Than 10 Subjects
   Click  " Onderwerpen "
-  FOR  ${_}  IN RANGE  1  10
-    ${random_id} =  Generate Random String  3  [NUMBERS][UPPER]
+  ${nr_of_subjects} =  Get Element Count  //tbody[@data-e2e-name="subject-list"]//tr
+  ${missing_subjects} =  Evaluate  max(10 - ${nr_of_subjects} , 0)
+  FOR  ${_}  IN RANGE  1  ${missing_subjects}
+    ${random_id} =  Generate Random String  5  [NUMBERS][UPPER]
     Create New Subject  Onderwerp ${random_id}
   END

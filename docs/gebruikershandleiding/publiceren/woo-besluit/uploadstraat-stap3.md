@@ -1,4 +1,4 @@
-# Uploadstraat stap 3: Productierapport uploaden
+# Stap  3: Productierapport uploaden
 
 ![De figuur laat zien hoe het productierapport en de bestanden worden geüpload.](img/besluit_4.png)
 
@@ -9,7 +9,8 @@ bijvoorbeeld zijn dat er een verplichte kolom mist in het productierapport of da
 
 Nadat het productierapport succesvol is geüpload, verschijnt de zogenaamde dropzone voor het uploaden van de Woo-documenten met
 de beoordeling ‘openbaar’ en ‘deels openbaar’. Het is mogelijk om de betreffende documenten te selecteren en te uploaden of om
-een .zip of .7z bestand te uploaden waarin alle documenten gebundeld zijn. Nadat je dit hebt gedaan gaat het systeem op de achtergrond aan de slag.
+een .zip of .7z bestand te uploaden waarin alle documenten gebundeld zijn, de maximale grootte per bestand is 5 GB.
+Nadat je dit hebt gedaan gaat het systeem op de achtergrond aan de slag.
 
 Eerst wordt gecontroleerd of de bestandsnaam van een document matcht met een ID in het productierapport, wordt het document
 gescand op virussen en opgeslagen. Indien de bestandsnaam van een document niet matcht met een ID in het productierapport dan

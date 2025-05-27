@@ -1,6 +1,6 @@
 {% extends 'public/base.html.twig' %}
 
-{% set page_title = pageTitle | trans %}
+{% set page_title = pageTitle | default('public.documents.archive.download') | trans %}
 
 {% block body %}
 <div class="woo-container woo-container--sm">
@@ -45,7 +45,10 @@
                     <tr>
                         <th class="woo-table-cell-light" scope="row">{{ "global.link" | trans }}</th>
                         <td>
-                            <a class="woo-a" data-e2e-name="download-file-link" href="{{ download_path }}" download>{{ 'public.global.download_verb' | trans }}</a> ({{ batch.size | size }})
+                            <a class="woo-a no-underline mr-1" data-e2e-name="download-file-link" href="{{ download_path }}" download>
+                                <twig:Public:Icon name="download" class="mr-0.5 relative -top-0.5" />
+                                <span class="underline">{{ 'public.global.download_verb' | trans }}</span>
+                            </a> ({{ batch.size | size }})
                         </td>
                     </tr>
                 </tbody>

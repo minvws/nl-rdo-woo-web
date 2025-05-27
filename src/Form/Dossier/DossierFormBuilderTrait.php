@@ -90,7 +90,7 @@ trait DossierFormBuilderTrait
                 ->add('save', SubmitType::class, [
                     'label' => 'global.save_draft',
                     'attr' => [
-                        'class' => 'bhr-button--secondary',
+                        'class' => 'bhr-btn-bordered-primary',
                         'data-last-button' => true,
                     ],
                 ]);
@@ -106,7 +106,7 @@ trait DossierFormBuilderTrait
                     'label' => 'global.cancel',
                     'validate' => false,
                     'attr' => [
-                        'class' => 'bhr-button--secondary',
+                        'class' => 'bhr-btn-bordered-primary',
                         'data-last-button' => true,
                     ],
                 ]);

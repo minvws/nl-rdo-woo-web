@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:diwoo="https://standaarden.overheid.nl/diwoo/metadata/" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd https://standaarden.overheid.nl/diwoo/metadata/ https://standaarden.overheid.nl/diwoo/metadata/0.9.4/xsd/diwoo-metadata.xsd">
+ <url>
+  <loc>http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/main_document/1eefbf67-fd11-6700-b0e0-315d29be4a5c</loc>
+  <lastmod>2024-04-04</lastmod>
+  <diwoo:Document>
+   <diwoo:DiWoo>
+    <diwoo:creatiedatum>2024-03-30</diwoo:creatiedatum>
+    <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
+    <diwoo:titelcollectie>
+     <diwoo:officieleTitel>file_name.pdf</diwoo:officieleTitel>
+    </diwoo:titelcollectie>
+    <diwoo:classificatiecollectie>
+     <diwoo:informatiecategorieen>
+      <diwoo:informatiecategorie resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_3baef532">Woo-verzoeken en -besluiten</diwoo:informatiecategorie>
+     </diwoo:informatiecategorieen>
+    </diwoo:classificatiecollectie>
+    <diwoo:documenthandelingen>
+     <diwoo:documenthandeling>
+      <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76">vaststelling</diwoo:soortHandeling>
+      <diwoo:atTime>2024-03-30T00:00:00+00:00</diwoo:atTime>
+     </diwoo:documenthandeling>
+    </diwoo:documenthandelingen>
+    <diwoo:hasParts>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/attachment/1eef99b0-093d-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/attachment/1eefa642-afd9-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/attachment/1eefb2d5-5675-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef02d0-39ed-6700-b0e0-315d29be4a5c">document-0001-0001.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef0f62-e089-6700-b0e0-315d29be4a5c">document-0001-0002.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef1bf5-8725-6700-b0e0-315d29be4a5c">document-0001-0003.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef2888-2dc1-6700-b0e0-315d29be4a5c">document-0001-0004.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef351a-d45d-6700-b0e0-315d29be4a5c">document-0001-0005.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef41ad-7af9-6700-b0e0-315d29be4a5c">document-0001-0006.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef4e40-2195-6700-b0e0-315d29be4a5c">document-0001-0007.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef5ad2-c831-6700-b0e0-315d29be4a5c">document-0001-0008.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef6765-6ecd-6700-b0e0-315d29be4a5c">document-0001-0009.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef73f8-1569-6700-b0e0-315d29be4a5c">document-0001-0010.pdf</diwoo:hasPart>
+    </diwoo:hasParts>
+   </diwoo:DiWoo>
+  </diwoo:Document>
+ </url>
+ <url>
+  <loc>http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/main_document/1ef08892-66d1-6700-b0e0-315d29be4a5c</loc>
+  <lastmod>2025-02-04</lastmod>
+  <diwoo:Document>
+   <diwoo:DiWoo>
+    <diwoo:creatiedatum>2025-01-30</diwoo:creatiedatum>
+    <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
+    <diwoo:titelcollectie>
+     <diwoo:officieleTitel>file_name.pdf</diwoo:officieleTitel>
+    </diwoo:titelcollectie>
+    <diwoo:classificatiecollectie>
+     <diwoo:informatiecategorieen>
+      <diwoo:informatiecategorie resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_3baef532">Woo-verzoeken en -besluiten</diwoo:informatiecategorie>
+     </diwoo:informatiecategorieen>
+    </diwoo:classificatiecollectie>
+    <diwoo:documenthandelingen>
+     <diwoo:documenthandeling>
+      <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76">vaststelling</diwoo:soortHandeling>
+      <diwoo:atTime>2025-01-30T00:00:00+00:00</diwoo:atTime>
+     </diwoo:documenthandeling>
+    </diwoo:documenthandelingen>
+    <diwoo:hasParts>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/attachment/1ef062da-72fd-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/attachment/1ef06f6d-1999-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/attachment/1ef07bff-c035-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/document/1eefcbfa-a3ad-6700-b0e0-315d29be4a5c">document-0002-0001.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/document/1eefd88d-4a49-6700-b0e0-315d29be4a5c">document-0002-0002.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/document/1eefe51f-f0e5-6700-b0e0-315d29be4a5c">document-0002-0003.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/document/1eeff1b2-9781-6700-b0e0-315d29be4a5c">document-0002-0004.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/document/1eeffe45-3e1d-6700-b0e0-315d29be4a5c">document-0002-0005.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/document/1ef00ad7-e4b9-6700-b0e0-315d29be4a5c">document-0002-0006.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/document/1ef0176a-8b55-6700-b0e0-315d29be4a5c">document-0002-0007.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/document/1ef023fd-31f1-6700-b0e0-315d29be4a5c">document-0002-0008.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/document/1ef0308f-d88d-6700-b0e0-315d29be4a5c">document-0002-0009.pdf</diwoo:hasPart>
+     <diwoo:hasPart resource="http://localhost:8000/dossier/PREF/my-woo-decision-2/file/download/document/1ef03d22-7f29-6700-b0e0-315d29be4a5c">document-0002-0010.pdf</diwoo:hasPart>
+    </diwoo:hasParts>
+   </diwoo:DiWoo>
+  </diwoo:Document>
+ </url>
+</urlset>

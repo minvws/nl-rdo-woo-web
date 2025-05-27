@@ -1,3 +1,12 @@
+parameters:
+    document_path: '%kernel.project_dir%/var/documents'
+    thumbnail_path: '%kernel.project_dir%/var/thumbnails'
+    batch_path: '%kernel.project_dir%/var/batches'
+    woo_index_path: '%kernel.project_dir%/var/woo_index'
+    upload_path: '%kernel.project_dir%/var/uploader'
+    working_copy_path: '%kernel.project_dir%/var/working_copy'
+    assets_path: '%kernel.project_dir%/var/assets'
+
 flysystem:
     storages:
         document.storage:
@@ -12,6 +21,22 @@ flysystem:
             adapter: 'lazy'
             options:
                 source: 'batch.storage.%env(STORAGE_BATCH_ADAPTER)%'
+        woo_index.storage:
+            adapter: 'lazy'
+            options:
+                source: 'woo_index.storage.%env(STORAGE_WOO_INDEX_ADAPTER)%'
+        upload.storage:
+            adapter: 'lazy'
+            options:
+                source: 'upload.storage.%env(STORAGE_UPLOAD_ADAPTER)%'
+        working_copy.storage:
+            adapter: 'lazy'
+            options:
+                source: 'working_copy.storage.local'
+        assets.storage:
+            adapter: 'lazy'
+            options:
+                source: 'assets.storage.%env(STORAGE_ASSETS_ADAPTER)%'
 
 
         #
@@ -41,6 +66,30 @@ flysystem:
                 client: 'Aws\S3\S3Client'
                 bucket: '%env(STORAGE_MINIO_BATCH_BUCKET)%'
 
+        woo_index.storage.aws:
+            adapter: 'aws'
+            visibility: 'public'
+            directory_visibility: 'public'
+            options:
+                client: 'Aws\S3\S3Client'
+                bucket: '%env(STORAGE_MINIO_WOO_INDEX_BUCKET)%'
+
+        upload.storage.aws:
+            adapter: 'aws'
+            visibility: 'public'
+            directory_visibility: 'public'
+            options:
+                client: 'Aws\S3\S3Client'
+                bucket: '%env(STORAGE_MINIO_UPLOAD_BUCKET)%'
+
+        assets.storage.aws:
+            adapter: 'aws'
+            visibility: 'public'
+            directory_visibility: 'public'
+            options:
+                client: 'Aws\S3\S3Client'
+                bucket: '%env(STORAGE_MINIO_ASSETS_BUCKET)%'
+
         #
         # Local storage definitions
         #
@@ -52,42 +101,74 @@ flysystem:
                 directory: '%document_path%'
                 permissions:
                     file:
-                        public: 0o664            # We want group to be able to read the file
+                        public: 0o664 # We want group to be able to read the file
                         private: 0o600
                     dir:
                         public: 0o775
                         private: 0o700
 
-        document.storage.phpunit:
+        thumbnail.storage.local:
             <<: *document.storage.local
             options:
                 <<: *document.storage.local.options
-                directory: 'vfs://root/%document_path%'
-
-        thumbnail.storage.local:
-            adapter: 'local'
-            visibility: 'public'
-            directory_visibility: 'public'
-            options:
                 directory: '%thumbnail_path%'
-                permissions:
-                    file:
-                        public: 0o664            # We want group to be able to read the file
-                        private: 0o600
-                    dir:
-                        public: 0o775
-                        private: 0o700
 
         batch.storage.local:
+            <<: *document.storage.local
+            options:
+                <<: *document.storage.local.options
+                directory: '%batch_path%'
+
+        woo_index.storage.local:
+            <<: *document.storage.local
+            options:
+                <<: *document.storage.local.options
+                directory: '%woo_index_path%'
+
+        upload.storage.local:
+            <<: *document.storage.local
+            options:
+                <<: *document.storage.local.options
+                directory: '%upload_path%'
+
+        working_copy.storage.local:
+            <<: *document.storage.local
+            options:
+                <<: *document.storage.local.options
+                directory: '%working_copy_path%'
+
+        assets.storage.local:
+            <<: *document.storage.local
+            options:
+                <<: *document.storage.local.options
+                directory: '%upload_path%'
+
+        #
+        # Phpunit (vfsStream) storage definitions
+        #
+        document.storage.phpunit: &document.storage.phpunit
             adapter: 'local'
             visibility: 'public'
             directory_visibility: 'public'
-            options:
-                directory: '%batch_path%'
+            options: &document.storage.phpunit.options
+                directory:   'vfs://root/%document_path%'
                 permissions:
                     file:
-                        public: 0o664            # We want group to be able to read the file
+                        public: 0o664 # We want group to be able to read the file
                         private: 0o600
                     dir:
                         public: 0o775
                         private: 0o700
+
+        assets.storage.phpunit:
+            <<: *document.storage.phpunit
+            options:
+                <<: *document.storage.phpunit.options
+                directory: 'vfs://root/%assets_path%'
+
+when@test:
+    flysystem:
+        storages:
+            woo_index.storage.memory:
+                adapter: 'memory'
+                visibility: 'public'

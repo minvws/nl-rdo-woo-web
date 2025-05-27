@@ -19,7 +19,7 @@ use App\Api\Admin\Dossier\DossierReferenceDto;
 use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
 
 /**
- * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+ * @SuppressWarnings("PHPMD.ExcessiveParameterList")
  */
 #[ApiResource(
     uriTemplate: '/decision-attachments/{attachmentId}',

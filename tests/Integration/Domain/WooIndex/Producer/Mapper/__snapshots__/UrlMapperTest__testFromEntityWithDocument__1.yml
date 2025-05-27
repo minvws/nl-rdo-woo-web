@@ -1,0 +1,12 @@
+loc: 'http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef02d0-39ed-6700-b0e0-315d29be4a5c'
+lastmod: '2024-04-01T13:37:42+00:00'
+diWooDocument:
+    creatiedatum: '2023-01-01T13:37:42+00:00'
+    publisher: { resource: 'https://identifier.overheid.nl/tooi/id/ministerie/mnre1025', name: mnre1025, value: 'ministerie van Volksgezondheid, Welzijn en Sport' }
+    officieleTitel: document-0001-0001.pdf
+    informatieCategorie: { resource: 'https://identifier.overheid.nl/tooi/def/thes/kern/c_3baef532', name: c_3baef532, value: 'Woo-verzoeken en -besluiten' }
+    documentHandeling: { soortHandeling: { resource: 'https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76', name: c_641ecd76, value: vaststelling }, atTime: '2023-01-01T13:37:42+00:00' }
+    isPartOf: { resource: 'http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/main_document/1eefbf67-fd11-6700-b0e0-315d29be4a5c', officieleTitel: file_name.pdf }
+    hasParts: null
+changefreq: null
+priority: null

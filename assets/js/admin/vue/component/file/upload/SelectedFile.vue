@@ -1,42 +1,63 @@
-<script setup>
-import { uploadFile } from '@js/admin/utils';
-import { computed, inject, nextTick, onBeforeUnmount, ref } from 'vue';
+<script setup lang="ts">
+import {
+  uploadFile,
+  type OnUploadError,
+  type UploadSuccessData,
+} from '@js/admin/utils';
+import { useFocusWithin } from '@vueuse/core';
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  ref,
+  useTemplateRef,
+} from 'vue';
 import Collapsible from '../../Collapsible.vue';
 import Icon from '../../Icon.vue';
 import MimeTypeIcon from '../MimeTypeIcon.vue';
 import { UPLOAD_AREA_ENDPOINT } from './static';
 
-const emit = defineEmits(['delete', 'uploaded', 'uploading', 'uploadError']);
-const props = defineProps({
-  enableAutoUpload: {
-    type: Boolean,
-    default: false,
-  },
-  file: {
-    type: Object,
-    required: true,
-    default: () => ({}),
-  },
-  fileId: {
-    type: String,
-    required: true,
-  },
-  payload: {
-    type: Object,
-  },
-});
+interface Props {
+  enableAutoUpload: boolean;
+  file: File;
+  fileId: string;
+  payload?: Record<string, string>;
+}
 
-const endpoint = inject(UPLOAD_AREA_ENDPOINT);
+interface Emits {
+  delete: [fileId: string];
+  uploaded: [
+    fileId: string,
+    file: File,
+    uploadId: string,
+    uploadSuccessData: UploadSuccessData,
+    hasFocus: boolean,
+  ];
+  uploading: [fileId: string, file: File];
+  uploadError: [fileId: string, file: File, error: OnUploadError];
+}
 
-const deleteButtonElement = ref(null);
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
+
+const endpoint = inject<string>(UPLOAD_AREA_ENDPOINT);
+
+const deleteButtonElement = useTemplateRef<HTMLButtonElement>(
+  'deleteButtonElement',
+);
+const resultDivElement = useTemplateRef<HTMLDivElement>('resultDivElement');
+const wrapperElement = useTemplateRef<HTMLLIElement>('wrapperElement');
+
 const isDeleteButtonVisible = ref(true);
 const isCollapsed = ref(false);
 const isSpinnerVisible = ref(false);
 const isErrorVisible = ref(false);
 const isSuccessVisible = ref(false);
 const isProgressVisible = ref(props.enableAutoUpload);
-const resultDivElement = ref(null);
-const wrapperElement = ref(null);
+
+const { focused: isFocusOnDeleteButton } = useFocusWithin(deleteButtonElement);
+const { focused: isFocusWithinWrapper } = useFocusWithin(wrapperElement);
 
 const isIndicatorIconVisible = computed(() =>
   [isSpinnerVisible, isErrorVisible, isSuccessVisible].some(
@@ -46,11 +67,12 @@ const isIndicatorIconVisible = computed(() =>
 
 const progressId = `${props.fileId}-progress`;
 const progress = ref(0);
-
-let cleanupUpload;
-let uploadId;
-let uploadResultTimeoutId;
 const uploadResultTimeoutDuration = 1500;
+
+let cleanupUpload: () => void;
+let uploadSuccessData: UploadSuccessData;
+let uploadId: string;
+let uploadResultTimeoutId: ReturnType<typeof setTimeout>;
 
 const triggerFileUpload = async () => {
   // Upload the file in the next tick to prevent an issue with icons not showing up
@@ -66,21 +88,21 @@ const triggerFileUpload = async () => {
       progress.value = fileProgress;
 
       if (fileProgress === 100) {
-        const isFocusOnDeleteButton =
-          document.activeElement === deleteButtonElement.value;
+        const hasFocusOnDeleteButton = isFocusOnDeleteButton.value;
 
         isDeleteButtonVisible.value = false;
         isSpinnerVisible.value = true;
 
         await nextTick();
 
-        if (isFocusOnDeleteButton) {
-          resultDivElement.value.focus();
+        if (hasFocusOnDeleteButton) {
+          resultDivElement.value?.focus();
         }
       }
     },
-    onSuccess: (uploadUuid) => {
+    onSuccess: (uploadUuid: string, data: UploadSuccessData) => {
       uploadId = uploadUuid;
+      uploadSuccessData = data;
       isSpinnerVisible.value = false;
       isSuccessVisible.value = true;
 
@@ -88,7 +110,7 @@ const triggerFileUpload = async () => {
         isCollapsed.value = true;
       }, uploadResultTimeoutDuration);
     },
-    onError: (error) => {
+    onError: (error: OnUploadError) => {
       isSpinnerVisible.value = false;
       isErrorVisible.value = true;
 
@@ -116,7 +138,8 @@ const onCollasped = () => {
     props.fileId,
     props.file,
     uploadId,
-    wrapperElement.value.contains(document.activeElement),
+    uploadSuccessData,
+    isFocusWithinWrapper.value,
   );
 };
 
@@ -171,19 +194,19 @@ onBeforeUnmount(() => {
                 v-if="isSpinnerVisible"
                 class="animate-spin"
                 name="loader"
-                size="16"
+                :size="16"
               />
               <Icon
                 v-if="isErrorVisible"
                 color="fill-bhr-maximum-red"
                 name="cross-rounded-filled"
-                size="16"
+                :size="16"
               />
               <Icon
                 v-if="isSuccessVisible"
                 color="fill-bhr-philippine-green"
                 name="check-rounded-filled"
-                size="16"
+                :size="16"
               />
             </div>
           </div>

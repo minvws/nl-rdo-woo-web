@@ -11,7 +11,7 @@ describe('The functionality regarding fetching and updating search results', () 
       <button>Mocked button</button>
     `;
 
-    global.fetch = vi.fn().mockImplementation(() =>
+    window.fetch = vi.fn().mockImplementation(() =>
       Promise.resolve({
         text: () =>
           Promise.resolve(
@@ -38,7 +38,7 @@ describe('The functionality regarding fetching and updating search results', () 
     const mockedParams = getMockedParams();
     fetchAndUpdateResults(mockedParams);
 
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect(window.fetch).toHaveBeenCalledWith(
       `https://example.com?${mockedParams}`,
     );
   });
@@ -47,7 +47,7 @@ describe('The functionality regarding fetching and updating search results', () 
     document.body.innerHTML = '';
     fetchAndUpdateResults(new URLSearchParams());
 
-    expect(global.fetch).not.toHaveBeenCalled();
+    expect(window.fetch).not.toHaveBeenCalled();
   });
 
   it('should update the filters and results elements with the fetched data', async () => {
@@ -81,7 +81,7 @@ describe('The functionality regarding fetching and updating search results', () 
   });
 
   it('should not throw an error if the response is not valid JSON', async () => {
-    global.fetch = vi.fn().mockRejectedValue(new Error('Invalid JSON'));
+    window.fetch = vi.fn().mockRejectedValue(new Error('Invalid JSON'));
 
     expect(async () => {
       await fetchAndUpdateResults(getMockedParams());

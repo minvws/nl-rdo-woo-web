@@ -4,20 +4,30 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Query;
 
+use App\Api\Admin\Publication\Search\SearchResultType;
+use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
+use App\Domain\Search\Index\ElasticDocumentType;
+use App\Domain\Search\Query\Facet\Definition\PrefixedDossierNrFacet;
+use App\Domain\Search\Query\Facet\Definition\TypeFacet;
 use App\Domain\Search\Query\Facet\Input\FacetInputFactory;
+use App\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
 use App\Entity\Department;
+use App\Enum\ApplicationMode;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Sort\SortField;
 use App\Service\Search\Query\Sort\SortOrder;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ */
 readonly class SearchParametersFactory
 {
-    private const DEFAULT_PAGE_SIZE = 10;
-    private const MIN_PAGE_SIZE = 1;
-    private const MAX_PAGE_SIZE = 100;
+    private const int DEFAULT_PAGE_SIZE = 10;
+    private const int MIN_PAGE_SIZE = 1;
+    private const int MAX_PAGE_SIZE = 100;
 
     public function __construct(
         private FacetInputFactory $facetInputFactory,
@@ -82,5 +92,70 @@ readonly class SearchParametersFactory
         );
 
         return new SearchParameters($facetInputs);
+    }
+
+    public function forAdminSearch(
+        string $searchTerm,
+        ?DossierType $dossierType,
+        ?string $dossierNr,
+        ?SearchResultType $resultType,
+    ): SearchParameters {
+        $facetInputs = $this->facetInputFactory->createEmpty();
+
+        if ($dossierNr !== null) {
+            $facetInputs = $facetInputs->withFacetInput(
+                FacetKey::PREFIXED_DOSSIER_NR,
+                new StringValuesFacetInput(
+                    new PrefixedDossierNrFacet(),
+                    [$dossierNr],
+                )
+            );
+        }
+
+        if ($dossierType !== null) {
+            $facetInputs = $facetInputs->withFacetInput(
+                FacetKey::TYPE,
+                new StringValuesFacetInput(
+                    new TypeFacet(),
+                    [ElasticDocumentType::fromDossierType($dossierType)->value],
+                )
+            );
+        }
+
+        if ($resultType !== null) {
+            if ($resultType === SearchResultType::DOSSIER && $dossierType !== null) {
+                $dossierTypes = [ElasticDocumentType::fromDossierType($dossierType)->value];
+            } else {
+                $dossierTypes = ElasticDocumentType::getMainTypeValues();
+            }
+
+            $types = match ($resultType) {
+                SearchResultType::DOSSIER => array_map(
+                    static fn (string $type): string => $type . '.publication',
+                    $dossierTypes,
+                ),
+                SearchResultType::DOCUMENT => [sprintf(
+                    '%s.%s',
+                    ElasticDocumentType::WOO_DECISION->value,
+                    ElasticDocumentType::WOO_DECISION_DOCUMENT->value,
+                )],
+                SearchResultType::MAIN_DOCUMENT => ElasticDocumentType::getMainDocumentTypeValues(),
+                SearchResultType::ATTACHMENT => [ElasticDocumentType::ATTACHMENT->value],
+            };
+
+            $facetInputs = $facetInputs->withFacetInput(
+                FacetKey::TYPE,
+                new StringValuesFacetInput(new TypeFacet(), $types),
+            );
+        }
+
+        return new SearchParameters(
+            facetInputs: $facetInputs,
+            limit: 15,
+            pagination: false,
+            aggregations: false,
+            query: $searchTerm,
+            mode: ApplicationMode::ADMIN,
+        );
     }
 }

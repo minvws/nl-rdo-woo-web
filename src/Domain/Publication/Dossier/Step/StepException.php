@@ -14,7 +14,7 @@ class StepException extends \RuntimeException
     ): self {
         return new self(sprintf(
             'Dossier instance of class %s is not compatible with step %s for type %s',
-            get_class($dossier),
+            $dossier::class,
             $step->getName()->value,
             $step->getDossierType()->value,
         ));

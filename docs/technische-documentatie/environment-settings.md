@@ -92,18 +92,24 @@ extracted when ingesting the same document multiple times. It will also store th
 Storage settings defines how documents, pages and thumbnails are stored and retrieved. There are two options: local and aws, but it is also possible
 to create your own storage adapter since internally it will be using flysystem.
 
-| Variable                         | Description                                                   | Default value  |
-| -------------------------------- | ------------------------------------------------------------- | -------------- |
-| `STORAGE_DOCUMENT_ADAPTER`       | Which adapter to use for document storage (`aws` or `local`)  | `local`        |
-| `STORAGE_THUMBNAIL_ADAPTER`      | Which adapter to use for thumbnail storage (`aws` or `local`) | `local`        |
-| `STORAGE_BATCH_ADAPTER`          | Which adapter to use for archive storage (`aws` or `local`)   | `local`        |
-| `STORAGE_MINIO_REGION`           | The AWS/Minio region to use                                   | `eu-west-1`    |
-| `STORAGE_MINIO_ENDPOINT`         | The AWS/Minio endpoint                                        | ``             |
-| `STORAGE_MINIO_ACCESS_KEY`       | The AWS/Minio access key                                      | ``             |
-| `STORAGE_MINIO_SECRET_KEY`       | The AWS/Minio secret key                                      | ``             |
-| `STORAGE_MINIO_DOCUMENT_BUCKET`  | Bucket for document storage                                   | `doc_bucket`   |
-| `STORAGE_MINIO_THUMBNAIL_BUCKET` | Bucket for thumbnail storage                                  | `thumb_bucket` |
-| `STORAGE_MINIO_BATCH_BUCKET`     | Bucket for archive storage                                    | `batch_bucket` |
+| Variable                         | Description                                                           | Default value      |
+|----------------------------------|-----------------------------------------------------------------------|--------------------|
+| `STORAGE_DOCUMENT_ADAPTER`       | Which adapter to use for document storage (`aws` or `local`)          | `local`            |
+| `STORAGE_THUMBNAIL_ADAPTER`      | Which adapter to use for thumbnail storage (`aws` or `local`)         | `local`            |
+| `STORAGE_BATCH_ADAPTER`          | Which adapter to use for archive storage (`aws` or `local`)           | `local`            |
+| `STORAGE_WOO_INDEX_ADAPTER`      | Which adapter to use for WooIndex sitemaps storage (`aws` or `local`) | `local`            |
+| `STORAGE_UPLOAD_ADAPTER`         | Which adapter to use for upload storage (`aws` or `local`)            | `local`            |
+| `STORAGE_ASSETS_ADAPTER`         | Which adapter to use for assets storage (`aws` or `local`)            | `local`            |
+| `STORAGE_MINIO_REGION`           | The AWS/Minio region to use                                           | `eu-west-1`        |
+| `STORAGE_MINIO_ENDPOINT`         | The AWS/Minio endpoint                                                | ``                 |
+| `STORAGE_MINIO_ACCESS_KEY`       | The AWS/Minio access key                                              | ``                 |
+| `STORAGE_MINIO_SECRET_KEY`       | The AWS/Minio secret key                                              | ``                 |
+| `STORAGE_MINIO_DOCUMENT_BUCKET`  | Bucket for document storage                                           | `doc-bucket`       |
+| `STORAGE_MINIO_THUMBNAIL_BUCKET` | Bucket for thumbnail storage                                          | `thumb-bucket`     |
+| `STORAGE_MINIO_BATCH_BUCKET`     | Bucket for archive storage                                            | `batch-bucket`     |
+| `STORAGE_MINIO_WOO_INDEX_BUCKET` | Bucket for WooIndex sitemap storage                                   | `woo-index-bucket` |
+| `STORAGE_MINIO_UPLOAD_BUCKET`    | Bucket for temporary upload storage                                   | `upload-bucket`    |
+| `STORAGE_MINIO_ASSETS_BUCKET`    | Bucket for assets storage (like the department logo)                  | `assets-bucket`    |
 
 Note that we are using Minio as a S3 compatible storage system. This means that you can also use AWS S3 as a storage system.
 

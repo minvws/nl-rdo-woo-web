@@ -20,6 +20,7 @@ class GlobalAggregation extends AbstractAggregation
     /**
      * @return array<string, mixed>
      */
+    #[\Override]
     public function build(): array
     {
         $data = [

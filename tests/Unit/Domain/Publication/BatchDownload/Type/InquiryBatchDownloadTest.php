@@ -6,11 +6,9 @@ namespace App\Tests\Unit\Domain\Publication\BatchDownload\Type;
 
 use App\Domain\Publication\BatchDownload\BatchDownloadScope;
 use App\Domain\Publication\BatchDownload\Type\InquiryBatchDownload;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\QueryBuilder;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -74,28 +72,34 @@ class InquiryBatchDownloadTest extends MockeryTestCase
 
     public function testIsAvailableForBatchDownloadReturnsTrueForAtLeastOneUploadedDocument(): void
     {
-        $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('shouldBeUploaded')->andReturnTrue();
-        $document->shouldReceive('isUploaded')->andReturnTrue();
-
         $inquiry = \Mockery::mock(Inquiry::class);
-        $inquiry->shouldReceive('getDocuments')->andReturn(new ArrayCollection([$document]));
-
         $scope = BatchDownloadScope::forInquiry($inquiry);
+        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+
+        $this->repository
+            ->shouldReceive('getDocumentsForBatchDownload')
+            ->with($inquiry)
+            ->andReturn($queryBuilder);
+
+        $queryBuilder->expects('select')->with('count(doc)')->andReturnSelf();
+        $queryBuilder->expects('getQuery->getSingleScalarResult')->andReturn(1);
 
         self::assertTrue($this->type->isAvailableForBatchDownload($scope));
     }
 
     public function testIsAvailableForBatchDownloadReturnsFalseIfThereAreNoUploadedDocuments(): void
     {
-        $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('shouldBeUploaded')->andReturnFalse();
-        $document->shouldReceive('isUploaded')->andReturnFalse();
-
         $inquiry = \Mockery::mock(Inquiry::class);
-        $inquiry->shouldReceive('getDocuments')->andReturn(new ArrayCollection([$document]));
-
         $scope = BatchDownloadScope::forInquiry($inquiry);
+        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+
+        $this->repository
+            ->shouldReceive('getDocumentsForBatchDownload')
+            ->with($inquiry)
+            ->andReturn($queryBuilder);
+
+        $queryBuilder->expects('select')->with('count(doc)')->andReturnSelf();
+        $queryBuilder->expects('getQuery->getSingleScalarResult')->andReturn(0);
 
         self::assertFalse($this->type->isAvailableForBatchDownload($scope));
     }

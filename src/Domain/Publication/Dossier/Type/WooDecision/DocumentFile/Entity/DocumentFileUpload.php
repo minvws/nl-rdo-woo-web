@@ -23,10 +23,6 @@ class DocumentFileUpload implements EntityWithFileInfo
     #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
     private Uuid $id;
 
-    #[ORM\ManyToOne(targetEntity: DocumentFileSet::class)]
-    #[ORM\JoinColumn(name: 'document_file_set_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private DocumentFileSet $documentFileSet;
-
     #[ORM\Embedded(class: FileInfo::class, columnPrefix: 'file_')]
     protected FileInfo $fileInfo;
 
@@ -36,10 +32,12 @@ class DocumentFileUpload implements EntityWithFileInfo
     #[ORM\Column(length: 255, nullable: true, enumType: DocumentFileUploadError::class)]
     private ?DocumentFileUploadError $error = null;
 
-    public function __construct(DocumentFileSet $documentFileSet)
-    {
+    public function __construct(
+        #[ORM\ManyToOne(targetEntity: DocumentFileSet::class)]
+        #[ORM\JoinColumn(name: 'document_file_set_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
+        private DocumentFileSet $documentFileSet,
+    ) {
         $this->id = Uuid::v6();
-        $this->documentFileSet = $documentFileSet;
         $this->status = DocumentFileUploadStatus::PENDING;
         $this->fileInfo = new FileInfo();
     }

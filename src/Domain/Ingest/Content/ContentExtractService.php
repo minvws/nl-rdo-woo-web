@@ -13,15 +13,10 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 readonly class ContentExtractService
 {
-    /**
-     * @var iterable<ContentExtractorInterface>
-     */
-    private iterable $extractors;
-
     /**
      * @param iterable<ContentExtractorInterface> $extractors
      */
@@ -30,9 +25,8 @@ readonly class ContentExtractService
         private LoggerInterface $logger,
         private CacheInterface $cache,
         private ContentExtractCacheKeyGenerator $cacheKeyGenerator,
-        iterable $extractors,
+        private iterable $extractors,
     ) {
-        $this->extractors = $extractors;
     }
 
     public function getExtracts(

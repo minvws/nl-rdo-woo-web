@@ -27,6 +27,7 @@ lib/
 ### Robot Framework ###
 /tests/robot_framework/results
 /tests/robot_framework/libraries/__pycache__
+/tests/robot_framework/files/generated
 .venv
 ### Robot Framework ###
 

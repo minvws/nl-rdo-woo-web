@@ -11,6 +11,12 @@ enum UploadGroupId: string
     case MAIN_DOCUMENTS = 'main-documents';
     case ATTACHMENTS = 'attachments';
     case WOO_DECISION_DOCUMENTS = 'woo-decision-documents';
+    case DEPARTMENT = 'department';
+
+    public function isDepartment(): bool
+    {
+        return $this === self::DEPARTMENT;
+    }
 
     /**
      * @return list<FileType>
@@ -18,8 +24,26 @@ enum UploadGroupId: string
     public function getFileTypes(): array
     {
         return match ($this) {
-            self::WOO_DECISION_DOCUMENTS => [FileType::PDF, FileType::XLS, FileType::DOC, FileType::PPT, FileType::TXT, FileType::ZIP],
-            default => [FileType::PDF, FileType::XLS, FileType::DOC, FileType::PPT, FileType::TXT],
+            self::WOO_DECISION_DOCUMENTS => [
+                FileType::PDF,
+                FileType::XLS,
+                FileType::DOC,
+                FileType::PPT,
+                FileType::TXT,
+                FileType::ZIP,
+                FileType::AUDIO,
+                FileType::VIDEO,
+            ],
+            self::DEPARTMENT => [
+                FileType::VECTOR_IMAGE,
+            ],
+            default => [
+                FileType::PDF,
+                FileType::XLS,
+                FileType::DOC,
+                FileType::PPT,
+                FileType::TXT,
+            ],
         };
     }
 

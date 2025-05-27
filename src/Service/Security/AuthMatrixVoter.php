@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class AuthMatrixVoter extends Voter
 {
-    private const MARKER = 'AuthMatrix';
+    private const string MARKER = 'AuthMatrix';
 
     public function __construct(
         private readonly AuthorizationMatrix $authorizationMatrix,
@@ -31,7 +31,7 @@ class AuthMatrixVoter extends Voter
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {

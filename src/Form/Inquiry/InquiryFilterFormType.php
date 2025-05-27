@@ -27,14 +27,14 @@ class InquiryFilterFormType extends AbstractType
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         /** @var Inquiry $inquiry */
         $inquiry = $builder->getData();
 
-        $dossierCount = $inquiry->getDossiers()->count();
+        $dossierCount = $inquiry->getPubliclyAvailableDossiers()->count();
         $dossiersName = $this->translator->trans('public.inquiries.dossiers_these', ['count' => $dossierCount]);
         $submitLabel = $this->translator->trans('admin.publications.submit.filter');
 
@@ -104,6 +104,7 @@ class InquiryFilterFormType extends AbstractType
         ]);
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return '';

@@ -33,6 +33,7 @@ class ComplaintJudgement extends AbstractDossier implements EntityWithMainDocume
         $this->document = null;
     }
 
+    #[\Override]
     public function setDateFrom(?\DateTimeImmutable $dateFrom): static
     {
         $this->dateFrom = $dateFrom;

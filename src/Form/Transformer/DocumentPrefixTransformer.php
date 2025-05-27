@@ -13,11 +13,8 @@ use Symfony\Component\Form\DataTransformerInterface;
  */
 class DocumentPrefixTransformer implements DataTransformerInterface
 {
-    protected EntityManagerInterface $doctrine;
-
-    public function __construct(EntityManagerInterface $doctrine)
+    public function __construct(protected EntityManagerInterface $doctrine)
     {
-        $this->doctrine = $doctrine;
     }
 
     public function transform(mixed $value): ?DocumentPrefix

@@ -6,6 +6,12 @@ robotframework-robocop >= 5.4.0
 robotframework-tidy >= 4.14.0
 robotframework-datetime-tz >= 1.0.6
 robotframework-dependencylibrary >= 4.0.1
+robotframework-requests >= 0.9.7
+robotframework-archivelibrary >= 0.4.3
+robotframework-faker >= 5.0.0
+robotframework-excellib >= 2.0.1
 pyotp >= 2.9.0
 pyzbar >= 0.1.9
-pillow >= 11.0.0
+robocorp-truststore
+rpaframework-pdf >= 8.0.1
+robotframework-retryfailed >= 0.2.0

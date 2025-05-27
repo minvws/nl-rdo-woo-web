@@ -21,7 +21,7 @@ describe('The "<DocumentChanges />" component', () => {
   const getButtons = (component: VueWrapper) => component.findAll('button');
 
   beforeEach(() => {
-    global.fetch = vi.fn().mockImplementation(() => Promise.resolve());
+    window.fetch = vi.fn().mockImplementation(() => Promise.resolve());
   });
 
   afterEach(() => {
@@ -45,10 +45,10 @@ describe('The "<DocumentChanges />" component', () => {
 
       expect(button?.text()).toContain('Ja, verwerk documenten');
 
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(window.fetch).not.toHaveBeenCalled();
 
       await button?.trigger('click');
-      expect(global.fetch).toHaveBeenCalledWith('mocked-confirm-endpoint', {
+      expect(window.fetch).toHaveBeenCalledWith('mocked-confirm-endpoint', {
         method: 'POST',
       });
     });
@@ -58,10 +58,10 @@ describe('The "<DocumentChanges />" component', () => {
 
       expect(button?.text()).toContain('Annuleren');
 
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(window.fetch).not.toHaveBeenCalled();
 
       await button?.trigger('click');
-      expect(global.fetch).toHaveBeenCalledWith('mocked-reject-endpoint', {
+      expect(window.fetch).toHaveBeenCalledWith('mocked-reject-endpoint', {
         method: 'POST',
       });
     });
@@ -84,10 +84,10 @@ describe('The "<DocumentChanges />" component', () => {
       expect(button?.text()).toContain('Terug naar uploaden');
 
       expect(component.emitted()).not.toHaveProperty('goBack');
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(window.fetch).not.toHaveBeenCalled();
 
       await button?.trigger('click');
-      expect(global.fetch).toHaveBeenCalledWith('mocked-confirm-endpoint', {
+      expect(window.fetch).toHaveBeenCalledWith('mocked-confirm-endpoint', {
         method: 'POST',
       });
       expect(component.emitted()).toHaveProperty('goBack');

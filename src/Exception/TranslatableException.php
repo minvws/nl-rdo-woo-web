@@ -12,21 +12,15 @@ abstract class TranslatableException extends \RuntimeException implements Transl
     private readonly string $translationKey;
 
     /**
-     * @var array<string, string>
-     */
-    private readonly array $placeholders;
-
-    /**
      * @param array<string, string> $placeholders
      */
-    public function __construct(string $message, ?string $translationKey = null, array $placeholders = [])
+    public function __construct(string $message, ?string $translationKey = null, private readonly array $placeholders = [])
     {
         if (! $translationKey) {
             $translationKey = $message;
         }
 
         $this->translationKey = $translationKey;
-        $this->placeholders = $placeholders;
 
         parent::__construct($message);
     }

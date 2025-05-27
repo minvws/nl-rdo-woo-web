@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class RobotsController extends AbstractController
 {
-    public function __construct(private RobotsViewFactory $robotsViewFactory)
+    public function __construct(private readonly RobotsViewFactory $robotsViewFactory)
     {
     }
 

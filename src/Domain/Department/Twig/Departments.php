@@ -10,8 +10,8 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 final readonly class Departments
 {
-    private const DEPARTMENTS_HAS_ANY_CACHE_KEY = 'DEPARTMENTS_HAS_ANY';
-    private const TTL_SHORT = 10;
+    private const string DEPARTMENTS_HAS_ANY_CACHE_KEY = 'DEPARTMENTS_HAS_ANY';
+    private const int TTL_SHORT = 10;
 
     public function __construct(
         private DepartmentRepository $repository,

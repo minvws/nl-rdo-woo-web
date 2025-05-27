@@ -15,10 +15,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 class AdministrationActionsType extends AbstractType
 {
     public const ACTION_REGENERATE_INVENTORY = 'regenerate_inventory';
-    public const ACTION_REGENERATE_ARCHIVES = 'regenerate_archives';
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -27,7 +26,6 @@ class AdministrationActionsType extends AbstractType
                 'label' => 'Inquiry action',
                 'choices' => [
                     'Regenerate inventory' => self::ACTION_REGENERATE_INVENTORY,
-                    'Regenerate archives' => self::ACTION_REGENERATE_ARCHIVES,
                 ],
             ])
             ->add('submit', SubmitType::class, [

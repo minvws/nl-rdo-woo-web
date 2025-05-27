@@ -4,33 +4,33 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Domain\WooIndex;
 
+use App\Domain\WooIndex\Builder\DiWooXMLWriter;
 use App\Domain\WooIndex\Builder\SitemapBuilder;
 use App\Domain\WooIndex\Builder\SitemapIndexBuilder;
-use App\Domain\WooIndex\DiWooRuntimeException;
+use App\Domain\WooIndex\StreamHelper;
 use App\Domain\WooIndex\WooIndex;
+use App\Domain\WooIndex\WooIndexNamer;
 use App\Domain\WooIndex\WooIndexRunOptions;
-use App\Domain\WooIndex\WriterFactory\DiWooXMLWriter;
-use App\Service\Storage\LocalFilesystem;
+use App\Domain\WooIndex\WooIndexSitemap;
 use App\Tests\Integration\IntegrationTestTrait;
 use App\Tests\Story\WooIndexAnnualReportStory;
 use App\Tests\Story\WooIndexCovenantStory;
 use App\Tests\Story\WooIndexWooDecisionStory;
+use League\Flysystem\FilesystemOperator;
 use Mockery\MockInterface;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 final class WooIndexTest extends KernelTestCase
 {
     use IntegrationTestTrait;
 
-    private vfsStreamDirectory $root;
+    private StreamHelper&MockInterface $streamHelper;
 
-    private LoggerInterface $logger;
+    private FilesystemOperator $wooIndexStorage;
 
-    private LocalFilesystem&MockInterface $localFilesystem;
+    private WooIndexNamer $wooIndexNamer;
 
     private WooIndex $wooIndex;
 
@@ -40,12 +40,12 @@ final class WooIndexTest extends KernelTestCase
 
         self::bootKernel();
 
-        $this->root = vfsStream::setup();
+        $this->streamHelper = \Mockery::mock(StreamHelper::class)->makePartial();
+        self::getContainer()->set(StreamHelper::class, $this->streamHelper);
 
-        $this->logger = self::getContainer()->get(LoggerInterface::class);
+        $this->wooIndexStorage = self::getContainer()->get('woo_index.storage');
 
-        $this->localFilesystem = $this->getPartialLocalFilesystem();
-        self::getContainer()->set(LocalFilesystem::class, $this->localFilesystem);
+        $this->wooIndexNamer = self::getContainer()->get(WooIndexNamer::class);
 
         /** @var SitemapIndexBuilder $sitemapIndexBuilder */
         $sitemapIndexBuilder = self::getContainer()->get(SitemapIndexBuilder::class);
@@ -69,21 +69,23 @@ final class WooIndexTest extends KernelTestCase
     {
         $this->setTestNow('2025-01-01 00:00:00');
 
-        $options = new WooIndexRunOptions(
-            chunkSize: 2,
-            pathSuffix: 'random-string',
-        );
-        $path = $this->wooIndex->create($options);
+        $wooIndexSitemap = $this->getWooIndexSitemap(Uuid::fromRfc4122('1efe8c60-9d44-6c08-8984-db09e5d32982'));
+        $subPath = $this->wooIndexNamer->getStorageSubpath($wooIndexSitemap);
+        $options = new WooIndexRunOptions(chunkSize: 2);
+        $this->wooIndex->create($wooIndexSitemap, $options);
 
-        $sitemapIndexPath = sprintf('%s/sitemap-index.xml', $path);
-        $this->assertFileExists($sitemapIndexPath);
-        $this->assertMatchesFileSnapshot($sitemapIndexPath);
+        $sitemapIndexPath = $subPath . $this->wooIndexNamer->getSitemapIndexName();
+        $this->assertTrue($this->wooIndexStorage->has($sitemapIndexPath));
+        $this->assertMatchesTextSnapshot($this->wooIndexStorage->read($sitemapIndexPath));
 
-        foreach (range(1, 9) as $sitemapNumber) {
-            $sitemapPath = sprintf('%s/sitemap-%05d.xml', $path, $sitemapNumber);
-            $this->assertFileExists($sitemapPath);
-            $this->assertMatchesFileSnapshot($sitemapPath);
+        foreach (range(1, 18) as $sitemapNumber) {
+            $sitemapPath = $subPath . $this->wooIndexNamer->getSitemapName($sitemapNumber);
+            $this->assertTrue($this->wooIndexStorage->has($sitemapPath), sprintf('Sitemap %s exists', $sitemapNumber));
+            $this->assertMatchesTextSnapshot($this->wooIndexStorage->read($sitemapPath));
         }
+
+        $sitemapPath = $subPath . $this->wooIndexNamer->getSitemapName(19);
+        $this->assertFalse($this->wooIndexStorage->has($sitemapPath), 'Sitemap 19 does not exist');
     }
 
     #[WithStory(WooIndexWooDecisionStory::class)]
@@ -92,67 +94,36 @@ final class WooIndexTest extends KernelTestCase
         $this->setTestNow('2025-01-01 00:00:00');
 
         // On the 7th iteration we will reach the file size limit, the rest will return 0 bytes
-        $this->localFilesystem->shouldReceive('getFileSize')->andReturnValues([0, 0, 0, 0, 0, 0, 49 * 1024 * 1024 + 1, 0]);
+        $this->streamHelper->shouldReceive('size')->andReturnValues([0, 0, 0, 0, 0, 0, 49 * 1024 * 1024 + 1, 0]);
 
-        $options = new WooIndexRunOptions(
-            chunkSize: 4,
-            pathSuffix: 'random-string',
-        );
-        $path = $this->wooIndex->create($options);
+        $wooIndexSitemap = $this->getWooIndexSitemap(Uuid::fromRfc4122('1efe8c60-9d44-6c08-8984-db09e5d32982'));
+        $subPath = $this->wooIndexNamer->getStorageSubpath($wooIndexSitemap);
+        $options = new WooIndexRunOptions(chunkSize: 4);
+        $this->wooIndex->create($wooIndexSitemap, $options);
 
-        $sitemapIndexPath = sprintf('%s/sitemap-index.xml', $path);
-        $this->assertFileExists($sitemapIndexPath);
-        $this->assertMatchesFileSnapshot($sitemapIndexPath);
+        $sitemapIndexPath = $subPath . $this->wooIndexNamer->getSitemapIndexName();
+        $this->assertTrue($this->wooIndexStorage->has($sitemapIndexPath), 'SitemapIndex exists');
+        $this->assertMatchesTextSnapshot($this->wooIndexStorage->read($sitemapIndexPath));
 
-        foreach (range(1, 3) as $sitemapNumber) {
-            $sitemapPath = sprintf('%s/sitemap-%05d.xml', $path, $sitemapNumber);
-            $this->assertFileExists($sitemapPath);
-            $this->assertMatchesFileSnapshot($sitemapPath);
+        foreach (range(1, 8) as $sitemapNumber) {
+            $sitemapPath = $subPath . $this->wooIndexNamer->getSitemapName($sitemapNumber);
+            $this->assertTrue($this->wooIndexStorage->has($sitemapPath), sprintf('Sitemap %s exists', $sitemapNumber));
+            $this->assertMatchesTextSnapshot($this->wooIndexStorage->read($sitemapPath));
         }
+
+        $sitemapPath = $subPath . $this->wooIndexNamer->getSitemapName(9);
+        $this->assertFalse($this->wooIndexStorage->has($sitemapPath), 'Sitemap 9 does not exist');
     }
 
-    public function testCreateThrowsExceptionWhenItFailsToCreateTempDir(): void
+    private function getWooIndexSitemap(Uuid $uuid): WooIndexSitemap
     {
-        $this->localFilesystem->shouldReceive('createTempDir')->andReturn(false);
+        $wooIndexSitemap = new WooIndexSitemap();
 
-        $this->expectExceptionObject(DiWooRuntimeException::failedCreatingTempDir());
+        $reflection = new \ReflectionClass($wooIndexSitemap);
+        $property = $reflection->getProperty('id');
+        $property->setAccessible(true);
+        $property->setValue($wooIndexSitemap, $uuid);
 
-        $options = new WooIndexRunOptions(
-            chunkSize: 2,
-            pathSuffix: 'random-string',
-        );
-        $this->wooIndex->create($options);
-    }
-
-    #[WithStory(WooIndexWooDecisionStory::class)]
-    public function testCreateThrowsExceptonWhenItFailsToGetFileSize(): void
-    {
-        $this->setTestNow('2025-01-01 00:00:00');
-
-        $this->localFilesystem->shouldReceive('getFileSize')->andReturn(false);
-        $this->localFilesystem->shouldReceive('uniqid')->andReturn('uniqid');
-
-        $expectedPath = 'vfs://root/tmp/uniqid/20250101_120100_000000__random-string/sitemap-00001.xml';
-
-        $this->expectExceptionObject(DiWooRuntimeException::failedGettingFileSize($expectedPath));
-
-        $options = new WooIndexRunOptions(
-            chunkSize: 2,
-            pathSuffix: 'random-string',
-        );
-        $this->wooIndex->create($options);
-    }
-
-    private function getPartialLocalFilesystem(): LocalFilesystem&MockInterface
-    {
-        vfsStream::newDirectory('tmp')->at($this->root);
-
-        $localFilesystem = \Mockery::mock(LocalFilesystem::class, [$this->logger])
-            ->makePartial()
-            ->shouldAllowMockingProtectedMethods();
-
-        $localFilesystem->shouldReceive('sysGetTempDir')->andReturn('vfs://root/tmp');
-
-        return $localFilesystem;
+        return $wooIndexSitemap;
     }
 }

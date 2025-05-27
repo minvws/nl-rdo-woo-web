@@ -1,0 +1,7 @@
+@utility woo-skip-link {
+  @apply block sr-only focus:not-sr-only focus:p-2 text-center text-woo-sea-blue text-base;
+}
+
+@utility woo-skip-link--to-main-content {
+  @apply bg-woo-boston-university-red text-white focus:outline-white focus:-outline-offset-2 text-lg;
+}

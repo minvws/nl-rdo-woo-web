@@ -16,17 +16,12 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings("PHPMD.TooManyPublicMethods")
  */
 class CollectorClient implements ClientInterface, ElasticClientInterface
 {
-    protected Client $elastic;
-    protected ElasticCollector $collector;
-
-    public function __construct(Client $elastic, ElasticCollector $collector)
+    public function __construct(protected Client $elastic, protected ElasticCollector $collector)
     {
-        $this->elastic = $elastic;
-        $this->collector = $collector;
     }
 
     public function getTransport(): Transport
@@ -173,5 +168,17 @@ class CollectorClient implements ClientInterface, ElasticClientInterface
     public function updateAliases(array $params = []): Elasticsearch|Promise
     {
         return $this->collectData('updateAlias', $params);
+    }
+
+    public function setServerless(bool $value): self
+    {
+        $this->elastic->setServerless($value);
+
+        return $this;
+    }
+
+    public function getServerless(): bool
+    {
+        return $this->elastic->getServerless();
     }
 }

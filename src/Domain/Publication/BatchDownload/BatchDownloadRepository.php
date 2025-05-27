@@ -9,6 +9,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<BatchDownload>
@@ -81,21 +82,38 @@ class BatchDownloadRepository extends ServiceEntityRepository
         return $this->getBaseScopeQuery($scope)->getQuery()->getResult();
     }
 
+    public function exists(Uuid $id): bool
+    {
+        return $this->createQueryBuilder('b')
+            ->select('COUNT(b.id)')
+            ->where('b.id = :id')
+            ->setParameter('id', $id->toRfc4122())
+            ->getQuery()
+            ->getSingleScalarResult() > 0;
+    }
+
     private function getBaseScopeQuery(BatchDownloadScope $scope): QueryBuilder
     {
         $builder = $this->createQueryBuilder('b');
-        if ($scope->inquiry instanceof Inquiry) {
-            $builder
-                ->andWhere('b.inquiry = :inquiry')
-                ->setParameter('inquiry', $scope->inquiry);
-        }
 
-        if ($scope->wooDecision instanceof WooDecision) {
-            $builder
+        if ($scope->inquiry instanceof Inquiry && $scope->wooDecision instanceof WooDecision) {
+            return $builder
+                ->andWhere('b.inquiry = :inquiry')
+                ->setParameter('inquiry', $scope->inquiry)
                 ->andWhere('b.dossier = :wooDecision')
                 ->setParameter('wooDecision', $scope->wooDecision);
         }
 
-        return $builder;
+        if ($scope->inquiry instanceof Inquiry) {
+            return $builder
+                ->andWhere('b.inquiry = :inquiry')
+                ->setParameter('inquiry', $scope->inquiry)
+                ->andWhere('b.dossier IS NULL');
+        }
+
+        return $builder
+            ->andWhere('b.dossier = :wooDecision')
+            ->setParameter('wooDecision', $scope->wooDecision)
+            ->andWhere('b.inquiry IS NULL');
     }
 }

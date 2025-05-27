@@ -1,0 +1,37 @@
+@utility bhr-table {
+  @apply w-full;
+
+  & th {
+    @apply whitespace-nowrap;
+  }
+
+  & td,
+  & th {
+    @apply py-2 px-4;
+  }
+
+  & tr {
+    @apply border-b border-bhr-platinum;
+  }
+}
+
+@utility bhr-row-head {
+  @apply font-normal text-left text-bhr-dim-gray;
+}
+
+@utility bhr-column-head {
+  @apply font-normal italic text-lg text-left;
+}
+
+@utility bhr-column-head--gray {
+  @apply bg-bhr-anti-flash-white border-r border-bhr-platinum text-bhr-independence last:border-r-0;
+}
+
+@utility bhr-fill-cell {
+  @apply block -my-2 -mx-4 py-2 px-4;
+}
+
+@utility bhr-clamp {
+  @apply line-clamp-2
+        max-w-md;
+}

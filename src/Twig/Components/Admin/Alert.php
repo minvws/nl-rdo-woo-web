@@ -24,8 +24,7 @@ class Alert
         return match ($this->type) {
             'danger' => 'exclamation-filled-colored',
             'info' => 'info-rounded-filled',
-            'success' => 'check-rounded-filled',
-            default => 'check',
+            default => 'check-rounded-filled',
         };
     }
 
@@ -33,9 +32,8 @@ class Alert
     {
         return match ($this->type) {
             'danger' => 'fill-current',
-            'info' => 'fill-bhr-ocean-boat-blue',
-            'success' => 'fill-bhr-philippine-green',
-            default => 'check',
+            'info' => 'fill-bhr-blue-800',
+            default => 'fill-bhr-philippine-green',
         };
     }
 
@@ -44,7 +42,6 @@ class Alert
         return match ($this->type) {
             'danger' => 'bhr-alert--danger',
             'info' => 'bhr-alert--info',
-            'success' => 'bhr-alert--success',
             default => 'bhr-alert--success',
         };
     }

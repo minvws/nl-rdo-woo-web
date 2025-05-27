@@ -68,4 +68,35 @@ class UtilsTest extends UnitTestCase
 
         self::assertEquals('12.06 KB', Utils::getFileSize($entity));
     }
+
+    #[DataProvider('numberProvider')]
+    public function testNumber(int $input, string $expected): void
+    {
+        self::assertEquals($expected, Utils::number($input));
+    }
+
+    /**
+     * @return array<string,array{input:int,expected:string}>
+     */
+    public static function numberProvider(): array
+    {
+        return [
+            'small number' => [
+                'input' => 456,
+                'expected' => '456',
+            ],
+            'large number' => [
+                'input' => 1234567890,
+                'expected' => '1.234.567.890',
+            ],
+            'zero' => [
+                'input' => 0,
+                'expected' => '0',
+            ],
+            'negative number' => [
+                'input' => -4567890,
+                'expected' => '-4.567.890',
+            ],
+        ];
+    }
 }

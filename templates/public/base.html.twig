@@ -23,6 +23,8 @@
 
     <!-- App versie: {{ app_version().version }} (Git referentie: {{ app_version().git_ref }}) -->
 
+    {% import "public/macros/main-nav.html.twig" as macro %}
+
     <body class="antialiased flex min-h-screen flex-col text-lg">
         <header>
             <a href="#main-content" class="woo-skip-link woo-skip-link--to-main-content">{{ 'global.skip_link' | trans() }}</a>
@@ -40,68 +42,85 @@
                 </a>
             </p>
 
-            <nav class="woo-main-nav" aria-label="{{ 'public.global.navigation.accessible.label' | trans }}"  data-e2e-name="main-nav">
-                <div class="woo-container">
-                    <div class="-mx-4 relative z-10">
-                        <div class="md:hidden no-js:hidden" data-e2e-name="hamburger">
-                            <button class="px-4 py-4 sm:py-6 focus:outline-white focus:-outline-offset-2 w-full text-right" id="js-main-nav-toggle" aria-controls="main-nav-list" aria-expanded="false">
-                                <twig:Public:Icon class="js-icon-collapsed" color="fill-white" name="hamburger" />
-                                <twig:Public:Icon class="hidden js-icon-expanded" color="fill-white" name="cross" />
-                                <span class="js-text sr-only">
-                                    {{ 'global.menu_toggle.label' | trans }}
-                                </span>
-                            </button>
-                        </div>
+            <div class="woo-main-header__nav-search">
+                <div class="woo-main-header__nav-search-container">
+                    <div class="woo-main-header__nav-search-wrapper">
+                        <nav class="woo-main-nav" aria-label="{{ 'public.global.navigation.accessible.label' | trans }}"  data-e2e-name="main-nav">
+                            <div class="-mx-4 relative z-10">
+                                <div class="woo-main-nav__anchors">
+                                    {{ macro.main_nav_anchor(
+                                            path('app_home'),
+                                            app.request.get('_route') == 'app_home',
+                                            'public.global.label.home' | trans,
+                                            "house"
+                                        )
+                                    }}
 
-                        <ul class="woo-main-nav__list" id="main-nav-list" data-e2e-name="main-nav">
-                            {% macro main_nav_item(route, isCurrentPage, title, iconName) %}
-                                <li>
-                                    <a class="woo-main-nav__link group" href="{{ route }}" {% if isCurrentPage %}aria-current="page"{% endif %}  data-e2e-name="nav-{{ title }}">
-                                        {%if iconName %}<twig:Public:Icon color="fill-white" class="woo-main-nav__icon" name="{{ iconName }}" size="22" />{% endif %}
-                                        <span class="group-hover:underline group-focus:underline group-aria-current-page:group-hover:no-underline group-aria-current-page:group-focus:no-underline">{{ title }}</span>
-                                    </a>
-                                </li>
-                            {% endmacro %}
+                                    <div class="absolute right-0 top-0 md:hidden no-js:hidden" data-e2e-name="hamburger">
+                                        <button class="focus:outline-white focus:-outline-offset-2 aspect-square w-15" id="js-main-nav-toggle" aria-controls="main-nav-list" aria-expanded="false">
+                                            <twig:Public:Icon class="js-icon-collapsed" color="fill-white" name="hamburger" />
+                                            <twig:Public:Icon class="hidden js-icon-expanded" color="fill-white" name="cross" />
+                                            <span class="js-text sr-only">
+                                                {{ 'global.menu_toggle.label' | trans }}
+                                            </span>
+                                        </button>
+                                    </div>
 
-                            {{ _self.main_nav_item(
-                                    path('app_home'),
-                                    app.request.get('_route') == 'app_home',
-                                    'public.global.label.home' | trans,
-                                    "house"
-                                )
-                            }}
-                            {{ _self.main_nav_item(
-                                    path('app_browse'),
-                                    app.request.get('_route') == 'app_browse' or (app.request.get('_route') == 'app_search' and app.request.get('type') != 'dossier'),
-                                    'public.global.label.search_publications' | trans
-                                )
-                            }}
+                                    <ul class="woo-main-nav__list" id="main-nav-list" data-e2e-name="main-nav">
+                                        {{ macro.main_nav_item(
+                                                path('app_browse'),
+                                                app.request.get('_route') == 'app_browse' or (app.request.get('_route') == 'app_search' and app.request.get('type') != 'dossier'),
+                                                'public.global.label.search_publications' | trans
+                                            )
+                                        }}
 
-                            {% for theme in all_themes() %}
-                                {{ _self.main_nav_item(
-                                    path('app_theme', {'name': theme.urlName}),
-                                    app.request.get('_route') == 'app_theme' and app.request.get('name') == theme.urlName,
-                                    theme.menuName | trans
-                                )
-                                }}
-                            {% endfor %}
+                                        {% for theme in all_themes() %}
+                                            {{ macro.main_nav_item(
+                                                path('app_theme', {'name': theme.urlName}),
+                                                app.request.get('_route') == 'app_theme' and app.request.get('name') == theme.urlName,
+                                                theme.menuName | trans
+                                            )
+                                            }}
+                                        {% endfor %}
 
-                            {% if DEPARTMENTS.hasAny %}
-                            {{ _self.main_nav_item(
-                                    path('app_departments_index'),
-                                    app.request.get('_route') == 'app_departments_index',
-                                    'public.global.label.departments' | trans
-                                )
-                            }}
-                            {% endif %}
-                        </ul>
+                                        {% if DEPARTMENTS.hasAny %}
+                                            {{ macro.main_nav_item(
+                                                    path('app_departments_index'),
+                                                    app.request.get('_route') == 'app_departments_index',
+                                                    'public.global.label.departments' | trans
+                                                )
+                                            }}
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+
+                        {% set hasTopSearchForm = block('search_form_top') is not empty %}
+                        {% if hasTopSearchForm %}
+                            <div class="woo-main-search">
+                                <div class="woo-main-search__container">
+                                    {% block search_form_top %}{% endblock %}
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
-            </nav>
+            </div>
 
-            {% if app.request.get('_route') is same as('app_home') %}
+            {% set isHomePage = app.request.get('_route') is same as('app_home') %}
+
+            {% if wo_breadcrumbs_exists() and not isHomePage %}
+                <div class="woo-container">
+                    {{ wo_render_breadcrumbs() }}
+                </div>
+            {% endif %}
+
+            {% if isHomePage %}
                 {% include 'public/home/snippets/search-form.html.twig' %}
-            {% elseif wo_breadcrumbs_exists() %}
+            {% endif %}
+
+            {# {% elseif wo_breadcrumbs_exists() %}
                 <div class="bg-woo-anti-flash-white">
                     <div class="woo-container">
                         {% set hasSearchForm = block('search_form_top') is not empty %}
@@ -117,7 +136,7 @@
                         </div>
                     </div>
                 </div>
-            {% endif %}
+            {% endif %} #}
         </header>
 
         <main class="grow py-8 lg:pt-16 lg:pb-24" id="main-content" data-e2e-name="main-content">

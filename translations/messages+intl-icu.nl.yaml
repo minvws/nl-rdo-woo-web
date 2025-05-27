@@ -66,6 +66,7 @@ global.more: "Meer…"
 global.name: "Naam"
 global.not_available: "niet beschikbaar"
 global.not_yet_processed: "Nog niet verwerkt"
+global.open: "Openen"
 global.optional: "optioneel"
 global.part_of: "onderdeel van"
 global.pagination: "Paginering"
@@ -84,11 +85,13 @@ global.save_and_continue: "Opslaan en verder"
 global.save_and_publish: "Opslaan en klaarzetten"
 global.save_draft: "Concept opslaan"
 global.save_edit: "Bewerken en opslaan"
-global.search_through: "Zoeken in deze documenten…"
+global.search_through: "Zoeken in deze documenten"
+global.search_through_all: "Zoeken in al deze documenten"
 global.skip_link: "Ga direct naar de inhoud"
-global.sort: "Sorteren op"
 global.sort.desc: "Nieuwste bovenaan"
 global.sort.asc: "Oudste bovenaan"
+global.sort.direction.sort_asc: "Oplopend sorteren"
+global.sort.direction.sort_desc: "Aflopend sorteren"
 global._score: "Relevantie"
 global.time: "Tijdstip"
 global.title: "Titel"
@@ -158,6 +161,11 @@ global.footer.label.contact: "Contact"
 global.footer.label.documentation: "Documentatie"
 global.footer.label.report_vulnerability: "Kwetsbaarheid melden"
 
+global.download.document_count: "Aantal documenten"
+global.download.total_document_size: "Totale inhoud"
+global.download.total_document_size_explanation: "(door compressie kan de download kleiner zijn)"
+
+
 auth.set_up.title: "Authenticator app instellen"
 auth.set_up.bullet-1: "Download en installeer de Google Authenticator of Authy app op je telefoon. Je vindt deze in de App Store of Play Store."
 auth.set_up.bullet-2: "Open de app en tik op '+'."
@@ -168,12 +176,19 @@ auth.set_up.recovery.title: "Herstelcodes"
 auth.set_up.recovery.description: "Bewaar onderstaande codes goed. Je kunt ze gebruiken als de authenticatie app op je telefoon niet meer werkt (bijvoorbeeld als je een nieuw toestel hebt). Deze herstelcodes zijn eenmalig te gebruiken."
 
 categories.category.type: "Informatiecategorieën"
+categories.category.type.go_to_plural: "informatiecategorieën"
 categories.category.department: "Verantwoordelijke bestuursorganen"
+categories.category.department.go_to_plural: "bestuursorganen"
 categories.category.subject: "Onderwerpen"
+categories.category.subject.go_to_plural: "onderwerpen"
 categories.category.source_file: "Type bronbestand"
+categories.category.source_file.go_to_plural: "types bronbestanden"
 categories.category.judgement: "Soort besluit"
+categories.category.judgement.go_to_plural: "soorten besluiten"
 categories.category.grounds: "Uitzonderingsgronden"
+categories.category.grounds.go_to_plural: "uitzonderingsgronden"
 categories.label.all-categories: "Naar alle categorieën"
+categories.label.go_to_all_of_type: "Naar alle {count} {type}"
 categories.category.date.from: "Datum vanaf"
 categories.category.date.to: "Datum tot"
 categories.category.date.without_date: "Datum"
@@ -240,7 +255,6 @@ admin.global.edit: "Bewerken"
 admin.global.subject: "Onderwerp"
 admin.global.decision_number: "Besluitnummer"
 admin.global.publication_reason: "Type besluit"
-admin.global.login_help: "Hulp bij inlogproblemen?"
 admin.global.no_record: "Niet opgegeven"
 admin.global.last_login: "Laatst ingelogd"
 admin.global.user: "Gebruiker"
@@ -250,6 +264,7 @@ admin.global.no_choices: "Nog niets gekozen"
 admin.global.dossiers.prefix_placeholder: "Kies een prefix"
 admin.global.statistics: "Statistieken"
 admin.global.yes: "Ja"
+admin.global.no: "Nee"
 admin.global.needs_action: "Actie vereist"
 admin.global.incomplete: "Incompleet"
 
@@ -299,6 +314,9 @@ admin.inquiries.row: "Rij"
 admin.decisions.manage: "Publicatiebeheer"
 admin.decisions.manage_details: "Publicatiebeheer: details"
 admin.decisions.manage_help: "Deze link biedt toegang tot beheerdersacties voor publicaties."
+admin.decisions.downloads: "Woo-besluiten downloads"
+admin.decisions.downloads_details: "Woo-besluiten downloads: overzicht"
+admin.decisions.downloads_help: "Deze link biedt toegang tot het download status overzicht voor woo-besluiten."
 admin.stats.manage: "Statistieken & Monitoring"
 admin.stats.worker_monitoring: "Monitoring van workers"
 admin.stats.manage_help: "Deze link biedt toegang tot statistieken en monitoring van het systeem."
@@ -321,17 +339,15 @@ admin.account.password_requirements.req1: "Minstens 14 tekens"
 admin.account.password_requirements.req2: "Mag geen veelvoorkomend woord zijn"
 admin.account.password_requirements.req3: "Mag niet alleen cijfers bevatten"
 admin.account.password_requirements.req4: "Mag niet vergelijkbaar zijn met je e-mailadres"
-admin.account.forgot_password.label: "Wachtwoord vergeten?"
-admin.account.forgot_password.instructions: "Reset het wachtwoord. Je krijgt nieuwe inloginstructies waarmee de gebruiker zelf een nieuw wachtwoord kan kiezen."
-admin.account.forgot_login.instructions: "Inloggegevens kwijt? Neem even contact op met de persoon die jou toegang heeft gegeven tot het platform."
-admin.account.reset_password: "Wachtwoord resetten"
-admin.account.reset_password.caution: 'Als je doorgaat kan de gebruiker niet meer inloggen met het oude wachtwoord. Je kan op de volgende pagina de nieuwe, tijdelijke inloginstructies downloaden voor de gebruiker. Zorg dat de gebruiker deze veilig bewaart.'
-admin.account.reset_password.confirm: 'Ja, reset het wachtwoord'
-admin.account.reset_2fa: "2FA resetten"
-admin.account.reset_2fa.label: "Nieuwe telefoon of authenticator app?"
-admin.account.reset_2fa.instructions: "Reset de twee factor code. Je krijgt nieuwe inloginstructies waarmee de gebruiker de twee factor authenticator opnieuw kan instellen."
-admin.account.reset_2fa_caution: "Resetten van de twee factor code betekent dat we de oude twee factor code voor altijd verwijderen uit ons systeem. Als je een nieuwe twee factor code aanvraagt zorg dan dat je deze op een veilige manier voor jezelf bewaart. Als je op 'Ja' klikt zal je de nieuwe twee factor code ontvangen."
-admin.account.reset_2fa.confirm: "Ja, reset de twee factor code"
+admin.account.login_help.title: "Hulp bij inlogproblemen"
+admin.account.login_help.description: "Via de onderstaande opties krijg je nieuwe inloginstructies waarmee de gebruiker zelf een nieuw wachtwoord kan kiezen of 2-factor authentication kan instellen."
+admin.account.login_help.forgot_password_instructions: "Inloggegevens kwijt? Neem even contact op met de persoon die jou toegang heeft gegeven tot het platform."
+admin.account.reset_password.button: "Wachtwoord resetten"
+admin.account.reset_password.title: "Wil je het wachtwoord resetten?"
+admin.account.reset_password.caution: 'Als je doorgaat, kan de gebruiker niet meer inloggen met het oude wachtwoord. Op de volgende pagina kun je de nieuwe tijdelijke inloginstructies voor de gebruiker downloaden. Zorg ervoor dat de gebruiker deze veilig bewaart.'
+admin.account.reset_2fa.button: "2-factor authentication code resetten"
+admin.account.reset_2fa.title: "Wil je de 2-factor authentication code resetten?"
+admin.account.reset_2fa.caution: "Het resetten van de 2-factor authentication code betekent dat de oude code permanent uit ons systeem wordt verwijderd. Wanneer je een nieuwe code aanvraagt, zorg er dan voor dat je deze veilig bewaart."
 admin.account.2fa.choose_provider: "Kies provider"
 admin.account.user.modify: "Wijzig gebruiker {name}"
 admin.account.user.info: "Gebruikersinformatie"
@@ -370,6 +386,7 @@ admin.department.slug: "URL landingspagina"
 admin.department.slug_help: "Deze naam komt direct achter het domein (minimaal 2 en maximaal 20 letters of cijfers)"
 admin.department.public: "Zichtbaar op de website"
 admin.department.public_help: "Schakelt landingspagina in en tonen in overzicht 'Bekijk per bestuursorgaan'"
+admin.department.landingpage_not_editable: "niet bewerkbaar"
 admin.user.role.super_admin: "Super beheerder"
 admin.user.role.super_admin.desc: "Alle rechten (inclusief beheer van de Beheerder rol)."
 admin.user.role.global_admin: Beheerder
@@ -385,6 +402,7 @@ admin.department.created: "Het bestuursorgaan is aangemaakt"
 admin.department.edit: "Bestuursorgaan wijzigen"
 admin.department.modified: "Het bestuursorgaan is aangepast"
 admin.department.new_department: "Nieuw bestuursorgaan aanmaken"
+admin.department.update_landing_page: "Wijzig landingspagina"
 admin.organisation.create: "Organisatie toevoegen"
 admin.organisation.edit: "Organisatie wijzigen"
 admin.organisation.manage: "Organisaties beheren"
@@ -397,6 +415,14 @@ admin.login.2fa.enter_code: "Voer authenticatiecode in"
 admin.login.2fa.instructions: "Open de authenticator app en voer de éénmalige code in om in te loggen."
 admin.login.2fa.error.invalid_code: "Ongeldige authenticatiecode. Vul een geldige authenticatiecode in."
 admin.login.2fa.reset_instructions: "Problemen met de authenticator app? Gebruik een herstelcode uit de inloginstructies."
+
+admin.organisation.department_landing_page_edit: "Wijzig landingspagina voor bestuursorgaan {name}"
+admin.department.landing_page.title: 'Titel'
+admin.department.landing_page.title_help: 'Verplicht veld, maximaal 100 tekens.'
+admin.department.landing_page.description: 'Omschrijving'
+admin.department.landing_page.modified: 'De landingspagina is aangepast.'
+admin.department.landing_page.customized_warning: 'Voor dit bestuursorgaan is een vaste landingspagina ingesteld, daardoor is de inhoud niet te beheren.'
+admin.department.landing_page.not_public_warning: 'Voor dit bestuursorgaan is de landingspagina uitgeschakeld, daardoor is de inhoud niet te beheren.'
 
 admin.menu.dossiers: 'Publicaties'
 admin.publication.start_new_publication: 'Nieuwe publicatie voorbereiden'
@@ -600,6 +626,8 @@ public.global.page_not-available.message: "De pagina of het document dat u zoekt
 public.global.date: "Datum"
 public.global.from: vanaf
 public.global.to: tot en met
+public.global.sort.sorted_by: "Gesorteerd op"
+public.global.sort.sort_by: "Sorteren op"
 public.global.show_less: "Toon minder"
 public.global.show_more: "Toon meer"
 public.global.warning: "Waarschuwing"
@@ -614,7 +642,6 @@ public.global.annual_report: "Jaarplan of jaarverslag"
 public.global.decisions: "Besluiten"
 public.global.size: "Grootte"
 public.global.subjects: Onderwerpen
-public.global.sortable: "Kolomkoppen met links zijn sorteerbaar"
 public.global.request_summary: "Samenvatting verzoek"
 public.global.logo.text: "Ministerie van Volksgezondheid, Welzijn en Sport"
 public.global.logo.label: "ga naar de homepage"
@@ -646,6 +673,8 @@ public.documents.not_yet_online: "(Nog) niet online"
 public.documents.public: "Openbaar"
 public.documents.already_public_short: "Reeds openbaar"
 
+public.table.sortable_columns: "Kolomkoppen met links zijn sorteerbaar"
+
 public.documents.judgment.short.public: "Openbaar"
 public.documents.judgment.short.partial_public: "Deels openbaar"
 public.documents.judgment.short.already_public: "Reeds openbaar"
@@ -654,11 +683,13 @@ public.documents.judgment.short.not_public: "Niet openbaar"
 public.breadcrumbs.departments: "Bestuursorganen"
 
 public.documents.related_documents: "Gerelateerde documenten"
+public.documents.related_to: "Gerelateerd aan"
 public.documents.strong_relationship: "Sterke relatie"
 public.documents.refers_to: "{has_or_have} een sterke relatie met dit document."
 public.documents.referred_by: "Documenten die naar dit document verwijzen"
 public.documents.email_thread: "Berichten uit dezelfde e-mailconversatie"
 public.documents.attachments: "Bijlagen bij dit e-mailbericht"
+public.documents.download_these: "Deze documenten downloaden"
 public.documents.document.background: "Achtergrond openbaarmaking"
 public.documents.document.about: "Over dit document"
 public.documents.document.date: "Datum document"
@@ -679,6 +710,7 @@ public.documents.file_type.spreadsheet: "Spreadsheet"
 public.documents.file_type.unknown: "Onbekend"
 public.documents.file_type.vcard: "Visitekaartje"
 public.documents.file_type.video: "Video"
+public.documents.file_type.audio: "Audio"
 public.documents.file_type.xml: "XML"
 public.documents.file_type.zip: "Zip-bestand"
 public.documents.file_type.chat: "Chatbericht"
@@ -852,7 +884,6 @@ public.inquiries.documents_wont_be_published: >-
     =1{# document wordt niet openbaar gemaakt.}
     other{# documenten worden niet openbaar gemaakt.}
   }
-public.inquiries.document.open_or_download: " openen of downloaden ({fileInfo} {fileSize})"
 
 public.inquiry.page_title: "Besluiten en documenten voor zaaknummer {case_number}"
 public.inquiry.decisions_for_case: "Er {are_or_is} {number_of_decisions} genomen voor het verzoek om informatie te openbaren met zaaknummer {case_number}"
@@ -889,8 +920,7 @@ public.documents.judgement.public: "Dit document is door juristen beoordeeld en 
 public.documents.judgement.partial_public: "Dit document is door juristen beoordeeld en vervolgens deels openbaar gemaakt."
 public.documents.judgement.not_public: "Dit document is door juristen beoordeeld en vervolgens niet openbaar gemaakt."
 public.documents.judgement.already_public: "Dit document is door juristen beoordeeld en bleek reeds openbaar beschikbaar."
-public.documents.archive.download: "Download document archief"
-public.documents.inquiry.download: "Download zaak archief"
+public.documents.archive.download: "Documenten downloaden"
 public.documents.archive.download_suspended: "Het archief is nog niet gereed voor download. Probeer het over een paar minuten opnieuw."
 public.documents.archive.download_outdated: "Dit archief wordt op dit moment vernieuwd. U kunt de huidige versie downloaden of probeer het later opnieuw voor de nieuwste versie."
 public.documents.archive.download_outdated_no_download: "Dit archief wordt op dit moment vernieuwd. Probeer het over een paar minuten opnieuw."
@@ -1039,6 +1069,7 @@ publication.dossier.error.generating_inventory: "Er is een technische fout opget
 publication.dossier.error.missing_inventory_header: "Het productierapport mist de kolom {headername}"
 publication.dossier.error.processing_inventory_row: "De verwerking van rij {rowIndex} veroorzaakt een fout"
 publication.dossier.error.opening_inventory_file: "Er is een fout opgetreden bij het openen van het productierapport, controleer de structuur"
+publication.dossier.error.organisation_mismatch: "Er is een fout opgetreden bij het openen van het productierapport, controleer de gebruikte prefix"
 publication.dossier.error.reading_cell: "Er is een fout opgetreden bij het lezen van het productierapport, controleer de structuur"
 publication.dossier.error.missing_document_number: "Rij {rownumber} heeft geen documentnummer"
 publication.dossier.error.invalid_document_number: "Rij {rownumber} heeft een ongeldig documentnummer"
@@ -1326,6 +1357,15 @@ admin.dossiers.action.row.expected_uploads: 'Verwacht aantal uploads'
 admin.dossiers.action.row.actual_uploads: 'Werkelijk aantal uploads'
 admin.dossiers.action.row.uploads_completed: 'Upload compleet'
 admin.dossiers.action.row.step_completed: 'Stap "{step}" compleet'
+
+admin.dossiers.downloads.column.dossier_nr: 'Dossiernummer'
+admin.dossiers.downloads.column.expected_count: 'Verwacht'
+admin.dossiers.downloads.column.file_count: 'Werkelijk'
+admin.dossiers.downloads.column.status: 'Status'
+admin.dossiers.downloads.column.expiration: 'Verloopdatum'
+admin.dossiers.downloads.column.size: 'Grootte'
+admin.dossiers.downloads.missing: 'Ontbreekt'
+admin.dossiers.downloads.actions: 'Acties'
 
 public.search.type_description.dossier: 'Reacties op Woo-verzoeken'
 public.search.type.document: 'Documenten'

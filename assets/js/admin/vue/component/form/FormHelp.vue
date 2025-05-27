@@ -1,14 +1,16 @@
-<script setup>
+<script setup lang="ts">
 import { getHelpId } from '@admin-fe/form';
 import { uniqueId } from '@js/utils';
 
-const props = defineProps({
-  inputId: {
-    type: String,
-  },
+interface Props {
+  inputId?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  inputId: uniqueId('help'),
 });
 
-const id = getHelpId(props.inputId || uniqueId('help'));
+const id = getHelpId(props.inputId);
 </script>
 
 <template>

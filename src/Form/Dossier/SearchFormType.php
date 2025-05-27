@@ -31,13 +31,14 @@ class SearchFormType extends AbstractType
     ) {
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return '';
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

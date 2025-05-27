@@ -9,47 +9,55 @@ use App\Domain\WooIndex\Builder\SitemapIndexBuilder;
 use App\Domain\WooIndex\Builder\SitemapUrlBuilder;
 use App\Domain\WooIndex\Producer\ProducerSignal;
 use App\Domain\WooIndex\Producer\UrlProducer;
-use App\Service\Storage\LocalFilesystem;
+use League\Flysystem\FilesystemOperator;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-final readonly class WooIndex
+readonly class WooIndex
 {
     public const MAX_SITEMAP_SIZE = 49 * 1024 * 1024;
 
     public function __construct(
-        private LocalFilesystem $localFilesystem,
+        private FilesystemOperator $wooIndexStorage,
         private UrlProducer $urlProducer,
         private SitemapIndexBuilder $sitemapIndexBuilder,
         private SitemapBuilder $sitemapBuilder,
         private SitemapUrlBuilder $urlBuilder,
         private WooIndexNamer $wooIndexNamer,
-        private string $sitemapBaseUrl,
+        private UrlGeneratorInterface $urlGenerator,
+        private StreamHelper $streamHelper,
+        private string $publicBaseUrl,
     ) {
     }
 
-    public function create(WooIndexRunOptions $options): string
+    public function create(WooIndexSitemap $wooIndexSitemap, WooIndexRunOptions $options): void
     {
-        $runId = $this->wooIndexNamer->getWooIndexRunId($options->pathSuffix);
-        $tempDir = $this->createTempDir($runId);
+        $subPath = $this->wooIndexNamer->getStorageSubpath($wooIndexSitemap);
 
-        $sitemapIndexWriter = $this->sitemapIndexBuilder->open($this->getSitemapIndexFullPath($tempDir));
+        $sitemapIndexStream = $this->streamHelper->createTempStream();
+
+        $sitemapIndexWriter = $this->sitemapIndexBuilder->open($sitemapIndexStream);
 
         $sitemapNumber = 0;
         foreach ($this->urlProducer->getChunked($options->chunkSize) as $sitemap) {
             $sitemapNumber++;
 
-            $sitemapFullPath = $this->getSitemapFullPath($tempDir, $sitemapNumber);
+            $sitemapStream = $this->streamHelper->createTempStream();
 
-            $sitemapWriter = $this->sitemapBuilder->open($sitemapFullPath);
+            $sitemapWriter = $this->sitemapBuilder->open($sitemapStream);
             foreach ($sitemap as $url) {
-                if ($this->isFileSizeReached($sitemapFullPath)) {
+                // Write writer buffer to stream before checking stream size.
+                $sitemapWriter->flush();
+
+                if ($this->isFileSizeReached($sitemapStream)) {
                     break;
                 }
 
                 $this->urlBuilder->addUrl($sitemapWriter, $url);
             }
-            $this->sitemapBuilder->close($sitemapWriter);
+            $this->sitemapBuilder->closeFlush($sitemapWriter);
+            $this->rewindWriteToStorageAndCloseStream($this->getSitemapFullPath($subPath, $sitemapNumber), $sitemapStream);
 
-            $this->sitemapIndexBuilder->addSitemap($sitemapIndexWriter, $this->getSitemapUri($runId, $sitemapNumber));
+            $this->sitemapIndexBuilder->addSitemap($sitemapIndexWriter, $this->getSitemapUri($wooIndexSitemap, $sitemapNumber));
 
             // If the generator was not consumed fully, we will stop the current generator so
             // it's items (Uri's) will move to the next sitemap:
@@ -58,53 +66,51 @@ final readonly class WooIndex
             }
         }
 
-        $this->sitemapIndexBuilder->close($sitemapIndexWriter);
-
-        return $tempDir;
-    }
-
-    private function createTempDir(string $runId): string
-    {
-        $tempDir = $this->localFilesystem->createTempDir($runId);
-        if ($tempDir === false) {
-            throw DiWooRuntimeException::failedCreatingTempDir();
-        }
-
-        return $tempDir;
+        $this->sitemapIndexBuilder->closeFlush($sitemapIndexWriter);
+        $this->rewindWriteToStorageAndCloseStream($this->getSitemapIndexFullPath($subPath), $sitemapIndexStream);
     }
 
     private function getSitemapIndexFullPath(string $path): string
     {
-        return $this->wooIndexNamer->joinPaths(
-            $path,
-            $this->wooIndexNamer->getSitemapIndexName(),
-        );
+        return sprintf('%s/%s', $path, $this->wooIndexNamer->getSitemapIndexName());
     }
 
     private function getSitemapFullPath(string $path, int $sitemapNumber): string
     {
-        return $this->wooIndexNamer->joinPaths(
-            $path,
-            $this->wooIndexNamer->getSitemapName($sitemapNumber),
-        );
+        return sprintf('%s/%s', $path, $this->wooIndexNamer->getSitemapName($sitemapNumber));
     }
 
-    private function getSitemapUri(string $runId, int $sitemapNumber): string
+    private function getSitemapUri(WooIndexSitemap $wooIndexSitemap, int $sitemapNumber): string
     {
-        return $this->wooIndexNamer->joinPaths(
-            $this->sitemapBaseUrl,
-            $runId,
-            $this->wooIndexNamer->getSitemapName($sitemapNumber),
-        );
+        $subpath = $this->urlGenerator->generate('app_woo_index_sitemap_download', [
+            'id' => $wooIndexSitemap->getId()->toRfc4122(),
+            'file' => $this->wooIndexNamer->getSitemapName($sitemapNumber),
+        ]);
+
+        return $this->publicBaseUrl . $subpath;
     }
 
-    private function isFileSizeReached(string $sitemapFullPath): bool
+    /**
+     * @param resource $contents
+     */
+    private function rewindWriteToStorageAndCloseStream(string $location, $contents): void
     {
-        $fileSize = $this->localFilesystem->getFileSize($sitemapFullPath);
-        if ($fileSize === false) {
-            throw DiWooRuntimeException::failedGettingFileSize($sitemapFullPath);
+        if (ftell($contents) !== 0) {
+            rewind($contents);
         }
 
-        return $fileSize >= self::MAX_SITEMAP_SIZE;
+        $this->wooIndexStorage->writeStream($location, $contents);
+
+        if (is_resource($contents)) {
+            fclose($contents);
+        }
+    }
+
+    /**
+     * @param resource $stream
+     */
+    private function isFileSizeReached($stream): bool
+    {
+        return $this->streamHelper->size($stream) >= self::MAX_SITEMAP_SIZE;
     }
 }

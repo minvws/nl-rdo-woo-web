@@ -89,11 +89,11 @@ Filter on dates
 
 *** Keywords ***
 Suite Setup
-  Suite Setup - CI
+  Suite Setup Generic
 
 Test Setup
   Go To Public
-  Go To  ${BASE_URL}/zoeken
+  Click On Search Submit
 
 Verify Search Results Sort Order
   [Arguments]  ${sorting_order}

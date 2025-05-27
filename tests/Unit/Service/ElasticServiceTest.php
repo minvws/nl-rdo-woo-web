@@ -11,7 +11,7 @@ use App\Service\Elastic\ElasticClientInterface;
 use App\Service\Elastic\ElasticService;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
-use Jaytaph\TypeArray\TypeArray;
+use MinVWS\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;

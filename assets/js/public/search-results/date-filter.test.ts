@@ -73,6 +73,7 @@ describe('The "dateFilters" function', () => {
       test('should hide the error message again when the user adjusts the dates to make it a valid date period', () => {
         initializeDateFilters();
 
+        setDates('2022-01-03', '2022-01-02');
         setInvalidDatePeriod();
         expect(errorMessageIsHidden()).toBe(false);
 

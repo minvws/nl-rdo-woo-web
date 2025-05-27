@@ -1,23 +1,21 @@
 *** Settings ***
 Documentation       Resource file containing custom keywords for the WooDecision information category
-Library             DateTime
-Library             OperatingSystem
-Library             String
 Library             Browser
 Library             DebugLibrary
+Library             FakerLibrary
 Resource            Admin.resource
 Resource            Dossier.resource
 
 
 *** Variables ***
-${RUN_LOCALLY}          ${EMPTY}
+${ENVIRONMENT}          ${EMPTY}
 ${PRODUCTION_REPORT}    ${EMPTY}
 ${DOCUMENTS}            ${EMPTY}
 ${NUMBER_OF_DOCUMENTS}  ${EMPTY}
 
 
 *** Keywords ***
-Publish Test Dossier
+Publish Test WooDecision
   [Arguments]
   ...  ${production_report}
   ...  ${documents}
@@ -26,7 +24,7 @@ Publish Test Dossier
   ...  ${publication_status}=Gepubliceerd
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=${prefix}  type=woo-decision
-  Fill Out Decision Details  Openbaarmaking
+  Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  ${production_report}
   Verify Document Upload Remaining  Nog te uploaden: ${number_of_documents} van ${number_of_documents} documenten.
   Upload Documents  ${documents}
@@ -35,22 +33,24 @@ Publish Test Dossier
   Publish Dossier And Return To Admin Home  ${publication_status}
   Log  Dossier reference: ${DOSSIER_REFERENCE}
 
-Fill Out Decision Details
+Fill Out WooDecision Details
   [Arguments]  ${decision}  ${has_attachment}=${FALSE}
   Check Checkbox  text="${decision}"
-  Fill Text  id=decision_summary  Samenvatting voor het besluitdossier Robot ${CURRENT_TIME}
-  Upload Besluitbrief  tests/robot_framework/files/woodecision/besluitbrief.pdf  besluitbrief.pdf
+  ${random_summary} =  Fakerlibrary.Text  200
+  Fill Text  id=decision_summary  ${random_summary}
+  Click  " Besluitbrief toevoegen... "
+  Upload Besluitbrief  tests/robot_framework/files/woodecision/besluitbrief.pdf
   IF  ${has_attachment}  Upload Attachment  staatscourant
   Click  "Opslaan en verder"
 
 Upload Besluitbrief
-  [Arguments]  ${besluitbrief_location}  ${besluitbrief_filename}
-  Click  " + Besluitbrief toevoegen... "
+  [Arguments]  ${besluitbrief_location}
+  ${path}  ${besluitbrief_filename} =  Split Path  ${besluitbrief_location}
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${besluitbrief_location}
-  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${besluitbrief_filename}  timeout=10s
+  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${besluitbrief_filename}  timeout=10s
   Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
   Click  //dialog[@open]//button[@type="submit"]
-  Wait For Condition  Text  //*[@id="inhoud"]  contains  Beslissing op Wob-/Woo-verzoek toegevoegd.
+  Success Alert Is Visible  Besluitbrief '${besluitbrief_filename}' is
 
 Upload Documents Step
   Upload Production Report  ${PRODUCTION_REPORT}
@@ -94,12 +94,7 @@ Upload Documents
   ...  timeout=30s
   ...  message=Upload did not complete within timeout. You might want to try making the archive smaller to make it faster.
   Sleep  1s
-  Click  //button[@data-e2e-name="process-documents"]
-  Wait For Elements State
-  ...  //button[@data-e2e-name="process-documents"]
-  ...  detached
-  ...  timeout=5s
-  ...  message=Click on Process Documents did not work
+  Click Process Documents
 
 Verify Document Upload Completed
   Scroll To Element  //*[@id="inhoud"]/div/div[2]
@@ -121,6 +116,14 @@ Click Confirm Production Report Replacement
 
 Click Continue To Documents
   Click  //*[@data-e2e-name="continue-to-documents"]
+
+Click Process Documents
+  Click  //button[@data-e2e-name="process-documents"]
+  Wait For Elements State
+  ...  //button[@data-e2e-name="process-documents"]
+  ...  detached
+  ...  timeout=30s
+  ...  message=Click on Process Documents did not work
 
 Open Document In Dossier
   [Arguments]  ${document_id}
@@ -163,8 +166,11 @@ Fill Publication Date
   ${day} =  Convert Date  ${date}  result_format=%d
   ${month} =  Convert Date  ${date}  result_format=%m
   ${year} =  Convert Date  ${date}  result_format=%Y
-  IF  ${RUN_LOCALLY}
+  IF  '${ENVIRONMENT}' == 'docker-local'
     Type Text  id=publish_publication_date  ${day}${month}${year}
   ELSE
     Type Text  id=publish_publication_date  ${month}${day}${year}
   END
+
+Click Edit Decision
+  Click  //a[@data-e2e-name="edit-decision"]

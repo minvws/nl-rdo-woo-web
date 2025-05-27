@@ -38,11 +38,9 @@ class PageIndexUpdaterTest extends MockeryTestCase
         $this->logger->shouldReceive('debug');
 
         $this->elasticClient->expects('update')->with(\Mockery::on(
-            static function (array $input) use ($id, $pageNr, $content) {
-                return $input['id'] === $id
-                    && $input['body']['script']['params']['page']['page_nr'] === $pageNr
-                    && $input['body']['script']['params']['page']['content'] === $content;
-            }
+            static fn (array $input) => $input['id'] === $id
+                && $input['body']['script']['params']['page']['page_nr'] === $pageNr
+                && $input['body']['script']['params']['page']['content'] === $content
         ));
 
         $this->indexUpdater->update($id, $pageNr, $content);

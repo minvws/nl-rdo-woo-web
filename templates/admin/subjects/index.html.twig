@@ -9,24 +9,13 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('subject.create') %}
-            <a class="bhr-button bhr-button--secondary" href="{{ path('app_admin_subject_create') }}" data-e2e-name="new-subject">{{ 'admin.subject.create' | trans() }}</a>
+            <a class="bhr-btn-filled-primary" href="{{ path('app_admin_subject_create') }}" data-e2e-name="new-subject">{{ 'admin.subject.create' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>
 
     <div class="bhr-card">
-        {% set alerts = app.flashes('backend') %}
-        {% if alerts | length > 0 %}
-            <div class="mb-8" data-e2e-name="alerts">
-                {% for messages in alerts %}
-                    {% for label, message in messages %}
-                        <twig:Admin:Alert type="{{ label }}">
-                            <strong>{{ message }}</strong>
-                        </twig:Admin:Alert>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include 'admin/shared/flash-messages.html.twig' %}
 
         {% if pagination | length > 0 %}
             <table class="bhr-table">

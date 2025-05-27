@@ -28,7 +28,7 @@ class ThemeExtensionTest extends MockeryTestCase
 
         self::assertEquals(
             $views,
-            iterator_to_array($extension->getAllThemes()),
+            iterator_to_array($extension->getAllThemes(), false),
         );
     }
 }

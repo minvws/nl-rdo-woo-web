@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Inquiry;
 
 use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
 use App\Domain\Publication\BatchDownload\BatchDownloadService;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -18,6 +17,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Domain\Search\SearchDispatcher;
 use App\Entity\Organisation;
 use App\Service\HistoryService;
+use App\Service\Inquiry\DocumentCaseNumbers;
 use App\Service\Inquiry\InquiryChangeset;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Storage\EntityStorageService;
@@ -143,32 +143,6 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->wooDecisionDispatcher->expects('dispatchGenerateInquiryInventoryCommand')->with($inquiryId);
 
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
-            static function (BatchDownloadScope $scope) use ($inquiryId) {
-                self::assertEquals($inquiryId, $scope->inquiry?->getId());
-
-                return true;
-            }
-        ));
-
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
-            function (BatchDownloadScope $scope) use ($inquiryId) {
-                self::assertEquals($inquiryId, $scope->inquiry?->getId());
-                self::assertEquals($this->dossier, $scope->wooDecision);
-
-                return true;
-            }
-        ));
-
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
-            static function (BatchDownloadScope $scope) use ($inquiryId, $newDossier) {
-                self::assertEquals($inquiryId, $scope->inquiry?->getId());
-                self::assertEquals($newDossier, $scope->wooDecision);
-
-                return true;
-            }
-        ));
-
         $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($addDoc1Id, Document::class, false);
         $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($addDoc2Id, Document::class, false);
         $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($removeDocId, Document::class, false);
@@ -229,23 +203,6 @@ class InquiryServiceTest extends MockeryTestCase
 
         $this->wooDecisionDispatcher->expects('dispatchGenerateInquiryInventoryCommand')->with($inquiryId);
 
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
-            static function (BatchDownloadScope $scope) use ($inquiryId) {
-                self::assertEquals($inquiryId, $scope->inquiry?->getId());
-
-                return true;
-            }
-        ));
-
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
-            function (BatchDownloadScope $scope) use ($inquiryId) {
-                self::assertEquals($inquiryId, $scope->inquiry?->getId());
-                self::assertEquals($this->dossier, $scope->wooDecision);
-
-                return true;
-            }
-        ));
-
         $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($addDoc1Id, Document::class, false);
         $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($addDoc2Id, Document::class, false);
         $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommand')->with($removeDocId, Document::class, false);
@@ -265,14 +222,14 @@ class InquiryServiceTest extends MockeryTestCase
         // Has no linked inquiries yet, so should be linked twice
         $docId123 = Uuid::v6();
         $changeset->updateCaseNrsForDocument(
-            $this->createDocument($docId123, []),
+            new DocumentCaseNumbers($docId123, []),
             ['case-1', 'case-2'],
         );
 
         // Has two new inquiry links (case-1 and case-3), one unmodified/existing (case-2) and one removed ('case-4')
         $docId456 = Uuid::v6();
         $changeset->updateCaseNrsForDocument(
-            $this->createDocument($docId456, ['case-2', 'case-4']),
+            new DocumentCaseNumbers($docId456, ['case-2', 'case-4']),
             ['case-1', 'case-2', 'case-3']
         );
 
@@ -313,24 +270,5 @@ class InquiryServiceTest extends MockeryTestCase
         );
 
         $this->inquiryService->applyChangesetAsync($changeset);
-    }
-
-    /**
-     * @param string[] $caseNumbers
-     */
-    private function createDocument(Uuid $id, array $caseNumbers): Document
-    {
-        $inquiries = new ArrayCollection();
-        foreach ($caseNumbers as $caseNumber) {
-            $inquiry = \Mockery::mock(Inquiry::class);
-            $inquiry->shouldReceive('getCasenr')->andReturn($caseNumber);
-            $inquiries->add($inquiry);
-        }
-
-        $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('getInquiries')->andReturn($inquiries);
-        $document->shouldReceive('getId')->andReturn($id);
-
-        return $document;
     }
 }

@@ -19,12 +19,14 @@ Organisation Selector Visible
 Click Manage Organisations
   Click  //*[@data-e2e-name="manage-organisations"]
 
+Add A New Organisation Prefix First Run
+  [Arguments]  ${prefix}
+  Fill Text  (//input[@data-e2e-name="add-prefix-input"])[last()]  ${prefix}
+
 Add A New Organisation Prefix
   [Arguments]  ${prefix}
-  Click  //*[@id="js-add-widget"]
-  ${element_count} =  Get Element Count
-  ...  //div[@id="js-widgets-container"]//input[starts-with(@id,'organisation_form_documentPrefixes')]
-  Fill Text  //input[starts-with(@id,'organisation_form_documentPrefixes_${element_count-1}')]  ${prefix}
+  Click  //button[@data-e2e-name="add-prefix-button"]
+  Fill Text  (//input[@data-e2e-name="add-prefix-input"])[last()]  ${prefix}
 
 Click Create Organisation
   Click  //*[@data-e2e-name="create-organisation"]
@@ -71,7 +73,7 @@ Create New Organisation
       VAR  ${prefix}  ${random}
     END
     Fill Text  id=organisation_form_name  ${organisation_name}
-    Fill Text  id=organisation_form_documentPrefixes_0_prefix  ${prefix}
+    Fill Text  //input[@data-e2e-name="add-prefix-input"]  ${prefix}
     IF  '${responsible_department_name}' == 'EMPTY'
       Select Options By  //select[@name="organisation_form[departments][0]"]  index  1
     ELSE

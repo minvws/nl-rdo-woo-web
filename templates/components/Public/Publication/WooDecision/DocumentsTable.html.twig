@@ -1,0 +1,60 @@
+{% if documents | length > 0 %}
+    {% set fragment = fragment | default('#documenten') %}
+    <div class="woo-responsive-table">
+        <table class="woo-table">
+            <caption class="sr-only">
+                <span>{{ title }}</span>
+                {% if isSortable %}
+                    <span>{{ 'public.table.sortable_columns' | trans }}</span>
+                {% endif %}
+            </caption>
+            <thead>
+                <tr>
+                    {% if isSortable %}
+                        {{ knp_pagination_sortable(documents, 'global.document_number' | trans, 'doc.documentNr', { thClassName: "x-min-w-36 x-w-36", 'fragment': fragment }) }}
+                        <th class="x-min-w-12 x-w-12" scope="col">{{ 'global.document_type' | trans }}</th>
+                        {{ knp_pagination_sortable(documents, 'global.document_name' | trans, 'doc.fileInfo.name', { 'fragment': fragment }) }}
+                        {{ knp_pagination_sortable(documents, 'global.date' | trans, 'doc.documentDate', { thClassName: 'text-right! x-min-w-40 w-40', 'fragment': fragment }) }}
+                    {% else %}
+                        <th scope="row">{{ 'global.document_number' | trans }}</th>
+                        <th scope="row">{{ 'global.document_type' | trans }}</th>
+                        <th scope="row">{{ 'global.name' | trans }}</th>
+                        <th class="text-right" scope="row">{{ 'global.date' | trans }}</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+            {% for document in documents %}
+                <tr>
+                    <td class="woo-table-cell-light">
+                        {{ document.documentId }}
+                    </td>
+                    <td>
+                        {% set documentType = document.judgement is defined and document.judgement.isAlreadyPublic ? 'web' : (document.fileInfo.sourceType.value) %}
+                        <twig:Public:FileIcon type="{{ documentType }}" />
+                        <span class="sr-only">{{ document.fileInfo.sourceType | trans }}</span>
+                    </td>
+                    <td>
+                        <div class="woo-readable-width">
+                            <a class="woo-a break-all" href="{{ path('app_document_detail', { prefix: dossier.documentPrefix ?? document.dossiers.first.documentPrefix, dossierId: dossier.dossierNr ?? document.dossiers.first.dossierNr, documentId: document.documentNr }) }}">{{ document.fileInfo.name }}</a>
+                        </div>
+                    </td>
+                    <td class="text-right whitespace-nowrap">
+                        {% if document.documentDate is not null %}
+                            <time datetime="{{ document.documentDate | date("Y-m-d") }}">{{ document.documentDate | format_date('long') }}</time>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if isSortable and documents.pageCount is defined and documents.pageCount > 1 %}
+    <div class="pt-6">
+        {{ knp_pagination_render(documents, null, {}, { 'fragment': fragment }) }}
+    </div>
+    {% endif %}
+{% endif %}

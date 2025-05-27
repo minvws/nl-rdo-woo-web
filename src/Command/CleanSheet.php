@@ -12,6 +12,8 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\History\History;
 use App\Domain\Publication\Subject\Subject;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
+use App\Domain\Uploader\UploadEntity;
+use App\Domain\WooIndex\WooIndexSitemapService;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -25,7 +27,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webmozart\Assert\Assert;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 #[When('dev')]
 class CleanSheet extends Command
@@ -38,6 +40,7 @@ class CleanSheet extends Command
         private readonly EntityManagerInterface $entityManager,
         private readonly ElasticIndexManager $indexService,
         private readonly HttpClientInterface $httpClient,
+        private readonly WooIndexSitemapService $wooIndexSitemapService,
     ) {
         parent::__construct();
     }
@@ -79,6 +82,8 @@ class CleanSheet extends Command
         $this->deleteAllEntities(Document::class, $output);
         $this->deleteAllEntities(Inquiry::class, $output);
         $this->deleteAllEntities(History::class, $output);
+        $this->deleteAllEntities(UploadEntity::class, $output);
+        $this->clearAllSitemaps($output);
 
         if (! $input->getOption('keep-subjects')) {
             $this->deleteAllEntities(Subject::class, $output);
@@ -101,7 +106,7 @@ class CleanSheet extends Command
     {
         try {
             /** @var literal-string $entityClassName */
-            $this->entityManager->createQueryBuilder()->delete($entityClassName)->getQuery()->execute();
+            $this->entityManager->createQueryBuilder()->delete($entityClassName, 'e')->getQuery()->execute();
         } catch (\Exception $exception) {
             $output->writeln("<error>Error while deleting $entityClassName entities:</error>");
             $output->writeln("<error>{$exception->getMessage()}</error>");
@@ -168,5 +173,12 @@ class CleanSheet extends Command
         ]);
 
         $this->getApplication()?->doRun($greetInput, $output);
+    }
+
+    private function clearAllSitemaps(OutputInterface $output): void
+    {
+        $this->wooIndexSitemapService->cleanupAllSitemaps();
+
+        $output->writeln('👍 All WooIndex sitemap files and entities have been deleted');
     }
 }

@@ -11,6 +11,7 @@ use App\Tests\Factory\OrganisationFactory;
 use App\Tests\Integration\IntegrationTestTrait;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Persistence\Proxy;
 
 final class DepartmentRepositoryTest extends KernelTestCase
@@ -91,6 +92,58 @@ final class DepartmentRepositoryTest extends KernelTestCase
         ], $departments);
 
         $this->assertMatchesYamlSnapshot($departments);
+    }
+
+    public function testFindOne(): void
+    {
+        $this->deleteAllDepartments();
+        $this->createDepartments();
+
+        $firstDepartment = $this->repository->getAllPublicDepartments()[0] ?? null;
+        Assert::notNull($firstDepartment);
+
+        $firstId = $firstDepartment->getId();
+
+        $result = $this->repository->findOne($firstId);
+
+        self::assertEquals($firstDepartment, $result);
+    }
+
+    public function testGetDepartmentsQueryFilteredByOrganisation(): void
+    {
+        $organisationA = OrganisationFactory::createOne([]);
+        $organisationB = OrganisationFactory::createOne([]);
+
+        $departmentA = DepartmentFactory::createOne([
+            'name' => 'department  A',
+            'shortTag' => 'A',
+            'slug' => 'a',
+            'public' => true,
+            'organisations' => [$organisationA],
+        ]);
+
+        $departmentB = DepartmentFactory::createOne([
+            'name' => 'department  B',
+            'shortTag' => 'B',
+            'slug' => 'b',
+            'public' => true,
+            'organisations' => [$organisationB],
+        ]);
+
+        $departmentC = DepartmentFactory::createOne([
+            'name' => 'department  C',
+            'shortTag' => 'C',
+            'slug' => 'c',
+            'public' => true,
+            'organisations' => [$organisationA],
+        ]);
+
+        /** @var iterable<Department> $departments */
+        $departments = $this->repository->getDepartmentsQuery($organisationA->_real())->getResult();
+
+        self::assertContains($departmentA->_real(), $departments);
+        self::assertNotContains($departmentB->_real(), $departments);
+        self::assertContains($departmentC->_real(), $departments);
     }
 
     private function deleteAllDepartments(): void

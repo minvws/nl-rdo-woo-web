@@ -7,6 +7,7 @@ namespace App\Api\Admin\WooDecisionMainDocument;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
@@ -20,12 +21,24 @@ use App\Domain\Publication\MainDocument\MainDocumentAlreadyExistsException;
 use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 
 #[ApiResource(
-    uriTemplate: '/dossiers/{dossierId}/woo-decision-main-document',
+    uriTemplate: '/dossiers/{dossierId}/woo-decision-main-document/{mainDocumentId}',
     operations: [
         new Get(
             security: "is_granted('AuthMatrix.dossier.read')",
         ),
+        new GetCollection(
+            uriTemplate: '/dossiers/{dossierId}/woo-decision-main-document',
+            uriVariables: [
+                'dossierId' => new Link(toProperty: 'dossier', fromClass: DossierReferenceDto::class),
+            ],
+            security: "is_granted('AuthMatrix.dossier.read')",
+            itemUriTemplate: '/dossiers/{dossierId}/woo-decision-main-document/{mainDocumentId}',
+        ),
         new Post(
+            uriTemplate: '/dossiers/{dossierId}/woo-decision-main-document',
+            uriVariables: [
+                'dossierId' => new Link(toProperty: 'dossier', fromClass: DossierReferenceDto::class),
+            ],
             security: "is_granted('AuthMatrix.dossier.update')",
             input: AttachmentCreateDto::class,
         ),
@@ -39,6 +52,7 @@ use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
     ],
     uriVariables: [
         'dossierId' => new Link(toProperty: 'dossier', fromClass: DossierReferenceDto::class),
+        'mainDocumentId' => new Link(fromClass: self::class),
     ],
     stateless: false,
     openapi: new Operation(

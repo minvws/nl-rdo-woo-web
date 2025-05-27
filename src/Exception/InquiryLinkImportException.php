@@ -16,4 +16,12 @@ class InquiryLinkImportException extends TranslatableException
             ]
         );
     }
+
+    public static function forOrganisationMismatch(): self
+    {
+        return new self(
+            'Cannot link to prefixes outside of the active organisation',
+            'publication.dossier.error.opening_inventory_file',
+        );
+    }
 }

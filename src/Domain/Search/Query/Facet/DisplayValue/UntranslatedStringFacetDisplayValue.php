@@ -21,7 +21,7 @@ readonly class UntranslatedStringFacetDisplayValue implements FacetDisplayValueI
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {

@@ -16,6 +16,7 @@ Resource            ../resources/WooDecision.resource
 Resource            ../resources/Inquiry.resource
 Suite Setup         Suite Setup
 Test Teardown       Run Keyword If Test Failed  No-Click Logout
+Test Timeout        5 minutes  # For yet unknown reasons, this testsuite sometimes runs endlessly until the Github job timeout is reached, ruining the whole testrun. Therefore this suite has a test timeout of 5 minutes.
 Test Tags           ci  accesscontrol
 
 
@@ -39,7 +40,7 @@ Departments
   [Template]  Verify Permissions On Departments
   # ${role}  ${create}  ${read}  ${update}
   super_admin  ${TRUE}  ${TRUE}  ${TRUE}
-  organisation_admin  ${FALSE}  ${FALSE}  ${FALSE}
+  organisation_admin  ${FALSE}  ${TRUE}  ${FALSE}
   global_admin  ${FALSE}  ${FALSE}  ${FALSE}
   dossier_admin  ${FALSE}  ${FALSE}  ${FALSE}
   view_access  ${FALSE}  ${FALSE}  ${FALSE}
@@ -111,7 +112,7 @@ Elastic
 *** Keywords ***
 Suite Setup
   Cleansheet
-  Suite Setup - CI
+  Suite Setup Generic
   Login Admin
   Create New Organisation  Test Org 1  ministerie van Algemene Zaken  TESTORG1
   Create Test User  organisation=Programmadirectie Openbaarheid  role=super_admin
@@ -147,7 +148,7 @@ Menu Does Not Contain Item
 
 User List Does Not Contain Users From The Other Organisation
   Click Access Control
-  Get Element Count  //div[@data-e2e-name="tab1"]//th[contains(.,'_TO1_')]  should be  0
+  Get Element Count  //div[@data-e2e-name="tabs-gebruikers-content-1"]//th[contains(.,'_TO1_')]  should be  0
 
 Verify Permissions On Departments
   [Arguments]  ${role}  ${create}  ${read}  ${update}
@@ -204,7 +205,7 @@ Verify Permissions On Inquiries
   Cleansheet
   Login Admin  # as default admin user who may create dossiers
   Select Organisation  organisation=Programmadirectie Openbaarheid
-  Publish Test Dossier
+  Publish Test WooDecision
   ...  production_report=tests/robot_framework/files/inquiries/productierapport2.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten2.zip
   ...  number_of_documents=3
@@ -217,7 +218,7 @@ Verify Permissions On Inquiries
     Link Inquiry To Decision  ZAAK-1  ${DOSSIER_REFERENCE}
     Open Inquiry  ZAAK-1
   END
-  Go To  ${BASE_URL_BALIE}/admin/inquiry
+  Go To  %{URL_ADMIN}/admin/inquiry
   IF  not ${administration}
     Verify Page Error  403
   ELSE
@@ -244,13 +245,13 @@ Verify Permissions On Dossiers
       Cleansheet
       Click Publications
       Select Organisation  organisation=Programmadirectie Openbaarheid
-      Publish Test Dossier
+      Publish Test WooDecision
       ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 openbaar.xlsx
       ...  documents=tests/robot_framework/files/woodecision/documenten - 2.zip
       ...  number_of_documents=2
       ...  publication_status=Gepubliceerd
       VAR  ${dossier_reference_published}  ${DOSSIER_REFERENCE}
-      Publish Test Dossier
+      Publish Test WooDecision
       ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 andere.xlsx
       ...  documents=tests/robot_framework/files/woodecision/documenten - 2 andere.zip
       ...  number_of_documents=2
@@ -277,7 +278,7 @@ Verify Permissions On Dossiers
         END
       END
     END
-    Go To  ${BASE_URL_BALIE}/admin/dossiers
+    Go To  %{URL_ADMIN}/admin/dossiers
     IF  not ${administration}
       Verify Page Error  403
     ELSE
@@ -332,7 +333,7 @@ Verify Permissions On Statistics
   [Arguments]  ${role}  ${read}
   Set Credentials By Role  ${role}
   Login Admin  username=${EMAIL}  password=${PASSWORD}  otp_secret=${OTP}
-  Go To  ${BASE_URL_BALIE}/stats
+  Go To  %{URL_ADMIN}/stats
   IF  not ${read}
     Verify Page Error  403
   ELSE
@@ -345,7 +346,7 @@ Verify Permissions On Elastic
   [Arguments]  ${role}  ${read}
   Set Credentials By Role  ${role}
   Login Admin  username=${EMAIL}  password=${PASSWORD}  otp_secret=${OTP}
-  Go To  ${BASE_URL_BALIE}/elastic
+  Go To  %{URL_ADMIN}/elastic
   IF  not ${read}
     Verify Page Error  403
   ELSE

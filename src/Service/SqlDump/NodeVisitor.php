@@ -16,11 +16,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class NodeVisitor extends NodeVisitorAbstract
 {
-    protected OutputInterface $output;
-
-    public function __construct(OutputInterface $output)
+    public function __construct(protected OutputInterface $output)
     {
-        $this->output = $output;
     }
 
     public function enterNode(Node $node): int|Node|null

@@ -3,6 +3,7 @@ Documentation       Resource file containing custom keywords for the Departments
 Library             String
 Library             Browser
 Library             DebugLibrary
+Resource            ../resources/Generic.resource
 
 
 *** Keywords ***
@@ -12,14 +13,14 @@ Click Departments
 Change Department Settings
   [Arguments]  ${department}  ${visible}
   Click
-  ...  //table[@data-e2e-name="departments-table"]//tr[td[contains(.,'${department}')]]//td//a[@data-e2e-name="department-details-link"]
+  ...  //*[@data-e2e-name="departments-table"]//td[normalize-space()='${department}']/preceding-sibling::td//*[@data-e2e-name="department-details-link"]
   IF  ${visible}
     Check Checkbox  //*[@id="department_public"]
   ELSE
     Uncheck Checkbox  //*[@id="department_public"]
   END
   Click  //*[@id="department_submit"]
-  Get Text  //*[@data-e2e-name="alerts"]  contains  Het bestuursorgaan is aangepast
+  Success Alert Is Visible  Het bestuursorgaan is aangepast
 
 Create New Department
   [Documentation]  If no params are provided, a random name is generated.
@@ -40,7 +41,7 @@ Create New Department
     Uncheck Checkbox  id=department_public
   END
   Click  id=department_submit
-  Get Text  //*[@data-e2e-name="alerts"]  contains  Het bestuursorgaan is aangemaakt
+  Success Alert Is Visible  Het bestuursorgaan is aangemaakt
   RETURN  ${short_tag}
 
 Update Department
@@ -71,4 +72,4 @@ Update Department
     Check Checkbox  id=department_public
   END
   Click  id=department_submit
-  Get Text  //*[@data-e2e-name="alerts"]  contains  Het bestuursorgaan is aangepast
+  Success Alert Is Visible  Het bestuursorgaan is aangepast

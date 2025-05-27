@@ -38,6 +38,10 @@ readonly class BatchDownloadStorage
 
     public function removeFileForBatch(BatchDownload $batch): bool
     {
+        if ($batch->getFilename() === '') {
+            return true;
+        }
+
         try {
             $this->filesystem->delete(
                 $batch->getFilename(),
@@ -45,7 +49,7 @@ readonly class BatchDownloadStorage
 
             return true;
         } catch (FilesystemException $e) {
-            $this->logger->error('Failed to remove ZIP archive ', [
+            $this->logger->error('Failed to remove ZIP archive', [
                 'batch' => $batch->getId()->toRfc4122(),
                 'path' => $batch->getFilename(),
                 'exception' => $e->getMessage(),

@@ -10,7 +10,12 @@ defineExpose({
 </script>
 
 <template>
-  <div class="mb-4" tabindex="-1" ref="wrapperElement">
+  <div
+    class="mb-4"
+    tabindex="-1"
+    ref="wrapperElement"
+    data-e2e-name="upload-busy"
+  >
     <Alert type="info">
       <h3 class="font-bold">
         Wacht niet langer meer na het uploaden van je bestanden

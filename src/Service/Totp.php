@@ -8,11 +8,8 @@ use App\Entity\User;
 
 class Totp
 {
-    protected string $issuer;
-
-    public function __construct(string $issuer)
+    public function __construct(protected string $issuer)
     {
-        $this->issuer = $issuer;
     }
 
     public function getTotpUri(User $user): string

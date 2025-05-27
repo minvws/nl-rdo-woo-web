@@ -1,5 +1,22 @@
-@layer utilities {
-    .woo-muted {
-        @apply text-woo-dim-gray;
-    }
-}
+@import './utilities/anchor.css';
+@import './utilities/button.css';
+@import './utilities/carousel.css';
+@import './utilities/container.css';
+@import './utilities/footer-nav.css';
+@import './utilities/form.css';
+@import './utilities/heading.css';
+@import './utilities/icon.css';
+@import './utilities/list.css';
+@import './utilities/logo.css';
+@import './utilities/main-header.css';
+@import './utilities/main-nav.css';
+@import './utilities/main-search.css';
+@import './utilities/mute.css';
+@import './utilities/overlay-card.css';
+@import './utilities/paragraph.css';
+@import './utilities/readable-width.css';
+@import './utilities/rich-text.css';
+@import './utilities/search-result.css';
+@import './utilities/skip-link.css';
+@import './utilities/tab.css';
+@import './utilities/table.css';

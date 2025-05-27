@@ -18,9 +18,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class ChangePasswordSubscriber implements EventSubscriberInterface
 {
-    protected UrlGeneratorInterface $urlGenerator;
-    protected Security $security;
-
     // Skip the redirector when we are on these routes, otherwise we end up in a redirect loop
     /** @var array|string[] */
     protected array $skipRoutes = [
@@ -29,10 +26,8 @@ class ChangePasswordSubscriber implements EventSubscriberInterface
         'app_admin_user_profile',
     ];
 
-    public function __construct(Security $security, UrlGeneratorInterface $urlGenerator)
+    public function __construct(protected Security $security, protected UrlGeneratorInterface $urlGenerator)
     {
-        $this->urlGenerator = $urlGenerator;
-        $this->security = $security;
     }
 
     public static function getSubscribedEvents(): array

@@ -12,34 +12,55 @@ Library             DateTimeTZ
 Library             Browser
 Library             OTP
 Resource            Admin.resource
+Resource            Public.resource
 
 
 *** Variables ***
-${CURRENT_TIME}             ${EMPTY}
-${CURRENT_DATE}             ${EMPTY}
-${CURRENT_DATE_FORMAT2}     ${EMPTY}
-${CURRENT_EPOCH}            ${EMPTY}
-${RUN_LOCALLY}              ${FALSE}
-${HEADLESS}                 ${EMPTY}
+${ENVIRONMENT}  ${EMPTY}
+${HEADLESS}     ${EMPTY}
 
 
 *** Keywords ***
-Suite Setup - CI
+Suite Setup Generic
   [Documentation]  Creates an admin user if there isn't any, then logs in to the admin interface.
-  # If run locally, set the OTP code from the local env vars coz the setup has likely already ran
-  IF  ${RUN_LOCALLY}
-    VAR  ${TST_BALIE_OTP_SECRET}  %{SECRET_WOO_LOCAL}  scope=global
-  END
-  # On first run of this keyword, create the user.
-  IF  '${TST_BALIE_OTP_SECRET}' == '${EMPTY}'
-    ${temp_password} =  Create Woo Admin User
+  Set DateTime Variables
+  Set URL Variables
+  IF  '${ENVIRONMENT}' == 'docker-local'
+    # If run locally, the user should have been created manually (still) using the tag=init, so we set the OTP code from the local env var
     Open Browser And BaseUrl
-    Login Admin  password=${temp_password}
-  ELSE
-    Open Browser And BaseUrl
+    Set Credential Variables  ${TST_BALIE_USER}  ${TST_BALIE_PASSWORD}  %{SECRET_WOO_LOCAL}
+  ELSE IF  '${ENVIRONMENT}' == 'docker-ci'
+    # On first run of this keyword, create a user
+    IF  '${ADMIN_OTP_SECRET}' == '${EMPTY}'
+      ${temp_password} =  Create Woo Admin User
+      Open Browser And BaseUrl
+      # Log in once to change the temp password
+      ${new_password} =  Login Admin
+      ...  username=${TST_BALIE_USER}
+      ...  password=${temp_password}
+      ...  otp_secret=${TST_BALIE_OTP_SECRET}
+      Set Credential Variables  ${TST_BALIE_USER}  ${new_password}  ${TST_BALIE_OTP_SECRET}
+    ELSE
+      Open Browser And BaseUrl
+    END
+  ELSE IF  '${ENVIRONMENT}' == 'test'
+    Open Browser And BaseUrl  http_username=%{USERNAME_WOO_TEST}  http_password=%{PASSWORD_WOO_TEST}
+    Set Credential Variables  %{EMAIL_WOO_TEST_BALIE}  %{PASSWORD_WOO_TEST_BALIE}  %{SECRET_WOO_TEST_BALIE}
+  ELSE IF  '${ENVIRONMENT}' == 'acc'
+    Open Browser And BaseUrl  http_username=%{USERNAME_WOO_STAGING}  http_password=%{PASSWORD_WOO_STAGING}
+    Set Credential Variables  %{EMAIL_WOO_STAGING_BALIE}  %{PASSWORD_WOO_STAGING_BALIE}  %{SECRET_WOO_STAGING_BALIE}
   END
   Close Symfony Dev Bar
-  Setting Global Variables
+
+Set URL Variables
+  VAR  ${URL_PUBLIC}  http://%{URL_PUBLIC}  scope=global
+  VAR  ${URL_ADMIN}  http://%{URL_ADMIN}  scope=global
+
+Set Credential Variables
+  [Arguments]  ${username}  ${password}  ${otp_secret}
+  VAR  ${ADMIN_USER}  ${username}  scope=global
+  VAR  ${ADMIN_PASSWORD}  ${password}  scope=global
+  VAR  ${ADMIN_OTP_SECRET}  ${otp_secret}  scope=global
 
 Cleansheet
   [Documentation]  In some tests we want unique prefixes, which must also be cleaned up afterwards. Also allows for removing users. Always keeps subjects.
@@ -58,7 +79,7 @@ Cleansheet
   Should Not Contain  ${result.stdout}  exception
   Run Process  task worker:start  shell=True
 
-Setting Global Variables
+Set DateTime Variables
   ${time} =  Get Time  format=%Y-%m-%d %H:%M:%S
   ${date} =  Get Current Date  result_format=%Y-%m-%d
   ${timestamp} =  Get Utc Timestamp
@@ -70,20 +91,34 @@ Setting Global Variables
   VAR  ${CURRENT_EPOCH}  ${epoch}  scope=global
 
 Open Browser And BaseUrl
-  [Arguments]  ${device}=Desktop Chrome  ${slow_mo}=50ms
+  [Arguments]  ${slow_mo}=50ms  ${http_username}=${EMPTY}  ${http_password}=${EMPTY}
+  VAR  ${device}  %{DEVICE=Desktop Chrome}
   ${device_context} =  Get Device  ${device}
-  IF  'Desktop' in '${device}' and not ${RUN_LOCALLY}
-    VAR  ${viewport} =  { "width": 1920, "height": 970 }  # this is the viewport when your resolution is 1920x1080
+  IF  'Desktop' in '${device}' and '${ENVIRONMENT}' != 'docker-local'
+    # When not running locally on potentially a laptop screen, we resize the viewport so it fits within a 1920x1080 resolution.
+    VAR  ${viewport} =  { "width": 1920, "height": 970 }
   ELSE
     VAR  ${viewport} =  ${device_context}[viewport]
   END
   New Browser
   ...  browser=${device_context}[defaultBrowserType]
-  ...  headless=${HEADLESS}
+  ...  headless=%{HEADLESS=false}
   ...  args=["--ignore-certificate-errors", "--lang=nl"]
   ...  slowMo=${slow_mo}
-  New Context  &{device_context}  locale=nl-NL  viewport=${viewport}
-  New Page  ${BASE_URL}
+  IF  '${http_username}' != '${EMPTY}'
+    VAR  ${username}  ${http_username}
+    VAR  ${password}  ${http_password}
+    New Context
+    ...  &{device_context}
+    ...  locale=nl-NL
+    ...  viewport=${viewport}
+    ...  httpCredentials={'username': '$username', 'password': '$password'}
+  ELSE
+    New Context  &{device_context}  locale=nl-NL  viewport=${viewport}
+  END
+  New Page
+  Set Browser Timeout  20s
+  Go To Public
 
 Create Woo Admin User
   [Documentation]  Creates a super admin user using the CLI, that can be used for all robot tests. Returns the temporary password.

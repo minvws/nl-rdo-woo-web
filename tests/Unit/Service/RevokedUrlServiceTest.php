@@ -99,8 +99,6 @@ class RevokedUrlServiceTest extends UnitTestCase
             $documentInConceptAndPublishedDossier,
         ]);
 
-        $this->assertMatchesJsonSnapshot(
-            iterator_to_array($this->service->getUrls())
-        );
+        $this->assertMatchesJsonSnapshot(iterator_to_array($this->service->getUrls(), false));
     }
 }

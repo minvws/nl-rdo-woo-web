@@ -17,7 +17,7 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 final class AnnualReportAttachmentFactory extends PersistentProxyObjectFactory
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -44,6 +44,7 @@ final class AnnualReportAttachmentFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
         return $this

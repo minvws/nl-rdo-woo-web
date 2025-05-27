@@ -29,8 +29,9 @@ env:
 
 jobs:
   e2e-tests:
-    name: 'Run E2E tests'
+    name: 'Run E2E tests on Docker'
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - name: Install Task
@@ -55,8 +56,12 @@ jobs:
           pip install -r tests/robot_framework/requirements.txt
           rfbrowser init
       - name: Run Robot Framework tests
+        env:
+          URL_PUBLIC: localhost:8000
+          URL_ADMIN: localhost:8000/balie
+          HEADLESS: true
         run: |
-          python -m robot --outputdir tests/robot_framework/results --xunit outputxunit.xml --include ${{ env.TEST_TAG }} --variable headless:true tests/robot_framework
+          python -m robot --outputdir tests/robot_framework/results --xunit outputxunit.xml --include ${{ env.TEST_TAG }} --variable ENVIRONMENT:docker-ci tests/robot_framework
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()

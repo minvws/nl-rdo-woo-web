@@ -16,11 +16,8 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class StatsController extends AbstractController
 {
-    protected EntityManagerInterface $doctrine;
-
-    public function __construct(EntityManagerInterface $doctrine)
+    public function __construct(protected EntityManagerInterface $doctrine)
     {
-        $this->doctrine = $doctrine;
     }
 
     #[Route('/balie/stats', name: 'app_admin_stats', methods: ['GET'])]

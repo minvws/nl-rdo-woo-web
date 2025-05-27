@@ -15,7 +15,7 @@ Test Tags           ci  inquiries
 *** Test Cases ***
 Preview inquiry access
   [Documentation]  Verify preview access to a dossier using inquiry page
-  Publish Test Dossier
+  Publish Test WooDecision
   ...  production_report=tests/robot_framework/files/inquiries/productierapport4.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten4.zip
   ...  number_of_documents=3
@@ -32,7 +32,8 @@ Preview inquiry access
   ${document_url} =  Get URL
   # Verify the document can't be found normally
   New Context  locale=nl-NL
-  New Page  ${BASE_URL}
+  New Page
+  Go To Public
   Search On Public For  huppeldepup.docx  0 resultaten
   # Verify the document page can't be accessed normally
   Go To  ${document_url}
@@ -50,18 +51,18 @@ Verify PDF preview
 
 Verify download of full inquiry
   [Documentation]  Create a test dossier for an inquiry and then donwload the full inquiry
-  Publish Test Dossier
+  Publish Test WooDecision
   ...  production_report=tests/robot_framework/files/inquiries/productierapport8.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten8.zip
   ...  number_of_documents=5
   ...  publication_status=Gepland
   Click Inquiries
   Open Inquiry  8000-01
-  Download Inquiry Archive
+  Download Inquiry Archive  number_of_documents=5
 
 Link inquiries using production report
   [Documentation]  Create a WooDecision that is part of multiple inquiries using Production Report upload
-  Publish Test Dossier
+  Publish Test WooDecision
   ...  production_report=tests/robot_framework/files/inquiries/productierapport1.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten1.zip
   ...  number_of_documents=9
@@ -87,7 +88,7 @@ Link inquiries using production report
 
 Manually link inquiry to decision
   [Documentation]  Create a WooDecision without inquiries and manually link the decision
-  Publish Test Dossier
+  Publish Test WooDecision
   ...  production_report=tests/robot_framework/files/inquiries/productierapport2.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten2.zip
   ...  number_of_documents=3
@@ -101,7 +102,7 @@ Manually link inquiry to decision
 
 Manually link inquiry to documents
   [Documentation]  Create a WooDecision without inquiries and manually link the documents
-  Publish Test Dossier
+  Publish Test WooDecision
   ...  production_report=tests/robot_framework/files/inquiries/productierapport3.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten3.zip
   ...  number_of_documents=3
@@ -118,7 +119,7 @@ Manually link inquiry to documents
 
 Production report inquiry does not unlink
   [Documentation]  Unlinking using a production report should not be possible
-  Publish Test Dossier
+  Publish Test WooDecision
   ...  production_report=tests/robot_framework/files/inquiries/productierapport5.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten5.zip
   ...  number_of_documents=2
@@ -131,7 +132,7 @@ Production report inquiry does not unlink
 
 Manual links are not overwritten when reuploading production report
   [Documentation]  Reuploading the original production report after manually linking documents should not be possible.
-  Publish Test Dossier
+  Publish Test WooDecision
   ...  production_report=tests/robot_framework/files/inquiries/productierapport6.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten6.zip
   ...  number_of_documents=2
@@ -151,12 +152,12 @@ Manual links are not overwritten when reuploading production report
 
 Inquiry with multiple dossiers
   [Documentation]  Create an inquiry with multiple dossiers
-  Publish Test Dossier
+  Publish Test WooDecision
   ...  production_report=tests/robot_framework/files/inquiries/productierapport7a.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten7a.zip
   ...  number_of_documents=9
   VAR  @{dossier_ids} =  ${DOSSIER_REFERENCE}
-  Publish Test Dossier
+  Publish Test WooDecision
   ...  production_report=tests/robot_framework/files/inquiries/productierapport7b.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten7b.zip
   ...  number_of_documents=3
@@ -172,7 +173,7 @@ Inquiry with multiple dossiers
 *** Keywords ***
 Suite Setup
   Cleansheet
-  Suite Setup - CI
+  Suite Setup Generic
   Login Admin
   Select Organisation
 

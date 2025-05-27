@@ -1,99 +1,78 @@
-name: Release WOO-WEB
+name: Release ticket
 description: Create a release ticket for WOO-WEB (in English).
-title: "Release: open.minvws.nl release [VUL TAG IN] naar PROD"
+title: "Release [VUL TAG IN] naar PROD"
 labels: ["Release"]
 projects: ["minvws/30"]
 body:
   - type: input
     attributes:
-      label: "Current Production version WOO-WEB:"
-      placeholder: example 1.4.57
-    validations:
-      required: true
+      label: "Current version WOO-WEB on PROD:"
+      placeholder: v1.11.0
   - type: input
     attributes:
-      label: "Current Production version WOO_DB:"
-      placeholder: example 0.1.37
-    validations:
-      required: true
+      label: "New version WOO-WEB on PROD:"
+      placeholder: v1.12.0
   - type: input
     attributes:
-      label: "New release Production version WOO-WEB:"
-      placeholder: example 1.4.58
-    validations:
-      required: true
+      label: "Current version WOO_DB on PROD:"
+      placeholder: v0.1.64
   - type: input
     attributes:
-      label: "New release Production version WOO_DB:"
-      placeholder: example 0.1.37
-    validations:
-      required: true
-  - type: markdown
+      label: "New version WOO_DB on PROD:"
+      placeholder: v0.1.65
+  - type: checkboxes
     attributes:
-      value: |
-        ## Checklist for this release
+      label: ElasticSearch rollover required?
+      options:
+      - label: 'Yes'
+  - type: textarea
+    attributes:
+      label: 'Actions required before, during or right after deployment:'
+  - type: textarea
+    attributes:
+      label: 'Tickets in release:'
   - type: checkboxes
     id: general
     attributes:
       label: General
       description: General checks for this release
       options:
-        - label: Are the release notes and a release summary written?
-          required: true
-        - label: Are there any changes that may have an effect on the DPIA or otherwise on privacy?
-          required: false
-        - label: Are there any changes that may have an effect on security?
-          required: false
-        - label: Have any new features been checked against accessibility guidelines?
-          required: false
+        - label: Create release notes and a release summary
+        - label: 'Check: are there any changes that may have an effect on the DPIA or otherwise on privacy? If so: discuss with privacy and discuss changes/implications?'
+        - label: 'Check: will the release trigger additional cost? If so: confirm budget availability or request additional budget.'
+        - label: 'Check: are there any changes that may have an effect on security? If so: discuss with security and get **approval**'
+        - label: 'Check: have any new features been checked against accessibility guidelines?'
   - type: checkboxes
     id: communication
     attributes:
       label: Communication
       description: Communication checks for this release
       options:
-        - label: Did you notify stakeholders?
-          required: false
-        - label: Is any public notification needed?
-          required: false
-        - label: Do we need to adjust the software manual?
-          required: false
-        - label: Did you notify Operations?
-          required: true
+        - label: Notify relevant stakeholders
+        - label: 'Check: is any public notification needed? If so: communication requested?'
+        - label: Adjust the software manual
+        - label: Inform the helpdesk
   - type: checkboxes
     id: qa
     attributes:
       label: QA
       description: QA checks for this release
       options:
-        - label: Does code coverage meet the specifications?
-          required: false
-        - label: Are the automated tests passing?
-          required: false
-        - label: Do the automated tests cover all new features?
-          required: false
+        - label: 'Check: code coverage meets specifications'
         - label: Test new logging items and inform SOC SIEM/CSIRT
-          required: false
         - label: Discuss changes/issues with QA to ensure accurate/rapid testing
-          required: false
-        - label: QA has signed off on this version and has given approval for release
-          required: true
+        - label: Test report created ([See template](https://github.com/minvws/nl-rdo-quality-coordination/blob/main/Kwaliteitsmanagement/Kwaliteitsaanpak/Testrapport/Testrapport.md))
         - label: Arrange any required post-release tests and/or monitoring.
-          required: false
   - type: checkboxes
     id: dependencies
     attributes:
       label: Dependencies
       description: Dependencies checks for this release
       options:
+        - label: Make sure all Dependabot PR's are merged (to be sure of the latest versions)
         - label: Calculate dependencies on other systems, are there any breaking changes down-/upstream?
-          required: false
-        - label: Any database changes required?
-          required: false
-        - label: Any ES rollover required?
-          required: false
-        - label: Are there (certificate/specification) changes to (API) endpoints?
-          required: false
+        - label: 'Check: any database changes required? If so: prepare database schema schedule release'
+        - label: 'Check: are there (certificate/specification) changes to (API) eindpoints? If so, notify clients'
   - type: checkboxes
     id: rollout
     attributes:
@@ -101,26 +80,9 @@ body:
       description: Roll-out checks for this release
       options:
         - label: Rollback procedure present?
-          required: true
         - label: Is a release date present?
-          required: false
         - label: Are there any dependencies and/or is a specific release order required?
-          required: false
-        - label: Do we have approval from the PO?
-          required: true
-        - label: Do we have approval from the IBMF?
-          required: true
-        - label: Is an ticket created to update the Public Repository of this project?
-          required: false
-        - label: Inform RDO Operations of a new version and request a release
-          required: true
-  - type: textarea
-    attributes:
-      label: Benodigde acties voor, tijdens en (direct) na de release
-    validations:
-      required: false
-  - type: textarea
-    attributes:
-      label: Tickets in release
-    validations:
-      required: false
+        - label: '*Approval PO*'
+        - label: '*Approval QA Lead*, the QA Lead will check this release checklist and the test report'
+        - label: '*Approval IBMF*, add screenshot of checklist and explanation of any unchecked or striked out items'
+        - label: Inform iRealisatie Operations of a new version and request a release at `helpdesk@irealisatie.nl` (check [Operations Richtlijnen](https://github.com/minvws/nl-rdo-quality-coordination/blob/main/Operations/Richtlijnen/beheer.md#3-wijzigingenbeheer) for details)

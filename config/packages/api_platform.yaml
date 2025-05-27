@@ -4,25 +4,17 @@ api_platform:
     show_webby: false
     formats:
         json: ['application/json']
-        jsonapi:  ['application/vnd.api+json']
     error_formats:
         json: ['application/json']
-        jsonapi:  ['application/vnd.api+json']
     docs_formats:
         json: ['application/json']
-        jsonapi:  ['application/vnd.api+json']
         jsonopenapi: ['application/vnd.openapi+json']
         html: ['text/html']
     defaults:
+        collectDenormalizationErrors: true
         stateless: false
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
-        extra_properties:
-            standard_put: true
-            rfc_7807_compliant_errors: true
-        collectDenormalizationErrors: true
-    use_symfony_listeners: false
-    keep_legacy_inflector: false
     exception_to_status:
         Doctrine\ORM\NoResultException: 404
     resource_class_directories:

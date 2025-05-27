@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handler;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentFileProcessor;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUpdateCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUpdateRepository;
-use App\Domain\Upload\Postprocessor\Strategy\FileStrategy;
 use App\Domain\Upload\UploadedFile;
 use App\Service\Storage\EntityStorageService;
 use Psr\Log\LoggerInterface;
@@ -23,7 +23,7 @@ readonly class ProcessDocumentFileUpdateHandler
         private LoggerInterface $logger,
         private EntityStorageService $entityStorageService,
         private DocumentFileService $documentFileService,
-        private FileStrategy $fileStrategy,
+        private DocumentFileProcessor $fileProcessor,
     ) {
     }
 
@@ -54,21 +54,19 @@ readonly class ProcessDocumentFileUpdateHandler
         $documentId = $documentFileUpdate->getDocument()->getDocumentId();
         Assert::notNull($documentId);
 
-        $this->fileStrategy->process(
-            new UploadedFile($localFile),
+        $this->fileProcessor->process(
+            new UploadedFile($localFile, $documentFileUpdate->getFileInfo()->getName()),
             $documentFileUpdate->getDocumentFileSet()->getDossier(),
             $documentId,
-            $documentFileUpdate->getFileInfo()->getType(),
         );
 
+        // Remove the upload file as this has now been 'forwarded' to the Document entity
+        $this->entityStorageService->deleteAllFilesForEntity($documentFileUpdate);
+        $this->entityStorageService->removeDownload($localFile, true);
+        $documentFileUpdate->getFileInfo()->removeFileProperties();
         $documentFileUpdate->setStatus(DocumentFileUpdateStatus::COMPLETED);
         $this->documentFileUpdateRepository->save($documentFileUpdate, true);
 
         $this->documentFileService->checkProcessingUpdatesCompletion($documentFileUpdate->getDocumentFileSet());
-
-        // Remove the upload file as this has now been 'forwarded' to the Document entity
-        $this->entityStorageService->deleteAllFilesForEntity($documentFileUpdate);
-
-        $this->entityStorageService->removeDownload($localFile, true);
     }
 }

@@ -1,0 +1,13 @@
+@utility bhr-progress {
+  &[value] {
+    @apply appearance-none block h-2 rounded overflow-hidden w-full;
+  }
+
+  &[value]::-webkit-progress-bar {
+    @apply bg-bhr-anti-flash-white;
+  }
+
+  &[value]::-webkit-progress-value {
+    @apply bg-bhr-blue-800;
+  }
+}

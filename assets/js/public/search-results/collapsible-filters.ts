@@ -1,4 +1,5 @@
 import { collapseElement, expandElement } from '@js/utils';
+import { queryCheckboxFilterElements } from './helpers';
 
 export const collapsibleFilters = () => {
   let abortController: AbortController;
@@ -63,7 +64,7 @@ export const collapsibleFilters = () => {
       return;
     }
 
-    if (isFiltersGroupSavedAsCollapsed(filtersGroupElement)) {
+    if (shouldCollapseFiltersGroup(filtersGroupElement)) {
       collapseFiltersGroup(filtersGroupElement, false);
     } else {
       expandFiltersGroup(filtersGroupElement, false);
@@ -95,7 +96,7 @@ export const collapsibleFilters = () => {
       return;
     }
 
-    if (areFilterItemsSavedAsExpanded(filtersGroupElement)) {
+    if (shouldExpandFilterItems(filtersGroupElement)) {
       expandFilterItems(filtersGroupElement, false);
     } else {
       collapseFilterItems(filtersGroupElement, false);
@@ -234,6 +235,31 @@ export const collapsibleFilters = () => {
     const set = getExpandedFilterItems();
     set.add(getFiltersGroupKey(filtersGroupElement));
     saveExpandedFilterItems(set);
+  };
+
+  const hasCheckedFilterCheckboxElements = (filtersGroupElement: HTMLElement) =>
+    queryCheckboxFilterElements(filtersGroupElement).some(
+      (element) => element.checked,
+    );
+
+  const shouldExpandFilterItems = (filtersGroupElement: HTMLElement) => {
+    if (
+      hasCheckedFilterCheckboxElements(
+        getFilterItemsCollapsibeElement(filtersGroupElement),
+      )
+    ) {
+      return true;
+    }
+
+    return areFilterItemsSavedAsExpanded(filtersGroupElement);
+  };
+
+  const shouldCollapseFiltersGroup = (filtersGroupElement: HTMLElement) => {
+    if (hasCheckedFilterCheckboxElements(filtersGroupElement)) {
+      return false;
+    }
+
+    return isFiltersGroupSavedAsCollapsed(filtersGroupElement);
   };
 
   const areFilterItemsSavedAsExpanded = (filtersGroupElement: HTMLElement) => {

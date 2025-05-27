@@ -34,9 +34,9 @@ final class UrlProducerTest extends KernelTestCase
     #[WithStory(WooIndexAnnualReportStory::class)]
     public function testGetUrls(): void
     {
-        $urls = iterator_to_array($this->urlProducer->getAll());
+        $urls = iterator_to_array($this->urlProducer->getAll(), false);
 
-        $this->assertCount(14, $urls);
+        $this->assertCount(32, $urls);
         foreach ($urls as $url) {
             $this->assertInstanceOf(Url::class, $url);
         }
@@ -57,8 +57,8 @@ final class UrlProducerTest extends KernelTestCase
             }
         }
 
-        $this->assertSame(6, $numberOfChunks);
-        $this->assertSame(18, $numberOfIterations);
+        $this->assertSame(36, $numberOfIterations, 'We should have 36 iterations');
+        $this->assertSame(12, $numberOfChunks, 'We should have 12 chunks');
     }
 
     #[WithStory(WooIndexWooDecisionStory::class)]
@@ -87,8 +87,8 @@ final class UrlProducerTest extends KernelTestCase
             }
         }
 
-        $this->assertSame(6, $numberOfChunks);
-        $this->assertSame(11, $numberOfIterations);
+        $this->assertSame(29, $numberOfIterations, 'We should have 23 iterations, because we stopped the chunk after 5 urls');
+        $this->assertSame(15, $numberOfChunks, 'We should have 15 chunks, because we stopped the chunk after 5 urls');
     }
 
     /**

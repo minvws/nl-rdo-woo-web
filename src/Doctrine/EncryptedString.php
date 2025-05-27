@@ -6,16 +6,19 @@ namespace App\Doctrine;
 
 use App\Service\Encryption\EncryptionServiceInterface;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\ConversionException;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Exception\SerializationFailed;
+use Doctrine\DBAL\Types\Exception\ValueNotConvertible;
+use Doctrine\DBAL\Types\TextType;
 use Psr\Log\LoggerInterface;
 
 /**
  * This class is a Doctrine type that encrypts and decrypts data transparently. It will encrypt the string and stores it in the
  * database. When the data is retrieved from the database, the encrypted string is decrypted and returned.
  */
-class EncryptedString extends Type
+class EncryptedString extends TextType
 {
+    public const TYPE = 'encrypted_string';
+
     // Type classes are instantiated by Doctrine, so we can't inject the encryption service directly.
     // The encryption service is injected through the Kernel::boot() method.
     protected static EncryptionServiceInterface $encryptionService;
@@ -30,16 +33,9 @@ class EncryptedString extends Type
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
-    {
-        return 'text';
-    }
-
-    /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
+    #[\Override]
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
@@ -53,15 +49,18 @@ class EncryptedString extends Type
                 'exception' => $e->getMessage(),
             ]);
 
-            throw ConversionException::conversionFailedSerialization($value, 'encrypted_string', $e->getMessage(), $e);
+            throw SerializationFailed::new($value, self::TYPE, $e->getMessage(), $e);
         }
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
+    #[\Override]
     public function convertToPHPValue($value, AbstractPlatform $platform): ?string
     {
+        $value = parent::convertToPHPValue($value, $platform);
+
         if ($value === null || $value === '') {
             return null;
         }
@@ -73,22 +72,12 @@ class EncryptedString extends Type
                 'exception' => $e->getMessage(),
             ]);
 
-            throw ConversionException::conversionFailed($value, $this->getName(), $e);
+            throw ValueNotConvertible::new($value, self::TYPE, previous: $e);
         }
     }
 
     public function getName(): string
     {
-        return 'encrypted_string';
-    }
-
-    /**
-     * We need to add the SQL comment hint, otherwise migrations not detect our doctrine type correctly.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
-    {
-        return true;
+        return self::TYPE;
     }
 }

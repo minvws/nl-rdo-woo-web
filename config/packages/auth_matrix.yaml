@@ -25,7 +25,7 @@ auth_matrix:
         },
         {
             prefix: "user",
-            roles: [ "ROLE_GLOBAL_ADMIN" ],
+            roles: [ "ROLE_GLOBAL_ADMIN", "ROLE_SUPER_ADMIN" ],
             permissions: {
                 create: true,
                 read: true,
@@ -35,18 +35,6 @@ auth_matrix:
                 organisation_only: false,
             }
         },
-        {
-            prefix: "user",
-            roles: [ "ROLE_SUPER_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-            },
-            filters: {
-                organisation_only: false,
-            }
-        }
 
       # -- Department ----------------------------------------------------------------------------
         {
@@ -58,20 +46,40 @@ auth_matrix:
                 update: true,
             }
         },
-
-      # -- Subject ----------------------------------------------------------------------------
         {
-            prefix: "subject",
+            prefix: "department",
+            roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            permissions: {
+                read: true,
+            },
+            filters: {
+                organisation_only: true,
+            }
+        },
+
+      # -- Department landing page --------------------------------------------------------------
+        {
+            prefix: "department_landing_page",
             roles: [ "ROLE_SUPER_ADMIN" ],
             permissions: {
-                create: true,
-                read: true,
                 update: true,
             }
         },
         {
-            prefix: "subject",
+            prefix: "department_landing_page",
             roles: [ "ROLE_ORGANISATION_ADMIN" ],
+            permissions: {
+                update: true,
+            },
+            filters: {
+                organisation_only: true,
+            }
+        },
+
+      # -- Subject ----------------------------------------------------------------------------
+        {
+            prefix: "subject",
+            roles: [ "ROLE_SUPER_ADMIN", "ROLE_ORGANISATION_ADMIN" ],
             permissions: {
                 create: true,
                 read: true,
@@ -255,16 +263,7 @@ auth_matrix:
       # -- Organisation ----------------------------------------------------------------------------
         {
             prefix: "organisation",
-            roles: [ "ROLE_GLOBAL_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-            }
-        },
-        {
-            prefix: "organisation",
-            roles: [ "ROLE_SUPER_ADMIN" ],
+            roles: [ "ROLE_GLOBAL_ADMIN", "ROLE_SUPER_ADMIN" ],
             permissions: {
                 create: true,
                 read: true,
@@ -290,25 +289,7 @@ auth_matrix:
         },
         {
             prefix: "inquiry",
-            roles: [ "ROLE_GLOBAL_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-            }
-        },
-        {
-            prefix: "inquiry",
-            roles: [ "ROLE_ORGANISATION_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-            }
-        },
-        {
-            prefix: "inquiry",
-            roles: [ "ROLE_DOSSIER_ADMIN" ],
+            roles: [ "ROLE_GLOBAL_ADMIN", "ROLE_ORGANISATION_ADMIN", "ROLE_DOSSIER_ADMIN" ],
             permissions: {
                 create: true,
                 read: true,
@@ -328,21 +309,7 @@ auth_matrix:
       # -- Misc ----------------------------------------------------------------------------
         {
             prefix: "stat",
-            roles: [ "ROLE_GLOBAL_ADMIN" ],
-            permissions: {
-                read: true,
-            }
-        },
-        {
-            prefix: "stat",
-            roles: [ "ROLE_ORGANISATION_ADMIN" ],
-            permissions: {
-                read: true,
-            }
-        },
-        {
-            prefix: "stat",
-            roles: [ "ROLE_SUPER_ADMIN" ],
+            roles: [ "ROLE_GLOBAL_ADMIN", "ROLE_ORGANISATION_ADMIN", "ROLE_SUPER_ADMIN" ],
             permissions: {
                 read: true,
             }

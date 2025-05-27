@@ -1,66 +1,58 @@
-<script setup>
+<script setup lang="ts">
 import Alert from '@admin-fe/component/Alert.vue';
 import Form from '@admin-fe/component/form/Form.vue';
 import FormButton from '@admin-fe/component/form/FormButton.vue';
+import type { FileInfo } from '@admin-fe/component/form/interface';
 import { useFormStore } from '@admin-fe/composables';
-import { validators } from '@admin-fe/form';
+import { validators, type FormValue } from '@admin-fe/form';
+import type { SelectOptions } from '@admin-fe/form/interface';
 import { computed, nextTick, ref, watch } from 'vue';
 import InputDate from './input/InputDate.vue';
-import InputFileUpload from './input/InputFileUpload.vue';
-import InputLanguages from './input/InputLanguages.vue';
 import InputFileTypes from './input/InputFileTypes.vue';
+import InputFileUpload from './input/InputFileUpload.vue';
 import InputGrounds from './input/InputGrounds.vue';
+import InputLanguages from './input/InputLanguages.vue';
 import InputReference from './input/InputReference.vue';
-import { publicationFileSchema } from './interface';
+import {
+  publicationFileSchema,
+  type GroundOptions,
+  type PublicationFile,
+  type PublicationFileTypes,
+} from './interface';
 
-const emit = defineEmits(['cancel', 'saved']);
+interface Props {
+  allowedFileTypes: string[];
+  allowedMimeTypes: string[];
+  allowMultiple: boolean;
+  dateLabel?: string;
+  endpoint: string;
+  file: PublicationFile;
+  fileTypeLabel: string;
+  fileTypeOptions: PublicationFileTypes;
+  groundOptions: GroundOptions;
+  isEditMode?: boolean;
+  languageOptions: SelectOptions;
+  uploadGroupId: string;
+}
 
-const props = defineProps({
-  allowedFileTypes: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  allowedMimeTypes: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  endpoint: {
-    type: String,
-    required: true,
-  },
-  file: {
-    type: Object,
-    required: true,
-  },
-  fileTypeOptions: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  groundOptions: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  isEditMode: {
-    type: Boolean,
-    default: false,
-  },
-  languageOptions: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  uploadGroupId: {
-    type: String,
-  },
+interface Emits {
+  cancel: [];
+  saved: [PublicationFile];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  allowedFileTypes: () => [],
+  allowedMimeTypes: () => [],
+  groundOptions: () => [],
+  isEditMode: false,
+  languageOptions: () => [],
 });
+
+const emit = defineEmits<Emits>();
 
 const id = computed(() => props.file.id);
 
-const fileInfo = computed(() => createFileInfo());
+const fileInfo = ref<FileInfo | null>(null);
 const formalDate = computed(() => props.file.formalDate);
 const grounds = computed(() => props.file.grounds);
 const internalReference = computed(() => props.file.internalReference);
@@ -69,7 +61,7 @@ const type = computed(() => props.file.type);
 
 const hasSubmitError = ref(false);
 
-const createFileInfo = () => {
+const createFileInfo = (): FileInfo | null => {
   if (!props.file) {
     return null;
   }
@@ -82,6 +74,11 @@ const createFileInfo = () => {
   return { name, size, type: mimeType };
 };
 
+const saveButtonText = computed(
+  () =>
+    `Opslaan en ${props.fileTypeLabel.toLowerCase()} ${props.isEditMode ? 'bijwerken' : 'toevoegen'}`,
+);
+
 const unsetError = () => {
   hasSubmitError.value = false;
 };
@@ -91,7 +88,7 @@ const cancel = () => {
   unsetError();
 };
 
-const onSubmit = (formValue, dirtyFormValue) => {
+const onSubmit = (formValue: FormValue, dirtyFormValue: FormValue) => {
   unsetError();
 
   const endpoint = props.isEditMode
@@ -104,8 +101,8 @@ const onSubmit = (formValue, dirtyFormValue) => {
   });
 };
 
-const onSubmitSuccess = (file) => {
-  emit('saved', file);
+const onSubmitSuccess = (publicationFile: unknown) => {
+  emit('saved', publicationFile as PublicationFile);
 };
 
 const onSubmitError = () => {
@@ -144,6 +141,7 @@ watch(
     <InputFileUpload
       :allowed-file-types="props.allowedFileTypes"
       :allowed-mime-types="props.allowedMimeTypes"
+      :display-max-one-file-message="!props.allowMultiple"
       :file-info="fileInfo"
       :group-id="props.uploadGroupId"
     />
@@ -154,17 +152,17 @@ watch(
 
     <InputLanguages :options="props.languageOptions" :value="language" />
 
-    <InputDate :value="formalDate" />
+    <InputDate :label="props.dateLabel" :value="formalDate" />
 
     <InputGrounds :options="props.groundOptions" :values="grounds" />
 
     <div v-if="hasSubmitError" class="mb-6">
       <Alert type="danger">
-        Het opslaan van de bijlage is mislukt. Probeer het later opnieuw.
+        Het opslaan van "{{ file.name }}" is mislukt. Probeer het later opnieuw.
       </Alert>
     </div>
 
-    <FormButton>Opslaan</FormButton>
+    <FormButton>{{ saveButtonText }}</FormButton>
     <FormButton @click="cancel" :is-secondary="true">Annuleren</FormButton>
   </Form>
 </template>

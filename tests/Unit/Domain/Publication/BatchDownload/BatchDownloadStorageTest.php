@@ -102,6 +102,18 @@ class BatchDownloadStorageTest extends MockeryTestCase
         );
     }
 
+    public function testRemoveFileForBatchWhenFilenameIsNotSet(): void
+    {
+        $batch = \Mockery::mock(BatchDownload::class);
+        $batch->shouldReceive('getFilename')->andReturn('');
+
+        $this->filesystemOperator->shouldNotReceive('delete');
+
+        self::assertTrue(
+            $this->storage->removeFileForBatch($batch),
+        );
+    }
+
     public function testRemoveFileForBatchReturnsFalseOnError(): void
     {
         $batch = \Mockery::mock(BatchDownload::class);

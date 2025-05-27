@@ -13,7 +13,7 @@ concurrency:
 
 env:
   NODE_VERSION: 20
-  PHP_VERSION: 8.2
+  PHP_VERSION: 8.3
 
 jobs:
   migration_check:
@@ -24,7 +24,7 @@ jobs:
 
   audit:
     name: Dependency Audit
-    runs-on: 'ubuntu-22.04'
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,7 +54,7 @@ jobs:
 
   validate:
     name: 'Build & validate'
-    runs-on: 'ubuntu-22.04'
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:14.10-bookworm
@@ -89,7 +89,7 @@ jobs:
           npm run jslint:json
           sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace@g' reports/eslint.json
       - name: 'Linting: Markdown'
-        uses: DavidAnson/markdownlint-cli2-action@v19
+        uses: DavidAnson/markdownlint-cli2-action@v20
         if: always()
       - name: 'Linting: REUSE'
         uses: fsfe/reuse-action@v5

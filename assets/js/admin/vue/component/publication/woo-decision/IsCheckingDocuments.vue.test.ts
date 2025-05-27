@@ -11,7 +11,7 @@ describe('The "<IsCheckingDocuments />" component', () => {
   test('should display a spinner icon', async () => {
     const iconComponent = getIconComponent(createComponent());
     expect(iconComponent.props()).toMatchObject({
-      color: 'fill-bhr-ocean-boat-blue',
+      color: 'fill-bhr-blue-800',
       name: 'loader',
       size: 48,
     });

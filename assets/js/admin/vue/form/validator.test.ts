@@ -52,7 +52,7 @@ describe('the "forbidden" validator', () => {
   test('should return a forbidden error if the provided value equals one of the forbidden values', () => {
     const expectedError = { id: 'forbidden' };
     const fn = forbidden([
-      'mocked_forbidden_value',
+      'MOCKED_FORBIDDEN_VALUE',
       'another_mocked_forbidden_value',
     ]);
 

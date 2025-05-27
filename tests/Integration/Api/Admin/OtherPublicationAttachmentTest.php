@@ -31,6 +31,7 @@ use Symfony\Component\Validator\Constraints\Type;
 final class OtherPublicationAttachmentTest extends ApiTestCase
 {
     use IntegrationTestTrait;
+    use TestFileTrait;
 
     private vfsStreamDirectory $root;
 
@@ -86,7 +87,7 @@ final class OtherPublicationAttachmentTest extends ApiTestCase
             'dossier' => OtherPublicationFactory::createOne([
                 'organisation' => $user->getOrganisation(),
             ]),
-        ]);
+        ])->_real();
 
         static::createClient()
             ->loginUser($user->_real(), 'balie')
@@ -143,9 +144,7 @@ final class OtherPublicationAttachmentTest extends ApiTestCase
 
         $client = static::createClient()->loginUser($user->_real(), 'balie');
 
-        vfsStream::newFile('test_file.pdf')
-            ->withContent('This is a test file.')
-            ->at($this->root);
+        $this->createPdfTestFile();
 
         $uploadFile = new UploadedFile(
             path: $this->root->url() . '/test_file.pdf',
@@ -226,9 +225,7 @@ final class OtherPublicationAttachmentTest extends ApiTestCase
 
         $client = static::createClient()->loginUser($user->_real(), 'balie');
 
-        vfsStream::newFile('test_file.pdf')
-            ->withContent('This is a test file.')
-            ->at($this->root);
+        $this->createPdfTestFile();
 
         $uploadFile = new UploadedFile(
             path: $this->root->url() . '/test_file.pdf',
@@ -410,7 +407,7 @@ final class OtherPublicationAttachmentTest extends ApiTestCase
                 'organisation' => $user->getOrganisation(),
                 'status' => DossierStatus::CONCEPT,
             ]),
-        ]);
+        ])->_real();
 
         static::createClient()
             ->loginUser($user->_real(), 'balie')
@@ -467,7 +464,7 @@ final class OtherPublicationAttachmentTest extends ApiTestCase
             'dossier' => OtherPublicationFactory::createOne([
                 'organisation' => $user->getOrganisation(),
             ]),
-        ]);
+        ])->_real();
 
         $response = static::createClient()
             ->loginUser($user->_real(), 'balie')
@@ -548,14 +545,14 @@ final class OtherPublicationAttachmentTest extends ApiTestCase
             ->isEnabled()
             ->create();
 
-        $attachment = OtherPublicationAttachmentFactory::createOne([
+        $attachment = OtherPublicationAttachmentFactory::new()->create([
             'fileInfo' => FileInfoFactory::createOne([
                 'name' => 'test_file.pdf',
             ]),
             'dossier' => OtherPublicationFactory::createOne([
                 'organisation' => $user->getOrganisation(),
             ]),
-        ]);
+        ])->_real();
 
         static::createClient()
             ->loginUser($user->_real(), 'balie')

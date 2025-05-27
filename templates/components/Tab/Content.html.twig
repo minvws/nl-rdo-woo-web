@@ -1,0 +1,16 @@
+{% set hasWrapper = numberOfTabs > 1 %}
+{% if hasWrapper %}
+    <div
+        aria-labelledby="tabs-{{ tabsName }}-button-{{ tabNumber }}"
+        id="tabs-{{ tabsName }}-content-{{ tabNumber }}"
+        data-e2e-name="tabs-{{ tabsName }}-content-{{ tabNumber }}"
+        data-tab-content
+        role="tabpanel"
+        tabindex="0"
+        {% if isHidden %}hidden{% endif %}
+    >
+{% endif %}
+    {% block content %}{% endblock %}
+{% if hasWrapper %}
+    </div>
+{% endif %}

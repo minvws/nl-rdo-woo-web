@@ -16,6 +16,7 @@ use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use App\Service\Uploader\UploaderService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -23,7 +24,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webmozart\Assert\Assert;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 #[AsMessageHandler]
 readonly class UpdateMainDocumentHandler
@@ -45,7 +46,7 @@ readonly class UpdateMainDocumentHandler
         $dossier = $this->dossierRepository->findOneByDossierId($dossierId);
         Assert::isInstanceOf($dossier, EntityWithMainDocument::class);
 
-        /** @var MainDocumentRepositoryInterface $documentRepository */
+        /** @var EntityRepository<MainDocumentRepositoryInterface> $documentRepository */
         $documentRepository = $this->entityManager->getRepository($dossier->getMainDocumentEntityClass());
         Assert::isInstanceOf($documentRepository, MainDocumentRepositoryInterface::class);
 

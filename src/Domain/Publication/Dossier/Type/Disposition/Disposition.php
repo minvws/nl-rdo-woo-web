@@ -46,6 +46,7 @@ class Disposition extends AbstractDossier implements EntityWithAttachments, Enti
         $this->document = null;
     }
 
+    #[\Override]
     public function setDateFrom(?\DateTimeImmutable $dateFrom): static
     {
         $this->dateFrom = $dateFrom;

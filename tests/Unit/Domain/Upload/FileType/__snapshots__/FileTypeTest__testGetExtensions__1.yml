@@ -22,3 +22,18 @@ PPT:
 ZIP:
     - zip
     - 7z
+AUDIO:
+    - aac
+    - mp3
+    - wav
+    - opus
+VIDEO:
+    - wmv
+    - avi
+    - mp4
+    - mov
+    - m4a
+    - mpg
+    - asf
+VECTOR_IMAGE:
+    - svg

@@ -9,7 +9,7 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 #[AsTwigComponent]
 class IconLink
 {
-    public ?string $href;
-    public ?string $icon;
-    public ?string $text;
+    public ?string $href = null;
+    public ?string $icon = null;
+    public ?string $text = null;
 }

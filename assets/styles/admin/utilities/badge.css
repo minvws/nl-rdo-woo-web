@@ -1,0 +1,19 @@
+@utility bhr-badge {
+  @apply border-2 font-bold inline-block leading-none px-2 py-0.5 rounded-2xl text-sm whitespace-nowrap;
+}
+
+@utility bhr-badge--blue {
+  @apply border-bhr-blue-800 text-bhr-blue-800;
+}
+
+@utility bhr-badge--green {
+  @apply border-bhr-philippine-green text-bhr-philippine-green;
+}
+
+@utility bhr-badge--purple {
+  @apply border-bhr-plum text-bhr-plum;
+}
+
+@utility bhr-badge--red {
+  @apply border-bhr-maximum-red text-bhr-maximum-red;
+}

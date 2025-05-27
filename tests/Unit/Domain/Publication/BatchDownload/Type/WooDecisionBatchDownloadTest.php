@@ -6,7 +6,6 @@ namespace App\Tests\Unit\Domain\Publication\BatchDownload\Type;
 
 use App\Domain\Publication\BatchDownload\BatchDownloadScope;
 use App\Domain\Publication\BatchDownload\Type\WooDecisionBatchDownload;
-use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
@@ -72,34 +71,36 @@ class WooDecisionBatchDownloadTest extends MockeryTestCase
         );
     }
 
-    public function testIsAvailableForBatchDownloadReturnsFalseForNonPublicWooDecision(): void
+    public function testIsAvailableForBatchDownloadReturnsFalseForNoPublicDocumentsFound(): void
     {
         $wooDecision = \Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
-
         $scope = BatchDownloadScope::forWooDecision($wooDecision);
+        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+
+        $this->repository
+            ->shouldReceive('getDocumentsForBatchDownload')
+            ->with($wooDecision)
+            ->andReturn($queryBuilder);
+
+        $queryBuilder->expects('select')->with('count(doc)')->andReturnSelf();
+        $queryBuilder->expects('getQuery->getSingleScalarResult')->andReturn(0);
 
         self::assertFalse($this->type->isAvailableForBatchDownload($scope));
     }
 
-    public function testIsAvailableForBatchDownloadReturnsFalseForWooDecisionWithoutUploads(): void
+    public function testIsAvailableForBatchDownloadReturnsTrueForAtLeastOnePublicDocumentFound(): void
     {
         $wooDecision = \Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
-        $wooDecision->shouldReceive('getUploadStatus->getActualUploadCount')->andReturn(0);
-
         $scope = BatchDownloadScope::forWooDecision($wooDecision);
+        $queryBuilder = \Mockery::mock(QueryBuilder::class);
 
-        self::assertFalse($this->type->isAvailableForBatchDownload($scope));
-    }
+        $this->repository
+            ->shouldReceive('getDocumentsForBatchDownload')
+            ->with($wooDecision)
+            ->andReturn($queryBuilder);
 
-    public function testIsAvailableForBatchDownloadReturnsTrueForPublicWooDecisionWithUploads(): void
-    {
-        $wooDecision = \Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
-        $wooDecision->shouldReceive('getUploadStatus->getActualUploadCount')->andReturn(12);
-
-        $scope = BatchDownloadScope::forWooDecision($wooDecision);
+        $queryBuilder->expects('select')->with('count(doc)')->andReturnSelf();
+        $queryBuilder->expects('getQuery->getSingleScalarResult')->andReturn(1);
 
         self::assertTrue($this->type->isAvailableForBatchDownload($scope));
     }

@@ -31,27 +31,52 @@ interface UploadResponseSuccess extends Response {
 enum UploadError {
   Techinal = 'error.technical',
   Unsafe = 'error.unsafe',
-  WhiteList = 'error.whiteList',
+  WhiteList = 'error.whitelist',
 }
 
 interface UploadResponseError extends Response {
   error: UploadError;
 }
 
-interface OnUploadError {
+export const UploadStatus = {
+  Aborted: 'aborted',
+  Incomplete: 'incomplete',
+  Stored: 'stored',
+  Uploaded: 'uploaded',
+  ValidationFailed: 'validation_failed',
+  ValidationPassed: 'validation_passed',
+} as const;
+
+type UploadStatusType = (typeof UploadStatus)[keyof typeof UploadStatus];
+
+export type UploadErrorType = Pick<
+  typeof UploadStatus,
+  'Aborted' | 'ValidationFailed'
+>;
+
+interface UploadStatusResponse {
+  uploadId: string;
+  status: UploadStatusType;
+}
+
+export interface OnUploadError {
   isTechnialError: boolean;
   isUnsafeError: boolean;
   isWhiteListError: boolean;
 }
+
+export type UploadSuccessData<T = Record<string, unknown>> = T;
 
 interface Options {
   endpoint?: string;
   file: File;
   onError?: (error: OnUploadError) => void;
   onProgress?: (progress: number) => void;
-  onSuccess?: (uploadUuid: string | undefined) => void;
-  payload?: Record<string, string>;
-  uploadName?: string;
+  onSuccess?: (
+    uploadUuid: string,
+    responseSuccessData: Record<string, unknown>,
+  ) => void;
+  payload?: UploadSuccessData;
 }
 
 export const uploadFile = (options: Options) => {
@@ -61,17 +86,18 @@ export const uploadFile = (options: Options) => {
     onError = () => {},
     onProgress = () => {},
     onSuccess = () => {},
-    uploadName = 'file',
     payload = {},
   } = options;
 
+  let checkStatusTimeout: ReturnType<typeof setTimeout> | null = null;
   let cleanupUpload: () => void = () => {};
+  let uploadProgress = 0;
+  let responseSuccessData: UploadSuccessData = {};
 
   const CHUNK_SIZE = 16 * 1024 * 1024; // 16 Mb
   const fileId = uniqueId('file', 32);
   const store = new Map<number, Chunk>();
   const totalFileSize = file.size;
-  let uploadProgress = 0;
 
   const intialize = () => {
     const numberOfChunks = Math.ceil(totalFileSize / CHUNK_SIZE);
@@ -108,7 +134,9 @@ export const uploadFile = (options: Options) => {
     const nextChunkToUpload = chunks.find((chunk) => !chunk.isUploaded);
 
     if (!nextChunkToUpload) {
-      onSuccess(chunks.find((chunk) => chunk.uploadUuid)?.uploadUuid);
+      checkStatus(
+        chunks.find((chunk) => chunk.uploadUuid)?.uploadUuid as string,
+      );
       return;
     }
 
@@ -150,6 +178,7 @@ export const uploadFile = (options: Options) => {
     return () => {
       abortController.abort();
       request.abort();
+      clearCheckStatusTimeout();
     };
   };
 
@@ -165,6 +194,10 @@ export const uploadFile = (options: Options) => {
       ? (response as UploadResponseSuccess).data.uploadUuid
       : undefined;
     store.set(chunkId, chunk);
+
+    if (isUploadSuccess) {
+      responseSuccessData = (response as UploadResponseSuccess).data;
+    }
 
     cleanupUpload();
 
@@ -203,6 +236,52 @@ export const uploadFile = (options: Options) => {
     onProgress(fileProgress);
   };
 
+  const clearCheckStatusTimeout = () => {
+    if (checkStatusTimeout) {
+      clearTimeout(checkStatusTimeout);
+    }
+
+    checkStatusTimeout = null;
+  };
+
+  const checkStatus = async (uploadUuid: string) => {
+    clearCheckStatusTimeout();
+
+    const response = await fetch(
+      `/balie/api/uploader/upload/${uploadUuid}/status`,
+    );
+
+    if (!isSuccessStatusCode(response.status)) {
+      // This endpoint is not implemented yet. We can therefore assume that the file is uploaded successfully.
+      onSuccess(uploadUuid, responseSuccessData);
+      return;
+    }
+
+    const data: UploadStatusResponse = await response.json();
+    const { status } = data;
+
+    if (status === UploadStatus.Stored) {
+      onSuccess(uploadUuid, responseSuccessData);
+      return;
+    }
+
+    if (
+      status === UploadStatus.Aborted ||
+      status === UploadStatus.ValidationFailed
+    ) {
+      onError({
+        isTechnialError: status === UploadStatus.Aborted,
+        isUnsafeError: status === UploadStatus.ValidationFailed,
+        isWhiteListError: false,
+      });
+      return;
+    }
+
+    checkStatusTimeout = setTimeout(() => {
+      checkStatus(uploadUuid);
+    }, 250);
+  };
+
   const getFileProgress = () => {
     const [totalBytesSent, totalBytesToSend] = getChunks().reduce(
       ([cummulativeBytesSent, cummulativeBytesToSend], chunk) => [
@@ -219,13 +298,13 @@ export const uploadFile = (options: Options) => {
     chunk: Chunk,
   ): { request: XMLHttpRequest; sendRequest: () => void } => {
     const formData = new FormData();
-    formData.append(uploadName, chunk.content, file.name);
     formData.append('chunkindex', chunk.index.toString());
+    formData.append('file', chunk.content, file.name);
     formData.append('totalchunkcount', chunk.numberOfChunks.toString());
     formData.append('uuid', fileId); // each chunk of a file should have the same uuid
 
     Object.entries(payload).forEach(([key, value]) => {
-      formData.append(key, value);
+      formData.append(key, value as string);
     });
 
     const request = new XMLHttpRequest();

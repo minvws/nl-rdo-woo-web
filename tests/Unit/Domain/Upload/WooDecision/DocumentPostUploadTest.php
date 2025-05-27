@@ -11,6 +11,7 @@ use App\Service\Uploader\UploadGroupId;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Oneup\UploaderBundle\Event\PostUploadEvent;
+use Oneup\UploaderBundle\Uploader\Exception\ValidationException;
 
 final class DocumentPostUploadTest extends UnitTestCase
 {
@@ -34,6 +35,8 @@ final class DocumentPostUploadTest extends UnitTestCase
             ->andReturn(UploadGroupId::MAIN_DOCUMENTS->value);
 
         $this->documentFileService->shouldNotReceive('addUpload');
+
+        self::expectExceptionObject(new ValidationException('error.invalid_group'));
 
         $documentPostUpload = new DocumentPostUpload($this->wooDecisionRepository, $this->documentFileService);
         $documentPostUpload->onPostUpload($postUploadEvent);

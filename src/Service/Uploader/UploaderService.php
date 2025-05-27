@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Webmozart\Assert\Assert;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 readonly class UploaderService
 {
@@ -64,7 +64,7 @@ readonly class UploaderService
 
         $session->remove($this->getSessionKey($uploadGroupId));
 
-        return $this->orphanageStorage->uploadFiles(iterator_to_array($finder));
+        return $this->orphanageStorage->uploadFiles(iterator_to_array($finder, false));
     }
 
     public function confirmSingleUpload(string $uploadUuid, UploadGroupId $uploadGroupId): File

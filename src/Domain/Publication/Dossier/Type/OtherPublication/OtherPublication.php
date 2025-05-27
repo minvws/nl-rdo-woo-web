@@ -46,6 +46,7 @@ class OtherPublication extends AbstractDossier implements EntityWithAttachments,
         $this->document = null;
     }
 
+    #[\Override]
     public function setDateFrom(?\DateTimeImmutable $dateFrom): static
     {
         $this->dateFrom = $dateFrom;

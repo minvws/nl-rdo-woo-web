@@ -3,8 +3,8 @@
 Handleiding publiceren beschikking
 
 ```{toctree}
-:maxdepth: 2
-:caption: Inhoudsopgave:
+:maxdepth: 1
+:caption: Inhoudsopgave
 
 inleiding
 uploadstraat-stap1

@@ -1,21 +1,17 @@
-<script setup>
-const props = defineProps({
-  for: {
-    type: String,
-    required: true,
-  },
-  required: {
-    type: Boolean,
-    default: true,
-    required: false,
-  },
+<script setup lang="ts">
+interface Props {
+  for: string;
+  required?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  required: true,
 });
 </script>
 
 <template>
-  <label class="bhr-label" :for="props.for"
-    ><slot /><span v-if="!props.required" class="font-normal">
-      (optioneel)</span
-    ></label
-  >
+  <label class="bhr-label" :for="props.for">
+    <slot />
+    <span v-if="!props.required" class="font-normal"> (optioneel)</span>
+  </label>
 </template>

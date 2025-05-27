@@ -56,7 +56,7 @@ readonly class DownloadResponseHelper
 
         $response = new StreamedResponse();
         $response->headers->set('Content-Type', 'application/zip');
-        $response->headers->set('Content-Length', $batch->getSize());
+        $response->headers->set('Content-Length', (string) $batch->getSize());
         $response->headers->set('Content-Disposition', 'attachment; filename="' . $batch->getFilename() . '"');
         $response->setCallback(function () use ($stream) {
             fpassthru($stream);

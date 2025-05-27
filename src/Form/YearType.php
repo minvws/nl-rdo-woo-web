@@ -20,6 +20,7 @@ class YearType extends ChoiceType
     public const PLUS_YEARS = 'plus_years';
     public const REVERSE = 'reverse';
 
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $options['choices'] = $this->getChoices(...$this->getChoicesArgsFromOptions($options));
@@ -53,7 +54,8 @@ class YearType extends ChoiceType
             Assert::notNull($date);
 
             $date = $date->firstOfYear();
-            $options[$date->format('Y')] = $date->format(\DateTimeInterface::ATOM);
+            $year = (int) $date->format('Y');
+            $options[$year] = $date->format(\DateTimeInterface::ATOM);
         }
 
         if ($reverse) {
@@ -63,6 +65,7 @@ class YearType extends ChoiceType
         return $options;
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);

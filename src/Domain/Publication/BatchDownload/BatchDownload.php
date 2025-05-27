@@ -26,12 +26,9 @@ class BatchDownload
     private ?Inquiry $inquiry = null;
 
     #[ORM\Column]
-    private \DateTimeImmutable $expiration;
-
-    #[ORM\Column]
     private int $downloaded = 0;
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['default' => 0])]
     private int $fileCount = 0;
 
     #[ORM\Column(length: 255, enumType: BatchDownloadStatus::class)]
@@ -41,13 +38,15 @@ class BatchDownload
     private string $filename = '';
 
     #[ORM\Column(type: Types::BIGINT, nullable: true)]
-    private ?string $size = null;
+    private ?int $size = null;
 
-    public function __construct(BatchDownloadScope $scope, \DateTimeImmutable $expiration)
-    {
+    public function __construct(
+        BatchDownloadScope $scope,
+        #[ORM\Column]
+        private \DateTimeImmutable $expiration,
+    ) {
         $this->id = Uuid::v6();
         $this->status = BatchDownloadStatus::PENDING;
-        $this->expiration = $expiration;
 
         if ($scope->wooDecision instanceof WooDecision) {
             $this->dossier = $scope->wooDecision;
@@ -82,7 +81,7 @@ class BatchDownload
         return $this->status;
     }
 
-    public function getSize(): ?string
+    public function getSize(): ?int
     {
         return $this->size;
     }
@@ -102,6 +101,11 @@ class BatchDownload
         return $this->filename;
     }
 
+    public function setFilename(string $filename): void
+    {
+        $this->filename = $filename;
+    }
+
     public function getFileCount(): int
     {
         return $this->fileCount;
@@ -110,17 +114,17 @@ class BatchDownload
     public function markAsOutdated(): void
     {
         $this->status = BatchDownloadStatus::OUTDATED;
-        $this->expiration = new \DateTimeImmutable('+2 hour');
+        $this->expiration = new \DateTimeImmutable('+15 minutes');
     }
 
     public function markAsFailed(): void
     {
         $this->status = BatchDownloadStatus::FAILED;
-        $this->expiration = new \DateTimeImmutable('+2 hour');
-        $this->size = '0';
+        $this->expiration = new \DateTimeImmutable('+15 minutes');
+        $this->size = 0;
     }
 
-    public function complete(string $filename, string $size, int $fileCount): void
+    public function complete(string $filename, int $size, int $fileCount): void
     {
         $this->status = BatchDownloadStatus::COMPLETED;
         $this->filename = $filename;

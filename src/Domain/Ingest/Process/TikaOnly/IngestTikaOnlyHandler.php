@@ -48,7 +48,16 @@ final readonly class IngestTikaOnlyHandler
         );
 
         try {
-            $this->subTypeIndexer->updatePage($entity, 0, $extracts->getCombinedContent());
+            $this->subTypeIndexer->index(
+                $entity,
+                [],
+                [
+                    [
+                        'page_nr' => 0,
+                        'content' => $extracts->getCombinedContent(),
+                    ],
+                ]
+            );
         } catch (\Exception $e) {
             $this->logger->error('Failed to index tika content as page', [
                 'id' => $entity->getId(),

@@ -13,6 +13,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionR
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\SearchDispatcher;
 use App\Exception\ProductionReportUpdaterException;
+use App\Service\Inquiry\DocumentCaseNumbers;
 use App\Service\Inquiry\InquiryChangeset;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Inventory\Progress\RunProgress;
@@ -21,9 +22,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.CyclomaticComplexity)
- * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ * @SuppressWarnings("PHPMD.CyclomaticComplexity")
+ * @SuppressWarnings("PHPMD.NPathComplexity")
  */
 readonly class InventoryUpdater
 {
@@ -79,13 +80,16 @@ readonly class InventoryUpdater
                 continue;
             }
 
-            $document = $this->documentRepository->findByDocumentNumber($documentNr);
+            $document = $this->documentRepository->findOneByDocumentNrCaseInsensitive($documentNr->getValue());
             if ($documentChangeStatus === InventoryChangeset::ADDED && $document === null) {
                 $document = new Document();
                 $document->setDocumentNr($documentNr->getValue());
 
                 $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
-                $inquiryChangeset->updateCaseNrsForDocument($document, $documentMetadata->getCaseNumbers());
+                $inquiryChangeset->updateCaseNrsForDocument(
+                    DocumentCaseNumbers::fromDocumentEntity($document),
+                    $documentMetadata->getCaseNumbers(),
+                );
 
                 $documentsToUpdate[] = $document;
 
@@ -102,7 +106,10 @@ readonly class InventoryUpdater
                 );
 
                 $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
-                $inquiryChangeset->updateCaseNrsForDocument($document, $documentMetadata->getCaseNumbers());
+                $inquiryChangeset->updateCaseNrsForDocument(
+                    DocumentCaseNumbers::fromDocumentEntity($document),
+                    $documentMetadata->getCaseNumbers(),
+                );
 
                 $documentsToUpdate[] = $document;
 
@@ -179,9 +186,9 @@ readonly class InventoryUpdater
         }
     }
 
-    private function getDocument(int|string $documentNr): ?Document
+    private function getDocument(string $documentNr): ?Document
     {
-        return $this->documentRepository->findOneBy(['documentNr' => $documentNr]);
+        return $this->documentRepository->findOneByDocumentNrCaseInsensitive($documentNr);
     }
 
     /**

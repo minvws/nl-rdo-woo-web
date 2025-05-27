@@ -1,0 +1,49 @@
+id: doc-456
+fields:
+    type: document
+    document_nr: doc-123
+    mime_type: application/pdf
+    file_size: 1234
+    file_type: pdf
+    source_type: { email: false, name: DOC, value: doc }
+    date: '2024-04-16T10:54:15+00:00'
+    filename: foo.bar
+    family_id: 789
+    document_id: abc123
+    thread_id: 567
+    judgement: { alreadyPublic: false, notPublic: false, atLeastPartialPublic: true, name: PARTIAL_PUBLIC, value: partial_public }
+    grounds: [x, 'y']
+    date_period: foo-bar
+    document_pages: 13
+    dossiers: [{ mapped-dossier-data: dummy }]
+    inquiry_ids: [{  }]
+    prefixed_dossier_nr: [PREFIX|dos-123]
+    organisation_ids: [{  }]
+    referred_document_nrs: [doc-456, doc-789]
+    metadata: [foo]
+    pages: { 1: bar }
+documentValues:
+    type: { name: WOO_DECISION_DOCUMENT, value: document }
+    document_nr: doc-123
+    mime_type: application/pdf
+    file_size: 1234
+    file_type: pdf
+    source_type: { email: false, name: DOC, value: doc }
+    date: '2024-04-16T10:54:15+00:00'
+    filename: foo.bar
+    family_id: 789
+    document_id: abc123
+    thread_id: 567
+    judgement: { alreadyPublic: false, notPublic: false, atLeastPartialPublic: true, name: PARTIAL_PUBLIC, value: partial_public }
+    grounds: [x, 'y']
+    date_period: foo-bar
+    document_pages: 13
+    dossiers: [{ mapped-dossier-data: dummy }]
+    inquiry_ids: [{  }]
+    prefixed_dossier_nr: [PREFIX|dos-123]
+    organisation_ids: [{  }]
+    referred_document_nrs: [doc-456, doc-789]
+    metadata: [foo]
+    pages: { 1: bar }
+    toplevel_type: { name: WOO_DECISION, value: dossier }
+    sublevel_type: { name: WOO_DECISION_DOCUMENT, value: document }

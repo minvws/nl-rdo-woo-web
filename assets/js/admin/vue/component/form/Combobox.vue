@@ -1,56 +1,51 @@
-<script setup>
+<script setup lang="ts">
 import Icon from '@admin-fe/component/Icon.vue';
-import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
-import { validators } from '@admin-fe/form';
+import {
+  InputStore,
+  useInputAriaDescribedBy,
+  useInputStore,
+} from '@admin-fe/composables';
+import { validators, type InputValidationErrors } from '@admin-fe/form';
 import { removeAccents, uniqueId } from '@js/utils';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 import RemovableInput from './RemovableInput.vue';
 
-const emit = defineEmits(['delete', 'mounted', 'update']);
+interface Props {
+  autoFocus?: boolean;
+  canDelete?: boolean;
+  errors?: InputValidationErrors;
+  forbiddenValues?: string[];
+  label: string;
+  name?: string;
+  options: string[];
+  value?: string;
+}
 
-const props = defineProps({
-  autoFocus: {
-    type: Boolean,
-    default: false,
-  },
-  canDelete: {
-    type: Boolean,
-    default: false,
-  },
-  forbiddenValues: {
-    type: Array,
-    default: () => [],
-  },
-  label: {
-    type: String,
-    required: true,
-  },
-  name: {
-    type: String,
-    default: '',
-  },
-  options: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  value: {
-    type: String,
-    required: false,
-    default: '',
-  },
-  errors: {
-    type: Array,
-    default: () => [],
-  },
+interface Emits {
+  delete: [InputStore];
+  mounted: [InputStore];
+  update: [string];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  autoFocus: false,
+  canDelete: false,
+  errors: () => [],
+  forbiddenValues: () => [],
+  name: '',
+  options: () => [],
+  value: '',
 });
 
+const emit = defineEmits<Emits>();
+
 const activeSearchResultIndex = ref(-1);
-const inputElement = ref(null);
+const inputElement = useTemplateRef<HTMLInputElement>('inputElement');
 const inputId = `${uniqueId('input')}`;
 const isListVisible = ref(false);
 const listId = `${uniqueId('list')}`;
-const optionsListElement = ref(null);
+const optionsListElement =
+  useTemplateRef<HTMLUListElement>('optionsListElement');
 const value = ref(props.value);
 
 const onDelete = () => {
@@ -97,6 +92,7 @@ const searchResults = computed(() => {
 const increaseActiveSearchResultIndex = () => {
   if (activeSearchResultIndex.value === searchResults.value.length - 1) {
     activeSearchResultIndex.value = 0;
+
     return;
   }
 
@@ -112,12 +108,12 @@ const decreaseActiveSearchResultIndex = () => {
   activeSearchResultIndex.value -= 1;
 };
 
-const onClick = (option) => {
+const onClick = (option: string) => {
   setValue(option);
   inputElement.value?.focus();
 };
 
-const setValue = (inputValue) => {
+const setValue = (inputValue: string) => {
   value.value = inputValue;
   onUpdate();
 
@@ -164,28 +160,30 @@ const onEscape = () => {
   onUpdate();
 };
 
-const getOptionIdByIndex = (index) => `${listId}-${index}`;
+const getOptionIdByIndex = (index: number) => `${listId}-${index}`;
+
 const getActiveDescendant = () => {
   if (activeSearchResultIndex.value === -1) {
-    return null;
+    return undefined;
   }
 
   scrollSearchResultIntoView(activeSearchResultIndex.value);
   return getOptionIdByIndex(activeSearchResultIndex.value);
 };
 
-const scrollSearchResultIntoView = (index) => {
+const scrollSearchResultIntoView = (index: number) => {
   if (index === -1) {
     return;
   }
 
-  const optionElement = optionsListElement.value.querySelector(
+  const optionElement = optionsListElement.value?.querySelector(
     `#${getOptionIdByIndex(index)}`,
   );
-  optionElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  optionElement?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 };
 
-const isSearchResultActive = (index) => index === activeSearchResultIndex.value;
+const isSearchResultActive = (index: number) =>
+  index === activeSearchResultIndex.value;
 
 const onBlur = () => {
   inputStore.markAsTouched();
@@ -195,12 +193,10 @@ const onBlur = () => {
   }, 200);
 };
 
-const createValidators = (forbiddenValues, errors) => {
+const createValidators = (forbiddenValues: string[]) => {
   const inputValidators = [validators.required()];
   if (forbiddenValues.length > 0) {
     inputValidators.push(validators.forbidden(forbiddenValues));
-  } else if (errors) {
-    inputValidators.push(validators.forbidden(errors));
   }
 
   return inputValidators;
@@ -234,12 +230,12 @@ const inputStore = useInputStore(
   createValidators(props.forbiddenValues),
 );
 const ariaDescribedBy = computed(() =>
-  useInputAriaDescribedBy(inputId, undefined, inputStore.hasVisibleErrors),
+  useInputAriaDescribedBy(inputId, '', inputStore.hasVisibleErrors),
 );
 
 onMounted(() => {
   if (props.autoFocus) {
-    inputElement.value.focus();
+    inputElement.value?.focus();
     showList();
   }
   emit('mounted', inputStore);
@@ -259,7 +255,6 @@ onMounted(() => {
       <div class="bhr-combobox__input" @click="onClickOnInputWrapper">
         <input
           @blur="onBlur"
-          @focus="onFocus"
           @input="onUpdate"
           @keyup.alt.down="onAltPlusArrowDown"
           @keyup.down.exact="onArrowDown"
@@ -294,7 +289,7 @@ onMounted(() => {
             :class="{ 'rotate-180': hasVisibleList }"
             color="fill-bhr-dim-gray"
             name="chevron-down"
-            size="24"
+            :size="24"
           />
         </button>
       </div>
@@ -315,6 +310,7 @@ onMounted(() => {
           }"
           :id="getOptionIdByIndex(index)"
           class="bhr-combobox__option"
+          data-e2e-name="combobox-option"
           role="option"
           v-for="(option, index) in searchResults"
           :key="option"

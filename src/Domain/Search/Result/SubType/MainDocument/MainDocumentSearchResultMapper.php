@@ -14,7 +14,8 @@ use App\Domain\Search\Result\HighlightMapperTrait;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\SearchResultMapperInterface;
 use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
-use Jaytaph\TypeArray\TypeArray;
+use App\Enum\ApplicationMode;
+use MinVWS\TypeArray\TypeArray;
 
 readonly class MainDocumentSearchResultMapper implements SearchResultMapperInterface
 {
@@ -31,7 +32,7 @@ readonly class MainDocumentSearchResultMapper implements SearchResultMapperInter
         return in_array($type, ElasticDocumentType::getMainDocumentTypes());
     }
 
-    public function map(TypeArray $hit): ?ResultEntryInterface
+    public function map(TypeArray $hit, ApplicationMode $mode = ApplicationMode::PUBLIC): ?ResultEntryInterface
     {
         $id = $hit->getStringOrNull('[_id]');
         if (is_null($id)) {

@@ -1,32 +1,29 @@
 
-{% set tabPaginators = [
-    activeUsers,
-    deactivatedUsers,
-    activeAdmins is not null ? activeAdmins : null,
-    deactivatedAdmins is not null ? deactivatedAdmins : null,
-] | filter(value => value) %}
+{% set tabPaginators = [activeUsers, deactivatedUsers] %}
+{% set tabPaginators = tabPaginators | merge(activeAdmins is not null ? [activeAdmins] : []) %}
+{% set tabPaginators = tabPaginators | merge(deactivatedAdmins is not null ? [deactivatedAdmins] : []) %}
 
-{% set tabTitles = [
-    'admin.user.active_users' | trans,
-    'admin.user.deactivated_users' | trans,
-    activeAdmins is not null ? 'admin.user.active_admins' | trans : null,
-    deactivatedAdmins is not null ? 'admin.user.deactivated_admins' | trans : null,
-] | filter(value => value) %}
+{% set tabButtonTitles = ['admin.user.active_users' | trans, 'admin.user.deactivated_users' | trans] %}
+{% set tabButtonTitles = tabButtonTitles | merge(activeAdmins is not null ? ['admin.user.active_admins' | trans] : []) %}
+{% set tabButtonTitles = tabButtonTitles | merge(deactivatedAdmins is not null ? ['admin.user.deactivated_admins' | trans] : []) %}
 
+{% set tabsName = 'gebruikers' %}
 <twig:Admin:Tabs
-    titles="{{ tabTitles }}"
+    buttonTitles="{{ tabButtonTitles }}"
+    name="{{ tabsName }}"
     title="{{ page_title }}"
 >
     {% for paginator in tabPaginators %}
-        <twig:Admin:Tab:Content
+        <twig:Tab:Content
             tabNumber="{{ loop.index }}"
+            tabsName="{{ tabsName }}"
             isHidden="{{ not loop.first }}"
         >
             {% include 'admin/user/snippets/user-tab-content.html.twig' with {
-                'fragment': '#tabcontrol-' ~ loop.index,
+                'fragment': '#tabs-' ~ tabsName ~ '-button-' ~ loop.index,
                 'paginator': paginator,
-                'title': tabTitles[loop.index0],
+                'title': tabButtonTitles[loop.index0],
             } %}
-        </twig:Admin:Tab:Content>
+        </twig:Tab:Content>
     {% endfor %}
 </twig:Admin:Tabs>

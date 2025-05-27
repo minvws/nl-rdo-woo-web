@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class WithdrawDocumentFormType extends AbstractType
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -48,13 +48,13 @@ class WithdrawDocumentFormType extends AbstractType
             ->add('submit', SubmitType::class, [
                 'label' => 'Intrekken',
                 'attr' => [
-                    'class' => 'bhr-button--primary',
+                    'class' => 'bhr-btn-filled-primary',
                 ],
             ])
             ->add('cancel', SubmitType::class, [
                 'label' => 'global.cancel',
                 'attr' => [
-                    'class' => 'bhr-button--secondary',
+                    'class' => 'bhr-btn-bordered-primary',
                     'data-last-button' => true,
                 ],
             ]);

@@ -3,7 +3,7 @@
  <lastmod>2021-01-01</lastmod>
  <diwoo:Document>
   <diwoo:DiWoo>
-   <diwoo:creatieDatum>2021-05-10</diwoo:creatieDatum>
+   <diwoo:creatiedatum>2021-05-10</diwoo:creatiedatum>
    <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
    <diwoo:titelcollectie>
     <diwoo:officieleTitel>Officiële titel</diwoo:officieleTitel>

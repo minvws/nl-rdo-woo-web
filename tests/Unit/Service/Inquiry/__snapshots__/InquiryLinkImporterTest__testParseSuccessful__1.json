@@ -1,0 +1,17 @@
+{
+    "case1": {
+        "add_documents": [
+            "1ef3ea0e-678d-6cee-9604-c962be9d60b2",
+            "1ef3ea0e-678d-6cee-9604-c962be9d60b1"
+        ],
+        "del_documents": [],
+        "add_dossiers": []
+    },
+    "case2": {
+        "add_documents": [
+            "1ef3ea0e-678d-6cee-9604-c962be9d60b2"
+        ],
+        "del_documents": [],
+        "add_dossiers": []
+    }
+}

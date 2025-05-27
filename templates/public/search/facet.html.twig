@@ -11,14 +11,16 @@
             <input class="woo-input-text" id="date-{{ fromOrTo }}" name="dt[{{ fromOrTo }}]" type="date" value="{{ app.request.get('dt')[fromOrTo] | default }}">
         {% endmacro %}
 
+        <div aria-live="assertive">
+            <twig:Public:InputError css="hidden pb-4" id="filter-dates-error">
+                {{ 'public.search.invalid_date_period' | trans }}
+            </twig:Public:InputError>
+        </div>
+
         <div class="grid gap-4 xs:grid-cols-2 md:grid-cols-1">
             <div>
                 {{ _self.date_input('from', 'public.global.from' | trans) }}
             </div>
-
-            <twig:Public:InputError css="hidden" id="filter-dates-error">
-                {{ 'public.search.invalid_date_period' | trans }}
-            </twig:Public:InputError>
 
             <div>
                 {{ _self.date_input('to', 'public.global.to' | trans) }}
@@ -100,6 +102,6 @@
     <input type="hidden" name="q" value="{{ app.request.get('q') }}"/>
 
     <div class="pt-8 js:hidden">
-        <button class="woo-button woo-button--primary" type="submit">{{ 'public.search.filter_results' | trans() }}</button>
+        <button class="woo-btn-filled-pink" type="submit">{{ 'public.search.filter_results' | trans() }}</button>
     </div>
 </form>

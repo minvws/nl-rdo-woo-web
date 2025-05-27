@@ -12,7 +12,7 @@ use Webmozart\Assert\Assert;
 
 class PaginatorFactory
 {
-    private const DEFAULT_LIMIT = 100;
+    private const int DEFAULT_LIMIT = 100;
 
     public function __construct(
         private readonly PaginatorInterface $paginator,

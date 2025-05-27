@@ -9,7 +9,8 @@ use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\ResultFactory;
 use App\Domain\Search\Result\SearchResultException;
 use App\Domain\Search\Result\SearchResultMapperInterface;
-use Jaytaph\TypeArray\TypeArray;
+use App\Enum\ApplicationMode;
+use MinVWS\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 
@@ -32,12 +33,14 @@ class ResultFactoryTest extends MockeryTestCase
         $hit = \Mockery::mock(TypeArray::class);
         $hit->shouldReceive('getString')->with('[fields][type][0]')->andReturn(ElasticDocumentType::WOO_DECISION->value);
 
+        $mode = ApplicationMode::ADMIN;
+
         $result = \Mockery::mock(ResultEntryInterface::class);
         $this->firstMapper->expects('supports')->with(ElasticDocumentType::WOO_DECISION)->andReturnFalse();
         $this->secondMapper->expects('supports')->with(ElasticDocumentType::WOO_DECISION)->andReturnTrue();
-        $this->secondMapper->expects('map')->with($hit)->andReturn($result);
+        $this->secondMapper->expects('map')->with($hit, $mode)->andReturn($result);
 
-        $this->assertSame($result, $this->factory->map($hit));
+        $this->assertSame($result, $this->factory->map($hit, $mode));
     }
 
     public function testMapThrowsExceptionWhenNoMapperSupportsTheHit(): void
@@ -49,6 +52,6 @@ class ResultFactoryTest extends MockeryTestCase
         $this->secondMapper->expects('supports')->with(ElasticDocumentType::WOO_DECISION)->andReturnFalse();
 
         $this->expectException(SearchResultException::class);
-        $this->factory->map($hit);
+        $this->factory->map($hit, ApplicationMode::PUBLIC);
     }
 }

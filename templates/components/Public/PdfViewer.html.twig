@@ -29,7 +29,7 @@
                                     src="{{ page.thumbnailUrl }}"
                                     width="204"
                                 />
-                                <span class="sr-only">{{ 'public.inquiries.document.open_or_download' | trans({ fileInfo: formattedFileType, fileSize: formattedFileSize  }) }} {{ page.pageNr }}</span>
+                                <span class="sr-only">{{ 'global.open' | trans }}: {{ 'global.page' | trans | lower }} {{ page.pageNr }}</span>
                             </a>
                         {% else %}
                             <div class="woo-carousel__a">

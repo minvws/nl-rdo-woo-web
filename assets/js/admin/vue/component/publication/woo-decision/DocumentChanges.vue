@@ -65,8 +65,9 @@ const onReject = async () => {
 
     <button
       @click="goBack"
-      class="bhr-button bhr-button--primary"
+      class="bhr-btn-filled-primary"
       type="button"
+      data-e2e-name="back-to-uploading"
     >
       Terug naar uploaden
     </button>
@@ -77,16 +78,12 @@ const onReject = async () => {
       <Alert type="danger">De acties zijn geannuleerd.</Alert>
     </div>
 
-    <button
-      @click="goBack"
-      class="bhr-button bhr-button--primary"
-      type="button"
-    >
+    <button @click="goBack" class="bhr-btn-filled-primary" type="button">
       Terug naar uploaden
     </button>
   </template>
 
-  <div v-else-if="hasChanges" class="bhr-content">
+  <div v-else-if="hasChanges" class="bhr-content" data-e2e-name="has-changes">
     <p class="font-semibold">
       Weet je zeker dat je de volgende acties uit wilt voeren?
     </p>
@@ -105,24 +102,17 @@ const onReject = async () => {
       </li>
     </ul>
 
-    <p class="mt-4 font-semibold">
-      Als je verder gaat, wordt het huidige productierapport vervangen.
-    </p>
-
     <div class="mt-4">
       <button
         @click="onConfirm"
-        class="bhr-button bhr-button--primary bhr-button--fixed-width mr-4"
+        class="bhr-btn-filled-primary mr-4"
         type="button"
+        data-e2e-name="confirm-document-processing"
       >
         Ja, verwerk documenten
       </button>
 
-      <button
-        @click="onReject"
-        class="bhr-button bhr-button--secondary bhr-button--fixed-width"
-        type="button"
-      >
+      <button @click="onReject" class="bhr-btn-bordered-primary" type="button">
         Annuleren
       </button>
     </div>
@@ -137,7 +127,7 @@ const onReject = async () => {
 
     <button
       @click="onConfirmAndGoBack"
-      class="bhr-button bhr-button--primary"
+      class="bhr-btn-filled-primary"
       type="button"
     >
       Terug naar uploaden

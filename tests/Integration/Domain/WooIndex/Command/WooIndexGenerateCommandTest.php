@@ -4,20 +4,25 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Domain\WooIndex\Command;
 
-use App\Domain\WooIndex\WooIndexFileManager;
 use App\Domain\WooIndex\WooIndexNamer;
+use App\Domain\WooIndex\WooIndexSitemapRepository;
 use App\Tests\Integration\IntegrationTestTrait;
 use App\Tests\Story\WooIndexWooDecisionStory;
-use org\bovigo\vfs\vfsStream;
+use League\Flysystem\FilesystemOperator;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 final class WooIndexGenerateCommandTest extends KernelTestCase
 {
     use IntegrationTestTrait;
+
+    private FilesystemOperator $wooIndexStorage;
+
+    private WooIndexSitemapRepository $wooIndexSitemapRepository;
+
+    private WooIndexNamer $wooIndexNamer;
 
     private Application $applicaton;
 
@@ -27,14 +32,12 @@ final class WooIndexGenerateCommandTest extends KernelTestCase
 
         self::bootKernel();
 
-        vfsStream::setup();
+        $this->wooIndexStorage = self::getContainer()->get('woo_index.storage');
+        $this->wooIndexSitemapRepository = self::getContainer()->get(WooIndexSitemapRepository::class);
+        $this->wooIndexNamer = self::getContainer()->get(WooIndexNamer::class);
 
         $this->applicaton = new Application(self::$kernel);
         $this->applicaton->setAutoExit(false);
-
-        $wooIndexNamer = \Mockery::mock(WooIndexNamer::class)->makePartial()->shouldAllowMockingProtectedMethods();
-        $wooIndexNamer->shouldReceive('getRandomRunIdSuffix')->andReturn('random-string');
-        self::getContainer()->set(WooIndexNamer::class, $wooIndexNamer);
     }
 
     #[WithStory(WooIndexWooDecisionStory::class)]
@@ -46,27 +49,56 @@ final class WooIndexGenerateCommandTest extends KernelTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([], ['interactive' => false]);
 
-        $commandTester->assertCommandIsSuccessful();
-
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('Successfully published new sitemap to', $output);
-        $this->assertStringContainsString('vfs://root/var/www/html/public/sitemap/', $output);
+
+        $commandTester->assertCommandIsSuccessful();
+        $this->assertStringContainsString('Successfully published new sitemap with id: ', $output);
+        $this->assertStringNotContainsString('Cleaning up older sitemaps', $output);
+
+        $wooIndexSitemap = $this->wooIndexSitemapRepository->lastFinished();
+        $this->assertNotNull($wooIndexSitemap, 'IndexSitemap exists');
+
+        $subPath = $this->wooIndexNamer->getStorageSubpath($wooIndexSitemap);
+        $this->assertTrue($this->wooIndexStorage->directoryExists($subPath), 'Sitemap directory exists');
+
+        $sitemapIndexPath = $subPath . $this->wooIndexNamer->getSitemapIndexName();
+        $this->assertTrue($this->wooIndexStorage->has($sitemapIndexPath), 'SitemapIndex exists');
+
+        $sitemapOnePath = $subPath . $this->wooIndexNamer->getSitemapName(1);
+        $this->assertTrue($this->wooIndexStorage->has($sitemapOnePath), 'Sitemap one exsits');
+
+        $sitemapTwoPath = $subPath . $this->wooIndexNamer->getSitemapName(2);
+        $this->assertFalse($this->wooIndexStorage->has($sitemapTwoPath), 'Sitemap two does not exsit');
     }
 
-    public function testExecuteWhenPublishingFails(): void
+    #[WithStory(WooIndexWooDecisionStory::class)]
+    public function testExecuteWithCleanup(): void
     {
-        $fileManager = \Mockery::mock(WooIndexFileManager::class, ['wooIndexDir' => 'woo-index/dir'])->makePartial();
-        $fileManager->shouldReceive('publish')->once()->andReturnFalse();
-
-        self::getContainer()->set(WooIndexFileManager::class, $fileManager);
+        $this->setTestNow('2025-01-01 00:00:00.123456');
 
         $command = $this->applicaton->find('woo-index:generate');
         $commandTester = new CommandTester($command);
-        $commandTester->execute([]);
-
-        $this->assertSame(Command::FAILURE, $commandTester->getStatusCode());
+        $commandTester->execute(['--cleanup' => true], ['interactive' => false]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('Failed publishing the sitemap', $output);
+
+        $commandTester->assertCommandIsSuccessful();
+        $this->assertStringContainsString('Successfully published new sitemap with id: ', $output);
+        $this->assertStringContainsString('Cleaning up older sitemaps', $output);
+
+        $wooIndexSitemap = $this->wooIndexSitemapRepository->lastFinished();
+        $this->assertNotNull($wooIndexSitemap, 'IndexSitemap exists');
+
+        $subPath = $this->wooIndexNamer->getStorageSubpath($wooIndexSitemap);
+        $this->assertTrue($this->wooIndexStorage->directoryExists($subPath), 'Sitemap directory exists');
+
+        $sitemapIndexPath = $subPath . $this->wooIndexNamer->getSitemapIndexName();
+        $this->assertTrue($this->wooIndexStorage->has($sitemapIndexPath), 'SitemapIndex exists');
+
+        $sitemapOnePath = $subPath . $this->wooIndexNamer->getSitemapName(1);
+        $this->assertTrue($this->wooIndexStorage->has($sitemapOnePath), 'Sitemap one exsits');
+
+        $sitemapTwoPath = $subPath . $this->wooIndexNamer->getSitemapName(2);
+        $this->assertFalse($this->wooIndexStorage->has($sitemapTwoPath), 'Sitemap two does not exsit');
     }
 }

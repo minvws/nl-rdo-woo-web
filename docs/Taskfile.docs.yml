@@ -1,0 +1,60 @@
+# https://taskfile.dev
+version: "3"
+
+env:
+  MARKDOWNLINT_VERSION: v0.18.1
+  SPHINX_VERSION: 8.1.3
+
+tasks:
+  lint:
+    desc: Lint documentation
+    cmds:
+      - docker run -it --rm
+        --volume "{{.BASE_PATH}}":/workdir
+        davidanson/markdownlint-cli2:{{.MARKDOWNLINT_VERSION}}
+        {{.CLI_ARGS}}
+    requires:
+      vars: [ BASE_PATH ]
+
+  lint:fix:
+    desc: Auto fix lint errors in documentation
+    cmds:
+      - task: lint
+        vars: { CLI_ARGS: --fix }
+
+  sphinx:shell:
+    desc: Start a shell in the sphinx container
+    cmds:
+      - task: :dc
+        vars: { CLI_ARGS: run --rm sphinx bash }
+
+  sphinx:build:cleanup:
+    desc: Remove the sphinx container
+    internal: true
+    cmds:
+      - rm -rf "{{.BASE_PATH}}/public/documentatie"
+      - rm -rf "{{.BASE_PATH}}/docs/_build/html" "{{.BASE_PATH}}/docs/_build/doctrees"
+
+  sphinx:build:
+    desc: Build the documentation
+    cmds:
+      - task: lint
+      - task: sphinx:build:ci
+
+  sphinx:build:ci:
+    desc: Build the documentation in CI
+    cmds:
+      - task: sphinx:build:cleanup
+      - task: :d:create-cache-volumes
+      - docker compose run --rm
+        --volume "{{.BASE_PATH}}/docs":/docs
+        sphinx
+        sphinx-build -M html gebruikershandleiding _build
+      - cp -r "{{.BASE_PATH}}/docs/_build/html" "{{.BASE_PATH}}/public/documentatie"
+
+  sphinx:bundle:
+    desc: Bundle the documentation
+    cmds:
+      - task: sphinx:build
+      - tar -czf "{{.BASE_PATH}}/docs/_build/html.tar.gz" -C "{{.BASE_PATH}}/docs/_build" html
+      - echo "Documentation archive is available at file://{{.BASE_PATH}}/docs/_build/docs.tar.gz"

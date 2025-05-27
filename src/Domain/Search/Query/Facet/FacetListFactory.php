@@ -16,12 +16,10 @@ final readonly class FacetListFactory
     public function fromFacetInputs(FacetInputCollection $facetInputs): FacetList
     {
         $facets = [];
-        foreach ($this->facetDefinitions as $definition) {
-            $input = $facetInputs->getByFacetDefinition($definition);
-
+        foreach ($facetInputs as $facetInput) {
             $facets[] = new Facet(
-                definition: $definition,
-                input: $input,
+                definition: $this->facetDefinitions->get($facetInput->getFacetKey()),
+                input: $facetInput,
             );
         }
 

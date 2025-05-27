@@ -65,7 +65,7 @@ class ThumbnailStorageService extends StorageService
         return $this->doDeleteAllFilesForEntity($entity, $path);
     }
 
-    protected function generatePagePath(EntityWithFileInfo $entity, int $pageNr): string
+    public function generatePagePath(EntityWithFileInfo $entity, int $pageNr): string
     {
         $rootPath = $this->getRootPathForEntity($entity);
 

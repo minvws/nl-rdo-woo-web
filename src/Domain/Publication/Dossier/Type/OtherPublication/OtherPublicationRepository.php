@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\OtherPublication;
 
-use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
 use App\Domain\Search\Result\Dossier\OtherPublication\OtherPublicationSearchResult;
 use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
+use App\Enum\ApplicationMode;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -20,11 +20,15 @@ class OtherPublicationRepository extends AbstractDossierRepository implements Pr
         parent::__construct($registry, OtherPublication::class);
     }
 
-    public function getSearchResultViewModel(string $prefix, string $dossierNr): ?OtherPublicationSearchResult
-    {
+    public function getSearchResultViewModel(
+        string $prefix,
+        string $dossierNr,
+        ApplicationMode $mode,
+    ): ?OtherPublicationSearchResult {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(
                 'new %s(
+                    dos.id,
                     dos.dossierNr,
                     dos.documentPrefix,
                     dos.title,
@@ -42,7 +46,7 @@ class OtherPublicationRepository extends AbstractDossierRepository implements Pr
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', DossierStatus::PUBLISHED)
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
         ;
 
         /** @var ?OtherPublicationSearchResult */

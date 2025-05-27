@@ -1,26 +1,28 @@
-<script setup>
+<script setup lang="ts">
+import type { FormStore } from '@admin-fe/composables/form-store';
+import type { InputStore } from '@admin-fe/composables/input-store';
 import { isSuccessStatusCode, validateData } from '@js/admin/utils';
 import { provide, ref } from 'vue';
 import Pending from '../Pending.vue';
 
-const props = defineProps({
-  action: {
-    type: String,
-    required: false,
-  },
-  method: {
-    type: String,
-    required: false,
-    default: 'GET',
-  },
-  store: {
-    type: Object,
-    required: false,
-    default: () => ({}),
-  },
+interface Props {
+  action?: string;
+  method?: string;
+  store: FormStore;
+}
+
+interface Emits {
+  pristineSubmit: [];
+  submitError: [unknown];
+  submitSuccess: [unknown];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  method: 'GET',
 });
 
-const emit = defineEmits(['pristineSubmit', 'submitError', 'submitSuccess']);
+const emit = defineEmits<Emits>();
+
 const isSubmitting = ref(false);
 
 const onSubmit = async () => {
@@ -59,12 +61,14 @@ const onSubmit = async () => {
     }
 
     if (response.status === 422) {
-      (data.violations || []).forEach((violation) => {
-        props.store.addSubmitValidationError(
-          violation.propertyPath,
-          violation.message,
-        );
-      });
+      (data.violations || []).forEach(
+        (violation: { propertyPath: string; message: string }) => {
+          props.store.addSubmitValidationError(
+            violation.message,
+            violation.propertyPath,
+          );
+        },
+      );
       return;
     }
 
@@ -73,7 +77,7 @@ const onSubmit = async () => {
 };
 
 provide('form', {
-  addInput: (inputStore) => {
+  addInput: (inputStore: InputStore) => {
     props.store.addInput(inputStore);
   },
 });

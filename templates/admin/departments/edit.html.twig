@@ -4,7 +4,15 @@
 
 {% block body %}
 <div class="bhr-container bhr-container--sm">
-    <h1 class="bhr-title text-center mb-10">{{ page_title }}</h1>
+    <twig:Admin:LeftAndRight>
+        <h1 class="bhr-title">{{ page_title }}</h1>
+
+        <twig:block name="right">
+            {% if user_can_edit_landingpage(department) %}
+                <a class="bhr-btn-bordered-primary whitespace-nowrap" href="{{ path('app_admin_department_landing_page_edit', { id: department.id }) }}" data-e2e-name="update-landing-page">{{ 'admin.department.update_landing_page' | trans }}</a>
+            {% endif %}
+        </twig:block>
+    </twig:Admin:LeftAndRight>
 
     <div class="bhr-card">
         {{ form(form) }}

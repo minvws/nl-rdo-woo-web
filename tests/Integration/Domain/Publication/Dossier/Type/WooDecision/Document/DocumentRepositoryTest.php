@@ -9,6 +9,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use App\Tests\Factory\DocumentFactory;
+use App\Tests\Factory\InquiryFactory;
 use App\Tests\Factory\OrganisationFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use App\Tests\Integration\IntegrationTestTrait;
@@ -150,52 +151,6 @@ final class DocumentRepositoryTest extends KernelTestCase
             123,
         );
         self::assertCount(0, $result);
-    }
-
-    public function testFindBySearchTerm(): void
-    {
-        $organisation = OrganisationFactory::createOne();
-
-        DocumentFactory::createOne([
-            'documentNr' => $documentNr = 'FOO-123',
-            'dossiers' => [WooDecisionFactory::createOne(['organisation' => $organisation])],
-        ]);
-        DocumentFactory::createOne([
-            'documentNr' => 'FOO-1234',
-            'dossiers' => [WooDecisionFactory::createOne(['organisation' => $organisation])],
-        ]);
-
-        $result = $this->repository->findBySearchTerm(
-            $documentNr,
-            10,
-            $organisation->_real(),
-        );
-
-        self::assertCount(2, $result);
-    }
-
-    public function testFindBySearchTermFilteredByUuid(): void
-    {
-        $organisation = OrganisationFactory::createOne();
-        $dossierOne = WooDecisionFactory::createOne(['organisation' => $organisation]);
-
-        DocumentFactory::createOne([
-            'documentNr' => $documentNr = 'FOO-123',
-            'dossiers' => [$dossierOne],
-        ]);
-        DocumentFactory::createOne([
-            'documentNr' => 'FOO-1235',
-            'dossiers' => [WooDecisionFactory::createOne(['organisation' => $organisation])],
-        ]);
-
-        $result = $this->repository->findBySearchTerm(
-            $documentNr,
-            10,
-            $organisation->_real(),
-            dossierId: $dossierOne->_real()->getId(),
-        );
-
-        self::assertCount(1, $result);
     }
 
     public function testPagecount(): void
@@ -362,39 +317,6 @@ final class DocumentRepositoryTest extends KernelTestCase
         self::assertEquals($documentNr, $result->documentNr);
     }
 
-    public function testGetPublishedDocuments(): void
-    {
-        $organisation = OrganisationFactory::createOne();
-
-        $dossierA = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
-        $dossierB = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::CONCEPT]);
-
-        DocumentFactory::createOne([
-            'documentNr' => $documentNrA = 'FOO-123',
-            'dossiers' => [$dossierA],
-        ]);
-
-        DocumentFactory::createOne([
-            'documentNr' => $documentNrB = 'FOO-456',
-            'dossiers' => [$dossierA],
-        ]);
-
-        // This one should not be matched, not a public dossier
-        DocumentFactory::createOne([
-            'documentNr' => 'FOO-999',
-            'dossiers' => [$dossierB],
-        ]);
-
-        /**
-         * @var array<array-key, Document> $result
-         */
-        $result = $this->repository->getPublishedDocuments();
-
-        self::assertCount(2, $result);
-        self::assertEquals($documentNrA, $result[0]->getDocumentNr());
-        self::assertEquals($documentNrB, $result[1]->getDocumentNr());
-    }
-
     public function testFindByDocumentNr(): void
     {
         DocumentFactory::createOne([
@@ -531,20 +453,53 @@ final class DocumentRepositoryTest extends KernelTestCase
     {
         $iterable = $this->repository->getPublishedDocumentsIterable();
 
-        /** @var array<int,Document> $allDocuments */
-        $allDocuments = iterator_to_array($iterable);
+        /** @var list<Document> $allDocuments */
+        $allDocuments = iterator_to_array($iterable, false);
 
         /** @var non-empty-list<Proxy<Document>> $documents */
-        $documents = WooIndexWooDecisionStory::getPool('documents');
+        $documents = [
+            ...WooIndexWooDecisionStory::getPool('documents-1'),
+            ...WooIndexWooDecisionStory::getPool('documents-2'),
+        ];
 
         $expectedDocumentUuids = array_map(
             fn (Proxy $document): string => $document->_real()->getId()->toRfc4122(),
             $documents,
         );
 
-        $this->assertCount(10, $allDocuments);
+        $this->assertCount(20, $allDocuments);
         foreach ($allDocuments as $document) {
             $this->assertContains($document->getId()->toRfc4122(), $expectedDocumentUuids);
         }
+    }
+
+    public function testFindOneByDocumentNrCaseInsensitive(): void
+    {
+        DocumentFactory::createOne([
+            'documentNr' => $documentNr = 'FOO-xx-123',
+        ]);
+
+        $result = $this->repository->findOneByDocumentNrCaseInsensitive(strtoupper($documentNr));
+
+        self::assertNotNull($result);
+        self::assertEquals($documentNr, $result->getDocumentNr());
+    }
+
+    public function testGetDocumentCaseNrs(): void
+    {
+        $document = DocumentFactory::createOne([
+            'documentNr' => $documentNr = 'FOO-xx-123',
+        ]);
+
+        InquiryFactory::createOne([
+            'caseNr' => $caseNr = 'FOO-123',
+            'documents' => [$document->_real()],
+        ]);
+
+        $documentCaseNrs = $this->repository->getDocumentCaseNrs(strtoupper($documentNr));
+
+        self::assertFalse($documentCaseNrs->isDocumentNotFound());
+        self::assertEquals($document->getId(), $documentCaseNrs->documentId);
+        self::assertEquals($documentCaseNrs->caseNrs, [$caseNr]);
     }
 }

@@ -1,4 +1,4 @@
-# Wijzigen na publicatie
+# Publicatie wijzigen
 
 Om een jaarplan/jaarverslag te wijzigen ga je naar het overzicht ‘Alle publicaties’ en klik je op de desbetreffende publicatie.
 Vanuit het overzicht van de publicatie is het mogelijk om de informatie te bewerken.

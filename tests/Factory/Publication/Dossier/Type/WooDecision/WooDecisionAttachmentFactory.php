@@ -7,6 +7,7 @@ namespace App\Tests\Factory\Publication\Dossier\Type\WooDecision;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use App\Tests\Factory\FileInfoFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -14,6 +15,11 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
  */
 final class WooDecisionAttachmentFactory extends PersistentProxyObjectFactory
 {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+    ) {
+    }
+
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
@@ -37,9 +43,22 @@ final class WooDecisionAttachmentFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
-        return $this;
+        return $this
+            ->afterInstantiate(function (WooDecisionAttachment $attachment, array $attributes): void {
+                if (isset($attributes['overwrite_id'])) {
+                    $this->entityManager->detach($attachment);
+
+                    $reflection = new \ReflectionClass($attachment);
+                    $property = $reflection->getProperty('id');
+                    $property->setAccessible(true);
+                    $property->setValue($attachment, $attributes['overwrite_id']);
+
+                    $this->entityManager->persist($attachment);
+                }
+            });
     }
 
     public static function class(): string

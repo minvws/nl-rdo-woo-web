@@ -14,19 +14,13 @@ use App\Service\Elastic\ElasticService;
 readonly class DossierIndexer
 {
     /**
-     * @var iterable<ElasticDossierMapperInterface>
-     */
-    private iterable $mappers;
-
-    /**
      * @param iterable<ElasticDossierMapperInterface> $mappers
      */
     public function __construct(
         private ElasticService $elasticService,
         private NestedDossierIndexUpdater $nestedDossierUpdater,
-        iterable $mappers,
+        private iterable $mappers,
     ) {
-        $this->mappers = $mappers;
     }
 
     public function index(AbstractDossier $dossier, bool $updateSubItems = true): void

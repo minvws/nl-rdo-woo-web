@@ -1,126 +1,228 @@
-import { SelectOptions } from '@admin-fe/form/interface';
-import { createMockedAttachmentType } from '@js/test/file-type';
+import { FormValue } from '@admin-fe/form/interface';
+import { createMockedPublicationFile } from '@js/test';
 import { mount } from '@vue/test-utils';
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { nextTick } from 'vue';
 import PublicationFileForm from './PublicationFileForm.vue';
-import type { GroundOptions, PublicationFileTypes } from './interface';
+
+let formSubmitFunction: (formValue: FormValue) => Promise<Response>;
+
+let mockedInputStore: any;
+
+vi.mock('@admin-fe/composables', () => ({
+  useFormStore: vi.fn((submitFunction) => {
+    formSubmitFunction = submitFunction;
+    return {
+      getInputStore: vi.fn().mockReturnValue(mockedInputStore),
+      reset: vi.fn(),
+    };
+  }),
+}));
 
 describe('The "PublicationFileForm" component', () => {
-  interface CreateComponentOptions {
-    allowedFileTypes: string[];
-    allowedMimeTypes: string[];
-    fileTypeOptions: PublicationFileTypes;
-    groundOptions: GroundOptions;
-    languageOptions: SelectOptions;
-  }
-
-  const createComponent = (options: Partial<CreateComponentOptions> = {}) => {
-    const {
-      allowedFileTypes = [],
-      allowedMimeTypes = [],
-      fileTypeOptions = [],
-      groundOptions = [],
-      languageOptions = [],
-    } = options;
-
-    return mount(PublicationFileForm, {
+  const createComponent = () =>
+    mount(PublicationFileForm, {
       props: {
-        allowedFileTypes,
-        allowedMimeTypes,
-        endpoint: 'https://mocked-endpoint',
-        file: {
-          id: 'mocked-id',
-          internalReference: 'mocked-internal-reference',
-          language: 'mocked-language',
-          name: 'mocked-name',
-          formalDate: 'mocked-formal-date',
-          type: 'mocked-type',
-          grounds: ['mocked-ground-1', 'mocked-ground-2'],
-          size: 1024,
-          mimeType: 'mocked/mime-type',
-        },
-        fileTypeOptions,
-        groundOptions,
+        allowedFileTypes: ['mocked-file-type-1', 'mocked-file-type-2'],
+        allowedMimeTypes: ['mocked/mime-type-1', 'mocked/mime-type-2'],
+        allowMultiple: false,
+        endpoint: 'mocked-endpoint',
+        file: createMockedPublicationFile(),
+        fileTypeLabel: 'Mocked file type label',
+        fileTypeOptions: [],
+        groundOptions: [{ citation: 'mocked-citation', label: 'mocked-label' }],
         isEditMode: false,
-        languageOptions,
+        languageOptions: [{ label: 'Dutch', value: 'nl' }],
         uploadGroupId: 'mocked-upload-group-id',
       },
-      global: {
-        stubs: {
-          Form: false,
-          Pending: false,
-        },
-      },
       shallow: true,
+      global: {
+        renderStubDefaultSlot: true,
+      },
     });
-  };
 
-  const getComponent = (
-    componentName: string,
-    createComponentOptions: Partial<CreateComponentOptions> = {},
-  ) =>
-    createComponent(createComponentOptions).findComponent({
-      name: componentName,
-    });
+  const getFormComponent = (component = createComponent()) =>
+    component.findComponent({ name: 'Form' });
+
+  const getAlertComponent = (component = createComponent()) =>
+    component.findComponent({ name: 'Alert' });
+
+  const getCancelButton = (component = createComponent()) =>
+    component.findAllComponents({ name: 'FormButton' }).at(1);
+
+  const getSaveButton = (component = createComponent()) =>
+    component.findAllComponents({ name: 'FormButton' }).at(0);
+
+  const getFileTypesComponent = (component = createComponent()) =>
+    component.findComponent({ name: 'InputFileTypes' });
+
+  const getFileUploadComponent = (component = createComponent()) =>
+    component.findComponent({ name: 'InputFileUpload' });
+
+  const getLanguagesComponent = (component = createComponent()) =>
+    component.findComponent({ name: 'InputLanguages' });
+
+  const getGroundsComponent = (component = createComponent()) =>
+    component.findComponent({ name: 'InputGrounds' });
+
+  const getReferenceComponent = (component = createComponent()) =>
+    component.findComponent({ name: 'InputReference' });
+
+  beforeEach(() => {
+    mockedInputStore = undefined;
+    vi.resetAllMocks();
+
+    window.fetch = vi.fn();
+  });
 
   test('should display a file upload field', () => {
-    const allowedMimeTypes = ['mocked/mime-type-1', 'mocked/mime-type-2'];
-    const component = getComponent('InputFileUpload', { allowedMimeTypes });
-    expect(component.props('allowedMimeTypes')).toEqual(allowedMimeTypes);
-    expect(component.props('fileInfo')).toEqual(
-      expect.objectContaining({
-        name: 'mocked-name',
-        size: 1024,
-        type: 'mocked/mime-type',
-      }),
-    );
+    expect(getFileUploadComponent().props()).toMatchObject({
+      allowedFileTypes: ['mocked-file-type-1', 'mocked-file-type-2'],
+      allowedMimeTypes: ['mocked/mime-type-1', 'mocked/mime-type-2'],
+      fileInfo: null,
+      groupId: 'mocked-upload-group-id',
+      displayMaxOneFileMessage: true,
+    });
   });
 
   test('should allow the user to provide the internal reference of the file', () => {
-    const component = getComponent('InputReference');
-
-    expect(component.props('value')).toBe('mocked-internal-reference');
+    expect(getReferenceComponent().props()).toMatchObject({
+      value: 'mocked-internal-reference',
+    });
   });
 
   test('should allow the user to provide the type of this file', () => {
-    const fileTypeOptions = [
-      createMockedAttachmentType('mocked-type-1', 'Mocked label 1'),
-      createMockedAttachmentType('mocked-type-2', 'Mocked label 2'),
-    ];
-    const component = getComponent('InputFileTypes', { fileTypeOptions });
-
-    expect(component.props('options')).toEqual(fileTypeOptions);
-    expect(component.props('value')).toBe('mocked-type');
+    expect(getFileTypesComponent().props()).toMatchObject({
+      options: [],
+      value: 'mocked-type',
+    });
   });
 
   test('should allow the user to provide the language of this file', () => {
-    const languageOptions = [
-      { value: 'en', label: 'English' },
-      { value: 'nl', label: 'Dutch' },
-    ];
-    const component = getComponent('InputLanguages', { languageOptions });
-
-    expect(component.props('options')).toEqual(languageOptions);
-    expect(component.props('value')).toBe('mocked-language');
-  });
-
-  test('should allow the user to provide a date of this document', () => {
-    const component = getComponent('InputDate');
-
-    expect(component.props('value')).toEqual('mocked-formal-date');
+    expect(getLanguagesComponent().props()).toMatchObject({
+      options: [{ label: 'Dutch', value: 'nl' }],
+      value: 'Dutch',
+    });
   });
 
   test('should allow the user to provide grounds for this file', () => {
-    const groundOptions = [
-      { citation: 'mocked-citation-1', label: 'mocked-label-1' },
-      { citation: 'mocked-citation-2', label: 'mocked-label-2' },
-    ];
-    const component = getComponent('InputGrounds', { groundOptions });
+    expect(getGroundsComponent().props()).toMatchObject({
+      options: [{ citation: 'mocked-citation', label: 'mocked-label' }],
+      values: ['mocked-ground-1', 'mocked-ground-2'],
+    });
+  });
 
-    expect(component.props('options')).toEqual(groundOptions);
-    expect(component.props('values')).toEqual([
-      'mocked-ground-1',
-      'mocked-ground-2',
-    ]);
+  test('should display an error message when saving the file fails', async () => {
+    const component = createComponent();
+
+    expect(getAlertComponent(component).exists()).toBe(false);
+
+    await getFormComponent(component).vm.$emit('submitError');
+    expect(getAlertComponent(component).exists()).toBe(true);
+  });
+
+  describe('when pressing the cancel button', () => {
+    test('should emit a "cancel" event', async () => {
+      const component = createComponent();
+      await getCancelButton(component)?.trigger('click');
+      expect(component.emitted('cancel')).toBeTruthy();
+    });
+
+    test('should hide the error message', async () => {
+      const component = createComponent();
+
+      await getFormComponent(component).vm.$emit('submitError');
+      expect(getAlertComponent(component).exists()).toBe(true);
+
+      await getCancelButton(component)?.trigger('click');
+      expect(getAlertComponent(component).exists()).toBe(false);
+    });
+  });
+
+  test('should have a save button text that is based on the file type label and if this componentis in edit mode', async () => {
+    const component = createComponent();
+    expect(getSaveButton(component)?.text()).toBe(
+      'Opslaan en mocked file type label toevoegen',
+    );
+
+    await component.setProps({ isEditMode: true });
+    expect(getSaveButton(component)?.text()).toBe(
+      'Opslaan en mocked file type label bijwerken',
+    );
+  });
+
+  describe('when submitting the form', () => {
+    test('should make a request to the endpoint with the correct arguments', async () => {
+      createComponent();
+
+      formSubmitFunction({
+        name: 'mocked-name',
+        size: 100,
+        type: 'mocked-type',
+      });
+
+      expect(window.fetch).toHaveBeenCalledWith(
+        'mocked-endpoint',
+        expect.objectContaining({
+          body: JSON.stringify({
+            name: 'mocked-name',
+            size: 100,
+            type: 'mocked-type',
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            accept: 'application/json',
+          },
+          method: 'POST',
+        }),
+      );
+    });
+  });
+
+  describe('when the property "isEditMode" or "file" of the component changes', () => {
+    test('should update the file info', async () => {
+      const component = createComponent();
+      expect(getFileUploadComponent(component).props()).toMatchObject({
+        fileInfo: null,
+      });
+
+      const updatedFile = createMockedPublicationFile({
+        name: 'updated-name',
+        size: 200,
+        mimeType: 'updated-mime-type',
+      });
+      await component.setProps({ file: updatedFile });
+      await nextTick();
+      expect(getFileUploadComponent(component).props()).toMatchObject({
+        fileInfo: {
+          name: 'updated-name',
+          size: 200,
+          type: 'updated-mime-type',
+        },
+      });
+    });
+
+    test('should set the validators of the uploadUuid input store if "isEditMode" is true', async () => {
+      mockedInputStore = {
+        setValidators: vi.fn(),
+      };
+
+      const component = createComponent();
+
+      expect(mockedInputStore.setValidators).not.toHaveBeenCalled();
+
+      await component.setProps({ isEditMode: true });
+      await nextTick();
+
+      expect(mockedInputStore.setValidators).toHaveBeenCalledWith([]);
+    });
+  });
+
+  test('should emit a "saved" event when the form is submitted', async () => {
+    const component = createComponent();
+    expect(component.emitted('saved')).toBeFalsy();
+
+    await getFormComponent(component).vm.$emit('submitSuccess');
+    expect(component.emitted('saved')).toBeTruthy();
   });
 });

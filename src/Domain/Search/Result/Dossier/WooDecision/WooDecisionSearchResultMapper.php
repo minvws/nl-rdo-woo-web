@@ -9,7 +9,8 @@ use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\SearchResultMapperInterface;
-use Jaytaph\TypeArray\TypeArray;
+use App\Enum\ApplicationMode;
+use MinVWS\TypeArray\TypeArray;
 
 readonly class WooDecisionSearchResultMapper implements SearchResultMapperInterface
 {
@@ -24,12 +25,13 @@ readonly class WooDecisionSearchResultMapper implements SearchResultMapperInterf
         return $type === ElasticDocumentType::WOO_DECISION;
     }
 
-    public function map(TypeArray $hit): ?ResultEntryInterface
+    public function map(TypeArray $hit, ApplicationMode $mode = ApplicationMode::PUBLIC): ?ResultEntryInterface
     {
         return $this->baseMapper->map(
             $hit,
             $this->repository,
             ElasticDocumentType::WOO_DECISION,
+            mode: $mode,
         );
     }
 }

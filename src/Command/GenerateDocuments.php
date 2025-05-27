@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 #[When('dev')]
 class GenerateDocuments extends Command
@@ -127,7 +127,7 @@ class GenerateDocuments extends Command
         }
 
         shuffle($inquiries);
-        $randomInquiries = array_slice($inquiries, 0, rand(1, $maxReturn));
+        $randomInquiries = array_slice($inquiries, 0, random_int(1, $maxReturn));
 
         return $randomInquiries;
     }

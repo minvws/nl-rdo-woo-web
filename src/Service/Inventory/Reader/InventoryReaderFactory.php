@@ -24,11 +24,11 @@ class InventoryReaderFactory
      */
     public function __construct(iterable $factories)
     {
-        $this->factories = $factories instanceof \Traversable ? iterator_to_array($factories) : $factories;
+        $this->factories = $factories instanceof \Traversable ? iterator_to_array($factories, false) : $factories;
     }
 
     /**
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @SuppressWarnings("PHPMD.ExcessiveMethodLength")
      */
     public function create(string $mimetype): InventoryReaderInterface
     {

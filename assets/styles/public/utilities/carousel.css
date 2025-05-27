@@ -1,0 +1,18 @@
+@utility woo-carousel {
+  @apply bg-woo-anti-flash-white;
+}
+
+@utility woo-carousel__list {
+  @apply flex flex-row overflow-x-auto relative px-3 py-0.5;
+}
+
+@utility woo-carousel__a {
+  @apply block px-3 py-6 focus:-outline-offset-2;
+}
+
+@utility woo-carousel__img {
+  @apply block max-w-none h-[285px];
+  box-shadow:
+    0 4px 16px 0 rgba(0, 0, 0, 0.25),
+    0 2px 4px 0 rgba(0, 0, 0, 0.25);
+}

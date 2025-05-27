@@ -1,0 +1,89 @@
+@utility woo-btn_generic_ {
+    @apply
+        cursor-pointer
+        font-bold
+        inline-flex
+        items-center
+        justify-center
+        leading-none
+        transition-colors;
+}
+
+@utility woo-btn_filled_or_bordered_ {
+    @apply woo-btn_generic_;
+    @apply
+        border-1
+        border-transparent
+        h-10
+        px-4;
+}
+
+@utility woo-btn-filled_ {
+    @apply woo-btn_filled_or_bordered_;
+    @apply text-white;
+    @apply focus:outline-white focus:-outline-offset-4;
+}
+
+@utility woo-btn-filled-primary {
+    @apply woo-btn-filled_;
+    @apply
+        bg-woo-sea-blue
+        border-woo-sea-blue;
+
+    &:active,
+    &:focus,
+    &:hover {
+        @apply bg-woo-ateneo-blue border-woo-ateneo-blue;
+    }
+}
+
+@utility woo-btn-filled-pink {
+    @apply woo-btn-filled_;
+    @apply
+        bg-woo-boston-university-red
+        border-woo-boston-university-red;
+
+    &:active,
+    &:focus,
+    &:hover {
+        @apply bg-woo-dark-candy-apple-red border-woo-dark-candy-apple-red;
+    }
+}
+
+@utility woo-btn-bordered-blue {
+    @apply woo-btn_filled_or_bordered_;
+    @apply
+        border-woo-sea-blue
+        text-woo-sea-blue;
+
+    &:active,
+    &:focus,
+    &:hover {
+        @apply border-woo-ateneo-blue text-woo-ateneo-blue;
+    }
+}
+
+@utility woo-btn-bordered-pink {
+    @apply woo-btn_filled_or_bordered_;
+    @apply
+        border-woo-boston-university-red
+        text-woo-boston-university-red;
+
+    &:active,
+    &:focus,
+    &:hover {
+        @apply border-woo-dark-candy-apple-red text-woo-dark-candy-apple-red;
+    }
+}
+
+@utility woo-btn--icon-only {
+    @apply px-0 w-10;
+}
+
+@utility woo-btn__icon-left {
+    @apply mr-2;
+}
+
+@utility woo-btn__icon-right {
+    @apply ml-2;
+}

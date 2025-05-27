@@ -16,10 +16,11 @@ class ThemeExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('all_themes', [$this, 'getAllThemes']),
+            new TwigFunction('all_themes', $this->getAllThemes(...)),
         ];
     }
 

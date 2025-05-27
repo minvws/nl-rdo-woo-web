@@ -18,6 +18,7 @@ use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
 use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
+use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
@@ -87,7 +88,21 @@ enum ElasticDocumentType: string implements TranslatableInterface
             $entity instanceof Advice => self::ADVICE,
             $entity instanceof AdviceMainDocument => self::ADVICE_MAIN_DOCUMENT,
             $entity instanceof AdviceAttachment => self::ATTACHMENT,
-            default => throw IndexException::noTypeFoundForEntityClass(get_class($entity)),
+            default => throw IndexException::noTypeFoundForEntityClass($entity::class),
+        };
+    }
+
+    public static function fromDossierType(DossierType $type): self
+    {
+        return match ($type) {
+            DossierType::WOO_DECISION => self::WOO_DECISION,
+            DossierType::ADVICE => self::ADVICE,
+            DossierType::ANNUAL_REPORT => self::ANNUAL_REPORT,
+            DossierType::COMPLAINT_JUDGEMENT => self::COMPLAINT_JUDGEMENT,
+            DossierType::DISPOSITION => self::DISPOSITION,
+            DossierType::COVENANT => self::COVENANT,
+            DossierType::OTHER_PUBLICATION => self::OTHER_PUBLICATION,
+            DossierType::INVESTIGATION_REPORT => self::INVESTIGATION_REPORT,
         };
     }
 
@@ -176,24 +191,32 @@ enum ElasticDocumentType: string implements TranslatableInterface
     }
 
     /**
-     * @return array<array-key,string>
+     * @return list<string>
      */
     public static function getMainTypeValues(): array
     {
-        return array_map(
-            static fn (ElasticDocumentType $type): string => $type->value,
+        return self::toValues(
             self::getMainTypes(),
         );
     }
 
     /**
-     * @return array<array-key,string>
+     * @return list<string>
      */
     public static function getSubTypeValues(): array
     {
-        return array_map(
-            static fn (ElasticDocumentType $type): string => $type->value,
+        return self::toValues(
             self::getSubTypes(),
+        );
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function getMainDocumentTypeValues(): array
+    {
+        return self::toValues(
+            self::getMainDocumentTypes(),
         );
     }
 
@@ -202,5 +225,20 @@ enum ElasticDocumentType: string implements TranslatableInterface
         $prefix = in_array($this, self::getMainTypes(), true) ? 'public.documents.type.' : 'public.search.type.';
 
         return $translator->trans($prefix . $this->value, locale: $locale);
+    }
+
+    /**
+     * @param self[] $types
+     *
+     * @return list<string>
+     */
+    private static function toValues(array $types): array
+    {
+        return array_values(
+            array_map(
+                static fn (ElasticDocumentType $type): string => $type->value,
+                $types,
+            ),
+        );
     }
 }

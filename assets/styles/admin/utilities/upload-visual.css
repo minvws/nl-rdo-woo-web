@@ -1,0 +1,59 @@
+@utility bhr-upload-visual {
+    @apply absolute transition inset-0 flex items-center justify-center z-10;
+}
+
+@utility bhr-upload-visual__dot {
+    @apply bg-bhr-blue-800 text-white rounded-full w-24 h-24 flex flex-col justify-center items-center outline-8 outline-sky-300/10 pointer-events-none;
+}
+
+@utility bhr-upload-visual__dot--slide-in-up {
+    animation: slideDotInUp;
+    animation-duration: 0.25s;
+}
+
+@utility bhr-upload-visual__dot--slide-out-down {
+    animation: slideDotOutDown;
+    animation-duration: 0.25s;
+}
+
+@utility bhr-upload-visual__dot--slide-out-up {
+    animation: slideDotOutUp;
+    animation-duration: 0.25s;
+}
+
+@keyframes slideDotInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 20%, 0);
+        visibility: visible;
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes slideDotOutDown {
+    from {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translate3d(0, 20%, 0);
+    }
+}
+
+@keyframes slideDotOutUp {
+    from {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translate3d(0, -20%, 0);
+    }
+}

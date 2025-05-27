@@ -48,8 +48,10 @@ class WooDecisionMapperTest extends MockeryTestCase
     public function testMap(): void
     {
         $inquiryId = Uuid::v6();
+        $caseNr = '123-45';
         $inquiry = \Mockery::mock(Inquiry::class);
         $inquiry->shouldReceive('getId')->andReturn($inquiryId);
+        $inquiry->shouldReceive('getCasenr')->andReturn($caseNr);
 
         $dossierNr = 'test-123';
 
@@ -75,6 +77,9 @@ class WooDecisionMapperTest extends MockeryTestCase
                 'decision' => DecisionType::PUBLIC,
                 'inquiry_ids' => [
                     $inquiryId,
+                ],
+                'inquiry_case_nrs' => [
+                    $caseNr,
                 ],
             ],
             $doc->getFields(),

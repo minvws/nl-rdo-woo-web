@@ -131,17 +131,19 @@ inject('form').addInput(inputStore);
       props.helpText
     }}</FormHelp>
 
-    <InputErrors
-      :errors="inputStore.errors"
-      :inputId="inputId"
-      :value="value"
-      v-if="inputStore.hasVisibleErrors"
-    />
+    <div aria-live="assertive">
+      <InputErrors
+        :errors="inputStore.errors"
+        :inputId="inputId"
+        :value="value"
+        v-if="inputStore.hasVisibleErrors"
+      />
 
-    <ErrorMessages
-      :errors="inputStore.submitValidationErrors"
-      v-if="inputStore.hasVisibleErrors"
-    />
+      <ErrorMessages
+        :errors="inputStore.submitValidationErrors"
+        v-if="inputStore.hasVisibleErrors"
+      />
+    </div>
 
     <UploadArea
       @uploaded="onUploaded"

@@ -44,7 +44,7 @@ abstract class AbstractAttachment implements EntityWithFileInfo
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
     protected AbstractDossier $dossier;
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['default' => false])]
     private bool $withdrawn = false;
 
     #[ORM\Column(length: 255, nullable: true, enumType: AttachmentWithdrawReason::class)]

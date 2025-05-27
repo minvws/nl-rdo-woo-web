@@ -22,8 +22,7 @@ final readonly class UploadedFileDto
         $name = $upload->getFileInfo()->getName();
         Assert::string($name);
 
-        $mimeType = $upload->getFileInfo()->getMimeType();
-        Assert::string($mimeType);
+        $mimeType = $upload->getFileInfo()->getMimeType() ?? 'application/octet-stream';
 
         return new self(
             id: $upload->getId(),

@@ -19,6 +19,7 @@
         <server name="SHELL_VERBOSITY" value="-1" />
 
         <env name="STORAGE_DOCUMENT_ADAPTER" value="phpunit" force="true" />
+        <env name="STORAGE_ASSETS_ADAPTER" value="phpunit" force="true" />
     </php>
 
     <testsuites>

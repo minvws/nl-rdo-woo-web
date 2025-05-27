@@ -16,12 +16,9 @@ use Psr\Log\LoggerInterface;
 class EncryptionService implements EncryptionServiceInterface
 {
     protected ?EncryptionKey $encryptionKey = null;
-    protected LoggerInterface $logger;
 
-    public function __construct(string $encryptionKey, LoggerInterface $logger)
+    public function __construct(string $encryptionKey, protected LoggerInterface $logger)
     {
-        $this->logger = $logger;
-
         if ($encryptionKey === '') {
             $this->logger->warning('Encryption key input empty');
             $this->encryptionKey = null;

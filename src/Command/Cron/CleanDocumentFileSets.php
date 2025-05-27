@@ -20,7 +20,7 @@ class CleanDocumentFileSets extends Command
     protected function configure(): void
     {
         $this->setName('woopie:cron:clean-document-file-sets')
-            ->setDescription('Cleans up DocumentFileSet entities and relates files')
+            ->setDescription('Cleans up DocumentFileSet entities and related files')
         ;
     }
 

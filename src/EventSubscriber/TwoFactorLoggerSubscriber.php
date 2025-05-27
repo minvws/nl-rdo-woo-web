@@ -20,15 +20,11 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class TwoFactorLoggerSubscriber implements EventSubscriberInterface
 {
-    protected LoggerInterface $logger;
-    protected AuditLogger $auditLogger;
-    protected EntityManagerInterface $doctrine;
-
-    public function __construct(LoggerInterface $logger, AuditLogger $auditLogger, EntityManagerInterface $doctrine)
-    {
-        $this->logger = $logger;
-        $this->auditLogger = $auditLogger;
-        $this->doctrine = $doctrine;
+    public function __construct(
+        protected LoggerInterface $logger,
+        protected AuditLogger $auditLogger,
+        protected EntityManagerInterface $doctrine,
+    ) {
     }
 
     public function onFailure(TwoFactorAuthenticationEvent $event): void

@@ -1,0 +1,9 @@
+{% set isLeft = isLeft ?? false %}
+{% set isRight = isRight ?? false %}
+
+<twig:Admin:Icon
+    class="bhr-icon {{ isLeft ? 'bhr-btn__icon-left' : '' }} {{ isRight ? 'bhr-btn__icon-right' : '' }}"
+    color="{{ color|default('fill-current') }}"
+    size="{{ size|default(isLeft or isRight ? 20 : 24) }}"
+    name="{{ name }}"
+/>

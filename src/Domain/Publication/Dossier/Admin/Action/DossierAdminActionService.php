@@ -9,17 +9,10 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 readonly class DossierAdminActionService
 {
     /**
-     * @var iterable<DossierAdminActionInterface>
-     */
-    private iterable $actions;
-
-    /**
      * @param iterable<DossierAdminActionInterface> $actions
      */
-    public function __construct(
-        iterable $actions,
-    ) {
-        $this->actions = $actions;
+    public function __construct(private iterable $actions)
+    {
     }
 
     /**

@@ -30,18 +30,6 @@ readonly class DocumentEventHandler
                 BatchDownloadScope::forWooDecision($dossier),
             );
         }
-
-        foreach ($event->document->getInquiries() as $inquiry) {
-            $this->batchDownloadService->refresh(
-                BatchDownloadScope::forInquiry($inquiry),
-            );
-
-            foreach ($event->document->getDossiers() as $dossier) {
-                $this->batchDownloadService->refresh(
-                    BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossier),
-                );
-            }
-        }
     }
 
     #[AsMessageHandler]

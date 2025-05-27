@@ -24,14 +24,6 @@ class DocumentFileUpdate implements EntityWithFileInfo
     #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
     private Uuid $id;
 
-    #[ORM\ManyToOne(targetEntity: DocumentFileSet::class)]
-    #[ORM\JoinColumn(name: 'document_file_set_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private DocumentFileSet $documentFileSet;
-
-    #[ORM\ManyToOne(targetEntity: Document::class)]
-    #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private Document $document;
-
     #[ORM\Column(length: 255, nullable: false, enumType: DocumentFileUpdateType::class)]
     private DocumentFileUpdateType $type;
 
@@ -41,12 +33,16 @@ class DocumentFileUpdate implements EntityWithFileInfo
     #[ORM\Embedded(class: FileInfo::class, columnPrefix: 'file_')]
     protected FileInfo $fileInfo;
 
-    public function __construct(DocumentFileSet $documentFileSet, Document $document)
-    {
+    public function __construct(
+        #[ORM\ManyToOne(targetEntity: DocumentFileSet::class)]
+        #[ORM\JoinColumn(name: 'document_file_set_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
+        private DocumentFileSet $documentFileSet,
+        #[ORM\ManyToOne(targetEntity: Document::class)]
+        #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
+        private Document $document,
+    ) {
         $this->id = Uuid::v6();
-        $this->documentFileSet = $documentFileSet;
-        $this->document = $document;
-        $this->type = DocumentFileUpdateType::forDocument($document);
+        $this->type = DocumentFileUpdateType::forDocument($this->document);
         $this->status = DocumentFileUpdateStatus::PENDING;
         $this->fileInfo = new FileInfo();
     }

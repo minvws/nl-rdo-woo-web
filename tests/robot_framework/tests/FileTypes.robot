@@ -12,7 +12,7 @@ Test Tags           ci  filetypes
 Create a dossier with different filetypes using individual files, zip and 7z
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=MINVWS
-  Fill Out Decision Details  Openbaarmaking
+  Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/filetypes/productierapport.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 15 van 15 documenten.
   Upload Documents  tests/robot_framework/files/filetypes/presentation.zip
@@ -24,11 +24,13 @@ Create a dossier with different filetypes using individual files, zip and 7z
   ...  tests/robot_framework/files/filetypes/16102.doc
   ...  tests/robot_framework/files/filetypes/16103.odt
   Upload Documents  @{files}
+  Verify Document Upload Remaining  Nog te uploaden: 5 van 15 documenten.
   VAR  @{files} =
   ...  tests/robot_framework/files/filetypes/16109.xlsx
   ...  tests/robot_framework/files/filetypes/16110.xls
   ...  tests/robot_framework/files/filetypes/16111.csv
   Upload Documents  @{files}
+  Verify Document Upload Remaining  Nog te uploaden: 2 van 15 documenten.
   VAR  @{files} =
   ...  tests/robot_framework/files/filetypes/16112.ods
   ...  tests/robot_framework/files/filetypes/16115.pdf
@@ -69,6 +71,6 @@ Verify filetypes available in search
 *** Keywords ***
 Suite Setup
   Cleansheet
-  Suite Setup - CI
+  Suite Setup Generic
   Login Admin
   Select Organisation  organisation=Programmadirectie Openbaarheid

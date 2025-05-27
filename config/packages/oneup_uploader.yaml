@@ -1,4 +1,4 @@
-# Read the documentation: https://github.com/1up-lab/OneupUploaderBundle/blob/master/Resources/doc/index.md
+# Read the documentation: https://github.com/1up-lab/OneupUploaderBundle/blob/main/doc/index.md
 parameters:
     oneup_uploader.path.prefix: ''
     oneup_uploader.chunks.storage.directory: '%oneup_uploader.path.prefix%%kernel.cache_dir%/uploads/chunks'
@@ -30,6 +30,16 @@ oneup_uploader:
             custom_frontend:
                 class: App\Controller\Admin\CustomDropzoneController
                 name: woo_decision
+            storage:
+                directory: '%oneup_uploader.storage.directory%'
+            use_orphanage: false
+            namer: App\Service\Uploader\UploaderNamer
+
+        department:
+            frontend: custom
+            custom_frontend:
+                class: App\Controller\Admin\CustomDropzoneController
+                name: department
             storage:
                 directory: '%oneup_uploader.storage.directory%'
             use_orphanage: false

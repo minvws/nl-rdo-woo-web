@@ -1,7 +1,4 @@
 parameters:
-    document_path: '%kernel.project_dir%/var/documents'
-    thumbnail_path: '%kernel.project_dir%/var/thumbnails'
-    batch_path: '%kernel.project_dir%/var/batches'
     configPageLimit: '%env(int:DOCUMENT_PAGE_LIMIT)%'
     env(DOCUMENT_PAGE_LIMIT): '0'
 
@@ -14,6 +11,7 @@ parameters:
 imports:
     - { resource: services/default_autowire.yaml }
     - { resource: services/woo_index.yaml }
+    - { resource: services/batch_archiver.yaml }
 
 services:
     _defaults:
@@ -157,10 +155,6 @@ services:
         arguments:
             $config: '%authorization_matrix%'
 
-    App\Service\DocumentUploadQueue:
-        arguments:
-            $redis: '@snc_redis.admin'
-
     App\Service\Inventory\Sanitizer\InventorySanitizer:
         arguments:
             $writer: '@App\Service\Inventory\Sanitizer\ExcelWriter'
@@ -172,10 +166,6 @@ services:
     App\Service\HistoryService:
         arguments:
             $translator: '@translator.default'
-
-    App\Service\FileUploader:
-        arguments:
-            $redis: '@snc_redis.admin'
 
     App\Domain\Publication\Dossier\Type\DossierTypeManager:
         arguments:
@@ -241,10 +231,6 @@ services:
         arguments:
             $strategies: !tagged_iterator domain.upload.preprocessor.strategy
 
-    App\Domain\Upload\Postprocessor\FilePostprocessor:
-        arguments:
-            $strategies: !tagged_iterator domain.upload.postprocessor.strategy
-
     extractor.7z:
         class: App\Domain\Upload\Extractor\Extractor
         public: true
@@ -261,7 +247,6 @@ services:
         arguments:
             $providers: !tagged_iterator domain.publication.dossier.file_provider
 
-
     App\Domain\Upload\AntiVirus\ClamAvClientFactory:
         arguments:
             $address: '%env(CLAM_AV_ADDRESS)%'
@@ -269,6 +254,10 @@ services:
     App\Domain\Upload\AntiVirus\ClamAvFileScanner:
         arguments:
             $fileSizeLimit: '%env(CLAM_AV_MAX_FILESIZE)%'
+
+    App\Domain\Uploader\Handler\S3\S3UploadHelper:
+        arguments:
+            $bucket: '%env(STORAGE_MINIO_UPLOAD_BUCKET)%'
 
 when@dev:
     services: &services_dev
@@ -278,6 +267,7 @@ when@dev:
             resource: '../tests/Factory'
 
         Faker\Generator:
+            public: true
             factory: ['App\Tests\Faker\FakerFactory', 'create']
 
         App\Tests\Story\:
@@ -286,4 +276,8 @@ when@dev:
             resource: '../tests/Story'
 
 when@test:
-    services: *services_dev
+    services:
+        <<: *services_dev
+
+        App\Domain\Department\Markdown\MarkdownConverter:
+            public: true

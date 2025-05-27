@@ -10,7 +10,7 @@ use App\Domain\Search\Index\ElasticDocumentId;
 use App\ElasticConfig;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
-use Jaytaph\TypeArray\TypeArray;
+use MinVWS\TypeArray\TypeArray;
 use Psr\Log\LoggerInterface;
 
 /**

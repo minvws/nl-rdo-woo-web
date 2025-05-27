@@ -20,9 +20,7 @@ class LazyFileReferenceTest extends MockeryTestCase
     {
         /** @var callable&MockInterface $spy */
         $spy = \Mockery::spy(
-            static function (): string {
-                return '/foo/bar.txt';
-            }
+            static fn (): string => '/foo/bar.txt'
         );
 
         $reference = new LazyFileReference($spy);

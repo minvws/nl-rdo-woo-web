@@ -47,11 +47,34 @@
     {% include 'public/dossier/woo-decision/document/snippets/about.html.twig' %}
 
     {% if document.entity.fileInfo.sourceType.isEmail %}
-        {{ macro.documents_section(thread, 'public.documents.email_thread') }}
-        {{ macro.documents_section(family, 'public.documents.attachments') }}
+        {% include 'public/dossier/woo-decision/document/snippets/documents.html.twig' with {
+            documents: thread,
+            id: 'berichten-in-conversatie',
+            title: 'public.documents.email_thread' | trans,
+            searchUrl: thread_search_url,
+        } %}
+
+        {% include 'public/dossier/woo-decision/document/snippets/documents.html.twig' with {
+            documents: family,
+            id: 'bijlagen',
+            title: 'public.documents.attachments' | trans,
+            searchUrl: family_search_url,
+        } %}
     {% else %}
-        {{ macro.documents_section(document.entity.referredBy, 'public.documents.referred_by', false) }}
-        {{ macro.documents_section(family, 'public.documents.related_documents') }}
+        {% include 'public/dossier/woo-decision/document/snippets/documents.html.twig' with {
+            documents: document.entity.referredBy,
+            id: 'gerefereerde-documenten',
+            isSortable: false,
+            title: 'public.documents.referred_by' | trans,
+            searchUrl: referred_search_url,
+        } %}
+
+        {% include 'public/dossier/woo-decision/document/snippets/documents.html.twig' with {
+            documents: family,
+            id: 'gerelateerde-documenten',
+            title: 'public.documents.related_documents' | trans,
+            searchUrl: family_search_url,
+        } %}
     {% endif %}
 
     {% include 'public/dossier/woo-decision/document/snippets/background.html.twig' %}

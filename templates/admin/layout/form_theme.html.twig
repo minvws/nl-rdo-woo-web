@@ -112,7 +112,9 @@
 {%- block file_widget -%}
     {% set allowMultiple = 'multiple' in attr|default([])|keys %}
 
-    <div {{ vue_component('UploadAreaController', {
+    <div {{ vue_component('GenericController', {
+        componentName: 'UploadArea',
+
         allowedMimeTypes: attr.accept|default([]),
         allowedFileTypes: attr.typeNames|default(['PDF']),
         allowMultiple: allowMultiple,
@@ -185,14 +187,26 @@
 {%- endblock checkbox_row -%}
 
 {% block button_attributes %}
-    {%- set attr = attr|merge({ class: 'bhr-button bhr-button--fixed-width mr-4 ' ~ attr.class|default('bhr-button--primary')}) -%}
+    {%- set attr = attr|merge({ class: 'mr-4 ' ~ attr.class|default('bhr-btn-filled-primary')}) -%}
      id="{{ id }}" name="{{ full_name }}"
     {% for attrname, attrvalue in attr %}{% if attrvalue != 'data-first-button' and attrvalue != 'data-last-button'%} {{ attrname }}="{{ attrvalue }}"{%endif%}{% endfor %}
 {% endblock button_attributes %}
 
 {%- block textarea_widget -%}
     {%- set attr = attr|merge({ class: 'bhr-textarea ' ~ (errors|length > 0 ? 'bhr-textarea--invalid ' : '') }) -%}
-    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+    {% if attr['data-is-markdown'] is defined %}
+        <div {{ vue_component('GenericController', {
+            componentName: 'MarkdownEditor',
+
+            id: id,
+            name: full_name,
+            value: value,
+        }) }}>
+            <div class="min-h-14"></div>
+        </div>
+    {% else %}
+        <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+    {% endif %}
 {%- endblock textarea_widget -%}
 
 {%- block widget_attributes -%}

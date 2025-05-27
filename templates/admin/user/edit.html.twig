@@ -6,128 +6,125 @@
     <div class="bhr-container bhr-container--sm">
         <h1 class="bhr-title mb-10">{{ user.name }}</h1>
 
-        <div class="px-11">
-            <div class="bhr-card">
-                <twig:Admin:LeftAndRight>
-                    <h2 class="bhr-title-sm">{{ 'admin.account.user.info' | trans() }}</h2>
+        <div class="bhr-card">
+            <twig:Admin:LeftAndRight>
+                <h2 class="bhr-title-sm">{{ 'admin.account.user.info' | trans() }}</h2>
 
-                    <twig:block name="right">
-                        {% if user.enabled %}
-                            {{ form_start(user_disable) }}
-                            {{ form_errors(user_disable) }}
-                            <button
-                                class="bhr-button bhr-button--secondary"
-                                id="{{ user_disable.submit.vars.id }}"
-                                name="{{ field_name(user_disable.submit) }}"
-                                type="submit"
-                            >{{ 'admin.account.deactivate' | trans() }}</button>
-                            {{ form_end(user_disable) }}
-                        {% else %}
-                            {{ form_start(user_enable) }}
-                            {{ form_errors(user_enable) }}
-                            <button
-                                class="bhr-button bhr-button--secondary"
-                                id="{{ user_enable.submit.vars.id }}"
-                                name="{{ field_name(user_enable.submit) }}"
-                                type="submit"
-                                >{{ 'admin.account.activate' | trans() }}</button>
-                            {{ form_end(user_enable) }}
-                        {% endif %}
-                    </twig:block>
-                </twig:Admin:LeftAndRight>
+                <twig:block name="right">
+                    {% if user.enabled %}
+                        {{ form_start(user_disable) }}
+                        {{ form_errors(user_disable) }}
+                        <button
+                            class="bhr-btn-bordered-primary"
+                            id="{{ user_disable.submit.vars.id }}"
+                            name="{{ field_name(user_disable.submit) }}"
+                            type="submit"
+                        >{{ 'admin.account.deactivate' | trans() }}</button>
+                        {{ form_end(user_disable) }}
+                    {% else %}
+                        {{ form_start(user_enable) }}
+                        {{ form_errors(user_enable) }}
+                        <button
+                            class="bhr-btn-bordered-primary"
+                            id="{{ user_enable.submit.vars.id }}"
+                            name="{{ field_name(user_enable.submit) }}"
+                            type="submit"
+                            >{{ 'admin.account.activate' | trans() }}</button>
+                        {{ form_end(user_enable) }}
+                    {% endif %}
+                </twig:block>
+            </twig:Admin:LeftAndRight>
 
-                {% if not user.enabled %}
-                    <div class="my-4">
-                        <twig:Admin:Alert type="info">
-                            {{ 'admin.account.user.is_deactivated' | trans() }}
-                        </twig:Admin:Alert>
-                    </div>
-                {% endif %}
-
-                {{ form_start(user_info) }}
-                {{ form_errors(user_info) }}
-
-                <div class="bhr-form-row">
-                    {{ form_row(user_info.name) }}
+            {% if not user.enabled %}
+                <div class="my-4">
+                    <twig:Admin:Alert type="info">
+                        {{ 'admin.account.user.is_deactivated' | trans() }}
+                    </twig:Admin:Alert>
                 </div>
+            {% endif %}
 
-                <div class="bhr-form-row">
-                    <h3 class="bhr-label">{{ (user_info.email.vars.label | default('global.email')) | trans }}</h3>
+            {{ form_start(user_info) }}
+            {{ form_errors(user_info) }}
 
-                    {{ form_help(user_info.email) }}
-                    <p><strong>{{ field_value(user_info.email) }}</strong></p>
-                    {% do user_info.email.setRendered %}
-                </div>
-
-                <h2 class="bhr-title-sm mb-4">{{ 'admin.account.user.roles' | trans() }}</h2>
-                {{ form_row(user_info.roles) }}
-
-                {{ form_end(user_info) }}
+            <div class="bhr-form-row">
+                {{ form_row(user_info.name) }}
             </div>
 
-            <div class="bhr-card mt-10">
-                <h2 class="bhr-title-sm mb-6">{{ 'admin.global.login_help' | trans() }}</h2>
+            <div class="bhr-form-row">
+                <h3 class="bhr-label">{{ (user_info.email.vars.label | default('global.email')) | trans }}</h3>
 
-                <div class="bhr-form-row">
+                {{ form_help(user_info.email) }}
+                <p><strong>{{ field_value(user_info.email) }}</strong></p>
+                {% do user_info.email.setRendered %}
+            </div>
+
+            <h2 class="bhr-title-sm mb-4">{{ 'admin.account.user.roles' | trans() }}</h2>
+            {{ form_row(user_info.roles) }}
+
+            {{ form_end(user_info) }}
+        </div>
+
+        <div class="bhr-card mt-10">
+            <h2 class="bhr-title-sm mb-3">{{ 'admin.account.login_help.title' | trans }}</h2>
+            <p class="bhr-form-help">{{ 'admin.account.login_help.description' | trans }}</p>
+
+            <div class="flex mt-8">
+                <div>
                     {{ form_start(user_reset_password, {'attr': {'id': 'form_reset_password'}}) }}
                     {% do user_reset_password.reset_2fa.setRendered %}
                     {{ form_row(user_reset_password.reset_pw) }}
-                    <h3 class="bhr-label">{{ 'admin.account.forgot_password.label' | trans }}</h3>
-                    <p class="bhr-form-help">{{ 'admin.account.forgot_password.instructions' | trans() }}</p>
                     {{ form_row(user_reset_password.submit, {
                         'label': 'Reset password',
                         'id': 'reset_credentials_password_form_submit',
                         'attr': {
-                            'class': 'bhr-button--secondary mt-6 js:hidden'
+                            'class': 'bhr-btn-bordered-primary mt-6 js:hidden'
                         }
                     }) }}
                     {{ form_end(user_reset_password) }}
                     <button
                         aria-haspopup="dialog"
-                        class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary mt-6 js-dialog-toggle no-js:hidden"
+                        class="bhr-btn-bordered-primary mr-4 js-dialog-toggle no-js:hidden"
                         data-dialog-action="open"
                         data-dialog-for="js-reset-password"
                         type="button"
                         data-e2e-name="password-reset-button"
-                    >{{ 'admin.account.reset_password' | trans }}</button>
+                    >{{ 'admin.account.reset_password.button' | trans }}</button>
                 </div>
 
-                <div class="bhr-form-row">
+                <div>
                     {{ form_start(user_reset_2fa, {'attr': {'id': 'form_reset_2fa'}}) }}
                     {% do user_reset_2fa.reset_pw.setRendered %}
                     {{ form_row(user_reset_2fa.reset_2fa) }}
-                    <h3 class="bhr-label">{{ 'admin.account.reset_2fa.label' | trans() }}</h3>
-                    <p class="bhr-form-help">{{ 'admin.account.reset_2fa.instructions' | trans() }}</p>
                     {{ form_row(user_reset_2fa.submit, {
                         'label': 'Reset 2FA',
                         'id': 'reset_credentials_2fa_form_submit',
                         'attr': {
-                            'class': 'bhr-button--secondary mt-6 js:hidden'
+                            'class': 'bhr-btn-bordered-primary mt-6 js:hidden'
                         }
                     }) }}
                     {{ form_end(user_reset_2fa) }}
                     <button
                         aria-haspopup="dialog"
-                        class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary mt-6 js-dialog-toggle no-js:hidden"
+                        class="bhr-btn-bordered-primary js-dialog-toggle no-js:hidden"
                         data-dialog-action="open"
                         data-dialog-for="js-reset-2fa"
                         type="button"
                         data-e2e-name="2fa-reset-button"
-                    >{{ 'admin.account.reset_2fa' | trans() }}</button>
+                    >{{ 'admin.account.reset_2fa.button' | trans }}</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <twig:Admin:Dialog id="js-reset-password" title="{{ 'global.confirm_title' | trans() }}">
-        <p class="mb-8 text-lg" data-e2e-name="password-reset-instructions">{{ 'admin.account.reset_password.caution' | trans() }}</p>
-        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary js-click-on-selector" data-e2e-name="password-reset-confirmation-button" data-selector="reset_credentials_password_form_submit">{{ 'admin.account.reset_password.confirm' | trans() }}</button>
-        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary js-dialog-toggle" data-dialog-for="js-reset-password" data-dialog-action="close">{{ 'global.cancel' | trans() }}</button>
+    <twig:Admin:Dialog id="js-reset-password" title="{{ 'admin.account.reset_password.title' | trans }}">
+        <p class="mb-8 text-lg" data-e2e-name="password-reset-instructions">{{ 'admin.account.reset_password.caution' | trans }}</p>
+        <button type="button" class="bhr-btn-filled-danger mr-4 js-click-on-selector" data-e2e-name="password-reset-confirmation-button" data-selector="reset_credentials_password_form_submit">{{ 'admin.account.reset_password.button' | trans }}</button>
+        <button type="button" class="bhr-btn-bordered-primary js-dialog-toggle" data-dialog-for="js-reset-password" data-dialog-action="close">{{ 'global.cancel' | trans }}</button>
     </twig:Admin:Dialog>
 
-    <twig:Admin:Dialog id="js-reset-2fa" title="{{ 'global.confirm_title' | trans() }}">
-        <p class="mb-8 text-lg">{{ 'admin.account.reset_2fa_caution' | trans() }}</p>
-        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary js-click-on-selector" data-selector="reset_credentials_2fa_form_submit">{{ 'admin.account.reset_2fa.confirm' | trans() }}</button>
-        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary js-dialog-toggle" data-dialog-for="js-reset-2fa" data-dialog-action="close">{{ 'global.cancel' | trans() }}</button><div class="js-button-placeholder"></div>
+    <twig:Admin:Dialog id="js-reset-2fa" title="{{ 'admin.account.reset_2fa.title' | trans }}">
+        <p class="mb-8 text-lg">{{ 'admin.account.reset_2fa.caution' | trans }}</p>
+        <button type="button" class="bhr-btn-filled-danger mr-4 js-click-on-selector" data-selector="reset_credentials_2fa_form_submit">{{ 'admin.account.reset_2fa.button' | trans }}</button>
+        <button type="button" class="bhr-btn-bordered-primary js-dialog-toggle" data-dialog-for="js-reset-2fa" data-dialog-action="close">{{ 'global.cancel' | trans }}</button><div class="js-button-placeholder"></div>
     </twig:Admin:Dialog>
 {% endblock %}

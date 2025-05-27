@@ -17,21 +17,25 @@ aan de pagina. De unieke link naar de zaakpagina kan je vinden op de overzichtsp
 aan vanuit het overzicht ‘Alle publicaties’ en scroll naar het blok ‘Publicatie’. Ook kan je de unieke link vinden in het
 menu Zaken: zoek het betreffende zaaknummer op en klik op de regel. De zaakpagina opent, de URL is de unieke link.
 
-Zaken achteraf toevoegen
-: Het is ook mogelijk om een zaaknummer te koppelen aan een Woo-document of Woo-besluit via het menu ‘Zaken’.
+## Zaken achteraf toevoegen
 
-‘Koppel aan Woo-documenten’
-: In het geval je een nieuw zaaknummer wil koppelen aan eerder gepubliceerde documenten klik je op ‘Koppel aan Woo-documenten’ en
+Het is ook mogelijk om een zaaknummer te koppelen aan een Woo-document of Woo-besluit via het menu ‘Zaken’.
+
+### Koppel aan Woo-documenten
+
+In het geval je een nieuw zaaknummer wil koppelen aan eerder gepubliceerde documenten klik je op ‘Koppel aan Woo-documenten’ en
 moet je een Excel bestand uploaden met daarin het document ID, de matter en het zaaknummer dat je wil toevoegen. Daarna moet je de prefix
 van het besluit selecteren dat bij dit besluit hoort. Je kunt de prefix van het besluit vinden door het besluit op te zoeken en
 naar de basisinformatiepagina te gaan.
 
-‘Koppel aan Woo-besluiten’
-: Wanneer je een of meerdere zaaknummers wil koppelen aan een of meerdere bestaande Woo-besluiten druk je op ‘koppel aan Woo-besluiten’.
+### Koppel aan Woo-besluiten
+
+Wanneer je een of meerdere zaaknummers wil koppelen aan een of meerdere bestaande Woo-besluiten druk je op ‘koppel aan Woo-besluiten’.
 Vervolgens voer je het referentienummer in van het besluit. Dit kunnen ook meerdere besluiten zijn.
 
-Feitelijke verstrekking
-: Wanneer de publicatie is klaar gezet verschijnt er een link die gedeeld kan worden met de verzoeker. Via die link kan de verzoeker
+## Feitelijke verstrekking
+
+Wanneer de publicatie is klaar gezet verschijnt er een link die gedeeld kan worden met de verzoeker. Via die link kan de verzoeker
 eerder bij de publicatie dan het groter publiek. Iedereen die de link heeft heeft toegang tot de zaakpagina. Dit stelt verzoekers
 in staat om de informatie enkele dagen eerder te ontvangen dan het publiek, zodat onderzoekers en journalisten deze kunnen analyseren
 voordat de publicatie openbaar wordt gemaakt.

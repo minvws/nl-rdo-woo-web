@@ -28,7 +28,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  *
  * @implements EntityWithMainDocument<WooDecisionMainDocument>
  * @implements EntityWithAttachments<WooDecisionAttachment>
@@ -44,7 +44,6 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
 
     /** @var Collection<array-key, Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'dossiers', fetch: 'EXTRA_LAZY')]
-    #[ORM\JoinColumn(onDelete: 'cascade')]
     #[ORM\OrderBy(['documentNr' => 'ASC'])]
     protected Collection $documents;
 
@@ -54,8 +53,6 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
 
     /** @var Collection<array-key,Inquiry> */
     #[ORM\ManyToMany(targetEntity: Inquiry::class, mappedBy: 'dossiers')]
-    #[ORM\JoinTable(name: 'inquiry_dossier')]
-    #[ORM\JoinColumn(onDelete: 'cascade')]
     protected Collection $inquiries;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: Inventory::class)]

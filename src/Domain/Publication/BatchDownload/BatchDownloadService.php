@@ -10,11 +10,6 @@ use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 readonly class BatchDownloadService
 {
     /**
-     * @var iterable<BatchDownloadTypeInterface>
-     */
-    private iterable $types;
-
-    /**
      * @param iterable<BatchDownloadTypeInterface> $types
      */
     public function __construct(
@@ -22,15 +17,18 @@ readonly class BatchDownloadService
         private BatchDownloadDispatcher $dispatcher,
         private BatchDownloadStorage $storage,
         #[AutowireIterator('domain.public.batchdownload.type')]
-        iterable $types,
+        private iterable $types,
     ) {
-        $this->types = $types;
     }
 
     public function refresh(BatchDownloadScope $scope): void
     {
         $batches = $this->batchRepository->getAllForScope($scope);
         foreach ($batches as $batch) {
+            if ($batch->getStatus()->isOutdated()) {
+                continue;
+            }
+
             $batch->markAsOutdated();
             $this->batchRepository->save($batch);
         }
@@ -40,22 +38,29 @@ readonly class BatchDownloadService
             return;
         }
 
+        if ($scope->containsBothInquiryAndWooDecision()) {
+            return;
+        }
+
         $this->create($scope);
+    }
+
+    public function find(BatchDownloadScope $scope): ?BatchDownload
+    {
+        return $this->batchRepository->getBestAvailableBatchDownloadForScope($scope);
     }
 
     public function findOrCreate(BatchDownloadScope $scope): BatchDownload
     {
-        // If a batch already exists, re-use this and return early.
-        $batch = $this->batchRepository->getBestAvailableBatchDownloadForScope($scope);
-        if ($batch) {
-            return $batch;
-        }
-
-        return $this->create($scope);
+        return $this->find($scope) ?? $this->create($scope);
     }
 
     public function create(BatchDownloadScope $scope): BatchDownload
     {
+        if ($scope->containsBothInquiryAndWooDecision()) {
+            return $this->findOrCreate(BatchDownloadScope::forWooDecision($scope->wooDecision));
+        }
+
         $batch = new BatchDownload(
             $scope,
             new \DateTimeImmutable('+10 years'),
@@ -86,5 +91,10 @@ readonly class BatchDownloadService
         }
 
         throw new \OutOfBoundsException('Scope not supported');
+    }
+
+    public function exists(BatchDownload $batch): bool
+    {
+        return $this->batchRepository->exists($batch->getId());
     }
 }

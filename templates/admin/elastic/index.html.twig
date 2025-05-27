@@ -5,24 +5,13 @@
     <h1 class="bhr-title mb-6">{{ 'elastic.label.management' | trans() }}</h1>
 
     <div class="bhr-card">
-        {% set alerts = app.flashes('backend') %}
-        {% if alerts | length > 0 %}
-            <div class="mb-8">
-                {% for messages in alerts %}
-                    {% for label, message in messages %}
-                        <twig:Admin:Alert type="{{ label }}">
-                            <strong>{{ message }}</strong>
-                        </twig:Admin:Alert>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include 'admin/shared/flash-messages.html.twig' %}
 
         {% if rolloverDetails %}
             {% include 'admin/elastic/counts.html.twig' with {'details': rolloverDetails} %}
 
             <p class="pt-6">
-                <a class="bhr-button bhr-button--primary" href="{{ path('app_admin_elastic_live', {indexName: rolloverDetails.index.name}) }}">{{ "admin.elastic.promote_to_live" | trans() }}</a>
+                <a class="bhr-btn-filled-primary" href="{{ path('app_admin_elastic_live', {indexName: rolloverDetails.index.name}) }}">{{ "admin.elastic.promote_to_live" | trans() }}</a>
             </p>
         {% else %}
             <p class="text-center italic">{{ "admin.elastic.no_rollover" | trans() }}</p>
@@ -64,7 +53,7 @@
         </table>
 
         <p class="pt-6">
-            <a class="bhr-button bhr-button--primary" href="{{ path('app_admin_elastic_create') }}">{{ "admin.elastic.new_rollover" | trans() }}</a>
+            <a class="bhr-btn-filled-primary" href="{{ path('app_admin_elastic_create') }}">{{ "admin.elastic.new_rollover" | trans() }}</a>
         </p>
     </div>
 </div>

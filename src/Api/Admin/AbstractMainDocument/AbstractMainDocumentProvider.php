@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Api\Admin\AbstractMainDocument;
 
+use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
@@ -19,17 +20,19 @@ abstract readonly class AbstractMainDocumentProvider implements ProviderInterfac
     /**
      * @param array<array-key, string> $uriVariables
      * @param array<array-key, mixed>  $context
+     *
+     * @return array<array-key,AbstractMainDocumentDto>|AbstractMainDocumentDto|object[]|null
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ?AbstractMainDocumentDto
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): array|AbstractMainDocumentDto|null
     {
-        unset($operation);
         unset($context);
 
         $document = $this->getAttachmentRepository()->findOneByDossierId(Uuid::fromString($uriVariables['dossierId']));
-        if ($document === null) {
-            return null;
+
+        if ($operation instanceof CollectionOperationInterface) {
+            return $document ? [$this->fromEntityToDto($document)] : [];
         }
 
-        return $this->fromEntityToDto($document);
+        return $document ? $this->fromEntityToDto($document) : null;
     }
 }

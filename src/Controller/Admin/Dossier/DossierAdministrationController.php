@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Dossier;
 
+use App\Domain\Publication\BatchDownload\BatchDownloadScope;
+use App\Domain\Publication\BatchDownload\BatchDownloadService;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
 use App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionService;
 use App\Domain\Publication\Dossier\DossierRepository;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Form\Dossier\AdministrationActionsType;
 use App\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -26,6 +29,8 @@ class DossierAdministrationController extends AbstractController
         private readonly DossierAdminActionService $adminActionService,
         private readonly WizardStatusFactory $wizardStatusFactory,
         private readonly TranslatorInterface $translator,
+        private readonly WooDecisionRepository $wooDecisionRepository,
+        private readonly BatchDownloadService $batchDownloadService,
     ) {
     }
 
@@ -71,6 +76,42 @@ class DossierAdministrationController extends AbstractController
             'form' => $form,
             'breadcrumbs' => $breadcrumbs,
             'workflowStatus' => $this->wizardStatusFactory->getWizardStatus($dossier),
+        ]);
+    }
+
+    #[Route('/balie/admin/dossiers/downloads', name: 'app_admin_dossier_downloads', methods: ['GET'])]
+    #[IsGranted('AuthMatrix.dossier.administration')]
+    public function downloads(Breadcrumbs $breadcrumbs): Response
+    {
+        $breadcrumbs->addRouteItem('global.admin', 'app_admin');
+        $breadcrumbs->addItem('admin.decisions.downloads');
+
+        $dossierEntities = $this->wooDecisionRepository->getPubliclyAvailable();
+        $list = [];
+        foreach ($dossierEntities as $dossier) {
+            $scope = BatchDownloadScope::forWooDecision($dossier);
+            $download = $this->batchDownloadService->find($scope);
+            $type = $this->batchDownloadService->getType($scope);
+
+            $expectedDownloadCount = $type->getDocumentsQuery($scope)
+                ->select('count(doc.id)')
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            $list[] = [
+                'prefix' => $dossier->getDocumentPrefix(),
+                'dossierNr' => $dossier->getDossierNr(),
+                'expectedDownloadCount' => $expectedDownloadCount,
+                'downloadFileCount' => $download?->getFileCount(),
+                'downloadStatus' => $download?->getStatus(),
+                'downloadExpiration' => $download?->getExpiration(),
+                'downloadSize' => $download?->getSize(),
+            ];
+        }
+
+        return $this->render('admin/dossier/administration/downloads.html.twig', [
+            'dossiers' => $list,
+            'breadcrumbs' => $breadcrumbs,
         ]);
     }
 }

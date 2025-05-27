@@ -1,0 +1,25 @@
+{% set numberOfTabs = buttonTitles | length %}
+
+{% if numberOfTabs > 0 %}
+    {% if numberOfTabs > 1 %}
+        <div class="js-tabs">
+            <ul class="woo-tab-list" role="tablist" aria-label="{{ title }}">
+                {% for buttonTitle in buttonTitles %}
+                    <li class="woo-tab-list__item" role="presentation">
+                        <twig:Public:Tab:Button
+                            isActive="{{ loop.first }}"
+                            tabNumber="{{ loop.index }}"
+                            tabsName="{{ name }}"
+                            title="{{ buttonTitle }}"
+                        />
+                    </li>
+                {% endfor %}
+            </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    {% if numberOfTabs > 1 %}
+        </div>
+    {% endif %}
+{% endif %}

@@ -13,7 +13,7 @@ use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\SubType\MainDocument\MainDocumentSearchResultMapper;
 use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
-use Jaytaph\TypeArray\TypeArray;
+use MinVWS\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 

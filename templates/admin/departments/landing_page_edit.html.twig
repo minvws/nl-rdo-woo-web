@@ -1,0 +1,45 @@
+{% extends 'admin/base.html.twig' %}
+
+{% set page_title = 'admin.organisation.department_landing_page_edit' | trans({'name': department.name}) %}
+
+{% block body %}
+<div class="bhr-container bhr-container--sm">
+    <h1 class="bhr-title mb-10">{{ page_title }}</h1>
+
+    <div class="bhr-card">
+        <twig:Admin:Tabs
+            buttonTitles="{{ ['Titel en omschrijving', 'Logo'] }}"
+            name="landingspagina"
+            title="Dit is een titel"
+        >
+            <twig:Tab:Content
+                tabNumber="1"
+                tabsName="landingspagina"
+                isHidden="{{ false }}"
+            >
+                <div class="pt-4">
+                    {{ form(form) }}
+                </div>
+            </twig:Tab:Content>
+
+            <twig:Tab:Content
+                tabNumber="2"
+                tabsName="landingspagina"
+                isHidden="{{ true }}"
+            >
+                <div class="pt-4">
+                    <div {{ vue_component('GenericController', {
+                        componentName: 'DepartmentLogoManager',
+
+                        deleteEndpoint: path('api_uploader_department_remove_logo', { departmentId: department.id }),
+                        logoEndpoint: department.fileInfo.isUploaded ? path('app_department_assets_download', { id: department.id, file: department.fileInfo.name }) : null,
+                        uploadEndpoint: path('_uploader_upload_department', { departmentId: department.id }),
+                    }) }}>
+                        <div class="min-h-14"></div>
+                    </div>
+                </div>
+            </twig:Tab:Content>
+        </twig:Admin:Tabs>
+    </div>
+</div>
+{% endblock %}

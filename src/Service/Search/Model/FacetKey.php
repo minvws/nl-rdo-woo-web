@@ -17,6 +17,9 @@ enum FacetKey: string
     case PREFIXED_DOSSIER_NR = 'dnr';
     case INQUIRY_DOSSIERS = 'dsi';
     case INQUIRY_DOCUMENTS = 'dci';
+    case FAMILY = 'fam';
+    case THREAD = 'thread';
+    case REFERRED_DOCUMENT_NR = 'ref';
 
     /**
      * @deprecated use FacetDefinition::$requestParameter instead
@@ -35,6 +38,9 @@ enum FacetKey: string
             self::PREFIXED_DOSSIER_NR => 'dnr',
             self::INQUIRY_DOSSIERS => 'dsi',
             self::INQUIRY_DOCUMENTS => 'dci',
+            self::FAMILY => 'fam',
+            self::THREAD => 'thread',
+            self::REFERRED_DOCUMENT_NR => 'ref',
         };
     }
 }

@@ -139,18 +139,14 @@ class DocumentUpdaterTest extends MockeryTestCase
         $this->repository
             ->expects('findByDocumentNumber')
             ->with(\Mockery::on(
-                static function (DocumentNumber $documentNumber): bool {
-                    return $documentNumber->getValue() === 'PREFIX-matter-123';
-                }
+                static fn (DocumentNumber $documentNumber): bool => $documentNumber->getValue() === 'PREFIX-matter-123'
             ))
             ->andReturn($newReferredDoc);
 
         $this->repository
             ->expects('findByDocumentNumber')
             ->with(\Mockery::on(
-                static function (DocumentNumber $documentNumber): bool {
-                    return $documentNumber->getValue() === 'PREFIX-matter-456';
-                }
+                static fn (DocumentNumber $documentNumber): bool => $documentNumber->getValue() === 'PREFIX-matter-456'
             ))
             ->andReturn($oldReferredDoc);
 

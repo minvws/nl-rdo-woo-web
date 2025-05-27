@@ -25,7 +25,7 @@ class WooDecisionMainDocument extends AbstractMainDocument
         parent::__construct();
 
         $this->dossier = $dossier;
-        $this->formalDate = $formalDate;
+        $this->setFormalDate($formalDate);
         $this->type = AttachmentType::JUDGEMENT_ON_WOB_WOO_REQUEST;
         $this->language = $language;
         $this->fileInfo->setPaginatable(true);
@@ -37,5 +37,13 @@ class WooDecisionMainDocument extends AbstractMainDocument
     public static function getAllowedTypes(): array
     {
         return [AttachmentType::JUDGEMENT_ON_WOB_WOO_REQUEST];
+    }
+
+    public function setFormalDate(\DateTimeImmutable $formalDate): void
+    {
+        $this->formalDate = $formalDate;
+
+        // Forward the formal date to the woo-decision decisionDate
+        $this->dossier->setDecisionDate($formalDate);
     }
 }

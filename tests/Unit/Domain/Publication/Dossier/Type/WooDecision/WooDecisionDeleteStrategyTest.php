@@ -82,9 +82,7 @@ class WooDecisionDeleteStrategyTest extends MockeryTestCase
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($processRun);
 
         $this->batchDownloadService->expects('removeAllForScope')->with(\Mockery::on(
-            static function (BatchDownloadScope $scope) use ($dossier): bool {
-                return $scope->wooDecision === $dossier;
-            }
+            static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier
         ));
         $this->inquiryService->expects('removeDossierFromInquiries')->with($dossier);
 
@@ -112,9 +110,7 @@ class WooDecisionDeleteStrategyTest extends MockeryTestCase
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($productionReport);
 
         $this->batchDownloadService->expects('removeAllForScope')->with(\Mockery::on(
-            static function (BatchDownloadScope $scope) use ($dossier): bool {
-                return $scope->wooDecision === $dossier;
-            }
+            static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier
         ));
         $this->inquiryService->expects('removeDossierFromInquiries')->with($dossier);
 

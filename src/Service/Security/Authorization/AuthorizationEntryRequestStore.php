@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class AuthorizationEntryRequestStore
 {
-    private const REQUEST_ATTRIBUTE = 'auth_matrix';
+    private const string REQUEST_ATTRIBUTE = 'auth_matrix';
 
     public function __construct(
         private readonly RequestStack $requestStack,

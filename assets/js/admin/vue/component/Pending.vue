@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 <template>
   <div class="relative">
-    <div class="transition-all" :class="{ 'blur-sm': props.isPending }">
+    <div class="transition-all" :class="{ 'blur-xs': props.isPending }">
       <slot />
     </div>
 

@@ -7,7 +7,7 @@ namespace App\Service\Inventory;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
-readonly class DocumentNumber
+readonly class DocumentNumber implements \Stringable
 {
     private string $value;
 

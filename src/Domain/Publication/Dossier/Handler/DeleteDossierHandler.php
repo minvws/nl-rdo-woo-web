@@ -17,11 +17,6 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 class DeleteDossierHandler
 {
     /**
-     * @var iterable<DossierDeleteStrategyInterface>
-     */
-    private iterable $deleteStrategies;
-
-    /**
      * @param iterable<DossierDeleteStrategyInterface> $deleteStrategies
      */
     public function __construct(
@@ -29,9 +24,8 @@ class DeleteDossierHandler
         private readonly LoggerInterface $logger,
         private readonly DossierWorkflowManager $dossierWorkflowManager,
         private readonly EntityManagerInterface $entityManager,
-        iterable $deleteStrategies,
+        private readonly iterable $deleteStrategies,
     ) {
-        $this->deleteStrategies = $deleteStrategies;
     }
 
     public function __invoke(DeleteDossierCommand $command): void

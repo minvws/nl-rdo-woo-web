@@ -22,16 +22,17 @@ use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
 use App\Tests\Integration\IntegrationTestTrait;
+use App\Tests\Integration\VfsStreamHelpers;
 use Doctrine\ORM\EntityManager;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Webmozart\Assert\Assert;
 
 final class DossierFileControllerTest extends WebTestCase
 {
     use IntegrationTestTrait;
+    use VfsStreamHelpers;
 
     private vfsStreamDirectory $root;
     private KernelBrowser $client;
@@ -47,7 +48,7 @@ final class DossierFileControllerTest extends WebTestCase
         $this->client = static::createClient();
 
         $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
-        $this->documentPathPrefix = trim(self::getContainer()->getParameter('document_path'), '/');
+        $this->documentPathPrefix = self::getContainer()->getParameter('document_path');
     }
 
     public function testDownloadingWooDecisionDocument(): void
@@ -156,7 +157,7 @@ final class DossierFileControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->persist($dossier);
 
-        $this->createFileForEntityOnVfs($entityWithFileInfo);
+        $this->createFileForEntityOnVfs($entityWithFileInfo, $this->documentPathPrefix);
 
         $this->client->request(
             'GET',
@@ -175,22 +176,5 @@ final class DossierFileControllerTest extends WebTestCase
         $this->assertResponseHeaderSame('Content-Length', (string) $entityWithFileInfo->getFileInfo()->getSize());
         $this->assertResponseHeaderSame('Last-Modified', $entityWithFileInfo->getUpdatedAt()->format('D, d M Y H:i:s') . ' GMT');
         $this->assertResponseHeaderSame('Content-Disposition', sprintf('%s; filename="%s"', $expectedDisposition, $expectedDownloadFileName));
-    }
-
-    private function createFileForEntityOnVfs(EntityWithFileInfo $entity): void
-    {
-        $fileInfoPath = $entity->getFileInfo()->getPath();
-        Assert::string($fileInfoPath);
-
-        $newDirectoryPath = sprintf('%s%s', $this->documentPathPrefix, dirname($fileInfoPath));
-        vfsStream::newDirectory($newDirectoryPath)->at($this->root);
-
-        /** @var vfsStreamDirectory $childDir */
-        $childDir = $this->root->getChild($newDirectoryPath);
-
-        $fileInfoName = $entity->getFileInfo()->getName();
-        Assert::string($fileInfoName);
-
-        vfsStream::newFile($fileInfoName)->withContent('This is a test file.')->at($childDir);
     }
 }

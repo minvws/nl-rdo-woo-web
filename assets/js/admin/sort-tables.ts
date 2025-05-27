@@ -1,70 +1,130 @@
 export const sortTables = () => {
   let abortController: AbortController;
 
+  const TOGGLER_SELECTOR = '.js-sort-table-toggler';
+
+  type SortDirection = 'ascending' | 'descending' | 'none';
+
   const initialize = () => {
     cleanup();
 
-    // Collect sort buttons.
-    const sortTableElements: NodeListOf<HTMLAnchorElement> =
-      document.querySelectorAll('.js-sort-table-toggler');
+    abortController = new AbortController();
 
-    // Return as soon as possible.
-    if (sortTableElements.length === 0) {
+    document
+      .querySelectorAll<HTMLAnchorElement>(TOGGLER_SELECTOR)
+      .forEach((sortTableTogglerElement) => {
+        sortTableTogglerElement.addEventListener(
+          'click',
+          (event) => {
+            event.preventDefault();
+
+            const tableElement =
+              sortTableTogglerElement.closest<HTMLTableElement>('table')!;
+            const tableColumnElement =
+              sortTableTogglerElement.closest<HTMLTableCellElement>('th')!;
+
+            const newSortDirection = getNewSortDirection(tableColumnElement);
+            resetTableSortDirections(tableElement);
+            sortTable(
+              tableElement,
+              getIndexOfTableColumn(tableColumnElement),
+              newSortDirection,
+            );
+            setColumnSortDirection(tableColumnElement, newSortDirection);
+          },
+          { signal: abortController.signal! },
+        );
+      });
+  };
+
+  const getNewSortDirection = (
+    tableColumnElement: HTMLTableCellElement,
+  ): SortDirection =>
+    tableColumnElement.getAttribute('aria-sort') === 'ascending'
+      ? 'descending'
+      : 'ascending';
+
+  const resetTableSortDirections = (tableElement: HTMLTableElement) => {
+    tableElement
+      .querySelectorAll<HTMLTableCellElement>('th[aria-sort]')
+      .forEach((tableColumnElement) => {
+        setColumnSortDirection(tableColumnElement, 'none');
+      });
+  };
+
+  const setColumnSortDirection = (
+    tableColumnElement: HTMLTableCellElement,
+    sortDirection: SortDirection,
+  ) => {
+    tableColumnElement.setAttribute('aria-sort', sortDirection);
+    setSortTableTogglerDirection(
+      tableColumnElement.querySelector<HTMLAnchorElement>(TOGGLER_SELECTOR),
+      sortDirection,
+    );
+  };
+
+  const setSortTableTogglerDirection = (
+    sortTableTogglerElement: HTMLAnchorElement | null,
+    sortDirection: SortDirection,
+  ) => {
+    if (!sortTableTogglerElement) {
       return;
     }
 
-    // Initialize abort controller.
-    abortController = new AbortController();
+    updateReadbleNextSortingDirection(sortTableTogglerElement, sortDirection);
+    updateSortIcon(sortTableTogglerElement, sortDirection);
+  };
 
-    // Loop the sort toggler elements.
-    sortTableElements.forEach((sortToggleElement) => {
-      // Attach click handler.
-      sortToggleElement.addEventListener(
-        'click',
-        async (event) => {
-          event.preventDefault();
+  const updateReadbleNextSortingDirection = (
+    sortTableTogglerElement: HTMLAnchorElement,
+    sortDirection: SortDirection,
+  ) => {
+    const element = sortTableTogglerElement.querySelector<HTMLSpanElement>(
+      '.js-sort-next-direction',
+    );
+    if (!element) {
+      return;
+    }
 
-          // Find find the closest ancestor <th> element
-          const closestTh = sortToggleElement.closest('th');
+    element.textContent =
+      sortDirection === 'ascending'
+        ? (element.dataset.textDesc ?? '')
+        : (element.dataset.textAsc ?? '');
+  };
 
-          if (closestTh) {
-            // Find the index of the clicked column
-            const columnIndex = Array.from(
-              closestTh.parentElement!.children,
-            ).indexOf(closestTh);
-
-            // Get the sort direction.
-            let sortDirection = closestTh.getAttribute('aria-sort') || 'asc';
-
-            // Sort results based on the clicked anchor its column index.
-            const table: HTMLTableElement = sortToggleElement.closest('table')!;
-            sortTable(table, columnIndex, sortDirection!);
-
-            // Change the sort direction as soon as the user has clicked on it.
-            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-            closestTh.setAttribute('aria-sort', sortDirection);
-          }
-        },
-        { signal: abortController.signal! },
+  const updateSortIcon = (
+    sortTableTogglerElement: HTMLAnchorElement,
+    sortDirection: SortDirection,
+  ) => {
+    const iconElements =
+      sortTableTogglerElement.querySelectorAll<HTMLSpanElement>(
+        '.js-sort-icon',
       );
+
+    iconElements.forEach((iconElement) => {
+      iconElement.classList.add('hidden');
+
+      if (iconElement.classList.contains(`js-sort-icon-${sortDirection}`)) {
+        iconElement.classList.remove('hidden');
+      }
     });
   };
+
+  const getIndexOfTableColumn = (tableColumnElement: HTMLTableCellElement) =>
+    [...tableColumnElement.parentElement!.children].indexOf(tableColumnElement);
 
   const sortTable = (
     table: HTMLTableElement,
     columnIndex: number,
-    sortDirection: string,
+    sortDirection: SortDirection,
   ) => {
     const tableBody = table.tBodies[0];
-    const { rows } = table.tBodies[0];
-    const sortedRows = Array.from(rows);
 
-    sortedRows.sort((a, b) => {
+    const sortedRows = [...tableBody.rows].sort((a, b) => {
       const aValue = a.cells[columnIndex].textContent || '';
       const bValue = b.cells[columnIndex].textContent || '';
 
-      // Perform string comparison based on sortDirection
-      if (sortDirection === 'asc') {
+      if (sortDirection === 'ascending') {
         return aValue.localeCompare(bValue);
       }
       return bValue.localeCompare(aValue);

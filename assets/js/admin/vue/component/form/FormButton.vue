@@ -1,23 +1,20 @@
-<script setup>
-import { computed } from 'vue';
+<script setup lang="ts">
+interface Props {
+  isSecondary?: boolean;
+}
 
-const props = defineProps({
-  isSecondary: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
+const props = withDefaults(defineProps<Props>(), {
+  isSecondary: false,
 });
 
-const buttonType = computed(() => (props.isSecondary ? 'button' : 'submit'));
+const buttonType = props.isSecondary ? 'button' : 'submit';
 </script>
 
 <template>
   <button
-    class="bhr-button bhr-button--fixed-width"
     :class="{
-      'bhr-button--primary': !props.isSecondary,
-      'bhr-button--secondary': props.isSecondary,
+      'bhr-btn-filled-primary': !props.isSecondary,
+      'bhr-btn-bordered-primary': props.isSecondary,
       'ml-2': props.isSecondary,
     }"
     :type="buttonType"

@@ -22,6 +22,7 @@ use App\Service\Elastic\ElasticClientInterface;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Mockery\MockInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -110,7 +111,14 @@ class RolloverCounterTest extends UnitTestCase
     private function mockSubTypeRepository(string $entityClass, int $count, int $pageCount): void
     {
         $repository = \Mockery::mock(ServiceEntityRepository::class);
-        $repository->expects('createQueryBuilder->select->addSelect->getQuery->getSingleResult')->andReturn([
+        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+
+        $repository->shouldReceive('createQueryBuilder')->andReturn($queryBuilder);
+
+        // Chaning does not work when method return type of method call is static:
+        $queryBuilder->shouldReceive('select')->andReturnSelf();
+        $queryBuilder->shouldReceive('addSelect')->andReturnSelf();
+        $queryBuilder->shouldReceive('getQuery->getSingleResult')->andReturn([
             'count' => $count,
             'pageCount' => $pageCount,
         ]);

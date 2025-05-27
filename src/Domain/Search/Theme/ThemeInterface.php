@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Theme;
 
-use App\Service\Search\Query\Condition\QueryConditions;
+use App\Service\Search\Query\Condition\QueryConditionBuilderInterface;
 
 interface ThemeInterface
 {
@@ -16,5 +16,5 @@ interface ThemeInterface
 
     public function getPageTextTranslationKey(): string;
 
-    public function getBaseQueryConditions(): QueryConditions;
+    public function getBaseQueryConditionBuilder(): QueryConditionBuilderInterface;
 }

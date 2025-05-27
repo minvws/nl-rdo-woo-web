@@ -11,7 +11,7 @@ Display facet with hyperlinks
     {% set entries = result.aggregation(facet.key).entries|default([]) %}
 
     {% if entries | length > 0 %}
-    <div class="border-b last:border-b-0 border-woo-chinese-silver pb-8 mb-8">
+    <div class="border-b last:border-b-0 border-woo-chinese-silver pb-8 mb-8" id="{{ facetKey.value }}">
         <h2 class="woo-h3 sm:font-normal mb-6">{{ title }}</h2>
 
         <ul class="sm:columns-2 lg:columns-3 sm:gap-x-12">
@@ -37,16 +37,28 @@ Display facet with hyperlinks
     {% endif %}
 {% endmacro %}
 
-{% macro facet_preview(title, facetKey, result) %}
+{% macro facet_preview(title, facetKey, result, gotoPlural) %}
     {% set facet = result.searchParameters.facetInputs.getByFacetKey(facetKey).facet %}
-    {% set entries = result.aggregation(facet.key).entries|default([])[:8] %}
-    {% if entries | length > 0 %}
-    <div data-e2e-name="categories-{{ title }}">
-        <h3 class="woo-h3 sm:font-normal mb-6">{{ title }}</h3>
+    {% set allEntries = result.aggregation(facet.key).entries %}
+    {% set numberOfAllEntries = allEntries | length %}
+    {% set numberOfVisibleEntries = 6 %}
+    {% set hasMoreEntries = numberOfAllEntries > numberOfVisibleEntries %}
+    {% set visibleEntries = allEntries|default([])[:numberOfVisibleEntries] %}
+    {% if visibleEntries | length > 0 %}
+    <div class="pb-16" data-e2e-name="categories-{{ title }}">
+        <div class="flex border-b border-woo-chinese-silver mb-2 pb-2">
+            <h3 class="woo-h3 sm:font-normal grow mr-2">{{ title }}</h3>
+            {% if hasMoreEntries and gotoPlural is not null %}
+                <a class="woo-a no-underline" href="{{ path('app_browse') }}#{{ facetKey.value }}">
+                    <twig:Public:Icon class="mr-1 relative -top-px" name="chevron-right" size="12" />
+                    {{ 'categories.label.go_to_all_of_type' | trans({'count': numberOfAllEntries, 'type': gotoPlural}) }}
+                </a>
+            {% endif %}
+        </div>
 
-        <ul>
-            {% for entryIndex, entry in entries %}
-            <li>
+        <ul class="sm:columns-2 lg:columns-3 sm:gap-x-12">
+            {% for entryIndex, entry in visibleEntries %}
+            <li class="sm:py-2">
                 {# parenthesis around searchkey are important, otherwise it will be used as a literal 'searchkey' value #}
                 <twig:Public:ArrowedLink
                     to="{{ path('app_search', entry.queryParams) }}"
@@ -129,14 +141,15 @@ Display facet with hyperlinks
             </button>
         </legend>
 
+        {% set numberOfInitialEntries = 5 %}
         <div class="js-filters-group-collapsible" id="filters-group-{{ facet.key.value }}">
-            {% for entry in entries[:5] %}
+            {% for entry in entries[:numberOfInitialEntries] %}
                 {{ _self.facet_entry(entry, facetInput) }}
             {% endfor %}
 
-            {% if entries | length > 5 %}
+            {% if entries | length > numberOfInitialEntries %}
                 <div class="js-filters-item-collapsible" id="filter-items-{{ facet.key.value }}">
-                    {% for entry in entries[5:] %}
+                    {% for entry in entries[numberOfInitialEntries:] %}
                         {{ _self.facet_entry(entry, facetInput) }}
                     {% endfor %}
                 </div>

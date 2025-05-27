@@ -8,6 +8,7 @@ use App\Domain\Department\DepartmentService;
 use App\Domain\Publication\Dossier\ViewModel\DossierViewFactory;
 use App\Domain\Search\Query\SearchParametersFactory;
 use App\Entity\Department;
+use App\Service\Search\Query\Definition\BrowseDepartmentAggregationsQueryDefinition;
 use App\Service\Search\SearchService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,17 +17,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Annotation\Route;
-use Twig\Environment;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class DepartmentController extends AbstractController
 {
     public function __construct(
-        private readonly Environment $twig,
         private readonly DossierViewFactory $dossierViewFactory,
         private readonly SearchParametersFactory $searchParametersFactory,
         private readonly SearchService $searchService,
         private readonly DepartmentService $departmentService,
+        private readonly BrowseDepartmentAggregationsQueryDefinition $aggregationsQueryDefinition,
     ) {
     }
 
@@ -66,18 +66,15 @@ class DepartmentController extends AbstractController
             ));
         }
 
-        $facetResult = $this->searchService->searchFacets($searchParameters);
+        $facetResult = $this->searchService->getResult($this->aggregationsQueryDefinition, $searchParameters);
 
-        $loader = $this->twig->getLoader();
-        $template = 'public/department/custom/' . $department->getSlug() . '.html.twig';
-        if (! $loader->exists($template)) {
-            $template = 'public/department/details_default.html.twig';
-        }
-
-        return $this->render($template, [
-            'recents' => $this->dossierViewFactory->getRecentDossiersForDepartment(5, $department),
-            'facets' => $facetResult,
-            'department' => $department,
-        ]);
+        return $this->render(
+            $this->departmentService->getTemplate($department),
+            [
+                'recents' => $this->dossierViewFactory->getRecentDossiersForDepartment(5, $department),
+                'facets' => $facetResult,
+                'department' => $department,
+            ],
+        );
     }
 }

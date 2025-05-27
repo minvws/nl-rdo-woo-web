@@ -26,7 +26,7 @@ class InventoryType extends AbstractType
     ];
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -59,7 +59,7 @@ class InventoryType extends AbstractType
             $builder->add('cancel', SubmitType::class, [
                 'label' => 'global.cancel',
                 'attr' => [
-                    'class' => 'bhr-button--secondary',
+                    'class' => 'bhr-btn-bordered-primary',
                 ],
             ]);
         }

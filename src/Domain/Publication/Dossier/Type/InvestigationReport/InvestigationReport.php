@@ -46,6 +46,7 @@ class InvestigationReport extends AbstractDossier implements EntityWithAttachmen
         $this->document = null;
     }
 
+    #[\Override]
     public function setDateFrom(?\DateTimeImmutable $dateFrom): static
     {
         $this->dateFrom = $dateFrom;

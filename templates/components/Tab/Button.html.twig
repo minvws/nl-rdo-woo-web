@@ -1,0 +1,14 @@
+<button
+    aria-controls="tabs-{{ tabsName }}-content-{{ tabNumber }}"
+    aria-label="{{ title }}"
+    {% if isActive %}
+        aria-selected="true"
+    {% else %}
+        tabindex="-1"
+    {% endif %}
+    class="{{ class }}"
+    data-e2e-name="tabs-{{ tabsName }}-button-{{ tabNumber }}"
+    data-tab-target="#tabs-{{ tabsName }}-button-{{ tabNumber }}"
+    id="tabs-{{ tabsName }}-button-{{ tabNumber }}"
+    role="tab"
+>{{ title }}</button>

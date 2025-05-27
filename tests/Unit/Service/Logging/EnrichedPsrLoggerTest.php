@@ -21,8 +21,8 @@ use Symfony\Component\Uid\Uuid;
 
 final class EnrichedPsrLoggerTest extends UnitTestCase
 {
-    private const IPS = ['127.0.0.1'];
-    private const MY_ROLES = ['Chief Chaos Coordinator'];
+    private const array IPS = ['127.0.0.1'];
+    private const array MY_ROLES = ['Chief Chaos Coordinator'];
 
     private Logger&MockInterface $logger;
     private TokenStorageInterface&MockInterface $tokenStorage;

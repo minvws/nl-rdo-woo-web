@@ -10,6 +10,7 @@ use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use App\Domain\Sitemap\SitemapDossierSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
@@ -46,10 +47,15 @@ class SitemapDossierSubscriberTest extends MockeryTestCase
             $dossier,
         ]);
 
+        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+        $queryBuilder->shouldReceive('select')->andReturnSelf();
+        $queryBuilder->shouldReceive('where')->andReturnSelf();
+        $queryBuilder->shouldReceive('setParameter')->andReturnSelf();
+        $queryBuilder->shouldReceive('getQuery')->andReturn($query);
+
         $this->dossierRepository
-            ->expects('createQueryBuilder->select->where->setParameter->getQuery')
-            ->once()
-            ->andReturn($query);
+            ->shouldReceive('createQueryBuilder')
+            ->andReturn($queryBuilder);
 
         $this->dossierPathHelper->expects('getAbsoluteDetailsPath')->with($dossier)->andReturn($url = '/foo/bar');
 

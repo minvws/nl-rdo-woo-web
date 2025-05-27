@@ -26,6 +26,7 @@ enum ElasticField: string
     case DECISION_DATE = 'decision_date';
     case DECISION = 'decision';
     case INQUIRY_IDS = 'inquiry_ids';
+    case INQUIRY_CASE_NRS = 'inquiry_case_nrs';
     case MIME_TYPE = 'mime_type';
     case FILE_SIZE = 'file_size';
     case FILE_TYPE = 'file_type';
@@ -45,4 +46,6 @@ enum ElasticField: string
     case SUBJECT_NAMES = 'subject_names';
     case DEPARTMENT_NAMES = 'department_names';
     case DATE_FILTER = 'date_filter';
+    case ORGANISATION_IDS = 'organisation_ids';
+    case REFERRED_DOCUMENT_NRS = 'referred_document_nrs';
 }

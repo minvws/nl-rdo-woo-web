@@ -44,7 +44,7 @@ const defaultFileInfo = computed(() => {
       </span>
       <span class="bhr-file__info-area">
         <span
-          class="bhr-file__file-name group-hover:text-bhr-sea-blue group-focus:text-bhr-sea-blue"
+          class="bhr-file__file-name group-hover:text-bhr-sea-blue group-focus:text-bhr-sea-blue break-all"
         >
           {{ props.fileName }}
         </span>
@@ -60,17 +60,19 @@ const defaultFileInfo = computed(() => {
 
     <button
       @click="onDelete"
-      class="bhr-file__delete"
+      class="bhr-btn-ghost-danger w-12"
+      data-e2e-name="delete-file"
       type="button"
       v-if="props.canDelete"
     >
-      <Icon color="fill-current" :size="18" name="trash-bin" />
+      <Icon color="fill-current" :size="20" name="trash-bin" />
       <span class="sr-only">Verwijder {{ props.fileName }}</span>
     </button>
 
     <a
       v-else-if="props.withdrawUrl"
-      class="bhr-file__delete"
+      class="bhr-btn-ghost-danger w-16"
+      data-e2e-name="withdraw-file"
       :href="props.withdrawUrl"
     >
       <Icon color="fill-current" :size="18" name="trash-bin" />

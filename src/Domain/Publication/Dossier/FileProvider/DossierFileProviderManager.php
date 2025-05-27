@@ -11,17 +11,10 @@ use App\Enum\ApplicationMode;
 class DossierFileProviderManager
 {
     /**
-     * @var iterable<DossierFileProviderInterface>
-     */
-    private iterable $providers;
-
-    /**
      * @param iterable<DossierFileProviderInterface> $providers
      */
-    public function __construct(
-        iterable $providers,
-    ) {
-        $this->providers = $providers;
+    public function __construct(private readonly iterable $providers)
+    {
     }
 
     public function getEntityForPublicUse(

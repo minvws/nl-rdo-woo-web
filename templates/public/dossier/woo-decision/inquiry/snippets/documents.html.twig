@@ -1,5 +1,3 @@
-{% import "public/macros/document.html.twig" as macro %}
-
 {% if documentCount.total > 0 %}
 <div class="mt-16" data-e2e-name="inquiry-documents">
     <h2 class="woo-h2 woo-h2-spacing" id="documenten">{{ 'global.documents' | trans }}</h2>
@@ -12,11 +10,16 @@
     <div class="pt-4">
         <twig:Public:DownloadFilesForm
             action="{{ downloadUrl }}"
-            canDownload="{{ public_docs.count > 0 }}"
+            canDownload="0"
             searchUrl="{{ searchUrl }}"
         />
     </div>
 
-    {{ macro.document_tabs(public_docs, already_public_docs, not_public_docs, not_online_docs, '#documenten') }}
+    <twig:Public:Publication:WooDecision:DocumentTabs
+        alreadyPublicDocuments="{{ already_public_docs }}"
+        publicDocuments="{{ public_docs }}"
+        notOnlineDocuments="{{ not_online_docs }}"
+        notPublicDocuments="{{ not_public_docs }}"
+    />
 </div>
 {% endif %}

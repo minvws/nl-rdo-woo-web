@@ -17,8 +17,6 @@ Enable landingpages
   Change Department Settings  BZK  ${TRUE}
   Change Department Settings  VWS  ${TRUE}
   Go To Public
-  Sleep  1s
-  Reload
   Click Bekijk Per Bestuursorgaan
   Get Text  //*[@data-e2e-name="departments"]  contains  AZ
   Get Text  //*[@data-e2e-name="departments"]  contains  BZK
@@ -52,7 +50,7 @@ Invisble landingpage is not accessible
 
 *** Keywords ***
 Suite Setup
-  Suite Setup - CI
+  Suite Setup Generic
 
 Navigate To Individual Landingpage
   [Arguments]  ${keyword}

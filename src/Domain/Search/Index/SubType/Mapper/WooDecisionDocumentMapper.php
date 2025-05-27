@@ -38,13 +38,19 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
 
         $dossiers = [];
         $prefixedDossierNrs = [];
+        $organisationIds = [];
         foreach ($entity->getDossiers() as $dossier) {
             $dossiers[] = $this->wooDecisionMapper->map($dossier)->getDocumentValues();
             $prefixedDossierNrs[] = PrefixedDossierNr::forDossier($dossier);
+            $organisationIds[] = $dossier->getOrganisation()->getId();
         }
 
         $inquiryIds = $entity->getInquiries()->map(
             fn (Inquiry $inquiry) => $inquiry->getId()
+        )->toArray();
+
+        $referredDocumentNrs = $entity->getReferredBy()->map(
+            fn (Document $document) => $document->getDocumentNr()
         )->toArray();
 
         $file = $entity->getFileInfo();
@@ -68,6 +74,8 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
             ElasticNestedField::DOSSIERS->value => $dossiers,
             ElasticField::INQUIRY_IDS->value => $inquiryIds,
             ElasticField::PREFIXED_DOSSIER_NR->value => $prefixedDossierNrs,
+            ElasticField::ORGANISATION_IDS->value => $organisationIds,
+            ElasticField::REFERRED_DOCUMENT_NRS->value => $referredDocumentNrs,
         ];
 
         if ($metadata !== null) {

@@ -1,0 +1,12 @@
+{% set alerts = app.flashes('backend') %}
+{% if alerts | length > 0 %}
+    <div class="mb-8" data-e2e-name="{{ e2eName | default('alerts') }}">
+        {% for messages in alerts %}
+            {% for label, message in messages %}
+                <twig:Admin:Alert type="{{ label }}">
+                    {{ message }}
+                </twig:Admin:Alert>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endif %}

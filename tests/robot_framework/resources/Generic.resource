@@ -10,8 +10,6 @@ Library             Browser
 
 
 *** Variables ***
-${BASE_URL}                 localhost:8000
-${BASE_URL_BALIE}           localhost:8000/balie
 ${TST_BALIE_USER}           email@example.org
 ${TST_BALIE_PASSWORD}       IkLoopNooitVastVandaag
 ${TST_BALIE_OTP_SECRET}     ${EMPTY}
@@ -94,3 +92,10 @@ Go To With Response
   ${response} =  Wait For Response  ${url}
   ${status} =  Get From Dictionary  ${response}  status
   RETURN  ${status}
+
+Success Alert Is Visible
+  [Arguments]  ${contains_message}=${EMPTY}
+  Get Element States  //div[@data-e2e-name="alerts"]/div[contains(@class, 'bhr-alert--success')]  contains  attached
+  IF  "${contains_message}" != '${EMPTY}'
+    Get Text  //div[@data-e2e-name="alerts"]/div[contains(@class, 'bhr-alert--success')]  contains  ${contains_message}
+  END

@@ -29,14 +29,14 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class InquiryController extends AbstractController
 {
     protected const MAX_ITEMS_PER_PAGE = 100;
 
     /**
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     * @SuppressWarnings("PHPMD.ExcessiveParameterList")
      */
     public function __construct(
         private readonly InquiryRepository $repository,
@@ -95,7 +95,7 @@ class InquiryController extends AbstractController
             if ($uploadedFile instanceof UploadedFile) {
                 /** @var DocumentPrefix $prefix */
                 $prefix = $form->get('prefix')->getData();
-                $result = $this->inquiryImporter->processSpreadsheet(
+                $result = $this->inquiryImporter->import(
                     $this->authorizationMatrix->getActiveOrganisation(),
                     $uploadedFile,
                     $prefix

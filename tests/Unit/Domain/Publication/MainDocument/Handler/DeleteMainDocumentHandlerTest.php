@@ -89,9 +89,7 @@ class DeleteMainDocumentHandlerTest extends MockeryTestCase
         $this->annualReportDocumentRepository->expects('remove')->with($annualReportDocument, true);
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            static function (MainDocumentDeletedEvent $message) use ($annualReportDocument) {
-                return $message->documentId === $annualReportDocument->getId();
-            }
+            static fn (MainDocumentDeletedEvent $message) => $message->documentId === $annualReportDocument->getId()
         ))->andReturns(new Envelope(new \stdClass()));
 
         $this->deleteStrategy->expects('delete')->with($annualReportDocument);

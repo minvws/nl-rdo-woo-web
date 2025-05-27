@@ -51,6 +51,7 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
                 $dossierDocument->getDocumentValues(),
             ],
             ElasticField::PREFIXED_DOSSIER_NR->value => PrefixedDossierNr::forDossier($entity->getDossier()),
+            ElasticField::ORGANISATION_IDS->value => [$entity->getDossier()->getOrganisation()->getId()],
         ];
 
         if ($metadata !== null) {

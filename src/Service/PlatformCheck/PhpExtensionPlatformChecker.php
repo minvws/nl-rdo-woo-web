@@ -6,7 +6,7 @@ namespace App\Service\PlatformCheck;
 
 readonly class PhpExtensionPlatformChecker implements PlatformCheckerInterface
 {
-    private const REQUIRED_EXTENSIONS = ['amqp', 'json', 'pdo_pgsql', 'intl', 'zip'];
+    private const array REQUIRED_EXTENSIONS = ['amqp', 'json', 'pdo_pgsql', 'intl', 'zip'];
 
     /**
      * @param string[] $requiredExtensions

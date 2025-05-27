@@ -12,9 +12,16 @@ use App\Domain\Publication\Dossier\Type\Advice\Advice;
 use App\Domain\Publication\Dossier\Type\Advice\AdviceAttachment;
 use App\Domain\Publication\Dossier\Type\Advice\AdviceMainDocument;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
+use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
+use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
+use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
+use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
+use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
+use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
@@ -24,10 +31,13 @@ use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\IndexException;
 use App\Tests\Unit\UnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ElasticDocumentTypeTest extends UnitTestCase
 {
+    use MatchesSnapshots;
+
     /**
      * @return array<string, array{entity: AbstractDossier|AbstractAttachment|AbstractMainDocument, expectedType: ElasticDocumentType}>
      */
@@ -128,6 +138,54 @@ class ElasticDocumentTypeTest extends UnitTestCase
                 'entityClass' => OtherPublicationAttachment::class,
                 'expectedType' => ElasticDocumentType::ATTACHMENT,
             ],
+            'AnnualReport' => [
+                'entityClass' => AnnualReport::class,
+                'expectedType' => ElasticDocumentType::ANNUAL_REPORT,
+            ],
+            'AnnualReportMainDocument' => [
+                'entityClass' => AnnualReportMainDocument::class,
+                'expectedType' => ElasticDocumentType::ANNUAL_REPORT_MAIN_DOCUMENT,
+            ],
+            'AnnualReportAttachment' => [
+                'entityClass' => AnnualReportAttachment::class,
+                'expectedType' => ElasticDocumentType::ATTACHMENT,
+            ],
+            'InvestigationReport' => [
+                'entityClass' => InvestigationReport::class,
+                'expectedType' => ElasticDocumentType::INVESTIGATION_REPORT,
+            ],
+            'InvestigationReportMainDocument' => [
+                'entityClass' => InvestigationReportMainDocument::class,
+                'expectedType' => ElasticDocumentType::INVESTIGATION_REPORT_MAIN_DOCUMENT,
+            ],
+            'InvestigationReportAttachment' => [
+                'entityClass' => InvestigationReportAttachment::class,
+                'expectedType' => ElasticDocumentType::ATTACHMENT,
+            ],
+            'Disposition' => [
+                'entityClass' => Disposition::class,
+                'expectedType' => ElasticDocumentType::DISPOSITION,
+            ],
+            'DispositionMainDocument' => [
+                'entityClass' => DispositionMainDocument::class,
+                'expectedType' => ElasticDocumentType::DISPOSITION_MAIN_DOCUMENT,
+            ],
+            'DispositionAttachment' => [
+                'entityClass' => DispositionAttachment::class,
+                'expectedType' => ElasticDocumentType::ATTACHMENT,
+            ],
+            'Advice' => [
+                'entityClass' => Advice::class,
+                'expectedType' => ElasticDocumentType::ADVICE,
+            ],
+            'AdviceMainDocument' => [
+                'entityClass' => AdviceMainDocument::class,
+                'expectedType' => ElasticDocumentType::ADVICE_MAIN_DOCUMENT,
+            ],
+            'AdviceAttachment' => [
+                'entityClass' => AdviceAttachment::class,
+                'expectedType' => ElasticDocumentType::ATTACHMENT,
+            ],
         ];
     }
 
@@ -150,17 +208,22 @@ class ElasticDocumentTypeTest extends UnitTestCase
 
     public function testGetMainTypeValues(): void
     {
-        self::assertContains(
-            ElasticDocumentType::COVENANT->value,
+        $this->assertMatchesSnapshot(
             ElasticDocumentType::getMainTypeValues(),
         );
     }
 
     public function testGetSubTypeValues(): void
     {
-        self::assertContains(
-            ElasticDocumentType::ATTACHMENT->value,
+        $this->assertMatchesSnapshot(
             ElasticDocumentType::getSubTypeValues(),
+        );
+    }
+
+    public function testGetMainDocumentTypeValues(): void
+    {
+        $this->assertMatchesSnapshot(
+            ElasticDocumentType::getMainDocumentTypeValues(),
         );
     }
 
@@ -192,5 +255,55 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'foo',
             ElasticDocumentType::COVENANT_MAIN_DOCUMENT->trans($translator, $locale),
         );
+    }
+
+    #[DataProvider('fromDossierTypeProvider')]
+    public function testFromDossierType(DossierType $input, ElasticDocumentType $expectedType): void
+    {
+        self::assertEquals(
+            $expectedType,
+            ElasticDocumentType::fromDossierType($input),
+        );
+    }
+
+    /**
+     * @return array<string, array{input:DossierType, expectedType:ElasticDocumentType}>
+     */
+    public static function fromDossierTypeProvider(): array
+    {
+        return [
+            'woo-decision' => [
+                'input' => DossierType::WOO_DECISION,
+                'expectedType' => ElasticDocumentType::WOO_DECISION,
+            ],
+            'advice' => [
+                'input' => DossierType::ADVICE,
+                'expectedType' => ElasticDocumentType::ADVICE,
+            ],
+            'annual-report' => [
+                'input' => DossierType::ANNUAL_REPORT,
+                'expectedType' => ElasticDocumentType::ANNUAL_REPORT,
+            ],
+            'complaint-judgment' => [
+                'input' => DossierType::COMPLAINT_JUDGEMENT,
+                'expectedType' => ElasticDocumentType::COMPLAINT_JUDGEMENT,
+            ],
+            'disposition' => [
+                'input' => DossierType::DISPOSITION,
+                'expectedType' => ElasticDocumentType::DISPOSITION,
+            ],
+            'covenant' => [
+                'input' => DossierType::COVENANT,
+                'expectedType' => ElasticDocumentType::COVENANT,
+            ],
+            'other-publication' => [
+                'input' => DossierType::OTHER_PUBLICATION,
+                'expectedType' => ElasticDocumentType::OTHER_PUBLICATION,
+            ],
+            'investigation-report' => [
+                'input' => DossierType::INVESTIGATION_REPORT,
+                'expectedType' => ElasticDocumentType::INVESTIGATION_REPORT,
+            ],
+        ];
     }
 }

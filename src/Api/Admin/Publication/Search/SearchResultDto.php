@@ -12,12 +12,15 @@ use App\Api\Admin\Publication\Search\Parameter\PublicationTypeFilterParameterPro
 use App\Api\Admin\Publication\Search\Parameter\ResultTypeFilterParameterProvider;
 use App\Api\Admin\Publication\Search\Parameter\SearchParameterProvider;
 use App\Domain\Publication\Dossier\Type\DossierType;
+use Symfony\Component\TypeInfo\Type;
+use Symfony\Component\TypeInfo\TypeIdentifier;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[GetCollection(
     uriTemplate: 'publication/search',
     parameters: [
         'q' => new QueryParameter(
+            nativeType: new Type\BuiltinType(TypeIdentifier::STRING),
             provider: SearchParameterProvider::class,
             required: true,
             constraints: [
@@ -26,18 +29,21 @@ use Symfony\Component\Validator\Constraints as Assert;
             ],
         ),
         'dossierId' => new QueryParameter(
+            nativeType: new Type\BuiltinType(TypeIdentifier::STRING),
             provider: DossierIdParameterProvider::class,
             constraints: [
                 new Assert\Uuid(),
             ],
         ),
         'filter[publicationType]' => new QueryParameter(
+            nativeType: new Type\BuiltinType(TypeIdentifier::STRING),
             provider: PublicationTypeFilterParameterProvider::class,
             constraints: [
                 new Assert\Choice(callback: [DossierType::class, 'getAllValues']),
             ],
         ),
         'filter[resultType]' => new QueryParameter(
+            nativeType: new Type\BuiltinType(TypeIdentifier::STRING),
             provider: ResultTypeFilterParameterProvider::class,
             constraints: [
                 new Assert\Choice(callback: [SearchResultType::class, 'getAllValues']),

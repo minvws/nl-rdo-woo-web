@@ -4,15 +4,19 @@
     {% do formField.setRendered %}
     <p class="bhr-form-help text-lg pb-2">{{ helpText }}</p>
 
-    <div {{ vue_component('PublicationDocument', {
+    <div data-e2e-name="main-document" {{ vue_component('GenericController', {
+        componentName: 'PublicationFiles',
+
         allowedFileTypes: allowedFileTypes | default([]),
         allowedMimeTypes: allowedMimeTypes | default([]),
+        allowMultiple: false,
         canDelete: canDelete,
-        documentType: documentType,
+        dateLabel: dateLabel | default(null),
         endpoint: endpoint,
         fileTypeOptions: documentTypes,
         groundOptions: grounds,
         languageOptions: languages,
+        readableFileType: documentType,
         uploadGroupId: "main-documents"
     }) }}>
         <div class="min-h-14"></div>

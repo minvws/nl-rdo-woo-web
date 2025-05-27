@@ -8,6 +8,8 @@ use App\Entity\Department;
 use App\Form\DepartmentType;
 use App\Message\UpdateDepartmentMessage;
 use App\Repository\DepartmentRepository;
+use App\Service\Security\Authorization\AuthorizationMatrix;
+use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,13 +21,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DepartmentController extends AbstractController
 {
-    protected const MAX_ITEMS_PER_PAGE = 100;
+    protected const int MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
         private readonly DepartmentRepository $repository,
         private readonly MessageBusInterface $messageBus,
         private readonly TranslatorInterface $translator,
         private readonly PaginatorInterface $paginator,
+        private readonly AuthorizationMatrix $authorizationMatrix,
     ) {
     }
 
@@ -33,8 +36,13 @@ class DepartmentController extends AbstractController
     #[IsGranted('AuthMatrix.department.read')]
     public function index(Request $request): Response
     {
+        $organisation = null;
+        if ($this->authorizationMatrix->hasFilter(AuthorizationMatrixFilter::ORGANISATION_ONLY)) {
+            $organisation = $this->authorizationMatrix->getActiveOrganisation();
+        }
+
         $pagination = $this->paginator->paginate(
-            $this->repository->createQueryBuilder('d')->getQuery(),
+            $this->repository->getDepartmentsQuery(filterByOrganisation: $organisation),
             $request->query->getInt('page', 1),
             self::MAX_ITEMS_PER_PAGE,
             [

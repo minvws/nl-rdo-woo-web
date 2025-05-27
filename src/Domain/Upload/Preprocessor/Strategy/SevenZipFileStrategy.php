@@ -12,12 +12,12 @@ use Symfony\Component\Mime\MimeTypesInterface;
 
 readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInterface
 {
-    private const SUPPORTED_EXTENSIONS = [
+    private const array SUPPORTED_EXTENSIONS = [
         '7z',
         'zip',
     ];
 
-    private const SUPPORTED_MIME_TYPES = [
+    private const array SUPPORTED_MIME_TYPES = [
         'application/zip',
         'application/x-7z-compressed',
     ];
@@ -45,7 +45,15 @@ readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInterface
 
     public function canProcess(UploadedFile $file): bool
     {
-        return in_array($file->getOriginalFileExtension(), self::SUPPORTED_EXTENSIONS, true)
-            || in_array($this->mimeTypes->guessMimeType($file->getPathname()), self::SUPPORTED_MIME_TYPES, true);
+        return $this->supports(
+            $file->getOriginalFileExtension(),
+            $this->mimeTypes->guessMimeType($file->getPathname()) ?? '',
+        );
+    }
+
+    public function supports(string $extension, string $mimetype): bool
+    {
+        return in_array($extension, self::SUPPORTED_EXTENSIONS, true)
+            || in_array($mimetype, self::SUPPORTED_MIME_TYPES, true);
     }
 }

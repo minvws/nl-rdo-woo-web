@@ -108,7 +108,7 @@ Link Inquiry To Documents
   Wait For Condition  Text  //div[@class="bhr-upload-area__files-area"]  contains  ${filename}  timeout=10s
   Select Prefix When Linking Inquiries  MINVWS
   Click  id=inquiry_link_documents_form_link
-  Wait For Condition  Text  //*[@data-e2e-name="inquiry-alerts"]  contains  zaaknummers gekoppeld  timeout=10s
+  Success Alert Is Visible  zaaknummers gekoppeld
   Click  id=inquiry_link_documents_form_cancel
 
 Select Prefix When Linking Inquiries
@@ -129,14 +129,10 @@ Verify Inquiry Document Count
   Get Text  //*[@data-e2e-name="inquiry-list"]//tr[contains(.,'${inquiry}')]/td[3]  equals  ${count}
 
 Download Inquiry Archive
-  Click  //button[@data-e2e-name="download-documents-button"]
-  Wait Until Keyword Succeeds  10min  10s  Download Status Not Contains Pending
-  Generic Download Click  //a[@data-e2e-name="download-file-link"]
-
-Download Status Not Contains Pending
-  Go Back
-  Click  //button[@data-e2e-name="download-documents-button"]
-  Get Text  //*[@data-e2e-name="download-status"]  not contains  Het archief is nog niet gereed voor download.
+  [Arguments]  ${number_of_documents}
+  Click  //a[@data-e2e-name="download-documents"]
+  Get Text  //*[@data-e2e-name="nr-of-documents"]  equals  ${number_of_documents}
+  Generic Download Click  //a[@data-e2e-name="download-file-link"]  expected_extension=zip
 
 Click First Document In Inquiry
   Click  (//div[@data-e2e-name="inquiry-documents"]//tbody//a)[1]

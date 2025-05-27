@@ -16,8 +16,8 @@ export const queryCheckboxFilterElements = (
   }
 
   return [
-    ...element.querySelectorAll('.js-search-filter-checkbox'),
-  ] as HTMLInputElement[];
+    ...element.querySelectorAll<HTMLInputElement>('.js-search-filter-checkbox'),
+  ];
 };
 
 export const getUpdatedParamsFromCheckboxFilter = (

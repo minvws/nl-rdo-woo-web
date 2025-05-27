@@ -22,6 +22,7 @@ class WooDecisionMainDocumentRepository extends AbstractMainDocumentRepository i
         parent::__construct($registry, WooDecisionMainDocument::class);
     }
 
+    #[\Override]
     public function create(AbstractDossier $dossier, CreateMainDocumentCommand $command): WooDecisionMainDocument
     {
         Assert::isInstanceOf($dossier, WooDecision::class);

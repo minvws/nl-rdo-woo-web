@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Domain\Publication\Dossier\DocumentPrefix;
 use App\Entity\Department;
 use App\Entity\Organisation;
 use App\Form\Organisation\OrganisationFormType;
@@ -24,28 +25,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Webmozart\Assert\Assert;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class OrganisationController extends AbstractController
 {
-    protected EntityManagerInterface $doctrine;
-    protected OrganisationService $organisationService;
-    protected TranslatorInterface $translator;
-    protected AuditLogger $auditLogger;
-    protected AuthorizationMatrix $authorizationMatrix;
-
     public function __construct(
-        EntityManagerInterface $doctrine,
-        OrganisationService $organisationService,
-        TranslatorInterface $translator,
-        AuditLogger $auditLogger,
-        AuthorizationMatrix $authorizationMatrix,
+        protected EntityManagerInterface $doctrine,
+        protected OrganisationService $organisationService,
+        protected TranslatorInterface $translator,
+        protected AuditLogger $auditLogger,
+        protected AuthorizationMatrix $authorizationMatrix,
     ) {
-        $this->doctrine = $doctrine;
-        $this->organisationService = $organisationService;
-        $this->translator = $translator;
-        $this->auditLogger = $auditLogger;
-        $this->authorizationMatrix = $authorizationMatrix;
     }
 
     #[Route('/balie/organisatie', name: 'app_admin_user_organisation', methods: ['GET'])]
@@ -81,6 +71,8 @@ class OrganisationController extends AbstractController
             'departmentOptions' => $this->getDepartmentsOptions(),
             'departmentValues' => $this->getDepartmentsValues($organisationForm),
             'departmentsErrors' => $this->getDepartmentsErrors($organisationForm),
+            'prefixValues' => $this->getPrefixValues($organisationForm),
+            'prefixErrors' => $this->getPrefixErrors($organisationForm),
         ]);
     }
 
@@ -106,6 +98,8 @@ class OrganisationController extends AbstractController
             'departmentOptions' => $this->getDepartmentsOptions(),
             'departmentValues' => $this->getDepartmentsValues($organisationForm),
             'departmentsErrors' => $this->getDepartmentsErrors($organisationForm),
+            'prefixValues' => $this->getPrefixValues($organisationForm),
+            'prefixErrors' => $this->getPrefixErrors($organisationForm),
         ]);
     }
 
@@ -151,6 +145,38 @@ class OrganisationController extends AbstractController
     {
         $errors = [];
         foreach ($form->get('departments')->getErrors(true) as $error) {
+            $errors[] = $error->getMessage();
+        }
+
+        return $errors;
+    }
+
+    /**
+     * @return array<array-key, string>
+     */
+    private function getPrefixValues(FormInterface $form): array
+    {
+        $prefixes = $form->get('documentPrefixes')->getData();
+        if (! $prefixes instanceof Collection) {
+            return [];
+        }
+
+        return $prefixes->map(
+            static function ($prefix): string {
+                Assert::isInstanceOf($prefix, DocumentPrefix::class);
+
+                return $prefix->getPrefix();
+            },
+        )->toArray();
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getPrefixErrors(FormInterface $form): array
+    {
+        $errors = [];
+        foreach ($form->get('documentPrefixes')->getErrors(true) as $error) {
             $errors[] = $error->getMessage();
         }
 

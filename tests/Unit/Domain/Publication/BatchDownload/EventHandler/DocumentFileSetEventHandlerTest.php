@@ -45,9 +45,7 @@ class DocumentFileSetEventHandlerTest extends MockeryTestCase
         $this->repository->expects('findOne')->with($dossierId)->andReturn($dossier);
 
         $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
-            static function (BatchDownloadScope $scope) use ($dossier): bool {
-                return $scope->wooDecision === $dossier;
-            }
+            static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier
         ));
 
         $this->handler->handleDocumentFileSetProcessed($event);

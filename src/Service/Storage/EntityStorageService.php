@@ -17,27 +17,27 @@ use Webmozart\Assert\Assert;
  * This class is responsible for storing and retrieving files attached to entities using FileInfo. See StorageService
  * for more information.
  *
- * @SuppressWarnings(TooManyPublicMethods)
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("TooManyPublicMethods")
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class EntityStorageService extends StorageService
 {
-    private string $documentRoot;
+    private readonly string $documentRoot;
 
     public function __construct(
         RemoteFilesystem $remoteFilesystem,
         LocalFilesystem $localFilesystem,
         LoggerInterface $logger,
         StorageRootPathGenerator $rootPathGenerator,
-        private MessageBusInterface $messageBus,
-        private EntityManagerInterface $doctrine,
-        private bool $isLocal = false,
+        private readonly MessageBusInterface $messageBus,
+        private readonly EntityManagerInterface $doctrine,
+        private readonly bool $isLocal = false,
         ?string $documentRoot = null,
     ) {
         parent::__construct($remoteFilesystem, $localFilesystem, $logger, $rootPathGenerator);
 
         // Document root should always end with a slash
-        $documentRoot = $documentRoot ?? '/';
+        $documentRoot ??= '/';
         $this->documentRoot = str_ends_with($documentRoot, '/') ? $documentRoot : $documentRoot . '/';
     }
 
@@ -207,14 +207,14 @@ class EntityStorageService extends StorageService
         return $this->doDeleteAllFilesForEntity($entity, $path);
     }
 
-    protected function generatePagePath(EntityWithFileInfo $entity, int $pageNr): string
+    public function generatePagePath(EntityWithFileInfo $entity, int $pageNr): string
     {
         $rootPath = $this->getRootPathForEntity($entity);
 
         return sprintf('%s/pages/page-%d.pdf', $rootPath, $pageNr);
     }
 
-    protected function generateEntityPath(EntityWithFileInfo $entity, ?string $filename = null): string
+    public function generateEntityPath(EntityWithFileInfo $entity, ?string $filename = null): string
     {
         if ($filename === null) {
             $filename = $this->getBasenameOfFilePath($entity);

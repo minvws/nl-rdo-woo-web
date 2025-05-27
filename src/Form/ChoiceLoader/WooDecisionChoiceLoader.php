@@ -27,7 +27,7 @@ class WooDecisionChoiceLoader implements ChoiceLoaderInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function loadChoiceList(?callable $value = null): ChoiceListInterface
     {
@@ -50,7 +50,7 @@ class WooDecisionChoiceLoader implements ChoiceLoaderInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function loadChoicesForValues(array $values, ?callable $value = null): array
     {
@@ -66,7 +66,7 @@ class WooDecisionChoiceLoader implements ChoiceLoaderInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function loadValuesForChoices(array $choices, ?callable $value = null): array
     {

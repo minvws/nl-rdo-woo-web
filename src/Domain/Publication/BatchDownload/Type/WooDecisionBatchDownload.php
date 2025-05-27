@@ -43,16 +43,11 @@ readonly class WooDecisionBatchDownload implements BatchDownloadTypeInterface
 
     public function isAvailableForBatchDownload(BatchDownloadScope $scope): bool
     {
-        Assert::notNull($scope->wooDecision);
+        $query = $this->getDocumentsQuery($scope);
 
-        if (! $scope->wooDecision->getStatus()->isPubliclyAvailable()) {
-            return false;
-        }
+        /** @var int $count */
+        $count = $query->select('count(doc)')->getQuery()->getSingleScalarResult();
 
-        if ($scope->wooDecision->getUploadStatus()->getActualUploadCount() === 0) {
-            return false;
-        }
-
-        return true;
+        return $count > 0;
     }
 }

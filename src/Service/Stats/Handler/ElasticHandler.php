@@ -9,13 +9,10 @@ use Symfony\Component\Uid\Uuid;
 
 class ElasticHandler implements StatsHandlerInterface
 {
-    protected ElasticClientInterface $elastic;
-
     protected const INDEX = 'worker_stats';
 
-    public function __construct(ElasticClientInterface $elastic)
+    public function __construct(protected ElasticClientInterface $elastic)
     {
-        $this->elastic = $elastic;
     }
 
     public function store(\DateTimeImmutable $dt, string $hostname, string $section, int $duration): void

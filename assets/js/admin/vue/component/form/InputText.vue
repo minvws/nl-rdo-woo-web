@@ -1,5 +1,10 @@
-<script setup>
-import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
+<script setup lang="ts">
+import {
+  type FormStore,
+  useInputAriaDescribedBy,
+  useInputStore,
+} from '@admin-fe/composables';
+import type { Validator } from '@admin-fe/form/interface';
 import { uniqueId } from '@js/utils';
 import { computed, inject, ref, watch } from 'vue';
 import ErrorMessages from './ErrorMessages.vue';
@@ -7,57 +12,30 @@ import FormHelp from './FormHelp.vue';
 import FormLabel from './FormLabel.vue';
 import InputErrors from './InputErrors.vue';
 
-const props = defineProps({
-  class: {
-    type: String,
-    default: '',
-  },
-  hasFormRow: {
-    type: Boolean,
-    default: true,
-  },
-  helpText: {
-    type: String,
-  },
-  isDisabled: {
-    type: Boolean,
-    default: false,
-  },
-  isDisabledMessage: {
-    type: String,
-    required: false,
-  },
-  label: {
-    type: String,
-    required: false,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  required: {
-    type: Boolean,
-    required: false,
-    default: true,
-  },
-  type: {
-    type: String,
-    required: false,
-    default: 'text',
-  },
-  validators: {
-    type: Array,
-    required: false,
-    default: () => [],
-  },
-  value: {
-    type: String,
-    required: false,
-    default: '',
-  },
+interface Props {
+  class?: string;
+  hasFormRow?: boolean;
+  helpText?: string;
+  label?: string;
+  name: string;
+  required?: boolean;
+  type?: string;
+  validators?: Validator[];
+  value?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  class: '',
+  hasFormRow: true,
+  helpText: '',
+  label: '',
+  required: true,
+  type: 'text',
+  validators: () => [],
+  value: '',
 });
 
-const inputId = `${uniqueId('input')}`;
+const inputId = uniqueId('input');
 const value = ref(props.value);
 
 watch(
@@ -73,25 +51,20 @@ const inputStore = useInputStore(
   value,
   props.validators,
 );
-const inputClass = computed(() => {
-  return {
-    'bhr-input-text': true,
-    'bhr-input-text--disabled': props.isDisabled,
-    'bhr-input-text--invalid': inputStore.hasVisibleErrors,
-    [props.class]: true,
-  };
-});
-const formRowClass = computed(() => {
-  return {
-    'bhr-form-row': props.hasFormRow,
-    'bhr-form-row--invalid': props.hasFormRow && inputStore.hasVisibleErrors,
-  };
-});
+const inputClass = computed(() => ({
+  'bhr-input-text': true,
+  'bhr-input-text--invalid': inputStore.hasVisibleErrors,
+  [props.class]: true,
+}));
+const formRowClass = computed(() => ({
+  'bhr-form-row': props.hasFormRow,
+  'bhr-form-row--invalid': props.hasFormRow && inputStore.hasVisibleErrors,
+}));
 const ariaDescribedBy = computed(() =>
   useInputAriaDescribedBy(inputId, props.helpText, inputStore.hasVisibleErrors),
 );
 
-inject('form').addInput(inputStore);
+(inject('form') as FormStore).addInput(inputStore);
 </script>
 
 <template>
@@ -104,36 +77,30 @@ inject('form').addInput(inputStore);
       props.helpText
     }}</FormHelp>
 
-    <InputErrors
-      :errors="inputStore.errors"
-      :inputId="inputId"
-      :value="value"
-      v-if="inputStore.hasVisibleErrors"
-    />
+    <div aria-live="assertive">
+      <InputErrors
+        :errors="inputStore.errors"
+        :inputId="inputId"
+        :value="value"
+        v-if="inputStore.hasVisibleErrors"
+      />
 
-    <ErrorMessages
-      :errors="inputStore.submitValidationErrors"
-      v-if="inputStore.hasVisibleErrors"
-    />
+      <ErrorMessages
+        :messages="inputStore.submitValidationErrors"
+        v-if="inputStore.hasVisibleErrors"
+      />
+    </div>
 
     <input
       @blur="inputStore.markAsTouched"
       :aria-describedby="ariaDescribedBy"
-      :aria-disabled="props.isDisabled"
       :aria-invalid="inputStore.hasVisibleErrors"
       :class="inputClass"
-      :disabled="props.isDisabled"
       :id="inputId"
       :name="props.name"
       :type="props.type"
       :required="props.required"
       v-model="value"
     />
-
-    <p class="sr-only" aria-live="assertive">
-      <template v-if="props.isDisabled">
-        {{ props.isDisabledMessage }}
-      </template>
-    </p>
   </div>
 </template>

@@ -15,6 +15,7 @@ use App\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface;
 use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Webmozart\Assert\Assert;
@@ -23,11 +24,6 @@ use Webmozart\Assert\Assert;
 readonly class DeleteMainDocumentHandler
 {
     /**
-     * @var iterable<MainDocumentDeleteStrategyInterface>
-     */
-    private iterable $deleteStrategies;
-
-    /**
      * @param iterable<MainDocumentDeleteStrategyInterface> $deleteStrategies
      */
     public function __construct(
@@ -35,9 +31,8 @@ readonly class DeleteMainDocumentHandler
         private DossierWorkflowManager $dossierWorkflowManager,
         private EntityManagerInterface $entityManager,
         private DossierRepository $dossierRepository,
-        iterable $deleteStrategies,
+        private iterable $deleteStrategies,
     ) {
-        $this->deleteStrategies = $deleteStrategies;
     }
 
     public function __invoke(DeleteMainDocumentCommand $command): void
@@ -47,7 +42,7 @@ readonly class DeleteMainDocumentHandler
         $dossier = $this->dossierRepository->findOneByDossierId($dossierId);
         Assert::isInstanceOf($dossier, EntityWithMainDocument::class);
 
-        /** @var MainDocumentRepositoryInterface $documentRepository */
+        /** @var EntityRepository<MainDocumentRepositoryInterface> $documentRepository */
         $documentRepository = $this->entityManager->getRepository($dossier->getMainDocumentEntityClass());
         Assert::isInstanceOf($documentRepository, MainDocumentRepositoryInterface::class);
 

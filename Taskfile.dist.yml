@@ -3,11 +3,14 @@ version: "3"
 
 includes:
   docs:
-    taskfile: docs/Taskfile.dist.yml
+    taskfile: docs/Taskfile.docs.yml
     dir: docs
   rf:
-    taskfile: tests/robot_framework/Taskfile.dist.yml
+    taskfile: tests/robot_framework/Taskfile.rf.yml
     dir: tests/robot_framework
+  minio:
+    taskfile: taskfiles/Taskfile.minio.yml
+    flatten: true
 
 vars:
   BASE_PATH:
@@ -45,7 +48,7 @@ tasks:
     desc: Pull all docker images
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "pull --include-deps" }
+        vars: { DOCKER_COMPOSE_ARGS: "pull --include-deps --policy missing" }
 
   dc:build:
     desc: Build all docker images
@@ -89,8 +92,9 @@ tasks:
       - task: composer:install
       - task: dc
         vars: { DOCKER_COMPOSE_ARGS: "up -d", CLI_ARGS: "" }
-      - task: dc:run
+      - task: dc:shell
         vars: { CLI_ARGS: "app bash -c 'wait-for-it postgres:5432 --timeout=0 --strict -- wait-for-it rabbitmq:5672 --timeout=0 --strict -- wait-for-it elasticsearch:9200 --timeout=0 --strict -- echo \"Done waiting\"'" }
+      - task: minio:create-buckets
       - task: app:migrate
       - task: app:loadfixtures
       - task: dc:run
@@ -99,6 +103,7 @@ tasks:
         vars: { CLI_ARGS: "app bin/console woopie:index:create woopie latest --read --write" }
       - task: npm:install
       - task: npm:build
+      - task: docs:sphinx:build:ci
 
   setup:if-not-exist:
     vars:
@@ -140,6 +145,7 @@ tasks:
     cmds:
       - task: down
       - task: down
+      - task: dc:pull
       - task: dc:rebuild
       - task: up
 
@@ -152,12 +158,8 @@ tasks:
   env:
     desc: Template .env
     run: once
-    vars:
-      DATABASE_ENCRYPTION_KEY: 3140050008b203765bc6ed21721f020e8e72febd72669adcf3151098abdaedc13ddbceb53c7bea8688f9f9a20af5a8ea438528359b8f82ec6545bfa11dddb73735670403cd7495dd6726bb9d2815813d7808ec38d67cfea223113f1ab7d44f817ce6aeff
     cmds:
       - cp .env.development .env.local
-      - docker run --rm --volume "$(pwd)":/workspace --workdir /workspace ghcr.io/ilyes512/utils:latest
-        sed -i "s/DATABASE_ENCRYPTION_KEY=.*/DATABASE_ENCRYPTION_KEY={{.DATABASE_ENCRYPTION_KEY}}/g" .env.local
     sources:
       - .env.development
     generates:
@@ -172,6 +174,7 @@ tasks:
       The following files/dirs are excluded:
         - /.idea
     cmds:
+      - task: down
       - task: down
       - docker volume rm woo_composer || true
       - docker volume rm woo_npm || true
@@ -227,6 +230,7 @@ tasks:
     cmds:
       - task: dc:shell
         vars: { CLI_ARGS: "app bin/console woopie:dev:clean-sheet --force --keep-prefixes {{.CLI_ARGS}}" }
+      - task: minio:clear-buckets
 
   app:db:reset:
     desc: Reset the application database including RabbitMQ queues and ElasticSearch indexes
@@ -299,6 +303,18 @@ tasks:
       - task: dc:shell
         vars: { CLI_ARGS: "app composer update-test-snapshots" }
 
+  app:rector:
+    desc: Run Rector on the code base
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer rector" }
+
+  app:rector:preview:
+    desc: Preview Rector changes on the code base
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app composer rector-preview" }
+
   app:checktranslations:
     desc: Run YAML linting on translation files
     cmds:
@@ -328,6 +344,8 @@ tasks:
       - task: npm:install
       - task: npm:build
       - task: app:syncdotenv
+      - task: docs:sphinx:build:ci
+      - task: minio:create-buckets
 
   d:create-cache-volumes:
     cmds:
@@ -357,3 +375,9 @@ tasks:
     cmds:
       - task: dc
         vars: { DOCKER_COMPOSE_ARGS: "logs worker --tail 30 --follow" }
+
+  app:generate-sitemap:
+    desc: Generate the sitemap in one command
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app bin/console Woo-index:generate {{.CLI_ARGS}}" }

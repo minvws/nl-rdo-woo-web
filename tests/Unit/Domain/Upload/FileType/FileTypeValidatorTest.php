@@ -5,25 +5,31 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Upload\FileType;
 
 use App\Domain\Upload\FileType\FileTypeValidator;
+use App\Domain\Upload\FileType\MimeTypeHelper;
 use App\Service\Uploader\UploadGroupId;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Oneup\UploaderBundle\Event\ValidationEvent;
 use Oneup\UploaderBundle\Uploader\Exception\ValidationException;
+use Oneup\UploaderBundle\Uploader\File\FilesystemFile;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 
 final class FileTypeValidatorTest extends MockeryTestCase
 {
     private LoggerInterface&MockInterface $logger;
+    private MimeTypeHelper&MockInterface $mimeTypeHelper;
     private FileTypeValidator $validator;
 
     public function setUp(): void
     {
         $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->mimeTypeHelper = \Mockery::mock(MimeTypeHelper::class);
 
-        $this->validator = new FileTypeValidator($this->logger);
+        $this->validator = new FileTypeValidator(
+            $this->mimeTypeHelper,
+            $this->logger,
+        );
 
         parent::setUp();
     }
@@ -42,13 +48,27 @@ final class FileTypeValidatorTest extends MockeryTestCase
         $this->validator->onValidate($event);
     }
 
-    public function testValidateThrowsErrorWhenMimeTypeIsNotAllowed(): void
+    public function testValidateThrowsErrorWhenMimeTypeIsNotValid(): void
     {
-        $request = new Request(request: ['groupId' => UploadGroupId::MAIN_DOCUMENTS->value]);
+        $upload = \Mockery::mock(FilesystemFile::class);
+
+        $request = new Request(
+            request: ['groupId' => UploadGroupId::MAIN_DOCUMENTS->value],
+        );
 
         $event = \Mockery::mock(ValidationEvent::class);
         $event->shouldReceive('getRequest')->andReturn($request);
-        $event->shouldReceive('getFile->getMimetype')->andReturn('foo/bar');
+        $event->shouldReceive('getFile')->andReturn($upload);
+
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($upload)
+            ->andReturn('foo/bar');
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with('foo/bar', UploadGroupId::MAIN_DOCUMENTS)
+            ->andReturnFalse();
 
         $this->logger->expects('error');
         $this->expectException(ValidationException::class);
@@ -57,56 +77,29 @@ final class FileTypeValidatorTest extends MockeryTestCase
         $this->validator->onValidate($event);
     }
 
-    public function testValidateContinuesWithoutExceptionForWhitelistedMimeType(): void
+    public function testValidateAcceptsValidMimeType(): void
     {
-        $request = new Request(request: ['groupId' => UploadGroupId::MAIN_DOCUMENTS->value]);
-
-        $event = \Mockery::mock(ValidationEvent::class);
-        $event->shouldReceive('getRequest')->andReturn($request);
-        $event->expects('getFile->getMimetype')->andReturn('application/pdf');
-
-        $this->validator->onValidate($event);
-    }
-
-    public function testValidateFallsBackToExtensionMimetypeAndThrowsExceptionIfThisAlsoFails(): void
-    {
-        $upload = \Mockery::mock(UploadedFile::class);
-        $upload->expects('getClientOriginalName')->andReturn('foo.zip');
+        $upload = \Mockery::mock(FilesystemFile::class);
 
         $request = new Request(
             request: ['groupId' => UploadGroupId::MAIN_DOCUMENTS->value],
-            files: [
-                'file' => $upload,
-            ],
         );
 
         $event = \Mockery::mock(ValidationEvent::class);
         $event->shouldReceive('getRequest')->andReturn($request);
-        $event->shouldReceive('getFile->getMimetype')->andReturn('foo/bar');
+        $event->shouldReceive('getFile')->andReturn($upload);
 
-        $this->logger->expects('error');
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage(FileTypeValidator::ERROR_WHITELIST);
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($upload)
+            ->andReturn('application/pdf');
 
-        $this->validator->onValidate($event);
-    }
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with('application/pdf', UploadGroupId::MAIN_DOCUMENTS)
+            ->andReturnTrue();
 
-    public function testValidateFallsBackToExtensionMimetypeAndCanAcceptThis(): void
-    {
-        $upload = \Mockery::mock(UploadedFile::class);
-        $upload->expects('getClientOriginalName')->andReturn('foo.docx');
-
-        $request = new Request(
-            request: ['groupId' => UploadGroupId::MAIN_DOCUMENTS->value],
-            files: [
-                'file' => $upload,
-            ],
-        );
-
-        $event = \Mockery::mock(ValidationEvent::class);
-        $event->shouldReceive('getRequest')->andReturn($request);
-        $event->shouldReceive('getFile->getMimetype')->andReturn('foo/bar');
-
+        $this->logger->shouldNotHaveReceived('error');
         $this->validator->onValidate($event);
     }
 }

@@ -12,17 +12,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 class PlatformCheck extends Command
 {
     /**
-     * @var iterable<PlatformCheckerInterface>
-     */
-    private iterable $checkers;
-
-    /**
      * @param iterable<PlatformCheckerInterface> $checkers
      */
-    public function __construct(iterable $checkers)
+    public function __construct(private readonly iterable $checkers)
     {
-        $this->checkers = $checkers;
-
         parent::__construct();
     }
 

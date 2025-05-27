@@ -1,0 +1,20 @@
+@utility bhr-link-list {
+  @apply flex 
+            flex-col
+            gap-2;
+}
+
+@utility bhr-link-list__link {
+  @apply text-lg 
+            p-4 
+            bg-white 
+            hover-focus:bg-bhr-platinum
+            border 
+            border-bhr-light-silver 
+            border-solid 
+            rounded-lg 
+            flex
+            gap-2
+            items-center
+            justify-between;
+}

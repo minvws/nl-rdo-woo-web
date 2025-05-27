@@ -8,7 +8,6 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType as Dec
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Form\Dossier\AbstractDossierStepType;
 use App\Form\Dossier\DossierFormBuilderTrait;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -23,7 +22,7 @@ class DecisionType extends AbstractDossierStepType
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -50,17 +49,6 @@ class DecisionType extends AbstractDossierStepType
             ]);
 
         $this->addDocumentField($builder);
-
-        $builder
-            ->add('decision_date', DateType::class, [
-                'required' => true,
-                'label' => 'Datum waarop het besluit genomen is',
-                'help' => 'Vul de formele besluit-datum in',
-                'widget' => 'single_text',
-                'input' => 'datetime_immutable',
-                'data' => $dossier->getDecisionDate() ?? new \DateTimeImmutable(),
-                'property_path' => 'decisionDate',
-            ]);
 
         $this->addSubmits($builder);
     }

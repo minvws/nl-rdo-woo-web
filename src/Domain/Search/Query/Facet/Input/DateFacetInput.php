@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace App\Domain\Search\Query\Facet\Input;
 
 use App\Domain\Search\Query\Facet\FacetDefinitionInterface;
+use App\Service\Search\Model\FacetKey;
 use App\Service\Utils\CastTypes;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 final readonly class DateFacetInput extends FacetInput implements DateFacetInputInterface
 {
-    public const WITHOUT_DATE = 'without_date';
-    public const FROM = 'from';
-    public const TO = 'to';
+    public const string WITHOUT_DATE = 'without_date';
+    public const string FROM = 'from';
+    public const string TO = 'to';
 
     private bool $isActive;
 
@@ -115,5 +116,10 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
             $key === self::FROM ? null : $this->from,
             $key === self::TO ? null : $this->to,
         );
+    }
+
+    public function getFacetKey(): FacetKey
+    {
+        return $this->facet->getKey();
     }
 }

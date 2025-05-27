@@ -36,9 +36,7 @@ final class DepartmentsTest extends UnitTestCase
             ->shouldReceive('get')
             ->with(
                 'DEPARTMENTS_HAS_ANY',
-                \Mockery::on(function (callable $callback): bool {
-                    return $callback($this->item);
-                }))
+                \Mockery::on(fn (callable $callback): bool => $callback($this->item)))
             ->andReturn(true);
 
         $result = (new Departments($this->repository, $this->cache))->hasAny();

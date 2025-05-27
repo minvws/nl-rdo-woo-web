@@ -7,25 +7,19 @@ namespace App\Twig\Runtime;
 use App\Citation;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use App\Domain\Publication\History\History;
 use App\Service\DateRangeConverter;
-use App\Service\DocumentUploadQueue;
 use App\Service\HistoryService;
-use App\Service\Search\Query\QueryGenerator;
+use App\Service\Search\Query\Component\HighlightComponent;
 use App\Service\Security\OrganisationSwitcher;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
 readonly class WooExtensionRuntime implements RuntimeExtensionInterface
 {
     public function __construct(
         private RequestStack $requestStack,
-        private DocumentUploadQueue $uploadQueue,
         private OrganisationSwitcher $organisationSwitcher,
         private HistoryService $historyService,
         private DossierPathHelper $dossierPathHelper,
@@ -95,18 +89,10 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
         return strval($query);
     }
 
-    /**
-     * @return string[]
-     */
-    public function getUploadQueue(WooDecision $dossier): array
-    {
-        return $this->uploadQueue->getFilenames($dossier);
-    }
-
     public function filterHighlights(string $input): string
     {
         return str_replace(
-            [QueryGenerator::HL_START, QueryGenerator::HL_END],
+            [HighlightComponent::HL_START, HighlightComponent::HL_END],
             ['<strong>', '</strong>'],
             $input,
         );

@@ -10,29 +10,31 @@
 
 {% block body %}
     <div class="bhr-container bhr-container--sm">
-        <h1 class="bhr-title screen:text-center mb-10 print:mb-4">{{ page_title ~ " " ~ user.name }}</h1>
-        <div class="bhr-card">
-            <div class="bhr-content">
-                <div class="py-6 px-8 bg-bhr-chinese-white mb-8" data-e2e-name="user-info">
-                    <twig:Admin:Icon name="check-rounded-filled" color="fill-bhr-japanese-laurel" size="32" />
-                    <strong class="text-lg ml-3">{{ user_info | trans() }}</strong>
-                </div>
-                <div class="bhr-form-row">
-                    <p class="bhr-label">{{ 'admin.account.instructions' | trans() }}</p>
-                    <a href="{{ path('app_admin_user_pdf') }}">
-                        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary">
-                            {{ 'admin.account.instructions_download' | trans() }}</button>
-                    </a>
+        <h1 class="bhr-title mb-10 print:mb-4 print:text-left">{{ page_title ~ " " ~ user.name }}</h1>
 
-                </div>
-                <div class="bhr-form-row">
-                    <p class="bhr-label">{{ 'admin.account.instructions.shared' | trans() }}</p>
-                    <span class="bhr-form-help text-lg pb-2 block">
-                        {{ 'admin.account.instructions.caution' | trans() }}</span>
-                    <a href="{{ path('app_admin_users') }}">
-                        <button type="button" class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary">
-                            {{ 'admin.account.instructions.confirmation' | trans() }}</button>
+        <div class="bhr-card">
+            <div data-e2e-name="user-info">
+                <twig:Admin:Alert type="success">
+                    {{ user_info | trans }}
+                </twig:Admin:Alert>
+            </div>
+
+            <div class="pt-8">
+                <p class="bhr-label">{{ 'admin.account.instructions' | trans }}</p>
+
+                <div class="pt-2">
+                    <a class="bhr-btn-filled-primary" href="{{ path('app_admin_user_pdf') }}">
+                        {{ 'admin.account.instructions_download' | trans }}
                     </a>
+                </div>
+            </div>
+
+            <div class="pt-8">
+                <p class="bhr-label">{{ 'admin.account.instructions.shared' | trans }}</p>
+                <p class="bhr-form-help text-lg pb-2 block">{{ 'admin.account.instructions.caution' | trans }}</p>
+
+                <div class="pt-2">
+                    <a class="bhr-btn-bordered-primary" href="{{ path('app_admin_users') }}">{{ 'admin.account.instructions.confirmation' | trans }}</a>
                 </div>
             </div>
         </div>

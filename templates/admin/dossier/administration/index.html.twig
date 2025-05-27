@@ -11,18 +11,7 @@
     <h1 class="bhr-title pb-6">{{ page_title }}</h1>
 
     <div class="bhr-card">
-        {% set alerts = app.flashes('backend') %}
-        {% if alerts | length > 0 %}
-            <div class="mb-8">
-                {% for messages in alerts %}
-                    {% for label, message in messages %}
-                        <twig:Admin:Alert type="{{ label }}">
-                            <strong>{{ message }}</strong>
-                        </twig:Admin:Alert>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include 'admin/shared/flash-messages.html.twig' %}
 
         {% if dossiers | length > 0 %}
             <table class="bhr-table">

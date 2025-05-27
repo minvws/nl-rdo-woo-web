@@ -11,7 +11,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @phpstan-import-type AttachmentTypeBranchArray from AttachmentTypeBranch
  * @phpstan-import-type AttachmentTypeArray from AttachmentType
  *
- * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings("PHPMD.ExcessiveMethodLength")
  */
 readonly class AttachmentTypeFactory
 {

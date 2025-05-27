@@ -1,13 +1,17 @@
-# Publicatieplatform documentatie
+# Welkom bij de documentatie van het publicatieplatform
 
-Deze documentatie bevat de meest recente informatie over het gebruik van het publicatieplatform.
+Het publicatieplatform kan bereikt worden via [open.minvws.nl](https://open.minvws.nl/).
+
+Hieronder vind je de inhoudsopgave van deze documentatie. Via de zijbalk kan je ook zoeken door de documentatie.
 
 ```{toctree}
 :maxdepth: 2
-:caption: Inhoudsopgave:
+:caption: Inhoudsopgave
 
-administrator/index
-organisatiebeheer/index
-inloggen/index
+introductie
+inloggen
 publiceren/index
+organisatiebeheer/index
+admin/index
+changelog
 ```

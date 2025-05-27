@@ -62,6 +62,11 @@ final class ClamAvFileScannerTest extends MockeryTestCase
         parent::setUp();
     }
 
+    public function testGetFileSizeLimit(): void
+    {
+        self::assertEquals(10, $this->scanner->getFileSizeLimit());
+    }
+
     public function testScanReturnsTechnicalErrorWhenStreamCannotBeOpened(): void
     {
         $path = '/foo/bar/non.existent';

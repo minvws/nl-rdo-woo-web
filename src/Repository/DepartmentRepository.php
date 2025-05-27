@@ -7,7 +7,9 @@ namespace App\Repository;
 use App\Entity\Department;
 use App\Entity\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Department>
@@ -97,5 +99,28 @@ class DepartmentRepository extends ServiceEntityRepository
             ->setParameter('organisationId', $organisation->getId());
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findOne(Uuid $departmentId): Department
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.id = :id')
+            ->setParameter('id', $departmentId);
+
+        /** @var Department */
+        return $qb->getQuery()->getSingleResult();
+    }
+
+    public function getDepartmentsQuery(?Organisation $filterByOrganisation): Query
+    {
+        $queryBuilder = $this->createQueryBuilder('d');
+
+        if ($filterByOrganisation instanceof Organisation) {
+            $queryBuilder->innerJoin('d.organisations', 'o')
+                ->where('o.id = :organisationId')
+                ->setParameter('organisationId', $filterByOrganisation->getId());
+        }
+
+        return $queryBuilder->getQuery();
     }
 }

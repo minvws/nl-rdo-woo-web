@@ -1,0 +1,7 @@
+/**
+ * Check `./rich-text.css` if you want to apply the style below to every paragraph in a certain element
+ */
+
+@utility woo-p {
+  @apply mb-6 last:mb-0;
+}

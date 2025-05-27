@@ -1,0 +1,27 @@
+@utility bhr-site-header-nav-item {
+  @apply block font-bold leading-4 px-4 py-4 lg:py-8 text-lg;
+}
+
+@utility bhr-site-header-nav-item--anchor {
+  @apply hover-focus:bg-bhr-davys-grey;
+}
+
+@utility bhr-site-header-nav-item--active {
+  @apply bg-bhr-davys-grey;
+}
+
+@utility bhr-site-header-nav-item--divider {
+  @apply relative after:content-[''] after:bg-bhr-dim-gray after:absolute after:w-px after:inset-y-0 after:right-0 after:my-2;
+}
+
+@utility bhr-site-header-nav-item--skip-link {
+  @apply sr-only focus:not-sr-only focus:px-4 focus:py-8;
+}
+
+@utility bhr-site-header-sub-nav-item {
+  @apply block text-black px-4 py-2 border-b border-bhr-platinum hover:bg-bhr-lavender-web;
+
+  &.bhr-site-header-sub-nav-item--active {
+    @apply font-bold text-white bg-bhr-blue-800 pointer-events-none;
+  }
+}

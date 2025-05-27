@@ -11,7 +11,7 @@ class SortItems implements \IteratorAggregate
     /**
      * @var SortItem[]
      */
-    private array $sortItems;
+    private readonly array $sortItems;
 
     public function __construct(SortItem ...$sortItems)
     {

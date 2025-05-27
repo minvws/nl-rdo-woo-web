@@ -69,7 +69,9 @@ const hasSubmitErrors = computed(() => props.submitErrors.length > 0);
   >
     <h2 class="bhr-label">Gepubliceerde besluiten</h2>
 
-    <ErrorMessages :messages="props.submitErrors" />
+    <div aria-live="assertive">
+      <ErrorMessages :messages="props.submitErrors" />
+    </div>
 
     <div class="bhr-textarea mb-8">
       <output class="block mb-3">
@@ -84,7 +86,7 @@ const hasSubmitErrors = computed(() => props.submitErrors.length > 0);
       <button
         @click="isDialogOpen = true"
         aria-haspopup="dialog"
-        class="bhr-button bhr-button--secondary"
+        class="bhr-btn-bordered-primary"
         data-e2e-name="inquiry-decision-selector"
         type="button"
       >
@@ -115,14 +117,16 @@ const hasSubmitErrors = computed(() => props.submitErrors.length > 0);
       />
     </div>
 
-    <ErrorMessages
-      v-if="isFirstSelectDossierErrorVisible"
-      :messages="['Selecteer eerst een besluit']"
-    />
+    <div aria-live="assertive">
+      <ErrorMessages
+        v-if="isFirstSelectDossierErrorVisible"
+        :messages="['Selecteer eerst een besluit']"
+      />
+    </div>
 
     <button
       @click="onAddDossier"
-      class="bhr-button bhr-button--fixed-width mr-4 bhr-button--primary"
+      class="bhr-btn-filled-primary mr-4"
       type="button"
       data-e2e-name="link-dossier"
     >
@@ -131,7 +135,7 @@ const hasSubmitErrors = computed(() => props.submitErrors.length > 0);
 
     <button
       @click="cancel"
-      class="bhr-button bhr-button--fixed-width mr-4 bhr-button--secondary"
+      class="bhr-btn-bordered-primary"
       type="button"
       data-e2e-name="cancel-linking"
     >

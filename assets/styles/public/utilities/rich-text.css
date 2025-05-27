@@ -1,0 +1,65 @@
+@utility woo-rich-text {
+  & h1 {
+    @apply woo-h1 woo-h1-spacing;
+  }
+
+  & h2 {
+    @apply woo-h2 woo-h2-spacing;
+  }
+
+  & h3 {
+    @apply woo-h3 woo-h3-spacing;
+  }
+
+  & p + h2 {
+    @apply mt-16;
+  }
+
+  & ul + h2 {
+    @apply mt-16;
+  }
+
+  & ol + h2 {
+    @apply mt-16;
+  }
+
+  & ul {
+    @apply woo-ul;
+  }
+
+  & ol {
+    @apply woo-ol;
+  }
+
+  & ul ul {
+    @apply woo-ul--circle;
+  }
+
+  & ol ul {
+    @apply woo-ul--circle;
+  }
+
+  & > ul {
+    @apply mb-6 last:mb-0;
+  }
+
+  & > ol {
+    @apply mb-6 last:mb-0;
+  }
+
+  & li {
+    @apply woo-li;
+  }
+
+  & p {
+    @apply woo-p;
+  }
+
+  & a:not([class]) {
+    @apply woo-a;
+  }
+
+  & a:not([class])[href^='mailto'] {
+    @apply woo-a-email;
+  }
+}

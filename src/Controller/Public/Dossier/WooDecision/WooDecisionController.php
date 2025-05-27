@@ -32,7 +32,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class WooDecisionController extends AbstractController
 {
@@ -145,7 +145,6 @@ class WooDecisionController extends AbstractController
 
         return $this->render('public/dossier/woo-decision/shared/batch-download.html.twig', [
             'batch' => $batch,
-            'pageTitle' => 'public.documents.archive.download',
             'download_path' => $this->generateUrl(
                 'app_woodecision_batch_download',
                 [

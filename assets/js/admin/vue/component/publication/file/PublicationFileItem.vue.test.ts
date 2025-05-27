@@ -55,7 +55,7 @@ describe('the <PublicationFileItem /> component', () => {
     wrapper.find('button[aria-haspopup="dialog"]');
 
   beforeEach(() => {
-    global.fetch = vi.fn().mockImplementation(() =>
+    window.fetch = vi.fn().mockImplementation(() =>
       Promise.resolve({
         status: 200,
       }),
@@ -89,11 +89,11 @@ describe('the <PublicationFileItem /> component', () => {
     it('should make a request to the provided endpoint', async () => {
       const component = createComponent();
 
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(window.fetch).not.toHaveBeenCalled();
 
       await deleteFile(getUploadedFileComponent(component));
 
-      expect(global.fetch).toHaveBeenNthCalledWith(1, 'mocked-endpoint', {
+      expect(window.fetch).toHaveBeenNthCalledWith(1, 'mocked-endpoint', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ describe('the <PublicationFileItem /> component', () => {
 
     describe('when the request fails', () => {
       beforeEach(() => {
-        global.fetch = vi.fn().mockImplementation(() =>
+        window.fetch = vi.fn().mockImplementation(() =>
           Promise.resolve({
             status: 400,
           }),

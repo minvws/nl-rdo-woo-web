@@ -7,7 +7,7 @@ namespace App\Domain\WooIndex\Tooi;
 /**
  * Based on https://standaarden.overheid.nl/diwoo/metadata/doc/0.9.4/diwoo-metadata-lijsten_xsd_Simple_Type_diwoo_ministerielijst.
  *
- * @SuppressWarnings(PHPMD.ConstantNamingConventions)
+ * @SuppressWarnings("PHPMD.ConstantNamingConventions")
  */
 enum Ministerie: string
 {

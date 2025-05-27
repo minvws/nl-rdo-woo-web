@@ -10,13 +10,18 @@ use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\Document
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUpdateRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUploadRepository;
+use App\Domain\Upload\FileType\MimeTypeHelper;
 use App\Domain\Upload\Preprocessor\FilePreprocessor;
 use App\Domain\Upload\Process\DocumentNumberExtractor;
 use App\Domain\Upload\UploadedFile;
 use App\Service\Storage\EntityStorageService;
+use App\Service\Uploader\UploadGroupId;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ */
 #[AsMessageHandler]
 readonly class ProcessDocumentFileUploadHandler
 {
@@ -28,6 +33,7 @@ readonly class ProcessDocumentFileUploadHandler
         private EntityStorageService $entityStorageService,
         private DocumentNumberExtractor $documentNumberExtractor,
         private DocumentFileService $documentFileService,
+        private MimeTypeHelper $mimeTypeHelper,
     ) {
     }
 
@@ -66,14 +72,15 @@ readonly class ProcessDocumentFileUploadHandler
 
         $this->handleFiles($fileIterator, $documentFileSet);
 
+        // Remove the upload file as this has now been 'forwarded' to the DocumentFileUpdate entity
+        $this->entityStorageService->deleteAllFilesForEntity($documentFileUpload);
+        $this->entityStorageService->removeDownload($localFile);
+        $documentFileUpload->getFileInfo()->removeFileProperties();
+
         $documentFileUpload->markAsProcessed();
         $this->documentFileUploadRepository->save($documentFileUpload, true);
 
         $this->documentFileService->checkProcessingUploadsCompletion($documentFileSet);
-
-        // Remove the upload file as this has now been 'forwarded' to the DocumentFileUpdate entity
-        $this->entityStorageService->deleteAllFilesForEntity($documentFileUpload);
-        $this->entityStorageService->removeDownload($localFile);
     }
 
     /**
@@ -83,6 +90,17 @@ readonly class ProcessDocumentFileUploadHandler
     {
         $dossier = $documentFileSet->getDossier();
         foreach ($fileIterator as $file) {
+            /** @var UploadedFile $file */
+            $mimeType = $this->mimeTypeHelper->detectMimeType($file);
+            if (! $this->mimeTypeHelper->isValidForUploadGroup($mimeType, UploadGroupId::WOO_DECISION_DOCUMENTS)) {
+                $this->logger->info('Unsupported mimetype, skipping file', [
+                    'filename' => $file->getOriginalFilename(),
+                    'dossierId' => $dossier->getId(),
+                ]);
+
+                continue;
+            }
+
             $document = $this->documentNumberExtractor->matchDocumentForFile($file, $dossier);
             if ($document === null) {
                 continue;

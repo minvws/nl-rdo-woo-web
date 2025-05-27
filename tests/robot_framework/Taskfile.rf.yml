@@ -1,0 +1,93 @@
+# https://taskfile.dev
+version: "3"
+
+tasks:
+  venv:
+    desc: Create virtual environment
+    dir: ../../
+    cmds:
+      - python3 -m venv .venv --clear --upgrade-deps
+      - source .venv/bin/activate && pip install -r tests/robot_framework/requirements.txt  --use-feature=truststore
+      - source .venv/bin/activate && rfbrowser init
+
+  run:
+    aliases: [test, run-local]
+    desc: Run Robot tests with browser on Docker
+    dir: ../../
+    env:
+      URL_PUBLIC: localhost:8000
+      URL_ADMIN: localhost:8000/balie
+      HEADLESS: false
+    cmds:
+      - task: :up
+      - source .venv/bin/activate && robot  --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:docker-local tests/robot_framework
+
+  run-test:
+    aliases: [run-tst]
+    desc: Run Robot tests with browser on TEST
+    dir: ../../
+    env:
+      URL_PUBLIC: web.test.woo.rdobeheer.nl
+      URL_ADMIN: balie.test.woo.rdobeheer.nl/balie
+      HEADLESS: false
+    cmds:
+      - source .venv/bin/activate && robot  --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:test tests/robot_framework
+
+  run-acc:
+    desc: Run Robot tests with browser on ACC
+    dir: ../../
+    env:
+      URL_PUBLIC: web.acc.woo.rdobeheer.nl
+      URL_ADMIN: balie.acc.woo.rdobeheer.nl/balie
+      HEADLESS: false
+    cmds:
+      - source .venv/bin/activate && robot  --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:acc tests/robot_framework
+
+  run-mobile:
+    desc: Run Robot tests with browser on Docker
+    dir: ../../
+    env:
+      URL_PUBLIC: localhost:8000
+      URL_ADMIN: localhost:8000/balie
+      HEADLESS: false
+      DEVICE: iPhone 14
+    cmds:
+      - task: :up
+      - source .venv/bin/activate && robot  --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:docker-local tests/robot_framework
+
+  run-headless:
+    desc: Run Robot tests with headless browser on Docker
+    dir: ../../
+    env:
+      URL_PUBLIC: localhost:8000
+      URL_ADMIN: localhost:8000/balie
+      HEADLESS: true
+    cmds:
+      - task: :up
+      - source .venv/bin/activate && robot --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:docker-local tests/robot_framework
+
+  robocop:
+    desc: Run Robocop
+    dir: ../../
+    cmds:
+      - source .venv/bin/activate && robocop .
+
+  robotidy:
+    desc: Run Robotidy
+    dir: ../../
+    cmds:
+      - source .venv/bin/activate && robotidy .
+
+  cleansheet:
+    desc: Run for Robot customized cleansheet
+    cmds:
+      - task: :dc:shell
+        vars: { CLI_ARGS: "app bin/console woopie:dev:clean-sheet --force {{.CLI_ARGS}}" }
+      - task: :dc:shell
+        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --append --group subject" }
+      - task: :minio:clear-buckets
+
+  sitemap:
+    desc: Generate the sitemap in one command
+    cmds:
+      - task: :app:generate-sitemap

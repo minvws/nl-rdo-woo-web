@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:diwoo="https://standaarden.overheid.nl/diwoo/metadata/" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd https://standaarden.overheid.nl/diwoo/metadata/ https://standaarden.overheid.nl/diwoo/metadata/0.9.4/xsd/diwoo-metadata.xsd">
+ <url>
+  <loc>http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef02d0-39ed-6700-b0e0-315d29be4a5c</loc>
+  <lastmod>2024-04-01</lastmod>
+  <diwoo:Document>
+   <diwoo:DiWoo>
+    <diwoo:creatiedatum>2023-01-01</diwoo:creatiedatum>
+    <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
+    <diwoo:titelcollectie>
+     <diwoo:officieleTitel>document-0001-0001.pdf</diwoo:officieleTitel>
+    </diwoo:titelcollectie>
+    <diwoo:classificatiecollectie>
+     <diwoo:informatiecategorieen>
+      <diwoo:informatiecategorie resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_3baef532">Woo-verzoeken en -besluiten</diwoo:informatiecategorie>
+     </diwoo:informatiecategorieen>
+    </diwoo:classificatiecollectie>
+    <diwoo:documenthandelingen>
+     <diwoo:documenthandeling>
+      <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76">vaststelling</diwoo:soortHandeling>
+      <diwoo:atTime>2023-01-01T13:37:42+00:00</diwoo:atTime>
+     </diwoo:documenthandeling>
+    </diwoo:documenthandelingen>
+    <diwoo:isPartOf resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/main_document/1eefbf67-fd11-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:isPartOf>
+   </diwoo:DiWoo>
+  </diwoo:Document>
+ </url>
+ <url>
+  <loc>http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef0f62-e089-6700-b0e0-315d29be4a5c</loc>
+  <lastmod>2024-04-02</lastmod>
+  <diwoo:Document>
+   <diwoo:DiWoo>
+    <diwoo:creatiedatum>2023-01-02</diwoo:creatiedatum>
+    <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
+    <diwoo:titelcollectie>
+     <diwoo:officieleTitel>document-0001-0002.pdf</diwoo:officieleTitel>
+    </diwoo:titelcollectie>
+    <diwoo:classificatiecollectie>
+     <diwoo:informatiecategorieen>
+      <diwoo:informatiecategorie resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_3baef532">Woo-verzoeken en -besluiten</diwoo:informatiecategorie>
+     </diwoo:informatiecategorieen>
+    </diwoo:classificatiecollectie>
+    <diwoo:documenthandelingen>
+     <diwoo:documenthandeling>
+      <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76">vaststelling</diwoo:soortHandeling>
+      <diwoo:atTime>2023-01-02T13:37:42+00:00</diwoo:atTime>
+     </diwoo:documenthandeling>
+    </diwoo:documenthandelingen>
+    <diwoo:isPartOf resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/main_document/1eefbf67-fd11-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:isPartOf>
+   </diwoo:DiWoo>
+  </diwoo:Document>
+ </url>
+ <url>
+  <loc>http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef1bf5-8725-6700-b0e0-315d29be4a5c</loc>
+  <lastmod>2024-04-03</lastmod>
+  <diwoo:Document>
+   <diwoo:DiWoo>
+    <diwoo:creatiedatum>2023-01-03</diwoo:creatiedatum>
+    <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
+    <diwoo:titelcollectie>
+     <diwoo:officieleTitel>document-0001-0003.pdf</diwoo:officieleTitel>
+    </diwoo:titelcollectie>
+    <diwoo:classificatiecollectie>
+     <diwoo:informatiecategorieen>
+      <diwoo:informatiecategorie resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_3baef532">Woo-verzoeken en -besluiten</diwoo:informatiecategorie>
+     </diwoo:informatiecategorieen>
+    </diwoo:classificatiecollectie>
+    <diwoo:documenthandelingen>
+     <diwoo:documenthandeling>
+      <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76">vaststelling</diwoo:soortHandeling>
+      <diwoo:atTime>2023-01-03T13:37:42+00:00</diwoo:atTime>
+     </diwoo:documenthandeling>
+    </diwoo:documenthandelingen>
+    <diwoo:isPartOf resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/main_document/1eefbf67-fd11-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:isPartOf>
+   </diwoo:DiWoo>
+  </diwoo:Document>
+ </url>
+ <url>
+  <loc>http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/document/1eef2888-2dc1-6700-b0e0-315d29be4a5c</loc>
+  <lastmod>2024-04-04</lastmod>
+  <diwoo:Document>
+   <diwoo:DiWoo>
+    <diwoo:creatiedatum>2023-01-04</diwoo:creatiedatum>
+    <diwoo:publisher resource="https://identifier.overheid.nl/tooi/id/ministerie/mnre1025">ministerie van Volksgezondheid, Welzijn en Sport</diwoo:publisher>
+    <diwoo:titelcollectie>
+     <diwoo:officieleTitel>document-0001-0004.pdf</diwoo:officieleTitel>
+    </diwoo:titelcollectie>
+    <diwoo:classificatiecollectie>
+     <diwoo:informatiecategorieen>
+      <diwoo:informatiecategorie resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_3baef532">Woo-verzoeken en -besluiten</diwoo:informatiecategorie>
+     </diwoo:informatiecategorieen>
+    </diwoo:classificatiecollectie>
+    <diwoo:documenthandelingen>
+     <diwoo:documenthandeling>
+      <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76">vaststelling</diwoo:soortHandeling>
+      <diwoo:atTime>2023-01-04T13:37:42+00:00</diwoo:atTime>
+     </diwoo:documenthandeling>
+    </diwoo:documenthandelingen>
+    <diwoo:isPartOf resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/main_document/1eefbf67-fd11-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:isPartOf>
+   </diwoo:DiWoo>
+  </diwoo:Document>
+ </url>
+</urlset>

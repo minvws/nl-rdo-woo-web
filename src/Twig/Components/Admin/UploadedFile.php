@@ -9,9 +9,9 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 #[AsTwigComponent]
 class UploadedFile
 {
-    public ?string $deleteUrl;
-    public ?string $downloadUrl;
+    public ?string $deleteUrl = null;
+    public ?string $downloadUrl = null;
     public string $fileName;
-    public ?string $fileSize;
-    public ?string $mimeType;
+    public ?string $fileSize = null;
+    public ?string $mimeType = null;
 }

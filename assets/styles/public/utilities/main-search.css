@@ -1,0 +1,9 @@
+@utility woo-main-search {
+  @apply bg-woo-anti-flash-white py-4;
+  @apply lg:bg-transparent lg:py-0 lg:max-w-[306px] lg:pt-3.5;
+  @apply xl:grow xl:max-w-[336px];
+}
+
+@utility woo-main-search__container {
+  @apply woo-container lg:woo-no-container;
+}

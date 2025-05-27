@@ -7,7 +7,7 @@ namespace App\Command;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Domain\Search\Index\ElasticDocumentId;
 use App\Service\Elastic\ElasticService;
-use Jaytaph\TypeArray\TypeArray;
+use MinVWS\TypeArray\TypeArray;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

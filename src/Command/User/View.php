@@ -18,17 +18,12 @@ use Symfony\Component\Process\Process;
 
 class View extends Command
 {
-    protected UserService $userService;
-    protected EntityManagerInterface $doctrine;
-    protected Totp $totp;
-
-    public function __construct(UserService $userService, EntityManagerInterface $doctrine, Totp $totp)
-    {
+    public function __construct(
+        protected UserService $userService,
+        protected EntityManagerInterface $doctrine,
+        protected Totp $totp,
+    ) {
         parent::__construct();
-
-        $this->userService = $userService;
-        $this->doctrine = $doctrine;
-        $this->totp = $totp;
     }
 
     protected function configure(): void

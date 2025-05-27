@@ -4,6 +4,14 @@
 
 Deze map bevat de gebruikershandleiding. Opgezet in Markdown zodat we bij elke build een nieuwe versie kunnen genereren van deze handleiding.
 
+De documentatie is publiekelijk beschikbaar op [open.minvws.nl/documentatie/](https://open.minvws.nl/documentatie).
+
+Om deze lokaal te genereren, gebruik je het volgende commando:
+
+```bash
+task docs:sphinx:build
+```
+
 ## Technische documentatie
 
 Deze map bevat technische documentatie om de broncode beter mee te kunnen begrijpen binnen deze repository.

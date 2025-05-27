@@ -39,14 +39,11 @@ readonly class InquiryBatchDownload implements BatchDownloadTypeInterface
 
     public function isAvailableForBatchDownload(BatchDownloadScope $scope): bool
     {
-        Assert::notNull($scope->inquiry);
+        $query = $this->getDocumentsQuery($scope);
 
-        foreach ($scope->inquiry->getDocuments() as $document) {
-            if ($document->shouldBeUploaded() && $document->isUploaded()) {
-                return true;
-            }
-        }
+        /** @var int $count */
+        $count = $query->select('count(doc)')->getQuery()->getSingleScalarResult();
 
-        return false;
+        return $count > 0;
     }
 }

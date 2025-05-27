@@ -9,7 +9,7 @@ use League\Flysystem\FilesystemOperator;
 use Psr\Log\LoggerInterface;
 
 /**
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings("PHPMD.TooManyPublicMethods")
  */
 readonly class RemoteFilesystem
 {
@@ -109,7 +109,7 @@ readonly class RemoteFilesystem
     }
 
     /**
-     * @SuppressWarnings(ErrorControlOperator)
+     * @SuppressWarnings("ErrorControlOperator")
      *
      * @param resource $resource
      */

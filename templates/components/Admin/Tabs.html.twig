@@ -1,15 +1,25 @@
-{% if titles | length > 0 %}
-    <ul class="bhr-tab-list" role="tablist" aria-label="{{ title }}">
-        {% for tabTitle in titles %}
-            <li class="bhr-tab-list__item" role="presentation">
-                <twig:Admin:Tab:Button
-                    isActive="{{ loop.first }}"
-                    tabNumber="{{ loop.index }}"
-                    title="{{ tabTitle }}"
-                />
-            </li>
-        {% endfor %}
-    </ul>
+{% set numberOfTabs = buttonTitles | length %}
+
+{% if numberOfTabs > 0 %}
+    {% if numberOfTabs > 1 %}
+        <div class="js-tabs">
+            <ul class="bhr-tab-list" role="tablist" aria-label="{{ title }}">
+                {% for buttonTitle in buttonTitles %}
+                    <li class="bhr-tab-list__item" role="presentation">
+                        <twig:Admin:Tab:Button
+                            isActive="{{ loop.first }}"
+                            tabNumber="{{ loop.index }}"
+                            tabsName="{{ name }}"
+                            title="{{ buttonTitle }}"
+                        />
+                    </li>
+                {% endfor %}
+            </ul>
+    {% endif %}
 
     {% block content %}{% endblock %}
+
+    {% if numberOfTabs > 1 %}
+        </div>
+    {% endif %}
 {% endif %}

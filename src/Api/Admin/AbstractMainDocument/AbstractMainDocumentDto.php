@@ -9,10 +9,11 @@ use App\Api\Admin\Dossier\DossierReferenceDto;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
 /**
- * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+ * @SuppressWarnings("PHPMD.ExcessiveParameterList")
  */
 abstract readonly class AbstractMainDocumentDto
 {
@@ -21,6 +22,7 @@ abstract readonly class AbstractMainDocumentDto
      */
     final public function __construct(
         public DossierReferenceDto $dossier,
+        public Uuid $id,
         public string $name,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
         #[ApiProperty(
@@ -60,6 +62,7 @@ abstract readonly class AbstractMainDocumentDto
 
         return new static(
             DossierReferenceDto::fromEntity($entity->getDossier()),
+            $entity->getId(),
             $entity->getFileInfo()->getName() ?? '',
             $entity->getFormalDate(),
             $entity->getType()->value,

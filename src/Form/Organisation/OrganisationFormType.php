@@ -22,14 +22,14 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  *
  * @template-extends AbstractType<OrganisationFormType>
  */
 class OrganisationFormType extends AbstractType
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -88,7 +88,7 @@ class OrganisationFormType extends AbstractType
                 'data' => $documentPrefixes,
                 'constraints' => [
                     new NotBlank(),
-                    new Callback([$this, 'validatePrefixes']),
+                    new Callback($this->validatePrefixes(...)),
                     new Count(min: 1, minMessage: 'at_least_one_prefix_required'),
                 ],
             ])

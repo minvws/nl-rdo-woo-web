@@ -280,7 +280,13 @@ const onDelete = (fileId) => {
   buttonElement.value?.focus();
 };
 
-const onUploaded = (fileId, file, uploadId, elementHasFocus) => {
+const onUploaded = (
+  fileId,
+  file,
+  uploadId,
+  uploadSuccessData,
+  elementHasFocus,
+) => {
   selectedFiles.value.delete(fileId);
   updateInputValue();
 
@@ -290,7 +296,7 @@ const onUploaded = (fileId, file, uploadId, elementHasFocus) => {
 
   uploadedFiles.value.push(file);
   uploadedFile.value = file;
-  emit('uploaded', file, uploadId);
+  emit('uploaded', file, uploadId, uploadSuccessData);
 
   if (!props.allowMultiple) {
     dangerousFiles.value = [];

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\ComplaintJudgement;
 
-use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
 use App\Domain\Search\Result\Dossier\ComplaintJudgement\ComplaintJudgementSearchResult;
 use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
+use App\Enum\ApplicationMode;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -20,11 +20,15 @@ class ComplaintJudgementRepository extends AbstractDossierRepository implements 
         parent::__construct($registry, ComplaintJudgement::class);
     }
 
-    public function getSearchResultViewModel(string $prefix, string $dossierNr): ?ComplaintJudgementSearchResult
-    {
+    public function getSearchResultViewModel(
+        string $prefix,
+        string $dossierNr,
+        ApplicationMode $mode,
+    ): ?ComplaintJudgementSearchResult {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(
                 'new %s(
+                    dos.id,
                     dos.dossierNr,
                     dos.documentPrefix,
                     dos.title,
@@ -41,7 +45,7 @@ class ComplaintJudgementRepository extends AbstractDossierRepository implements 
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', DossierStatus::PUBLISHED)
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
         ;
 
         /** @var ?ComplaintJudgementSearchResult */

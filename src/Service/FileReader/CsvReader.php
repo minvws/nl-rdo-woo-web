@@ -12,16 +12,11 @@ use App\Service\Inventory\InventoryDataHelper;
  */
 class CsvReader implements FileReaderInterface
 {
-    protected readonly string $filepath;
-    protected readonly HeaderMap $mapping;
     /** @var mixed[][] */
     protected array $rows = [];
 
-    public function __construct(string $filepath, HeaderMap $mapping)
+    public function __construct(protected readonly string $filepath, protected readonly HeaderMap $mapping)
     {
-        $this->filepath = $filepath;
-        $this->mapping = $mapping;
-
         $handle = fopen($this->filepath, 'r');
         if (! $handle) {
             throw new \RuntimeException('Failed to open file: ' . $this->filepath);

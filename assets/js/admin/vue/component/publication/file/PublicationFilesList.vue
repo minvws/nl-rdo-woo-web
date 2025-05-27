@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, useTemplateRef } from 'vue';
 import type { PublicationFileTypes, PublicationFile } from './interface';
 import PublicationFileItem from './PublicationFileItem.vue';
 
@@ -23,11 +23,14 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>();
 
+const publicationFileItemComponents =
+  useTemplateRef<InstanceType<typeof PublicationFileItem>[]>('items');
 const numberOfFiles = computed(() => props.files.size);
 const hasFiles = computed(() => numberOfFiles.value > 0);
 const hasMultipleFiles = computed(() => numberOfFiles.value > 1);
 
-const createDeleteEndpoint = (id?: string) => `${props.endpoint}/${id}`;
+const createDeleteEndpoint = (id?: string) =>
+  id ? `${props.endpoint}/${id}` : props.endpoint;
 
 const isFirstFile = (index: number) => index === 0;
 const isLastFile = (index: number) => index === numberOfFiles.value - 1;
@@ -39,6 +42,12 @@ const onDeleted = (id: string) => {
 const onEdit = (id: string) => {
   emit('edit', id);
 };
+
+defineExpose({
+  setFocus: () => {
+    publicationFileItemComponents.value?.[0]?.setFocus();
+  },
+});
 </script>
 
 <template>
@@ -49,10 +58,10 @@ const onEdit = (id: string) => {
       @edit="onEdit"
       :can-delete="props.canDelete"
       :class="{
-        '!rounded-b-none': hasMultipleFiles && isFirstFile(index),
-        '!rounded-none':
+        'rounded-b-none!': hasMultipleFiles && isFirstFile(index),
+        'rounded-none!':
           hasMultipleFiles && !isFirstFile(index) && !isLastFile(index),
-        '!rounded-t-none': hasMultipleFiles && isLastFile(index),
+        'rounded-t-none!': hasMultipleFiles && isLastFile(index),
         '-mt-px': hasMultipleFiles && !isFirstFile(index),
       }"
       :date="file.formalDate"
@@ -65,6 +74,7 @@ const onEdit = (id: string) => {
       :key="file.id"
       :mime-type="file.mimeType"
       :withdraw-url="file.withdrawUrl"
+      ref="items"
     />
   </div>
 </template>

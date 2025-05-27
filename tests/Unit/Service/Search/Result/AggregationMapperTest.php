@@ -18,7 +18,7 @@ use App\Domain\Search\Query\SearchParameters;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Result\AggregationMapper;
 use App\SourceType;
-use Jaytaph\TypeArray\TypeArray;
+use MinVWS\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 

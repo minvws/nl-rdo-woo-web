@@ -20,23 +20,14 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class OrganisationService
 {
-    private const UNCHANGED = '[unchanged]';
-
-    protected EntityManagerInterface $doctrine;
-    protected LoggerInterface $logger;
-    protected AuditLogger $auditLogger;
-    protected TokenStorageInterface $tokenStorage;
+    private const string UNCHANGED = '[unchanged]';
 
     public function __construct(
-        EntityManagerInterface $doctrine,
-        LoggerInterface $logger,
-        AuditLogger $auditLogger,
-        TokenStorageInterface $tokenStorage,
+        protected EntityManagerInterface $doctrine,
+        protected LoggerInterface $logger,
+        protected AuditLogger $auditLogger,
+        protected TokenStorageInterface $tokenStorage,
     ) {
-        $this->doctrine = $doctrine;
-        $this->logger = $logger;
-        $this->auditLogger = $auditLogger;
-        $this->tokenStorage = $tokenStorage;
     }
 
     public function create(Organisation $organisation): void

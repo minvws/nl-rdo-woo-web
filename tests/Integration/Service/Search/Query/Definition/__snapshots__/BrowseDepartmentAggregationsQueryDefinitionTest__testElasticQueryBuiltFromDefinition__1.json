@@ -1,0 +1,275 @@
+{
+    "body": {
+        "query": {
+            "bool": {
+                "filter": [
+                    {
+                        "bool": {
+                            "minimum_should_match": 1,
+                            "should": [
+                                {
+                                    "bool": {
+                                        "filter": [
+                                            {
+                                                "terms": {
+                                                    "type": [
+                                                        "dossier",
+                                                        "covenant",
+                                                        "annual_report",
+                                                        "investigation_report",
+                                                        "disposition",
+                                                        "complaint_judgement",
+                                                        "other_publication",
+                                                        "advice"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "terms": {
+                                                    "status": [
+                                                        "published"
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "bool": {
+                                        "filter": [
+                                            {
+                                                "terms": {
+                                                    "type": [
+                                                        "document",
+                                                        "woo_decision_main_document",
+                                                        "covenant_main_document",
+                                                        "annual_report_main_document",
+                                                        "investigation_report_main_document",
+                                                        "disposition_main_document",
+                                                        "complaint_judgement_main_document",
+                                                        "other_publication_main_document",
+                                                        "advice_main_document",
+                                                        "attachment"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "nested": {
+                                                    "path": "dossiers",
+                                                    "query": {
+                                                        "terms": {
+                                                            "dossiers.status": [
+                                                                "published"
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "bool": {
+                            "filter": [
+                                {
+                                    "terms": {
+                                        "department_names": [
+                                            "foo|bar"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "aggs": {
+            "grounds": {
+                "terms": {
+                    "field": "grounds",
+                    "size": 5,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
+                }
+            },
+            "judgement": {
+                "terms": {
+                    "field": "judgement",
+                    "size": 5,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
+                }
+            },
+            "dossiers-period": {
+                "nested": {
+                    "path": "dossiers"
+                },
+                "aggs": {
+                    "period": {
+                        "terms": {
+                            "field": "dossiers.date_period",
+                            "size": 5,
+                            "order": {
+                                "_count": "desc"
+                            },
+                            "min_doc_count": 1
+                        }
+                    }
+                }
+            },
+            "source": {
+                "terms": {
+                    "field": "source_type",
+                    "size": 5,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
+                }
+            },
+            "subject": {
+                "terms": {
+                    "field": "subject_names",
+                    "size": 5,
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1
+                }
+            },
+            "toplevel_type": {
+                "terms": {
+                    "field": "toplevel_type",
+                    "size": 10,
+                    "min_doc_count": 1
+                },
+                "aggs": {
+                    "sublevel_type": {
+                        "terms": {
+                            "field": "sublevel_type",
+                            "size": 5,
+                            "order": {
+                                "_count": "desc"
+                            },
+                            "min_doc_count": 1
+                        }
+                    },
+                    "publication": {
+                        "missing": {
+                            "field": "sublevel_type"
+                        }
+                    }
+                }
+            },
+            "all": {
+                "global": {},
+                "aggs": {
+                    "facet-base-filter": {
+                        "filter": {
+                            "bool": {
+                                "should": [
+                                    {
+                                        "match_all": {}
+                                    }
+                                ],
+                                "filter": [
+                                    {
+                                        "bool": {
+                                            "minimum_should_match": 1,
+                                            "should": [
+                                                {
+                                                    "bool": {
+                                                        "filter": [
+                                                            {
+                                                                "terms": {
+                                                                    "type": [
+                                                                        "dossier",
+                                                                        "covenant",
+                                                                        "annual_report",
+                                                                        "investigation_report",
+                                                                        "disposition",
+                                                                        "complaint_judgement",
+                                                                        "other_publication",
+                                                                        "advice"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            {
+                                                                "terms": {
+                                                                    "status": [
+                                                                        "published"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "bool": {
+                                                        "filter": [
+                                                            {
+                                                                "terms": {
+                                                                    "type": [
+                                                                        "document",
+                                                                        "woo_decision_main_document",
+                                                                        "covenant_main_document",
+                                                                        "annual_report_main_document",
+                                                                        "investigation_report_main_document",
+                                                                        "disposition_main_document",
+                                                                        "complaint_judgement_main_document",
+                                                                        "other_publication_main_document",
+                                                                        "advice_main_document",
+                                                                        "attachment"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            {
+                                                                "nested": {
+                                                                    "path": "dossiers",
+                                                                    "query": {
+                                                                        "terms": {
+                                                                            "dossiers.status": [
+                                                                                "published"
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "aggs": {
+                            "department": {
+                                "terms": {
+                                    "field": "department_names",
+                                    "size": 5,
+                                    "order": {
+                                        "_count": "desc"
+                                    },
+                                    "min_doc_count": 1
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "index": "woopie-read",
+    "from": 0,
+    "size": 0
+}

@@ -194,8 +194,51 @@ final class WooDecisionUploadTest extends ApiTestCase
         self::assertNull($documentFileSet);
     }
 
-    private function uploadFile(Client $client, Uuid $wooDecisionId, UploadedFile $file): void
+    public function testUploadingSingleFileUsingWroingUploadGroupId(): void
     {
+        $user = UserFactory::new()
+            ->asDossierAdmin()
+            ->isEnabled()
+            ->create()
+            ->_real();
+
+        $wooDecision = WooDecisionFactory::createOne([
+            'decision' => DecisionType::PUBLIC,
+            'status' => DossierStatus::CONCEPT,
+            'organisation' => $user->getOrganisation(),
+        ])->_real();
+
+        $client = static::createClient()->loginUser($user, 'balie');
+
+        vfsStream::newFile($fileName = 'logl.svg')
+            ->withContent(<<<'SVG'
+            <?xml version="1.0" encoding="utf-8"?>
+            <svg fill="#000000" width="800px" height="800px"></svg>
+            SVG)
+            ->at($this->root);
+
+        $uploadFile = new UploadedFile(
+            path: sprintf('%s/%s', $this->root->url(), $fileName),
+            originalName: $fileName,
+        );
+
+        $this->uploadFile($client, $wooDecision->getId(), $uploadFile, UploadGroupId::DEPARTMENT);
+        self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+
+        self::assertMatchesJsonSnapshot($client->getResponse()?->toArray(false));
+
+        /** @var DocumentFileSet $documentFileSet */
+        $documentFileSet = $this->documentFileSetRepository->findUncompletedByDossier($wooDecision);
+
+        self::assertNull($documentFileSet);
+    }
+
+    private function uploadFile(
+        Client $client,
+        Uuid $wooDecisionId,
+        UploadedFile $file,
+        UploadGroupId $uploadGroupId = UploadGroupId::WOO_DECISION_DOCUMENTS,
+    ): void {
         $client->request(
             Request::METHOD_POST,
             sprintf('/balie/uploader/woo-decision/%s', $wooDecisionId),
@@ -208,7 +251,7 @@ final class WooDecisionUploadTest extends ApiTestCase
                     'parameters' => [
                         'chunkindex' => '0',
                         'totalchunkcount' => '1',
-                        'groupId' => UploadGroupId::WOO_DECISION_DOCUMENTS->value,
+                        'groupId' => $uploadGroupId->value,
                         'uuid' => 'file-' . $this->getFaker()->uuid(),
                     ],
                     'files' => [

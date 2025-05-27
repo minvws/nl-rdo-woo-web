@@ -26,6 +26,7 @@ use Symfony\Component\Validator\Constraints\Choice;
 final class DispositionMainDocumentTest extends ApiTestCase
 {
     use IntegrationTestTrait;
+    use TestFileTrait;
 
     private vfsStreamDirectory $root;
 
@@ -38,7 +39,7 @@ final class DispositionMainDocumentTest extends ApiTestCase
         self::bootKernel();
     }
 
-    public function testGetDispositionDocumentReturns404UntilCreated(): void
+    public function testGetDispositionDocumentReturnsEmptySetUntilCreated(): void
     {
         $user = UserFactory::new()
             ->asSuperAdmin()
@@ -52,7 +53,7 @@ final class DispositionMainDocumentTest extends ApiTestCase
         $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         // There should be no Disposition document yet, so 404
-        $client->request(
+        $response = $client->request(
             Request::METHOD_GET,
             sprintf('/balie/api/dossiers/%s/disposition-document', $dossier->getId()),
             [
@@ -61,7 +62,7 @@ final class DispositionMainDocumentTest extends ApiTestCase
                 ],
             ],
         );
-        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        $this->assertCount(0, $response->toArray(), 'Expected no main documents yet');
 
         $uploadUuid = $this->uploadDocument($client);
 
@@ -89,7 +90,7 @@ final class DispositionMainDocumentTest extends ApiTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
         // Now it should be possible to fetch the data
-        $client->request(
+        $response = $client->request(
             Request::METHOD_GET,
             sprintf('/balie/api/dossiers/%s/disposition-document', $dossier->getId()),
             [
@@ -99,10 +100,10 @@ final class DispositionMainDocumentTest extends ApiTestCase
             ],
         );
         self::assertResponseIsSuccessful();
+        $this->assertCount(1, $response->toArray(), 'Expected one main document');
 
         unset($data['uploadUuid']); // This is only used for processing and not returned in the response
-        self::assertJsonContains($data);
-        self::assertMatchesResourceItemJsonSchema(DispositionMainDocumentDto::class);
+        self::assertJsonContains([$data]);
     }
 
     public function testUpdateDispositionDocument(): void
@@ -119,13 +120,17 @@ final class DispositionMainDocumentTest extends ApiTestCase
             'dossier' => DispositionFactory::createOne([
                 'organisation' => $user->getOrganisation(),
             ]),
-        ]);
+        ])->_disableAutoRefresh();
 
         $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         $response = $client->request(
             Request::METHOD_PUT,
-            sprintf('/balie/api/dossiers/%s/disposition-document', $document->getDossier()->getId()),
+            sprintf(
+                '/balie/api/dossiers/%s/disposition-document/%s',
+                $document->getDossier()->getId(),
+                $document->getId(),
+            ),
             [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -142,7 +147,11 @@ final class DispositionMainDocumentTest extends ApiTestCase
 
         $response2 = $client->request(
             Request::METHOD_GET,
-            sprintf('/balie/api/dossiers/%s/disposition-document', $document->getDossier()->getId()),
+            sprintf(
+                '/balie/api/dossiers/%s/disposition-document/%s',
+                $document->getDossier()->getId(),
+                $document->getId(),
+            ),
             [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -169,18 +178,6 @@ final class DispositionMainDocumentTest extends ApiTestCase
         ]);
 
         $client = static::createClient()->loginUser($user->_real(), 'balie');
-
-        // There should be no Disposition document yet, so 404
-        $client->request(
-            Request::METHOD_DELETE,
-            sprintf('/balie/api/dossiers/%s/disposition-document', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-            ],
-        );
-        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
 
         $uploadUuid = $this->uploadDocument($client);
 
@@ -211,7 +208,11 @@ final class DispositionMainDocumentTest extends ApiTestCase
         // Now it should be possible to delete it
         $client->request(
             Request::METHOD_DELETE,
-            sprintf('/balie/api/dossiers/%s/disposition-document', $dossier->getId()),
+            sprintf(
+                '/balie/api/dossiers/%s/disposition-document/%s',
+                $dossier->getId(),
+                $dossier->getMainDocument()?->getId(),
+            ),
             [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -331,13 +332,17 @@ final class DispositionMainDocumentTest extends ApiTestCase
             'dossier' => DispositionFactory::createOne([
                 'organisation' => $user->getOrganisation(),
             ]),
-        ]);
+        ])->_disableAutoRefresh();
 
         $client = static::createClient()->loginUser($user->_real(), 'balie');
 
         $client->request(
             Request::METHOD_PUT,
-            sprintf('/balie/api/dossiers/%s/disposition-document', $document->getDossier()->getId()),
+            sprintf(
+                '/balie/api/dossiers/%s/disposition-document/%s',
+                $document->getDossier()->getId(),
+                $document->getId(),
+            ),
             [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -359,9 +364,7 @@ final class DispositionMainDocumentTest extends ApiTestCase
 
     private function uploadDocument(Client $client): string
     {
-        vfsStream::newFile('test_file.pdf')
-            ->withContent('This is a test file.')
-            ->at($this->root);
+        $this->createPdfTestFile();
 
         $uploadFile = new UploadedFile(
             path: $this->root->url() . '/test_file.pdf',

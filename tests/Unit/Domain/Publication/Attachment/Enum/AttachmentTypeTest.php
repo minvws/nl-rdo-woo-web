@@ -16,7 +16,7 @@ final class AttachmentTypeTest extends UnitTestCase
 {
     public function testAttachmentTypeIsTranslatable(): void
     {
-        $this->assertTrue(is_a(AttachmentType::class, TranslatableInterface::class, true), 'AttachmentType should be translatable');
+        $this->assertInstanceOf(TranslatableInterface::class, AttachmentType::ADVICE, 'AttachmentType should be translatable');
     }
 
     public function testCasesAllHaveUniqueValues(): void
@@ -84,5 +84,12 @@ final class AttachmentTypeTest extends UnitTestCase
 
         self::assertNotContains(AttachmentType::ANNUAL_REPORT, $filteredCases);
         self::assertContains(AttachmentType::OTHER, $filteredCases);
+    }
+
+    public function testIsRequestForAdvice(): void
+    {
+        self::assertFalse(AttachmentType::OTHER->isRequestForAdvice());
+        self::assertFalse(AttachmentType::ADVICE->isRequestForAdvice());
+        self::assertTrue(AttachmentType::REQUEST_FOR_ADVICE->isRequestForAdvice());
     }
 }

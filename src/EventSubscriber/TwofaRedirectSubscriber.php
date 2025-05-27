@@ -25,13 +25,8 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class TwofaRedirectSubscriber implements EventSubscriberInterface
 {
-    protected TokenStorageInterface $tokenStorage;
-    protected UrlGeneratorInterface $urlGenerator;
-
-    public function __construct(TokenStorageInterface $tokenStorage, UrlGeneratorInterface $urlGenerator)
+    public function __construct(protected TokenStorageInterface $tokenStorage, protected UrlGeneratorInterface $urlGenerator)
     {
-        $this->tokenStorage = $tokenStorage;
-        $this->urlGenerator = $urlGenerator;
     }
 
     public static function getSubscribedEvents(): array

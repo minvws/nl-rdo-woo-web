@@ -14,7 +14,7 @@ use Symfony\Component\Uid\Uuid;
 
 class OrganisationSwitcher
 {
-    private const SESSION_KEY = 'organisation';
+    private const string SESSION_KEY = 'organisation';
 
     public function __construct(
         private readonly OrganisationRepository $repository,

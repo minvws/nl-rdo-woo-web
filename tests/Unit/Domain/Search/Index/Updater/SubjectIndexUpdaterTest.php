@@ -34,10 +34,8 @@ class SubjectIndexUpdaterTest extends MockeryTestCase
         $subject->shouldReceive('getName')->andReturn('Foo Bar');
 
         $this->elasticClient->expects('updateByQuery')->with(\Mockery::on(
-            static function (array $input) use ($subjectId) {
-                return $input['body']['query']['bool']['should'][0]['match']['subject.id'] === $subjectId
-                    && $input['body']['script']['params']['subject']['name'] === 'Foo Bar';
-            }
+            static fn (array $input) => $input['body']['query']['bool']['should'][0]['match']['subject.id'] === $subjectId
+                && $input['body']['script']['params']['subject']['name'] === 'Foo Bar'
         ));
 
         $this->indexUpdater->update($subject);

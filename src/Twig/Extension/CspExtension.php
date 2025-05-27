@@ -13,17 +13,15 @@ use Twig\TwigFunction;
  */
 class CspExtension extends AbstractExtension
 {
-    protected CspExtensionRuntime $runtime;
-
-    public function __construct(CspExtensionRuntime $runtime)
+    public function __construct(protected CspExtensionRuntime $runtime)
     {
-        $this->runtime = $runtime;
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('csp_nonce', [$this->runtime, 'getCspNonce']),
+            new TwigFunction('csp_nonce', $this->runtime->getCspNonce(...)),
         ];
     }
 }

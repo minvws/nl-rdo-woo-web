@@ -34,6 +34,7 @@ doctrine:
             string_functions:
                 CONTAINS: MartinGeorgiev\Doctrine\ORM\Query\AST\Functions\Contains
                 ILIKE: MartinGeorgiev\Doctrine\ORM\Query\AST\Functions\Ilike
+                TYPE: App\Doctrine\TypeFunction
         controller_resolver:
             auto_mapping: false
 

@@ -77,6 +77,17 @@ enum DossierStatus: string implements TranslatableInterface
         ];
     }
 
+    /**
+     * @return list<self>
+     */
+    public static function publiclyAvailableCases(): array
+    {
+        return [
+            self::PREVIEW,
+            self::PUBLISHED,
+        ];
+    }
+
     public function isNew(): bool
     {
         return $this === self::NEW;

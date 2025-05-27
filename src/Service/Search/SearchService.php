@@ -7,63 +7,43 @@ namespace App\Service\Search;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Search\Query\SearchParameters;
 use App\Domain\Search\Query\SearchParametersFactory;
+use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 use App\Service\Search\Object\ObjectHandler;
-use App\Service\Search\Query\QueryGenerator;
+use App\Service\Search\Query\Definition\QueryDefinitionInterface;
 use App\Service\Search\Result\Result;
 use App\Service\Search\Result\ResultTransformer;
 use Elastic\Elasticsearch\Response\Elasticsearch;
+use Erichard\ElasticQueryBuilder\QueryBuilder;
 use Psr\Log\LoggerInterface;
 
-class SearchService
+readonly class SearchService
 {
     public function __construct(
-        protected ElasticClientInterface $elastic,
-        protected LoggerInterface $logger,
-        protected QueryGenerator $queryGenerator,
-        protected ObjectHandler $objectHandler,
-        protected ResultTransformer $resultTransformer,
-        protected SearchParametersFactory $searchParametersFactory,
+        private ElasticClientInterface $elastic,
+        private LoggerInterface $logger,
+        private ObjectHandler $objectHandler,
+        private ResultTransformer $resultTransformer,
+        private SearchParametersFactory $searchParametersFactory,
     ) {
     }
 
-    public function searchFacets(SearchParameters $searchParameters): Result
-    {
-        $query = $this->queryGenerator->createFacetsQuery($searchParameters);
+    public function getResult(
+        QueryDefinitionInterface $queryDefinition,
+        ?SearchParameters $searchParameters = null,
+    ): Result {
+        if ($searchParameters === null) {
+            $searchParameters = $this->searchParametersFactory->createDefault();
+        }
 
-        return $this->doSearch($query->build(), $searchParameters);
-    }
+        $queryBuilder = new QueryBuilder();
+        $queryBuilder->setIndex(ElasticConfig::READ_INDEX);
+        $queryBuilder->setSize($searchParameters->limit);
+        $queryBuilder->setFrom($searchParameters->offset);
 
-    public function search(SearchParameters $searchParameters): Result
-    {
-        $query = $this->queryGenerator->createQuery($searchParameters);
+        $queryDefinition->configure($queryBuilder, $searchParameters);
+        $query = $queryBuilder->build();
 
-        return $this->doSearch($query->build(), $searchParameters);
-    }
-
-    public function isIngested(Document $document): bool
-    {
-        return $this->objectHandler->isIngested($document);
-    }
-
-    public function getPageContent(Document $document, int $pageNr): string
-    {
-        return $this->objectHandler->getPageContent($document, $pageNr);
-    }
-
-    public function retrieveExtendedFacets(): Result
-    {
-        $searchParameters = $this->searchParametersFactory->createDefault();
-        $query = $this->queryGenerator->createExtendedFacetsQuery($searchParameters);
-
-        return $this->doSearch($query->build(), $searchParameters);
-    }
-
-    /**
-     * @param array<string, mixed> $query
-     */
-    protected function doSearch(array $query, SearchParameters $searchParameters): Result
-    {
         try {
             /** @var Elasticsearch $response */
             $response = $this->elastic->search($query);
@@ -80,5 +60,15 @@ class SearchService
         }
 
         return $this->resultTransformer->transform($query, $searchParameters, $response);
+    }
+
+    public function isIngested(Document $document): bool
+    {
+        return $this->objectHandler->isIngested($document);
+    }
+
+    public function getPageContent(Document $document, int $pageNr): string
+    {
+        return $this->objectHandler->getPageContent($document, $pageNr);
     }
 }

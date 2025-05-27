@@ -14,7 +14,7 @@ final class AttachmentLanguageTest extends UnitUnitTestCase
 {
     public function testAttachmentLanguageIsTranslatable(): void
     {
-        $this->assertTrue(is_a(AttachmentLanguage::class, TranslatableInterface::class, true), 'AttachmentLanguage should be translatable');
+        $this->assertInstanceOf(TranslatableInterface::class, AttachmentLanguage::DUTCH, 'AttachmentLanguage should be translatable');
     }
 
     public function testCasesAllHAveUniqueValues(): void

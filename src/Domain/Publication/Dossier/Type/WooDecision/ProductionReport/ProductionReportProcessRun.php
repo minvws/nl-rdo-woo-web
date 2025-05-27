@@ -16,7 +16,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
 /**
- * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings("PHPMD.ExcessiveClassComplexity")
  */
 #[ORM\Entity(repositoryClass: ProductionReportProcessRunRepository::class)]
 class ProductionReportProcessRun implements EntityWithFileInfo
@@ -36,18 +36,14 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\OneToOne(inversedBy: 'processRun', targetEntity: WooDecision::class)]
-    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
-    private WooDecision $dossier;
-
     #[ORM\Column(type: 'datetime_immutable', nullable: false)]
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $startedAt;
+    private ?\DateTimeImmutable $startedAt = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $endedAt;
+    private ?\DateTimeImmutable $endedAt = null;
 
     /** @var array<int, array{message: string, translation: string, placeholders: array<string, string>}> */
     #[ORM\Column(type: Types::JSON, nullable: false)]
@@ -72,15 +68,17 @@ class ProductionReportProcessRun implements EntityWithFileInfo
 
     private ?string $tmpFilename = null;
 
-    public function __construct(WooDecision $dossier)
-    {
-        $this->dossier = $dossier;
+    public function __construct(
+        #[ORM\OneToOne(inversedBy: 'processRun', targetEntity: WooDecision::class)]
+        #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
+        private WooDecision $dossier,
+    ) {
         $this->createdAt = new \DateTimeImmutable();
         $this->status = self::STATUS_PENDING;
         $this->progress = 0;
         $this->file = new FileInfo();
 
-        $dossier->setProcessRun($this);
+        $this->dossier->setProcessRun($this);
     }
 
     public function startComparing(): self

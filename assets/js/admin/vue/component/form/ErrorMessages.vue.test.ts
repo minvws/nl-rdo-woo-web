@@ -1,6 +1,6 @@
-import ErrorMessages from './ErrorMessages.vue';
 import { VueWrapper, mount } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
+import ErrorMessages from './ErrorMessages.vue';
 
 describe('The "ErrorMessages" component', () => {
   interface Options {

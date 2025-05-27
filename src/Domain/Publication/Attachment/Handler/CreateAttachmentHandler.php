@@ -11,6 +11,7 @@ use App\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Service\Uploader\UploaderService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -35,7 +36,7 @@ readonly class CreateAttachmentHandler
             DossierStatusTransition::UPDATE_ATTACHMENT,
         );
 
-        /** @var AttachmentRepositoryInterface $attachmentRepository */
+        /** @var EntityRepository<AttachmentRepositoryInterface> $attachmentRepository */
         $attachmentRepository = $this->entityManager->getRepository($dossier->getAttachmentEntityClass());
         Assert::isInstanceOf($attachmentRepository, AttachmentRepositoryInterface::class);
         $entity = $attachmentRepository->create($dossier, $command);

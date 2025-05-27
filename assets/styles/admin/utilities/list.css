@@ -1,0 +1,15 @@
+/**
+ * Check `./content.css` if you want to apply the style below to every list in a certain element
+ */
+
+@utility bhr-ul {
+  @apply leading-tight list-square ml-5;
+}
+
+@utility bhr-ol {
+  @apply leading-tight list-decimal ml-5;
+}
+
+@utility bhr-li {
+  @apply py-0.5;
+}

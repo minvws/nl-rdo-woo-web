@@ -1,67 +1,44 @@
-<script setup>
-import { useMultiInputStore } from '@admin-fe/composables';
+<script setup lang="ts">
+import {
+  FormStore,
+  InputStore,
+  useMultiInputStore,
+} from '@admin-fe/composables';
 import { createName, getOtherValues, shouldAutoFocus } from '@admin-fe/form';
-import { computed, inject, ref } from 'vue';
+import type { SelectOptions } from '@admin-fe/form/interface';
+import { computed, inject, ref, useTemplateRef } from 'vue';
 import MultiInput from './MultiInput.vue';
 import RemovableSelect from './RemovableSelect.vue';
+import type { MultiInputItem } from './interface';
 
-const props = defineProps({
-  buttonText: {
-    type: String,
-    required: true,
-  },
-  buttonTextMultiple: {
-    type: String,
-    required: false,
-  },
-  helpText: {
-    type: String,
-    required: false,
-  },
-  label: {
-    type: String,
-    required: true,
-  },
-  minLength: {
-    type: Number,
-    required: false,
-    default: 0,
-  },
-  maxLength: {
-    type: Number,
-    required: false,
-  },
-  legend: {
-    type: String,
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  options: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  submitErrors: {
-    type: Array,
-    default: () => [],
-  },
-  values: {
-    type: Array,
-    default: () => [],
-  },
+interface Props {
+  buttonText: string;
+  buttonTextMultiple?: string;
+  helpText?: string;
+  label: string;
+  minLength?: number;
+  maxLength?: number;
+  legend: string;
+  name: string;
+  options: SelectOptions;
+  submitErrors?: string[];
+  values: string[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  options: () => [],
+  submitErrors: () => [],
+  values: () => [],
 });
 
-const items = ref([]);
-const multiInputComponent = ref(null);
+const items = ref<MultiInputItem[]>([]);
+const multiInputComponent = useTemplateRef<MultiInput>('multiInputComponent');
 
-const updateItem = (value, itemId) => {
+const updateItem = (value: string, itemId: string) => {
   multiInputComponent.value?.updateItem(value, itemId);
 };
 
-const deleteItem = (inputStore, itemId) => {
+const deleteItem = (inputStore: InputStore, itemId: string) => {
   multiInputComponent.value?.deleteItem(itemId);
   multiInputStore.removeInputStore(inputStore);
   multiInputStore.makeDirty();
@@ -76,9 +53,9 @@ const multiInputStore = useMultiInputStore(
   props.legend,
   computed(() => items.value.map((item) => item.value)),
 );
-inject('form')?.addInput(multiInputStore);
+(inject('form') as FormStore)?.addInput(multiInputStore);
 
-const onItemsUpdate = (updatedItems) => {
+const onItemsUpdate = (updatedItems: MultiInputItem[]) => {
   items.value = updatedItems;
 };
 </script>
@@ -96,18 +73,20 @@ const onItemsUpdate = (updatedItems) => {
     :legend="props.legend"
     :max-length="props.maxLength"
     :min-length="props.minLength"
-    :options="props.options"
+    :options="props.options.map((option) => option.value)"
     :values="props.values"
     ref="multiInputComponent"
   >
     <RemovableSelect
       v-for="(item, index) in items"
-      @delete="(comboboxInputStore) => deleteItem(comboboxInputStore, item.id)"
-      @mounted="
-        (comboboxInputStore) =>
-          multiInputStore.addInputStore(comboboxInputStore)
+      @delete="
+        (selectInputStore: InputStore) => deleteItem(selectInputStore, item.id)
       "
-      @update="(value) => updateItem(value, item.id)"
+      @mounted="
+        (selectInputStore: InputStore) =>
+          multiInputStore.addInputStore(selectInputStore)
+      "
+      @update="(value: string) => updateItem(value, item.id)"
       :auto-focus="shouldAutoFocus(index, items, props.minLength)"
       :can-delete="canDeleteItem"
       :forbidden-values="getOtherValues(item.id, items)"

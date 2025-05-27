@@ -1,134 +1,167 @@
 import { getLocation } from '@js/utils';
 
 export const tabs = () => {
-  let abortController: AbortController;
-  let tabButtons: HTMLButtonElement[];
-  let tabList: HTMLElement | null;
+  const abortController = new AbortController();
 
   const initialize = () => {
-    tabList = document.querySelector('[role="tablist"]');
-    if (!tabList) {
+    [...document.querySelectorAll<HTMLDivElement>('.js-tabs')].forEach(
+      initializeTabsElement,
+    );
+  };
+
+  const initializeTabsElement = (tabsElement: HTMLDivElement) => {
+    const tabListElement =
+      tabsElement.querySelector<HTMLUListElement>('[role="tablist"]');
+
+    if (!tabListElement) {
       return;
     }
 
-    tabButtons = [
-      ...tabList.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
+    const tabButtonElements = [
+      ...tabListElement.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
+    ];
+    const tabContentElements = [
+      ...tabsElement.querySelectorAll<HTMLDivElement>('[role="tabpanel"]'),
     ];
 
-    abortController = new AbortController();
-
-    displayTabByHash();
-    addClickHandler();
-    enableNavigation();
+    addTabButtonsClickHandler(tabButtonElements, tabContentElements);
+    enableNavigationForList(
+      tabListElement,
+      tabButtonElements,
+      tabContentElements,
+    );
+    displayTabByHash(tabButtonElements, tabContentElements);
   };
 
-  const addClickHandler = () => {
-    // Add a click event handler to each tab
-    tabButtons.forEach((tabButton) => {
-      tabButton.addEventListener(
+  const addTabButtonsClickHandler = (
+    tabButtonElements: HTMLButtonElement[],
+    tabContentElements: HTMLDivElement[],
+  ) => {
+    tabButtonElements.forEach((tabButtonElement) => {
+      tabButtonElement.addEventListener(
         'click',
-        (event) => {
-          const { currentTarget } = event;
-          if (!(currentTarget instanceof HTMLButtonElement)) {
-            return;
-          }
-
-          getLocation().hash = currentTarget.id;
-          changeTabs(currentTarget);
+        () => {
+          activateTabButton(
+            tabButtonElement,
+            tabButtonElements,
+            tabContentElements,
+          );
         },
         { signal: abortController.signal },
       );
     });
   };
 
-  const enableNavigation = () => {
-    if (tabList) {
-      tabList.addEventListener(
-        'keydown',
-        (event: Event) => {
-          const { key } = event as KeyboardEvent;
-
-          const isArrowRight = key === 'ArrowRight';
-          const isArrowLeft = key === 'ArrowLeft';
-
-          if (!isArrowRight && !isArrowLeft) {
-            return;
-          }
-
-          let tabIndex = tabButtons.findIndex(
-            (tabButton) => tabButton === document.activeElement,
-          );
-
-          if (isArrowRight) {
-            tabIndex += 1;
-            // If we're at the end, go to the start
-            if (tabIndex >= tabButtons.length) {
-              tabIndex = 0;
-            }
-            // Move left
-          } else if (key === 'ArrowLeft') {
-            tabIndex -= 1;
-            // If we're at the start, move to the end
-            if (tabIndex < 0) {
-              tabIndex = tabButtons.length - 1;
-            }
-          }
-
-          tabButtons[tabIndex].focus();
-        },
-        { signal: abortController.signal },
-      );
-    }
+  const activateTabButton = (
+    tabButtonElement: HTMLButtonElement,
+    tabButtonElements: HTMLButtonElement[],
+    tabContentElements: HTMLDivElement[],
+  ) => {
+    getLocation().hash = tabButtonElement.id;
+    changeTabs(tabButtonElement, tabButtonElements, tabContentElements);
   };
 
-  const displayTabByHash = () => {
+  const enableNavigationForList = (
+    tabListElement: HTMLUListElement,
+    tabButtonElements: HTMLButtonElement[],
+    tabContentElements: HTMLDivElement[],
+  ) => {
+    tabListElement.addEventListener(
+      'keydown',
+      (event: Event) => {
+        const { key } = event as KeyboardEvent;
+
+        const isArrowRight = key === 'ArrowRight';
+        const isArrowLeft = key === 'ArrowLeft';
+
+        if (!isArrowRight && !isArrowLeft) {
+          return;
+        }
+
+        let tabIndex = tabButtonElements.findIndex(
+          (tabButtonElement) => tabButtonElement === document.activeElement,
+        );
+
+        if (isArrowRight) {
+          tabIndex += 1;
+          // If we're at the end, go to the start
+          if (tabIndex >= tabButtonElements.length) {
+            tabIndex = 0;
+          }
+          // Move left
+        } else if (key === 'ArrowLeft') {
+          tabIndex -= 1;
+          // If we're at the start, move to the end
+          if (tabIndex < 0) {
+            tabIndex = tabButtonElements.length - 1;
+          }
+        }
+
+        const tabButtonElement = tabButtonElements[tabIndex];
+        tabButtonElement.focus();
+        activateTabButton(
+          tabButtonElement,
+          tabButtonElements,
+          tabContentElements,
+        );
+      },
+      { signal: abortController.signal },
+    );
+  };
+
+  const displayTabByHash = (
+    tabButtonElements: HTMLButtonElement[],
+    tabContentElements: HTMLDivElement[],
+  ) => {
     const { hash } = getLocation();
     if (hash === '') {
       return;
     }
 
-    const tabButtonElement = tabButtons.find(
-      (tabButton) => tabButton.getAttribute('data-tab-target') === hash,
+    const tabButtonElement = tabButtonElements.find(
+      (currentTabButtonElement) =>
+        currentTabButtonElement.getAttribute('data-tab-target') === hash,
     );
 
     if (!tabButtonElement) {
       return;
     }
 
-    changeTabs(tabButtonElement);
+    changeTabs(tabButtonElement, tabButtonElements, tabContentElements);
   };
 
-  const changeTabs = (tabButtonElement: HTMLButtonElement) => {
-    const grandparent = tabList?.parentNode;
-    if (!grandparent) {
-      return;
-    }
-
+  const changeTabs = (
+    tabButtonElement: HTMLButtonElement,
+    tabButtonElements: HTMLButtonElement[],
+    tabContentElements: HTMLDivElement[],
+  ) => {
     // Remove all current selected tabs
-    tabButtons.forEach((tabElement) =>
-      tabElement.setAttribute('aria-selected', 'false'),
-    );
+    tabButtonElements.forEach((currentTabButtonElement) => {
+      currentTabButtonElement.setAttribute('aria-selected', 'false');
+      currentTabButtonElement.setAttribute('tabindex', '-1');
+    });
 
     // Set this tab as selected
     tabButtonElement.setAttribute('aria-selected', 'true');
+    tabButtonElement.removeAttribute('tabindex');
 
     // Hide all tab panels
-    grandparent
-      .querySelectorAll('[role="tabpanel"]')
-      .forEach((tabPanelElement) =>
-        tabPanelElement.setAttribute('hidden', 'true'),
-      );
+    tabContentElements.forEach((currentTabContentElement) =>
+      currentTabContentElement.setAttribute('hidden', 'true'),
+    );
 
     // Show the selected panel
-    grandparent
-      ?.querySelector(`#${tabButtonElement.getAttribute('aria-controls')}`)
+    tabContentElements
+      .find(
+        (currentTabContentElement) =>
+          tabButtonElement.getAttribute('aria-controls') ===
+          currentTabContentElement.id,
+      )
       ?.removeAttribute('hidden');
   };
 
   const cleanup = () => {
-    if (abortController) {
-      abortController.abort();
-    }
+    abortController.abort();
   };
 
   return {

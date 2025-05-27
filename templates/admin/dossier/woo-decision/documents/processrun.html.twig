@@ -1,6 +1,6 @@
 {% if inventoryStatus.isQueued %}
     <div class="text-center">
-        <span class="inline-block animate-spin"><twig:Admin:Icon color="fill-bhr-ocean-boat-blue" size="48" name="loader" /></span>
+        <span class="inline-block animate-spin"><twig:Admin:Icon color="fill-bhr-blue-800" size="48" name="loader" /></span>
         <p class="text-lg pt-4">Verwerking gaat beginnen</p>
     </div>
 {% elseif inventoryStatus.isRunning %}
@@ -53,8 +53,8 @@
         </div>
 
         <div class="mt-8">
-            <a class="bhr-button bhr-button--primary bhr-button--fixed-width mr-4" href="?confirm=1" data-e2e-name="confirm-replacement">{{ 'admin.inventory.confirm_replacement' | trans }}</a>
-            <a class="bhr-button bhr-button--secondary bhr-button--fixed-width" href="?reject=1">{{ 'global.cancel' | trans }}</a>
+            <a class="bhr-btn-filled-primary  mr-4" href="?confirm=1" data-e2e-name="confirm-replacement">{{ 'admin.inventory.confirm_replacement' | trans }}</a>
+            <a class="bhr-btn-bordered-primary " href="?reject=1">{{ 'global.cancel' | trans }}</a>
         </div>
     </div>
 {% elseif inventoryStatus.hasErrors %}
@@ -79,6 +79,6 @@
     {% else %}
         <p>Het productierapport is succesvol vervangen.</p>
 
-        <p class="mt-6"><a class="bhr-button bhr-button--primary" href="{{ path('app_admin_dossier_woodecision_documents_edit', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" data-e2e-name="continue-to-documents">Naar documenten</a></p>
+        <p class="mt-6"><a class="bhr-btn-filled-primary" href="{{ path('app_admin_dossier_woodecision_documents_edit', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}" data-e2e-name="continue-to-documents">Naar documenten</a></p>
     {% endif %}
 {% endif %}

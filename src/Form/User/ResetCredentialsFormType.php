@@ -16,7 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class ResetCredentialsFormType extends AbstractType
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -34,7 +34,7 @@ class ResetCredentialsFormType extends AbstractType
             ->add('submit', SubmitType::class, [
                 'label' => 'admin.user.reset',
                 'attr' => [
-                    'class' => 'bhr-button--secondary mt-6',
+                    'class' => 'bhr-btn-bordered-primary mt-6',
                 ],
             ]);
     }

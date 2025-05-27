@@ -34,8 +34,13 @@ readonly class WooDecisionMapper implements ElasticDossierMapperInterface
         $fields[ElasticField::PUBLICATION_REASON->value] = $dossier->getPublicationReason();
         $fields[ElasticField::DECISION_DATE->value] = $dossier->getDecisionDate()?->format(\DateTimeInterface::ATOM);
         $fields[ElasticField::DECISION->value] = $dossier->getDecision();
+
         $fields[ElasticField::INQUIRY_IDS->value] = $dossier->getInquiries()->map(
             fn (Inquiry $inquiry) => $inquiry->getId()
+        )->toArray();
+
+        $fields[ElasticField::INQUIRY_CASE_NRS->value] = $dossier->getInquiries()->map(
+            fn (Inquiry $inquiry) => $inquiry->getCasenr()
         )->toArray();
 
         return new ElasticDocument(

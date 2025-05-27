@@ -40,7 +40,7 @@ class DossierVoter extends Voter
     /**
      * @param AbstractDossier $subject
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {

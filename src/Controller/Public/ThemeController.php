@@ -7,6 +7,7 @@ namespace App\Controller\Public;
 use App\Domain\Search\Query\SearchParametersFactory;
 use App\Domain\Search\Theme\ThemeInterface;
 use App\Domain\Search\Theme\ThemeManager;
+use App\Service\Search\Query\Definition\SearchAllQueryDefinition;
 use App\Service\Search\Result\Result;
 use App\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,6 +24,7 @@ class ThemeController extends AbstractController
         private readonly ThemeManager $themeManager,
         private readonly SearchParametersFactory $searchParametersFactory,
         private readonly SearchService $searchService,
+        private readonly SearchAllQueryDefinition $queryDefinition,
     ) {
     }
 
@@ -114,8 +116,8 @@ class ThemeController extends AbstractController
     {
         $searchParameters = $this->searchParametersFactory
             ->createFromRequest($request)
-            ->withBaseQueryConditions($theme->getBaseQueryConditions());
+            ->withBaseQueryConditions($theme->getBaseQueryConditionBuilder());
 
-        return $this->searchService->search($searchParameters);
+        return $this->searchService->getResult($this->queryDefinition, $searchParameters);
     }
 }

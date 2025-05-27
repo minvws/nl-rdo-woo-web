@@ -14,14 +14,14 @@ use App\Service\Search\Model\Suggestion;
 use App\Service\Search\Model\SuggestionEntry;
 use App\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
 use Elastic\Elasticsearch\Response\Elasticsearch;
-use Jaytaph\TypeArray\TypeArray;
 use Knp\Component\Pager\Pagination\AbstractPagination;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use MinVWS\TypeArray\TypeArray;
 use Psr\Log\LoggerInterface;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 readonly class ResultTransformer
 {
@@ -37,8 +37,11 @@ readonly class ResultTransformer
     /**
      * @param array<string,mixed> $query
      */
-    public function transform(array $query, SearchParameters $searchParameters, ?Elasticsearch $response): Result
-    {
+    public function transform(
+        array $query,
+        SearchParameters $searchParameters,
+        ?Elasticsearch $response,
+    ): Result {
         if (! $response) {
             $this->logger->error('ElasticSearch did not return a response', [
                 'query' => $query,
@@ -78,8 +81,10 @@ readonly class ResultTransformer
     /**
      * Transforms the elasticsearch result array into a result object.
      */
-    protected function transformResults(SearchParameters $searchParameters, Elasticsearch $response): Result
-    {
+    protected function transformResults(
+        SearchParameters $searchParameters,
+        Elasticsearch $response,
+    ): Result {
         $typedResponse = new TypeArray($response->asArray());
         $result = new Result();
 
@@ -92,12 +97,15 @@ readonly class ResultTransformer
         }
 
         $result->setResultCount($typedResponse->getInt('[hits][total][value]', 0));
-        $result->setDossierCount($typedResponse->getInt('[aggregations][unique_dossiers][value]', 0));
 
-        $documentCountWithoutDate = $typedResponse->getIntOrNull('[aggregations][all][facet-base-filter][date_filter][doc_count]')
-            ?? $typedResponse->getIntOrNull('[aggregations][all][facet-base-filter][facet-filter-date][date_filter][doc_count]');
-        $result->setDocumentCountWithoutDate($documentCountWithoutDate);
-        $result->setDisplayWithoutDateMessage($this->displayWithoutDateMessage($searchParameters, $documentCountWithoutDate));
+        if ($searchParameters->aggregations === true) {
+            $result->setDossierCount($typedResponse->getInt('[aggregations][unique_dossiers][value]', 0));
+
+            $documentCountWithoutDate = $typedResponse->getIntOrNull('[aggregations][all][facet-base-filter][date_filter][doc_count]')
+                ?? $typedResponse->getIntOrNull('[aggregations][all][facet-base-filter][facet-filter-date][date_filter][doc_count]');
+            $result->setDocumentCountWithoutDate($documentCountWithoutDate);
+            $result->setDisplayWithoutDateMessage($this->displayWithoutDateMessage($searchParameters, $documentCountWithoutDate));
+        }
 
         $suggestions = $this->transformSuggestions($typedResponse);
         if ($suggestions) {
@@ -117,7 +125,7 @@ readonly class ResultTransformer
         // Add all found hits and their documents
         $entries = [];
         foreach ($typedResponse->getIterable('[hits][hits]') as $hit) {
-            $entries[] = $this->resultFactory->map($hit);
+            $entries[] = $this->resultFactory->map($hit, $searchParameters->mode);
         }
 
         /** @var ResultEntryInterface[] $entries */

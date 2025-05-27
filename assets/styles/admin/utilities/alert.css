@@ -1,0 +1,15 @@
+@utility bhr-alert {
+  @apply p-6 leading-tight text-black text-lg;
+}
+
+@utility bhr-alert--danger {
+  @apply bg-bhr-cornsilk;
+}
+
+@utility bhr-alert--info {
+  @apply bg-bhr-azureish-white;
+}
+
+@utility bhr-alert--success {
+  @apply bg-bhr-chinese-white;
+}

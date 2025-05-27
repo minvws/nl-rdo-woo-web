@@ -6,7 +6,7 @@ import type {
 } from '../form/interface';
 
 export interface InputStore {
-  addSubmitValidationError: (error: string) => void;
+  addSubmitValidationError: (error: string, path?: string) => void;
   errors: InputValidationErrors;
   hasVisibleErrors: boolean;
   isDirty: boolean;

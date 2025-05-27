@@ -25,8 +25,8 @@ class InquiryLinkUpdateResult
     private array $updatedDocumentIds = [];
 
     public function __construct(
-        private Inquiry $inquiry,
-        private string $caseNr,
+        private readonly Inquiry $inquiry,
+        private readonly string $caseNr,
     ) {
     }
 

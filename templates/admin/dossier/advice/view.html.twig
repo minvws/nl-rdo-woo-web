@@ -17,3 +17,42 @@
     'admin.dossiers.advice.delete_bullet-2' | trans,
     'admin.dossiers.advice.delete_bullet-3' | trans,
 ] %}
+
+{% block attachments %}
+    {% if attachments is defined %}
+        {% set filteredAttachments = attachments|filter(a => not a.type.isRequestForAdvice) %}
+        {% set requestsForAdvice = attachments|filter(a => a.type.isRequestForAdvice) %}
+
+        {% if requestsForAdvice | length > 0 %}
+            <twig:Admin:Definition term="Adviesaanvraag">
+                <ul>
+                    {% for attachment in requestsForAdvice %}
+                        <li class="pt-0.5">
+                            <twig:Admin:DownloadFile
+                                href="{{ attachment.downloadUrl }}"
+                                mimeType="{{ attachment.mimeType }}"
+                                text="{{ attachment.name }}"
+                            />
+                        </li>
+                    {% endfor %}
+                </ul>
+            </twig:Admin:Definition>
+        {% endif %}
+
+        {% if filteredAttachments | length > 0 %}
+            <twig:Admin:Definition term="Bijlagen">
+                <ul>
+                    {% for attachment in filteredAttachments %}
+                        <li class="pt-0.5">
+                            <twig:Admin:DownloadFile
+                                href="{{ attachment.downloadUrl }}"
+                                mimeType="{{ attachment.mimeType }}"
+                                text="{{ attachment.name }}"
+                            />
+                        </li>
+                    {% endfor %}
+                </ul>
+            </twig:Admin:Definition>
+        {% endif %}
+    {% endif %}
+{% endblock %}

@@ -7,26 +7,26 @@ namespace App\Tests\Integration\Domain\Publication\BatchDownload;
 use App\Domain\Publication\BatchDownload\BatchDownload;
 use App\Domain\Publication\BatchDownload\BatchDownloadRepository;
 use App\Domain\Publication\BatchDownload\BatchDownloadScope;
+use App\Tests\Factory\InquiryFactory;
 use App\Tests\Factory\Publication\BatchDownload\BatchDownloadFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use App\Tests\Integration\IntegrationTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Uid\Uuid;
 
 class BatchDownloadRepositoryTest extends KernelTestCase
 {
     use IntegrationTestTrait;
 
-    private function getRepository(): BatchDownloadRepository
-    {
-        /** @var BatchDownloadRepository */
-        return self::getContainer()->get(BatchDownloadRepository::class);
-    }
+    private BatchDownloadRepository $repository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         self::bootKernel();
+
+        $this->repository = self::getContainer()->get(BatchDownloadRepository::class);
     }
 
     public function testSaveAndRemove(): void
@@ -40,18 +40,17 @@ class BatchDownloadRepositoryTest extends KernelTestCase
 
         $id = $download->getId();
 
-        $repository = $this->getRepository();
         self::assertNull(
-            $this->getRepository()->find($id)
+            $this->repository->find($id)
         );
 
-        $repository->save($download);
-        $result = $this->getRepository()->find($id);
+        $this->repository->save($download);
+        $result = $this->repository->find($id);
         self::assertEquals($download, $result);
 
-        $repository->remove($download);
+        $this->repository->remove($download);
         self::assertNull(
-            $this->getRepository()->find($id)
+            $this->repository->find($id)
         );
     }
 
@@ -68,55 +67,71 @@ class BatchDownloadRepositoryTest extends KernelTestCase
             'expiration' => new \DateTimeImmutable('-1 day'),
         ]);
 
-        $repository = $this->getRepository();
-        $result = $repository->findExpiredBatchDownloads();
+        $result = $this->repository->findExpiredBatchDownloads();
 
         self::assertCount(1, $result);
         self::assertEquals($downloadB->_real(), $result[0]);
     }
 
-    public function testGetBestAvailableBatchDownloadForEntity(): void
+    public function testGetBestAvailableBatchDownloadForScopeWithWooDecision(): void
     {
         $dossierA = WooDecisionFactory::createOne();
         $dossierB = WooDecisionFactory::createOne();
 
-        $scope = BatchDownloadScope::forWooDecision($dossierA->_real());
-
-        $downloadA = BatchDownloadFactory::createOne([
-            'scope' => $scope,
+        $dossierScope = BatchDownloadScope::forWooDecision($dossierA->_real());
+        $pendingDownload = BatchDownloadFactory::createOne([
+            'scope' => $dossierScope,
         ]);
 
-        $downloadB = BatchDownloadFactory::createOne([
-            'scope' => $scope,
+        $failedDownload = BatchDownloadFactory::createOne([
+            'scope' => $dossierScope,
         ]);
-        $downloadB->markAsFailed();
-        $downloadB->_save();
+        $failedDownload->markAsFailed();
+        $failedDownload->_save();
 
-        $downloadC = BatchDownloadFactory::createOne([
-            'scope' => $scope,
+        $olderDownload = BatchDownloadFactory::createOne([
+            'scope' => $dossierScope,
         ]);
-        $downloadC->complete('123.zip', '456', 789);
-        $downloadC->_save();
+        $olderDownload->complete('123.zip', 456, 789);
+        $olderDownload->_save();
 
-        $downloadD = BatchDownloadFactory::createOne([
+        $expectedDownload = BatchDownloadFactory::createOne([
             'expiration' => new \DateTimeImmutable('+2 month'),
-            'scope' => $scope,
+            'scope' => $dossierScope,
         ]);
-        $downloadD->complete('123.zip', '456', 789);
-        $downloadD->_save();
+        $expectedDownload->complete('123.zip', 456, 789);
+        $expectedDownload->_save();
 
-        $downloadE = BatchDownloadFactory::createOne([
+        $otherDossierDownload = BatchDownloadFactory::createOne([
             'expiration' => new \DateTimeImmutable('+3 month'),
             'scope' => BatchDownloadScope::forWooDecision($dossierB->_real()),
         ]);
-        $downloadE->complete('123.zip', '456', 789);
-        $downloadE->_save();
+        $otherDossierDownload->complete('123.zip', 456, 789);
+        $otherDossierDownload->_save();
 
-        $repository = $this->getRepository();
+        $inquiry = InquiryFactory::createOne();
+        BatchDownloadScope::forInquiryAndWooDecision($inquiry->_real(), $dossierA->_real());
+        BatchDownloadFactory::createOne([
+            'scope' => $dossierScope,
+        ]);
 
         self::assertEquals(
-            $downloadD->_real(),
-            $repository->getBestAvailableBatchDownloadForScope($scope),
+            $expectedDownload->_real(),
+            $this->repository->getBestAvailableBatchDownloadForScope($dossierScope),
         );
+    }
+
+    public function testExists(): void
+    {
+        $batchDownload = BatchDownloadFactory::createOne([
+            'scope' => BatchDownloadScope::forWooDecision(WooDecisionFactory::createOne()->_real()),
+        ]);
+
+        $this->assertTrue($this->repository->exists($batchDownload->getId()));
+    }
+
+    public function testExistsReturnsFalse(): void
+    {
+        $this->assertFalse($this->repository->exists(Uuid::v6()));
     }
 }

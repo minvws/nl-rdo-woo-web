@@ -9,11 +9,8 @@ use Symfony\Component\Uid\Uuid;
 
 abstract class AbstractInquiryMessage
 {
-    protected Uuid $uuid;
-
-    final public function __construct(Uuid $uuid)
+    final public function __construct(protected Uuid $uuid)
     {
-        $this->uuid = $uuid;
     }
 
     public function getUuid(): Uuid

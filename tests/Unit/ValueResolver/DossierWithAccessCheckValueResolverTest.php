@@ -39,7 +39,7 @@ class DossierWithAccessCheckValueResolverTest extends MockeryTestCase
     {
         $request = new Request();
         $argument = \Mockery::mock(ArgumentMetadata::class);
-        $argument->shouldReceive('getType')->andReturn(__CLASS__);
+        $argument->shouldReceive('getType')->andReturn(self::class);
 
         $this->expectException(ViewingNotAllowedException::class);
         $this->resolver->resolve($request, $argument);

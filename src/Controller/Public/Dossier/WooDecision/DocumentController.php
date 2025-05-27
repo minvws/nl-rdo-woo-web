@@ -11,6 +11,8 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\DocumentV
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
+use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use App\Service\Search\Model\FacetKey;
 use App\Service\Security\DossierVoter;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -24,7 +26,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class DocumentController extends AbstractController
 {
@@ -87,6 +89,27 @@ class DocumentController extends AbstractController
                 $dossier,
                 $document,
                 DossierFileType::DOCUMENT,
+            ),
+            'family_search_url' => $this->generateUrl(
+                'app_search',
+                [
+                    FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
+                    FacetKey::FAMILY->getParamName() => [$document->getFamilyId()],
+                ]
+            ),
+            'thread_search_url' => $this->generateUrl(
+                'app_search',
+                [
+                    FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
+                    FacetKey::THREAD->getParamName() => [$document->getThreadId()],
+                ]
+            ),
+            'referred_search_url' => $this->generateUrl(
+                'app_search',
+                [
+                    FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
+                    FacetKey::REFERRED_DOCUMENT_NR->getParamName() => [$document->getDocumentNr()],
+                ]
             ),
         ]);
     }

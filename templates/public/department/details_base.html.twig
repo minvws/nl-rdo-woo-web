@@ -22,13 +22,11 @@
             </div>
 
             <div class="woo-container">
-                <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
-                    {{ macro.facet_preview('categories.category.type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::TYPE'), facets) }}
-                    {{ macro.facet_preview('categories.category.grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), facets) }}
-                    {{ macro.facet_preview('categories.category.subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT'), facets) }}
-                    {{ macro.facet_preview('categories.category.source_file' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE'), facets) }}
-                    {{ macro.facet_preview('categories.category.judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), facets) }}
-                </div>
+                {{ macro.facet_preview('categories.category.type' | trans, constant('App\\Service\\Search\\Model\\FacetKey::TYPE'), facets) }}
+                {{ macro.facet_preview('categories.category.grounds' | trans, constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), facets) }}
+                {{ macro.facet_preview('categories.category.subject' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT'), facets) }}
+                {{ macro.facet_preview('categories.category.source_file' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SOURCE'), facets) }}
+                {{ macro.facet_preview('categories.category.judgement' | trans, constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), facets) }}
             </div>
         </section>
     {% endif %}

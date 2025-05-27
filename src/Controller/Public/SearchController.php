@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controller\Public;
 
 use App\Domain\Search\Query\SearchParametersFactory;
+use App\Service\Search\Query\Definition\BrowseAllAggregationsQueryDefinition;
+use App\Service\Search\Query\Definition\SearchAllQueryDefinition;
 use App\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +22,8 @@ class SearchController extends AbstractController
     public function __construct(
         private readonly SearchService $searchService,
         private readonly SearchParametersFactory $searchParametersFactory,
+        private readonly BrowseAllAggregationsQueryDefinition $aggregationsQueryDefinition,
+        private readonly SearchAllQueryDefinition $searchAllQueryDefinition,
     ) {
     }
 
@@ -31,7 +35,7 @@ class SearchController extends AbstractController
     {
         // Do the search
         $searchParameters = $this->searchParametersFactory->createFromRequest($request);
-        $result = $this->searchService->search($searchParameters);
+        $result = $this->searchService->getResult($this->searchAllQueryDefinition, $searchParameters);
 
         // We return an json with 2 html blobs: facets and result. These are loaded in the correct spots in the frontend.
         $ret = [];
@@ -73,7 +77,7 @@ class SearchController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem('public.search.label');
 
-        $result = $this->searchService->search($searchParameters);
+        $result = $this->searchService->getResult($this->searchAllQueryDefinition, $searchParameters);
         if ($result->hasFailed()) {
             return $this->render('public/search/result-failure.html.twig', [
                 'result' => $result,
@@ -109,7 +113,7 @@ class SearchController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem('public.global.label.all_categories');
 
-        $result = $this->searchService->retrieveExtendedFacets();
+        $result = $this->searchService->getResult($this->aggregationsQueryDefinition);
         if ($result->hasFailed()) {
             return $this->render('public/search/result-failure.html.twig', [
                 'result' => $result,

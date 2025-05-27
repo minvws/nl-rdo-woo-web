@@ -11,7 +11,7 @@
     <ul class="woo-search-result__spec-list">
         <li class="woo-search-result__spec">
             {% if hasRoundedIcon %}<span class="bg-gray-100 rounded-full inline-grid place-content-center align-bottom aspect-square w-6">{% endif %}
-                <twig:Public:Icon name="{{ resultIconName | default('map') }}" class="{{ hasRoundedIcon ? '' : 'mr-1' }}" size="20" />
+                <twig:Public:FileIcon type="{{ resultIconName | default('map') }}" class="{{ hasRoundedIcon ? '' : 'mr-1' }}" size="20" />
             {% if hasRoundedIcon %}</span>{% endif %}
             {% block resultType %}<span class="font-bold text-gray-700">{{ resultType | trans }}</span>{% endblock %}
         </li>

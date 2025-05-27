@@ -114,9 +114,7 @@ class DossierWorkflowManagerTest extends MockeryTestCase
 
         $this->dossierService->expects('handleEntityUpdate')->with($this->dossier);
         $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
-            function (BatchDownloadScope $scope): bool {
-                return $scope->wooDecision === $this->dossier;
-            }
+            fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $this->dossier
         ));
 
         $this->historyService->expects('addDossierEntry')->with(
@@ -126,7 +124,6 @@ class DossierWorkflowManagerTest extends MockeryTestCase
         );
 
         $this->inquiryService->expects('generateInventory')->with($inquiry);
-        $this->inquiryService->expects('generateArchives')->with($inquiry);
 
         $this->manager->applyTransition($this->dossier, DossierStatusTransition::PUBLISH);
     }

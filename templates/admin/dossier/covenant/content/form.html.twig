@@ -1,5 +1,7 @@
 {{ form_start(form) }}
-    <div {{ vue_component('MultiComboboxController', {
+    <div {{ vue_component('GenericController', {
+        componentName: 'MultiCombobox',
+
         buttonText: 'Voeg partij toe',
         buttonTextMultiple: 'Voeg nog een partij toe',
         helpText: 'Geef de namen van de juridische entiteiten waartussen de overeenkomst is gesloten. Voer geen namen van personen in.',

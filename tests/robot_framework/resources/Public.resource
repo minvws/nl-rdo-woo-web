@@ -3,15 +3,18 @@ Documentation       Resource file with generic keywords.
 Library             String
 Library             Browser
 Library             DebugLibrary
+Library             DateTime
+Library             DateTimeTZ
+Resource            Generic.resource
 
 
 *** Variables ***
-${BASE_URL}     ${EMPTY}
+${URL_PUBLIC}   ${EMPTY}
 
 
 *** Keywords ***
 Go To Public
-  Go To  ${BASE_URL}
+  Go To  ${URL_PUBLIC}
 
 Search On Public For
   [Documentation]  Provide the expected search results. '0 resultaten' can be used to expect no results.
@@ -20,10 +23,13 @@ Search On Public For
   Initiate Search  ${search_term}
   Get Text  //div[@id="js-search-results"]  contains  ${search_results}
 
+Click On Search Submit
+  Click  //form[@role="search"]//button[@type="submit"]
+
 Initiate Search
   [Arguments]  ${search_term}
   Fill Text  id=search-field  ${search_term}
-  Keyboard Key  press  Enter
+  Click On Search Submit
 
 Verify Search Result Count
   [Arguments]  ${result_string}
@@ -186,7 +192,7 @@ Selecting Results Sorting
   Get Element States  //details[@data-e2e-name="sorting-selector"]/div  contains  hidden
 
 Click Bekijk Per Bestuursorgaan
-  Click With Reload Retry  //ul[@data-e2e-name="main-nav"]//a[contains(.,'Bekijk per bestuursorgaan')]
+  Click With Reload Retry  //ul[@data-e2e-name="main-nav"]//a[contains(.,'Bekijk per bestuursorgaan')]  sleep=1s
 
 Select Filter Options - Date
   [Arguments]  ${date_from}  ${date_to}

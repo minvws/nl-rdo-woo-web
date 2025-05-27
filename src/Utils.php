@@ -26,4 +26,12 @@ class Utils
             $entity->getFileInfo()->getSize()
         );
     }
+
+    public static function number(int $value): string
+    {
+        return number_format(
+            num: $value,
+            thousands_separator: '.',
+        );
+    }
 }

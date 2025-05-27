@@ -48,6 +48,7 @@ readonly class DefaultDossierMapper implements ElasticDossierMapperInterface
                 ElasticField::DATE_PERIOD->value => DateRangeConverter::convertToString($dossier->getDateFrom(), $dossier->getDateTo()),
                 ElasticField::PUBLICATION_DATE->value => $dossier->getPublicationDate()?->format(\DateTimeInterface::ATOM),
                 ElasticObjectField::SUBJECT->value => $this->mapSubject($dossier->getSubject()),
+                ElasticField::ORGANISATION_IDS->value => [$dossier->getOrganisation()->getId()],
             ],
         );
     }

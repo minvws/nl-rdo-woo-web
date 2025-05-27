@@ -21,7 +21,7 @@ class TermsAggregationWithMinDocCount extends TermsAggregation
     public function __construct(
         string $name,
         string|Field|InlineScript $fieldOrSource,
-        private int $minDocCount,
+        private readonly int $minDocCount,
         array $aggregations = [],
         ?string $orderField = null,
         string $orderValue = SortDirections::ASC,
@@ -44,6 +44,7 @@ class TermsAggregationWithMinDocCount extends TermsAggregation
     /**
      * @return array<string, string>
      */
+    #[\Override]
     protected function buildAggregation(): array
     {
         $build = parent::buildAggregation();

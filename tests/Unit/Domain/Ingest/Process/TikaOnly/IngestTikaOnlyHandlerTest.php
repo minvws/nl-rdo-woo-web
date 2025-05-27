@@ -94,7 +94,18 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
             ))
             ->andReturn($collection);
 
-        $this->subTypeIndexer->expects('updatePage')->with($entity, 0, $text);
+        $this->subTypeIndexer
+            ->expects('index')
+            ->with(
+                $entity,
+                [],
+                [
+                    [
+                        'page_nr' => 0,
+                        'content' => $text,
+                    ],
+                ],
+            );
 
         $this->handler->__invoke($command);
     }
@@ -133,8 +144,17 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
             ->andReturn($collection);
 
         $this->subTypeIndexer
-            ->expects('updatePage')
-            ->with($entity, 0, $text)
+            ->expects('index')
+            ->with(
+                $entity,
+                [],
+                [
+                    [
+                        'page_nr' => 0,
+                        'content' => $text,
+                    ],
+                ],
+            )
             ->andThrow($thrownException = new \RuntimeException('oops'));
 
         $this->logger

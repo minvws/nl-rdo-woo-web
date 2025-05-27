@@ -51,7 +51,6 @@ framework:
             App\Message\SetElasticAliasMessage: high
             App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ProductionReportProcessRunCommand: high
             App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\GenerateInventoryCommand: high
-            App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\ProcessDocumentCommand: high                   # Processes doc uploads (not the actual ingest). Higher prio for user feedback.
             App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand: high
             App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand: high
             App\Domain\Publication\Dossier\Command\DeleteDossierCommand: high
@@ -61,6 +60,7 @@ framework:
             App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUpdateCommand: high
             App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawDocumentCommand: high
             App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawAllDocumentsCommand: high
+            App\Domain\Uploader\Command\ValidateUploadCommand: high
 
             App\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand: ingestor
             App\Domain\Ingest\Process\Dossier\IngestDossierCommand: ingestor

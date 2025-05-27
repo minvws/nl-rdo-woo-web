@@ -26,7 +26,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 /**
  * @template-extends AbstractType<UserCreateFormType>
  *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class UserCreateFormType extends AbstractType
 {
@@ -37,7 +37,7 @@ class UserCreateFormType extends AbstractType
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -61,7 +61,7 @@ class UserCreateFormType extends AbstractType
                     new NotBlank(),
                     new Email(),
                     new Length(['min' => 4, 'max' => 180]),
-                    new Callback([$this, 'validateEmail']),
+                    new Callback($this->validateEmail(...)),
                 ],
             ])
             ->add('submit', SubmitType::class, [

@@ -8,8 +8,9 @@ use App\Domain\Search\Query\Facet\FacetDefinitionInterface;
 use App\Domain\Search\Query\Facet\Input\DateFacetInput;
 use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
 use App\Domain\Search\Query\Facet\Input\FacetInputInterface;
+use App\Enum\ApplicationMode;
 use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Condition\QueryConditions;
+use App\Service\Search\Query\Condition\QueryConditionBuilderInterface;
 use App\Service\Search\Query\Sort\SortField;
 use App\Service\Search\Query\Sort\SortOrder;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -17,7 +18,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 final readonly class SearchParameters
 {
     /**
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     * @SuppressWarnings("PHPMD.ExcessiveParameterList")
      */
     public function __construct(
         public FacetInputCollection $facetInputs,
@@ -30,8 +31,14 @@ final readonly class SearchParameters
         public SearchType $searchType = SearchType::DEFAULT,
         public SortField $sortField = SortField::SCORE,
         public SortOrder $sortOrder = SortOrder::DESC,
-        public ?QueryConditions $baseQueryConditions = null,
+        public ?QueryConditionBuilderInterface $baseQueryConditions = null,
+        public ApplicationMode $mode = ApplicationMode::PUBLIC,
     ) {
+    }
+
+    public function hasQueryString(): bool
+    {
+        return ! empty($this->query);
     }
 
     public function hasActiveFacets(): bool
@@ -148,7 +155,7 @@ final readonly class SearchParameters
         );
     }
 
-    public function withBaseQueryConditions(QueryConditions $queryConditions): self
+    public function withBaseQueryConditions(QueryConditionBuilderInterface $queryConditions): self
     {
         return new self(
             facetInputs: $this->facetInputs,

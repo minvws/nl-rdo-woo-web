@@ -1,0 +1,7 @@
+@utility bhr-bold {
+  @apply font-bold;
+}
+
+@utility bhr-italic {
+  @apply italic;
+}

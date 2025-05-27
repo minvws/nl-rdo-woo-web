@@ -14,6 +14,9 @@ enum FileType: string
     case TXT = 'txt';
     case PPT = 'ppt';
     case ZIP = 'zip';
+    case AUDIO = 'audio';
+    case VIDEO = 'video';
+    case VECTOR_IMAGE = 'vector-image';
 
     public static function fromMimeType(string $mimeType): ?self
     {
@@ -42,6 +45,9 @@ enum FileType: string
             self::TXT => ['txt', 'rdf'],
             self::PPT => ['pps', 'ppsx', 'ppt', 'pptx', 'odp'],
             self::ZIP => ['zip', '7z'],
+            self::AUDIO => ['aac', 'mp3', 'wav', 'opus'],
+            self::VIDEO => ['wmv', 'avi', 'mp4', 'mov', 'm4a', 'mpg', 'asf'],
+            self::VECTOR_IMAGE => ['svg'],
         };
     }
 
@@ -54,6 +60,9 @@ enum FileType: string
             self::TXT => 'Word',
             self::PPT => 'PowerPoint',
             self::ZIP => 'Zip',
+            self::AUDIO => 'Audio',
+            self::VIDEO => 'Video',
+            self::VECTOR_IMAGE => 'Vector Image',
         };
     }
 

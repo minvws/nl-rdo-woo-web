@@ -16,8 +16,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 class RoleType extends ChoiceTypeWithHelp
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
@@ -28,15 +29,9 @@ class RoleType extends ChoiceTypeWithHelp
                     return [];
                 }
 
-                return array_map(function ($role) {
-                    return strtolower(str_replace('ROLE_', '', $role));
-                }, $data);
+                return array_map(fn ($role) => strtolower(str_replace('ROLE_', '', $role)), $data);
             },
-            function ($roles) {
-                return array_map(function ($role) {
-                    return 'ROLE_' . strtoupper($role);
-                }, $roles);
-            }
+            fn ($roles) => array_map(fn ($role) => 'ROLE_' . strtoupper((string) $role), $roles)
         ));
     }
 }

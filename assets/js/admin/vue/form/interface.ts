@@ -24,6 +24,7 @@ export type ValidatorMessage = (
   error?: InputValidationError,
   value?: InputValueType,
 ) => string;
+export type ValidatorMessages = Record<string, ValidatorMessage>;
 
 export interface SelectOption {
   label: string;

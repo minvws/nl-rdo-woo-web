@@ -1,0 +1,12 @@
+loc: 'http://localhost:8000/dossier/PREF/my-annual-report-1/file/download/main_document/1ec83642-1485-6700-b700-2bb719c51bd0'
+lastmod: '2022-02-04T01:12:42+00:00'
+diWooDocument:
+    creatiedatum: '2022-01-30T00:00:00+00:00'
+    publisher: { resource: 'https://identifier.overheid.nl/tooi/id/ministerie/mnre1025', name: mnre1025, value: 'ministerie van Volksgezondheid, Welzijn en Sport' }
+    officieleTitel: file_name.pdf
+    informatieCategorie: { resource: 'https://identifier.overheid.nl/tooi/def/thes/kern/c_c6cd1213', name: c_c6cd1213, value: 'jaarplannen en jaarverslagen' }
+    documentHandeling: { soortHandeling: { resource: 'https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76', name: c_641ecd76, value: vaststelling }, atTime: '2022-01-30T00:00:00+00:00' }
+    isPartOf: null
+    hasParts: [{ resource: 'http://localhost:8000/dossier/PREF/my-annual-report-1/file/download/attachment/1ec842d4-bb21-6700-b700-2bb719c51bd0', officieleTitel: file_name.pdf }, { resource: 'http://localhost:8000/dossier/PREF/my-annual-report-1/file/download/attachment/1ec84f67-61bd-6700-b700-2bb719c51bd0', officieleTitel: file_name.pdf }, { resource: 'http://localhost:8000/dossier/PREF/my-annual-report-1/file/download/attachment/1ec85bfa-0859-6700-b700-2bb719c51bd0', officieleTitel: file_name.pdf }]
+changefreq: null
+priority: null

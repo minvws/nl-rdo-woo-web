@@ -6,15 +6,8 @@ namespace App\Service\Search\Model;
 
 class SuggestionEntry
 {
-    protected string $name;
-    protected float $score;
-    protected int $frequency;
-
-    public function __construct(string $name, float $score, int $frequency)
+    public function __construct(protected string $name, protected float $score, protected int $frequency)
     {
-        $this->name = $name;
-        $this->score = $score;
-        $this->frequency = $frequency;
     }
 
     public function getName(): string

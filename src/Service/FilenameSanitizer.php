@@ -13,6 +13,7 @@ class FilenameSanitizer extends \IndieHD\FilenameSanitizer\FilenameSanitizer
         return $this;
     }
 
+    #[\Override]
     public function stripPhp(): static
     {
         $this->setFilename(htmlspecialchars($this->getFilename()));
@@ -20,6 +21,7 @@ class FilenameSanitizer extends \IndieHD\FilenameSanitizer\FilenameSanitizer
         return $this;
     }
 
+    #[\Override]
     public function stripRiskyCharacters(): static
     {
         $filename = $this->getFilename();

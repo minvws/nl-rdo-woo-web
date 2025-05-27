@@ -11,7 +11,7 @@ use App\Domain\Search\Index\Schema\ElasticPath;
 use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
-use Jaytaph\TypeArray\TypeArray;
+use MinVWS\TypeArray\TypeArray;
 
 /**
  * DocumentHandler would be a better Elasticsearch name

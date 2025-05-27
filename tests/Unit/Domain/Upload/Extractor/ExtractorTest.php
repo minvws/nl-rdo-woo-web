@@ -74,7 +74,7 @@ final class ExtractorTest extends UnitTestCase
         $extractor = new Extractor($this->archive, $this->filesystem, $this->finderFactory);
         $result = $extractor->getFiles($this->file);
 
-        $this->assertSame($expectedResult, iterator_to_array($result));
+        $this->assertSame($expectedResult, iterator_to_array($result, false));
     }
 
     public function testGetFilesWrapsExceptionThrownByArchiveOpen(): void
@@ -91,7 +91,7 @@ final class ExtractorTest extends UnitTestCase
         $this->expectExceptionObject(ExtractorException::forFailingToOpenArchive($this->file, $ex));
 
         $extractor = new Extractor($this->archive, $this->filesystem, $this->finderFactory);
-        iterator_to_array($extractor->getFiles($this->file));
+        iterator_to_array($extractor->getFiles($this->file), false);
     }
 
     public function testGetFilesThrowsExceptionIfTempDirCouldNotBeCreated(): void
@@ -117,7 +117,7 @@ final class ExtractorTest extends UnitTestCase
         $this->expectExceptionObject(ExtractorException::forFailingToCreateTempDir($this->file));
 
         $extractor = new Extractor($this->archive, $this->filesystem, $this->finderFactory);
-        iterator_to_array($extractor->getFiles($this->file));
+        iterator_to_array($extractor->getFiles($this->file), false);
     }
 
     public function testGetFilesWrapsThrownArchiveExceptions(): void
@@ -154,6 +154,6 @@ final class ExtractorTest extends UnitTestCase
         $this->expectExceptionObject(ExtractorException::forFailingToExtractFiles($this->file, $tempDir, $ex));
 
         $extractor = new Extractor($this->archive, $this->filesystem, $this->finderFactory);
-        iterator_to_array($extractor->getFiles($this->file));
+        iterator_to_array($extractor->getFiles($this->file), false);
     }
 }

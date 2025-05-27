@@ -13,12 +13,13 @@ use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
 use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use App\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
 use App\Entity\Organisation;
+use App\Enum\ApplicationMode;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  *
  * @extends AbstractDossierRepository<WooDecision>
  */
@@ -64,20 +65,25 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
             ->innerJoin('dos.documents', 'doc')
             ->setParameter('documentNr', $documentNr)
             ->setParameter('type', DossierType::WOO_DECISION)
-            ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
+            ->setParameter('statuses', DossierStatus::publiclyAvailableCases())
         ;
 
         return $qb->getQuery()->getResult();
     }
 
-    public function getSearchResultViewModel(string $prefix, string $dossierNr): ?WooDecisionSearchResult
-    {
+    public function getSearchResultViewModel(
+        string $prefix,
+        string $dossierNr,
+        ApplicationMode $mode,
+    ): ?WooDecisionSearchResult {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(
                 'new %s(
+                    dos.id,
                     dos.dossierNr,
                     dos.documentPrefix,
-                    dos.title, dos.decision,
+                    dos.title,
+                    dos.decision,
                     dos.summary,
                     dos.publicationDate,
                     dos.decisionDate,
@@ -93,7 +99,7 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
         ;
 
         /** @var ?WooDecisionSearchResult */
@@ -136,10 +142,21 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
             ->andWhere('doc.withdrawn = false')
             ->andWhere('doc.judgement IN(:judgements)')
             ->setParameter('wooDecisionId', $wooDecision->getId())
-            ->setParameter('statuses', [
-                DossierStatus::PREVIEW,
-                DossierStatus::PUBLISHED,
-            ])
+            ->setParameter('statuses', DossierStatus::publiclyAvailableCases())
             ->setParameter('judgements', Judgement::atLeastPartialPublicValues());
+    }
+
+    /**
+     * @return WooDecision[]
+     */
+    public function getPubliclyAvailable(): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.status IN (:statuses)')
+            ->orderBy('d.publicationDate', 'ASC')
+            ->setParameter('statuses', DossierStatus::publiclyAvailableCases())
+        ;
+
+        return $qb->getQuery()->getResult();
     }
 }

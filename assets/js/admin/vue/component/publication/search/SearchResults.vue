@@ -1,16 +1,20 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
 import SearchResultsTable from './SearchResultsTable.vue';
+import type { PublicationSearchResult } from './interface';
 
-const props = defineProps({
-  results: {
-    type: Array,
-    default: () => [],
-  },
+interface Props {
+  results: PublicationSearchResult[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  results: () => [],
 });
 
-const filterResultsByType = (results, type) =>
-  results.filter((result) => result.type === type);
+const filterResultsByType = (
+  results: PublicationSearchResult[],
+  type: PublicationSearchResult['type'],
+) => results.filter((result) => result.type === type);
 
 const documents = computed(() =>
   filterResultsByType(props.results, 'document'),

@@ -9,7 +9,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
-use App\Entity\Organisation;
+use App\Service\Inquiry\DocumentCaseNumbers;
 use App\Service\Inventory\DocumentNumber;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -19,8 +19,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;
 
 /**
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings("PHPMD.TooManyPublicMethods")
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  *
  * @extends ServiceEntityRepository<Document>
  */
@@ -141,37 +141,6 @@ class DocumentRepository extends ServiceEntityRepository
         ;
     }
 
-    /**
-     * @return list<Document>
-     */
-    public function findBySearchTerm(
-        string $searchTerm,
-        int $limit,
-        Organisation $organisation,
-        ?Uuid $dossierId = null,
-    ): array {
-        $qb = $this
-            ->createQueryBuilder('d')
-            ->innerJoin('d.dossiers', 'ds')
-            ->leftJoin('d.inquiries', 'i')
-            ->where('ILIKE(d.fileInfo.name, :searchTerm) = true')
-            ->orWhere('ILIKE(d.documentNr, :searchTerm) = true')
-            ->orWhere('ILIKE(i.casenr, :searchTerm) = true')
-            ->andWhere('ds.organisation = :organisation')
-            ->orderBy('d.updatedAt', 'DESC')
-            ->setMaxResults($limit)
-            ->setParameter('searchTerm', '%' . $searchTerm . '%')
-            ->setParameter('organisation', $organisation);
-
-        if ($dossierId !== null) {
-            $qb = $qb
-                ->andWhere('ds.id = :dossierId')
-                ->setParameter('dossierId', $dossierId);
-        }
-
-        return $qb->getQuery()->getResult();
-    }
-
     public function findOneByDossierAndDocumentId(WooDecision $dossier, string $documentId): ?Document
     {
         $qb = $this->createQueryBuilder('d')
@@ -231,8 +200,8 @@ class DocumentRepository extends ServiceEntityRepository
             ->addSelect('
                 (CASE
                     WHEN doc.withdrawn=true THEN 1
-                    WHEN doc.suspended=true THEN 1
-                    WHEN doc.judgement IN (:publicJudgements) AND doc.fileInfo.uploaded=false THEN 1
+                    WHEN doc.suspended=true THEN 2
+                    WHEN doc.judgement IN (:publicJudgements) AND doc.fileInfo.uploaded=false THEN 3
                     ELSE 0
                 END) AS HIDDEN hasNotice')
             ->setParameter('publicJudgements', Judgement::atLeastPartialPublicValues());
@@ -303,22 +272,6 @@ class DocumentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Document[]
-     */
-    public function getPublishedDocuments(int $limit = 50000, int $offset = 0): array
-    {
-        $qb = $this->createQueryBuilder('d')
-            ->innerJoin('d.dossiers', 'ds')
-            ->where('ds.status = :status')
-            ->orderBy('d.createdAt', 'ASC')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset)
-            ->setParameter('status', DossierStatus::PUBLISHED);
-
-        return $qb->getQuery()->getResult();
-    }
-
-    /**
      * @return iterable<int,Document>
      */
     public function getPublishedDocumentsIterable(): iterable
@@ -329,8 +282,11 @@ class DocumentRepository extends ServiceEntityRepository
                 FROM App\Domain\Publication\Dossier\Type\WooDecision\WooDecision ds
                 WHERE ds MEMBER OF d.dossiers AND ds.status = :status
             )')
+            ->andWhere('d.judgement IN (:judgements)')
+            ->andWhere('d.fileInfo.uploaded = true')
             ->orderBy('d.createdAt', 'ASC')
-            ->setParameter('status', DossierStatus::PUBLISHED);
+            ->setParameter('status', DossierStatus::PUBLISHED)
+            ->setParameter('judgements', [Judgement::PUBLIC, Judgement::PARTIAL_PUBLIC]);
 
         return $qb->getQuery()->toIterable();
     }
@@ -376,5 +332,32 @@ class DocumentRepository extends ServiceEntityRepository
             ->setParameter('status', DossierStatus::PUBLISHED);
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findOneByDocumentNrCaseInsensitive(string $documentNr): ?Document
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->where('LOWER(d.documentNr) = LOWER(:documentNr)')
+            ->setParameter('documentNr', $documentNr)
+        ;
+
+        /** @var ?Document */
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function getDocumentCaseNrs(string $documentNr): DocumentCaseNumbers
+    {
+        /**
+         * @var array<array-key, array{id:Uuid, casenr:string}> $result
+         */
+        $result = $this->createQueryBuilder('d')
+            ->select('d.id, inq.casenr')
+            ->where('LOWER(d.documentNr) = LOWER(:documentNr)')
+            ->setParameter('documentNr', $documentNr)
+            ->leftJoin('d.inquiries', 'inq')
+            ->getQuery()
+            ->getArrayResult();
+
+        return DocumentCaseNumbers::fromArray($result);
     }
 }

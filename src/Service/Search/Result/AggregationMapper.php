@@ -12,12 +12,12 @@ use App\Domain\Search\Query\SearchParameters;
 use App\Service\Search\Model\Aggregation;
 use App\Service\Search\Model\AggregationBucketEntry;
 use App\Service\Search\Model\FacetKey;
-use Jaytaph\TypeArray\TypeArray;
+use MinVWS\TypeArray\TypeArray;
 
 readonly class AggregationMapper
 {
-    private const KEY = '[key]';
-    private const DOC_COUNT = '[doc_count]';
+    private const string KEY = '[key]';
+    private const string DOC_COUNT = '[doc_count]';
 
     public function __construct(
         private FacetInputFactory $facetInputFactory,

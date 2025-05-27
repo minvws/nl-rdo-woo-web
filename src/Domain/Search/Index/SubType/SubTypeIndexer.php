@@ -13,19 +13,13 @@ use App\Service\Elastic\ElasticService;
 readonly class SubTypeIndexer
 {
     /**
-     * @var iterable<ElasticSubTypeMapperInterface>
-     */
-    private iterable $mappers;
-
-    /**
      * @param iterable<ElasticSubTypeMapperInterface> $mappers
      */
     public function __construct(
         private ElasticService $elasticService,
         private PageIndexUpdater $pageIndexUpdater,
-        iterable $mappers,
+        private iterable $mappers,
     ) {
-        $this->mappers = $mappers;
     }
 
     /**

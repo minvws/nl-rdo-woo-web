@@ -1,28 +1,22 @@
-<script setup>
+<script setup lang="ts">
 import { uniqueId } from '@utils';
+import type { PublicationSearchResult } from './interface';
 
-const props = defineProps({
-  columnResultId: {
-    type: String,
-    required: true,
-  },
-  results: {
-    type: Array,
-    default: () => [],
-  },
-  title: {
-    type: String,
-    required: true,
-  },
-  hideResultId: {
-    type: Boolean,
-    default: false,
-  },
+interface Props {
+  columnResultId: string;
+  hideResultId?: boolean;
+  results: PublicationSearchResult[];
+  title: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  hideResultId: false,
+  results: () => [],
 });
 
 const titleId = uniqueId('search-results-title');
 
-const onRowClick = (url) => {
+const onRowClick = (url: string) => {
   window.location.assign(url);
 };
 </script>

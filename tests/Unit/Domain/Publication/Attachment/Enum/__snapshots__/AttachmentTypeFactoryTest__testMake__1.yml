@@ -15,9 +15,11 @@
     attachmentTypes: true
     name: branch.communications
 -
+    requestForAdvice: false
     name: COVENANT
     value: c_386e74cb
 -
+    requestForAdvice: false
     name: COMPLAINT_JUDGEMENT
     value: ww_jc6woe9
 -

@@ -63,6 +63,8 @@ describe('The functionality regarding the collapsible filters on the search page
   const getToggleFilterItemsButton = () =>
     screen.getByTestId('toggle-filter-items-button');
 
+  const getMoreItemsCheckbox = () => screen.getByTestId('more-items-checkbox');
+
   afterEach(() => {
     cleanup();
 
@@ -97,12 +99,34 @@ describe('The functionality regarding the collapsible filters on the search page
       it('should be collapsed', () => {
         expect(getFiltersGroupCollapsible()).toHaveClass('hidden');
       });
+
+      describe('when having checkboxes which are checked', () => {
+        beforeEach(() => {
+          fireEvent.click(getMoreItemsCheckbox());
+          initializeFunctionality();
+        });
+
+        it('should be expanded', () => {
+          expect(getFiltersGroupCollapsible()).not.toHaveClass('hidden');
+        });
+      });
     });
   });
 
   describe('an expandable element within a filters group', () => {
     it('should be collapsed by default', () => {
       expect(getFiltersItemCollapsible()).toHaveClass('hidden');
+    });
+
+    describe('when having checkboxes which are checked', () => {
+      beforeEach(() => {
+        fireEvent.click(getMoreItemsCheckbox());
+        initializeFunctionality();
+      });
+
+      it('should be expanded', () => {
+        expect(getFiltersItemCollapsible()).not.toHaveClass('hidden');
+      });
     });
 
     describe('the toggle button', () => {

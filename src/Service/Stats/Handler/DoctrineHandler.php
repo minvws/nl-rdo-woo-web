@@ -9,11 +9,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class DoctrineHandler implements StatsHandlerInterface
 {
-    protected EntityManagerInterface $doctrine;
-
-    public function __construct(EntityManagerInterface $doctrine)
+    public function __construct(protected EntityManagerInterface $doctrine)
     {
-        $this->doctrine = $doctrine;
     }
 
     public function store(\DateTimeImmutable $dt, string $hostname, string $section, int $duration): void

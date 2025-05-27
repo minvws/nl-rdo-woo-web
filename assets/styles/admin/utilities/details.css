@@ -1,0 +1,9 @@
+@utility bhr-details {
+  & summary::after {
+    content: attr(data-collapsed);
+  }
+
+  &[open] summary::after {
+    content: attr(data-expanded);
+  }
+}

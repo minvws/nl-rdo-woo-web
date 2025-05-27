@@ -58,21 +58,15 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
         $postUpdateArgs = \Mockery::mock(PostUpdateEventArgs::class);
 
         $this->entityManager->expects('persist')->with(\Mockery::on(
-            static function (History $history): bool {
-                return $history->getContextKey() === 'dossier_updated';
-            }
+            static fn (History $history): bool => $history->getContextKey() === 'dossier_updated'
         ));
 
         $this->entityManager->expects('persist')->with(\Mockery::on(
-            static function (History $history): bool {
-                return $history->getContextKey() === 'dossier_update_publication_date';
-            }
+            static fn (History $history): bool => $history->getContextKey() === 'dossier_update_publication_date'
         ));
 
         $this->entityManager->expects('persist')->with(\Mockery::on(
-            static function (History $history): bool {
-                return $history->getContextKey() === 'dossier_update_preview_date';
-            }
+            static fn (History $history): bool => $history->getContextKey() === 'dossier_update_preview_date'
         ));
 
         $this->entityManager->expects('flush');

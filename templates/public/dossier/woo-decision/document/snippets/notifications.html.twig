@@ -56,7 +56,7 @@
                 }}</p>
 
                 {% if document.entity.grounds | length > 0 %}
-                    <p class="!mb-2">{{ 'public.documents.reasons_are' | trans({'count': document.entity.grounds | length }) }}:</p>
+                    <p class="mb-2!">{{ 'public.documents.reasons_are' | trans({'count': document.entity.grounds | length }) }}:</p>
                     <ul>
                         {% for ground in document.entity.grounds %}
                             <li>

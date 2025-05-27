@@ -6,8 +6,6 @@ namespace App\Domain\Publication\Attachment\Repository;
 
 use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Entity\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
@@ -55,42 +53,6 @@ class AttachmentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    /**
-     * @return list<AbstractAttachment>
-     */
-    public function findBySearchTerm(
-        string $searchTerm,
-        int $limit,
-        Organisation $organisation,
-        ?Uuid $dossierId = null,
-        ?DossierType $dossierType = null,
-    ): array {
-        $qb = $this
-            ->createQueryBuilder('a')
-            ->join('a.dossier', 'd')
-            ->where('ILIKE(a.fileInfo.name, :searchTerm) = true')
-            ->andWhere('d.organisation = :organisation')
-            ->orderBy('a.updatedAt', 'DESC')
-            ->setMaxResults($limit)
-            ->setParameter('searchTerm', '%' . $searchTerm . '%')
-            ->setParameter('organisation', $organisation);
-
-        if ($dossierId !== null) {
-            $qb = $qb
-                ->andWhere('d.id = :dossierId')
-                ->setParameter('dossierId', $dossierId);
-        }
-
-        if ($dossierType !== null) {
-            $qb = $qb
-                ->andWhere('d INSTANCE OF :dossierType')
-                ->setParameter('dossierType', $dossierType);
-        }
-
-        /** @var list<AbstractAttachment> */
-        return $qb->getQuery()->getResult();
-    }
-
     public function getAllPublishedQuery(): Query
     {
         return $this
@@ -109,6 +71,7 @@ class AttachmentRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a')
             ->join('a.dossier', 'd')
             ->where('d.status = :status')
+            ->andWhere('a.fileInfo.uploaded = true')
             ->orderBy('a.createdAt', 'ASC')
             ->setParameter('status', DossierStatus::PUBLISHED);
 

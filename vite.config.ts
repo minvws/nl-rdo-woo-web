@@ -20,6 +20,7 @@ export default defineConfig({
         'worker-charts': './assets/js/misc/charts.js',
       },
     },
+    assetsInlineLimit: 0,
   },
 
   resolve: {

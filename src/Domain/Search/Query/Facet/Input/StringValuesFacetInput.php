@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Search\Query\Facet\Input;
 
 use App\Domain\Search\Query\Facet\FacetDefinitionInterface;
+use App\Service\Search\Model\FacetKey;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Webmozart\Assert\Assert;
 
@@ -65,5 +66,10 @@ final readonly class StringValuesFacetInput extends FacetInput implements String
                 )
             ),
         );
+    }
+
+    public function getFacetKey(): FacetKey
+    {
+        return $this->facet->getKey();
     }
 }

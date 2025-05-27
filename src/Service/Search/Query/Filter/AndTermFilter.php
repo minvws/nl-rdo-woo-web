@@ -8,7 +8,7 @@ use App\Domain\Search\Index\Schema\ElasticNestedField;
 use App\Domain\Search\Query\Facet\Facet;
 use App\Domain\Search\Query\Facet\Input\StringValuesFacetInputInterface;
 use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Query\Query;
+use App\Service\Search\Query\Dsl\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 
 /**

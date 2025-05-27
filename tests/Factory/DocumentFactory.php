@@ -17,8 +17,8 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 final class DocumentFactory extends PersistentProxyObjectFactory
 {
     public function __construct(
-        private StorageRootPathGenerator $storageRootPathGenerator,
-        private EntityManagerInterface $entityManager,
+        private readonly StorageRootPathGenerator $storageRootPathGenerator,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -59,6 +59,7 @@ final class DocumentFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
         return $this

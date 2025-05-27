@@ -1,3 +1,4 @@
+queryString: true
 activeFacets: true
 queryParameters:
     q: foo
@@ -5,7 +6,7 @@ queryParameters:
     sort: _score
     sortorder: desc
 facetInputs:
-    date: { active: true, withoutDate: false, anyPeriodFilterDates: true, periodFilterFrom: null, periodFilterTo: '2024-01-15', requestParameters: { to: '2024-01-15' }, fromDate: false, toDate: true, notActive: false, facet: { key: { paramName: dt, name: DATE, value: date }, field: { name: DATE_FILTER, value: date_filter }, requestParameter: dt, filter: {  }, aggregationStrategy: {  } }, from: null, to: '2024-01-15T00:00:00+00:00' }
+    date: { active: true, withoutDate: false, anyPeriodFilterDates: true, periodFilterFrom: null, periodFilterTo: '2024-01-15', requestParameters: { to: '2024-01-15' }, fromDate: false, toDate: true, facetKey: { paramName: dt, name: DATE, value: date }, notActive: false, facet: { key: { paramName: dt, name: DATE, value: date }, field: { name: DATE_FILTER, value: date_filter }, requestParameter: dt, filter: {  }, aggregationStrategy: {  } }, from: null, to: '2024-01-15T00:00:00+00:00' }
 operator:
     name: AND
     value: and
@@ -28,3 +29,6 @@ sortOrder:
     name: DESC
     value: desc
 baseQueryConditions: null
+mode:
+    accessibleDossierStatuses: [{ new: false, concept: false, scheduled: false, preview: true, published: false, newOrConcept: false, conceptOrScheduled: false, publiclyAvailable: true, publiclyAvailableOrScheduled: true, deleted: false, notDeleted: true, name: PREVIEW, value: preview }, { new: false, concept: false, scheduled: false, preview: false, published: true, newOrConcept: false, conceptOrScheduled: false, publiclyAvailable: true, publiclyAvailableOrScheduled: true, deleted: false, notDeleted: true, name: PUBLISHED, value: published }]
+    name: PUBLIC
