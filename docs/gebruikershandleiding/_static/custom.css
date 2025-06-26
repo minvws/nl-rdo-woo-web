@@ -1,0 +1,5 @@
+/* sidebar caption font */
+main.sidemenu p.caption {
+    font-weight: bold;
+    font-size: 120%;
+}

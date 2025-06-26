@@ -25,7 +25,7 @@ auth_matrix:
         },
         {
             prefix: "user",
-            roles: [ "ROLE_GLOBAL_ADMIN", "ROLE_SUPER_ADMIN" ],
+            roles: [ "ROLE_SUPER_ADMIN" ],
             permissions: {
                 create: true,
                 read: true,
@@ -75,6 +75,17 @@ auth_matrix:
                 organisation_only: true,
             }
         },
+
+      # -- Content page --------------------------------------------------------------
+        {
+            prefix: "content_page",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                read: true,
+                update: true,
+            }
+        },
+
 
       # -- Subject ----------------------------------------------------------------------------
         {
@@ -145,34 +156,6 @@ auth_matrix:
                 unpublished_dossiers: true,
             }
         },
-        {
-            prefix: "dossier",
-            roles: [ "ROLE_GLOBAL_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-                delete: false,
-                execute: true,
-            },
-            filters: {
-                published_dossiers: true,
-            }
-        },
-        {
-            prefix: "dossier",
-            roles: [ "ROLE_GLOBAL_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-                delete: true,
-                execute: true,
-            },
-            filters: {
-                unpublished_dossiers: true,
-            }
-        },
 
       # -- Document ----------------------------------------------------------------------------
         {
@@ -219,34 +202,6 @@ auth_matrix:
         },
         {
             prefix: "document",
-            roles: [ "ROLE_GLOBAL_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-                delete: true,
-            },
-            filters: {
-                published_dossiers: false,
-                unpublished_dossiers: true,
-            }
-        },
-        {
-            prefix: "document",
-            roles: [ "ROLE_GLOBAL_ADMIN" ],
-            permissions: {
-                create: true,
-                read: true,
-                update: true,
-                delete: false,
-            },
-            filters: {
-                published_dossiers: true,
-                unpublished_dossiers: false,
-            }
-        },
-        {
-            prefix: "document",
             roles: [ "ROLE_VIEW_ACCESS" ],
             permissions: {
                 create: false,
@@ -263,7 +218,7 @@ auth_matrix:
       # -- Organisation ----------------------------------------------------------------------------
         {
             prefix: "organisation",
-            roles: [ "ROLE_GLOBAL_ADMIN", "ROLE_SUPER_ADMIN" ],
+            roles: [ "ROLE_SUPER_ADMIN" ],
             permissions: {
                 create: true,
                 read: true,
@@ -289,7 +244,7 @@ auth_matrix:
         },
         {
             prefix: "inquiry",
-            roles: [ "ROLE_GLOBAL_ADMIN", "ROLE_ORGANISATION_ADMIN", "ROLE_DOSSIER_ADMIN" ],
+            roles: [ "ROLE_ORGANISATION_ADMIN", "ROLE_DOSSIER_ADMIN" ],
             permissions: {
                 create: true,
                 read: true,
@@ -309,7 +264,7 @@ auth_matrix:
       # -- Misc ----------------------------------------------------------------------------
         {
             prefix: "stat",
-            roles: [ "ROLE_GLOBAL_ADMIN", "ROLE_ORGANISATION_ADMIN", "ROLE_SUPER_ADMIN" ],
+            roles: [ "ROLE_ORGANISATION_ADMIN", "ROLE_SUPER_ADMIN" ],
             permissions: {
                 read: true,
             }

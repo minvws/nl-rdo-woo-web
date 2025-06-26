@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision;
 
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierReference;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
@@ -250,5 +251,45 @@ final class WooDecisionRepositoryTest extends KernelTestCase
 
         $this->assertNotContains($wooDecisionA->getDossierNr(), $dosserNrResults);
         $this->assertContains($wooDecisionB->getDossierNr(), $dosserNrResults);
+    }
+
+    public function testGetNotificationCounts(): void
+    {
+        $wooDecision = WooDecisionFactory::createOne();
+
+        DocumentFactory::createone([
+            'dossiers' => [$wooDecision],
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createone([
+                'uploaded' => false,
+            ]),
+            'suspended' => false,
+        ]);
+
+        $docB = DocumentFactory::createone([
+            'dossiers' => [$wooDecision],
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createone([
+                'uploaded' => true,
+            ]),
+            'suspended' => true,
+        ]);
+        $docB->withdraw(DocumentWithdrawReason::DATA_IN_DOCUMENT, '');
+        $docB->_save();
+
+        DocumentFactory::createone([
+            'dossiers' => [$wooDecision],
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createone([
+                'uploaded' => true,
+            ]),
+            'suspended' => true,
+        ]);
+
+        $result = $this->getRepository()->getNotificationCounts($wooDecision);
+
+        $this->assertEquals(1, $result['missing_uploads']);
+        $this->assertEquals(1, $result['withdrawn']);
+        $this->assertEquals(2, $result['suspended']);
     }
 }

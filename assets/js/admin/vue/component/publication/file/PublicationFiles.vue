@@ -5,7 +5,7 @@ import Icon from '@admin-fe/component/Icon.vue';
 import type { SelectOptions } from '@admin-fe/form/interface';
 import { validateResponse } from '@js/admin/utils';
 import { useFocusWithin } from '@vueuse/core';
-import { computed, nextTick, useTemplateRef, ref } from 'vue';
+import { computed, nextTick, useTemplateRef, ref, provide } from 'vue';
 import {
   findFileTypeLabelByValue,
   getValuesFromPublicationFileTypes,
@@ -18,6 +18,7 @@ import {
 } from './interface';
 import PublicationFileForm from './PublicationFileForm.vue';
 import PublicationFilesList from './PublicationFilesList.vue';
+import { UPLOAD_AREA_ENDPOINT } from '../../../../vue/component/file/upload/static';
 
 interface Props {
   allowedFileTypes: string[];
@@ -26,11 +27,14 @@ interface Props {
   canDelete: boolean;
   dateLabel?: string;
   endpoint: string;
+  uploadEndpoint?: null | string;
+  e2eName?: string;
   fileTypeOptions: PublicationFileTypes;
   groundOptions: GroundOptions;
   languageOptions: SelectOptions;
   readableFileType?: string;
   uploadGroupId: string;
+  dossierId?: null | string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -56,6 +60,10 @@ const createEmptyPublicationFile = (): PublicationFile => ({
   size: 0,
   type: '',
 });
+
+if (props.uploadEndpoint) {
+  provide(UPLOAD_AREA_ENDPOINT, props.uploadEndpoint);
+}
 
 const getReadableFileType = () => {
   if (props.readableFileType) {
@@ -229,7 +237,11 @@ retrieveFiles();
   </div>
 
   <Teleport to="body">
-    <Dialog v-model="isDialogOpen" :title="dialogTitle">
+    <Dialog
+      v-model="isDialogOpen"
+      :e2e-name="props.e2eName"
+      :title="dialogTitle"
+    >
       <PublicationFileForm
         @cancel="onCancel"
         @saved="onSaved"
@@ -245,6 +257,7 @@ retrieveFiles();
         :is-edit-mode="isEditMode"
         :language-options="props.languageOptions"
         :upload-group-id="props.uploadGroupId"
+        :dossier-id="props.dossierId"
       />
     </Dialog>
   </Teleport>

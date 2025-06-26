@@ -8,31 +8,54 @@ use App\Domain\Publication\Dossier\DocumentPrefix;
 use App\Entity\Department;
 use App\Entity\Organisation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
  * This is a set of fixtures for the Organisation entity. It is not meant to be used in production.
  */
-class OrganisationFixtures extends Fixture
+class OrganisationFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
+    public const string REFERENCE = 'organisation-fixture-reference';
+
+    /**
+     * @return list<string>
+     */
+    public static function getGroups(): array
+    {
+        return ['example'];
+    }
+
     public function load(ObjectManager $manager): void
     {
-        $org = $manager->getRepository(Organisation::class)->findOneBy(['name' => 'Programmadirectie Openbaarheid']);
-        if ($org !== null) {
-            return;
-        }
+        $documentPrefix1 = new DocumentPrefix();
+        $documentPrefix1->setPrefix('PREFIX1');
 
-        /** @var Department $department */
-        $department = $manager->getRepository(Department::class)->findOneBy(['shortTag' => 'VWS']);
-
-        $documentPrefix = new DocumentPrefix();
-        $documentPrefix->setPrefix('MINVWS');
+        $documentPrefix2 = new DocumentPrefix();
+        $documentPrefix2->setPrefix('PREFIX2');
 
         $entity = new Organisation();
-        $entity->setName('Programmadirectie Openbaarheid');
-        $entity->addDepartment($department);
-        $entity->addDocumentPrefix($documentPrefix);
+        $entity->setName('Voorbeeld organisatie');
+        $entity->addDocumentPrefix($documentPrefix1);
+        $entity->addDocumentPrefix($documentPrefix2);
+        $entity->addDepartment(
+            $this->getReference(DepartmentFixtures::REFERENCE_1, Department::class),
+        );
+        $entity->addDepartment(
+            $this->getReference(DepartmentFixtures::REFERENCE_2, Department::class),
+        );
+
         $manager->persist($entity);
         $manager->flush();
+        $this->addReference(self::REFERENCE, $entity);
+    }
+
+    /**
+     * @return array<array-key, class-string>
+     */
+    public function getDependencies(): array
+    {
+        return [DepartmentFixtures::class];
     }
 }

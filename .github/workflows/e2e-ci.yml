@@ -24,6 +24,7 @@ on:
 
 env:
   CR_PAT: "${{ secrets.REPO_READ_ONLY_TOKEN }}"
+  GH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }}
   PYTHON_VERSION: 3.12
   TEST_TAG: ${{ inputs.test_tag || 'ci' }}
 
@@ -42,19 +43,22 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run up:ci task
+      - name: Run task setup
         run: task setup
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      - name: Initialize Robot Framework
+      - name: Prepare OS for tests
         run: |
           sudo apt-get install --reinstall libpq-dev
           sudo npx playwright install-deps
+      - name: Create virtual environment
+        run: |
           python -m pip install --upgrade pip
           pip install -r tests/robot_framework/requirements.txt
           rfbrowser init
+          task rf:fixtures:load:e2e
       - name: Run Robot Framework tests
         env:
           URL_PUBLIC: localhost:8000

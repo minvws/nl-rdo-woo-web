@@ -92,6 +92,7 @@ describe('The "PublicationFiles" component', () => {
         allowMultiple,
         canDelete: false,
         endpoint: 'https://mocked-endpoint.com',
+        e2eName: 'mocked-e2e-name',
         fileTypeOptions,
         groundOptions,
         languageOptions,
@@ -196,6 +197,7 @@ describe('The "PublicationFiles" component', () => {
   describe('the readable document type', () => {
     test('should equal the property "readableFileType" when it is provided', () => {
       const component = createComponent({
+        allowMultiple: false,
         readableFileType: 'mocked-readable-file-type',
       });
 
@@ -233,6 +235,10 @@ describe('The "PublicationFiles" component', () => {
   });
 
   describe('when an file is deleted', () => {
+    beforeEach(() => {
+      isFocusWithin.value = false;
+    });
+
     test('should display a message saying the file was deleted', async () => {
       const component = createComponent();
       await flushPromises();
@@ -283,6 +289,12 @@ describe('The "PublicationFiles" component', () => {
       await mockCancel(component);
       await mockEdit(component);
       expect(dialogComponent.props('title')).toBe('Bijlage bewerken');
+    });
+
+    test('should have an attribute "data-e2e-name" with the value of the "e2eName" property', () => {
+      expect(getDialogComponent(createComponent()).props('e2eName')).toBe(
+        'mocked-e2e-name',
+      );
     });
   });
 });

@@ -21,7 +21,7 @@ zodat lezers snel begrijpen waar het convenant over gaat. Dit veld is verplicht 
 Upload hier het hoofddocument van het convenant. Dit veld is verplicht om verder te gaan.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Je kunt slechts één document uploaden.
 :::
 

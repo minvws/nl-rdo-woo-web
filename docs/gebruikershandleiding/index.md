@@ -13,5 +13,5 @@ inloggen
 publiceren/index
 organisatiebeheer/index
 admin/index
-changelog
+releasenotes
 ```

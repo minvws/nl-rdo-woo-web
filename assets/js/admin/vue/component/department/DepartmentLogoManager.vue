@@ -50,7 +50,12 @@ const onUploaded = (
     <img class="mx-auto max-w-[80%]" :src="logoEndpoint" alt="Logo" />
 
     <div class="pt-8">
-      <button @click="removeLogo" class="bhr-file__delete" type="button">
+      <button
+        @click="removeLogo"
+        class="bhr-file__delete"
+        type="button"
+        data-e2e-name="remove-logo"
+      >
         <Icon color="fill-current" :size="18" name="trash-bin" />
         <span class="ml-2">Verwijder logo</span>
       </button>

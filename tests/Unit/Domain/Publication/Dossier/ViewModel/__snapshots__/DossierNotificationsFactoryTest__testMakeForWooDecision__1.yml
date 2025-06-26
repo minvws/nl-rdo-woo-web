@@ -1,0 +1,9 @@
+anyDocumentNotifications: true
+dossierNotifications:
+    - incomplete
+    - suspended
+    - withdrawn
+isNotCompleted: true
+missingUploads: 2
+withdrawnDocuments: 4
+suspendedDocuments: 3

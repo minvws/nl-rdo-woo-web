@@ -159,4 +159,30 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @return array{missing_uploads: int, withdrawn: int, suspended: int}
+     */
+    public function getNotificationCounts(WooDecision $wooDecision): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->select('SUM(CASE WHEN doc.withdrawn = true THEN 1 ELSE 0 END) as withdrawn')
+            ->addSelect('SUM(CASE WHEN doc.suspended = true THEN 1 ELSE 0 END) as suspended')
+            ->addSelect('SUM(CASE WHEN
+                            doc.suspended = false
+                            AND doc.withdrawn = false
+                            AND doc.fileInfo.uploaded = false
+                            AND doc.judgement
+                        IN (:judgements) THEN 1 ELSE 0 END) as missing_uploads')
+            ->where('d.id = :dossierId')
+            ->leftJoin('d.documents', 'doc')
+            ->setParameter('dossierId', $wooDecision->getId())
+            ->setParameter('judgements', Judgement::atLeastPartialPublicValues())
+        ;
+
+        /**
+         * @var array{missing_uploads: int, withdrawn: int, suspended: int}
+         */
+        return $qb->getQuery()->getSingleResult();
+    }
 }

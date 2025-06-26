@@ -151,3 +151,11 @@ bin/console woopie:move-orphaned-files
 
 Moves orphaned files into a separate ("trash") bucket. Orphaned files are files in storage that are no longer related to any of the existing entities.
 Asks for the name of the destination bucket during execution.
+
+### Cleanup worker status
+
+```shell
+bin/console woopie:cron:clean-worker-status
+```
+
+Removes all WorkerStats records with a `created_at` more than one week old.

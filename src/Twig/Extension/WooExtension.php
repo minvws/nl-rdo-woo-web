@@ -43,6 +43,7 @@ class WooExtension extends AbstractExtension
             new TwigFunction('get_backend_history', $this->runtime->getBackendHistory(...)),
             new TwigFunction('history_trans', $this->runtime->historyTranslation(...)),
             new TwigFunction('dossier_details_path', $this->runtime->dossierDetailsPath(...)),
+            new TwigFunction('get_dossier_notifications', $this->runtime->getDossierNotifications(...)),
         ];
     }
 }

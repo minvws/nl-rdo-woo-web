@@ -25,17 +25,16 @@ class WithdrawDocumentFormType extends AbstractType
     {
         $builder
             ->add('reason', EnumType::class, [
-                'label' => 'Reden',
+                'label' => 'admin.dossiers.decision.documents.withdraw.reason',
                 'required' => true,
                 'class' => DocumentWithdrawReason::class,
                 'expanded' => true,
-                'placeholder' => 'Choose an option',
                 'constraints' => [
                     new NotBlank(),
                 ],
             ])
             ->add('explanation', TextareaType::class, [
-                'label' => 'Toelichting',
+                'label' => 'admin.dossiers.decision.documents.withdraw.explanation',
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),
@@ -46,7 +45,7 @@ class WithdrawDocumentFormType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Intrekken',
+                'label' => 'admin.dossiers.decision.documents.withdraw.submit',
                 'attr' => [
                     'class' => 'bhr-btn-filled-primary',
                 ],

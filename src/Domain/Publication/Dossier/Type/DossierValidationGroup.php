@@ -27,6 +27,7 @@ enum DossierValidationGroup: string
     case DISPOSITION_DETAILS = 'disposition_details';
     case OTHER_PUBLICATION_DETAILS = 'other_publication_details';
     case ADVICE_DETAILS = 'advice_details';
+    case REQUEST_FOR_ADVICE_DETAILS = 'request_for_advice_details';
 
     /**
      * @return string[] Returns the values of applicable enum cases, as the validator cannot use enums as input

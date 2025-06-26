@@ -2,7 +2,6 @@
 Documentation       This file contains testcases that can be used to initiate a new environment and getting an OTP.
 Resource            ../resources/Setup.resource
 
-
 *** Test Cases ***
 Initiate local environment
   [Documentation]  Creates a new admin user and stores the OTP code in your .zshrc file.
@@ -16,6 +15,9 @@ Initiate local environment
   ...  password=${temp_password}
   ...  otp_secret=${TST_BALIE_OTP_SECRET}
   ...  new_password=${TST_BALIE_PASSWORD}
+# For disable reason see https://github.com/minvws/nl-rdo-woo-web-private/blob/273f83b6160bc29d73ac95a5f2d1523cff65cbd3/tests/robot_framework/resources/Setup.resource#L148
+#  Load VWS Fixtures
+  Load E2E Fixtures
 
 Get Local OTP Code
   [Documentation]  Generate OTP code using local secret

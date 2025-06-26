@@ -15,7 +15,7 @@ is, zodat lezers snel begrijpen waar het onderzoeksrapport over gaat. Dit veld i
 Upload hier het hoofddocument van het onderzoeksrapport. Dit veld is verplicht om verder te gaan.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Je kunt slechts één document uploaden.
 :::
 

@@ -10,15 +10,14 @@ Suite Setup         Suite Setup
 Test Setup          Test Setup
 Test Tags           ci  public  public-init
 
-
 *** Test Cases ***
 Filter Options For Dossiers
   [Documentation]  Tellingen moeten overeenkomen tussen samenvattingsregel en gekozen filteropties
   ...  Depends On Suite  TestDossiers
   # Step by step filter on more dossier types
   ${woo_count}  ${woo_publication_count} =  Select Filter Options - Dossier  woo-decision
-  VAR  ${result_count}  ${woo_count}
-  VAR  ${publication_count}  ${woo_publication_count}
+  VAR  ${result_count} =  ${woo_count}
+  VAR  ${publication_count} =  ${woo_publication_count}
   Compare Search Result Summary  ${result_count}  ${publication_count}
   ${ar_count}  ${ar_publication_count} =  Select Filter Options - Dossier  annual-report
   ${result_count} =  Evaluate  ${result_count} + ${ar_count}
@@ -59,7 +58,7 @@ Searching in dossier should only search in dossier
   ${number_of_documents} =  Get Text  //*[@data-e2e-name="dossier-document-count"]
   ${number_of_documents} =  Remove String Using Regexp  ${number_of_documents}  \\D
   ${number_of_attachments} =  Get Element Count  //tr[@data-e2e-name="dossier-attachments-row"]
-  VAR  ${decision_document}  1
+  VAR  ${decision_document} =  1
   ${docs_in_dossier} =  Evaluate
   ...  ${number_of_documents} + ${number_of_attachments} + ${decision_document}
   Click Search Through Documents In Dossier
@@ -97,7 +96,7 @@ Test Setup
 
 Verify Search Results Sort Order
   [Arguments]  ${sorting_order}
-  VAR  @{search_results}  @{EMPTY}
+  VAR  @{search_results} =  @{EMPTY}
   ${nr_of_elements} =  Get Element Count  //li[@data-e2e-name="search-result"]//span[@data-e2e-name="publication-date"]
   IF  ${nr_of_elements} > 0
     @{result_elements} =  Get Elements  //li[@data-e2e-name="search-result"]//span[@data-e2e-name="publication-date"]

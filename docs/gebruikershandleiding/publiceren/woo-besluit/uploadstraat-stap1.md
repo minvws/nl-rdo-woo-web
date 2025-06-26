@@ -38,7 +38,7 @@ Kies uit het dropdown-menu een prefix. Is er slechts één keuze, dan is deze op
 en referentienummer moet uniek zijn binnen de organisatie. Dit veld is verplicht om in te vullen.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Het is niet mogelijk om de prefix te wijzigen, nadat je deze hebt opgeslagen.
 :::
 
@@ -53,7 +53,7 @@ Vul een referentienummer in voor deze publicatie. Het referentienummer mag besta
 De combinatie van het referentienummer en de prefix moet uniek zijn binnen de organisatie. Dit veld is verplicht om in te vullen.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Na het opslaan van deze stap kun je het referentienummer niet meer aanpassen, dus voer het zorgvuldig in.
 :::
 

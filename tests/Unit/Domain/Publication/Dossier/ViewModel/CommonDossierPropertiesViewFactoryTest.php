@@ -14,7 +14,7 @@ use App\Domain\Publication\Dossier\ViewModel\Subject as SubjectViewModel;
 use App\Domain\Publication\Dossier\ViewModel\SubjectViewFactory;
 use App\Domain\Publication\Subject\Subject;
 use App\Entity\Department as DepartmentEntity;
-use App\Enum\Department as DepartmentEnum;
+use App\Tests\Story\DepartmentEnum;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\MockInterface;
@@ -55,7 +55,7 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
         $this->departmentViewFactory
             ->shouldReceive('make')
             ->with($department)
-            ->andReturn($expectedMainDepartment = new Department(DepartmentEnum::VWS->value));
+            ->andReturn($expectedMainDepartment = new Department(DepartmentEnum::VWS->value, feedbackContent: null));
 
         /** @var AbstractDossier&MockInterface $dossier */
         $dossier = \Mockery::mock(AbstractDossier::class);
@@ -110,7 +110,7 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
         $this->departmentViewFactory
             ->shouldReceive('make')
             ->with($department)
-            ->andReturn($expectedMainDepartment = new Department(DepartmentEnum::VWS->value));
+            ->andReturn($expectedMainDepartment = new Department(DepartmentEnum::VWS->value, feedbackContent: null));
 
         /** @var AbstractDossier&MockInterface $dossier */
         $dossier = \Mockery::mock(AbstractDossier::class);

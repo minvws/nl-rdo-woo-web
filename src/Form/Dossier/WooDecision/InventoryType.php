@@ -52,7 +52,7 @@ class InventoryType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Upload productierapport',
+                'label' => 'admin.inventory.submit_label',
             ]);
 
         if ($dossier->getProductionReport() !== null) {

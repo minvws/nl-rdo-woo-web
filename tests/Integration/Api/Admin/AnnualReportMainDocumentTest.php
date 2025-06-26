@@ -5,100 +5,127 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Api\Admin;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
-use ApiPlatform\Symfony\Bundle\Test\Client;
 use App\Api\Admin\AnnualReportMainDocument\AnnualReportMainDocumentDto;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Uploader\Handler\UploadHandlerInterface;
+use App\Domain\Uploader\UploadEntity;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
 use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentFactory;
+use App\Tests\Factory\UploadEntityFactory;
 use App\Tests\Factory\UserFactory;
 use App\Tests\Integration\IntegrationTestTrait;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Carbon\CarbonImmutable;
+use League\Flysystem\FilesystemOperator;
+use Mockery\MockInterface;
+use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints\Choice;
 
 final class AnnualReportMainDocumentTest extends ApiTestCase
 {
     use IntegrationTestTrait;
-    use TestFileTrait;
 
-    private vfsStreamDirectory $root;
+    protected static ?bool $alwaysBootKernel = false;
+
+    private UploadHandlerInterface&MockInterface $uploadHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->root = vfsStream::setup();
-
         self::bootKernel();
+
+        $this->uploadHandler = \Mockery::mock(UploadHandlerInterface::class);
+        self::getContainer()->set(UploadHandlerInterface::class, $this->uploadHandler);
     }
 
     public function testGetAnnualReportDocumentReturnsEmptySetUntilCreated(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = AnnualReportFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ]);
+        $dossier = AnnualReportFactory::createOne(['organisation' => $user->getOrganisation()]);
 
-        $client = static::createClient()->loginUser($user->_real(), 'balie');
-
-        // There should be no annualReport document yet, so 404
-        $response = $client->request(
-            Request::METHOD_GET,
-            sprintf('/balie/api/dossiers/%s/annual-report-document', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
+        $response = static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_GET,
+                sprintf('/balie/api/dossiers/%s/annual-report-document', $dossier->getId()),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
                 ],
-            ],
-        );
+            );
         $this->assertCount(0, $response->toArray(), 'Expected no main documents yet');
 
-        $uploadUuid = $this->uploadDocument($client);
+        $upload = UploadEntityFactory::new()->create([
+            'uploadGroupId' => UploadGroupId::MAIN_DOCUMENTS,
+            'context' => new InputBag([
+                'dossierId' => $dossier->getId()->toRfc4122(),
+            ]),
+        ]);
 
-        // Now create the AnnualReportDocument
+        $upload->finishUploading(
+            filename: 'filename.pdf',
+            size: 3547981,
+        );
+        $upload->_save();
+
+        $upload->passValidation(mimeType: 'application/pdf');
+        $upload->_save();
+
+        $upload = $upload->_real();
+
+        $this->uploadHandler
+            ->shouldReceive('moveUploadedFileToStorage')
+            ->once()
+            ->with(
+                \Mockery::on(fn (UploadEntity $uploadEntity) => $uploadEntity->getId() == $upload->getId()),
+                \Mockery::type(FilesystemOperator::class),
+                \Mockery::type('string'),
+            );
+
         $data = [
-            'formalDate' => (new \DateTimeImmutable('yesterday'))->format('Y-m-d'),
+            'formalDate' => CarbonImmutable::yesterday()->format('Y-m-d'),
             'internalReference' => 'foo bar',
             'type' => AttachmentType::ANNUAL_REPORT->value,
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
-            'uploadUuid' => $uploadUuid,
+            'uploadUuid' => $upload->getUploadId(),
         ];
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/dossiers/%s/annual-report-document', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
+        static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/balie/api/dossiers/%s/annual-report-document', $dossier->getId()),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ],
+                    'json' => $data,
                 ],
-                'json' => $data,
-            ],
-        );
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
-        // Now it should be possible to fetch the data
-        $response = $client->request(
-            Request::METHOD_GET,
-            sprintf('/balie/api/dossiers/%s/annual-report-document', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
+        $response = static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_GET,
+                sprintf('/balie/api/dossiers/%s/annual-report-document', $dossier->getId()),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
                 ],
-            ],
-        );
+            );
         self::assertResponseIsSuccessful();
         $this->assertCount(1, $response->toArray(), 'Expected one main document');
 
@@ -108,10 +135,7 @@ final class AnnualReportMainDocumentTest extends ApiTestCase
 
     public function testUpdateAnnualReportDocument(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
         $document = AnnualReportMainDocumentFactory::createOne([
             'fileInfo' => FileInfoFactory::createOne([
@@ -120,196 +144,138 @@ final class AnnualReportMainDocumentTest extends ApiTestCase
             'dossier' => AnnualReportFactory::createOne([
                 'organisation' => $user->getOrganisation(),
             ]),
-        ])->_disableAutoRefresh();
+        ])->_real();
 
-        $client = static::createClient()->loginUser($user->_real(), 'balie');
-
-        $response = $client->request(
-            Request::METHOD_PUT,
-            sprintf(
-                '/balie/api/dossiers/%s/annual-report-document/%s',
-                $document->getDossier()->getId(),
-                $document->getId(),
-            ),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
+        $updateResponse = static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_PUT,
+                sprintf(
+                    '/balie/api/dossiers/%s/annual-report-document/%s',
+                    $document->getDossier()->getId(),
+                    $document->getId(),
+                ),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ],
+                    'json' => [
+                        'name' => 'foobar.pdf',
+                    ],
                 ],
-                'json' => [
-                    'name' => 'foobar.pdf',
-                ],
-            ],
-        );
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         self::assertMatchesResourceItemJsonSchema(AnnualReportMainDocumentDto::class);
 
-        $response2 = $client->request(
-            Request::METHOD_GET,
-            sprintf(
-                '/balie/api/dossiers/%s/annual-report-document/%s',
-                $document->getDossier()->getId(),
-                $document->getId(),
-            ),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
+        $getResponse = static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_GET,
+                sprintf(
+                    '/balie/api/dossiers/%s/annual-report-document/%s',
+                    $document->getDossier()->getId(),
+                    $document->getId(),
+                ),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
                 ],
-            ],
-        );
+            );
 
         self::assertResponseIsSuccessful();
         self::assertMatchesResourceItemJsonSchema(AnnualReportMainDocumentDto::class);
 
-        $this->assertSame($response->toArray(), $response2->toArray());
+        $this->assertSame($updateResponse->toArray(), $getResponse->toArray());
     }
 
     public function testAnnualReportDocumentCanBeDeletedAfterCreation(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
         $dossier = AnnualReportFactory::createOne([
             'organisation' => $user->getOrganisation(),
             'status' => DossierStatus::CONCEPT,
         ]);
 
-        $client = static::createClient()->loginUser($user->_real(), 'balie');
+        $adviceMainDocument = AnnualReportMainDocumentFactory::createOne([
+            'dossier' => $dossier,
+        ])->_real();
 
-        $uploadUuid = $this->uploadDocument($client);
-
-        // Now create the AnnualReportDocument
-        $data = [
-            'formalDate' => (new \DateTimeImmutable('yesterday'))->format('Y-m-d'),
-            'internalReference' => 'foo bar',
-            'type' => AttachmentType::ANNUAL_PLAN->value,
-            'language' => AttachmentLanguage::DUTCH->value,
-            'grounds' => ['foo', 'bar'],
-            'uploadUuid' => $uploadUuid,
-        ];
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/dossiers/%s/annual-report-document', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
+        static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_DELETE,
+                sprintf(
+                    '/balie/api/dossiers/%s/annual-report-document/%s',
+                    $dossier->getId(),
+                    $adviceMainDocument->getId(),
+                ),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
                 ],
-                'json' => $data,
-            ],
-        );
-
-        self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
-        self::assertMatchesResourceItemJsonSchema(AnnualReportMainDocumentDto::class);
-
-        // Now it should be possible to delete it
-        $client->request(
-            Request::METHOD_DELETE,
-            sprintf(
-                '/balie/api/dossiers/%s/annual-report-document/%s',
-                $dossier->getId(),
-                $dossier->getMainDocument()?->getId(),
-            ),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-            ],
-        );
+            );
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }
 
     public function testAnnualReportDocumentCannotBeDeletedForAPublishedDossier(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
         $dossier = AnnualReportFactory::createOne([
             'organisation' => $user->getOrganisation(),
             'status' => DossierStatus::PUBLISHED,
         ]);
 
-        $client = static::createClient()->loginUser($user->_real(), 'balie');
+        AnnualReportMainDocumentFactory::createOne([
+            'dossier' => $dossier,
+        ])->_real();
 
-        $uploadUuid = $this->uploadDocument($client);
-
-        // Now create the AnnualReportDocument
-        $data = [
-            'formalDate' => (new \DateTimeImmutable('yesterday'))->format('Y-m-d'),
-            'internalReference' => 'foo bar',
-            'type' => AttachmentType::ANNUAL_REPORT->value,
-            'language' => AttachmentLanguage::DUTCH->value,
-            'grounds' => ['foo', 'bar'],
-            'uploadUuid' => $uploadUuid,
-        ];
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/dossiers/%s/annual-report-document', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
+        static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_DELETE,
+                sprintf('/balie/api/dossiers/%s/annual-report-document', $dossier->getId()),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
                 ],
-                'json' => $data,
-            ],
-        );
-
-        self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
-        self::assertMatchesResourceItemJsonSchema(AnnualReportMainDocumentDto::class);
-
-        // It should not be possible to delete it
-        $client->request(
-            Request::METHOD_DELETE,
-            sprintf('/balie/api/dossiers/%s/annual-report-document', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-            ],
-        );
+            );
         self::assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
     }
 
     public function testCreateAnnualReportDocumentOnlyAcceptsValidTypeValues(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = AnnualReportFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ]);
-
-        $client = static::createClient()->loginUser($user->_real(), 'balie');
-
-        $uploadUuid = $this->uploadDocument($client);
+        $dossier = AnnualReportFactory::createOne(['organisation' => $user->getOrganisation()]);
 
         $data = [
-            'formalDate' => (new \DateTimeImmutable('yesterday'))->format('Y-m-d'),
+            'formalDate' => CarbonImmutable::yesterday()->format('Y-m-d'),
             'internalReference' => 'foo bar',
             'type' => AttachmentType::PROGRESS_REPORT->value,
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
-            'uploadUuid' => $uploadUuid,
+            'uploadUuid' => Uuid::v6(),
         ];
-
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/dossiers/%s/annual-report-document', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
+        static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/balie/api/dossiers/%s/annual-report-document', $dossier->getId()),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ],
+                    'json' => $data,
                 ],
-                'json' => $data,
-            ],
-        );
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertMatchesResourceItemJsonSchema(AnnualReportMainDocumentDto::class);
@@ -320,10 +286,7 @@ final class AnnualReportMainDocumentTest extends ApiTestCase
 
     public function testUpdateAnnualReportDocumentOnlyAcceptsValidTypeValues(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
         $document = AnnualReportMainDocumentFactory::createOne([
             'fileInfo' => FileInfoFactory::createOne([
@@ -332,69 +295,33 @@ final class AnnualReportMainDocumentTest extends ApiTestCase
             'dossier' => AnnualReportFactory::createOne([
                 'organisation' => $user->getOrganisation(),
             ]),
-        ])->_disableAutoRefresh();
+        ])->_real();
 
-        $client = static::createClient()->loginUser($user->_real(), 'balie');
-
-        $client->request(
-            Request::METHOD_PUT,
-            sprintf(
-                '/balie/api/dossiers/%s/annual-report-document/%s',
-                $document->getDossier()->getId(),
-                $document->getId(),
-            ),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
+        static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_PUT,
+                sprintf(
+                    '/balie/api/dossiers/%s/annual-report-document/%s',
+                    $document->getDossier()->getId(),
+                    $document->getId(),
+                ),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ],
+                    'json' => [
+                        'name' => 'foobar.pdf',
+                        'type' => AttachmentType::PROGRESS_REPORT->value,
+                    ],
                 ],
-                'json' => [
-                    'name' => 'foobar.pdf',
-                    'type' => AttachmentType::PROGRESS_REPORT->value,
-                ],
-            ],
-        );
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertMatchesResourceItemJsonSchema(AnnualReportMainDocumentDto::class);
         self::assertJsonContains(['violations' => [
             ['propertyPath' => 'type', 'code' => Choice::NO_SUCH_CHOICE_ERROR],
         ]]);
-    }
-
-    private function uploadDocument(Client $client): string
-    {
-        $this->createPdfTestFile();
-
-        $uploadFile = new UploadedFile(
-            path: $this->root->url() . '/test_file.pdf',
-            originalName: 'test_file.pdf    ',
-        );
-
-        $uploadUuid = 'file-' . $this->getFaker()->uuid();
-
-        // Upload the document first
-        $client->request(
-            Request::METHOD_POST,
-            '/balie/uploader',
-            [
-                'headers' => ['Content-Type' => 'multipart/form-data'],
-                'extra' => [
-                    'parameters' => [
-                        'chunkindex' => '0',
-                        'totalchunkcount' => '1',
-                        'groupId' => UploadGroupId::MAIN_DOCUMENTS->value,
-                        'uuid' => $uploadUuid,
-                    ],
-                    'files' => [
-                        'file' => $uploadFile,
-                    ],
-                ],
-            ],
-        );
-
-        self::assertResponseIsSuccessful();
-
-        return $uploadUuid;
     }
 }

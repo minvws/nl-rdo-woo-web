@@ -9,7 +9,6 @@ use App\Domain\Publication\Dossier\Admin\DossierListingService;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Entity\Department;
-use App\Form\Dossier\WooDecision\DocumentUploadType;
 use App\Repository\DepartmentRepository;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -20,7 +19,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * @template-extends AbstractType<DocumentUploadType>
+ * @template-extends AbstractType<SearchFormType>
  */
 class SearchFormType extends AbstractType
 {

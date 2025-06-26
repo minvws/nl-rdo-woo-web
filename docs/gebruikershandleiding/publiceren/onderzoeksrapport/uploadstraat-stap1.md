@@ -34,7 +34,7 @@ Voer hier het referentienummer in, dat samen met de prefix een unieke identifica
 is cruciaal voor de indexering van de publicatie. Dit veld is verplicht om in te vullen.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Na het opslaan van deze stap kun je het referentienummer niet meer aanpassen, dus voer het zorgvuldig in.
 :::
 
@@ -44,6 +44,6 @@ Kies uit het dropdown-menu een prefix. Is er slechts één keuze, dan is deze op
 en referentienummer moet uniek zijn binnen de organisatie.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Het is niet mogelijk om de prefix te wijzigen, nadat je deze hebt opgeslagen.
 :::

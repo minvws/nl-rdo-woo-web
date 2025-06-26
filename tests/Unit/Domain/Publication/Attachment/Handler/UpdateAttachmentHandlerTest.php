@@ -15,7 +15,7 @@ use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\FileInfo;
-use App\Service\Uploader\UploaderService;
+use App\Domain\Upload\Process\EntityUploadStorer;
 use App\Service\Uploader\UploadGroupId;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -30,7 +30,7 @@ class UpdateAttachmentHandlerTest extends MockeryTestCase
     private AttachmentEntityLoader&MockInterface $entityLoader;
     private AttachmentDispatcher&MockInterface $dispatcher;
     private ValidatorInterface&MockInterface $validator;
-    private UploaderService&MockInterface $uploaderService;
+    private EntityUploadStorer&MockInterface $uploadStorer;
 
     public function setUp(): void
     {
@@ -38,14 +38,14 @@ class UpdateAttachmentHandlerTest extends MockeryTestCase
         $this->entityLoader = \Mockery::mock(AttachmentEntityLoader::class);
         $this->dispatcher = \Mockery::mock(AttachmentDispatcher::class);
         $this->validator = \Mockery::mock(ValidatorInterface::class);
-        $this->uploaderService = \Mockery::mock(UploaderService::class);
+        $this->uploadStorer = \Mockery::mock(EntityUploadStorer::class);
 
         $this->handler = new UpdateAttachmentHandler(
             $this->attachmentRepository,
             $this->validator,
-            $this->uploaderService,
             $this->entityLoader,
             $this->dispatcher,
+            $this->uploadStorer,
         );
 
         parent::setUp();
@@ -105,7 +105,12 @@ class UpdateAttachmentHandlerTest extends MockeryTestCase
 
         $this->dispatcher->expects('dispatchAttachmentUpdatedEvent')->with($attachment);
 
-        $this->uploaderService->expects('attachFileToEntity')->with($uploadRef, $attachment, UploadGroupId::ATTACHMENTS);
+        $this->uploadStorer
+            ->expects('storeUploadForEntityWithSourceTypeAndName')
+            ->with(
+                $attachment,
+                $uploadRef,
+            );
 
         $this->handler->__invoke($command);
     }

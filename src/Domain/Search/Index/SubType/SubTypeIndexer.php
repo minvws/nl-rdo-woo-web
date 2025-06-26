@@ -9,6 +9,7 @@ use App\Domain\Search\Index\IndexException;
 use App\Domain\Search\Index\SubType\Mapper\ElasticSubTypeMapperInterface;
 use App\Domain\Search\Index\Updater\PageIndexUpdater;
 use App\Service\Elastic\ElasticService;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class SubTypeIndexer
 {
@@ -18,6 +19,7 @@ readonly class SubTypeIndexer
     public function __construct(
         private ElasticService $elasticService,
         private PageIndexUpdater $pageIndexUpdater,
+        #[AutowireIterator('woo_platform.search.index.subtype_mapper')]
         private iterable $mappers,
     ) {
     }

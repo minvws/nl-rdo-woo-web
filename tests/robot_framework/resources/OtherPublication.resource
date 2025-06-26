@@ -2,8 +2,8 @@
 Documentation       Resource file containing custom keywords for the Other Publication information category
 Library             Browser
 Library             DebugLibrary
+Resource            Admin.resource
 Library             FakerLibrary
-
 
 *** Variables ***
 ${FILE_NAME}        ${EMPTY}
@@ -12,9 +12,11 @@ ${FILE_LOCATION}    ${EMPTY}
 
 *** Keywords ***
 Fill Out Other Publication Details
+  [Arguments]  ${has_attachment}
   ${random_summary} =  Fakerlibrary.Text  200
   Fill Text  id=content_form_summary  ${random_summary}
   Upload Informatiestuk  ${FILE_LOCATION}
+  IF  ${has_attachment}  Upload Attachment  brief
   Click  "Opslaan en verder"
 
 Upload Informatiestuk

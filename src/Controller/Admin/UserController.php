@@ -17,9 +17,6 @@ use App\Service\PaginatorFactory;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use App\Service\UserService;
-use MinVWS\AuditLogger\AuditLogger;
-use MinVWS\AuditLogger\Contracts\LoggableUser;
-use MinVWS\AuditLogger\Events\Logging\AccountChangeLogEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,13 +30,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class UserController extends AbstractController
 {
-    protected const RESET_USER_KEY = 'reset_user';
+    private const string RESET_USER_KEY = 'reset_user';
 
     public function __construct(
         private readonly UserRepository $repository,
         private readonly UserService $userService,
         private readonly TranslatorInterface $translator,
-        private readonly AuditLogger $auditLogger,
         private readonly AuthorizationMatrix $authorizationMatrix,
         private readonly PaginatorFactory $paginatorFactory,
     ) {
@@ -211,42 +207,22 @@ class UserController extends AbstractController
 
     protected function handleInfoForm(FormInterface $form, Request $request, User $user): ?Response
     {
-        $oldUser = clone $user;
+        $unchangedUser = clone $user;
 
         $form->handleRequest($request);
         if (! $form->isSubmitted() || ! $form->isValid()) {
             return null;
         }
 
-        /** @var LoggableUser $loggedInUser */
+        /** @var User $loggedInUser */
         $loggedInUser = $this->getUser();
 
         /** @var string[] $roles */
         $roles = $form->get('roles')->getData();
 
-        $this->userService->updateRoles($loggedInUser, $user, $roles);
+        $this->userService->updateRoles($loggedInUser, $unchangedUser, $user, $roles);
 
         $this->addFlash('backend', ['success' => $this->translator->trans('admin.user.user_modified')]);
-
-        $this->auditLogger->log((new AccountChangeLogEvent())
-            ->asUpdate()
-            ->withActor($loggedInUser)
-            ->withTarget($user)
-            ->withSource('woo')
-            ->withEventCode(AccountChangeLogEvent::EVENTCODE_USERDATA)
-            ->withData([
-                'user_id' => $user->getAuditId(),
-            ])
-            ->withPiiData([
-                'old' => [
-                    'name' => $oldUser->getName(),
-                    'email' => $oldUser->getEmail(),
-                ],
-                'new' => [
-                    'name' => $user->getName(),
-                    'email' => $user->getEmail(),
-                ],
-            ]));
 
         return $this->redirectToRoute('app_admin_users');
     }
@@ -258,27 +234,13 @@ class UserController extends AbstractController
             return null;
         }
 
-        $user->setEnabled(false);
-        $this->repository->save($user, true);
+        /** @var User $actor */
+        $actor = $this->getUser();
+        $this->userService->disable($user, $actor);
 
-        // User name.
         $userName = $user->getName();
         $this->addFlash('backend', ['success' => $this->translator
             ->trans('admin.user.user_deactivated', ['{name}' => $userName])]);
-
-        /** @var LoggableUser $loggedInUser */
-        $loggedInUser = $this->getUser();
-        /** @var LoggableUser $loggedInUser */
-        $this->auditLogger->log((new AccountChangeLogEvent())
-            ->asUpdate()
-            ->withActor($loggedInUser)
-            ->withTarget($user)
-            ->withSource('woo')
-            ->withEventCode(AccountChangeLogEvent::EVENTCODE_ACTIVE)
-            ->withData([
-                'user_id' => $user->getAuditId(),
-                'enabled' => false,
-            ]));
 
         return $this->redirectToRoute('app_admin_users');
     }
@@ -290,28 +252,15 @@ class UserController extends AbstractController
             return null;
         }
 
-        $user->setEnabled(true);
-        $this->repository->save($user, true);
+        /** @var User $actor */
+        $actor = $this->getUser();
+        $this->userService->enable($user, $actor);
 
         $userName = $user->getName();
         $this->addFlash(
             'backend',
             ['success' => $this->translator->trans('admin.user.user_activated', ['{name}' => $userName])]
         );
-
-        /** @var LoggableUser $loggedInUser */
-        $loggedInUser = $this->getUser();
-        /** @var LoggableUser $loggedInUser */
-        $this->auditLogger->log((new AccountChangeLogEvent())
-            ->asUpdate()
-            ->withActor($loggedInUser)
-            ->withTarget($user)
-            ->withSource('woo')
-            ->withEventCode(AccountChangeLogEvent::EVENTCODE_ACTIVE)
-            ->withData([
-                'user_id' => $user->getAuditId(),
-                'enabled' => true,
-            ]));
 
         return $this->redirectToRoute('app_admin_users');
     }

@@ -13,6 +13,7 @@ use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
 use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Uploader\UploadGroupId;
@@ -37,6 +38,7 @@ use Webmozart\Assert\Assert;
     'woo_decision_main_document' => WooDecisionMainDocument::class,
     'other_publication_main_document' => OtherPublicationMainDocument::class,
     'advice_main_document' => AdviceMainDocument::class,
+    'request_for_advice_main_document' => RequestForAdviceMainDocument::class,
 ])]
 #[ORM\HasLifecycleCallbacks]
 abstract class AbstractMainDocument implements EntityWithFileInfo

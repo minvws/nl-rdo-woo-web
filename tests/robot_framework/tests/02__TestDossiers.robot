@@ -18,8 +18,7 @@ Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Teardown       Run Keyword If Test Failed  Go To Admin
 Test Template       Create Test Dossier
-Test Tags           ci  testdossiers  public-init  themes-init  sitemap-init
-
+Test Tags           ci  testdossiers  public-init  sitemap-init
 
 *** Test Cases ***                                    type                  publication_status    has_attachment    decision
 Woo-besluit, Concept, Openbaarmaking                  woo-decision          Concept               ${FALSE}          Openbaarmaking
@@ -50,12 +49,12 @@ Klachtoordeel, Gepubliceerd                           complaint-judgement   Gepu
 Klachtoordeel, Gepland                                complaint-judgement   Gepland               ${FALSE}
 Overig, Concept                                       other-publication     Concept               ${FALSE}
 Overig, Gepubliceerd                                  other-publication     Gepubliceerd          ${FALSE}
-Overig, Gepubliceerd, Bijlage                         other-publication     Concept               ${TRUE}
+Overig, Gepubliceerd, Bijlage                         other-publication     Gepubliceerd          ${TRUE}
 Overig, Gepland                                       other-publication     Gepland               ${FALSE}
-# Advies, Concept  advice  Concept  ${FALSE}
-# Advies, Gepubliceerd  advice  Gepubliceerd  ${FALSE}
-# Advies, Gepubliceerd, Bijlage  advice  Concept  ${TRUE}
-# Advies, Gepland  advice  Concept  ${FALSE}
+Advies, Concept  advice  Concept  ${FALSE}
+Advies, Gepubliceerd  advice  Gepubliceerd  ${FALSE}
+Advies, Gepubliceerd, Bijlage  advice  Gepubliceerd  ${TRUE}
+Advies, Gepland  advice  Gepland  ${FALSE}
 
 
 *** Keywords ***
@@ -89,8 +88,8 @@ Create Test Dossier
   ELSE IF  "${type}" == "complaint-judgement"
     Fill Out Complaint Judgement Details
   ELSE IF  "${type}" == "other-publication"
-    Fill Out Other Publication Details
+    Fill Out Other Publication Details  ${has_attachment}
   ELSE IF  "${type}" == "advice"
-    Fill Out Advice Details
+    Fill Out Advice Details  ${has_attachment}
   END
   Publish Dossier And Return To Admin Home  ${publication_status}

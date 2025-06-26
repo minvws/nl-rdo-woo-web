@@ -16,6 +16,7 @@ vars:
   BASE_PATH:
     sh: pwd
   PROJECT_NAME: nl-rdo-woo-web
+  GH_VERSION: v2.74.0
 
 # env:
 #   BUILDKIT_PROGRESS: plain
@@ -103,7 +104,7 @@ tasks:
         vars: { CLI_ARGS: "app bin/console woopie:index:create woopie latest --read --write" }
       - task: npm:install
       - task: npm:build
-      - task: docs:sphinx:build:ci
+      - task: docs:build:ci
 
   setup:if-not-exist:
     vars:
@@ -198,10 +199,10 @@ tasks:
         vars: { CLI_ARGS: "app bin/console doctrine:migrations:migrate --no-interaction" }
 
   app:loadfixtures:
-    desc: Load doctrine fixtures
+    desc: Load doctrine example fixtures
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction" }
+        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --group=example --append" }
 
   app:migrate:diff:
     desc: Run (doctrine) database migrations diff
@@ -344,7 +345,7 @@ tasks:
       - task: npm:install
       - task: npm:build
       - task: app:syncdotenv
-      - task: docs:sphinx:build:ci
+      - task: docs:build:ci
       - task: minio:create-buckets
 
   d:create-cache-volumes:
@@ -381,3 +382,14 @@ tasks:
     cmds:
       - task: dc:shell
         vars: { CLI_ARGS: "app bin/console Woo-index:generate {{.CLI_ARGS}}" }
+
+  gh:check-token:
+    desc: Check your $CR_PAT environment variable for valid GitHub token
+    cmds:
+      - docker run -it --rm
+        --volume "{{.BASE_PATH}}/docs":/gh
+        --env GITHUB_TOKEN="$CR_PAT"
+        maniator/gh:{{.GH_VERSION}}
+        auth status {{.CLI_ARGS}}
+    requires:
+      vars: [ CR_PAT ]

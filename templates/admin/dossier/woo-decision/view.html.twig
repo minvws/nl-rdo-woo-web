@@ -4,6 +4,7 @@
 {% set page_title = "Dossier " | trans() ~ dossier.dossierNr %}
 {% set uploadStatus = dossier.uploadStatus %}
 {% set firstOpenStep = workflowStatus.firstOpenStep.stepName.value | default %}
+{% set notifications = get_dossier_notifications(dossier) %}
 
 {% block body %}
 <div class="bhr-container bhr-container--sm">
@@ -14,6 +15,14 @@
         </h1>
         <span data-e2e-name="dossier-status"><twig:Admin:DossierStatusBadge status="{{ dossier.status }}" /></span>
     </div>
+
+    {% if notifications.hasAnyDocumentNotifications %}
+        <div class="mb-4" data-e2e-name="has-document-notifications">
+            <twig:Admin:Alert type="danger">
+                {{ 'admin.dossiers.documents.needs_work' | trans | raw }}
+            </twig:Admin:Alert>
+        </div>
+    {% endif %}
 
     <section class="bhr-card">
         <twig:Admin:LeftAndRight>
@@ -117,7 +126,7 @@
         {% endif %}
     </section>
 
-    <section class="bhr-card mt-10" data-e2e-name="documents-section">
+    <section id="documents" class="bhr-card mt-10" data-e2e-name="documents-section">
         <twig:Admin:LeftAndRight>
             <h2 class="bhr-title">{{ 'global.documents' | trans }}{% if dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments and dossier.inventory is not null %} ({{ uploadStatus.actualUploadCount }}/{{ uploadStatus.expectedUploadCount }}){%endif %}</h2>
 
@@ -164,12 +173,21 @@
                     {% endif %}
                 </twig:Admin:Definition>
             </dl>
-            {% if dossier.hasWithdrawnOrSuspendedDocuments %}
-            <div class="my-4">
-                <twig:Admin:Alert type="danger">
-                    {{ 'admin.dossiers.documents.withdrawn_or_suspended' | trans }}
-                </twig:Admin:Alert>
-            </div>
+
+            {% if notifications.hasAnyDocumentNotifications %}
+                <div class="my-4" data-e2e-name="document-notifications">
+                    <twig:Admin:Alert type="danger">
+                        {% if notifications.missingUploads > 0 %}
+                            {{ 'admin.dossiers.documents.number_to_upload' | trans({'count': notifications.missingUploads})}}
+                        {% endif %}
+                        {% if notifications.withdrawnDocuments > 0 %}
+                            {{ 'admin.dossiers.documents.withdrawn' | trans({'count': notifications.withdrawnDocuments}) }}
+                        {% endif %}
+                        {% if notifications.suspendedDocuments > 0 %}
+                            {{ 'admin.dossiers.documents.suspended' | trans({'count': notifications.suspendedDocuments}) }}
+                        {% endif %}
+                    </twig:Admin:Alert>
+                </div>
             {% endif %}
         {% else %}
             <p class="font-bold text-lg text-center py-6">{{ ("admin.dossiers.woo-decision.complete_step." ~ firstOpenStep) | trans }}</p>

@@ -20,13 +20,15 @@ readonly class DownloadResponseHelper
     ) {
     }
 
-    public function getResponseForEntityWithFileInfo(?EntityWithFileInfo $entity): StreamedResponse
+    /**
+     * @param resource|false|null $stream
+     */
+    public function getReponseForEntityAndStream(?EntityWithFileInfo $entity, $stream): StreamedResponse
     {
         if (! $entity || ! $entity->getFileInfo()->isUploaded()) {
             throw new NotFoundHttpException('File is not available for download');
         }
 
-        $stream = $this->entityStorageService->retrieveResourceEntity($entity);
         if (! $stream) {
             throw new NotFoundHttpException('File is not available for download');
         }
@@ -45,6 +47,17 @@ readonly class DownloadResponseHelper
         });
 
         return $response;
+    }
+
+    public function getResponseForEntityWithFileInfo(?EntityWithFileInfo $entity): StreamedResponse
+    {
+        if (! $entity || ! $entity->getFileInfo()->isUploaded()) {
+            throw new NotFoundHttpException('File is not available for download');
+        }
+
+        $stream = $this->entityStorageService->retrieveResourceEntity($entity);
+
+        return $this->getReponseForEntityAndStream($entity, $stream);
     }
 
     public function getResponseForBatchDownload(BatchDownload $batch): StreamedResponse

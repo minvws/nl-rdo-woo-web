@@ -4,6 +4,7 @@ import Icon from './Icon.vue';
 import { ref, watch } from 'vue';
 
 interface Props {
+  e2eName?: string;
   title: string;
 }
 
@@ -45,6 +46,7 @@ watch(isOpen, (value) => {
   <dialog
     @close="onClose"
     :aria-labelledby="titleId"
+    :data-e2e-name="e2eName"
     class="bhr-dialog"
     ref="dialogElement"
   >

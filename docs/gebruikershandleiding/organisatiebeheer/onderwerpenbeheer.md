@@ -24,7 +24,7 @@ Klik op een onderwerp om de tekst ervan aan te passen. Zodra je een wijziging aa
 alle publicaties die aan dat onderwerp zijn gekoppeld.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Het is niet mogelijk om onderwerpen te verwijderen.
 :::
 

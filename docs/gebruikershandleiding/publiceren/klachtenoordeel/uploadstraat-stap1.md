@@ -33,7 +33,7 @@ Voer hier het referentienummer in, dat samen met de prefix een unieke identifica
 is cruciaal voor de indexering van de publicatie.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Na het opslaan van deze stap kun je het referentienummer niet meer aanpassen, dus voer het zorgvuldig in. Dit veld is verplicht om in te vullen.
 :::
 

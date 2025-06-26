@@ -19,7 +19,6 @@ Test Teardown       Run Keyword If Test Failed  No-Click Logout
 Test Timeout        5 minutes  # For yet unknown reasons, this testsuite sometimes runs endlessly until the Github job timeout is reached, ruining the whole testrun. Therefore this suite has a test timeout of 5 minutes.
 Test Tags           ci  accesscontrol
 
-
 *** Variables ***
 ${EMAIL}        ${EMPTY}
 ${PASSWORD}     ${EMPTY}
@@ -32,7 +31,6 @@ Users
   # ${role}  ${create}  ${read}  ${update}  ${delete}  ${organisation_only}
   super_admin  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}  ${FALSE}
   organisation_admin  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}
-  global_admin  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}  ${FALSE}
   dossier_admin  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}
   view_access  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}
 
@@ -41,16 +39,23 @@ Departments
   # ${role}  ${create}  ${read}  ${update}
   super_admin  ${TRUE}  ${TRUE}  ${TRUE}
   organisation_admin  ${FALSE}  ${TRUE}  ${FALSE}
-  global_admin  ${FALSE}  ${FALSE}  ${FALSE}
   dossier_admin  ${FALSE}  ${FALSE}  ${FALSE}
   view_access  ${FALSE}  ${FALSE}  ${FALSE}
+
+Department Landingpages
+  [Documentation]  The order of execution is important here, the super admin should go first so the org admin sees the edit link.
+  [Template]  Verify Permissions On Department Landingpages
+  # ${role}  ${update}  ${organisation_only}
+  super_admin  ${TRUE}  ${FALSE}
+  organisation_admin  ${TRUE}  ${TRUE}
+  dossier_admin  ${FALSE}  ${FALSE}
+  view_access  ${FALSE}  ${FALSE}
 
 Subjects
   [Template]  Verify Permissions On Subjects
   # ${role}  ${create}  ${read}  ${update}
   super_admin  ${TRUE}  ${TRUE}  ${TRUE}
   organisation_admin  ${TRUE}  ${TRUE}  ${TRUE}
-  global_admin  ${FALSE}  ${FALSE}  ${FALSE}
   dossier_admin  ${FALSE}  ${FALSE}  ${FALSE}
   view_access  ${FALSE}  ${FALSE}  ${FALSE}
 
@@ -59,7 +64,6 @@ Organisations
   # ${role}  ${create}  ${read}  ${update}
   super_admin  ${TRUE}  ${TRUE}  ${TRUE}
   organisation_admin  ${FALSE}  ${FALSE}  ${FALSE}
-  global_admin  ${TRUE}  ${TRUE}  ${TRUE}
   dossier_admin  ${FALSE}  ${FALSE}  ${FALSE}
   view_access  ${FALSE}  ${FALSE}  ${FALSE}
 
@@ -68,7 +72,6 @@ Inquiries
   # ${role}  ${create}  ${read}  ${administration}  ${dataset}
   super_admin  ${TRUE}  ${TRUE}  ${TRUE}
   # organisation_admin  ${TRUE}  ${TRUE}  ${FALSE}  # Organisation admins cannot read dossiers, so they can't find any to link.
-  global_admin  ${TRUE}  ${TRUE}  ${FALSE}
   dossier_admin  ${TRUE}  ${TRUE}  ${FALSE}
   view_access  ${FALSE}  ${TRUE}  ${FALSE}
 
@@ -78,7 +81,6 @@ Dossiers
   dossier_admin  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}  ${FALSE}  ${TRUE}  ${FALSE}
   view_access  ${FALSE}  ${TRUE}  ${FALSE}  ${FALSE}  ${TRUE}  ${TRUE}  ${FALSE}
   super_admin  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}
-  global_admin  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}  ${FALSE}  ${FALSE}
   organisation_admin  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}
 
 Documents
@@ -88,14 +90,12 @@ Documents
   dossier_admin  ${TRUE}
   view_access  ${FALSE}
   super_admin  ${TRUE}
-  global_admin  ${TRUE}
 
 Statistics
   [Template]  Verify Permissions On Statistics
   # ${role}  ${read}
   super_admin  ${TRUE}
   organisation_admin  ${TRUE}
-  global_admin  ${TRUE}
   dossier_admin  ${FALSE}
   view_access  ${FALSE}
 
@@ -104,7 +104,6 @@ Elastic
   # ${role}  ${read}
   super_admin  ${TRUE}
   organisation_admin  ${FALSE}
-  global_admin  ${FALSE}
   dossier_admin  ${FALSE}
   view_access  ${FALSE}
 
@@ -114,12 +113,11 @@ Suite Setup
   Cleansheet
   Suite Setup Generic
   Login Admin
-  Create New Organisation  Test Org 1  ministerie van Algemene Zaken  TESTORG1
-  Create Test User  organisation=Programmadirectie Openbaarheid  role=super_admin
-  Create Test User  organisation=Programmadirectie Openbaarheid  role=global_admin
-  Create Test User  organisation=Programmadirectie Openbaarheid  role=organisation_admin
-  Create Test User  organisation=Programmadirectie Openbaarheid  role=dossier_admin
-  Create Test User  organisation=Programmadirectie Openbaarheid  role=view_access
+  Create New Organisation  Test Org 1  E2E Test Department 1  TESTORG1
+  Create Test User  organisation=E2E Test Organisation  role=super_admin
+  Create Test User  organisation=E2E Test Organisation  role=organisation_admin
+  Create Test User  organisation=E2E Test Organisation  role=dossier_admin
+  Create Test User  organisation=E2E Test Organisation  role=view_access
 
 Verify Permissions On Users
   [Arguments]  ${role}  ${create}  ${read}  ${update}  ${delete}  ${organisation_only}
@@ -165,6 +163,30 @@ Verify Permissions On Departments
   END
   No-Click Logout
 
+Verify Permissions On Department Landingpages
+  [Arguments]  ${role}  ${update}  ${organisation_only}
+  Set Credentials By Role  ${role}
+  Login Admin  username=${EMAIL}  password=${PASSWORD}  otp_secret=${OTP}
+  IF  not ${update}
+    Menu Does Not Contain Item  Bestuursorganen
+  ELSE
+    Click Departments
+    IF  ${organisation_only}
+      Get Element Count  //*[@data-e2e-name="departments-table"]/tbody/tr  should be  2
+      Click Edit Department Landingpage  E2E-DEP1
+      Click Submit Landingpage
+    ELSE
+      Get Element Count  //*[@data-e2e-name="departments-table"]/tbody/tr  should not be  1
+      Update Department
+      ...  short_tag=E2E-DEP1
+      ...  updated_name=E2E Test Department 1
+      ...  updated_short_tag=E2E-DEP1
+      ...  updated_slug=e2edep1
+      ...  visible_public=${TRUE}
+    END
+  END
+  No-Click Logout
+
 Verify Permissions On Subjects
   [Arguments]  ${role}  ${create}  ${read}  ${update}
   Set Credentials By Role  ${role}
@@ -204,14 +226,14 @@ Verify Permissions On Inquiries
   Set Credentials By Role  ${role}
   Cleansheet
   Login Admin  # as default admin user who may create dossiers
-  Select Organisation  organisation=Programmadirectie Openbaarheid
+  Select Organisation  organisation=E2E Test Organisation
   Publish Test WooDecision
   ...  production_report=tests/robot_framework/files/inquiries/productierapport2.xlsx
   ...  documents=tests/robot_framework/files/inquiries/documenten2.zip
   ...  number_of_documents=3
   Login Admin  username=${EMAIL}  password=${PASSWORD}  otp_secret=${OTP}
   IF  ${read} and ${create}
-    Select Organisation  organisation=Programmadirectie Openbaarheid
+    Select Organisation  organisation=E2E Test Organisation
     Click Inquiries
     Click Manual Inquiry Linking
     Click Manual Woo Decision Linking
@@ -244,19 +266,19 @@ Verify Permissions On Dossiers
     IF  ${create}
       Cleansheet
       Click Publications
-      Select Organisation  organisation=Programmadirectie Openbaarheid
+      Select Organisation  organisation=E2E Test Organisation
       Publish Test WooDecision
       ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 openbaar.xlsx
       ...  documents=tests/robot_framework/files/woodecision/documenten - 2.zip
       ...  number_of_documents=2
       ...  publication_status=Gepubliceerd
-      VAR  ${dossier_reference_published}  ${DOSSIER_REFERENCE}
+      VAR  ${dossier_reference_published} =  ${DOSSIER_REFERENCE}
       Publish Test WooDecision
       ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 andere.xlsx
       ...  documents=tests/robot_framework/files/woodecision/documenten - 2 andere.zip
       ...  number_of_documents=2
       ...  publication_status=Concept
-      VAR  ${dossier_reference_unpublished}  ${DOSSIER_REFERENCE}
+      VAR  ${dossier_reference_unpublished} =  ${DOSSIER_REFERENCE}
       IF  ${published_dossiers}
         IF  ${update}
           Can Update A Dossier  ${dossier_reference_published}
@@ -320,7 +342,7 @@ Verify Permissions On Documents
   ...  ${update}
   Set Credentials By Role  ${role}
   Login Admin  username=${EMAIL}  password=${PASSWORD}  otp_secret=${OTP}
-  Select Organisation  organisation=Programmadirectie Openbaarheid
+  Select Organisation  organisation=E2E Test Organisation
   Select Openbaar Dossier
   IF  ${update}
     Click Documents Edit

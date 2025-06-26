@@ -23,10 +23,22 @@ language = 'nl'
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_book_theme'
-# html_static_path = ['_static']
+html_theme = "sphinx-rijkshuisstijl-2008"
+html_theme_path = ["."]
+html_theme_options = {
+    "logo": "/documentatie/_static/img/ro-logo.svg",
+    "home_url": "/documentatie",
+    "show_copyright_privacy_block_footer": "false",
+    "copyright_url": "/documentatie/copyright.html",
+    "privacy_url": "https://irealisatie.nl/privacy"
+}
+
+locale_dirs = ['locales/']
 
 myst_enable_extensions = [
     'deflist',
     'colon_fence',
 ]
+
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]

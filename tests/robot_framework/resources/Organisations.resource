@@ -4,7 +4,6 @@ Library             String
 Library             Browser
 Library             DebugLibrary
 
-
 *** Keywords ***
 Click Organisation Selector
   Click  //*[@data-e2e-name="organisation-switcher"]
@@ -36,7 +35,7 @@ Click Save Organisation
   ${error_present} =  Get Element Count  //div[@id="organisation_form-error"]
   IF  ${error_present} > 0
     # Retry on CSRF error, temp workaround for https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
-    Select Responsible Department  ministerie van Volksgezondheid, Welzijn en Sport
+    Select Responsible Department  E2E Test Department 1
     Click  //*[@id="organisation_form_submit"]
     Get Element States
     ...  //div[@id="organisation_form-error"]
@@ -50,7 +49,7 @@ Select Responsible Department
   Select Options By  //select[@name="organisation_form[departments][0]"]  label  ${department}
 
 Select Organisation
-  [Arguments]  ${organisation}=Programmadirectie Openbaarheid
+  [Arguments]  ${organisation}=E2E Test Organisation
   ${count} =  Get Element Count  //*[@data-e2e-name="organisation-switcher"]
   IF  ${count} > 0
     ${already_selected} =  Get Element Count  //*[@data-e2e-name="active-organisation"][contains(.,'${organisation}')]
@@ -69,8 +68,8 @@ Create New Organisation
     Click  //a[@data-e2e-name="create-organisation"]
     IF  '${organisation_name}' == 'EMPTY' and '${prefix}' == 'EMPTY'
       ${random} =  Generate Random String  5  [NUMBERS][UPPER]
-      VAR  ${organisation_name}  A Random Organisation ${random}
-      VAR  ${prefix}  ${random}
+      VAR  ${organisation_name} =  A Random Organisation ${random}
+      VAR  ${prefix} =  ${random}
     END
     Fill Text  id=organisation_form_name  ${organisation_name}
     Fill Text  //input[@data-e2e-name="add-prefix-input"]  ${prefix}
@@ -113,7 +112,7 @@ Select Random Department
   Select Options By  //select[@name="organisation_form[departments][0]"]  index  ${random_index}
 
 Open Organisation Details
-  [Arguments]  ${organisation}=Programmadirectie Openbaarheid
+  [Arguments]  ${organisation}=E2E Test Organisation
   Click  //table[@data-e2e-name="organisations-table"]//td[contains(.,'${organisation}')]/..//a
 
 Click Save Prefixes
@@ -121,7 +120,7 @@ Click Save Prefixes
   ${error_present} =  Get Element Count  //div[@id="organisation_form-error"]
   IF  ${error_present} > 0
     # Retry, temp workaround for CSRF issue https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
-    Select Responsible Department  ministerie van Volksgezondheid, Welzijn en Sport
+    Select Responsible Department  E2E Test Department 1
     Click  //*[@id="organisation_form_submit"]
     Get Element States
     ...  //div[@id="organisation_form-error"]

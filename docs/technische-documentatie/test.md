@@ -11,6 +11,7 @@
     - [CI tests](#ci-tests)
     - [Any other testsuite](#any-other-testsuite)
     - [Test and Acceptance tests](#test-and-acceptance-tests)
+  - [Dependency management](#dependency-management)
 
 ## All use cases
 
@@ -120,3 +121,9 @@ To execute the ACC tests use the following command:
 ```shell
 task rf:run-acc tag=pr
 ```
+
+## Dependency management
+
+The dependencies for Robot Framework in this project are managed using a `requirements.in` and `requirements.txt` file.
+To add dependencies, add them to the `requirements.in` file and run `dependency:export`, which will generate/update the `requirements.txt`.
+Installation of the necessary dependencies is handled through the commands mentioned above.

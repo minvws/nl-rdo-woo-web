@@ -5,7 +5,6 @@ Library             Browser
 Library             DebugLibrary
 Resource            Generic.resource
 
-
 *** Keywords ***
 Verify Existence Of Inquiry
   [Arguments]  ${inquiry_number}
@@ -106,7 +105,7 @@ Link Inquiry To Documents
   Upload File By Selector  id=inquiry_link_documents_form_upload  ${linking_excel}
   ${filename} =  Fetch From Right  ${linking_excel}  /
   Wait For Condition  Text  //div[@class="bhr-upload-area__files-area"]  contains  ${filename}  timeout=10s
-  Select Prefix When Linking Inquiries  MINVWS
+  Select Prefix When Linking Inquiries  E2E-A
   Click  id=inquiry_link_documents_form_link
   Success Alert Is Visible  zaaknummers gekoppeld
   Click  id=inquiry_link_documents_form_cancel

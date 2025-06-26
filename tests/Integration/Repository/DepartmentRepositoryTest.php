@@ -146,6 +146,24 @@ final class DepartmentRepositoryTest extends KernelTestCase
         self::assertContains($departmentC->_real(), $departments);
     }
 
+    public function testFindAllSortedByName(): void
+    {
+        $this->deleteAllDepartments();
+
+        DepartmentFactory::createSequence([
+            ['name' => 'c'],
+            ['name' => 'a'],
+            ['name' => 'b'],
+        ]);
+
+        $departments = $this->repository->findAllSortedByName();
+
+        self::assertCount(3, $departments);
+        self::assertSame('a', $departments[0]->getName());
+        self::assertSame('b', $departments[1]->getName());
+        self::assertSame('c', $departments[2]->getName());
+    }
+
     private function deleteAllDepartments(): void
     {
         $this->repository

@@ -15,7 +15,7 @@ zodat lezers snel begrijpen waar de beschikking over gaat. Dit veld is verplicht
 Upload hier het hoofddocument van de beschikking. Dit veld is verplicht om verder te gaan.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Je kunt slechts één document uploaden.
 :::
 

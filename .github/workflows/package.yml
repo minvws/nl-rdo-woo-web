@@ -36,6 +36,8 @@ jobs:
       - name: Run build task
         run: npm run build
       - name: Build the docs
+        env:
+          GH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }}
         run: task docs:sphinx:build:ci
       - name: Clean build
         run: |

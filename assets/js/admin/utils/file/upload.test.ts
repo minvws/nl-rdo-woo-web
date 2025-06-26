@@ -182,12 +182,12 @@ describe('The "uploadFile" function', () => {
     expect(formData.get('another')).toBe('another_payload');
   });
 
-  test('should upload the file to "/balie/uploader" by default', async () => {
+  test('should upload the file to "/balie/upload" by default', async () => {
     await triggerUploadFile();
 
     expect(xmlHttpRequestMock1.open).toHaveBeenCalledWith(
       'POST',
-      '/balie/uploader',
+      '/balie/upload',
       true,
     );
   });
@@ -270,35 +270,6 @@ describe('The "uploadFile" function', () => {
           isTechnialError: false,
           isUnsafeError: true,
           isWhiteListError: false,
-        });
-      });
-
-      test('should recheck the status if the response says the file passed validation (it should in the end be stored)', async () => {
-        fetchSpy.mockResolvedValueOnce({
-          status: 200,
-          json: vi.fn().mockResolvedValue({
-            status: UploadStatus.ValidationPassed,
-          }),
-        } as unknown as Response);
-
-        fetchSpy.mockResolvedValueOnce({
-          status: 200,
-          json: vi.fn().mockResolvedValue({
-            status: UploadStatus.Stored,
-          }),
-        } as unknown as Response);
-
-        await triggerUploadFile();
-        await vi.advanceTimersByTimeAsync(6000);
-
-        expect(fetchSpy).toHaveBeenCalledTimes(1);
-        expect(onSuccessSpy).not.toHaveBeenCalled();
-
-        await vi.advanceTimersByTimeAsync(250);
-        expect(fetchSpy).toHaveBeenCalledTimes(2);
-        expect(onSuccessSpy).toHaveBeenCalledWith('mocked-upload-uuid', {
-          mimeType: 'mocked/mime-type',
-          uploadUuid: 'mocked-upload-uuid',
         });
       });
     });

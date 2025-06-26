@@ -25,6 +25,9 @@ use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportM
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Search\Index\ElasticDocumentType;
@@ -108,6 +111,28 @@ class ElasticDocumentTypeTest extends UnitTestCase
                 ),
                 'expectedType' => ElasticDocumentType::ATTACHMENT,
             ],
+            'RequestForAdvice' => [
+                'entity' => new RequestForAdvice(),
+                'expectedType' => ElasticDocumentType::REQUEST_FOR_ADVICE,
+            ],
+            'RequestForAdviceMainDocument' => [
+                'entity' => new RequestForAdviceMainDocument(
+                    new RequestForAdvice(),
+                    new \DateTimeImmutable(),
+                    AttachmentType::ADVICE,
+                    AttachmentLanguage::DUTCH,
+                ),
+                'expectedType' => ElasticDocumentType::REQUEST_FOR_ADVICE_MAIN_DOCUMENT,
+            ],
+            'RequestForAdviceAttachment' => [
+                'entity' => new RequestForAdviceAttachment(
+                    new RequestForAdvice(),
+                    new \DateTimeImmutable(),
+                    AttachmentType::ADVICE,
+                    AttachmentLanguage::DUTCH,
+                ),
+                'expectedType' => ElasticDocumentType::ATTACHMENT,
+            ],
         ];
     }
 
@@ -184,6 +209,18 @@ class ElasticDocumentTypeTest extends UnitTestCase
             ],
             'AdviceAttachment' => [
                 'entityClass' => AdviceAttachment::class,
+                'expectedType' => ElasticDocumentType::ATTACHMENT,
+            ],
+            'RequestForAdvice' => [
+                'entityClass' => RequestForAdvice::class,
+                'expectedType' => ElasticDocumentType::REQUEST_FOR_ADVICE,
+            ],
+            'RequestForAdviceMainDocument' => [
+                'entityClass' => RequestForAdviceMainDocument::class,
+                'expectedType' => ElasticDocumentType::REQUEST_FOR_ADVICE_MAIN_DOCUMENT,
+            ],
+            'RequestForAdviceAttachment' => [
+                'entityClass' => RequestForAdviceAttachment::class,
                 'expectedType' => ElasticDocumentType::ATTACHMENT,
             ],
         ];
@@ -279,6 +316,10 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'advice' => [
                 'input' => DossierType::ADVICE,
                 'expectedType' => ElasticDocumentType::ADVICE,
+            ],
+            'request-for-advice' => [
+                'input' => DossierType::REQUEST_FOR_ADVICE,
+                'expectedType' => ElasticDocumentType::REQUEST_FOR_ADVICE,
             ],
             'annual-report' => [
                 'input' => DossierType::ANNUAL_REPORT,

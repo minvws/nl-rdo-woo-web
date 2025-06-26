@@ -9,6 +9,7 @@ use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\DossierReference;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -129,6 +130,27 @@ final class DossierPathHelperTest extends MockeryTestCase
 
         $this->router->expects('generate')->with(
             'app_advice_detail',
+            [
+                'prefix' => 'dos-prefix',
+                'dossierId' => 'dos-nr',
+            ]
+        )->andReturn('foo-bar');
+
+        self::assertEquals(
+            'foo-bar',
+            $this->pathHelper->getDetailsPath($dossier),
+        );
+    }
+
+    public function testGetDetailsPathWithRequestForAdvice(): void
+    {
+        $dossier = \Mockery::mock(RequestForAdvice::class);
+        $dossier->shouldReceive('getDossierNr')->andReturn('dos-nr');
+        $dossier->shouldReceive('getDocumentPrefix')->andReturn('dos-prefix');
+        $dossier->shouldReceive('getType')->andReturn(DossierType::REQUEST_FOR_ADVICE);
+
+        $this->router->expects('generate')->with(
+            'app_request_for_advice_detail',
             [
                 'prefix' => 'dos-prefix',
                 'dossierId' => 'dos-nr',

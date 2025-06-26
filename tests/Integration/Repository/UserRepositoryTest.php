@@ -134,10 +134,6 @@ final class UserRepositoryTest extends KernelTestCase
                     'enabled' => true,
                 ],
                 [
-                    'roles' => [Roles::ROLE_GLOBAL_ADMIN],
-                    'enabled' => true,
-                ],
-                [
                     'roles' => [Roles::ROLE_DOSSIER_ADMIN],
                     'enabled' => true,
                 ],
@@ -157,7 +153,7 @@ final class UserRepositoryTest extends KernelTestCase
             ->findActiveAdminsQuery()
             ->getResult();
 
-        $this->assertCount(2, $result);
+        $this->assertCount(1, $result);
     }
 
     public function testFindDeactivatedAdminsQuery(): void
@@ -166,10 +162,6 @@ final class UserRepositoryTest extends KernelTestCase
             ->sequence([
                 [
                     'roles' => [Roles::ROLE_SUPER_ADMIN],
-                    'enabled' => true,
-                ],
-                [
-                    'roles' => [Roles::ROLE_GLOBAL_ADMIN],
                     'enabled' => true,
                 ],
                 [

@@ -1,0 +1,4 @@
+name: 'my name'
+deleteLogoEndpoint: delete-logo-endpoint
+logoEndpoint: /logo-endpoint
+uploadLogoEndpoint: upload-logo-endpoint

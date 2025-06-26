@@ -9,6 +9,7 @@ describe('The <Dialog /> component', () => {
   const createComponent = () =>
     mount(Dialog, {
       props: {
+        e2eName: 'mocked-e2e-name',
         title: 'mocked-title',
       },
       slots: {
@@ -42,11 +43,13 @@ describe('The <Dialog /> component', () => {
     expect(getTitleElement(createComponent()).text()).toContain('mocked-title');
   });
 
-  it('should label the dialog with the title', () => {
+  it('should label the dialog with the title and add the e2e name as an attribute "data-e2e-name"', () => {
     const component = createComponent();
-    expect(getDialogElement(component).attributes('aria-labelledby')).toBe(
-      getTitleElement(component).attributes('id'),
-    );
+
+    expect(getDialogElement(component).attributes()).toMatchObject({
+      'aria-labelledby': getTitleElement(component).attributes('id'),
+      'data-e2e-name': 'mocked-e2e-name',
+    });
   });
 
   it('should display a button within a form with a close icon which closes the dialog element', async () => {

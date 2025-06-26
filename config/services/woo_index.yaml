@@ -3,11 +3,10 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
-            string $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
+            string $publicBaseUrl: '%public_base_url%'
 
     App\Domain\WooIndex\Producer\Mapper\UrlMapper:
         public: true
-
     App\Domain\WooIndex\Producer\Repository\UrlRepository:
         public: true
 

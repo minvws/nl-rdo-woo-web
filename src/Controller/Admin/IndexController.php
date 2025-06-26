@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Domain\Content\Page\ContentPage;
 use App\Entity\User;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,21 +35,11 @@ class IndexController extends AbstractController
         return $this->render('admin/index.html.twig', []);
     }
 
-    #[Route('/balie/contact', name: 'app_admin_contact', methods: ['GET'])]
-    public function contact(): Response
-    {
-        return $this->render('admin/static/contact.html.twig', []);
-    }
-
-    #[Route('/balie/privacy', name: 'app_admin_privacy', methods: ['GET'])]
-    public function privacy(): Response
-    {
-        return $this->render('admin/static/privacy.html.twig', []);
-    }
-
-    #[Route('/balie/toegankelijkheid', name: 'app_admin_accessibility', methods: ['GET'])]
-    public function accessibility(): Response
-    {
-        return $this->render('admin/static/accessibility.html.twig', []);
+    public function contentPage(
+        #[MapEntity(mapping: ['slug' => 'slug'])] ContentPage $contentPage,
+    ): Response {
+        return $this->render('admin/content-page/render.html.twig', [
+            'page' => $contentPage,
+        ]);
     }
 }

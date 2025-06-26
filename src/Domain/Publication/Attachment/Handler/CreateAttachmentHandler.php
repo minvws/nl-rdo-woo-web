@@ -9,7 +9,7 @@ use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
 use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Service\Uploader\UploaderService;
+use App\Domain\Upload\Process\EntityUploadStorer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -22,10 +22,10 @@ readonly class CreateAttachmentHandler
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private UploaderService $uploaderService,
         private ValidatorInterface $validator,
         private AttachmentEntityLoader $entityLoader,
         private AttachmentDispatcher $dispatcher,
+        private EntityUploadStorer $uploadStorer,
     ) {
     }
 
@@ -49,11 +49,7 @@ readonly class CreateAttachmentHandler
             throw new ValidationFailedException($entity, $violations);
         }
 
-        $this->uploaderService->attachFileToEntity(
-            $command->uploadFileReference,
-            $entity,
-            $entity::getUploadGroupId(),
-        );
+        $this->uploadStorer->storeUploadForEntityWithSourceTypeAndName($entity, $command->uploadFileReference);
 
         $attachmentRepository->save($entity, true);
 

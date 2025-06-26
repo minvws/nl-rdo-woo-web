@@ -8,7 +8,6 @@ Library             String
 Library             DebugLibrary
 Library             Browser
 
-
 *** Variables ***
 ${TST_BALIE_USER}           email@example.org
 ${TST_BALIE_PASSWORD}       IkLoopNooitVastVandaag
@@ -51,7 +50,7 @@ Verify Page Error
   Get Text  //h2[@class="exception-http"]  contains  ${error_code}
 
 Abbreviate To First Letters
-  [Documentation]  Example: an input of 'Programmadirectie Openbaarheid' would result in 'PO'
+  [Documentation]  Example: an input of 'E2E Test Organisation' would result in 'PO'
   [Arguments]  ${string}
   ${abbreviated} =  Evaluate  ' '.join([word[0] for word in '${string}'.split()]).replace(" ", "")
   RETURN  ${abbreviated}
@@ -78,7 +77,7 @@ Convert Dutch To English Date
 
 Click With Reload Retry
   [Arguments]  ${selector}  ${sleep}=5s
-  VAR  ${count}  0
+  VAR  ${count} =  0
   WHILE  ${count} < 1  limit=30 seconds
     Sleep  ${sleep}
     Reload
@@ -94,8 +93,15 @@ Go To With Response
   RETURN  ${status}
 
 Success Alert Is Visible
-  [Arguments]  ${contains_message}=${EMPTY}
-  Get Element States  //div[@data-e2e-name="alerts"]/div[contains(@class, 'bhr-alert--success')]  contains  attached
+  [Arguments]
+  ...  ${contains_message}=${EMPTY}
+  ...  ${selector}=//*[@data-e2e-name="alerts"]/div[contains(@class, 'bhr-alert--success')]
+  Wait For Elements State  ${selector}  attached  timeout=5s
   IF  "${contains_message}" != '${EMPTY}'
-    Get Text  //div[@data-e2e-name="alerts"]/div[contains(@class, 'bhr-alert--success')]  contains  ${contains_message}
+    Get Text  ${selector}  contains  ${contains_message}
   END
+
+Verify Image
+  [Arguments]  ${selector}  ${expected_min_height}
+  ${bounding_box} =  Get BoundingBox  ${selector}
+  Should Be True  ${bounding_box.height} > ${expected_min_height}

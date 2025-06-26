@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\WorkerStats;
+use Carbon\CarbonImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -34,5 +35,15 @@ class WorkerStatsRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function removeOldEntries(CarbonImmutable $cutoffDate): void
+    {
+        $this->createQueryBuilder('w')
+            ->delete()
+            ->where('w.createdAt < :cutoffDate')
+            ->setParameter('cutoffDate', $cutoffDate)
+            ->getQuery()
+            ->execute();
     }
 }

@@ -1,0 +1,15 @@
+{% extends 'admin/base.html.twig' %}
+
+{% set page_title = page.title %}
+
+{% block body %}
+    <div class="bhr-container bhr-container--sm">
+        <h1 class="bhr-title mb-4">{{ page.title }}</h1>
+
+        <div class="bhr-card">
+            <div class="bhr-content text-lg">
+                {{ page.content | render_markdown | raw }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

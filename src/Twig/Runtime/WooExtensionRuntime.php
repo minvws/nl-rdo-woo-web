@@ -7,6 +7,8 @@ namespace App\Twig\Runtime;
 use App\Citation;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\DossierReference;
+use App\Domain\Publication\Dossier\ViewModel\DossierNotifications;
+use App\Domain\Publication\Dossier\ViewModel\DossierNotificationsFactory;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use App\Domain\Publication\History\History;
 use App\Service\DateRangeConverter;
@@ -16,6 +18,9 @@ use App\Service\Security\OrganisationSwitcher;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;
 
+/**
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ */
 readonly class WooExtensionRuntime implements RuntimeExtensionInterface
 {
     public function __construct(
@@ -23,6 +28,7 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
         private OrganisationSwitcher $organisationSwitcher,
         private HistoryService $historyService,
         private DossierPathHelper $dossierPathHelper,
+        private DossierNotificationsFactory $dossierNotificationsFactory,
     ) {
     }
 
@@ -127,5 +133,10 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     public function dossierDetailsPath(AbstractDossier|DossierReference $dossier): string
     {
         return $this->dossierPathHelper->getDetailsPath($dossier);
+    }
+
+    public function getDossierNotifications(AbstractDossier $dossier): DossierNotifications
+    {
+        return $this->dossierNotificationsFactory->make($dossier);
     }
 }

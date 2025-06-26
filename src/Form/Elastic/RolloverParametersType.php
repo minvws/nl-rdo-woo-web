@@ -14,6 +14,7 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @template-extends AbstractType<RolloverParametersType>
@@ -22,6 +23,7 @@ class RolloverParametersType extends AbstractType
 {
     public function __construct(
         protected MappingService $mappingService,
+        private TranslatorInterface $translator,
     ) {
     }
 
@@ -48,7 +50,7 @@ class RolloverParametersType extends AbstractType
                     $form = $event->getForm();
                     /** @var \Symfony\Component\Form\FormInterface $mappingField */
                     $mappingField = $form['mappingVersion'];
-                    $mappingField->addError(new FormError('Mapping version does not exist'));
+                    $mappingField->addError(new FormError($this->translator->trans('Mapping version does not exist', domain: 'validators')));
                 }
             });
     }

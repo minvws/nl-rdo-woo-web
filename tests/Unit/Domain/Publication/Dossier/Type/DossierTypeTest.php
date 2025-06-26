@@ -64,6 +64,12 @@ final class DossierTypeTest extends UnitTestCase
         $this->assertFalse(DossierType::COVENANT->isComplaintJudgement());
     }
 
+    public function testIsRequestForAdvice(): void
+    {
+        $this->assertTrue(DossierType::REQUEST_FOR_ADVICE->isRequestForAdvice());
+        $this->assertFalse(DossierType::COVENANT->isRequestForAdvice());
+    }
+
     #[DataProvider('transDataProvider')]
     public function testTransKey(DossierType $dossierType, string $expectedKey, ?string $locale): void
     {

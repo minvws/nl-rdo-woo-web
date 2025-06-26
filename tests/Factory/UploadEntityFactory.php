@@ -22,6 +22,7 @@ final class UploadEntityFactory extends PersistentProxyObjectFactory
     protected function defaults(): array
     {
         return [
+            'user' => UserFactory::new(),
             'uploadId' => self::faker()->randomAscii(),
             'uploadGroupId' => UploadGroupId::WOO_DECISION_DOCUMENTS,
             'context' => new InputBag(),

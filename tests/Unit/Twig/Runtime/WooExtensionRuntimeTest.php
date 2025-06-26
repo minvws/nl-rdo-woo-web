@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Twig\Runtime;
 
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\Dossier\ViewModel\DossierNotifications;
+use App\Domain\Publication\Dossier\ViewModel\DossierNotificationsFactory;
 use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use App\Service\HistoryService;
 use App\Service\Security\OrganisationSwitcher;
@@ -16,18 +19,21 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
 {
-    private RequestStack|MockInterface $requestStack;
+    private RequestStack&MockInterface $requestStack;
     private WooExtensionRuntime $runtime;
+    private DossierNotificationsFactory&MockInterface $dossierNotificationsFactory;
 
     public function setUp(): void
     {
         $this->requestStack = \Mockery::mock(RequestStack::class);
+        $this->dossierNotificationsFactory = \Mockery::mock(DossierNotificationsFactory::class);
 
         $this->runtime = new WooExtensionRuntime(
             $this->requestStack,
             \Mockery::mock(OrganisationSwitcher::class),
             \Mockery::mock(HistoryService::class),
             \Mockery::mock(DossierPathHelper::class),
+            $this->dossierNotificationsFactory,
         );
     }
 
@@ -80,5 +86,18 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
                 'expectedQuery' => '?a=1&dt[to]=b',
             ],
         ];
+    }
+
+    public function testGetDossierNotifications(): void
+    {
+        $dossier = \Mockery::mock(WooDecision::class);
+        $notifications = \Mockery::mock(DossierNotifications::class);
+
+        $this->dossierNotificationsFactory->expects('make')->with($dossier)->andReturn($notifications);
+
+        $this->assertSame(
+            $notifications,
+            $this->runtime->getDossierNotifications($dossier),
+        );
     }
 }

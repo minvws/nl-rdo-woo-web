@@ -15,7 +15,7 @@ zodat lezers snel begrijpen waar het informatiestuk over gaat. Dit veld is verpl
 Upload hier het hoofddocument van het informatiestuk. Dit veld is verplicht om verder te gaan.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Je kunt slechts één document uploaden.
 :::
 

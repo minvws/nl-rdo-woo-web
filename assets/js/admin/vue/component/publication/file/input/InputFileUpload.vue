@@ -9,6 +9,12 @@ interface Props {
   displayMaxOneFileMessage?: boolean;
   fileInfo: FileInfo | null;
   groupId: string;
+  dossierId?: null | string;
+}
+
+interface Payload {
+  groupId: string;
+  dossierId?: string;
 }
 
 interface Emits {
@@ -23,6 +29,11 @@ const props = withDefaults(defineProps<Props>(), {
   fileInfo: null,
   groupId: '',
 });
+
+const payload: Payload = {
+  groupId: props.groupId,
+  dossierId: props.dossierId || undefined,
+};
 
 const emit = defineEmits<Emits>();
 
@@ -39,7 +50,7 @@ const helpText = props.displayMaxOneFileMessage
     :allowed-mime-types="props.allowedMimeTypes"
     :enable-auto-upload="true"
     :help-text="helpText"
-    :payload="{ groupId: props.groupId }"
+    :payload="payload"
     :uploaded-file-info="props.fileInfo"
     :validators="[validators.required()]"
     label="Bestand"

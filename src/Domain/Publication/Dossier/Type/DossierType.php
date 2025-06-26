@@ -12,6 +12,7 @@ use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -26,6 +27,7 @@ enum DossierType: string implements TranslatableInterface
     case COMPLAINT_JUDGEMENT = 'complaint-judgement';   // Klachtoordeel (KO)
     case OTHER_PUBLICATION = 'other-publication';       // Overig
     case ADVICE = 'advice';                             // Advies
+    case REQUEST_FOR_ADVICE = 'request-for-advice';     // Adviesaanvraag
 
     public function isCovenant(): bool
     {
@@ -67,6 +69,11 @@ enum DossierType: string implements TranslatableInterface
         return $this === self::ADVICE;
     }
 
+    public function isRequestForAdvice(): bool
+    {
+        return $this === self::REQUEST_FOR_ADVICE;
+    }
+
     public function hasAttachments(): bool
     {
         return is_subclass_of($this->getDossierClass(), EntityWithAttachments::class);
@@ -83,6 +90,7 @@ enum DossierType: string implements TranslatableInterface
             self::COMPLAINT_JUDGEMENT => ComplaintJudgement::class,
             self::OTHER_PUBLICATION => OtherPublication::class,
             self::ADVICE => Advice::class,
+            self::REQUEST_FOR_ADVICE => RequestForAdvice::class,
         };
     }
 

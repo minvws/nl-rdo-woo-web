@@ -44,8 +44,8 @@ class OrganisationFormType extends AbstractType
 
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Naam organisatie',
-                'help' => 'Bijvoorbeeld Ministerie van VWS - Directie Wetgeving en Juridische Zaken',
+                'label' => 'admin.organisation.name',
+                'help' => 'admin.organisation.name_help',
                 'attr' => [
                     'class' => 'w-full',
                 ],
@@ -93,7 +93,7 @@ class OrganisationFormType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Opslaan',
+                'label' => 'global.save',
             ])
         ;
     }
@@ -116,7 +116,7 @@ class OrganisationFormType extends AbstractType
 
             if (in_array($prefix, $prefixes, true)) {
                 $context
-                    ->buildViolation('Er mogen geen dubbele prefixes ingevoerd worden')
+                    ->buildViolation('no_double_prefixes_allowed')
                     ->addViolation();
             } else {
                 $prefixes[] = $prefix;

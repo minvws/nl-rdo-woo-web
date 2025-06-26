@@ -8,6 +8,7 @@ use App\Domain\Publication\Dossier\DocumentPrefix;
 use App\Entity\Department;
 use App\Entity\Organisation;
 use App\Form\Organisation\OrganisationFormType;
+use App\Repository\DepartmentRepository;
 use App\Service\OrganisationService;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\Common\Collections\Collection;
@@ -108,7 +109,9 @@ class OrganisationController extends AbstractController
      */
     private function getDepartmentsOptions(): array
     {
-        $departments = $this->doctrine->getRepository(Department::class)->findAll();
+        /** @var DepartmentRepository $departmentRepository */
+        $departmentRepository = $this->doctrine->getRepository(Department::class);
+        $departments = $departmentRepository->findAllSortedByName();
 
         return array_map(
             static fn (Department $department) => [

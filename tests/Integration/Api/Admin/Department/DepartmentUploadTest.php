@@ -75,7 +75,10 @@ final class DepartmentUploadTest extends ApiTestCase
         unset($data['data']['department']);
 
         self::assertMatchesJsonSnapshot($data);
-        self::assertMatchesRegularExpression('#^/assets/department/[a-z-0-9-]{36}/[a-z-0-9-]{36}.svg$#', $endpoint);
+        self::assertMatchesRegularExpression(
+            '#^/balie/assets/department/[a-z-0-9-]{36}/[a-z-0-9-]{36}.svg$#',
+            $endpoint,
+        );
 
         $department = $this->departmentRepository->findOne($department->getId());
 
@@ -124,7 +127,10 @@ final class DepartmentUploadTest extends ApiTestCase
         unset($data['data']['department']);
 
         self::assertMatchesJsonSnapshot($data);
-        self::assertMatchesRegularExpression('#^/assets/department/[a-z-0-9-]{36}/[a-z-0-9-]{36}.svg$#', $endpoint);
+        self::assertMatchesRegularExpression(
+            '#^/balie/assets/department/[a-z-0-9-]{36}/[a-z-0-9-]{36}.svg$#',
+            $endpoint,
+        );
 
         $department = $this->departmentRepository->findOne($department->getId());
 

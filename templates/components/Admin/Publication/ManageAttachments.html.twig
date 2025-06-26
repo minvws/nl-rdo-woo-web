@@ -10,10 +10,13 @@
         allowMultiple: allowMultiple ?? true,
         canDelete: canDelete,
         endpoint: endpoint,
+        uploadEndpoint: uploadEndpoint | default(null),
+        e2eName: e2eName | default('attachments'),
         fileTypeOptions: documentTypes,
         groundOptions: grounds,
         languageOptions: languages,
-        uploadGroupId: "attachments"
+        uploadGroupId: "attachments",
+        dossierId: dossierId | default(null),
     }) }}>
         <div class="min-h-14"></div>
     </div>

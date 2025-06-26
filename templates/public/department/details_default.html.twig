@@ -4,14 +4,14 @@
 
 {% block department_content %}
     {% if department_logo is not null %}
-        <img class="mb-4 max-w-[400px]" src="{{ department_logo }}" alt="Bestuursorgaan Logo">
+        <img class="mb-4 max-w-[400px]" src="{{ department_logo }}" alt="Bestuursorgaan Logo" data-e2e-name="landing-page-img">
     {% endif %}
 
-    <div class="woo-readable-width">
+    <div class="woo-readable-width" data-e2e-name="landing-page-body">
         <h1 class="woo-h1 woo-h1-spacing font-normal">{{ department.landingPageTitle | default('public.department.public_information_by_department' | trans({ department: department.name })) }}</h1>
 
         <div class="woo-rich-text">
-            <p>{{ department.landingPageDescription | as_markdown_for_department | default('public.department.public_information_default_description' | trans({ department: department.name })) | raw }}</p>
+            <p>{{ department.landingPageDescription | render_markdown | default('public.department.public_information_default_description' | trans({ department: department.name })) | raw }}</p>
         </div>
     </div>
 {% endblock %}

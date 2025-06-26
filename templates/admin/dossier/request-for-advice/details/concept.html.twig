@@ -1,0 +1,9 @@
+{% extends 'admin/dossier/shared/concept.html.twig' %}
+
+{% block dossier_title %}
+    {{ 'admin.dossiers.request-for-advice.create_new' | trans }}
+{% endblock %}
+
+{% block form %}
+    {% include 'admin/dossier/request-for-advice/details/form.html.twig' %}
+{% endblock %}

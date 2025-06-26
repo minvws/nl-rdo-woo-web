@@ -70,7 +70,7 @@ class OrganisationSwitcher
 
     public function isSwitchAllowed(User $user): bool
     {
-        return $user->hasRole(Roles::ROLE_SUPER_ADMIN) || $user->hasRole(Roles::ROLE_GLOBAL_ADMIN);
+        return $user->hasRole(Roles::ROLE_SUPER_ADMIN);
     }
 
     public function getDefaultOrganisation(User $user): Organisation

@@ -42,7 +42,7 @@ zien zonder dat er wijzigingen kunnen worden aangebracht.
 Het e-mailadres wordt gebruikt om in te loggen.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Het is niet mogelijk om het e-mailadres achteraf te wijzigen.
 :::
 
@@ -51,7 +51,7 @@ Wanneer het account succesvol is aangemaakt is het mogelijk om de inlog-instruct
 gebruiker te sturen.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Dit is het enige moment dat deze instructies gedownload kunnen worden.
 :::
 

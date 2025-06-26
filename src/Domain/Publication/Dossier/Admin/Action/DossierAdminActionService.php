@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Admin\Action;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class DossierAdminActionService
 {
     /**
      * @param iterable<DossierAdminActionInterface> $actions
      */
-    public function __construct(private iterable $actions)
-    {
+    public function __construct(
+        #[AutowireIterator('woo_platform.publication.dossier.admin.action')]
+        private iterable $actions,
+    ) {
     }
 
     /**

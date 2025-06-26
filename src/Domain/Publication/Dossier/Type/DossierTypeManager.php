@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Type;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -20,6 +21,7 @@ class DossierTypeManager
      */
     public function __construct(
         private readonly AuthorizationCheckerInterface $authorizationChecker,
+        #[AutowireIterator('woo_platform.publication.dossier_type_config')]
         iterable $configs,
     ) {
         $this->configs = [];

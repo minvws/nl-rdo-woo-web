@@ -7,7 +7,6 @@ Resource            Admin.resource
 Resource            Dossier.resource
 Resource            TestData.resource
 
-
 *** Variables ***
 ${FILE_NAME}        ${EMPTY}
 ${FILE_LOCATION}    ${EMPTY}
@@ -44,7 +43,7 @@ Upload Covenant
 
 Publish Test Covenant
   [Arguments]  ${publication_status}=Gepubliceerd  ${has_attachment}=${FALSE}
-  VAR  ${type}  covenant
+  VAR  ${type} =  covenant
   Create New Dossier  ${type}
   Generate Test Data Set  ${type}  ${has_attachment}
   Fill Out Basic Details  type=${type}

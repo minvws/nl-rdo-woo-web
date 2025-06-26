@@ -1,13 +1,14 @@
 import { z } from 'zod';
 
 export enum UploadStatus {
-  Confirmed = 'confirmed',
-  Completed = 'completed',
-  NeedsConfirmation = 'needs_confirmation',
   OpenForUploads = 'open_for_uploads',
-  ProcessingUpdates = 'processing_updates',
   ProcessingUploads = 'processing_uploads',
+  NeedsConfirmation = 'needs_confirmation',
+  Confirmed = 'confirmed',
   Rejected = 'rejected',
+  ProcessingUpdates = 'processing_updates',
+  Completed = 'completed',
+  NoChanges = 'no_changes',
 }
 
 export const uploadedWooDecisionDocumentSchema = z.object({

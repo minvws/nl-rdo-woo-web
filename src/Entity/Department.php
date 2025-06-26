@@ -60,6 +60,9 @@ class Department implements EntityWithFileInfo
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $landingPageDescription;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $feedbackContent;
+
     #[ORM\Embedded(class: FileInfo::class, columnPrefix: 'file_')]
     #[Assert\Valid()]
     protected FileInfo $fileInfo;
@@ -193,5 +196,15 @@ class Department implements EntityWithFileInfo
     public function getFileCacheKey(): string
     {
         return $this->id->toRfc4122();
+    }
+
+    public function getFeedbackContent(): ?string
+    {
+        return $this->feedbackContent;
+    }
+
+    public function setFeedbackContent(?string $feedbackContent): void
+    {
+        $this->feedbackContent = $feedbackContent;
     }
 }

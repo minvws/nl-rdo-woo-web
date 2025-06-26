@@ -17,7 +17,7 @@ use App\Domain\Publication\MainDocument\Command\UpdateMainDocumentCommand;
 use App\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
 use App\Domain\Publication\MainDocument\Handler\UpdateMainDocumentHandler;
 use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
-use App\Service\Uploader\UploaderService;
+use App\Domain\Upload\Process\EntityUploadStorer;
 use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -37,8 +37,8 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
     private DossierWorkflowManager&MockInterface $dossierWorkflowManager;
     private UpdateMainDocumentHandler $handler;
     private DossierRepository&MockInterface $dossierRepository;
-    private UploaderService&MockInterface $uploaderService;
     private ValidatorInterface&MockInterface $validator;
+    private EntityUploadStorer&MockInterface $uploadStorer;
 
     public function setUp(): void
     {
@@ -47,16 +47,16 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
         $this->dossierRepository = \Mockery::mock(DossierRepository::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
-        $this->uploaderService = \Mockery::mock(UploaderService::class);
         $this->validator = \Mockery::mock(ValidatorInterface::class);
+        $this->uploadStorer = \Mockery::mock(EntityUploadStorer::class);
 
         $this->handler = new UpdateMainDocumentHandler(
             $this->messageBus,
             $this->dossierWorkflowManager,
             $this->entityManager,
             $this->dossierRepository,
-            $this->uploaderService,
             $this->validator,
+            $this->uploadStorer,
         );
 
         parent::setUp();
@@ -111,12 +111,11 @@ class UpdateMainDocumentHandlerTest extends MockeryTestCase
         $validatorList->expects('count')->andReturn(0);
         $this->validator->shouldReceive('validate')->andReturn($validatorList);
 
-        $this->uploaderService
-            ->expects('attachFileToEntity')
+        $this->uploadStorer
+            ->expects('storeUploadForEntityWithSourceTypeAndName')
             ->with(
-                $uploadFileReference,
                 \Mockery::type(AnnualReportMainDocument::class),
-                UploadGroupId::MAIN_DOCUMENTS,
+                $uploadFileReference,
             );
 
         $this->handler->__invoke(

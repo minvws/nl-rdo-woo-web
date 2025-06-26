@@ -22,9 +22,7 @@ class DisableUserFormType extends AbstractType
     {
         $builder
             ->add('enabled', HiddenType::class)
-            ->add('submit', SubmitType::class, [
-                'label' => 'Deactivate account',
-            ]);
+            ->add('submit', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -11,6 +11,7 @@ use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -24,6 +25,7 @@ class DeleteDossierHandler
         private readonly LoggerInterface $logger,
         private readonly DossierWorkflowManager $dossierWorkflowManager,
         private readonly EntityManagerInterface $entityManager,
+        #[AutowireIterator('woo_platform.publication.dossier_delete_strategy')]
         private readonly iterable $deleteStrategies,
     ) {
     }

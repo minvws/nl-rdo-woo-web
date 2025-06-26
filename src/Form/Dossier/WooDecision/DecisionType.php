@@ -31,9 +31,9 @@ class DecisionType extends AbstractDossierStepType
 
         if ($dossier->getStatus()->isConcept()) {
             $builder->add('decision', EnumType::class, [
-                'label' => 'Besluit',
+                'label' => 'admin.decisions.decision',
                 'required' => true,
-                'help' => 'Hoe komen we tegemoet aan het verzoek?',
+                'help' => 'admin.decisions.decision_help',
                 'class' => DecisionTypeEnum::class,
                 'expanded' => true,
             ]);
@@ -41,9 +41,9 @@ class DecisionType extends AbstractDossierStepType
 
         $builder
             ->add('summary', TextareaType::class, [
-                'label' => 'Samenvatting van het besluit',
+                'label' => 'admin.decisions.summary',
                 'required' => true,
-                'help' => 'Vat samen waarom het bovenstaande besluit is genomen',
+                'help' => 'admin.decisions.summary_help',
                 'attr' => ['rows' => 5],
                 'empty_data' => '',
             ]);

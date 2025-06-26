@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Story;
 
-use App\Enum\Department as DepartmentEnum;
 use App\Tests\Factory\DepartmentFactory;
 use Zenstruck\Foundry\Story;
 

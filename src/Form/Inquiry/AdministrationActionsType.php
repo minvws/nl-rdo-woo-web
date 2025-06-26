@@ -23,13 +23,13 @@ class AdministrationActionsType extends AbstractType
     {
         $builder
             ->add('action', ChoiceType::class, [
-                'label' => 'Inquiry action',
+                'label' => 'admin.administration_actions.action',
                 'choices' => [
-                    'Regenerate inventory' => self::ACTION_REGENERATE_INVENTORY,
+                    'admin.administration_actions.regenerate_inventory' => self::ACTION_REGENERATE_INVENTORY,
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Execute action (async)',
+                'label' => 'admin.administration_actions.submit',
             ]);
     }
 }

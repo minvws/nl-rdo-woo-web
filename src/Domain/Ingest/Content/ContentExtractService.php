@@ -9,6 +9,7 @@ use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Storage\EntityStorageService;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -25,6 +26,7 @@ readonly class ContentExtractService
         private LoggerInterface $logger,
         private CacheInterface $cache,
         private ContentExtractCacheKeyGenerator $cacheKeyGenerator,
+        #[AutowireIterator('woo_platform.ingest.content_extractor')]
         private iterable $extractors,
     ) {
     }

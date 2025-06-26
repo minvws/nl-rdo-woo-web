@@ -29,7 +29,7 @@ class Subject
     private Organisation $organisation;
 
     /** @var Collection<array-key,AbstractDossier> */
-    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: AbstractDossier::class)]
+    #[ORM\OneToMany(targetEntity: AbstractDossier::class, mappedBy: 'subject')]
     private Collection $dossiers;
 
     public function __construct()

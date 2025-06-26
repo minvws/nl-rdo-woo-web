@@ -40,6 +40,17 @@ class DepartmentRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return list<Department>
+     */
+    public function findAllSortedByName(): array
+    {
+        return $this->createQueryBuilder('d')
+            ->orderBy('d.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @return string[]
      */
     public function getNames(): array

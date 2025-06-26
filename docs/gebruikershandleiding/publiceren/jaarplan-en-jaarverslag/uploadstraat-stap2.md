@@ -15,7 +15,7 @@ is, zodat lezers snel begrijpen waar het jaarplan/jaarverslag over gaat. Dit vel
 Upload hier het hoofddocument van het jaarplan/jaarverslag. Dit veld is verplicht om verder te gaan.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Je kunt slechts één document uploaden.
 :::
 

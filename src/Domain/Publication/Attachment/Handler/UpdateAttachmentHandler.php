@@ -9,7 +9,7 @@ use App\Domain\Publication\Attachment\Command\UpdateAttachmentCommand;
 use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Service\Uploader\UploaderService;
+use App\Domain\Upload\Process\EntityUploadStorer;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -20,9 +20,9 @@ readonly class UpdateAttachmentHandler
     public function __construct(
         private AttachmentRepository $attachmentRepository,
         private ValidatorInterface $validator,
-        private UploaderService $uploaderService,
         private AttachmentEntityLoader $entityLoader,
         private AttachmentDispatcher $dispatcher,
+        private EntityUploadStorer $uploadStorer,
     ) {
     }
 
@@ -76,10 +76,9 @@ readonly class UpdateAttachmentHandler
     private function mapUpload(UpdateAttachmentCommand $command, AbstractAttachment $entity): void
     {
         if ($command->uploadFileReference !== null) {
-            $this->uploaderService->attachFileToEntity(
-                $command->uploadFileReference,
+            $this->uploadStorer->storeUploadForEntityWithSourceTypeAndName(
                 $entity,
-                $entity::getUploadGroupId(),
+                $command->uploadFileReference
             );
         }
     }

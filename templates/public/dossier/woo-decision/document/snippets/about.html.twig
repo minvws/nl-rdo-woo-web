@@ -80,10 +80,7 @@
 
                         {% if isDownloadable %}
                             {% include 'public/dossier/shared/snippets/redacted-message.html.twig' with {
-                                'departmentName': dossier.mainDepartment.name,
-                                'documentId': document.entity.id,
-                                'documentName': document.entity.fileInfo.name,
-                                'isExternalDepartmentResponsible': dossier.isExternalDepartmentResponsible,
+                                'department': dossier.mainDepartment,
                                 'hasGrounds': hasGrounds,
                             } %}
                         {% endif %}

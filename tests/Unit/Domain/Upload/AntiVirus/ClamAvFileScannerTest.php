@@ -6,30 +6,24 @@ namespace App\Tests\Unit\Domain\Upload\AntiVirus;
 
 use App\Domain\Upload\AntiVirus\ClamAvClientFactory;
 use App\Domain\Upload\AntiVirus\ClamAvFileScanner;
+use App\Domain\Upload\AntiVirus\FileScannedEvent;
 use App\Domain\Upload\AntiVirus\FileScanResult;
-use App\Entity\User;
 use App\Service\Storage\LocalFilesystem;
-use MinVWS\AuditLogger\AuditLogger;
-use MinVWS\AuditLogger\Events\Logging\FileUploadLogEvent;
-use MinVWS\AuditLogger\Loggers\LoggerInterface as AuditLoggerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xenolope\Quahog\Client;
 use Xenolope\Quahog\Result;
 
 final class ClamAvFileScannerTest extends MockeryTestCase
 {
     private Client&MockInterface $clamAvClient;
-    private ClamAvClientFactory&MockInterface $clientFactory;
     private LoggerInterface&MockInterface $logger;
     private LocalFilesystem&MockInterface $filesystem;
-    private AuditLoggerInterface&MockInterface $internalAuditLogger;
-    private AuditLogger $auditLogger;
-    private User&MockInterface $user;
-    private Security&MockInterface $security;
+    private EventDispatcherInterface&MockInterface $eventDispatcher;
     private ClamAvFileScanner $scanner;
+    private ClamAvClientFactory&MockInterface $clientFactory;
 
     public function setUp(): void
     {
@@ -40,23 +34,14 @@ final class ClamAvFileScannerTest extends MockeryTestCase
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->filesystem = \Mockery::mock(LocalFilesystem::class);
 
-        $this->internalAuditLogger = \Mockery::mock(AuditLoggerInterface::class);
-        $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();
-        $this->auditLogger = new AuditLogger([$this->internalAuditLogger]);
-
-        $this->user = \Mockery::mock(User::class);
-        $this->user->shouldReceive('getAuditId')->andReturn('user-id');
-
-        $this->security = \Mockery::mock(Security::class);
-        $this->security->shouldReceive('getUser')->andReturn($this->user);
+        $this->eventDispatcher = \Mockery::mock(EventDispatcherInterface::class);
 
         $this->scanner = new ClamAvFileScanner(
             $this->clientFactory,
             $this->logger,
             $this->filesystem,
-            $this->auditLogger,
-            $this->security,
             10,
+            $this->eventDispatcher,
         );
 
         parent::setUp();
@@ -150,10 +135,10 @@ final class ClamAvFileScannerTest extends MockeryTestCase
 
         $this->logger->expects('error');
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
-            static function (FileUploadLogEvent $event) use ($reason): bool {
-                self::assertTrue($event->getLogData()['failed']);
-                self::assertEquals($reason, $event->getLogData()['failed_reason']);
+        $this->eventDispatcher->expects('dispatch')->with(\Mockery::on(
+            static function (FileScannedEvent $event) use ($reason): bool {
+                self::assertTrue($event->hasFailed);
+                self::assertEquals($reason, $event->reason);
 
                 return true;
             }
@@ -180,10 +165,10 @@ final class ClamAvFileScannerTest extends MockeryTestCase
 
         $this->clamAvClient->expects('scanResourceStream')->with($stream)->andReturn($result);
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
-            static function (FileUploadLogEvent $event): bool {
-                self::assertFalse($event->getLogData()['failed']);
-                self::assertEquals('', $event->getLogData()['failed_reason']);
+        $this->eventDispatcher->expects('dispatch')->with(\Mockery::on(
+            static function (FileScannedEvent $event): bool {
+                self::assertFalse($event->hasFailed);
+                self::assertEquals('', $event->reason);
 
                 return true;
             }

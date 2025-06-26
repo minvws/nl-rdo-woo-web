@@ -1,0 +1,38 @@
+msgid "Home"
+msgstr "Home"
+
+msgid "Pagination"
+msgstr "Paginering"
+
+msgid "Sidebar"
+msgstr "Zijbalk"
+
+msgid "Go to the previous page"
+msgstr "Ga naar de vorige pagina"
+
+msgid "Go to the next page"
+msgstr "Ga naar de volgende pagina"
+
+msgid "Logo Government of the Netherlands"
+msgstr "Logo Rijksoverheid"
+
+msgid "Logo Government of the Netherlands, go to the homepage"
+msgstr "Logo Rijksoverheid, ga naar de homepage"
+
+msgid "Ministry of Health, Welfare and Sport"
+msgstr "Ministerie van Volksgezondheid, Welzijn en Sport"
+
+msgid "Previous"
+msgstr "Vorige"
+
+msgid "Next"
+msgstr "Volgende"
+
+msgid "Searching for multiple words only shows matches that contain all words."
+msgstr "Het zoeken op meerdere woorden geeft alleen resultaten die alle zoekwoorden bevatten."
+
+msgid "Warning"
+msgstr "Waarschuwing"
+
+msgid "Please activate JavaScript to enable the search functionality."
+msgstr "Activeer JavaScript om de zoekfunctionaliteit in te schakelen."

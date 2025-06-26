@@ -12,6 +12,7 @@ use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -33,6 +34,7 @@ class DossierVoter extends Voter
             $subject instanceof Disposition => true,
             $subject instanceof OtherPublication => true,
             $subject instanceof Advice => true,
+            $subject instanceof RequestForAdvice => true,
             default => false,
         };
     }

@@ -40,7 +40,6 @@ class Create extends Command
             ->setDefinition([
                 new InputArgument('email', InputArgument::REQUIRED, 'Email of the user'),
                 new InputArgument('name', InputArgument::REQUIRED, 'Full name of user'),
-                new InputOption('admin', 'a', InputOption::VALUE_NONE, 'Admin user'),
                 new InputOption('super-admin', 's', InputOption::VALUE_NONE, 'Super Admin user'),
             ]);
     }
@@ -52,8 +51,6 @@ class Create extends Command
     {
         if ($input->getOption('super-admin')) {
             $role = Roles::ROLE_SUPER_ADMIN;
-        } elseif ($input->getOption('admin')) {
-            $role = Roles::ROLE_GLOBAL_ADMIN;
         } else {
             $role = Roles::ROLE_VIEW_ACCESS;
         }

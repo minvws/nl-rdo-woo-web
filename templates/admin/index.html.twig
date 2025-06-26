@@ -62,6 +62,14 @@
                     'admin.decisions.downloads_help' | trans
                 )
                 }}
+                {{
+                _self.table_row(
+                    matrix_has_permission('content_page.read'),
+                    path('app_admin_content_pages'),
+                    'admin.content_pages.manage' | trans,
+                    'admin.content_pages.manage_help' | trans
+                )
+                }}
             </tbody>
         </table>
     </div>

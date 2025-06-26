@@ -8,11 +8,13 @@
         documentType="{{ 'admin.dossiers.advice.document' | trans }}"
         documentTypes="{{ documentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/advice-document' }}"
+        e2eName="advice"
         formField="{{ form.document }}"
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.advice.form.content.document_help' | trans }}"
         languages="{{ attachmentLanguages }}"
         title="{{ 'admin.dossiers.advice.form.content.document_label' | trans }}"
+        dossierId="{{ dossier.id }}"
     />
 
     {% set attachmentsApiEndpoint = '/balie/api/dossiers/' ~ dossier.id ~ '/advice-attachments' %}
@@ -24,10 +26,12 @@
         canDelete="{{ canDeleteAttachments }}"
         documentTypes="{{ requestForAdviceTypes }}"
         endpoint="{{ attachmentsApiEndpoint }}"
+        e2eName="request-for-advice"
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.advice.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"
         title="{{ 'admin.dossiers.advice.form.content.request_for_advice_label' | trans }}"
+        dossierId="{{ dossier.id }}"
     />
 
     <twig:Admin:Publication:ManageAttachments
@@ -39,6 +43,7 @@
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.advice.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"
+        dossierId="{{ dossier.id }}"
     />
 
 {{ form_end(form) }}

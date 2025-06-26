@@ -34,7 +34,7 @@ class DocumentFileUpdate implements EntityWithFileInfo
     protected FileInfo $fileInfo;
 
     public function __construct(
-        #[ORM\ManyToOne(targetEntity: DocumentFileSet::class)]
+        #[ORM\ManyToOne(targetEntity: DocumentFileSet::class, inversedBy: 'updates')]
         #[ORM\JoinColumn(name: 'document_file_set_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
         private DocumentFileSet $documentFileSet,
         #[ORM\ManyToOne(targetEntity: Document::class)]

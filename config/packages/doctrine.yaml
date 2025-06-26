@@ -11,7 +11,7 @@ doctrine:
 
         profiling_collect_backtrace: '%kernel.debug%'
     orm:
-        auto_generate_proxy_classes: true
+        auto_generate_proxy_classes: NEVER
         enable_lazy_ghost_objects: true
         report_fields_where_declared: true
         validate_xml_mapping: true
@@ -37,6 +37,11 @@ doctrine:
                 TYPE: App\Doctrine\TypeFunction
         controller_resolver:
             auto_mapping: false
+
+when@dev:
+    doctrine:
+        orm:
+            auto_generate_proxy_classes: FILE_NOT_EXISTS_OR_CHANGED
 
 when@test:
     doctrine:

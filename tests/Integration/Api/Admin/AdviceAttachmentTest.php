@@ -9,19 +9,23 @@ use App\Api\Admin\AdviceAttachment\AdviceAttachmentDto;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Uploader\Handler\UploadHandlerInterface;
+use App\Domain\Uploader\UploadEntity;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Advice\AdviceAttachmentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Advice\AdviceFactory;
+use App\Tests\Factory\UploadEntityFactory;
 use App\Tests\Factory\UserFactory;
 use App\Tests\Integration\IntegrationTestTrait;
 use Carbon\CarbonImmutable;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
+use League\Flysystem\FilesystemOperator;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
@@ -31,36 +35,31 @@ use Symfony\Component\Validator\Constraints\Type;
 final class AdviceAttachmentTest extends ApiTestCase
 {
     use IntegrationTestTrait;
-    use TestFileTrait;
 
-    private vfsStreamDirectory $root;
+    protected static ?bool $alwaysBootKernel = false;
+
+    private UploadHandlerInterface&MockInterface $uploadHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->root = vfsStream::setup();
-
         self::bootKernel();
+
+        $this->uploadHandler = \Mockery::mock(UploadHandlerInterface::class);
+        self::getContainer()->set(UploadHandlerInterface::class, $this->uploadHandler);
     }
 
     public function testGetAllAdviceAttachments(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = AdviceFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ]);
+        $dossier = AdviceFactory::createOne(['organisation' => $user->getOrganisation()]);
 
-        AdviceAttachmentFactory::createMany(5, [
-            'dossier' => $dossier,
-        ]);
+        AdviceAttachmentFactory::createMany(5, ['dossier' => $dossier]);
 
         $response = static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/advice-attachments', $dossier->getId()),
@@ -78,10 +77,7 @@ final class AdviceAttachmentTest extends ApiTestCase
 
     public function testGetSingleAdviceAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
         $attachment = AdviceAttachmentFactory::createOne([
             'dossier' => AdviceFactory::createOne([
@@ -90,7 +86,7 @@ final class AdviceAttachmentTest extends ApiTestCase
         ])->_real();
 
         static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/advice-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
@@ -107,20 +103,15 @@ final class AdviceAttachmentTest extends ApiTestCase
 
     public function testGetSingleNonExistingAdviceAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = AdviceFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ]);
+        $dossier = AdviceFactory::createOne(['organisation' => $user->getOrganisation()]);
 
         static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_GET,
-                sprintf('/balie/api/dossiers/%s/advice-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
+                sprintf('/balie/api/dossiers/%s/advice-attachments/%s', $dossier->getId(), Uuid::v6()),
                 [
                     'headers' => [
                         'Accept' => 'application/json',
@@ -133,76 +124,67 @@ final class AdviceAttachmentTest extends ApiTestCase
 
     public function testCreateAdviceAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = AdviceFactory::createOne([
-            'organisation' => $user->getOrganisation(),
+        $dossier = AdviceFactory::createOne(['organisation' => $user->getOrganisation()]);
+
+        $upload = UploadEntityFactory::new()->create([
+            'uploadGroupId' => UploadGroupId::ATTACHMENTS,
+            'context' => new InputBag([
+                'dossierId' => $dossier->getId()->toRfc4122(),
+            ]),
         ]);
 
-        $client = static::createClient()->loginUser($user->_real(), 'balie');
-
-        $this->createPdfTestFile();
-
-        $uploadFile = new UploadedFile(
-            path: $this->root->url() . '/test_file.pdf',
-            originalName: 'test_file.pdf',
+        $upload->finishUploading(
+            filename: 'filename.pdf',
+            size: 3547981,
         );
+        $upload->_save();
 
-        $uploadUuid = $this->getFaker()->uuid();
+        $upload->passValidation(mimeType: 'application/pdf');
+        $upload->_save();
+        $upload = $upload->_real();
 
-        $client->request(
-            Request::METHOD_POST,
-            '/balie/uploader',
-            [
-                'headers' => ['Content-Type' => 'multipart/form-data'],
-                'extra' => [
-                    'parameters' => [
-                        'chunkindex' => '0',
-                        'totalchunkcount' => '1',
-                        'groupId' => UploadGroupId::ATTACHMENTS->value,
-                        'uuid' => $uploadUuid,
-                        'grounds' => ['ground one', 'ground two'],
+        $this->uploadHandler
+            ->shouldReceive('moveUploadedFileToStorage')
+            ->once()
+            ->with(
+                \Mockery::on(fn (UploadEntity $uploadEntity) => $uploadEntity->getId() == $upload->getId()),
+                \Mockery::type(FilesystemOperator::class),
+                \Mockery::type('string'),
+            );
+
+        static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/balie/api/dossiers/%s/advice-attachments', $dossier->getId()),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
                     ],
-                    'files' => [
-                        'file' => $uploadFile,
+                    'json' => [
+                        'uploadUuid' => $upload->getUploadId(),
+                        'type' => AttachmentType::COVENANT->value,
+                        'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
+                        'language' => AttachmentLanguage::DUTCH->value,
                     ],
                 ],
-            ],
-        );
+            );
 
         self::assertResponseIsSuccessful();
 
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/dossiers/%s/advice-attachments', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
+        static::createClient()
+            ->loginUser($user, 'balie')->request(
+                Request::METHOD_GET,
+                sprintf('/balie/api/dossiers/%s/advice-attachments', $dossier->getId()),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
                 ],
-                'json' => [
-                    'uploadUuid' => $uploadUuid,
-                    'type' => AttachmentType::COVENANT->value,
-                    'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
-                    'language' => AttachmentLanguage::DUTCH->value,
-                ],
-            ],
-        );
-
-        self::assertResponseIsSuccessful();
-
-        $client->request(
-            Request::METHOD_GET,
-            sprintf('/balie/api/dossiers/%s/advice-attachments', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-            ],
-        );
+            );
 
         self::assertResponseIsSuccessful();
     }
@@ -214,60 +196,23 @@ final class AdviceAttachmentTest extends ApiTestCase
     #[DataProvider('getInvalidCreateRequestData')]
     public function testCreateAdviceAttachmentWithInvalidRequestData(array $input, array $expectedViolations): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = AdviceFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ]);
+        $dossier = AdviceFactory::createOne(['organisation' => $user->getOrganisation()]);
 
-        $client = static::createClient()->loginUser($user->_real(), 'balie');
-
-        $this->createPdfTestFile();
-
-        $uploadFile = new UploadedFile(
-            path: $this->root->url() . '/test_file.pdf',
-            originalName: 'test_file.pdf',
-        );
-
-        $uploadUuid = ! isset($input['uploadUuid']) || (is_string($input['uploadUuid']) && trim($input['uploadUuid']) === '')
-            ? $this->getFaker()->uuid()
-            : $input['uploadUuid'];
-
-        $client->request(
-            Request::METHOD_POST,
-            '/balie/uploader',
-            [
-                'headers' => ['Content-Type' => 'multipart/form-data'],
-                'extra' => [
-                    'parameters' => [
-                        'chunkindex' => '0',
-                        'totalchunkcount' => '1',
-                        'groupId' => UploadGroupId::ATTACHMENTS->value,
-                        'uuid' => $uploadUuid,
+        static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/balie/api/dossiers/%s/advice-attachments', $dossier->getId()),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
                     ],
-                    'files' => [
-                        'file' => $uploadFile,
-                    ],
+                    'json' => $input,
                 ],
-            ],
-        );
-
-        self::assertResponseIsSuccessful();
-
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/dossiers/%s/advice-attachments', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => $input,
-            ],
-        );
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains(['violations' => $expectedViolations]);
@@ -397,10 +342,7 @@ final class AdviceAttachmentTest extends ApiTestCase
 
     public function testDeleteAdviceAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
         $attachment = AdviceAttachmentFactory::createOne([
             'dossier' => AdviceFactory::createOne([
@@ -410,7 +352,7 @@ final class AdviceAttachmentTest extends ApiTestCase
         ])->_real();
 
         static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/advice-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
@@ -426,20 +368,15 @@ final class AdviceAttachmentTest extends ApiTestCase
 
     public function testDeleteNonExistingAdviceAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = AdviceFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ]);
+        $dossier = AdviceFactory::createOne(['organisation' => $user->getOrganisation()]);
 
         static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_DELETE,
-                sprintf('/balie/api/dossiers/%s/advice-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
+                sprintf('/balie/api/dossiers/%s/advice-attachments/%s', $dossier->getId(), Uuid::v6()),
                 [
                     'headers' => [
                         'Accept' => 'application/json',
@@ -452,10 +389,7 @@ final class AdviceAttachmentTest extends ApiTestCase
 
     public function testUpdateAdviceAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
         $attachment = AdviceAttachmentFactory::createOne([
             'fileInfo' => FileInfoFactory::createOne([
@@ -466,8 +400,8 @@ final class AdviceAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        $response = static::createClient()
-            ->loginUser($user->_real(), 'balie')
+        $updateResponse = static::createClient()
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_PUT,
                 sprintf('/balie/api/dossiers/%s/advice-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
@@ -489,8 +423,8 @@ final class AdviceAttachmentTest extends ApiTestCase
         self::assertResponseIsSuccessful();
         self::assertMatchesResourceItemJsonSchema(AdviceAttachmentDto::class);
 
-        $response2 = static::createClient()
-            ->loginUser($user->_real(), 'balie')
+        $getResponse = static::createClient()
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/advice-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
@@ -504,22 +438,17 @@ final class AdviceAttachmentTest extends ApiTestCase
         self::assertResponseIsSuccessful();
         self::assertMatchesResourceItemJsonSchema(AdviceAttachmentDto::class);
 
-        $this->assertSame($response->toArray(), $response2->toArray());
+        $this->assertSame($updateResponse->toArray(), $getResponse->toArray());
     }
 
     public function testUpdateNonExistingAdviceAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = AdviceFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ])->_real();
+        $dossier = AdviceFactory::createOne(['organisation' => $user->getOrganisation()]);
 
         static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/advice-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
@@ -540,10 +469,7 @@ final class AdviceAttachmentTest extends ApiTestCase
     #[DataProvider('getInvalidUpdateRequestData')]
     public function testUpdateAdviceAttachmentWithInvalidRequestData(array $input, array $expectedViolations): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create();
 
         $attachment = AdviceAttachmentFactory::createOne([
             'fileInfo' => FileInfoFactory::createOne([

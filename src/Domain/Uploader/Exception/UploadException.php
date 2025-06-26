@@ -52,4 +52,12 @@ class UploadException extends \RuntimeException
             $uuid,
         ));
     }
+
+    public static function forEntityNotFoundByUploadId(string $uploadId): self
+    {
+        return new self(sprintf(
+            'No UploadEntity found with uploadId %s',
+            $uploadId,
+        ));
+    }
 }

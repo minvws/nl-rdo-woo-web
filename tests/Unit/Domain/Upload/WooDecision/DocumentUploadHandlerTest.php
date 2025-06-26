@@ -9,23 +9,19 @@ use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\Document
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use App\Domain\Upload\Process\EntityUploadStorer;
 use App\Domain\Upload\WooDecision\DocumentUploadHandler;
 use App\Domain\Uploader\Event\UploadValidatedEvent;
 use App\Domain\Uploader\UploadEntity;
-use App\Domain\Uploader\UploadService;
-use App\Service\Storage\EntityStorageService;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Unit\UnitTestCase;
-use League\Flysystem\FilesystemOperator;
 use Mockery\MockInterface;
 use Symfony\Component\Uid\Uuid;
 
 class DocumentUploadHandlerTest extends UnitTestCase
 {
     private WooDecisionRepository&MockInterface $wooDecisionRepository;
-    private UploadService&MockInterface $uploadService;
-    private FilesystemOperator&MockInterface $documentStorage;
-    private EntityStorageService&MockInterface $entityStorageService;
+    private EntityUploadStorer&MockInterface $uploadStorer;
     private DocumentFileService&MockInterface $documentFileService;
     private DocumentUploadHandler $handler;
 
@@ -34,17 +30,13 @@ class DocumentUploadHandlerTest extends UnitTestCase
         parent::setUp();
 
         $this->wooDecisionRepository = \Mockery::mock(WooDecisionRepository::class);
-        $this->uploadService = \Mockery::mock(UploadService::class);
-        $this->documentStorage = \Mockery::mock(FilesystemOperator::class);
-        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
+        $this->uploadStorer = \Mockery::mock(EntityUploadStorer::class);
         $this->documentFileService = \Mockery::mock(DocumentFileService::class);
 
         $this->handler = new DocumentUploadHandler(
             $this->wooDecisionRepository,
-            $this->uploadService,
-            $this->documentStorage,
-            $this->entityStorageService,
             $this->documentFileService,
+            $this->uploadStorer,
         );
     }
 
@@ -81,17 +73,7 @@ class DocumentUploadHandlerTest extends UnitTestCase
         $documentFileUpload = \Mockery::mock(DocumentFileUpload::class);
         $this->documentFileService->expects('createNewUpload')->with($documentFileSet, $filename)->andReturn($documentFileUpload);
 
-        $this->entityStorageService
-            ->expects('generateEntityPath')
-            ->with($documentFileUpload, $filename)
-            ->andReturn($path = '/some/path');
-
-        $this->uploadService->expects('moveUploadToStorage')->with($uploadEntity, $this->documentStorage, $path);
-
-        $documentFileUpload->expects('getFileInfo->setMimetype')->with($mimetype);
-        $documentFileUpload->expects('getFileInfo->setSize')->with($size);
-        $documentFileUpload->expects('getFileInfo->setPath')->with($path);
-        $documentFileUpload->expects('getFileInfo->setUploaded')->with(true);
+        $this->uploadStorer->expects('storeUploadForEntity')->with($uploadEntity, $documentFileUpload);
 
         $this->documentFileService->expects('finishUpload')->with($documentFileSet, $documentFileUpload);
 

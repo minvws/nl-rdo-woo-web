@@ -34,7 +34,7 @@ Install the dependencies for the project.
 - [Task](https://taskfile.dev/#/installation)
 
 <details>
-<summary>Optionally, but recommended, set a <code>CR_PAT</code> env variable:</summary>
+<summary>Set a <code>CR_PAT</code> env variable:</summary>
 
 This project currently needs to access private Composer and NPM packages hosted on Github. When you try to setup
 the project, it will prompt you for the Github Access Token, if the `CR_PAT` env variable is not set.

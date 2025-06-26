@@ -14,7 +14,7 @@ use App\Domain\Publication\MainDocument\EntityWithMainDocument;
 use App\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent;
 use App\Domain\Publication\MainDocument\MainDocumentAlreadyExistsException;
 use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
-use App\Service\Uploader\UploaderService;
+use App\Domain\Upload\Process\EntityUploadStorer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -34,8 +34,8 @@ readonly class CreateMainDocumentHandler
         private DossierWorkflowManager $dossierWorkflowManager,
         private EntityManagerInterface $entityManager,
         private DossierRepository $dossierRepository,
-        private UploaderService $uploaderService,
         private ValidatorInterface $validator,
+        private EntityUploadStorer $uploadStorer,
     ) {
     }
 
@@ -66,11 +66,7 @@ readonly class CreateMainDocumentHandler
             throw new ValidationFailedException($mainDocument, $violations);
         }
 
-        $this->uploaderService->attachFileToEntity(
-            $command->uploadFileReference,
-            $mainDocument,
-            $mainDocument::getUploadGroupId(),
-        );
+        $this->uploadStorer->storeUploadForEntityWithSourceTypeAndName($mainDocument, $command->uploadFileReference);
 
         $documentRepository->save($mainDocument, true);
 

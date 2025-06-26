@@ -124,6 +124,7 @@
                                             "complaint_judgement_main_document",
                                             "other_publication_main_document",
                                             "advice_main_document",
+                                            "request_for_advice_main_document",
                                             "attachment"
                                         ]
                                     }
@@ -185,7 +186,8 @@
                                             "disposition",
                                             "complaint_judgement",
                                             "other_publication",
-                                            "advice"
+                                            "advice",
+                                            "request_for_advice"
                                         ]
                                     }
                                 }
@@ -211,7 +213,8 @@
                                                         "disposition",
                                                         "complaint_judgement",
                                                         "other_publication",
-                                                        "advice"
+                                                        "advice",
+                                                        "request_for_advice"
                                                     ]
                                                 }
                                             },
@@ -240,6 +243,7 @@
                                                         "complaint_judgement_main_document",
                                                         "other_publication_main_document",
                                                         "advice_main_document",
+                                                        "request_for_advice_main_document",
                                                         "attachment"
                                                     ]
                                                 }

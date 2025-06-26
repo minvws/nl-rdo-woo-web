@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace App\Domain\Upload\Preprocessor;
 
 use App\Domain\Upload\UploadedFile;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class FilePreprocessor
 {
     /**
      * @param iterable<array-key,FilePreprocessorStrategyInterface> $strategies
      */
-    public function __construct(private iterable $strategies)
-    {
+    public function __construct(
+        #[AutowireIterator('woo_platform.upload.preprocessor.strategy')]
+        private iterable $strategies,
+    ) {
     }
 
     /**

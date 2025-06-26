@@ -40,7 +40,7 @@ class Covid19QueryConditionsTest extends UnitTestCase
 
         $this->organisationRepository
             ->expects('findOneBy')
-            ->with(['name' => 'Programmadirectie Openbaarheid'])
+            ->with(['name' => Covid19QueryConditionBuilder::ORGANISATION])
             ->andReturnNull();
 
         $this->expectException(\RuntimeException::class);
@@ -65,7 +65,7 @@ class Covid19QueryConditionsTest extends UnitTestCase
 
         $this->organisationRepository
             ->expects('findOneBy')
-            ->with(['name' => 'Programmadirectie Openbaarheid'])
+            ->with(['name' => Covid19QueryConditionBuilder::ORGANISATION])
             ->andReturn($organisation);
 
         $this->conditions->applyToQuery($facetList, $searchParameters, $boolQuery);

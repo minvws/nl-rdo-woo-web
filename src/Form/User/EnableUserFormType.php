@@ -22,9 +22,7 @@ class EnableUserFormType extends AbstractType
     {
         $builder
             ->add('enabled', HiddenType::class)
-            ->add('submit', SubmitType::class, [
-                'label' => 'Activate account',
-            ]);
+            ->add('submit', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

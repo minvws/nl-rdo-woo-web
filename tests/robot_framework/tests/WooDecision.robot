@@ -8,7 +8,6 @@ Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
 Test Tags           ci  woodecision  pr
 
-
 *** Variables ***
 ${DOSSIER_REFERENCE}    ${EMPTY}
 
@@ -19,37 +18,41 @@ In a public dossier with N public files, retract one of the documents
   ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 2.zip
   ...  number_of_documents=2
-  ...  prefix=MINVWS8
+  ...  prefix=E2E-A8
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Open Document In Dossier  1001
   Retract Document
   Click Breadcrumb Element  2
   Verify Document Retraction  1001
+  Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet en ingetrokken  Er is 1 document ingetrokken.
 
 In a public dossier with N public files, retract all documents via the Danger Zone
   Publish Test WooDecision
   ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 2.zip
   ...  number_of_documents=2
-  ...  prefix=MINVWS10
+  ...  prefix=E2E-A10
   Search For A Publication  ${DOSSIER_REFERENCE}
   Danger Zone Withdraw All Documents
   Verify Document Retraction  1001
   Verify Document Retraction  1002
+  Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet en ingetrokken  Er zijn 2 documenten ingetrokken.
 
 Upload a production report with N public files and a zip with N-1 files
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=MINVWS1
+  Fill Out Basic Details  prefix=E2E-A1
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
   Upload Documents  tests/robot_framework/files/woodecision/documenten - 10-1.zip
   Verify Document Upload Remaining  Nog te uploaden: 1 van 10 documenten.
+  Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet  Er moet nog 1 document geüpload worden.
+
 
 Upload a production report with N public files and a zip with N+1 files
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=MINVWS2
+  Fill Out Basic Details  prefix=E2E-A2
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
@@ -61,16 +64,17 @@ Upload a production report with N public files and a zip with N+1 files
 
 Upload a production report with N public files and a zip with N other files
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=MINVWS3
+  Fill Out Basic Details  prefix=E2E-A3
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
   Upload Documents  tests/robot_framework/files/woodecision/documenten - 10 andere.zip
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
+  Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet  Er moeten nog 10 document(en) geüpload worden.
 
 Upload a production report with N public files, M non-public files, and a zip with N + M files
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=MINVWS4
+  Fill Out Basic Details  prefix=E2E-A4
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 8 van 8 documenten.
@@ -86,9 +90,9 @@ Upload a production report with N public files, M already public files, and a zi
   ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 2.zip
   ...  number_of_documents=2
-  ...  prefix=MINVWS5
+  ...  prefix=E2E-A5
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=MINVWS5
+  Fill Out Basic Details  prefix=E2E-A5
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report
   ...  tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
@@ -101,7 +105,7 @@ In a public dossier with N public and M non-public documents, replace the produc
   ...  production_report=tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 8.zip
   ...  number_of_documents=8
-  ...  prefix=MINVWS6
+  ...  prefix=E2E-A6
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
@@ -131,7 +135,7 @@ In a public dossier with N public and M non-public documents, replace the produc
   ...  production_report=tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 8.zip
   ...  number_of_documents=8
-  ...  prefix=MINVWS7
+  ...  prefix=E2E-A7
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
@@ -156,7 +160,7 @@ In a public dossier with N public files, replace the production report with one 
   ...  production_report=tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 10.zip
   ...  number_of_documents=10
-  ...  prefix=MINVWS9
+  ...  prefix=E2E-A9
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
@@ -176,10 +180,12 @@ In a public dossier with N public files, replace the production report with one 
   Verify Notification
   ...  Er loopt nog een procedure over dit document met een betrokkene. We kunnen dit document daarom nog niet tonen.
   Verify Document History  Opgeschort
+  Go To Admin
+  Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet en opgeschort  Er is 1 document opgeschort.
 
 Create a publication that becomes public in the future
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=MINVWS11
+  Fill Out Basic Details  prefix=E2E-A11
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
@@ -201,7 +207,7 @@ In a public dossier with N public files, replace the production report with a co
   ...  production_report=tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   ...  documents=tests/robot_framework/files/woodecision/documenten - 10.zip
   ...  number_of_documents=10
-  ...  prefix=MINVWS12
+  ...  prefix=E2E-A12
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
@@ -241,20 +247,32 @@ Create Additional Prefixes
   [Documentation]  Creates new prefixes for testing purposes, including the default one because we assume a cleansheet -p was ran before.
   Click Organisation Selector
   Click Manage Organisations
-  Open Organisation Details  Programmadirectie Openbaarheid
-  Select Responsible Department  ministerie van Volksgezondheid, Welzijn en Sport
-  Add A New Organisation Prefix First Run  MINVWS
-  Add A New Organisation Prefix  MINVWS1
-  Add A New Organisation Prefix  MINVWS2
-  Add A New Organisation Prefix  MINVWS3
-  Add A New Organisation Prefix  MINVWS4
-  Add A New Organisation Prefix  MINVWS5
-  Add A New Organisation Prefix  MINVWS6
-  Add A New Organisation Prefix  MINVWS7
-  Add A New Organisation Prefix  MINVWS8
-  Add A New Organisation Prefix  MINVWS9
-  Add A New Organisation Prefix  MINVWS10
-  Add A New Organisation Prefix  MINVWS11
-  Add A New Organisation Prefix  MINVWS12
-  Add A New Organisation Prefix  MINVWS13
+  Open Organisation Details  E2E Test Organisation
+  Select Responsible Department  E2E Test Department 1
+  Add A New Organisation Prefix First Run  E2E-A
+  Add A New Organisation Prefix  E2E-A1
+  Add A New Organisation Prefix  E2E-A2
+  Add A New Organisation Prefix  E2E-A3
+  Add A New Organisation Prefix  E2E-A4
+  Add A New Organisation Prefix  E2E-A5
+  Add A New Organisation Prefix  E2E-A6
+  Add A New Organisation Prefix  E2E-A7
+  Add A New Organisation Prefix  E2E-A8
+  Add A New Organisation Prefix  E2E-A9
+  Add A New Organisation Prefix  E2E-A10
+  Add A New Organisation Prefix  E2E-A11
+  Add A New Organisation Prefix  E2E-A12
+  Add A New Organisation Prefix  E2E-A13
   Click Save Prefixes
+
+Verify Publication Status
+  [Arguments]  ${dossier_reference}  ${expected_status}  ${expected_document_notification}
+  Click Publications
+  Click Publication By Value  ${dossier_reference}
+  Get Text  //*[@data-e2e-name="has-document-notifications"]  contains  Documenten vereisen aandacht
+  Get Text  //*[@data-e2e-name="document-notifications"]  contains  ${expected_document_notification}
+  Click Publications
+  Get Text
+  ...  //table[@data-e2e-name="dossiers-table"]//tr[contains(.,'${dossier_reference}')]
+  ...  contains
+  ...  ${expected_status}

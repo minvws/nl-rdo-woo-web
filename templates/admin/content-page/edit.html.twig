@@ -1,0 +1,15 @@
+{% extends 'admin/base.html.twig' %}
+
+{% set page_title = 'admin.content-page.edit_title' | trans({'slug': page.slug}) %}
+
+{% block body %}
+<div class="bhr-container bhr-container--sm">
+    <h1 class="bhr-title mb-10">{{ page_title }}</h1>
+
+    <div class="bhr-card">
+        <div class="pt-4">
+            {{ form(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

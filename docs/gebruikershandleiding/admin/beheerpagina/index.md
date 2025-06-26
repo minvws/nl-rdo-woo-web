@@ -1,12 +1,12 @@
 # Beheer
 
 :::{admonition} Note
-:class: note
+:class: notification
 Deze pagina is alleen beschikbaar voor Super Beheerders.
 :::
 
 :::{admonition} Note
-:class: note
+:class: notification
 Deze pagina is niet vindbaar in het menu. Ga naar [https://URL/balie/admin](https://<URL>/balie/admin) om deze pagina te bereiken.
 :::
 

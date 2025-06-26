@@ -58,7 +58,7 @@
                         <td>
                             {% if department.public %}
                                 {% set landingPageUrl = PUBLIC_BASE_URL ~ path('app_department_detail', {'slug': department.slug}) %}
-                                <a class="bhr-a" href="{{ landingPageUrl }}">{{ landingPageUrl }}</a>
+                                <a class="bhr-a" href="{{ landingPageUrl }}" data-e2e-name="landing-page-url">{{ landingPageUrl }}</a>
                             {% endif %}
                         </td>
                     </tr>

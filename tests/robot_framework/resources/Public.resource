@@ -7,7 +7,6 @@ Library             DateTime
 Library             DateTimeTZ
 Resource            Generic.resource
 
-
 *** Variables ***
 ${URL_PUBLIC}   ${EMPTY}
 
@@ -93,17 +92,17 @@ Select Filter Options - Dossier
   ...  ${attachments}=${TRUE}
   ...  ${main_document}=${TRUE}
   IF  '${dossier_type}' == 'woo-decision'
-    VAR  ${id}  dossier
+    VAR  ${id} =  dossier
   ELSE IF  '${dossier_type}' == 'annual-report'
-    VAR  ${id}  annual_report
+    VAR  ${id} =  annual_report
   ELSE IF  '${dossier_type}' == 'covenant'
-    VAR  ${id}  covenant
+    VAR  ${id} =  covenant
   ELSE IF  '${dossier_type}' == 'disposition'
-    VAR  ${id}  disposition
+    VAR  ${id} =  disposition
   ELSE IF  '${dossier_type}' == 'investigation-report'
-    VAR  ${id}  investigation_report
+    VAR  ${id} =  investigation_report
   ELSE IF  '${dossier_type}' == 'complaint-judgement'
-    VAR  ${id}  complaint_judgement
+    VAR  ${id} =  complaint_judgement
   END
   IF  ${checked}
     Check Checkbox  id=input_${id}
@@ -182,11 +181,11 @@ Selecting Results Sorting
   [Arguments]  ${sorting_option}
   Click  //details[@data-e2e-name="sorting-selector"]
   IF  '${sorting_option}' == 'newest-first'
-    VAR  ${sorting_option_text}  Publicatiedatum (Nieuwste bovenaan)
+    VAR  ${sorting_option_text} =  Publicatiedatum (Nieuwste bovenaan)
   ELSE IF  '${sorting_option}' == 'oldest-first'
-    VAR  ${sorting_option_text}  Publicatiedatum (Oudste bovenaan)
+    VAR  ${sorting_option_text} =  Publicatiedatum (Oudste bovenaan)
   ELSE IF  '${sorting_option}' == 'decision=date'
-    VAR  ${sorting_option_text}  Besluitdatum
+    VAR  ${sorting_option_text} =  Besluitdatum
   END
   Click  //details[@data-e2e-name="sorting-selector"]//li[contains(.,'${sorting_option_text}')]
   Get Element States  //details[@data-e2e-name="sorting-selector"]/div  contains  hidden

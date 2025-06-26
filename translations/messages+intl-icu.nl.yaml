@@ -47,8 +47,8 @@ global.document_particular: "Bijzonderheden"
 global.document_edit: "Document bewerken"
 global.documents.filter_help: "Filter de documenten. Bij het veranderen van de selectie wordt deze pagina herladen en worden de gegevens voor de geselecteerde waarde getoond."
 global.no_documents: "Geen documenten"
-global.domain_title: "OpenVWS"
-global.meta_description: "Op deze website vindt u interne informatie van het ministerie van VWS. Deze informatie is openbaar gemaakt om inzicht te geven in de werkzaamheden en beslissingen van het ministerie."
+global.domain_title: "WooPlatform"
+global.meta_description: "Op dit platform vindt u informatie die openbaar is gemaakt op grond van de Wet open overheid (Woo). Deze informatie is openbaar gemaakt om inzicht te geven in de werkzaamheden en beslissingen."
 global.expires: "Verloopt"
 global.error_occured: "Er is een fout opgetreden"
 global.error_message: "Er is een technische fout opgetreden in uw zoekopdracht. Wis uw zoekopdracht en probeer het opnieuw."
@@ -231,7 +231,7 @@ admin.global.page_not-found.message: "De pagina of het document dat je zoekt, be
 admin.global.page_not-available.message: "De pagina of het document dat je zoekt, is momenteel niet beschikbaar."
 admin.global.current_location: "Je bent hier"
 admin.global.continue_later: "Later verdergaan"
-admin.global.platform_title: "Beheer platform woo-publicaties Ministerie van VWS"
+admin.global.platform_title: "Beheer platform woo-publicaties"
 admin.global.platform_explanation: "Deze instructies heb je nodig om jouw account voor het beheerplatform te activeren."
 admin.global.label.inquiries: "Zaken"
 admin.global.publication: "Publicatie"
@@ -242,10 +242,6 @@ admin.global.label.access_control: "Toegangsbeheer"
 admin.global.page_count: "Aantal pagina's"
 admin.global.document_count: "Aantal documenten"
 admin.global.dossier_count: "Besluiten"
-admin.global.questions: "Vraag over hoe iets werkt?"
-admin.global.contact_coordinator: "Neem dan even contact op met je coördinator."
-admin.global.contact_developer: "Vraag of opmerking voor de ontwikkelaars?"
-admin.global.suggestions: "Loop je tijdens het gebruiken van deze website tegen technische problemen aan? Of heb je ideeën die het systeem makkelijker in gebruik zouden maken? Laat het ons dan weten via <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl.</a>"
 admin.global.responsible_department: Verantwoordelijk bestuursorgaan
 admin.global.decision_on: "Besluit over:"
 admin.global.convenant_on: "Convenant met omschrijving:"
@@ -286,6 +282,7 @@ admin.inventory.confirm_replacement: "Ok, vervang productierapport"
 admin.inventory.checked: "Productierapport geüpload en gecontroleerd"
 admin.inventory.warning: "Als je verdergaat, wordt het oude productierapport in dit besluit vervangen."
 admin.inventory.explanation: "Dit heeft de volgende gevolgen"
+admin.inventory.submit_label: "Upload productierapport"
 
 admin.organisations.manage: "Organisaties beheren"
 admin.organisation.select: "Kies een organisatie"
@@ -317,6 +314,14 @@ admin.decisions.manage_help: "Deze link biedt toegang tot beheerdersacties voor 
 admin.decisions.downloads: "Woo-besluiten downloads"
 admin.decisions.downloads_details: "Woo-besluiten downloads: overzicht"
 admin.decisions.downloads_help: "Deze link biedt toegang tot het download status overzicht voor woo-besluiten."
+admin.decisions.decision: "Besluit"
+admin.decisions.decision_help: "Hoe komen we tegemoet aan het verzoek?"
+admin.decisions.summary: "Samenvatting van het besluit"
+admin.decisions.summary_help: "Vat samen waarom het bovenstaande besluit is genomen"
+admin.decision.preview_date: "Datum feitelijke verstrekking"
+admin.decision.preview_date_help: "Kies de datum waarop het besluit aan de verzoeker is/wordt verstrekt. Als er zaaknummers aan documenten in dit besluit zijn gekoppeld, kan de verzoeker deze vanaf dat moment online inzien."
+admin.decision.publication_date: "Datum openbare publicatie"
+admin.decision.publication_date_help: "Kies de datum waarop het besluit voor iedereen publiek toegankelijk wordt."
 admin.stats.manage: "Statistieken & Monitoring"
 admin.stats.worker_monitoring: "Monitoring van workers"
 admin.stats.manage_help: "Deze link biedt toegang tot statistieken en monitoring van het systeem."
@@ -386,11 +391,10 @@ admin.department.slug: "URL landingspagina"
 admin.department.slug_help: "Deze naam komt direct achter het domein (minimaal 2 en maximaal 20 letters of cijfers)"
 admin.department.public: "Zichtbaar op de website"
 admin.department.public_help: "Schakelt landingspagina in en tonen in overzicht 'Bekijk per bestuursorgaan'"
+admin.department.feedback_content.description: 'Tekst over verantwoordelijkheid en contact opnemen'
 admin.department.landingpage_not_editable: "niet bewerkbaar"
 admin.user.role.super_admin: "Super beheerder"
 admin.user.role.super_admin.desc: "Alle rechten (inclusief beheer van de Beheerder rol)."
-admin.user.role.global_admin: Beheerder
-admin.user.role.global_admin.desc: "Alle rechten op alle organisaties."
 admin.user.role.organisation_admin: "Organisatie-beheerder"
 admin.user.role.organisation_admin.desc: "Beheren van gebruikers en metadata binnen eigen organisatie."
 admin.user.role.decision_admin: "Publicatie-beheer"
@@ -410,11 +414,16 @@ admin.organisation.add_prefix: "Nog een prefix toevoegen"
 admin.organisation.add_department: "Nog een bestuursorganisatie toevoegen"
 admin.organisation.department_new: "Nieuw bestuursorgaan aanmaken"
 admin.organisation.department_edit: "Wijzig bestuursorgaan {name}"
+admin.organisation.name: "Naam organisatie"
+admin.organisation.name_help: "Bijvoorbeeld Ministerie van VWS - Directie Wetgeving en Juridische Zaken"
 admin.login.2fa.invalid_code: "Ongeldige authenticatiecode"
 admin.login.2fa.enter_code: "Voer authenticatiecode in"
 admin.login.2fa.instructions: "Open de authenticator app en voer de éénmalige code in om in te loggen."
 admin.login.2fa.error.invalid_code: "Ongeldige authenticatiecode. Vul een geldige authenticatiecode in."
 admin.login.2fa.reset_instructions: "Problemen met de authenticator app? Gebruik een herstelcode uit de inloginstructies."
+admin.administration_actions.action: "Zaak actie"
+admin.administration_actions.regenerate_inventory: "Productierapport regenereren"
+admin.administration_actions.submit: "Uitvoeren (in een achtergrondtaak)"
 
 admin.organisation.department_landing_page_edit: "Wijzig landingspagina voor bestuursorgaan {name}"
 admin.department.landing_page.title: 'Titel'
@@ -450,6 +459,7 @@ admin.publications.status.published: 'Openbaar'
 admin.publications.status.scheduled: 'Publicatie gepland'
 admin.publications.status.suspended: "Opgeschort"
 admin.publications.status.withdrawn: "Ingetrokken"
+admin.publications.status.incomplete: "Incompleet"
 admin.publications.type: "Categorie"
 admin.publications.submit.filter: "Filteren"
 admin.publications.has_landingpage: "Landingspagina"
@@ -491,9 +501,10 @@ admin.dossiers.form.details.subject_label: "Onderwerp"
 admin.dossiers.form.details.subject_help: "Kies het onderwerp waaronder deze publicatie valt. Het gekozen onderwerp wordt ook gekoppeld aan alle documenten."
 admin.dossiers.form.details.subject_placeholder: " Geen onderwerp"
 
+#START covenant
 admin.dossiers.covenant.create_new: 'Nieuw convenant publiceren'
 admin.dossiers.covenant.form.details.title: "Omschrijving van het convenant"
-admin.dossiers.covenant.form.details.description: 'Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals convenant, aangaande, etc. <ul class="my-4"><li class="bhr-form-help__dont text-sm">Niet: Convenant tussen het ministerie en een aantal ziekenhuizen aangaande het aantal beschikbare IC-bedden.</li><li class="bhr-form-help__do text-sm">Wel: Overeenkomst tussen ministerie en ziekenhuizen over aantal IC-bedden.</li></ul>'
+admin.dossiers.covenant.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals convenant, aangaande, etc. <ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Convenant over de samenwerking tussen GGD'en en onderwijsinstellingen voor het geven van voorlichting over gezonde leefstijl aan kinderen in het basisonderwijs</li><li class='bhr-form-help__do text-sm'>Wel: Samenwerking GGD en scholen voor gezondheidseducatie</li></ul>"
 admin.dossiers.covenant.form.details.date_legend: "Periode waarover het convenant gaat"
 admin.dossiers.covenant.form.details.ref_nr: "Referentienummer convenant"
 admin.dossiers.covenant.form.details.ref_int: "Interne referentie"
@@ -519,10 +530,18 @@ admin.dossiers.covenant.summary: "Toelichting op het convenant"
 admin.dossiers.covenant.period: "Periode waarover het convenant gaat"
 admin.dossiers.covenant.document: "Convenant"
 admin.dossiers.covenant.previous_version_link: "Opvolger van vorig convenant"
+admin.dossiers.covenant.step.details: "Basisgegevens"
+admin.dossiers.covenant.complete_step.details: "Maak eerst basisgegevens compleet"
+admin.dossiers.covenant.step.content: "Convenant"
+admin.dossiers.covenant.complete_step.content: "Maak eerst convenant compleet"
+admin.dossiers.covenant.step.publication: "Publicatie"
+admin.dossiers.covenant.complete_step.publication: "Het convenant is nog niet gepubliceerd"
+#STOP covenant
 
+#START annual-report
 admin.dossiers.annual-report.create_new: 'Nieuw jaarplan of jaarverslag publiceren'
 admin.dossiers.annual-report.form.details.title: "Omschrijving van het jaarplan of jaarverslag"
-admin.dossiers.annual-report.form.details.description: 'Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals jaarplan, jaarverslag, aangaande, etc. <ul class="my-4"><li class="bhr-form-help__dont text-sm">Niet: Jaarverslag van het ministerie Volksgezondheid, Welzijn en Sport in samenhang met de Slotwet aangaande het jaar 2022</li><li class="bhr-form-help__do text-sm">Wel: Jaarverslag en Slotwet ministerie VWS 2022</li></ul>'
+admin.dossiers.annual-report.form.details.description: 'Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals jaarplan, jaarverslag, aangaande, etc. <ul class="my-4"><li class="bhr-form-help__dont text-sm">Niet: Jaarverslag over de voortgang van het implementatieprogramma e-health toepassingen in de ouderenzorg gedurende het jaar 2024</li><li class="bhr-form-help__do text-sm">Wel: Voortgangsrapportage e-health toepassingen</li></ul>'
 admin.dossiers.annual-report.form.details.date_legend: "Het jaar waarover het jaarplan of jaarverslag gaat"
 admin.dossiers.annual-report.form.details.ref_int: "Interne referentie"
 admin.dossiers.annual-report.form.details.prefix: "Prefix voor publicatie"
@@ -543,6 +562,15 @@ admin.dossiers.annual-report.delete_bullet-3: "Je kan deze actie niet ongedaan m
 admin.dossiers.annual-report.summary: "Toelichting op het jaarplan of jaarverslag"
 admin.dossiers.annual-report.period: "Jaar"
 admin.dossiers.annual-report.document: "Jaarplan of jaarverslag"
+admin.dossiers.annual-report.step.details: "Basisgegevens"
+admin.dossiers.annual-report.complete_step.details: "Maak eerst basisgegevens compleet"
+admin.dossiers.annual-report.step.content: "Jaarplan of jaarverslag"
+admin.dossiers.annual-report.complete_step.content: "Maak eerst jaarplan of jaarverslag compleet"
+admin.dossiers.annual-report.step.publication: "Publicatie"
+admin.dossiers.annual-report.complete_step.publication: "Het jaarverslag of jaarplan is nog niet gepubliceerd"
+#STOP annual-report
+
+admin.dossiers.decision.date_from_legend: "Periode waarop verzoek ziet"
 admin.dossiers.decision.create_success: "<strong>Besluit klaarzetten gelukt:</strong> De publicatie wordt voorbereid."
 admin.dossiers.decision.edit_link: "Hele besluit bekijken"
 admin.dossiers.decision.preview_date: "Feitelijke verstrekking op"
@@ -579,7 +607,7 @@ admin.dossiers.woo-decision.complete_step.decision: "Maak eerst besluit compleet
 admin.dossiers.woo-decision.step.documents: "Documenten"
 admin.dossiers.woo-decision.complete_step.documents: "Maak eerst documenten compleet"
 admin.dossiers.woo-decision.step.publication: "Publicatie"
-admin.dossiers.woo-decision.complete_step.publication: "Het besluit is compleet maar nog niet gepubliceerd"
+admin.dossiers.woo-decision.complete_step.publication: "Het besluit is nog niet gepubliceerd"
 admin.dossiers.woo-decision.form.content.attachments_help: 'De documenten die met dit besluit openbaar worden gemaakt upload je in de volgende stap. Voeg hier alleen bijlagen toe die te maken hebben met de totstandkoming van het besluit.'
 admin.dossiers.woo-decision.step.replace_inventory: "Productierapport vervangen"
 admin.dossiers.woo-decision.step.replace_document: "Document vervangen"
@@ -592,32 +620,28 @@ admin.dossiers.woo-decision.form.content.document_label: 'Besluitbrief'
 admin.dossiers.decision.number: "Besluit"
 admin.dossiers.decision.inquiry_number: "Besluiten voor zaaknummer"
 admin.dossiers.documents.inquiry_number: "Documenten met zaaknummer"
-admin.dossiers.documents.withdrawn_or_suspended: "Er zijn één of meerdere documenten ingetrokken of opgeschort."
+admin.dossiers.documents.withdrawn: >-
+  { count, plural,
+    =1{Er is # document ingetrokken.}
+    other{Er zijn # documenten ingetrokken.}
+  }
+admin.dossiers.documents.suspended: >-
+  { count, plural,
+    =1{Er is # document opgeschort.}
+    other{Er zijn # documenten opgeschort.}
+  }
+admin.dossiers.documents.number_to_upload: >-
+  { count, plural,
+    =1{Er moet nog # document geüpload worden.}
+    other{Er moeten nog # document(en) geüpload worden.}
+  }
 admin.dossiers.documents.needs_upload: "Nog te uploaden"
-
-admin.dossiers.covenant.step.details: "Basisgegevens"
-admin.dossiers.covenant.complete_step.details: "Maak eerst basisgegevens compleet"
-admin.dossiers.covenant.step.content: "Convenant"
-admin.dossiers.covenant.complete_step.content: "Maak eerst convenant compleet"
-admin.dossiers.covenant.step.publication: "Publicatie"
-admin.dossiers.covenant.complete_step.publication: "Het convenant is compleet maar nog niet gepubliceerd"
-
-admin.dossiers.annual-report.step.details: "Basisgegevens"
-admin.dossiers.annual-report.complete_step.details: "Maak eerst basisgegevens compleet"
-admin.dossiers.annual-report.step.content: "Jaarplan of jaarverslag"
-admin.dossiers.annual-report.complete_step.content: "Maak eerst jaarplan of jaarverslag compleet"
-admin.dossiers.annual-report.step.publication: "Publicatie"
-admin.dossiers.annual-report.complete_step.publication: "Het jaarverslag of jaarplan is compleet maar nog niet gepubliceerd"
+admin.dossiers.documents.needs_work: '<strong>Documenten vereisen aandacht</strong><br>Bekijk de sectie <a class="bhr-a" href="#documents">“Documenten”</a> voor meer informatie over de status van de documenten.'
 
 admin.inquiries.case_number: "Zaaknummer"
 admin.inquiries.case_numbers: "Alle zaaknummers"
 admin.inquiries.link_case: "Zaaknummer aan Woo-besluiten of -documenten koppelen"
 admin.inquiries.link_to_case: "Link naar zaak"
-admin.accessibility.paragraph-1: "Wij willen graag dat iedereen deze website kan gebruiken. Komt u toch een pagina tegen die niet toegankelijk is? Of heeft u een andere vraag? <a href='https://www.toegankelijkheidsverklaring.nl/register/12522#verklaring-feedback-en-contactgegevens'>Neem dan contact op</a>."
-admin.accessibility.statement: "<a href='https://www.toegankelijkheidsverklaring.nl/register/12522'>Toegankelijkheidsverklaring Beheer OpenVWS</a>."
-admin.accessibility.downloadreport: "<a href='/documenten/2023-12-14.Toegankelijkheidsonderzoek.Beheer.OpenVWS.open.minvws.nl.versie.1.0.pdf'>Download het toegankelijkheidsonderzoek (PDF 267 KB)</a>."
-admin.accessibility.paragraph-2: "Een toegankelijke website is voor alle bezoekers beter te gebruiken. Daarom gelden er functioneel-technische en redactionele <a href='https://www.digitoegankelijk.nl/'>toegankelijkheidseisen</a> of (voorheen: webrichtlijnen) voor websites van de overheid. Deze zijn beschreven in de <a href='https://www.forumstandaardisatie.nl/standaard/digitoegankelijk-en-301-549-met-wcag-21'>toegankelijkheidsstandaard Digitoegankelijk EN 301 549</a>. "
-
 admin.user.password_changed: "Wachtwoord succesvol gewijzigd"
 
 public.global.access_denied.message: "U heeft niet de toegangsrechten die nodig zijn om deze pagina of dit document te mogen bekijken."
@@ -643,7 +667,7 @@ public.global.decisions: "Besluiten"
 public.global.size: "Grootte"
 public.global.subjects: Onderwerpen
 public.global.request_summary: "Samenvatting verzoek"
-public.global.logo.text: "Ministerie van Volksgezondheid, Welzijn en Sport"
+public.global.logo.text: "Woo Platform"
 public.global.logo.label: "ga naar de homepage"
 public.global.navigation.accessible.label: "Hoofdnavigatie"
 public.global.label.home: "Home"
@@ -661,7 +685,7 @@ public.global.has_or_have: >-
     =1{heeft}
     other{hebben}
   }
-public.global.contact: "Neem dan contact op met het <span class='font-bold'>{ministry}</span>"
+public.global.contact: "Neem dan contact op met <span class='font-bold'>{ministry}</span>"
 public.global.contact_other: "{source} valt niet onder de verantwoordelijkheid van het Ministerie van Volksgezondheid, Welzijn en Sport. Voor vragen of toelichting verwijzen we naar het <span class='font-bold'>{ministry}</span>."
 public.dossier.this_dossier: "dit besluit"
 public.document.this_document: "dit document"
@@ -746,17 +770,11 @@ public.search.use_less_keywords: "Gebruik minder zoekwoorden"
 public.search.only_first_set_displayed: "De eerste <span class='font-bold'>{display_count} resultaten</span> van uw zoekopdracht worden getoond."
 public.search.refine_results: "Verfijn uw zoekopdracht door middel van specifieke zoektermen en de beschikbare filteropties."
 
-public.intro.label.oga: "OpenVWS"
-public.intro.description.oga: "Openbaar gemaakte informatie door het ministerie van Volksgezondheid, Welzijn en Sport"
+public.intro.label.oga: "WooPlatform"
+public.intro.description.oga: "Openbaar gemaakte informatie"
 public.intro.maintext.oga.paragraph-1: "Iedereen heeft recht op informatie over wat de overheid doet, hoe ze dat doet en waarom. Bestuursorganen moeten die informatie uit zichzelf geven, of als iemand daarom vraagt. De informatie wordt dan openbaar."
 public.intro.maintext.oga.paragraph-2: 'Op dit platform vindt u informatie die openbaar is gemaakt op grond van de <a href="https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo">Wet open overheid (Woo)</a> door het Ministerie van Volksgezondheid, Welzijn en Sport en aan haar verwante (zelfstandig) bestuursorganen. Het platform zal de komende periode aangevuld worden met meer informatie.'
 public.intro.more_about_platform: "Meer over dit platform"
-
-public.about.oga: "Over dit platform"
-public.about.oga.paragraph-3: "De openbaargemaakte Woo-besluiten van het ministerie van VWS zijn momenteel nog op verschillende websites te vinden:"
-public.about.oga.bullet-1: "Algemene besluiten (niet COVID-19 gerelateerd) van het ministerie van Volksgezondheid, Welzijn en Sport kunt u vinden op <a href='https://www.rijksoverheid.nl'>rijksoverheid.nl</a>"
-public.about.oga.bullet-2: "COVID-19 gerelateerde besluiten kunt u vinden op deze website."
-
 public.publications.recent_publications: "Recente publicaties"
 
 public.department.public_information_by_department: "Openbaar gemaakte informatie van {department}"
@@ -782,7 +800,6 @@ public.browse.facets.title: "Zoek via de categorieën door openbaar gemaakte inf
 public.browse.facets.description: "Op dit platform vindt u informatie die openbaar is gemaakt op grond van de <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Wet open overheid (Woo)</a> door het Ministerie van Volksgezondheid, Welzijn en Sport en aan haar verwante (zelfstandig) bestuursorganen. Het platform zal de komende periode aangevuld worden met meer informatie."
 
 public.results.title: "Alle Wob- en Woo-besluiten"
-public.results.description: "Op deze website worden alle COVID-19 gerelateerde Woo-documenten en -besluiten gepubliceerd."
 public.results.in_dossiers: >-
   { count, plural,
     =0{in # publicaties}
@@ -791,56 +808,6 @@ public.results.in_dossiers: >-
   }
 
 public.messages.new_dossiers: "Op {dates} komt op deze pagina een nieuw (deel)besluit beschikbaar."
-public.contact.paragraph-1: "Wij zetten ons dagelijks in om dit platform te verbeteren, uit te breiden met nieuwe functionaliteit en te onderhouden. Voor feedback, tips of suggesties over hoe we dit platform kunnen verbeteren, kunt u ons bereiken via <a href='mailto:woo-platform@irealisatie.nl'>woo-platform@irealisatie.nl</a>."
-public.contact.paragraph-2: "De broncode van dit platform is open source beschikbaar op Github: <a href='https://github.com/minvws/nl-rdo-woo-web'>https://github.com/minvws/nl-rdo-woo-web</a>."
-public.contact.paragraph-3: "Heeft u een vraag of opmerking over een publicatie of document op dit platform, neem dan contact op met het bestuursorgaan dat hiervoor verantwoordelijk is. De contactgegevens zijn te vinden op <a href='https://organisaties.overheid.nl'>organisaties.overheid.nl</a>."
-public.privacy.page_title: "Privacyverklaring"
-public.privacy.main_title: "Privacyverklaring Wet open overheid (Woo)"
-public.privacy.sub_title-1: "Welke persoonsgegevens verwerken wij?"
-public.privacy.sub_title-2: "Wie is verantwoordelijk voor de verwerking van uw persoonsgegevens?"
-public.privacy.sub_title-3: "Met welk doel en op basis van welke grondslag verwerken wij persoonsgegevens?"
-public.privacy.sub_title-4: "Hoe lang bewaren wij persoonsgegevens?"
-public.privacy.sub_title-5: "Met wie delen wij persoonsgegevens?"
-public.privacy.sub_title-6: "Kunnen persoonsgegevens langer bewaard worden?"
-public.privacy.sub_title-7: "Hoe beveiligen wij persoonsgegevens?"
-public.privacy.sub_title-8: "Kunt u gegevens inzien, wijzigen of verwijderen?"
-public.privacy.paragraph-1: "Het ministerie van Volksgezondheid, Welzijn en Sport (VWS) verwerkt persoonsgegevens die u met ons deelt via uw Woo-verzoek. Dit zijn bijvoorbeeld uw NAW-gegevens (naam, adres, woonplaats)."
-public.privacy.paragraph-2: "De minister van VWS is de zogenaamde verwerkingsverantwoordelijke in de zin van de Algemene verordening gegevensbescherming (AVG). De <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-algemene-zaken/privacy/privacyverklaring-inkoop-en-aanbesteding'>Privacyverklaring van AZ</a> (AZ) vindt u elders op Rijksoverheid.nl. VWS heeft een functionaris voor gegevensbescherming (FG) als interne toezichthouder, die toezicht houdt op het zorgvuldig omgaan met persoonsgegevens door VWS. De FG is bereikbaar per e-mail: <a href='mailto:FG-VWS@minvws.nl'>FG-VWS@minvws.nl</a>."
-public.privacy.paragraph-3: "Uw gegevens worden alleen gebruikt om uw verzoek te kunnen behandelen. De rechtsgrondslag voor verwerkingen in het kader van Woo-verzoeken is om te voldoen aan een wettelijke verplichting (de Woo)."
-public.privacy.paragraph-4: "VWS bewaart uw persoonsgegevens 5 jaar in het kader van de Archiefwet."
-public.privacy.paragraph-5: "VWS deelt of verkoopt uw gegevens niet."
-public.privacy.paragraph-6: "Persoonsgegevens worden niet in alle situaties automatisch verwijderd. In een beperkt aantal gevallen mogen we deze gegevens langer bewaren . Bijvoorbeeld als iemand strafbare feiten pleegt en de bewaarde gegevens noodzakelijk zijn voor opsporing. Zo’n geval kan leiden tot een verlenging van de bewaartermijn."
-public.privacy.paragraph-7: "VWS neemt de bescherming van uw gegevens serieus en neemt passende maatregelen om misbruik, verlies, onbevoegde toegang, ongewenste openbaarmaking en ongeoorloofde wijziging tegen te gaan."
-public.privacy.paragraph-8: "U heeft het recht om uw persoonsgegevens in te zien, te wijzigen of te verwijderen. Daarnaast heeft u het recht om uw eventuele toestemming voor de gegevensverwerking in te trekken, of bezwaar te maken tegen de verwerking van uw persoonsgegevens door VWS."
-public.privacy.paragraph-9: "U kunt ook <a href='https://autoriteitpersoonsgegevens.nl/nl/zelf-doen/privacyrechten/klacht-indienen-bij-de-ap'>een melding doen bij de Autoriteit Persoonsgegevens.</a>"
-
-public.report_vulnerability.main_title: "Kwetsbaarheid melden"
-public.report_vulnerability.paragraph-1: "Ontdek je een zwakke plek of kwetsbaarheid op één van de websites, applicaties, of diensten van iRealisatie?"
-public.report_vulnerability.paragraph-2: "Dat willen we graag weten. Meld de kwetsbaarheid via <a href='mailto:security@irealisatie.nl'>security@irealisatie.nl</a>, dan bekijken wij het probleem en lossen we dit zo snel mogelijk op."
-
-public.cookies.paragraph-1: "Wij gebruiken het statistiekenprogramma Piwik om te analyseren welke pagina's het meest bezocht worden, hoe bezoekers op deze website zijn gekomen en welke zoektermen ze gebruiken in onze zoekmachine."
-public.cookies.paragraph-2: "Wij verzamelen, net als elke website, IP-adressen van onze bezoekers. Deze worden opgeslagen in zogeheten logfiles. De logfiles worden 5 dagen op de webserver bewaard, zodat ze beschikbaar zijn voor Piwik. Daarna blijven de logfiles 90 dagen bewaard voor uitsluitend beveiligingsredenen en worden ze ook alleen daarvoor bekeken."
-public.cookies.paragraph-3: "De Autoriteit Persoonsgegevens heeft maatregelen genomen om de herleidbaarheid van bezoekers naar onze website zo veel mogelijk te beperken. Dit doen we door onmiddellijk na het importeren van de logfiles in Piwik de laatste 2 octetten (cijfergroepen) van elk IP-adres weg te gooien. Dit gebeurt in een tijdelijk geheugen, voordat de IP-adressen in Piwik worden opgeslagen."
-public.cookies.paragraph-4: "Wij verzamelen de volgende gegevens met de logfiles:"
-public.cookies.paragraph-5: "Deze gegevens haalt Piwik uit de logfiles van de webserver. Deze logfiles blijven 31 dagen in de database van Piwik staan. Daarna worden ze verwijderd. Er blijft dan alleen een samengevoegde logfile over. Die geeft ons een jaarrapportage over het websitebezoek."
-public.cookies.paragraph-6: "Wij delen geen persoonsgegevens met derden, tenzij dat noodzakelijk is om aangifte te doen van strafbare feiten. Lees meer over het <a href='https://www.rijksoverheid.nl/cookies'>cookiegebruik door Rijksoverheid.nl</a>."
-public.cookies.bullet-1: "Cookies"
-public.cookies.bullet-2: "IP-adres"
-public.cookies.bullet-3: "user agents (browsers, operating system)"
-public.cookies.bullet-4: "gebruikte zoektermen om via externe zoekmachines op onze website te komen, gebruikte zoektermen in de zoekmachine op de website zelf"
-public.cookies.bullet-5: "gebruikte links binnen de website"
-public.cookies.bullet-6: "gebruikte links om op onze website te komen."
-
-public.copyright.paragraph-1: "Iedereen mag op grond van de Wet Hergebruik van Overheidsinformatie de informatie op deze website hergebruiken, tenzij anders is aangegeven."
-public.copyright.paragraph-2: "Het recht op hergebruik geldt voor alle soorten informatie. Bijvoorbeeld teksten, rapporten, foto’s, grafieken en afbeeldingen. Het hergebruik geldt zowel voor commerciële als niet-commerciële doelen."
-public.copyright.paragraph-3: "Hergebruik is toegestaan tenzij:"
-public.copyright.bullet-1: "via het copyrightteken (©) is aangegeven dat er op een foto wél copyright zit;"
-public.copyright.bullet-2: "het gaat om content van derden. Controleer daarom altijd de afzender van documenten."
-
-public.accessibility.paragraph-1: "Wij willen graag dat iedereen deze website kan gebruiken. Komt u toch een pagina tegen die niet toegankelijk is? Of heeft u een andere vraag? <a href='https://www.toegankelijkheidsverklaring.nl/register/20338/'>Neem dan contact met ons op</a>."
-public.accessibility.paragraph-2: "Een toegankelijke website is voor alle bezoekers beter te gebruiken. Daarom gelden er functioneel-technische en redactionele <a href='https://www.digitoegankelijk.nl/'>toegankelijkheidseisen</a> of (voorheen: webrichtlijnen) voor websites van de overheid. Deze zijn beschreven in de <a href='https://www.forumstandaardisatie.nl/standaard/digitoegankelijk-en-301-549-met-wcag-21'>toegankelijkheidsstandaard Digitoegankelijk EN 301 549</a>."
-public.accessibility.statement: "<a href='https://www.toegankelijkheidsverklaring.nl/register/10602'>Toegankelijkheidsverklaring open.minvws.nl</a>."
-public.accessibility.downloadreport: "<a href='/documenten/2024-02-13.Toegankelijkheidsonderzoek.OpenVWS.open.minvws.nl.versie.2.1.pdf'>Download het toegankelijkheidsonderzoek (PDF 304 KB)</a>."
 
 public.inquiries.no_docs_available: 'Er zijn op dit moment geen documenten beschikbaar voor het verzoek met zaaknummer {casenumber}'
 public.inquiries.download_inventory: "Download de inventarislijst zaaknummer {casenumber}"
@@ -899,7 +866,6 @@ public.documents.explanation: "Toelichting"
 public.documents.redacted_data: "Gelakte gegevens"
 public.documents.redacted_data.comments: "Komt u in dit document gegevens tegen waarvan u denkt dat deze gelakt hadden moeten worden? Of is het document slecht leesbaar?"
 public.documents.redacted_data.find_contact: "Contactgegevens zijn te vinden op: <a href='https://organisaties.overheid.nl'>organisaties.overheid.nl</a>."
-public.documents.let_us_know: "Laat het ons weten"
 public.documents.background: "Achtergrond"
 public.documents.determined_not_public: "Tijdens de beoordeling van het {dossier_type} heeft {department} besloten dit document niet openbaar te maken."
 public.documents.already_public: "Tijdens het beoordelen van dit document bleek dat de inhoud ervan al openbaar is."
@@ -1055,8 +1021,6 @@ dossier.type.woo-decision.publication-reason.woo_request: 'Woo-besluit'
 dossier.type.woo-decision.publication-reason.woo_active: 'Woo-actieve openbaarmaking'
 
 publication.dossier.new_basic_data: "Nieuw besluitdossier - basisgegevens"
-publication.dossier.description.title: "Onderwerp van het besluit"
-publication.dossier.description.help: 'Houd het kort (maar minimaal 2 karakters) en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals Woo, besluit etc.<ul class="my-4"><li class="bhr-form-help__dont text-sm">Niet: Woo-besluit aangaande de discussie tussen het ministerie en een aantal ziekenhuizen over de uitgangssituatie van het aantal aanwezige IC-bedden</li><li class="bhr-form-help__do text-sm">Wel: Discussie tussen ministerie en ziekenhuizen over uitgangssituatie aantal IC-bedden</li></ul>'
 publication.dossier.description.category.title: "Kies het type besluit"
 publication.dossier.to_publication: "Verder naar publiceren"
 publication.dossier.documents_prefix: "Prefix for documenten"
@@ -1095,6 +1059,10 @@ global.document.withdraw.reason.incorrect_attachment: 'De bijlage hoort niet bij
 global.attachment.withdraw.reason.unrelated: 'De bijlage hoort niet (meer) bij de publicatie'
 global.attachment.withdraw.reason.incomplete: 'De bijlage bevat onvolledige informatie'
 
+admin.attachment.withdraw.reason: "Reden"
+admin.attachment.withdraw.explanation: "Toelichting"
+admin.attachment.withdraw.submit: "Intrekken"
+
 admin.dossiers.decision.delete: "Besluit verwijderen"
 admin.dossiers.decision.delete.bullet_1: "Het besluit en alle bijlagen en documenten worden verwijderd."
 admin.dossiers.decision.delete.bullet_2: "Een besluit kan niet meer verwijderd worden nadat het is gepubliceerd."
@@ -1106,6 +1074,16 @@ admin.dossiers.decision.documents.withdraw_all.bullet_1: "Alle documenten in het
 admin.dossiers.decision.documents.withdraw_all.bullet_2: "Om documenten weer beschikbaar te maken, moet je ze opnieuw uploaden."
 admin.dossiers.decision.documents.withdraw_all.bullet_3: "Alle metadata over documenten blijft wel online zichtbaar en doorzoekbaar."
 admin.dossiers.decision.documents.withdraw_all.bullet_4: "Het besluit blijft ook online."
+
+admin.dossiers.decision.documents.withdraw.reason: "Reden"
+admin.dossiers.decision.documents.withdraw.explanation: "Toelichting"
+admin.dossiers.decision.documents.withdraw.submit: "Intrekken"
+admin.dossiers.docision.document.remove: "Document verwijderen"
+
+#START woo-decision
+admin.dossiers.woo-decision.form.details.title: 'Omschrijving van het besluit'
+admin.dossiers.woo-decision.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende woorden zoals Woo, besluit etc.<ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Woo-besluit inzake het verzoek tot openbaarmaking van de besluitvorming over de inzet van boostervaccins voor de najaarsronde 2023</li><li class='bhr-form-help__do text-sm'>Wel: Openbaarmaking besluit inzet boostervaccins</li></ul>"
+#END woo-decision
 
 #START investigation-report
 public.dossiers.investigation-report.tagline: "Onderzoeksrapport met omschrijving:"
@@ -1120,11 +1098,11 @@ admin.dossiers.investigation-report.complete_step.details: 'Maak eerst basisgege
 admin.dossiers.investigation-report.step.content: 'Onderzoeksrapport'
 admin.dossiers.investigation-report.complete_step.content: 'Maak eerst onderzoeksrapport compleet'
 admin.dossiers.investigation-report.step.publication: 'Publicatie'
-admin.dossiers.investigation-report.complete_step.publication: 'Het onderzoeksrapport is compleet maar nog niet gepubliceerd'
+admin.dossiers.investigation-report.complete_step.publication: 'Het onderzoeksrapport is nog niet gepubliceerd'
 admin.dossiers.investigation-report.create_new: 'Nieuw onderzoeksrapport publiceren'
 admin.dossiers.investigation-report.form.details.title: 'Omschrijving van het onderzoeksrapport'
 admin.dossiers.investigation-report.form.details.date_label: 'Datum van het onderzoeksrapport'
-admin.dossiers.investigation-report.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende woorden zoals onderzoeksrapport, aangaande, etc. <ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Onderzoeksrapporten van de Minister van Volksgezondheid, Welzijn en Sport van 21 april 2009, nr. PG/OGZ 2.926.977, houdende verlenging van de vergunning op grond van de Wet op het bevolkingsonderzoek voor het bevolkingsonderzoek naar tuberculose</li><li class='bhr-form-help__do text-sm'>Wel: Onderzoeksrapport verlenging vergunning bevolkingsonderzoek tuberculose</li></ul>"
+admin.dossiers.investigation-report.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende woorden zoals onderzoeksrapport, aangaande, etc. <ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Onderzoeksrapport over de effecten van de alcoholpreventiecampagne onder jongeren tussen de 12 en 18 jaar in het schooljaar 2023-2024</li><li class='bhr-form-help__do text-sm'>Wel: Effectiviteit voorlichtingscampagne alcoholpreventie</li></ul>"
 admin.dossiers.investigation-report.form.details.date_legend: 'Periode waarover het onderzoeksrapport gaat'
 admin.dossiers.investigation-report.form.details.ref_nr: 'Referentienummer onderzoeksrapport'
 admin.dossiers.investigation-report.form.details.ref_int: 'Interne referentie'
@@ -1166,11 +1144,11 @@ admin.dossiers.complaint-judgement.complete_step.details: 'Maak eerst basisgegev
 admin.dossiers.complaint-judgement.step.content: 'Klachtoordeel'
 admin.dossiers.complaint-judgement.complete_step.content: 'Maak eerst klachtoordeel compleet'
 admin.dossiers.complaint-judgement.step.publication: 'Publicatie'
-admin.dossiers.complaint-judgement.complete_step.publication: 'Het klachtoordeel is compleet maar nog niet gepubliceerd'
+admin.dossiers.complaint-judgement.complete_step.publication: 'Het klachtoordeel is nog niet gepubliceerd'
 admin.dossiers.complaint-judgement.create_new: 'Nieuw klachtoordeel publiceren'
 admin.dossiers.complaint-judgement.form.details.title: 'Omschrijving van het klachtoordeel'
 admin.dossiers.complaint-judgement.form.details.date_label: 'Datum van het klachtoordeel'
-admin.dossiers.complaint-judgement.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals klachtoordeel, aangaande, etc. <ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Klachtoordeelen van de Minister van Volksgezondheid, Welzijn en Sport van 21 april 2009, nr. PG/OGZ 2.926.977, houdende verlenging van de vergunning op grond van de Wet op het bevolkingsonderzoek voor het bevolkingsonderzoek naar tuberculose</li><li class='bhr-form-help__do text-sm'>Wel: Klachtoordeel verlenging vergunning bevolkingsonderzoek tuberculose</li></ul>"
+admin.dossiers.complaint-judgement.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals klachtoordeel, aangaande, etc. <ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Oordeel over de klacht die is ingediend over de beperkte telefonische bereikbaarheid van het zorgloket van het ministerie in de periode mei-juni 2024</li><li class='bhr-form-help__do text-sm'>Wel: Evaluatie telefonische bereikbaarheid zorgloket</li></ul>"
 admin.dossiers.complaint-judgement.form.details.ref_int: 'Interne referentie'
 admin.dossiers.complaint-judgement.form.content.document_label: 'Klachtoordeel'
 admin.dossiers.complaint-judgement.form.content.document_help: 'Upload minimaal het klachtoordeel'
@@ -1209,11 +1187,11 @@ admin.dossiers.disposition.complete_step.details: 'Maak eerst basisgegevens comp
 admin.dossiers.disposition.step.content: 'Beschikking'
 admin.dossiers.disposition.complete_step.content: 'Maak eerst beschikking compleet'
 admin.dossiers.disposition.step.publication: 'Publicatie'
-admin.dossiers.disposition.complete_step.publication: 'De beschikking is compleet maar nog niet gepubliceerd'
+admin.dossiers.disposition.complete_step.publication: 'De beschikking is nog niet gepubliceerd'
 admin.dossiers.disposition.create_new: 'Nieuwe beschikking publiceren'
 admin.dossiers.disposition.form.details.title: 'Omschrijving van de beschikking'
 admin.dossiers.disposition.form.details.date_label: 'Datum van de beschikking'
-admin.dossiers.disposition.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals beschikking, aangaande, etc. <ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Beschikkingen van de Minister van Volksgezondheid, Welzijn en Sport van 21 april 2009, nr. PG/OGZ 2.926.977, houdende verlenging van de vergunning op grond van de Wet op het bevolkingsonderzoek voor het bevolkingsonderzoek naar tuberculose</li><li class='bhr-form-help__do text-sm'>Wel: Beschikking verlenging vergunning bevolkingsonderzoek tuberculose</li></ul>"
+admin.dossiers.disposition.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals beschikking, aangaande, etc. <ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Beschikking met betrekking tot de verlening van een tijdelijke vergunning voor de vestiging van een medisch centrum in Rotterdam in het kader van de coronamaatregelen</li><li class='bhr-form-help__do text-sm'>Wel: Verlening tijdelijke vergunning medisch centrum Rotterdam</li></ul>"
 admin.dossiers.disposition.form.details.ref_int: 'Interne referentie'
 admin.dossiers.disposition.form.content.document_label: 'Beschikking'
 admin.dossiers.disposition.form.content.document_help: 'Upload minimaal de beschikking'
@@ -1254,12 +1232,12 @@ admin.dossiers.other-publication.complete_step.details: 'Maak eerst basisgegeven
 admin.dossiers.other-publication.step.content: 'Overig informatiestuk'
 admin.dossiers.other-publication.complete_step.content: 'Maak eerst details compleet'
 admin.dossiers.other-publication.step.publication: 'Publicatie'
-admin.dossiers.other-publication.complete_step.publication: 'De publicatie is compleet maar nog niet gepubliceerd'
+admin.dossiers.other-publication.complete_step.publication: 'De publicatie is nog niet gepubliceerd'
 admin.dossiers.other-publication.create_new: 'Overig informatiestuk publiceren'
 admin.dossiers.other_publication.form.details.subject_help: 'Kies het onderwerp waaronder dit informatiestuk valt. Het gekozen onderwerp wordt ook gekoppeld aan alle documenten.'
 admin.dossiers.other-publication.form.details.title: 'Omschrijving van het informatiestuk'
 admin.dossiers.other-publication.form.details.date_label: 'Datum van het informatiestuk'
-admin.dossiers.other-publication.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende woorden zoals inspanningsverplichting, aangaande, etc."
+admin.dossiers.other-publication.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals beschikking, aangaande, etc. <ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Memo over de voorgenomen wijzigingen in het declaratieproces voor de hulpmiddelen in de zorg per januari 2025</li><li class='bhr-form-help__do text-sm'>Wel: Wijziging declaratieproces hulpmiddelen in de zorg</li></ul>"
 admin.dossiers.other-publication.form.details.ref_int: 'Interne referentie'
 admin.dossiers.other-publication.form.content.document_label: 'Informatiestuk'
 admin.dossiers.other-publication.form.content.document_help: 'Upload minimaal het Informatiestuk'
@@ -1302,12 +1280,12 @@ admin.dossiers.advice.complete_step.details: 'Maak eerst basisgegevens compleet'
 admin.dossiers.advice.step.content: 'Advies'
 admin.dossiers.advice.complete_step.content: 'Maak eerst details compleet'
 admin.dossiers.advice.step.publication: 'Publicatie'
-admin.dossiers.advice.complete_step.publication: 'De publicatie is compleet maar nog niet gepubliceerd'
+admin.dossiers.advice.complete_step.publication: 'De publicatie is nog niet gepubliceerd'
 admin.dossiers.advice.create_new: 'Advies publiceren'
 admin.dossiers.advice.form.details.subject_help: 'Kies het onderwerp waaronder dit advies valt. Het gekozen onderwerp wordt ook gekoppeld aan alle documenten.'
 admin.dossiers.advice.form.details.title: 'Omschrijving van het advies'
 admin.dossiers.advice.form.details.date_label: 'Datum van het advies'
-admin.dossiers.advice.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende woorden zoals inspanningsverplichting, aangaande, etc.<br>Minimaal 2 karakters. Toegestane karakters: letters, cijfers en tekens.<ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Advies over het aantal ziekenhuizen aangaande het aantal beschikbare IC-bedden</li><li class='bhr-form-help__do text-sm'>Wel: Advies ziekenhuizen aantal IC-bedden</li></ul>"
+admin.dossiers.advice.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende woorden zoals inspanningsverplichting, aangaande, etc.<ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Advies over de mogelijke inzet van digitale middelen in het kader van jeugdgezondheidszorg bij langdurige uitbraken van infectieziekten</li><li class='bhr-form-help__do text-sm'>Wel: Gebruik digitale middelen in jeugdgezondheidszorg</li></ul>"
 admin.dossiers.advice.form.details.ref_int: 'Interne referentie'
 admin.dossiers.advice.form.content.document_label: 'Advies'
 admin.dossiers.advice.form.content.document_help: 'Upload minimaal het Advies'
@@ -1334,6 +1312,55 @@ history.advice.main_document_deleted.private: 'Advies verwijderd ({filename})'
 public.search.type_description.advice: 'Over ontwerpen van wet- en regelgeving'
 public.search.type.advice_main_document: 'Advies'
 #END advice
+
+#START request for advice
+public.dossiers.request-for-advice.tagline: "Adviesaanvraag met omschrijving:"
+public.dossiers.request-for-advice.description: "Een (on)gevraagd adviesaanvraag over een ontwerp van wet- of regelgeving of een ander onderwerp."
+public.request-for-advice.disposition.date: "Datum:"
+public.documents.type.request-for-advice: "Adviesaanvragen"
+public.documents.type.request-for-advice_main_document: "Adviesaanvraag"
+public.dossiers.request-for-advice.about: "Over deze adviesaanvraag"
+public.dossiers.request-for-advice.attachments_for: "Bijlagen bij deze adviesaanvraag"
+public.dossiers.request-for-advice.date: "Datum:"
+dossier.type.request-for-advice: "Adviesaanvraag"
+dossier.type.request-for-advice.description: "Adviezen over ontwerpen van wet- en regelgeving en andere onderwerpen"
+admin.dossiers.request-for-advice.step.details: 'Basisgegevens'
+admin.dossiers.request-for-advice.complete_step.details: 'Maak eerst basisgegevens compleet'
+admin.dossiers.request-for-advice.step.content: 'Adviesaanvraag'
+admin.dossiers.request-for-advice.complete_step.content: 'Maak eerst details compleet'
+admin.dossiers.request-for-advice.step.publication: 'Publicatie'
+admin.dossiers.request-for-advice.complete_step.publication: 'De publicatie is nog niet gepubliceerd'
+admin.dossiers.request-for-advice.create_new: 'Adviesaanvraag publiceren'
+admin.dossiers.request-for-advice.form.details.subject_help: 'Kies het onderwerp waaronder deze adviesaanvraag valt. Het gekozen onderwerp wordt ook gekoppeld aan alle documenten.'
+admin.dossiers.request-for-advice.form.details.title: 'Omschrijving van de adviesaanvraag'
+admin.dossiers.request-for-advice.form.details.date_label: 'Datum van de adviesaanvraag'
+admin.dossiers.request-for-advice.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende woorden zoals inspanningsverplichting, aangaande, etc.<ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Advies over de mogelijke inzet van digitale middelen in het kader van jeugdgezondheidszorg bij langdurige uitbraken van infectieziekten</li><li class='bhr-form-help__do text-sm'>Wel: Gebruik digitale middelen in jeugdgezondheidszorg</li></ul>"
+admin.dossiers.request-for-advice.form.details.ref_int: 'Interne referentie'
+admin.dossiers.request-for-advice.form.content.document_label: 'Adviesaanvraag'
+admin.dossiers.request-for-advice.form.content.document_help: 'Upload minimaal de Adviesaanvraag'
+admin.dossiers.request-for-advice.form.content.request_for_advice_label: 'Adviesaanvraag'
+admin.dossiers.request-for-advice.form.content.attachments_help: ''
+admin.dossiers.request-for-advice.form.publication.publication_date_label: 'Datum openbare publicatie'
+admin.dossiers.request-for-advice.form.publication.publication_date_help: 'Kies de datum waarop de adviesaanvraag voor iedereen publiek toegankelijk wordt.'
+admin.dossiers.request-for-advice.create.success: '<strong>Adviesaanvraag klaarzetten gelukt:</strong> De publicatie wordt voorbereid.'
+admin.dossiers.request-for-advice.edit_link: 'Hele publicatie bekijken'
+admin.dossiers.request-for-advice.description: 'Omschrijving van de adviesaanvraag'
+admin.dossiers.request-for-advice.delete: 'Publicatie verwijderen'
+admin.dossiers.request-for-advice.delete_disabled: 'Deze overige publicatie is gepubliceerd en kan daarom niet meer verwijderd worden.'
+admin.dossiers.request-for-advice.delete_bullet-1: 'De publicatie van de adviesaanvraag wordt verwijderd.'
+admin.dossiers.request-for-advice.delete_bullet-2: 'Het adviesaanvraag document en bijlagen kunnen niet meer verwijderd worden nadat het is gepubliceerd.'
+admin.dossiers.request-for-advice.delete_bullet-3: 'Je kan deze actie niet ongedaan maken.'
+admin.dossiers.request-for-advice.summary: 'Toelichting op de adviesaanvraag'
+admin.dossiers.request-for-advice.date: 'Datum'
+admin.dossiers.request-for-advice.document: 'Adviesaanvraag'
+admin.global.request-for-advice_on: 'Overige adviesaanvraag met omschrijving:'
+history.request-for-advice.main_document_added.private: 'Nieuwe adviesaanvraag toegevoegd ({filename})'
+history.request-for-advice.main_document_updated.private: 'Adviesaanvraag gewijzigd ({filename})'
+history.request-for-advice.main_document_updated.public: 'Adviesaanvraag vervangen'
+history.request-for-advice.main_document_deleted.private: 'Adviesaanvraag verwijderd ({filename})'
+public.search.type_description.request-for-advice: 'Over ontwerpen van wet- en regelgeving'
+public.search.type.request-for-advice_main_document: 'Adviesaanvraag'
+#END request for advice
 
 admin.dossiers.action.label.ingest: 'Volledig opnieuw indexeren (inclusief document inhoud)'
 admin.dossiers.action.label.index: 'Metadata opnieuw indexeren (exclusief document inhoud)'
@@ -1391,3 +1418,12 @@ public.search.type.investigation_report_main_document: 'Hoofddocument'
 public.theme.covid-19.menu_name: 'Thema COVID-19'
 public.theme.covid-19.page_title: 'Alle COVID-19 gerelateerde besluiten'
 public.theme.covid-19.page_text: 'Op deze pagina kunt u zoeken in alle COVID-19 gerelateerde Wob- en Woo-besluiten.'
+
+admin.content_pages.manage: "Content pagina's"
+admin.content_pages.manage_help: "Deze link biedt toegang tot beheerdersacties voor content pagina's."
+admin.content-page.slug: "URL"
+admin.content-page.title: "Titel"
+admin.content-page.title_help: "Deze wordt gebruikt als HTML pagina titel (H1)"
+admin.content-page.content: "Inhoud"
+admin.content-page.modified: "De content pagina is aangepast"
+admin.content-page.edit_title: "Wijzig content voor pagina {slug}"

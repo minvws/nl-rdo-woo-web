@@ -7,6 +7,7 @@ namespace App\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -42,8 +43,16 @@ class DepartmentType extends AbstractType
                 'label' => 'admin.department.public',
                 'help' => 'admin.department.public_help',
             ])
+            ->add('feedback_content', TextareaType::class, [
+                'label' => 'admin.department.feedback_content.description',
+                'required' => false,
+                'empty_data' => '',
+                'attr' => [
+                    'data-is-markdown' => 'true',
+                ],
+            ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Opslaan',
+                'label' => 'global.save',
             ])
         ;
     }

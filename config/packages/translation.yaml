@@ -2,4 +2,5 @@ framework:
     default_locale: nl
     translator:
         default_path: '%kernel.project_dir%/translations'
-        providers:
+        paths:
+            - '%kernel.project_dir%/translations/vws'

@@ -9,17 +9,20 @@ use App\Api\Admin\WooDecisionAttachment\WooDecisionAttachmentDto;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Uploader\Handler\UploadHandlerInterface;
+use App\Domain\Uploader\UploadEntity;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionAttachmentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use App\Tests\Factory\UploadEntityFactory;
 use App\Tests\Factory\UserFactory;
 use App\Tests\Integration\IntegrationTestTrait;
 use Carbon\CarbonImmutable;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
+use League\Flysystem\FilesystemOperator;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Date;
@@ -31,36 +34,31 @@ use Symfony\Component\Validator\Constraints\Type;
 final class WooDecisionAttachmentTest extends ApiTestCase
 {
     use IntegrationTestTrait;
-    use TestFileTrait;
 
-    private vfsStreamDirectory $root;
+    protected static ?bool $alwaysBootKernel = false;
+
+    private UploadHandlerInterface&MockInterface $uploadHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->root = vfsStream::setup();
-
         self::bootKernel();
+
+        $this->uploadHandler = \Mockery::mock(UploadHandlerInterface::class);
+        self::getContainer()->set(UploadHandlerInterface::class, $this->uploadHandler);
     }
 
     public function testGetAllDecisionAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ])->_real();
+        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()]);
 
-        WooDecisionAttachmentFactory::createMany(5, [
-            'dossier' => $dossier,
-        ]);
+        WooDecisionAttachmentFactory::createMany(5, ['dossier' => $dossier]);
 
         $response = static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments', $dossier->getId()),
@@ -78,10 +76,7 @@ final class WooDecisionAttachmentTest extends ApiTestCase
 
     public function testGetSingleDecisionAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
         $decision = WooDecisionAttachmentFactory::createOne([
             'dossier' => WooDecisionFactory::createOne([
@@ -90,7 +85,7 @@ final class WooDecisionAttachmentTest extends ApiTestCase
         ])->_real();
 
         static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
@@ -107,17 +102,12 @@ final class WooDecisionAttachmentTest extends ApiTestCase
 
     public function testGetSingleNonExistingDecisionAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ])->_real();
+        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()]);
 
         static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
@@ -133,76 +123,68 @@ final class WooDecisionAttachmentTest extends ApiTestCase
 
     public function testCreateDecisionAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ])->_real();
+        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()]);
 
-        $client = static::createClient()->loginUser($user->_real(), 'balie');
+        $upload = UploadEntityFactory::new()->create([
+            'uploadGroupId' => UploadGroupId::ATTACHMENTS,
+            'context' => new InputBag([
+                'dossierId' => $dossier->getId()->toRfc4122(),
+            ]),
+        ]);
 
-        $this->createPdfTestFile();
-
-        $uploadFile = new UploadedFile(
-            path: $this->root->url() . '/test_file.pdf',
-            originalName: 'test_file.pdf',
+        $upload->finishUploading(
+            filename: 'filename.pdf',
+            size: 3547981,
         );
+        $upload->_save();
 
-        $uploadUuid = $this->getFaker()->uuid();
+        $upload->passValidation(mimeType: 'application/pdf');
+        $upload->_save();
+        $upload = $upload->_real();
 
-        $client->request(
-            Request::METHOD_POST,
-            '/balie/uploader',
-            [
-                'headers' => ['Content-Type' => 'multipart/form-data'],
-                'extra' => [
-                    'parameters' => [
-                        'chunkindex' => '0',
-                        'totalchunkcount' => '1',
-                        'groupId' => UploadGroupId::ATTACHMENTS->value,
-                        'uuid' => $uploadUuid,
-                        'grounds' => ['ground one', 'ground two'],
+        $this->uploadHandler
+            ->shouldReceive('moveUploadedFileToStorage')
+            ->once()
+            ->with(
+                \Mockery::on(fn (UploadEntity $uploadEntity) => $uploadEntity->getId() == $upload->getId()),
+                \Mockery::type(FilesystemOperator::class),
+                \Mockery::type('string'),
+            );
+
+        static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/balie/api/dossiers/%s/decision-attachments', $dossier->getId()),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
                     ],
-                    'files' => [
-                        'file' => $uploadFile,
+                    'json' => [
+                        'uploadUuid' => $upload->getUploadId(),
+                        'type' => AttachmentType::ACTIONS->value,
+                        'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
+                        'language' => AttachmentLanguage::DUTCH->value,
                     ],
                 ],
-            ],
-        );
+            );
 
         $this->assertResponseIsSuccessful();
 
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/dossiers/%s/decision-attachments', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
+        static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_GET,
+                sprintf('/balie/api/dossiers/%s/decision-attachments', $dossier->getId()),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
                 ],
-                'json' => [
-                    'uploadUuid' => $uploadUuid,
-                    'type' => AttachmentType::ACTIONS->value,
-                    'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
-                    'language' => AttachmentLanguage::DUTCH->value,
-                ],
-            ],
-        );
-
-        $this->assertResponseIsSuccessful();
-
-        $client->request(
-            Request::METHOD_GET,
-            sprintf('/balie/api/dossiers/%s/decision-attachments', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-            ],
-        );
+            );
 
         $this->assertResponseIsSuccessful();
     }
@@ -214,60 +196,23 @@ final class WooDecisionAttachmentTest extends ApiTestCase
     #[DataProvider('getInvalidCreateRequestData')]
     public function testCreateDecisionAttachmentWithInvalidRequestData(array $input, array $expectedViolations): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ])->_real();
+        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()]);
 
-        $client = static::createClient()->loginUser($user->_real(), 'balie');
-
-        $this->createPdfTestFile();
-
-        $uploadFile = new UploadedFile(
-            path: $this->root->url() . '/test_file.pdf',
-            originalName: 'test_file.pdf',
-        );
-
-        $uploadUuid = ! isset($input['uploadUuid']) || (is_string($input['uploadUuid']) && trim($input['uploadUuid']) === '')
-            ? $this->getFaker()->uuid()
-            : $input['uploadUuid'];
-
-        $client->request(
-            Request::METHOD_POST,
-            '/balie/uploader',
-            [
-                'headers' => ['Content-Type' => 'multipart/form-data'],
-                'extra' => [
-                    'parameters' => [
-                        'chunkindex' => '0',
-                        'totalchunkcount' => '1',
-                        'groupId' => UploadGroupId::ATTACHMENTS->value,
-                        'uuid' => $uploadUuid,
+        static::createClient()
+            ->loginUser($user, 'balie')
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/balie/api/dossiers/%s/decision-attachments', $dossier->getId()),
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
                     ],
-                    'files' => [
-                        'file' => $uploadFile,
-                    ],
+                    'json' => $input,
                 ],
-            ],
-        );
-
-        $this->assertResponseIsSuccessful();
-
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/dossiers/%s/decision-attachments', $dossier->getId()),
-            [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => $input,
-            ],
-        );
+            );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertJsonContains(['violations' => $expectedViolations]);
@@ -397,20 +342,17 @@ final class WooDecisionAttachmentTest extends ApiTestCase
 
     public function testDeleteDecisionAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
         $decision = WooDecisionAttachmentFactory::createOne([
             'dossier' => WooDecisionFactory::createOne([
                 'organisation' => $user->getOrganisation(),
                 'status' => DossierStatus::CONCEPT,
             ]),
-        ])->_real();
+        ]);
 
         static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
@@ -426,17 +368,12 @@ final class WooDecisionAttachmentTest extends ApiTestCase
 
     public function testDeleteNonExistingDecisionAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ])->_real();
+        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()]);
 
         static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
@@ -452,10 +389,7 @@ final class WooDecisionAttachmentTest extends ApiTestCase
 
     public function testUpdateDecisionAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
         $decision = WooDecisionAttachmentFactory::createOne([
             'fileInfo' => FileInfoFactory::createOne([
@@ -466,8 +400,8 @@ final class WooDecisionAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        $response = static::createClient()
-            ->loginUser($user->_real(), 'balie')
+        $updateResponse = static::createClient()
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_PUT,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
@@ -489,8 +423,8 @@ final class WooDecisionAttachmentTest extends ApiTestCase
         $this->assertResponseIsSuccessful();
         $this->assertMatchesResourceItemJsonSchema(WooDecisionAttachmentDto::class);
 
-        $response2 = static::createClient()
-            ->loginUser($user->_real(), 'balie')
+        $getResponse = static::createClient()
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
@@ -504,22 +438,17 @@ final class WooDecisionAttachmentTest extends ApiTestCase
         $this->assertResponseIsSuccessful();
         $this->assertMatchesResourceItemJsonSchema(WooDecisionAttachmentDto::class);
 
-        $this->assertSame($response->toArray(), $response2->toArray());
+        $this->assertSame($updateResponse->toArray(), $getResponse->toArray());
     }
 
     public function testUpdateNonExistingDecisionAttachment(): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ])->_real();
+        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()]);
 
         static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
@@ -540,10 +469,7 @@ final class WooDecisionAttachmentTest extends ApiTestCase
     #[DataProvider('getInvalidUpdateRequestData')]
     public function testUpdateDecisionAttachmentWithInvalidRequestData(array $input, array $expectedViolations): void
     {
-        $user = UserFactory::new()
-            ->asSuperAdmin()
-            ->isEnabled()
-            ->create();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
         $decision = WooDecisionAttachmentFactory::createOne([
             'fileInfo' => FileInfoFactory::createOne([
@@ -552,10 +478,10 @@ final class WooDecisionAttachmentTest extends ApiTestCase
             'dossier' => WooDecisionFactory::createOne([
                 'organisation' => $user->getOrganisation(),
             ]),
-        ])->_real();
+        ]);
 
         static::createClient()
-            ->loginUser($user->_real(), 'balie')
+            ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_PUT,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),

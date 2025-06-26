@@ -52,7 +52,6 @@ final class IndexControllerTest extends WebTestCase
     public static function rolesData(): array
     {
         return [
-            Roles::ROLE_GLOBAL_ADMIN => ['role' => Roles::ROLE_GLOBAL_ADMIN],
             Roles::ROLE_ORGANISATION_ADMIN => ['role' => Roles::ROLE_ORGANISATION_ADMIN],
             Roles::ROLE_DOSSIER_ADMIN => ['role' => Roles::ROLE_DOSSIER_ADMIN],
             Roles::ROLE_VIEW_ACCESS => ['role' => Roles::ROLE_VIEW_ACCESS],

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Domain\Department\DepartmentService;
+use App\Domain\Department\LandingPage\ViewModel\DepartmentLandingPageViewFactory;
 use App\Entity\Department;
 use App\Form\LandingPageType;
 use App\Repository\DepartmentRepository;
@@ -21,6 +22,7 @@ class DepartmentLandingPageController extends AbstractController
         private readonly DepartmentRepository $repository,
         private readonly TranslatorInterface $translator,
         private readonly DepartmentService $departmentService,
+        private readonly DepartmentLandingPageViewFactory $viewFactory,
     ) {
     }
 
@@ -43,7 +45,7 @@ class DepartmentLandingPageController extends AbstractController
         }
 
         return $this->render('admin/departments/landing_page_edit.html.twig', [
-            'department' => $department,
+            'department' => $this->viewFactory->make($department),
             'form' => $form->createView(),
         ]);
     }

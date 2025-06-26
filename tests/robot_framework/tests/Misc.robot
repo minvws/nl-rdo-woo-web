@@ -9,7 +9,6 @@ Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
 Test Tags           ci  misc
 
-
 *** Test Cases ***
 Replace main document on a public WooDecision
   Generate Test Data Set  woo-decision
@@ -51,6 +50,41 @@ Remove an attachment
   Success Alert Is Visible  De bijlage is ingetrokken.
   Click Breadcrumb Element  2
   Get Text  id=inhoud  not contains  ${attachment_file_name}
+
+Verify document relations
+  [Tags]  relations
+  Publish Test WooDecision
+  ...  production_report=tests/robot_framework/files/woodecision/relations.xlsx
+  ...  documents=tests/robot_framework/files/woodecision/relations.zip
+  ...  number_of_documents=10
+  ...  prefix=E2E-A
+  Search For A Publication  ${DOSSIER_REFERENCE}
+  Click Public URL
+  # Check decision of 10
+  Get Element Count  //*[@data-e2e-name="documents-section"]//tbody//tr  should be  10
+  Click  //*[@data-e2e-name="documents-section"]//tbody//tr//a[contains(.,"doc1.pdf")]
+  # Check family id
+  Get Element Count  //*[@data-e2e-name="documents-section"]//tbody//tr  should be  5
+  Click  //*[@data-e2e-name="documents-section"]//tbody//tr//a[contains(.,"email2")]
+  # Check related id
+  Get Text  //*[@data-e2e-name="notifications"]  contains  test doc5.pdf heeft een sterke relatie met dit document.
+  # Check email thread id
+  Get Element Count  //*[@data-e2e-name="documents-section"][1]//tbody//tr  should be  3
+  # Check email attachments
+  Get Element Count  //*[@data-e2e-name="documents-section"][2]//tbody//tr  should be  5
+
+Replace main document on a preview WooDecision
+  Generate Test Data Set  woo-decision
+  Publish Test WooDecision
+  ...  production_report=${PRODUCTION_REPORT}
+  ...  documents=${DOCUMENTS}
+  ...  number_of_documents=${NUMBER_OF_DOCUMENTS}
+  ...  publication_status=Gepland
+  Search For A Publication  ${DOSSIER_REFERENCE}
+  # Now we open the publication, edit the decision and upload a new main document (besluitbrief)
+  Click Edit Decision
+  Edit Main Document
+  Upload Besluitbrief  tests/robot_framework/files/dummy.pdf
 
 
 *** Keywords ***

@@ -50,7 +50,7 @@ final readonly class DepartmentPostUpload
 
         $data['department'] = [
             'asset_endpoint' => $this->urlGenerator->generate(
-                'app_department_assets_download',
+                'app_admin_department_assets_download',
                 ['id' => $departmentId, 'file' => $department->getFileInfo()->getName()],
             ),
         ];

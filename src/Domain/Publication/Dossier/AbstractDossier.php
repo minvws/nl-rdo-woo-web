@@ -14,6 +14,7 @@ use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Validator as DossierValidator;
 use App\Domain\Publication\Subject\Subject;
@@ -44,6 +45,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     DossierType::COMPLAINT_JUDGEMENT->value => ComplaintJudgement::class,
     DossierType::OTHER_PUBLICATION->value => OtherPublication::class,
     DossierType::ADVICE->value => Advice::class,
+    DossierType::REQUEST_FOR_ADVICE->value => RequestForAdvice::class,
 ])]
 #[ORM\UniqueConstraint(name: 'dossier_unique_index', columns: ['dossier_nr', 'document_prefix'])]
 #[ORM\HasLifecycleCallbacks]

@@ -10,6 +10,11 @@ tasks:
       - source .venv/bin/activate && pip install -r tests/robot_framework/requirements.txt  --use-feature=truststore
       - source .venv/bin/activate && rfbrowser init
 
+  dependency:upgrade:
+    desc: Upgrade all RF dependencies
+    cmds:
+     - pip-compile --upgrade --output-file=- > requirements.txt
+
   run:
     aliases: [test, run-local]
     desc: Run Robot tests with browser on Docker
@@ -66,28 +71,38 @@ tasks:
       - task: :up
       - source .venv/bin/activate && robot --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:docker-local tests/robot_framework
 
-  robocop:
-    desc: Run Robocop
+  check:
+    desc: Run Robocop check
     dir: ../../
     cmds:
-      - source .venv/bin/activate && robocop .
+      - source .venv/bin/activate && robocop check --config tests/robot_framework/pyproject.toml
 
-  robotidy:
-    desc: Run Robotidy
+  format:
+    desc: Run Robocop format
     dir: ../../
     cmds:
-      - source .venv/bin/activate && robotidy .
+      - source .venv/bin/activate && robocop format --config tests/robot_framework/pyproject.toml
 
   cleansheet:
     desc: Run for Robot customized cleansheet
     cmds:
       - task: :dc:shell
         vars: { CLI_ARGS: "app bin/console woopie:dev:clean-sheet --force {{.CLI_ARGS}}" }
-      - task: :dc:shell
-        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --append --group subject" }
       - task: :minio:clear-buckets
 
   sitemap:
     desc: Generate the sitemap in one command
     cmds:
       - task: :app:generate-sitemap
+
+  fixtures:load:vws:
+    desc: Load the VWS fixtures, used by the Covid19 theme page
+    cmds:
+      - task: :dc:shell
+        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --append --group=vws" }
+
+  fixtures:load:e2e:
+    desc: Load the E2E fixtures
+    cmds:
+      - task: :dc:shell
+        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --append --group=e2e" }

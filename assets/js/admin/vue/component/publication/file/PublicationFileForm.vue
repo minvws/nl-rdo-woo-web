@@ -33,6 +33,7 @@ interface Props {
   isEditMode?: boolean;
   languageOptions: SelectOptions;
   uploadGroupId: string;
+  dossierId?: null | string;
 }
 
 interface Emits {
@@ -144,6 +145,7 @@ watch(
       :display-max-one-file-message="!props.allowMultiple"
       :file-info="fileInfo"
       :group-id="props.uploadGroupId"
+      :dossier-id="props.dossierId"
     />
 
     <InputReference :value="internalReference" />
@@ -156,7 +158,7 @@ watch(
 
     <InputGrounds :options="props.groundOptions" :values="grounds" />
 
-    <div v-if="hasSubmitError" class="mb-6">
+    <div v-if="hasSubmitError" class="mb-6" data-e2e-name="save-failed">
       <Alert type="danger">
         Het opslaan van "{{ file.name }}" is mislukt. Probeer het later opnieuw.
       </Alert>

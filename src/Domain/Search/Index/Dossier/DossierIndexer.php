@@ -10,6 +10,7 @@ use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\IndexException;
 use App\Domain\Search\Index\Updater\NestedDossierIndexUpdater;
 use App\Service\Elastic\ElasticService;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class DossierIndexer
 {
@@ -19,6 +20,7 @@ readonly class DossierIndexer
     public function __construct(
         private ElasticService $elasticService,
         private NestedDossierIndexUpdater $nestedDossierUpdater,
+        #[AutowireIterator('woo_platform.search.index.dossier_mapper')]
         private iterable $mappers,
     ) {
     }

@@ -33,7 +33,7 @@ class DocumentFileUpload implements EntityWithFileInfo
     private ?DocumentFileUploadError $error = null;
 
     public function __construct(
-        #[ORM\ManyToOne(targetEntity: DocumentFileSet::class)]
+        #[ORM\ManyToOne(targetEntity: DocumentFileSet::class, inversedBy: 'uploads')]
         #[ORM\JoinColumn(name: 'document_file_set_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
         private DocumentFileSet $documentFileSet,
     ) {

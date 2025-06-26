@@ -6,39 +6,38 @@ namespace App\Service;
 
 use App\Entity\Organisation;
 use App\Entity\User;
+use App\Repository\UserRepository;
 use App\Roles;
+use App\Service\Security\Event\UserCreatedEvent;
+use App\Service\Security\Event\UserDisableEvent;
+use App\Service\Security\Event\UserEnableEvent;
+use App\Service\Security\Event\UserResetEvent;
+use App\Service\Security\Event\UserUpdatedEvent;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManagerInterface;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
-use MinVWS\AuditLogger\AuditLogger;
-use MinVWS\AuditLogger\AuditUser;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
-use MinVWS\AuditLogger\Events\Logging\AccountChangeLogEvent;
-use MinVWS\AuditLogger\Events\Logging\ResetCredentialsLogEvent;
-use MinVWS\AuditLogger\Events\Logging\UserCreatedLogEvent;
 use Minvws\HorseBattery\HorseBattery;
 use Psr\Log\LoggerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * This class handles user management.
- *
  * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
-class UserService
+readonly class UserService
 {
     protected HorseBattery $passwordGenerator;
 
     public function __construct(
-        protected EntityManagerInterface $doctrine,
-        protected UserPasswordHasherInterface $passwordHasher,
-        protected TotpAuthenticatorInterface $totp,
-        protected LoggerInterface $logger,
-        protected AuditLogger $auditLogger,
-        protected TokenStorageInterface $tokenStorage,
+        private UserRepository $userRepository,
+        private UserPasswordHasherInterface $passwordHasher,
+        private TotpAuthenticatorInterface $totp,
+        private LoggerInterface $logger,
+        private TokenStorageInterface $tokenStorage,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
         $this->passwordGenerator = new HorseBattery();
     }
@@ -59,14 +58,13 @@ class UserService
             $user->setMfaToken($secret);
 
             $recoveryCodes = [];
-            for ($i = 0; $i != 5; $i++) {
+            for ($i = 0; $i !== 5; $i++) {
                 $recoveryCodes[] = $this->passwordGenerator->generate(4);
             }
             $user->setMfaRecovery($recoveryCodes);
         }
 
-        $this->doctrine->persist($user);
-        $this->doctrine->flush();
+        $this->userRepository->save($user, true);
 
         $this->logger->log('info', 'User credentials reset', [
             'user' => $user->getId(),
@@ -74,22 +72,17 @@ class UserService
             'reset2fa' => $reset2fa,
         ]);
 
-        /** @var LoggableUser|null $loggedInUser */
-        $loggedInUser = $this->tokenStorage->getToken()?->getUser() ?? null;
-        if ($loggedInUser === null) {
-            $loggedInUser = new AuditUser('cli user', 'system', [], 'system@localhost');
-        }
-        /** @var LoggableUser $loggedInUser */
-        $this->auditLogger->log((new ResetCredentialsLogEvent())
-            ->asUpdate()
-            ->withActor($loggedInUser)
-            ->withTarget($user)
-            ->withSource('woo')
-            ->withData([
-                'user_id' => $user->getAuditId(),
-                'password_reset' => $resetPassword,
-                '2fa_reset' => $reset2fa,
-            ]));
+        /** @var ?User $actor */
+        $actor = $this->tokenStorage->getToken()?->getUser();
+
+        $this->eventDispatcher->dispatch(
+            new UserResetEvent(
+                user: $user,
+                actor: $actor,
+                resetPassword: $resetPassword,
+                resetTwoFactorAuth: $reset2fa,
+            ),
+        );
 
         return $plainPassword;
     }
@@ -132,29 +125,23 @@ class UserService
         $user->setRoles($roles);
         $user->setChangepwd(true);  // User must change password on first login
 
-        $this->doctrine->persist($user);
-        $this->doctrine->flush();
+        $this->userRepository->save($user, true);
 
         $this->logger->log('info', 'User created', [
             'user' => $user->getId(),
             'roles' => $roles,
         ]);
 
-        /** @var LoggableUser|null $loggedInUser */
-        $loggedInUser = $this->tokenStorage->getToken()?->getUser() ?? null;
-        if ($loggedInUser === null) {
-            $loggedInUser = new AuditUser('cli user', 'system', [], 'system@localhost');
-        }
-        /** @var LoggableUser $loggedInUser */
-        $this->auditLogger->log((new UserCreatedLogEvent())
-            ->asCreate()
-            ->withActor($loggedInUser)
-            ->withTarget($user)
-            ->withSource('woo')
-            ->withData([
-                'user_id' => $user->getAuditId(),
-                'roles' => $roles,
-            ]));
+        /** @var ?User $actor */
+        $actor = $this->tokenStorage->getToken()?->getUser();
+
+        $this->eventDispatcher->dispatch(
+            new UserCreatedEvent(
+                user: $user,
+                actor: $actor,
+                roles: $roles,
+            ),
+        );
 
         return [
             'plainPassword' => $plainPassword,
@@ -184,10 +171,8 @@ class UserService
      *
      * @param string[] $roles
      */
-    public function updateRoles(LoggableUser $actor, User $target, array $roles): void
+    public function updateRoles(LoggableUser $actor, User $oldUser, User $target, array $roles): void
     {
-        $oldRoles = $target->getRoles();
-
         // Fetch all the roles that the actor is allowed to change
         $allowedRoles = [];
         foreach ($actor->getRoles() as $role) {
@@ -200,28 +185,45 @@ class UserService
         $roles = array_merge($roles, array_diff($target->getRoles(), $allowedRoles));
 
         $target->setRoles($roles);
-        $this->doctrine->persist($target);
-        $this->doctrine->flush();
+        $this->userRepository->save($target, true);
 
         $this->logger->log('info', 'User roles updated', [
             'user' => $target->getId(),
             'roles' => $roles,
         ]);
 
-        $this->auditLogger->log((new AccountChangeLogEvent())
-            ->asUpdate()
-            ->withActor($actor)
-            ->withTarget($target)
-            ->withSource('woo')
-            ->withEventCode(AccountChangeLogEvent::EVENTCODE_USERDATA)
-            ->withData([
-                'user_id' => $target->getAuditId(),
-                'old' => [
-                    'roles' => $oldRoles,
-                ],
-                'new' => [
-                    'roles' => $target->getRoles(),
-                ],
-            ]));
+        $this->eventDispatcher->dispatch(
+            new UserUpdatedEvent(
+                oldUser: $oldUser,
+                updatedUser: $target,
+                actor: $actor,
+            ),
+        );
+    }
+
+    public function disable(User $user, LoggableUser $actor): void
+    {
+        $user->setEnabled(false);
+        $this->userRepository->save($user, true);
+
+        $this->eventDispatcher->dispatch(
+            new UserDisableEvent(
+                user: $user,
+                actor: $actor,
+            ),
+        );
+    }
+
+    public function enable(User $user, LoggableUser $actor): void
+    {
+        $user->setEnabled(true);
+        $this->userRepository->save($user, true);
+
+        $this->eventDispatcher->dispatch(
+            new UserEnableEvent(
+                user: $user,
+                actor: $actor,
+            ),
+        );
     }
 }

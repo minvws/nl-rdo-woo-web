@@ -1,0 +1,61 @@
+[tool.robocop.lint]
+select = [
+    "ALL"
+]
+configure = [
+    "line-too-long.line_length=160",
+    "empty-line-after-section.empty_lines=1",
+    "inconsistent-assignment.assignment_sign_type=space_and_equal_sign",
+    "sleep-keyword-used.severity=I",
+]
+ignore = [
+    "first-argument-in-new-line",
+    "missing-doc-keyword",
+    "missing-doc-test-case",
+    "sleep-keyword-used",
+    "too-long-test-case",
+    "too-many-calls-in-test-case",
+]
+
+[tool.robocop.format]
+diff = false
+overwrite = true
+line_length = 120
+separator = "space"
+space_count = 2
+line_ending = "native"
+reruns = 3
+select = [
+    "AddMissingEnd",
+    "NormalizeSeparators",
+    "DiscardEmptySections",
+    "MergeAndOrderSections",
+    "RemoveEmptySettings",
+    "ReplaceEmptyValues",
+    "NormalizeAssignments",
+    "OrderSettings",
+    "OrderSettingsSection",
+    "NormalizeTags",
+    "RenameVariables",
+    "AlignSettingsSection",
+    "AlignVariablesSection",
+    "AlignTemplatedTestCases",
+    "NormalizeSectionHeaderName",
+    "NormalizeSettingName",
+    "ReplaceRunKeywordIf",
+    "SplitTooLongLine",
+    "RenameTestCases",
+    "RenameKeywords",
+    "ReplaceReturns",
+    "ReplaceBreakContinue",
+    "InlineIf",
+    "NormalizeComments",
+]
+configure = [
+    "NormalizeAssignments.equal_sign_type=space_and_equal_sign",
+    "OrderSettingsSection.new_lines_between_groups=0",
+    "AlignKeywordsSection.widths=10",
+    "NormalizeNewLines.section_lines=2",
+    "NormalizeNewLines.test_case_lines=1",
+    "NormalizeNewLines.keyword_lines=1",
+]

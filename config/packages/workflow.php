@@ -9,6 +9,7 @@ use App\Domain\Publication\Dossier\Type\Covenant\CovenantWorkflow;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionWorkflow;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportWorkflow;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationWorkflow;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceWorkflow;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionWorkflow;
 use Symfony\Config\FrameworkConfig;
 
@@ -21,4 +22,5 @@ return static function (FrameworkConfig $frameworkConfig): void {
     ComplaintJudgementWorkflow::configure($frameworkConfig);
     OtherPublicationWorkflow::configure($frameworkConfig);
     AdviceWorkflow::configure($frameworkConfig);
+    RequestForAdviceWorkflow::configure($frameworkConfig);
 };

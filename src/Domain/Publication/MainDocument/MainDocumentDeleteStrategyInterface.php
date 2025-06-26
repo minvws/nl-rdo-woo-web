@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\MainDocument;
 
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+
 /**
  * A main document delete strategy is called for an AbstractMainDocument that is being deleted based on autowiring by
  * the interface. If additional checks are needed you should implement something like an instanceof check and return
@@ -16,6 +18,7 @@ namespace App\Domain\Publication\MainDocument;
  * after all delete strategies have been executed. Since these strategies are executed synchronously they should
  * dispatch async commands for (relatively) slow actions.
  */
+#[AutoconfigureTag('woo_platform.publication.main_document_delete_strategy')]
 interface MainDocumentDeleteStrategyInterface
 {
     public function delete(AbstractMainDocument $mainDocument): void;

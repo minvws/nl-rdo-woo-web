@@ -1,0 +1,35 @@
+{% extends 'admin/base.html.twig' %}
+
+
+
+
+{% block body %}
+<div class="bhr-container">
+    <h1 class="bhr-title mb-6">{{ 'admin.content_pages.manage' | trans() }}</h1>
+
+    <div class="bhr-card">
+        {% include 'admin/shared/flash-messages.html.twig' %}
+        <table class="bhr-table table-fixed">
+            <thead>
+                <tr>
+                    <th class="text-left" scope="col">{{ 'admin.content-page.slug' | trans }}</th>
+                    <th class="text-left" scope="col">{{ 'admin.content-page.title' | trans }}</th>
+                    <th class="text-left" scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for page in pages %}
+                    <tr>
+                        <td>
+                            {% set landingPageUrl = PUBLIC_BASE_URL ~ '/' ~ page.slug %}
+                            <a class="bhr-a" href="{{ landingPageUrl }}" data-e2e-name="content-page-url">{{ landingPageUrl }}</a>
+                        </td>
+                        <td>{{ page.title }}
+                        <td><a class="bhr-a" href="{{ path('app_admin_content_page_edit', {slug: page.slug}) }}" data-e2e-name="content-page-edit">{{ 'admin.global.edit' | trans }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -7,7 +7,7 @@ Resource            ../resources/TestData.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
-
+Test Tags           single
 
 *** Test Cases ***
 Create a WooDecision

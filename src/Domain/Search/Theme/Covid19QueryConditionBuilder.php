@@ -21,6 +21,8 @@ use Erichard\ElasticQueryBuilder\Query\BoolQuery;
  */
 readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInterface
 {
+    public const string ORGANISATION = 'Directie Open Overheid';
+
     public function __construct(
         private OrganisationRepository $organisationRepository,
     ) {
@@ -97,7 +99,7 @@ readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInte
      */
     private function getSubjectIds(): array
     {
-        $organisation = $this->organisationRepository->findOneBy(['name' => 'Programmadirectie Openbaarheid']);
+        $organisation = $this->organisationRepository->findOneBy(['name' => self::ORGANISATION]);
         if ($organisation === null) {
             throw new \RuntimeException('Covid-19 theme cannot find the organisation');
         }

@@ -6,7 +6,6 @@ Library             FakerLibrary
 Resource            Admin.resource
 Resource            Dossier.resource
 
-
 *** Variables ***
 ${ENVIRONMENT}          ${EMPTY}
 ${PRODUCTION_REPORT}    ${EMPTY}
@@ -20,7 +19,7 @@ Publish Test WooDecision
   ...  ${production_report}
   ...  ${documents}
   ...  ${number_of_documents}
-  ...  ${prefix}=MINVWS
+  ...  ${prefix}=E2E-A
   ...  ${publication_status}=Gepubliceerd
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=${prefix}  type=woo-decision

@@ -11,7 +11,6 @@ Resource            Admin.resource
 Resource            Public.resource
 Resource            WooDecision.resource
 
-
 *** Variables ***
 ${CURRENT_TIME}             ${EMPTY}
 ${CURRENT_DATE}             ${EMPTY}
@@ -25,7 +24,7 @@ Fill Out Basic Details
   [Arguments]  ${date_from}=2021-12-01T00:00:00+00:00
   ...  ${date_to}=2023-01-31T00:00:00+00:00
   ...  ${type}=${EMPTY}
-  ...  ${prefix}=MINVWS
+  ...  ${prefix}=E2E-A
   Generate Dossier Reference Number
   Fill Text  id=details_title  Robot ${DOSSIER_REFERENCE}
   IF  '${type}' == 'disposition' or '${type}' == 'investigation-report' or '${type}' == 'complaint-judgement' or '${type}' == 'other-publication' or '${type}' == 'advice'
@@ -39,7 +38,7 @@ Fill Out Basic Details
   Select Options By  //select[@name="details[departments][0]"]  index  1
   IF  '${type}' == 'woo-decision'
     Check Checkbox  id=details_publication_reason_1
-    Select Options By  id=details_subject  label  Opstart Corona
+    Select Options By  id=details_subject  label  E2E Test Subject
   ELSE
     Select Random Subject
   END
@@ -55,7 +54,7 @@ Select Random Subject
 
 Generate Dossier Reference Number
   ${reference_number} =  Generate Random String  3  [NUMBERS][UPPER]
-  VAR  ${DOSSIER_REFERENCE}  ${reference_number}  scope=suite
+  VAR  ${DOSSIER_REFERENCE} =  ${reference_number}  scope=suite
 
 Search For A Publication
   [Documentation]  Clicks the link with matching text, if multiple are present it will fail.

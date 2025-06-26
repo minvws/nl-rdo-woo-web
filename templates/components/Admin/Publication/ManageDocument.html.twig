@@ -13,11 +13,14 @@
         canDelete: canDelete,
         dateLabel: dateLabel | default(null),
         endpoint: endpoint,
+        uploadEndpoint: uploadEndpoint | default(null),
+        e2eName: e2eName | default('main-document'),
         fileTypeOptions: documentTypes,
         groundOptions: grounds,
         languageOptions: languages,
         readableFileType: documentType,
-        uploadGroupId: "main-documents"
+        uploadGroupId: 'main-documents',
+        dossierId: dossierId | default(null),
     }) }}>
         <div class="min-h-14"></div>
     </div>

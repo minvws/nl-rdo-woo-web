@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
+use App\Domain\Organisation\Event\OrganisationCreatedEvent;
+use App\Domain\Organisation\Event\OrganisationUpdatedEvent;
 use App\Entity\Organisation;
 use App\Entity\User;
 use App\Service\OrganisationService;
 use Doctrine\ORM\EntityManagerInterface;
-use MinVWS\AuditLogger\AuditLogger;
-use MinVWS\AuditLogger\Events\Logging\GeneralLogEvent;
-use MinVWS\AuditLogger\Events\Logging\OrganisationChangeLogEvent;
-use MinVWS\AuditLogger\Events\Logging\OrganisationCreatedLogEvent;
-use MinVWS\AuditLogger\Loggers\LoggerInterface as AuditLoggerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
@@ -23,26 +21,22 @@ class OrganisationServiceTest extends MockeryTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
     private LoggerInterface&MockInterface $logger;
-    private AuditLoggerInterface&MockInterface $internalAuditLogger;
     private TokenStorageInterface&MockInterface $tokenStorage;
     private OrganisationService $organisationService;
-    private AuditLogger $auditLogger;
+    private EventDispatcherInterface&MockInterface $eventDispatcher;
 
     public function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->tokenStorage = \Mockery::mock(TokenStorageInterface::class);
-
-        $this->internalAuditLogger = \Mockery::mock(AuditLoggerInterface::class);
-        $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();
-        $this->auditLogger = new AuditLogger([$this->internalAuditLogger]);
+        $this->eventDispatcher = \Mockery::mock(EventDispatcherInterface::class);
 
         $this->organisationService = new OrganisationService(
             $this->entityManager,
             $this->logger,
-            $this->auditLogger,
             $this->tokenStorage,
+            $this->eventDispatcher,
         );
 
         parent::setUp();
@@ -65,10 +59,10 @@ class OrganisationServiceTest extends MockeryTestCase
 
         $this->tokenStorage->expects('getToken')->andReturn($token);
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
-            static function (OrganisationCreatedLogEvent $event): bool {
-                self::assertEquals('audit-id-foo', $event->getLogData()['user_id']);
-                self::assertEquals(GeneralLogEvent::AC_CREATE, $event->getLogData()['action_code']);
+        $this->eventDispatcher->expects('dispatch')->with(\Mockery::on(
+            static function (OrganisationCreatedEvent $event) use ($user, $organisation): bool {
+                self::assertEquals($user, $event->actor);
+                self::assertEquals($organisation, $event->organisation);
 
                 return true;
             }
@@ -96,10 +90,11 @@ class OrganisationServiceTest extends MockeryTestCase
 
         $this->tokenStorage->expects('getToken')->andReturn($token);
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
-            static function (OrganisationChangeLogEvent $event): bool {
-                self::assertEquals('audit-id-foo', $event->getLogData()['user_id']);
-                self::assertEquals(GeneralLogEvent::AC_UPDATE, $event->getLogData()['action_code']);
+        $this->eventDispatcher->expects('dispatch')->with(\Mockery::on(
+            static function (OrganisationUpdatedEvent $event) use ($user, $organisation): bool {
+                self::assertEquals($user, $event->actor);
+                self::assertEquals($organisation, $event->organisation);
+                self::assertEquals([], $event->changes);
 
                 return true;
             }

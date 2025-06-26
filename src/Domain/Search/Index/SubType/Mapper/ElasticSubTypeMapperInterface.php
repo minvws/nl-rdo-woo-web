@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Search\Index\SubType\Mapper;
 
 use App\Domain\Search\Index\ElasticDocument;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag('woo_platform.search.index.subtype_mapper')]
 interface ElasticSubTypeMapperInterface
 {
     public function supports(object $entity): bool;

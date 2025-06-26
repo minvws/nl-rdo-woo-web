@@ -6,6 +6,7 @@ namespace App\Domain\Search\Theme;
 
 use App\Domain\Search\Theme\ViewModel\Theme;
 use App\Domain\Search\Theme\ViewModel\ThemeViewFactory;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 class ThemeManager
 {
@@ -19,6 +20,7 @@ class ThemeManager
      */
     public function __construct(
         private readonly ThemeViewFactory $viewFactory,
+        #[AutowireIterator('woo_platform.search.theme')]
         iterable $themes,
     ) {
         foreach ($themes as $theme) {

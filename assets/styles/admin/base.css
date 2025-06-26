@@ -39,7 +39,7 @@
     }
 
     html {
-        @apply print:leading-5;
+        @apply scroll-smooth print:leading-5;
     }
 
     body:has(.bhr-dialog[open]) {

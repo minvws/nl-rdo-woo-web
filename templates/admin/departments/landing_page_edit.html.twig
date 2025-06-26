@@ -31,9 +31,9 @@
                     <div {{ vue_component('GenericController', {
                         componentName: 'DepartmentLogoManager',
 
-                        deleteEndpoint: path('api_uploader_department_remove_logo', { departmentId: department.id }),
-                        logoEndpoint: department.fileInfo.isUploaded ? path('app_department_assets_download', { id: department.id, file: department.fileInfo.name }) : null,
-                        uploadEndpoint: path('_uploader_upload_department', { departmentId: department.id }),
+                        deleteEndpoint: department.deleteLogoEndpoint,
+                        logoEndpoint: department.logoEndpoint,
+                        uploadEndpoint: department.uploadLogoEndpoint,
                     }) }}>
                         <div class="min-h-14"></div>
                     </div>

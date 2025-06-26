@@ -89,10 +89,19 @@
                                 <span class="bhr-clamp break-all">{{ dossier.title }}</span>
                             </td>
                             <td>
-                                {% if not dossier.isCompleted %}
+                                {% set notifications = get_dossier_notifications(dossier).dossierNotifications %}
+                                {% if notifications is not empty %}
                                     <span class="inline-block">
                                         <twig:Admin:Icon name="exclamation" color="fill-bhr-orange-yellow" />
-                                        <span class="relative top-px">{{ 'admin.global.incomplete' | trans }}</span>
+                                        <span class="relative top-px">
+                                            {% for notification in notifications %}
+                                                {% if loop.first %}
+                                                    {{ ('admin.publications.status.' ~ notification) | trans }}
+                                                {% else %}
+                                                    {{ 'global.and' | trans }} {{ ('admin.publications.status.' ~ notification) | trans | lower }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </span>
                                     </span>
                                 {% endif %}
                             </td>

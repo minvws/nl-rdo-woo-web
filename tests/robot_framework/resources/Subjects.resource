@@ -5,7 +5,6 @@ Library             Browser
 Library             DebugLibrary
 Resource            ../resources/Generic.resource
 
-
 *** Keywords ***
 Click Subjects
   Click  "Onderwerpen"
@@ -15,7 +14,7 @@ Create New Subject
   [Arguments]  ${name}=EMPTY
   IF  '${name}' == 'EMPTY'
     ${random} =  Generate Random String  3  [NUMBERS][UPPER]
-    VAR  ${name}  A Random Subject ${random}
+    VAR  ${name} =  A Random Subject ${random}
   END
   Click  //a[@data-e2e-name="new-subject"]
   Fill Text  id=subject_name  ${name}

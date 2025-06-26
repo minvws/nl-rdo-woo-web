@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\AntiVirus;
 
-use App\Entity\User;
 use App\Service\Storage\LocalFilesystem;
-use MinVWS\AuditLogger\AuditLogger;
-use MinVWS\AuditLogger\Events\Logging\FileUploadLogEvent;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
-use Xenolope\Quahog\Result;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 readonly class ClamAvFileScanner
 {
@@ -18,9 +14,8 @@ readonly class ClamAvFileScanner
         private ClamAvClientFactory $clientFactory,
         private LoggerInterface $logger,
         private LocalFilesystem $filesystem,
-        private AuditLogger $auditLogger,
-        private Security $security,
         private int $fileSizeLimit,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -78,7 +73,9 @@ readonly class ClamAvFileScanner
             return FileScanResult::TECHNICAL_ERROR;
         }
 
-        $this->logToAuditLog($result, $path);
+        $this->eventDispatcher->dispatch(
+            new FileScannedEvent($path, $result->hasFailed(), $result->getReason()),
+        );
 
         if ($result->hasFailed()) {
             $this->logger->error(sprintf(
@@ -91,22 +88,5 @@ readonly class ClamAvFileScanner
         }
 
         return FileScanResult::SAFE;
-    }
-
-    private function logToAuditLog(Result $result, string $path): void
-    {
-        $logEvent = (new FileUploadLogEvent())
-            ->withData([
-                'filename' => $path,
-            ])
-            ->withFailed($result->hasFailed(), $result->getReason() ?? '');
-
-        /** @var ?User $user */
-        $user = $this->security->getUser();
-        if ($user instanceof User) {
-            $logEvent->withActor($user);
-        }
-
-        $this->auditLogger->log($logEvent);
     }
 }

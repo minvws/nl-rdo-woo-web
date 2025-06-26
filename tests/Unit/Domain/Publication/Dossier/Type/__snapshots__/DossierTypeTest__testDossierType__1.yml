@@ -7,6 +7,7 @@
     complaintJudgement: false
     otherPublication: false
     advice: false
+    requestForAdvice: false
     attachments: true
     dossierClass: App\Domain\Publication\Dossier\Type\Covenant\Covenant
     valueForRouteName: covenant
@@ -21,6 +22,7 @@
     complaintJudgement: false
     otherPublication: false
     advice: false
+    requestForAdvice: false
     attachments: true
     dossierClass: App\Domain\Publication\Dossier\Type\WooDecision\WooDecision
     valueForRouteName: woodecision
@@ -35,6 +37,7 @@
     complaintJudgement: false
     otherPublication: false
     advice: false
+    requestForAdvice: false
     attachments: true
     dossierClass: App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport
     valueForRouteName: annualreport
@@ -49,6 +52,7 @@
     complaintJudgement: false
     otherPublication: false
     advice: false
+    requestForAdvice: false
     attachments: true
     dossierClass: App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport
     valueForRouteName: investigationreport
@@ -63,6 +67,7 @@
     complaintJudgement: false
     otherPublication: false
     advice: false
+    requestForAdvice: false
     attachments: true
     dossierClass: App\Domain\Publication\Dossier\Type\Disposition\Disposition
     valueForRouteName: disposition
@@ -77,6 +82,7 @@
     complaintJudgement: true
     otherPublication: false
     advice: false
+    requestForAdvice: false
     attachments: false
     dossierClass: App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement
     valueForRouteName: complaintjudgement
@@ -91,6 +97,7 @@
     complaintJudgement: false
     otherPublication: true
     advice: false
+    requestForAdvice: false
     attachments: true
     dossierClass: App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication
     valueForRouteName: otherpublication
@@ -105,8 +112,24 @@
     complaintJudgement: false
     otherPublication: false
     advice: true
+    requestForAdvice: false
     attachments: true
     dossierClass: App\Domain\Publication\Dossier\Type\Advice\Advice
     valueForRouteName: advice
     name: ADVICE
     value: advice
+-
+    covenant: false
+    wooDecision: false
+    annualReport: false
+    investigationReport: false
+    disposition: false
+    complaintJudgement: false
+    otherPublication: false
+    advice: false
+    requestForAdvice: true
+    attachments: true
+    dossierClass: App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice
+    valueForRouteName: requestforadvice
+    name: REQUEST_FOR_ADVICE
+    value: request-for-advice

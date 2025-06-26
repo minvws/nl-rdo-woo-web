@@ -7,7 +7,6 @@ namespace App;
 class Roles
 {
     public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
-    public const ROLE_GLOBAL_ADMIN = 'ROLE_GLOBAL_ADMIN';
     public const ROLE_ORGANISATION_ADMIN = 'ROLE_ORGANISATION_ADMIN';
     public const ROLE_DOSSIER_ADMIN = 'ROLE_DOSSIER_ADMIN';
     public const ROLE_VIEW_ACCESS = 'ROLE_VIEW_ACCESS';
@@ -17,13 +16,6 @@ class Roles
     protected static array $roleHierarchy = [
         self::ROLE_SUPER_ADMIN => [
             self::ROLE_SUPER_ADMIN,
-            self::ROLE_GLOBAL_ADMIN,
-            self::ROLE_ORGANISATION_ADMIN,
-            self::ROLE_DOSSIER_ADMIN,
-            self::ROLE_VIEW_ACCESS,
-        ],
-        self::ROLE_GLOBAL_ADMIN => [
-            self::ROLE_GLOBAL_ADMIN,
             self::ROLE_ORGANISATION_ADMIN,
             self::ROLE_DOSSIER_ADMIN,
             self::ROLE_VIEW_ACCESS,
@@ -41,11 +33,6 @@ class Roles
             'role' => self::ROLE_SUPER_ADMIN,
             'description' => 'admin.user.role.super_admin',
             'help' => 'admin.user.role.super_admin.desc',
-        ],
-        [
-            'role' => self::ROLE_GLOBAL_ADMIN,
-            'description' => 'admin.user.role.global_admin',
-            'help' => 'admin.user.role.global_admin.desc',
         ],
         [
             'role' => self::ROLE_ORGANISATION_ADMIN,

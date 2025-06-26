@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\ViewModel;
 
 use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Enum\Department as DepartmentEnum;
 
 trait CommonDossierPropertiesAccessors
 {
@@ -79,6 +78,6 @@ trait CommonDossierPropertiesAccessors
 
     public function isExternalDepartmentResponsible(): bool
     {
-        return ! $this->getMainDepartment()->isDepartment(DepartmentEnum::VWS);
+        return $this->getMainDepartment()->name !== 'ministerie van Volksgezondheid, Welzijn en Sport';
     }
 }

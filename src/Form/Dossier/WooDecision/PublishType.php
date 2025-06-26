@@ -29,9 +29,8 @@ class PublishType extends AbstractType
 
         if ($dossier->getStatus()->isConceptOrScheduled()) {
             $builder->add('preview_date', DateType::class, [
-                'label' => 'Datum feitelijke verstrekking',
-                'help' => 'Kies de datum waarop het besluit aan de verzoeker is/wordt verstrekt. '
-                        . 'Als er zaaknummers aan documenten in dit besluit zijn gekoppeld, kan de verzoeker deze vanaf dat moment online inzien.',
+                'label' => 'admin.decision.preview_date',
+                'help' => 'admin.decision.preview_date_help',
                 'required' => true,
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
@@ -40,13 +39,13 @@ class PublishType extends AbstractType
                     new NotBlank(),
                     new GreaterThanOrEqual(
                         new \DateTimeImmutable('today midnight'),
-                        message: 'De datum van feitelijke verstrekking moet gelijk of later zijn dan vandaag'
+                        message: 'preview_date_must_be_today_or_future'
                     ),
                 ],
             ]);
             $builder->add('publication_date', DateType::class, [
-                'label' => 'Datum openbare publicatie',
-                'help' => 'Kies de datum waarop het besluit voor iedereen publiek toegankelijk wordt.',
+                'label' => 'admin.decision.publication_date',
+                'help' => 'admin.decision.publication_date_help',
                 'required' => true,
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
@@ -55,7 +54,7 @@ class PublishType extends AbstractType
                     new NotBlank(),
                     new GreaterThanOrEqual([
                         'propertyPath' => 'parent.all[preview_date].data',
-                        'message' => 'De datum van openbare publicatie moet gelijk of later zijn dan de datum van feitelijke verstrekking',
+                        'message' => 'publication_date_must_be_today_or_past_preview_date',
                     ]),
                 ],
             ]);
@@ -69,7 +68,7 @@ class PublishType extends AbstractType
                     new NotBlank(),
                     new GreaterThanOrEqual(
                         new \DateTimeImmutable('today midnight'),
-                        message: 'De datum van feitelijke verstrekking moet gelijk of later zijn dan vandaag'
+                        message: 'publication_date_must_be_today_or_future'
                     ),
                 ],
             ]);

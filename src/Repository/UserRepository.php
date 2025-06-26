@@ -99,7 +99,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->andWhere('u.enabled = true')
             ->andWhere($this->oneOfGivenRolesExpression($qb, [
                 Roles::ROLE_SUPER_ADMIN,
-                Roles::ROLE_GLOBAL_ADMIN,
             ]))
             ->orderBy('u.id', 'ASC');
 
@@ -113,7 +112,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->andWhere('u.enabled = false')
             ->andWhere($this->oneOfGivenRolesExpression($qb, [
                 Roles::ROLE_SUPER_ADMIN,
-                Roles::ROLE_GLOBAL_ADMIN,
             ]))
             ->orderBy('u.id', 'ASC');
 

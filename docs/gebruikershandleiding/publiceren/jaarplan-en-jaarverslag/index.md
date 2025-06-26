@@ -1,4 +1,4 @@
-# Jaarplann en jaarverslag
+# Jaarplan en jaarverslag
 
 Handleiding publiceren jaarplannen en jaarverslag
 

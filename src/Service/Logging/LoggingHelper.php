@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\Service\Logging;
 
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
+
 class LoggingHelper
 {
     /** @var LoggingTypeInterface[] */
     private array $loggers = [];
 
+    /**
+     * @param iterable|LoggingTypeInterface[] $loggingTypes
+     */
     public function __construct(
-        /** @var iterable|LoggingTypeInterface[] $loggingTypes */
+        #[AutowireIterator('woo_platform.logging.type')]
         private readonly iterable $loggingTypes,
     ) {
         foreach ($this->loggingTypes as $loggingType) {

@@ -7,14 +7,17 @@ namespace App\Domain\Publication\Dossier\FileProvider;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Enum\ApplicationMode;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
-class DossierFileProviderManager
+readonly class DossierFileProviderManager
 {
     /**
      * @param iterable<DossierFileProviderInterface> $providers
      */
-    public function __construct(private readonly iterable $providers)
-    {
+    public function __construct(
+        #[AutowireIterator('woo_platform.publication.dossier.file_provider')]
+        private iterable $providers,
+    ) {
     }
 
     public function getEntityForPublicUse(

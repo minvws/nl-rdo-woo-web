@@ -5,8 +5,7 @@ parameters:
     rabbitmq_stats_url: '%env(RABBITMQ_STATS_URL)%'
 
     available_locales: ['en', 'nl']
-
-    default_site_name: open.minvws.nl
+    public_base_url: '%env(PUBLIC_BASE_URL)%'
 
 imports:
     - { resource: services/default_autowire.yaml }
@@ -46,10 +45,6 @@ services:
 
     App\Domain\Ingest\Content\Extractor\Tika\TikaService:
         $client: '@tika.client'
-
-    App\Domain\Ingest\Process\SubType\SubTypeIngester:
-        arguments:
-            - !tagged_iterator domain.ingest.subtype.strategy
 
     App\Service\Inventory\Reader\InventoryReaderFactory:
         arguments:
@@ -105,10 +100,6 @@ services:
                 '%env(ESUPDATER_TRANSPORT_DSN)%',
                 '%env(GLOBAL_TRANSPORT_DSN)%',
             ]
-
-    App\Service\Logging\LoggingHelper:
-        arguments:
-            - !tagged_iterator app.logging.type
 
     App\Controller\Public\StatsController:
         arguments:
@@ -167,50 +158,9 @@ services:
         arguments:
             $translator: '@translator.default'
 
-    App\Domain\Publication\Dossier\Type\DossierTypeManager:
-        arguments:
-            $configs: !tagged_iterator domain.publication.dossier_type_config
-
-    App\Domain\Search\Index\Dossier\DossierIndexer:
-        arguments:
-            $mappers: !tagged_iterator domain.search.index.dossier_mapper
-
-    App\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper:
-        tags:
-            - { name: 'domain.search.index.dossier_mapper', priority: 100 }
-
-    App\Domain\Search\Index\SubType\SubTypeIndexer:
-        arguments:
-            $mappers: !tagged_iterator domain.search.index.subtype_mapper
-
-    App\Domain\Publication\Dossier\Handler\DeleteDossierHandler:
-        arguments:
-            $deleteStrategies: !tagged_iterator domain.publication.dossier_delete_strategy
-
-    App\Domain\Publication\MainDocument\Handler\DeleteMainDocumentHandler:
-        arguments:
-            $deleteStrategies: !tagged_iterator domain.publication.main_document_delete_strategy
-
-    App\Domain\Search\Result\ResultFactory:
-        arguments:
-            $mappers: !tagged_iterator domain.search.result_mapper
-
-    App\Domain\Ingest\Content\ContentExtractService:
-        arguments:
-            $cache: '@content_extract_cache'
-            $extractors: !tagged_iterator domain.ingest.content_extractor
-
     App\Domain\Ingest\Content\Event\ContentExtractCacheInvalidator:
         arguments:
             $cache: '@content_extract_cache'
-
-    App\Command\PlatformCheck:
-        arguments:
-            $checkers: !tagged_iterator app.platform_checker
-
-    App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionService:
-        arguments:
-            $actions: !tagged_iterator domain.publication.dossier.admin.action
 
     App\Service\Uploader\UploaderNamer:
         public: true
@@ -227,10 +177,6 @@ services:
         arguments:
             $key: 'general'
 
-    App\Domain\Upload\Preprocessor\FilePreprocessor:
-        arguments:
-            $strategies: !tagged_iterator domain.upload.preprocessor.strategy
-
     extractor.7z:
         class: App\Domain\Upload\Extractor\Extractor
         public: true
@@ -238,14 +184,6 @@ services:
             $archive: '@App\Domain\ArchiveExtractor\SevenZipArchive'
 
     App\Domain\Upload\Extractor\Extractor $sevenZipExtractor: '@extractor.7z'
-
-    App\Domain\Search\Theme\ThemeManager:
-        arguments:
-            $themes: !tagged_iterator domain.search.theme
-
-    App\Domain\Publication\Dossier\FileProvider\DossierFileProviderManager:
-        arguments:
-            $providers: !tagged_iterator domain.publication.dossier.file_provider
 
     App\Domain\Upload\AntiVirus\ClamAvClientFactory:
         arguments:

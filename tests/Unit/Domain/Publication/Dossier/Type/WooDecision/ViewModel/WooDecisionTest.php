@@ -12,7 +12,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
 use App\Domain\Publication\Dossier\ViewModel\Department;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
-use App\Enum\Department as DepartmentEnum;
+use App\Tests\Story\DepartmentEnum;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Webmozart\Assert\Assert;
@@ -21,8 +21,7 @@ final class WooDecisionTest extends UnitTestCase
 {
     public function testIsExternalDepartmentResponsibleReturnsFalseWithOneVwsDepartment(): void
     {
-        $department = \Mockery::mock(Department::class);
-        $department->shouldReceive('isDepartment')->with(DepartmentEnum::VWS)->andReturn(true);
+        $department = new Department(name: DepartmentEnum::VWS->value, feedbackContent: null);
 
         /** @var ArrayCollection<array-key,Department> $departments */
         $departments = new ArrayCollection([$department]);
@@ -34,8 +33,7 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testIsExternalDepartmentResponsibleReturnsTrueWithOneNonVwsDepartment(): void
     {
-        $department = \Mockery::mock(Department::class);
-        $department->shouldReceive('isDepartment')->with(DepartmentEnum::VWS)->andReturn(false);
+        $department = new Department(name: 'ministry of muggles', feedbackContent: null);
 
         /** @var ArrayCollection<array-key,Department> $departments */
         $departments = new ArrayCollection([$department]);
@@ -47,9 +45,8 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testIsExternalDepartmentResponsibleUsesFirstWithMultipleDepartments(): void
     {
-        $departmentOne = \Mockery::mock(Department::class);
-        $departmentOne->shouldReceive('isDepartment')->with(DepartmentEnum::VWS)->andReturn(false);
-        $departmentTwo = \Mockery::mock(Department::class);
+        $departmentOne = new Department(name: 'ministry of muggles', feedbackContent: null);
+        $departmentTwo = new Department(name: DepartmentEnum::VWS->value, feedbackContent: null);
 
         /** @var ArrayCollection<array-key,Department> $departments */
         $departments = new ArrayCollection([$departmentOne, $departmentTwo]);

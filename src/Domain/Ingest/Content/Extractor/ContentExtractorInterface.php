@@ -6,7 +6,9 @@ namespace App\Domain\Ingest\Content\Extractor;
 
 use App\Domain\Ingest\Content\LazyFileReference;
 use App\Domain\Publication\FileInfo;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag('woo_platform.ingest.content_extractor')]
 interface ContentExtractorInterface
 {
     public function getContent(FileInfo $fileInfo, LazyFileReference $fileReference): string;

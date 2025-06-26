@@ -1,0 +1,38 @@
+msgid "Home"
+msgstr "Home"
+
+msgid "Pagination"
+msgstr "Pagination"
+
+msgid "Sidebar"
+msgstr "Sidebar"
+
+msgid "Go to the previous page"
+msgstr "Go to the previous page"
+
+msgid "Go to the next page"
+msgstr "Go to the next page"
+
+msgid "Logo Government of the Netherlands"
+msgstr "Logo Government of the Netherlands"
+
+msgid "Logo Government of the Netherlands, go to the homepage"
+msgstr "Logo Government of the Netherlands, go to the homepage"
+
+msgid "Ministry of Health, Welfare and Sport"
+msgstr "Ministry of Health, Welfare and Sport"
+
+msgid "Previous"
+msgstr "Previous"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Searching for multiple words only shows matches that contain all words."
+msgstr "Searching for multiple words only shows matches that contain all words."
+
+msgid "Warning"
+msgstr "Warning"
+
+msgid "Please activate JavaScript to enable the search functionality."
+msgstr "Please activate JavaScript to enable the search functionality."

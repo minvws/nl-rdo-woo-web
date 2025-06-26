@@ -14,7 +14,7 @@ use App\Domain\Publication\MainDocument\EntityWithMainDocument;
 use App\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
 use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
-use App\Service\Uploader\UploaderService;
+use App\Domain\Upload\Process\EntityUploadStorer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -34,8 +34,8 @@ readonly class UpdateMainDocumentHandler
         private DossierWorkflowManager $dossierWorkflowManager,
         private EntityManagerInterface $entityManager,
         private DossierRepository $dossierRepository,
-        private UploaderService $uploaderService,
         private ValidatorInterface $validator,
+        private EntityUploadStorer $uploadStorer,
     ) {
     }
 
@@ -101,10 +101,9 @@ readonly class UpdateMainDocumentHandler
     private function mapUpload(UpdateMainDocumentCommand $command, AbstractMainDocument $mainDocument): void
     {
         if ($command->uploadFileReference !== null) {
-            $this->uploaderService->attachFileToEntity(
-                $command->uploadFileReference,
+            $this->uploadStorer->storeUploadForEntityWithSourceTypeAndName(
                 $mainDocument,
-                $mainDocument::getUploadGroupId(),
+                $command->uploadFileReference
             );
         }
     }

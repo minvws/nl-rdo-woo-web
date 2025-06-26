@@ -25,6 +25,9 @@ use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportM
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
 use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
@@ -59,6 +62,9 @@ enum ElasticDocumentType: string implements TranslatableInterface
     case ADVICE = 'advice';
     case ADVICE_MAIN_DOCUMENT = 'advice_main_document';
 
+    case REQUEST_FOR_ADVICE = 'request_for_advice';
+    case REQUEST_FOR_ADVICE_MAIN_DOCUMENT = 'request_for_advice_main_document';
+
     case ATTACHMENT = 'attachment';
 
     public static function fromEntity(object $entity): self
@@ -88,6 +94,9 @@ enum ElasticDocumentType: string implements TranslatableInterface
             $entity instanceof Advice => self::ADVICE,
             $entity instanceof AdviceMainDocument => self::ADVICE_MAIN_DOCUMENT,
             $entity instanceof AdviceAttachment => self::ATTACHMENT,
+            $entity instanceof RequestForAdvice => self::REQUEST_FOR_ADVICE,
+            $entity instanceof RequestForAdviceMainDocument => self::REQUEST_FOR_ADVICE_MAIN_DOCUMENT,
+            $entity instanceof RequestForAdviceAttachment => self::ATTACHMENT,
             default => throw IndexException::noTypeFoundForEntityClass($entity::class),
         };
     }
@@ -97,6 +106,7 @@ enum ElasticDocumentType: string implements TranslatableInterface
         return match ($type) {
             DossierType::WOO_DECISION => self::WOO_DECISION,
             DossierType::ADVICE => self::ADVICE,
+            DossierType::REQUEST_FOR_ADVICE => self::REQUEST_FOR_ADVICE,
             DossierType::ANNUAL_REPORT => self::ANNUAL_REPORT,
             DossierType::COMPLAINT_JUDGEMENT => self::COMPLAINT_JUDGEMENT,
             DossierType::DISPOSITION => self::DISPOSITION,
@@ -133,6 +143,9 @@ enum ElasticDocumentType: string implements TranslatableInterface
             Advice::class => self::ADVICE,
             AdviceMainDocument::class => self::ADVICE_MAIN_DOCUMENT,
             AdviceAttachment::class => self::ATTACHMENT,
+            RequestForAdvice::class => self::REQUEST_FOR_ADVICE,
+            RequestForAdviceMainDocument::class => self::REQUEST_FOR_ADVICE_MAIN_DOCUMENT,
+            RequestForAdviceAttachment::class => self::ATTACHMENT,
             default => throw IndexException::noTypeFoundForEntityClass($entityClass),
         };
     }
@@ -151,6 +164,7 @@ enum ElasticDocumentType: string implements TranslatableInterface
             self::COMPLAINT_JUDGEMENT,
             self::OTHER_PUBLICATION,
             self::ADVICE,
+            self::REQUEST_FOR_ADVICE,
         ];
     }
 
@@ -169,6 +183,7 @@ enum ElasticDocumentType: string implements TranslatableInterface
             self::COMPLAINT_JUDGEMENT_MAIN_DOCUMENT,
             self::OTHER_PUBLICATION_MAIN_DOCUMENT,
             self::ADVICE_MAIN_DOCUMENT,
+            self::REQUEST_FOR_ADVICE_MAIN_DOCUMENT,
             self::ATTACHMENT,
         ];
     }
@@ -186,6 +201,7 @@ enum ElasticDocumentType: string implements TranslatableInterface
             self::COMPLAINT_JUDGEMENT_MAIN_DOCUMENT,
             self::WOO_DECISION_MAIN_DOCUMENT,
             self::OTHER_PUBLICATION_MAIN_DOCUMENT,
+            self::REQUEST_FOR_ADVICE_MAIN_DOCUMENT,
             self::ADVICE_MAIN_DOCUMENT,
         ];
     }

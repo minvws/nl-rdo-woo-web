@@ -15,6 +15,7 @@ use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
 use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
+use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment;
 use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Uploader\UploadGroupId;
@@ -34,6 +35,7 @@ use Webmozart\Assert\Assert;
     'disposition_attachment' => DispositionAttachment::class,
     'other_publication_attachment' => OtherPublicationAttachment::class,
     'advice_attachment' => AdviceAttachment::class,
+    'request_for_advice_attachment' => RequestForAdviceAttachment::class,
 ])]
 #[ORM\HasLifecycleCallbacks]
 abstract class AbstractAttachment implements EntityWithFileInfo

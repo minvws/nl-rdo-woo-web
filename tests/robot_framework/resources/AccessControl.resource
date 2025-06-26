@@ -9,9 +9,7 @@ Library             Browser
 Library             DebugLibrary
 Library             ${CURDIR}/../libraries/QR.py
 Resource            Admin.resource
-Resource            Generic.resource
 Resource            Organisations.resource
-
 
 *** Keywords ***
 Click Access Control
@@ -23,8 +21,8 @@ Create New User
   [Arguments]  ${role}  ${change_temp_password}=${TRUE}  ${store_creds}=${TRUE}  ${org_prefix}=
   ${unique_id} =  Generate Random String  3  [NUMBERS][UPPER]
   ${unique_id} =  Convert To Lower Case  ${unique_id}
-  VAR  ${name}  ${role}_${org_prefix}_${unique_id}
-  VAR  ${email}  ${role}_${unique_id}@test.email
+  VAR  ${name} =  ${role}_${org_prefix}_${unique_id}
+  VAR  ${email} =  ${role}_${unique_id}@test.email
   Click  "Nieuwe gebruiker aanmaken"
   Fill Text  id=user_create_form_name  ${name}
   Check Checkbox  //input[@value="${role}"]
@@ -42,9 +40,9 @@ Create New User
     Click  xpath=//*[@data-e2e-name="logout-link"]
   END
   IF  ${store_creds}
-    VAR  ${${role}_email}  ${email}  scope=suite
-    VAR  ${${role}_password}  ${password}  scope=suite
-    VAR  ${${role}_OTP}  ${otp_secret}  scope=suite
+    VAR  ${${role}_email} =  ${email}  scope=suite
+    VAR  ${${role}_password} =  ${password}  scope=suite
+    VAR  ${${role}_OTP} =  ${otp_secret}  scope=suite
   END
   RETURN  ${name}
 
@@ -57,9 +55,9 @@ Parse QR And Return OTP Code
 
 Set Credentials By Role
   [Arguments]  ${role}
-  VAR  ${EMAIL}  ${${role}_EMAIL}  scope=suite
-  VAR  ${PASSWORD}  ${${role}_PASSWORD}  scope=suite
-  VAR  ${OTP}  ${${role}_OTP}  scope=suite
+  VAR  ${EMAIL} =  ${${role}_EMAIL}  scope=suite
+  VAR  ${PASSWORD} =  ${${role}_PASSWORD}  scope=suite
+  VAR  ${OTP} =  ${${role}_OTP}  scope=suite
 
 Edit User
   [Arguments]  ${username}  ${new_username}  ${extra_role}
@@ -83,7 +81,7 @@ Deactivate User
   Get Text  //div[@data-e2e-name="tabs-gebruikers-content-2"]//tbody//th[contains(.,'${username}')]
 
 Create Test User
-  [Arguments]  ${role}  ${organisation}=Programmadirectie Openbaarheid
+  [Arguments]  ${role}  ${organisation}=E2E Test Organisation
   Login Admin
   Select Organisation  ${organisation}
   ${org_abbrev} =  Abbreviate To First Letters  ${organisation}
@@ -93,12 +91,12 @@ Create Test User
 Select Access Control Tab
   [Arguments]  ${tab}
   IF  '${tab}' == 'Active users'
-    VAR  ${tab_index}  1
+    VAR  ${tab_index} =  1
   ELSE IF  '${tab}' == 'Deactivated users'
-    VAR  ${tab_index}  2
+    VAR  ${tab_index} =  2
   ELSE IF  '${tab}' == 'Active admins'
-    VAR  ${tab_index}  3
+    VAR  ${tab_index} =  3
   ELSE IF  '${tab}' == 'Deactivated users'
-    VAR  ${tab_index}  4
+    VAR  ${tab_index} =  4
   END
   Click  //button[@data-e2e-name="tabs-gebruikers-button-${tab_index}"]

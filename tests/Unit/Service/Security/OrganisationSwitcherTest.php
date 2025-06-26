@@ -46,7 +46,6 @@ class OrganisationSwitcherTest extends MockeryTestCase
         $organisation = \Mockery::mock(Organisation::class);
 
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnFalse();
-        $this->user->expects('hasRole')->with(Roles::ROLE_GLOBAL_ADMIN)->andReturnFalse();
         $this->user->expects('getOrganisation')->andReturn($organisation);
 
         self::assertEquals(
@@ -144,7 +143,6 @@ class OrganisationSwitcherTest extends MockeryTestCase
         $organisation = \Mockery::mock(Organisation::class);
 
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnFalse();
-        $this->user->expects('hasRole')->with(Roles::ROLE_GLOBAL_ADMIN)->andReturnFalse();
         $this->user->expects('getOrganisation')->andReturn($organisation);
 
         self::assertEquals(
@@ -170,7 +168,6 @@ class OrganisationSwitcherTest extends MockeryTestCase
     public function testSwitchToOrganisationIsDeniedForNormalUsers(): void
     {
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnFalse();
-        $this->user->expects('hasRole')->with(Roles::ROLE_GLOBAL_ADMIN)->andReturnFalse();
 
         $organisation = \Mockery::mock(Organisation::class);
 
@@ -186,19 +183,6 @@ class OrganisationSwitcherTest extends MockeryTestCase
         $organisation->expects('getId')->andReturn($uuid);
 
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnTrue();
-        $this->session->expects('set')->with('organisation', $uuid->toRfc4122());
-
-        $this->organisationSwitcher->switchToOrganisation($this->user, $organisation);
-    }
-
-    public function testSwitchToOrganisationIsAppliedForGlobalAdmins(): void
-    {
-        $uuid = Uuid::v6();
-        $organisation = \Mockery::mock(Organisation::class);
-        $organisation->expects('getId')->andReturn($uuid);
-
-        $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnFalse();
-        $this->user->expects('hasRole')->with(Roles::ROLE_GLOBAL_ADMIN)->andReturnTrue();
         $this->session->expects('set')->with('organisation', $uuid->toRfc4122());
 
         $this->organisationSwitcher->switchToOrganisation($this->user, $organisation);

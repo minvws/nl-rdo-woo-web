@@ -45,6 +45,10 @@ readonly class UploadRequest
         $additionalParameters->remove(self::UUID_PARAM);
         $additionalParameters->remove(self::GROUP_ID_PARAM);
 
+        if ($request->getPayload()->has('dossierId')) {
+            $additionalParameters->set('dossierId', $request->getPayload()->get('dossierId'));
+        }
+
         $uploadedFile = $request->files->get('file');
         Assert::isInstanceOf($uploadedFile, UploadedFile::class);
 

@@ -3,7 +3,7 @@
 
     allowedFileTypes: uploadGroupId.fileTypeNames,
     allowedMimeTypes: uploadGroupId.mimeTypes,
-    dossierId: dossier.dossierNr,
+    dossierId: dossier.id,
     maxFileSize: 1024 * 1024 * 1024 * 5,
     nextStepUrl: nextStepUrl | default,
     continueLaterUrl: continueLaterUrl | default,
@@ -11,7 +11,7 @@
     rejectEndpoint: path('api_uploader_woo_decision_reject_changes', { dossierId: dossier.id }),
     processEndpoint: path('api_uploader_woo_decision_process', { dossierId: dossier.id }),
     statusEndpoint: path('api_uploader_woo_decision_status', { dossierId: dossier.id }),
-    uploadEndpoint: path('app_admin_upload', { dossierId: dossier.id }),
+    uploadEndpoint: path('app_admin_upload'),
 }) }}>
     <div class="min-h-80"></div>
 </div>

@@ -94,10 +94,7 @@
                             {% endfor %}
 
                             {% include 'public/dossier/shared/snippets/redacted-message.html.twig' with {
-                                'departmentName': dossier.mainDepartment.name,
-                                'documentId': document.id,
-                                'documentName': document.name,
-                                'isExternalDepartmentResponsible': dossier.isExternalDepartmentResponsible,
+                                'department': dossier.mainDepartment,
                                 'hasGrounds': grounds | length > 0,
                             } %}
                         </td>
@@ -124,12 +121,12 @@
                         </tr>
                         {% for attachment in attachments %}
                         <tr>
-                            <td>
+                            <td class="woo-table-cell-light w-64 min-w-64">
                                 <twig:Public:FileIcon type="{{ attachment.sourceType.value }}" size="16" />
                                 <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a>
                             </td>
-                            <td class="w-48 min-w-48 text-right">
-                                {{ attachment.formalDate | format_date('long') }}
+                            <td>
+                                {{ attachment.sourceType | trans }}, {{ attachment.size | size }}
                             </td>
                         </tr>
                         {% endfor %}

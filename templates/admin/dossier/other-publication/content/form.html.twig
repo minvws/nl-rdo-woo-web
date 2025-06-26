@@ -13,6 +13,7 @@
         helpText="{{ 'admin.dossiers.other-publication.form.content.document_help' | trans }}"
         languages="{{ attachmentLanguages }}"
         title="{{ 'admin.dossiers.other-publication.form.content.document_label' | trans }}"
+        dossierId="{{ dossier.id }}"
     />
 
     <twig:Admin:Publication:ManageAttachments
@@ -24,6 +25,7 @@
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.other-publication.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"
+        dossierId="{{ dossier.id }}"
     />
 
 {{ form_end(form) }}

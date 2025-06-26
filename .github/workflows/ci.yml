@@ -14,6 +14,7 @@ concurrency:
 env:
   NODE_VERSION: 20
   PHP_VERSION: 8.3
+  GH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }}
 
 jobs:
   migration_check:
@@ -148,16 +149,14 @@ jobs:
 
   test-pr:
     name: 'Test PR suite'
-    needs: validate
     if: ${{ github.event_name == 'pull_request' }}
     uses: minvws/nl-rdo-woo-web-private/.github/workflows/e2e-ci.yml@main
     secrets: inherit
     with:
-      test_tag: 'pr'
+      test_tag: 'ci'
 
   test:
     name: 'Test full suite'
-    needs: validate
     if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
     uses: minvws/nl-rdo-woo-web-private/.github/workflows/e2e-ci.yml@main
     secrets: inherit
@@ -166,7 +165,9 @@ jobs:
 
   package:
     name: Package
-    needs: test
+    needs:
+      - validate
+      - test
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     uses: minvws/nl-rdo-woo-web-private/.github/workflows/package.yml@main
     secrets: inherit

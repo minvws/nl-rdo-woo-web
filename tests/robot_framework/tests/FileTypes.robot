@@ -7,11 +7,10 @@ Suite Setup         Suite Setup
 Test Setup          Go To Admin
 Test Tags           ci  filetypes
 
-
 *** Test Cases ***
 Create a dossier with different filetypes using individual files, zip and 7z
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=MINVWS
+  Fill Out Basic Details  prefix=E2E-A
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  tests/robot_framework/files/filetypes/productierapport.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 15 van 15 documenten.
@@ -61,11 +60,11 @@ Verify filetypes of uploaded dossier
 
 Verify filetypes available in search
   [Template]  Search On Public For
-  16101.docx  Documentnummer 16101
-  16102.doc  Documentnummer 16102
-  16103.odt  Documentnummer 16103
-  16109.xlsx  Documentnummer 16109
-  16110.xlsx  Documentnummer 16110
+  16101.docx  16101
+  16102.doc  16102
+  16103.odt  16103
+  16109.xlsx  16109
+  16110.xlsx  16110
 
 
 *** Keywords ***
@@ -73,4 +72,4 @@ Suite Setup
   Cleansheet
   Suite Setup Generic
   Login Admin
-  Select Organisation  organisation=Programmadirectie Openbaarheid
+  Select Organisation  organisation=E2E Test Organisation

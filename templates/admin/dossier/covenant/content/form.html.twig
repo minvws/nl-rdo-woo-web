@@ -30,6 +30,7 @@
         helpText="{{ 'admin.dossiers.covenant.form.content.document_help' | trans }}"
         languages="{{ attachmentLanguages }}"
         title="{{ 'admin.dossiers.covenant.form.content.document_label' | trans }}"
+        dossierId="{{ dossier.id }}"
     />
 
     {{ form_row(form.previous_version_link) }}
@@ -43,6 +44,7 @@
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.covenant.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"
+        dossierId="{{ dossier.id }}"
     />
 
     {% do form.parties.setRendered %}

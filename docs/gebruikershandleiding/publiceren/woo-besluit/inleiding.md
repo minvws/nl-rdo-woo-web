@@ -59,7 +59,7 @@ in een productierapport. Het productierapport is een Excel-bestand met een aanta
 ingewikkeld te maken op dit moment zijn een aantal niet verplichte kolommen buiten beschouwing gelaten.
 
 :::{admonition} Let op!
-:class: attention
+:class: warning
 Werken met een dergelijk productierapport sluit aan bij de werkwijze van de Programmadirectie Openbaarheid (PDO)
 met betrekking tot het openbaar maken van COVID-19 gerelateerde Woo-besluiten. Indien er concernorganisaties zijn die Woo-besluiten
 willen gaan publiceren op het publicatieplatform dan bespreken we graag of deze werkwijze werkbaar is of dat we een nieuwe uploadstraat

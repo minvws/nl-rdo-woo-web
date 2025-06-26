@@ -1,7 +1,7 @@
 # https://taskfile.dev
 version: "3"
 
-env:
+vars:
   MARKDOWNLINT_VERSION: v0.18.1
   SPHINX_VERSION: 8.1.3
 
@@ -28,33 +28,62 @@ tasks:
       - task: :dc
         vars: { CLI_ARGS: run --rm sphinx bash }
 
-  sphinx:build:cleanup:
-    desc: Remove the sphinx container
-    internal: true
-    cmds:
-      - rm -rf "{{.BASE_PATH}}/public/documentatie"
-      - rm -rf "{{.BASE_PATH}}/docs/_build/html" "{{.BASE_PATH}}/docs/_build/doctrees"
-
-  sphinx:build:
+  build:
+    aliases: [ sphinx:build ]
     desc: Build the documentation
     cmds:
       - task: lint
       - task: sphinx:build:ci
 
-  sphinx:build:ci:
+  build:ci:
+    aliases: [ sphinx:build:ci ]
     desc: Build the documentation in CI
     cmds:
-      - task: sphinx:build:cleanup
+      - task: do:sphinx:build:cleanup
+      - task: do:sphinx-download-theme
       - task: :d:create-cache-volumes
-      - docker compose run --rm
-        --volume "{{.BASE_PATH}}/docs":/docs
-        sphinx
-        sphinx-build -M html gebruikershandleiding _build
+      - task: do:sphinx-build
       - cp -r "{{.BASE_PATH}}/docs/_build/html" "{{.BASE_PATH}}/public/documentatie"
 
-  sphinx:bundle:
+  bundle:
+    aliases: [ sphinx:bundle ]
     desc: Bundle the documentation
     cmds:
       - task: sphinx:build
       - tar -czf "{{.BASE_PATH}}/docs/_build/html.tar.gz" -C "{{.BASE_PATH}}/docs/_build" html
       - echo "Documentation archive is available at file://{{.BASE_PATH}}/docs/_build/docs.tar.gz"
+
+  do:sphinx:build:cleanup:
+    desc: Remove the generated sphinx files
+    internal: true
+    cmds:
+      - rm -rf "{{.BASE_PATH}}/public/documentatie"
+      - rm -rf "{{.BASE_PATH}}/docs/_build/html" "{{.BASE_PATH}}/docs/_build/doctrees"
+
+  do:sphinx-download-theme:
+    desc: Download the manon sphinx theme
+    internal: true
+    vars:
+      GH_CMD: release download --clobber -D gebruikershandleiding --repo minvws/icore-manon-sphinx-theme --pattern 'sphinx-rijkshuisstijl*.zip'
+    cmds:
+      - |
+        if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
+          echo "Downloading theme from GitHub using gh directly..."
+          gh {{.GH_CMD}}
+        else
+          echo "Downloading theme from GitHub using Docker..."
+          docker run -it --rm \
+            --volume "{{.BASE_PATH}}/docs":/gh \
+            --env GITHUB_TOKEN="$CR_PAT" \
+            maniator/gh:{{.GH_VERSION}} \
+            {{.GH_CMD}}
+        fi
+
+  do:sphinx-build:
+    desc: Run the sphinx-build tool
+    internal: true
+    cmds:
+      - docker compose run --rm
+        --volume "{{.BASE_PATH}}/docs":/docs
+        sphinx
+        sphinx-build -M html gebruikershandleiding _build

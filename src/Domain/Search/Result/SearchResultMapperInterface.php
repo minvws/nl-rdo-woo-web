@@ -7,7 +7,9 @@ namespace App\Domain\Search\Result;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Enum\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag('woo_platform.search.result_mapper')]
 interface SearchResultMapperInterface
 {
     public function supports(ElasticDocumentType $type): bool;

@@ -77,4 +77,29 @@ class UploadRequestTest extends MockeryTestCase
 
         self::assertEquals(['foo' => 'bar'], $request->additionalParameters->all());
     }
+
+    public function testFromHttpRequestWithDossierId(): void
+    {
+        $httpRequest = new Request(
+            query: [
+                'foo' => 'bar',
+                'chunkindex' => 2,
+                'dossierId' => 'dossier-123', // gets overwritten by request payload value
+            ],
+            request: [
+                'groupId' => UploadGroupId::WOO_DECISION_DOCUMENTS->value,
+                'dossierId' => 'dossier-456',
+            ],
+            files: [
+                'file' => \Mockery::mock(UploadedFile::class),
+            ],
+        );
+
+        $request = UploadRequest::fromHttpRequest($httpRequest);
+
+        self::assertEquals([
+            'foo' => 'bar',
+            'dossierId' => 'dossier-456',
+        ], $request->additionalParameters->all());
+    }
 }

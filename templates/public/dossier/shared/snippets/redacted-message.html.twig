@@ -1,12 +1,12 @@
 <div class="woo-rich-text woo-readable-width {{ (hasGrounds ?? false) ? 'mt-4' : '' }}">
     <p>
         {{ 'public.documents.redacted_data.comments' | trans }}
-        {% if (isExternalDepartmentResponsible ?? false) %}
-            {{ 'public.global.contact' | trans({ '{ministry}': departmentName }) | raw }}. {{ 'public.documents.redacted_data.find_contact' | trans | raw }}
+    </p>
+    <p>
+        {% if (department.feedbackContent is not empty) %}
+            {{ department.feedbackContent | render_markdown | raw }}
         {% else %}
-            <a
-                href="mailto:_dienstpostbusWoo-corona-ondersteuning@minvws.nl?subject=Opmerking over {{ documentName }} (documentnummer {{ documentId }})"
-            >{{ 'public.documents.let_us_know' | trans }}</a>.
+            {{ 'public.global.contact' | trans({ '{ministry}': department.name }) | raw }}. {{ 'public.documents.redacted_data.find_contact' | trans | raw }}
         {% endif %}
     </p>
 </div>

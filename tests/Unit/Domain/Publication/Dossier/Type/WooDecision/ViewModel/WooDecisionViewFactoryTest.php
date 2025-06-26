@@ -22,7 +22,7 @@ use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use App\Domain\Publication\Subject\Subject;
 use App\Entity\Department as DepartmentEntity;
-use App\Enum\Department as DepartmentEnum;
+use App\Tests\Story\DepartmentEnum;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\MockInterface;
@@ -70,7 +70,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->departmentViewFactory
             ->shouldReceive('make')
             ->with($department)
-            ->andReturn($expectedDepartment = new Department(DepartmentEnum::VWS->value));
+            ->andReturn($expectedDepartment = new Department(DepartmentEnum::VWS->value, feedbackContent: null));
 
         $this->departmentViewFactory
             ->shouldReceive('makeCollection')
@@ -102,7 +102,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
                 publicationDate: $publicationDate = new \DateTimeImmutable(),
-                mainDepartment: $expectedMainDepartment = new Department(DepartmentEnum::VWS->value),
+                mainDepartment: $expectedMainDepartment = new Department(DepartmentEnum::VWS->value, feedbackContent: null),
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::COVENANT,
                 subject: $expectedSubject = \Mockery::mock(SubjectViewModel::class),
@@ -147,8 +147,14 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
 
         $mainDocument = \Mockery::mock(WooDecisionMainDocument::class);
 
-        $this->departmentViewFactory->shouldReceive('make')->with($department)->andReturn($expectedDepartment = new Department('my departmen'));
-        $this->departmentViewFactory->shouldReceive('makeCollection')->with($departments)->andReturn(new ArrayCollection([$expectedDepartment]));
+        $this->departmentViewFactory
+            ->shouldReceive('make')
+            ->with($department)
+            ->andReturn($expectedDepartment = new Department('my department', feedbackContent: null));
+        $this->departmentViewFactory
+            ->shouldReceive('makeCollection')
+            ->with($departments)
+            ->andReturn(new ArrayCollection([$expectedDepartment]));
 
         $this->commonDossierPropertiesViewFactory
             ->shouldReceive('make')
@@ -160,7 +166,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
                 publicationDate: $publicationDate = new \DateTimeImmutable(),
-                mainDepartment: $expectedMainDepartment = new Department(DepartmentEnum::JV->value),
+                mainDepartment: $expectedMainDepartment = new Department(name: DepartmentEnum::JV->value, feedbackContent: null),
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::COVENANT,
                 subject: $expectedSubject = \Mockery::mock(SubjectViewModel::class),

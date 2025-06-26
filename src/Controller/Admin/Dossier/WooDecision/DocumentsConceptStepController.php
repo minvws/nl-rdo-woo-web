@@ -8,7 +8,6 @@ use App\Domain\Publication\Dossier\Step\StepActionHelper;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Form\Dossier\WooDecision\DocumentUploadType;
 use App\Form\Dossier\WooDecision\InventoryType;
 use App\Service\Uploader\UploadGroupId;
 use App\ValueObject\ProductionReportStatus;
@@ -83,8 +82,6 @@ class DocumentsConceptStepController extends AbstractController
 
         $processRun = $this->documentsHelper->mapProcessRunToForm($dossier, $inventoryForm);
 
-        $documentForm = $this->createForm(DocumentUploadType::class, $dossier);
-
         $dataPath = null;
         if ($processRun?->isNotFinal()) {
             $dataPath = 'app_admin_dossier_woodecision_documents_concept_inventory_status';
@@ -95,7 +92,6 @@ class DocumentsConceptStepController extends AbstractController
             'processRun' => $processRun,
             'workflowStatus' => $wizardStatus,
             'inventoryForm' => $inventoryForm,
-            'documentForm' => $documentForm,
             'dataPath' => $dataPath,
             'inventoryStatus' => new ProductionReportStatus($dossier),
             'uploadGroupId' => UploadGroupId::WOO_DECISION_DOCUMENTS,

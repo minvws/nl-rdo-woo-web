@@ -7,7 +7,6 @@ Library             OTP
 Library             ${CURDIR}/../libraries/QR.py
 Resource            ../resources/Generic.resource
 
-
 *** Variables ***
 ${ATTACHMENT_FILENAME}  ${EMPTY}
 ${ATTACHMENT_LOCATION}  ${EMPTY}
@@ -46,7 +45,7 @@ Login Admin
     Fill Text  id=change_password_plainPassword_second  ${new_password}
     Click  " Wachtwoord aanpassen "
     Success Alert Is Visible  Wachtwoord succesvol gewijzigd
-    VAR  ${password}  ${new_password}
+    VAR  ${password} =  ${new_password}
   END
   Get Text  //*[@id="main-nav"]  contains  Uitloggen
   Log  Logged in as: ${username}
@@ -80,7 +79,7 @@ Wait For Queue To Empty
 Is Queue Empty
   Reload
   Take Screenshot
-  VAR  @{elements}
+  VAR  @{elements} =
   ...  //*[@data-e2e-name="rabbitmq-stats"]//tr[contains(.,'es_updates')]/td[3]
   ...  //*[@data-e2e-name="rabbitmq-stats"]//tr[contains(.,'global')]/td[3]
   ...  //*[@data-e2e-name="rabbitmq-stats"]//tr[contains(.,'high')]/td[3]

@@ -37,7 +37,7 @@ class DocumentPrefixType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                     new Length(['min' => 5, 'max' => 30]),
-                    new Regex('/^[0-9a-zA-Z-]+$/', 'Prefix mag alleen bestaan uit letters, cijfers en streepjes'),
+                    new Regex('/^[0-9a-zA-Z-]+$/', 'alpha_numeric_dash_only'),
                 ],
             ])
         ;

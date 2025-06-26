@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Logging;
 
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+
+#[AutoconfigureTag('woo_platform.logging.type')]
 interface LoggingTypeInterface
 {
     public function disable(): void;

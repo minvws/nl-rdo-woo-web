@@ -4,29 +4,24 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Department;
+use App\Domain\Organisation\Event\OrganisationCreatedEvent;
+use App\Domain\Organisation\Event\OrganisationUpdatedEvent;
 use App\Entity\Organisation;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\AuditUser;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
-use MinVWS\AuditLogger\Events\Logging\OrganisationChangeLogEvent;
-use MinVWS\AuditLogger\Events\Logging\OrganisationCreatedLogEvent;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-/**
- * This class handles organisation management.
- */
-class OrganisationService
+readonly class OrganisationService
 {
-    private const string UNCHANGED = '[unchanged]';
-
     public function __construct(
-        protected EntityManagerInterface $doctrine,
-        protected LoggerInterface $logger,
-        protected AuditLogger $auditLogger,
-        protected TokenStorageInterface $tokenStorage,
+        private EntityManagerInterface $doctrine,
+        private LoggerInterface $logger,
+        private TokenStorageInterface $tokenStorage,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -39,23 +34,12 @@ class OrganisationService
             'organisation' => $organisation->getId(),
         ]);
 
-        /** @var LoggableUser|null $loggedInUser */
-        $loggedInUser = $this->tokenStorage->getToken()?->getUser() ?? null;
-        if ($loggedInUser === null) {
-            $loggedInUser = new AuditUser('cli user', 'system', [], 'system@localhost');
-        }
-        /** @var LoggableUser $loggedInUser */
-        $this->auditLogger->log((new OrganisationCreatedLogEvent())
-            ->asCreate()
-            ->withActor($loggedInUser)
-            ->withSource('woo')
-            ->withData([
-                'organisation_id' => $organisation->getId(),
-                'name' => $organisation->getName(),
-                'departments' => $organisation->getDepartments()->map(
-                    static fn (Department $department) => $department->getName(),
-                ),
-            ]));
+        $this->eventDispatcher->dispatch(
+            new OrganisationCreatedEvent(
+                actor: $this->getLoggableUser(),
+                organisation: $organisation,
+            ),
+        );
     }
 
     public function update(Organisation $organisation): Organisation
@@ -70,31 +54,25 @@ class OrganisationService
             'organisation' => $organisation->getId(),
         ]);
 
-        /** @var LoggableUser|null $loggedInUser */
+        $this->eventDispatcher->dispatch(
+            new OrganisationUpdatedEvent(
+                actor: $this->getLoggableUser(),
+                organisation: $organisation,
+                changes: $changes,
+            ),
+        );
+
+        return $organisation;
+    }
+
+    private function getLoggableUser(): LoggableUser
+    {
+        /** @var User|null $loggedInUser */
         $loggedInUser = $this->tokenStorage->getToken()?->getUser() ?? null;
         if ($loggedInUser === null) {
             $loggedInUser = new AuditUser('cli user', 'system', [], 'system@localhost');
         }
 
-        /** @var LoggableUser $loggedInUser */
-        $this->auditLogger->log((new OrganisationChangeLogEvent())
-            ->asUpdate()
-            ->withActor($loggedInUser)
-            ->withSource('woo')
-            ->withData([
-                'organisation_id' => $organisation->getId(),
-            ])
-            ->withPiiData([
-                'old' => [
-                    'name' => $changes['name'][0] ?? self::UNCHANGED,
-                    'departments' => $changes['departments'][0] ?? self::UNCHANGED,
-                ],
-                'new' => [
-                    'name' => $changes['name'][1] ?? self::UNCHANGED,
-                    'departments' => $changes['departments'][1] ?? self::UNCHANGED,
-                ],
-            ]));
-
-        return $organisation;
+        return $loggedInUser;
     }
 }

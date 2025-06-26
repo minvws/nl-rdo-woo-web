@@ -1,0 +1,31 @@
+{{ form_start(form) }}
+    {{ form_row(form.summary) }}
+
+    <twig:Admin:Publication:ManageDocument
+        allowedFileTypes="{{ documentTypeNames }}"
+        allowedMimeTypes="{{ documentMimeTypes }}"
+        canDelete="{{ canDeleteDocument }}"
+        documentType="{{ 'admin.dossiers.request-for-advice.document' | trans }}"
+        documentTypes="{{ documentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/request-for-advice-document' }}"
+        formField="{{ form.document }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.request-for-advice.form.content.document_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        title="{{ 'admin.dossiers.request-for-advice.form.content.document_label' | trans }}"
+        dossierId="{{ dossier.id }}"
+    />
+
+    <twig:Admin:Publication:ManageAttachments
+        allowedFileTypes="{{ attachmentTypeNames }}"
+        allowedMimeTypes="{{ attachmentMimeTypes }}"
+        canDelete="{{ canDeleteAttachments }}"
+        documentTypes="{{ attachmentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/request-for-advice-attachments' }}"
+        grounds="{{ grounds }}"
+        helpText="{{ 'admin.dossiers.request-for-advice.form.content.attachments_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        dossierId="{{ dossier.id }}"
+    />
+
+{{ form_end(form) }}

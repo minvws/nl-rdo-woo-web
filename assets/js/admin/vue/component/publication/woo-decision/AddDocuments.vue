@@ -82,7 +82,11 @@ const onComplete = () => {
       Verder naar publiceren
     </a>
 
-    <a :href="props.continueLaterUrl" class="bhr-btn-bordered-primary">
+    <a
+      :href="props.continueLaterUrl"
+      class="bhr-btn-bordered-primary"
+      data-e2e-name="continue-later"
+    >
       Later verdergaan
     </a>
   </div>

@@ -81,7 +81,7 @@ interface Options {
 
 export const uploadFile = (options: Options) => {
   const {
-    endpoint = '/balie/uploader',
+    endpoint = '/balie/upload',
     file,
     onError = () => {},
     onProgress = () => {},
@@ -260,7 +260,10 @@ export const uploadFile = (options: Options) => {
     const data: UploadStatusResponse = await response.json();
     const { status } = data;
 
-    if (status === UploadStatus.Stored) {
+    if (
+      status === UploadStatus.Stored ||
+      status === UploadStatus.ValidationPassed
+    ) {
       onSuccess(uploadUuid, responseSuccessData);
       return;
     }

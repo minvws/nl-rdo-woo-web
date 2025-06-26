@@ -22,6 +22,8 @@
 - Disposition
 - ComplaintJudgement
 - OtherPublication
+- Advice
+- RequestForAdvice
 
 ## Defining a new dossier type
 

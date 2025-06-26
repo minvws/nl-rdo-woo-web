@@ -1,0 +1,7 @@
+anyDocumentNotifications: false
+dossierNotifications:
+    - incomplete
+isNotCompleted: true
+missingUploads: 0
+withdrawnDocuments: 0
+suspendedDocuments: 0

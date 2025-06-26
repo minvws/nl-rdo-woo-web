@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier\Type;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 /**
  * A dossier delete strategy is called for dossier that is being deleted based on autowiring by the interface.
@@ -18,6 +19,7 @@ use App\Domain\Publication\Dossier\AbstractDossier;
  * delete strategies have been executed. For this to work correctly you must ensure that cascade deletes are correctly
  * configured on each dossier type entity and sub-entities.
  */
+#[AutoconfigureTag('woo_platform.publication.dossier_delete_strategy')]
 interface DossierDeleteStrategyInterface
 {
     public function delete(AbstractDossier $dossier): void;

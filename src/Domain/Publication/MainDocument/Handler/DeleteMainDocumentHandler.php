@@ -16,6 +16,7 @@ use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Webmozart\Assert\Assert;
@@ -31,6 +32,7 @@ readonly class DeleteMainDocumentHandler
         private DossierWorkflowManager $dossierWorkflowManager,
         private EntityManagerInterface $entityManager,
         private DossierRepository $dossierRepository,
+        #[AutowireIterator('woo_platform.publication.main_document_delete_strategy')]
         private iterable $deleteStrategies,
     ) {
     }
