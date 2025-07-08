@@ -17,9 +17,9 @@ readonly class AttachmentLanguageFactory
     }
 
     /**
-     * @phpstan-return array<int,AttachmentLanguageArray>
-     *
      * @return array<int,array<string,string>>
+     *
+     * @phpstan-return array<int,AttachmentLanguageArray>
      */
     public function makeAsArray(): array
     {

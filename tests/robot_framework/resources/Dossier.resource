@@ -11,6 +11,7 @@ Resource            Admin.resource
 Resource            Public.resource
 Resource            WooDecision.resource
 
+
 *** Variables ***
 ${CURRENT_TIME}             ${EMPTY}
 ${CURRENT_DATE}             ${EMPTY}
@@ -27,7 +28,7 @@ Fill Out Basic Details
   ...  ${prefix}=E2E-A
   Generate Dossier Reference Number
   Fill Text  id=details_title  Robot ${DOSSIER_REFERENCE}
-  IF  '${type}' == 'disposition' or '${type}' == 'investigation-report' or '${type}' == 'complaint-judgement' or '${type}' == 'other-publication' or '${type}' == 'advice'
+  IF  '${type}' == 'disposition' or '${type}' == 'investigation-report' or '${type}' == 'complaint-judgement' or '${type}' == 'other-publication' or '${type}' == 'advice' or '${type}' == 'request-for-advice'
     Type Text  id=details_date  01012022
   ELSE IF  '${type}' == 'annual-report'
     Select Options By  id=details_year  index  5
@@ -121,8 +122,8 @@ Verify Document Filetype
   Generic Download Click  //a[@data-e2e-name="download-file-link"]  ${file_type}
   Go Back
 
-Select Openbaar Dossier
-  Click  //table[@data-e2e-name="dossiers-table"]/tbody/tr[td[contains(.,'Openbaar')]]//td//a
+Select First Public Dossier
+  Click  (//table[@data-e2e-name="dossiers-table"]/tbody/tr[td[contains(.,'Openbaar')]]//td//a)[1]
 
 Click Continue To Publish
   Click  //*[@data-e2e-name="to-next-step-link"]

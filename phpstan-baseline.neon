@@ -127,18 +127,6 @@ parameters:
 			path: src/Command/Where.php
 
 		-
-			message: '#^Parameter \#1 \$file of method Oneup\\UploaderBundle\\Controller\\AbstractChunkedController\:\:handleChunkedUpload\(\) expects Symfony\\Component\\HttpFoundation\\File\\UploadedFile, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/Admin/CustomDropzoneController.php
-
-		-
-			message: '#^Parameter \#1 \$file of method Oneup\\UploaderBundle\\Controller\\AbstractController\:\:handleUpload\(\) expects Oneup\\UploaderBundle\\Uploader\\File\\FileInterface\|Symfony\\Component\\HttpFoundation\\File\\File, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/Admin/CustomDropzoneController.php
-
-		-
 			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 2
@@ -347,12 +335,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Domain/Search/Query/Facet/Input/DateFacetInput.php
-
-		-
-			message: '#^Parameter \$values of static method Erichard\\ElasticQueryBuilder\\Query\\Query\:\:terms\(\) expects array\<int, bool\|float\|int\|string\>, array\<string\> given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Domain/Search/Theme/Covid19QueryConditionBuilder.php
 
 		-
 			message: '#^Generator expects value type Generator\<int, T, mixed, mixed\>, Generator\<int, mixed, mixed, void\> given\.$#'
@@ -593,12 +575,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Service/Security/OrganisationSwitcher.php
-
-		-
-			message: '#^Method App\\Service\\Uploader\\UploaderService\:\:confirmUpload\(\) should return array\<Symfony\\Component\\HttpFoundation\\File\\File\> but returns array\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Service/Uploader/UploaderService.php
 
 		-
 			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'

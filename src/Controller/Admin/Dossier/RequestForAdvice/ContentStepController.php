@@ -30,7 +30,7 @@ class ContentStepController extends AbstractController
 
     #[Route(
         path: '/balie/dossier/request-for-advice/content/concept/{prefix}/{dossierId}',
-        name: 'app_admin_dossier_request_for_advice_content_concept',
+        name: 'app_admin_dossier_requestforadvice_content_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
@@ -74,7 +74,7 @@ class ContentStepController extends AbstractController
 
     #[Route(
         path: '/balie/dossier/request-for-advice/content/edit/{prefix}/{dossierId}',
-        name: 'app_admin_dossier_request_for_advice_content_edit',
+        name: 'app_admin_dossier_requestforadvice_content_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]

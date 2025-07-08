@@ -18,6 +18,8 @@ class ContentExtractOptions
 
     private ?int $pageNumber = null;
 
+    private ?string $localFile = null;
+
     public static function create(): self
     {
         return new self();
@@ -89,5 +91,22 @@ class ContentExtractOptions
         $clone->pageNumber = null;
 
         return $clone;
+    }
+
+    public function withLocalFile(?string $localFile): self
+    {
+        $this->localFile = $localFile;
+
+        return $this;
+    }
+
+    public function hasLocalFile(): bool
+    {
+        return $this->localFile !== null;
+    }
+
+    public function getLocalFile(): ?string
+    {
+        return $this->localFile;
     }
 }

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Upload\FileType;
 
 use App\Domain\Upload\FileType\MimeTypeHelper;
+use App\Domain\Upload\UploadedFile;
 use App\Service\Uploader\UploadGroupId;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
-use Oneup\UploaderBundle\Uploader\File\FilesystemFile;
 
 class MimeTypeHelperTest extends MockeryTestCase
 {
@@ -36,8 +36,8 @@ class MimeTypeHelperTest extends MockeryTestCase
 
     public function testDetectMimetypeForBat(): void
     {
-        $upload = \Mockery::mock(FilesystemFile::class);
-        $upload->shouldReceive('getClientOriginalName')->andReturn('1234.bat');
+        $upload = \Mockery::mock(UploadedFile::class);
+        $upload->shouldReceive('getOriginalFilename')->andReturn('1234.bat');
         $upload->shouldReceive('getPathname')->andReturn(__DIR__ . '/invalid-upload.bat');
 
         self::assertEquals(
@@ -48,8 +48,8 @@ class MimeTypeHelperTest extends MockeryTestCase
 
     public function testDetectMimetypeForCsv(): void
     {
-        $upload = \Mockery::mock(FilesystemFile::class);
-        $upload->shouldReceive('getClientOriginalName')->andReturn('1234.bat');
+        $upload = \Mockery::mock(UploadedFile::class);
+        $upload->shouldReceive('getOriginalFilename')->andReturn('1234.bat');
         $upload->shouldReceive('getPathname')->andReturn(__DIR__ . '/valid-upload-file.csv');
 
         self::assertEquals(

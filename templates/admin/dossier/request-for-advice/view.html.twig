@@ -17,3 +17,11 @@
     'admin.dossiers.request-for-advice.delete_bullet-2' | trans,
     'admin.dossiers.request-for-advice.delete_bullet-3' | trans,
 ] %}
+
+{% block dossier_link %}
+    {% if dossier.link is not empty %}
+        <twig:Admin:Definition term="{{ 'admin.dossiers.request-for-advice.link' | trans }}">
+            <a class="text-bhr-sea-blue underline" href="{{ dossier.link }}">{{ dossier.link }}</a>
+        </twig:Admin:Definition>
+    {% endif %}
+{% endblock %}

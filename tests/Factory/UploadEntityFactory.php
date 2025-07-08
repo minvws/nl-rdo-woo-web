@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Factory;
 
-use App\Domain\Uploader\UploadEntity;
+use App\Domain\Upload\UploadEntity;
 use App\Service\Uploader\UploadGroupId;
 use Symfony\Component\HttpFoundation\InputBag;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
@@ -23,7 +23,7 @@ final class UploadEntityFactory extends PersistentProxyObjectFactory
     {
         return [
             'user' => UserFactory::new(),
-            'uploadId' => self::faker()->randomAscii(),
+            'uploadId' => sprintf('file-%s', self::faker()->uuid()),
             'uploadGroupId' => UploadGroupId::WOO_DECISION_DOCUMENTS,
             'context' => new InputBag(),
         ];

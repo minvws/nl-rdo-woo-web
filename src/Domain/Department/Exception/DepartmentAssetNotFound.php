@@ -8,12 +8,11 @@ use App\Entity\Department;
 
 final class DepartmentAssetNotFound extends \RuntimeException implements DepartmentException
 {
-    public static function create(Department $department, string $file, ?\Throwable $previous = null): self
+    public static function noLogoFound(Department $department, ?\Throwable $previous = null): self
     {
         return new self(sprintf(
-            'Department with id "%s" does not have an asset file named "%s"',
+            'Department with id "%s" does not have an logo file',
             $department->getId(),
-            $file,
         ), previous: $previous);
     }
 }

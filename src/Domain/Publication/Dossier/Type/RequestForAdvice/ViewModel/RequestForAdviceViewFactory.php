@@ -23,6 +23,7 @@ final readonly class RequestForAdviceViewFactory
         return new RequestForAdvice(
             commonDossier: $this->commonDossierViewFactory->make($dossier),
             date: $dateFrom,
+            link: $dossier->getLink(),
         );
     }
 }

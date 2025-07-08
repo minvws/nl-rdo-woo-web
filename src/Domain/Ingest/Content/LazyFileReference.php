@@ -7,7 +7,7 @@ namespace App\Domain\Ingest\Content;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Storage\EntityStorageService;
 
-class LazyFileReference
+class LazyFileReference implements FileReferenceInterface
 {
     /** @var callable */
     private $loader;
@@ -40,10 +40,11 @@ class LazyFileReference
     ): self {
         return new self(
             function () use ($entity, $options, $entityStorage) {
-                $filePath = $options->hasPageNumber()
-                    ? $entityStorage->downloadPage($entity, $options->getPageNumber())
-                    : $entityStorage->downloadEntity($entity);
+                if ($options->hasPageNumber()) {
+                    throw ContentExtractException::forCannotCreateLazyFileReferenceForPage();
+                }
 
+                $filePath = $entityStorage->downloadEntity($entity);
                 if ($filePath === false) {
                     throw ContentExtractException::forCannotCreateLazyFileReference($entity);
                 }

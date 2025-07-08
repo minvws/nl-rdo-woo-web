@@ -81,9 +81,9 @@ final readonly class AttachmentTypeBranch
     }
 
     /**
-     * @phpstan-return AttachmentTypeBranchArray
-     *
      * @return array<string,mixed>
+     *
+     * @phpstan-return AttachmentTypeBranchArray
      */
     public function toArray(TranslatorInterface $translator): array
     {

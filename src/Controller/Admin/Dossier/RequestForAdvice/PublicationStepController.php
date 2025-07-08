@@ -29,7 +29,7 @@ class PublicationStepController extends AbstractController
 
     #[Route(
         path: '/balie/dossier/request-for-advice/publish/concept/{prefix}/{dossierId}',
-        name: 'app_admin_dossier_request_for_advice_publication_concept',
+        name: 'app_admin_dossier_requestforadvice_publication_concept',
         methods: ['GET', 'POST']
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
@@ -59,7 +59,7 @@ class PublicationStepController extends AbstractController
 
     #[Route(
         path: '/balie/dossier/request-for-advice/publish/edit/{prefix}/{dossierId}',
-        name: 'app_admin_dossier_request_for_advice_publication_edit',
+        name: 'app_admin_dossier_requestforadvice_publication_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]

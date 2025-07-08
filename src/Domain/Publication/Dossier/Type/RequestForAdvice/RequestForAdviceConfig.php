@@ -60,7 +60,7 @@ readonly class RequestForAdviceConfig implements DossierTypeConfigInterface
 
     public function getCreateRouteName(): string
     {
-        return 'app_admin_dossier_request_for_advice_details_create';
+        return 'app_admin_dossier_requestforadvice_details_create';
     }
 
     public function getSubEntityClasses(): array

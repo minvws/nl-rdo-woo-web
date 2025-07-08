@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Public;
 
+use App\Domain\Content\Page\ContentPageService;
+use App\Domain\Content\Page\ContentPageType;
 use App\Service\Search\Query\Definition\BrowseMainAggregationsQueryDefinition;
 use App\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +21,7 @@ class HomeController extends AbstractController
     public function __construct(
         private readonly SearchService $searchService,
         private readonly BrowseMainAggregationsQueryDefinition $queryDefinition,
+        private readonly ContentPageService $contentPageService,
     ) {
     }
 
@@ -45,6 +48,9 @@ class HomeController extends AbstractController
         }
 
         return $this->render('public/home/index.html.twig', [
+            'intro' => $this->contentPageService->getViewModel(ContentPageType::HOMEPAGE_INTRO),
+            'other_publications' => $this->contentPageService->getViewModel(ContentPageType::HOMEPAGE_OTHER_PUBLICATIONS),
+            'woo_request' => $this->contentPageService->getViewModel(ContentPageType::HOMEPAGE_WOO_REQUEST),
             'facets' => $this->searchService->getResult($this->queryDefinition),
         ]);
     }

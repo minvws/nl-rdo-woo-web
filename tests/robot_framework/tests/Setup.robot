@@ -2,6 +2,7 @@
 Documentation       This file contains testcases that can be used to initiate a new environment and getting an OTP.
 Resource            ../resources/Setup.resource
 
+
 *** Test Cases ***
 Initiate local environment
   [Documentation]  Creates a new admin user and stores the OTP code in your .zshrc file.

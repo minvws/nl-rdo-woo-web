@@ -36,15 +36,8 @@ class RequestForAdviceMainDocument extends AbstractMainDocument
      */
     public static function getAllowedTypes(): array
     {
-        return AttachmentType::getCasesWithout(
-            AttachmentType::DESIGNATION_DECISION,
-            AttachmentType::APPOINTMENT_DECISION,
-            AttachmentType::CONCESSION,
-            AttachmentType::RECOGNITION_DECISION,
-            AttachmentType::CONSENT_DECISION,
-            AttachmentType::EXEMPTION_DECISION,
-            AttachmentType::SUBSIDY_DECISION,
-            AttachmentType::PERMIT,
-        );
+        return [
+            AttachmentType::REQUEST_FOR_ADVICE,
+        ];
     }
 }

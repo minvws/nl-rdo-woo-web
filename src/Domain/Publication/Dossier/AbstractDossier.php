@@ -108,6 +108,7 @@ abstract class AbstractDossier
             DossierValidationGroup::DISPOSITION_DETAILS->value,
             DossierValidationGroup::OTHER_PUBLICATION_DETAILS->value,
             DossierValidationGroup::ADVICE_DETAILS->value,
+            DossierValidationGroup::REQUEST_FOR_ADVICE_DETAILS->value,
         ],
     )]
     #[Assert\LessThanOrEqual(
@@ -119,6 +120,7 @@ abstract class AbstractDossier
             DossierValidationGroup::DISPOSITION_DETAILS->value,
             DossierValidationGroup::OTHER_PUBLICATION_DETAILS->value,
             DossierValidationGroup::ADVICE_DETAILS->value,
+            DossierValidationGroup::REQUEST_FOR_ADVICE_DETAILS->value,
         ],
     )]
     protected ?\DateTimeImmutable $dateFrom = null;

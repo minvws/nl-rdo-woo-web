@@ -28,7 +28,7 @@ readonly class DossierPathHelper
             DossierType::COMPLAINT_JUDGEMENT => 'app_complaintjudgement_detail',
             DossierType::OTHER_PUBLICATION => 'app_otherpublication_detail',
             DossierType::ADVICE => 'app_advice_detail',
-            DossierType::REQUEST_FOR_ADVICE => 'app_request_for_advice_detail',
+            DossierType::REQUEST_FOR_ADVICE => 'app_requestforadvice_detail',
         };
 
         return $this->router->generate(

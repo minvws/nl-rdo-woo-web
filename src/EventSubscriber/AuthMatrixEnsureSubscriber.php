@@ -59,6 +59,7 @@ readonly class AuthMatrixEnsureSubscriber implements EventSubscriberInterface
             '/balie/profiel',
             '/balie/toegankelijkheid',
             '/balie/api',
+            '/balie/upload',
         ];
         if (in_array($uri, $allowedRoutes)) {
             return;

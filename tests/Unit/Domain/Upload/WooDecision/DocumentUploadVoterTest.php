@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Upload\WooDecision;
 
 use App\Domain\Upload\Dossier\DossierUploadRequestValidator;
+use App\Domain\Upload\UploadRequest;
+use App\Domain\Upload\UploadService;
 use App\Domain\Upload\WooDecision\DocumentUploadVoter;
-use App\Domain\Uploader\UploadRequest;
-use App\Domain\Uploader\UploadService;
 use App\Service\Uploader\UploadGroupId;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

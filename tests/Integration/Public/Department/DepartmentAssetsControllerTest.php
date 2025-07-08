@@ -64,7 +64,7 @@ final class DepartmentAssetsControllerTest extends WebTestCase
         $this->client->request(
             'GET',
             sprintf(
-                '/assets/department/%s/logo.svg',
+                '/assets/department/%s/logo',
                 $department->getId(),
             ),
         );

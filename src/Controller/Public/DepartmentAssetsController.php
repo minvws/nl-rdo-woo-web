@@ -23,15 +23,13 @@ final class DepartmentAssetsController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/assets/department/{id}/{file}',
-        name: 'app_department_assets_download',
+        '/assets/department/{id}/logo',
+        name: 'app_department_logo_download',
         methods: ['GET'],
     )]
-    public function download(
-        #[MapEntity()] Department $department,
-        string $file,
-    ): StreamedResponse {
-        $stream = $this->departmentFileService->getFileAsStream($department, $file);
+    public function downloadLogo(#[MapEntity()] Department $department): StreamedResponse
+    {
+        $stream = $this->departmentFileService->getLogoAsStream($department);
 
         return $this->downloadHelper->getReponseForEntityAndStream($department, $stream);
     }

@@ -44,7 +44,7 @@ Het gehele document wordt openbaar gemaakt met dit besluit.
 
 Het document wordt deels openbaar gemaakt met dit besluit. Een of meerdere beoordelingsgrond(en) van de Woo zijn van toepassing bij dit document.
 
-### ### Niet openbaar
+### Niet openbaar
 
 Het document wordt niet openbaar gemaakt omdat een of meerdere beoordelingsgrond(en) van toepassing zijn. De metadata van het document, zoals bestandsnaam, datum, beoordelingsgrond is opgenomen in het productierapport bij het besluit.
 

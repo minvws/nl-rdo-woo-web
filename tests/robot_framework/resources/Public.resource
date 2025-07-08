@@ -1,11 +1,12 @@
 *** Settings ***
 Documentation       Resource file with generic keywords.
 Library             String
-Library             Browser
-Library             DebugLibrary
 Library             DateTime
 Library             DateTimeTZ
+Library             Browser
+Library             DebugLibrary
 Resource            Generic.resource
+
 
 *** Variables ***
 ${URL_PUBLIC}   ${EMPTY}
@@ -138,14 +139,22 @@ Select Filter Options - Dossier
   Sleep  2s  # Wait for page update
   RETURN  ${total_count}  ${publication_count}  #  ${document_count}  ${attachment_count}
 
-Compare Search Result Summary
-  [Arguments]  ${expected_results}  ${expected_publications}
+Get Search Result Count
   ${text} =  Get Text  //span[@data-e2e-name="result-count"]
   ${results} =  Remove String Using Regexp  ${text}  \\D
+  RETURN  ${results}
+
+Get Search Dossier Count
+  ${text} =  Get Text  //span[@data-e2e-name="dossier-count"]
+  ${results} =  Remove String Using Regexp  ${text}  \\D
+  RETURN  ${results}
+
+Compare Search Result Summary
+  [Arguments]  ${expected_results}  ${expected_publications}
+  ${results} =  Get Search Result Count
   Should Be Equal As Numbers  ${results}  ${expected_results}
   IF  '${expected_publications}' != 'IGNORE'
-    ${text} =  Get Text  //span[@data-e2e-name="dossier-count"]
-    ${publications} =  Remove String Using Regexp  ${text}  \\D
+    ${publications} =  Get Search Dossier Count
     Should Be Equal As Numbers  ${publications}  ${expected_publications}
   END
 
@@ -196,8 +205,6 @@ Click Bekijk Per Bestuursorgaan
 Select Filter Options - Date
   [Arguments]  ${date_from}  ${date_to}
   Apply Date Filters Through URL  ${date_from}  ${date_to}
-  # Check if filtering went correct by checking facet pills, as sometimes the date component reverts to the previous value
-  Take Screenshot
   ${date_from} =  Convert Date  date=${date_from}  date_format=%d-%m-%Y
   ${date_to} =  Convert Date  date=${date_to}  date_format=%d-%m-%Y
   ${from_text} =  Convert Timestamp Format  timestamp=${date_from}  locale=nl  time_format=d MMMM Y
@@ -231,3 +238,9 @@ Verify Document Preview
   [Documentation]  Should contain three items and the alt text of the images should say Pagina #
   Get Element Count  //ol[@data-e2e-name="preview-list"]/li  >=  1
   Get Attribute  (//ol[@data-e2e-name="preview-list"]/li)[1]//img  alt  contains  Pagina 1
+
+Click Clear All Filters
+  Click  //*[@data-e2e-name="clear-all-filters"]
+
+Click Start A New Search
+  Click  //*[@data-e2e-name="start-new-search"]

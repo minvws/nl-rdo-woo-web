@@ -12,7 +12,7 @@ use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Twig\Environment;
 
-final readonly class DepartmentService
+readonly class DepartmentService
 {
     public function __construct(
         private DepartmentRepository $repository,

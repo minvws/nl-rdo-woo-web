@@ -13,6 +13,7 @@ Library             RPA.PDF
 Resource            Admin.resource
 Resource            Dossier.resource
 
+
 *** Variables ***
 ${TEST_DATA_ROOT}               tests/robot_framework/files
 ${DUMMY_PDF}                    ${TEST_DATA_ROOT}/dummy.pdf
@@ -22,6 +23,7 @@ ${PDF_TEMPLATE}                 ${TEST_DATA_ROOT}/template.html
 
 *** Keywords ***
 Generate Test Data Set
+  [Documentation]  Generates test data and stores their location in environment variables with test scope.
   [Arguments]  ${type}  ${has_attachment}=${FALSE}
   IF  '${type}' == 'woo-decision'
     ${location} =  Generate Test PDFs  5  ${has_attachment}

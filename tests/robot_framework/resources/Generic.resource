@@ -8,6 +8,7 @@ Library             String
 Library             DebugLibrary
 Library             Browser
 
+
 *** Variables ***
 ${TST_BALIE_USER}           email@example.org
 ${TST_BALIE_PASSWORD}       IkLoopNooitVastVandaag

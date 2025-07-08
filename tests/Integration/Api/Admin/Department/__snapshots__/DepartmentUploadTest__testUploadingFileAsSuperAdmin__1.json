@@ -1,9 +1,0 @@
-{
-    "data": {
-        "uploadUuid": "my-upload-uuid",
-        "originalName": "my_logo.svg",
-        "mimeType": "image/svg+xml",
-        "size": 94,
-        "groupId": "department"
-    }
-}

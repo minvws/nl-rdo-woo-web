@@ -7,9 +7,9 @@ namespace App\Api\Admin\Uploader\Status;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use App\Domain\Uploader\Exception\UploadNotFoundException;
-use App\Domain\Uploader\UploadEntity;
-use App\Domain\Uploader\UploadStatus;
+use App\Domain\Upload\Exception\UploadNotFoundException;
+use App\Domain\Upload\UploadEntity;
+use App\Domain\Upload\UploadStatus;
 use Symfony\Component\Uid\Uuid;
 
 #[ApiResource()]

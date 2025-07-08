@@ -26,13 +26,15 @@ final class DepartmentLandingPageViewFactoryTest extends UnitTestCase
         /** @var FileInfo&MockInterface $fileInfo */
         $fileInfo = \Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
-        $fileInfo->shouldReceive('getName')->andReturn($expectedFileInfoName = 'logo.png');
 
         /** @var Department&MockInterface $department */
         $department = \Mockery::mock(Department::class);
-        $department->shouldReceive('getName')->andReturn($expectedName = 'my name');
+        $department->shouldReceive('getName')->andReturn('my name');
         $department->shouldReceive('getId')->andReturn($expectedId = Uuid::fromRfc4122('1f040b49-271c-6a7c-9421-c9c7fcf0c37d'));
         $department->shouldReceive('getFileInfo')->andReturn($fileInfo);
+        $department->shouldReceive('getUpdatedAt')->andReturn($updatedAt = new \DateTimeImmutable('2023-10-01 12:00:00'));
+
+        $hash = hash('sha256', (string) $updatedAt->getTimestamp());
 
         $this->urlGenerator
             ->shouldReceive('generate')
@@ -41,42 +43,12 @@ final class DepartmentLandingPageViewFactoryTest extends UnitTestCase
 
         $this->urlGenerator
             ->shouldReceive('generate')
-            ->with('app_admin_department_assets_download', ['id' => $expectedId, 'file' => $expectedFileInfoName])
+            ->with('app_admin_department_logo_download', ['id' => $expectedId, 'cacheKey' => $hash])
             ->andReturn('/logo-endpoint');
 
         $this->urlGenerator
             ->shouldReceive('generate')
-            ->with('_uploader_upload_department', ['departmentId' => $expectedId])
-            ->andReturn('upload-logo-endpoint');
-
-        $factory = new DepartmentLandingPageViewFactory($this->urlGenerator);
-
-        $actual = $factory->make($department);
-
-        $this->assertMatchesObjectSnapshot($actual);
-    }
-
-    public function testMakeWithUploadedLogo(): void
-    {
-        /** @var FileInfo&MockInterface $fileInfo */
-        $fileInfo = \Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('isUploaded')->andReturnFalse();
-        $fileInfo->shouldNotReceive('getName');
-
-        /** @var Department&MockInterface $department */
-        $department = \Mockery::mock(Department::class);
-        $department->shouldReceive('getName')->andReturn($expectedName = 'my name');
-        $department->shouldReceive('getId')->andReturn($expectedId = Uuid::fromRfc4122('1f040b49-271c-6a7c-9421-c9c7fcf0c37d'));
-        $department->shouldReceive('getFileInfo')->andReturn($fileInfo);
-
-        $this->urlGenerator
-            ->shouldReceive('generate')
-            ->with('api_uploader_department_remove_logo', ['departmentId' => $expectedId])
-            ->andReturn('delete-logo-endpoint');
-
-        $this->urlGenerator
-            ->shouldReceive('generate')
-            ->with('_uploader_upload_department', ['departmentId' => $expectedId])
+            ->with('app_admin_upload')
             ->andReturn('upload-logo-endpoint');
 
         $factory = new DepartmentLandingPageViewFactory($this->urlGenerator);

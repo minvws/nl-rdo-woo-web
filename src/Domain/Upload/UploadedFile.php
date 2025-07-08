@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload;
 
-use Oneup\UploaderBundle\Uploader\File\FileInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
 class UploadedFile extends \SplFileInfo
@@ -14,7 +13,7 @@ class UploadedFile extends \SplFileInfo
         parent::__construct($filename);
     }
 
-    public static function fromFile(\SplFileInfo|FileInterface|File $file, ?string $originalFilename = null): self
+    public static function fromFile(\SplFileInfo|File $file, ?string $originalFilename = null): self
     {
         return new self($file->getPathname(), $originalFilename ?? $file->getBasename());
     }

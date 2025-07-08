@@ -7,6 +7,7 @@ Resource            Admin.resource
 Resource            Dossier.resource
 Resource            TestData.resource
 
+
 *** Variables ***
 ${FILE_NAME}        ${EMPTY}
 ${FILE_LOCATION}    ${EMPTY}

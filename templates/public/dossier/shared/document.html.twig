@@ -114,19 +114,18 @@
                     <caption class="sr-only">
                         {{ 'public.documents.document.related_attachments' | trans }}
                     </caption>
-                    <tbody>
+                    <thead class="sr-only">
                         <tr>
-                            <th class="sr-only">{{ 'global.document_name' | trans }}</th>
-                            <th class="sr-only">{{ 'global.document_date' | trans }}</th>
+                            <th scope="col">{{ 'global.document_type' | trans }}</th>
+                            <th scope="col">{{ 'global.document_name' | trans }}</th>
                         </tr>
+                    </thead>
+                    <tbody>
                         {% for attachment in attachments %}
                         <tr>
-                            <td class="woo-table-cell-light w-64 min-w-64">
-                                <twig:Public:FileIcon type="{{ attachment.sourceType.value }}" size="16" />
-                                <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a>
-                            </td>
+                            <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ attachment.type | trans | capitalize }}</th>
                             <td>
-                                {{ attachment.sourceType | trans }}, {{ attachment.size | size }}
+                                <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a> ({{ attachment.sourceType | trans }}, {{ attachment.size | size }})
                             </td>
                         </tr>
                         {% endfor %}

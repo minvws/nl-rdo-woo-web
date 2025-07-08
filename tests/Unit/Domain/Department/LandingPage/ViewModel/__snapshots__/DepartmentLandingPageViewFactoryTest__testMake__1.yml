@@ -1,4 +1,8 @@
+departmentId:
+    dateTime: '2025-06-03T19:54:34+00:00'
+    node: c9c7fcf0c37d
 name: 'my name'
 deleteLogoEndpoint: delete-logo-endpoint
 logoEndpoint: /logo-endpoint
 uploadLogoEndpoint: upload-logo-endpoint
+hasLogo: true

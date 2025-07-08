@@ -3,24 +3,19 @@ Documentation       Simple set to be run in PR's for a quick validation. Current
 Resource            ../resources/Setup.resource
 Resource            ../resources/WooDecision.resource
 Resource            ../resources/Organisations.resource
-Resource            ../resources/TestData.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
 Test Tags           single
 
+
 *** Test Cases ***
 Create a WooDecision
-  Generate Test Data Set  woo-decision
-  Publish Test WooDecision
-  ...  production_report=${PRODUCTION_REPORT}
-  ...  documents=${DOCUMENTS}
-  ...  number_of_documents=${NUMBER_OF_DOCUMENTS}
+  Publish Generated Test WooDecision
 
 
 *** Keywords ***
 Suite Setup
-  Cleansheet
   Suite Setup Generic
   Login Admin
   Select Organisation

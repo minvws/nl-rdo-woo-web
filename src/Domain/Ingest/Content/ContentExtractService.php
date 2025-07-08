@@ -44,7 +44,8 @@ readonly class ContentExtractService
             return $extracts->markAsFailure();
         }
 
-        $fileReference = LazyFileReference::createForEntityWithFileInfo($entity, $options, $this->entityStorage);
+        $fileReference = $this->getFileReference($options, $entity);
+
         $this->ensureEntityHashIsSet($entity, $options, $fileReference);
 
         try {
@@ -69,16 +70,14 @@ readonly class ContentExtractService
             $this->logWithContext('Content extract error: ' . $exception->getMessage(), $entity, LogLevel::ERROR);
             $extracts->markAsFailure();
         } finally {
-            if ($fileReference->hasPath()) {
-                $this->entityStorage->removeDownload($fileReference->getPath());
-            }
+            $this->cleanupFileReferenceDownload($fileReference);
         }
 
         return $extracts;
     }
 
     private function getExtract(
-        LazyFileReference $fileReference,
+        FileReferenceInterface $fileReference,
         EntityWithFileInfo $entity,
         ContentExtractorInterface $extractor,
         ContentExtractOptions $options,
@@ -128,7 +127,7 @@ readonly class ContentExtractService
     private function ensureEntityHashIsSet(
         EntityWithFileInfo $entity,
         ContentExtractOptions $options,
-        LazyFileReference $fileReference,
+        FileReferenceInterface $fileReference,
     ): void {
         if ($entity->getFileInfo()->getHash() !== null) {
             return;
@@ -153,5 +152,23 @@ readonly class ContentExtractService
         // further processing.
         $path = $fileReference->getPath();
         $this->entityStorage->setHash($entity, $path);
+    }
+
+    private function getFileReference(ContentExtractOptions $options, EntityWithFileInfo $entity): FileReferenceInterface
+    {
+        if ($options->hasLocalFile()) {
+            $fileReference = FileReference::forContentExtractOptions($options);
+        } else {
+            $fileReference = LazyFileReference::createForEntityWithFileInfo($entity, $options, $this->entityStorage);
+        }
+
+        return $fileReference;
+    }
+
+    private function cleanupFileReferenceDownload(FileReferenceInterface $fileReference): void
+    {
+        if ($fileReference instanceof LazyFileReference && $fileReference->hasPath()) {
+            $this->entityStorage->removeDownload($fileReference->getPath());
+        }
     }
 }

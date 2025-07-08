@@ -1,0 +1,32 @@
+queryString: true
+activeFacets: false
+queryParameters:
+    q: foo
+    sort: _score
+    sortorder: desc
+facetInputs: {  }
+operator:
+    name: AND
+    value: and
+limit: 0
+offset: 0
+pagination: true
+aggregations: true
+query: foo
+searchType:
+    dossier: false
+    document: false
+    all: true
+    notAll: false
+    name: ALL
+    value: all
+sortField:
+    name: SCORE
+    value: _score
+sortOrder:
+    name: DESC
+    value: desc
+baseQueryConditions: null
+mode:
+    accessibleDossierStatuses: [{ new: false, concept: false, scheduled: false, preview: true, published: false, newOrConcept: false, conceptOrScheduled: false, publiclyAvailable: true, publiclyAvailableOrScheduled: true, deleted: false, notDeleted: true, name: PREVIEW, value: preview }, { new: false, concept: false, scheduled: false, preview: false, published: true, newOrConcept: false, conceptOrScheduled: false, publiclyAvailable: true, publiclyAvailableOrScheduled: true, deleted: false, notDeleted: true, name: PUBLISHED, value: published }]
+    name: PUBLIC

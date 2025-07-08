@@ -8,6 +8,7 @@ use App\Domain\Ingest\Content\ContentExtractCollection;
 use App\Domain\Ingest\Content\ContentExtractOptions;
 use App\Domain\Ingest\Content\ContentExtractService;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Publication\FileInfo;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
@@ -50,16 +51,6 @@ final class PageContentExtractorTest extends UnitTestCase
     public function testExtract(): void
     {
         $pageNr = 123;
-
-        $this->fileInfo
-            ->shouldReceive('isPaginatable')
-            ->once()
-            ->andReturnTrue();
-
-        $this->entity
-            ->shouldReceive('getFileInfo')
-            ->andReturn($this->fileInfo);
-
         $this->subTypeIndexer
             ->shouldReceive('updatePage')
             ->once()
@@ -96,17 +87,17 @@ final class PageContentExtractorTest extends UnitTestCase
             ))
             ->andReturn($collection);
 
-        $this->extractor->extract($this->entity, $pageNr, false);
+        $workDir = '/foo/bar';
+        $localDocument = '/baz.pdf';
+        $context = new PdfPageProcessingContext($this->entity, $pageNr, $workDir, $localDocument);
+        $context->setLocalPageDocument('/baz_123.pdf');
+
+        $this->extractor->extract($context, false);
     }
 
     public function testExtractWhenUpdatingSubTypePageIndexFails(): void
     {
         $pageNr = 123;
-
-        $this->fileInfo
-            ->shouldReceive('isPaginatable')
-            ->once()
-            ->andReturnTrue();
 
         $this->entity
             ->shouldReceive('getFileInfo')
@@ -162,6 +153,11 @@ final class PageContentExtractorTest extends UnitTestCase
                 'exception' => $thrownException->getMessage(),
             ]);
 
-        $this->extractor->extract($this->entity, $pageNr, false);
+        $workDir = '/foo/bar';
+        $localDocument = '/baz.pdf';
+        $context = new PdfPageProcessingContext($this->entity, $pageNr, $workDir, $localDocument);
+        $context->setLocalPageDocument('/baz_123.pdf');
+
+        $this->extractor->extract($context, false);
     }
 }

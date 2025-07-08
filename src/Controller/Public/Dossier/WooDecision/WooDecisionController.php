@@ -17,7 +17,6 @@ use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFac
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Domain\Search\Theme\Covid19Theme;
 use App\Exception\ViewingNotAllowedException;
 use App\Service\DownloadResponseHelper;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -36,7 +35,7 @@ use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
  */
 class WooDecisionController extends AbstractController
 {
-    protected const MAX_ITEMS_PER_PAGE = 100;
+    protected const int MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
         private readonly PaginatorInterface $paginator,
@@ -48,13 +47,6 @@ class WooDecisionController extends AbstractController
         private readonly DossierFileViewFactory $dossierFileViewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
     ) {
-    }
-
-    #[Cache(public: true, maxage: 600, mustRevalidate: true)]
-    #[Route('/dossiers', name: 'app_woodecision_index', methods: ['GET'])]
-    public function index(): Response
-    {
-        return $this->redirectToRoute('app_theme', ['name' => Covid19Theme::URL_NAME]);
     }
 
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]

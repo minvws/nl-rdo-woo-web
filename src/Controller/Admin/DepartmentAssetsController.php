@@ -26,20 +26,18 @@ final class DepartmentAssetsController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/balie/assets/department/{id}/{file}',
-        name: 'app_admin_department_assets_download',
+        '/balie/assets/department/{id}/logo',
+        name: 'app_admin_department_logo_download',
         methods: ['GET'],
     )]
     #[IsGranted('AuthMatrix.department_landing_page.update')]
-    public function download(
-        #[MapEntity()] Department $department,
-        string $file,
-    ): StreamedResponse {
+    public function downloadLogo(#[MapEntity()] Department $department): StreamedResponse
+    {
         if (! $this->departmentService->userCanEditLandingpage($department)) {
             throw $this->createAccessDeniedException();
         }
 
-        $stream = $this->departmentFileService->getFileAsStream($department, $file);
+        $stream = $this->departmentFileService->getLogoAsStream($department);
 
         return $this->downloadHelper->getReponseForEntityAndStream($department, $stream);
     }

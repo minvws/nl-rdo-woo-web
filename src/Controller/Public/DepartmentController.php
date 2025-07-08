@@ -71,6 +71,12 @@ class DepartmentController extends AbstractController
         return $this->render(
             $this->departmentService->getTemplate($department),
             [
+                'departmentLogo' => $department->getFileInfo()->isUploaded()
+                    ? $this->generateUrl('app_department_logo_download', [
+                        'id' => $department->getId(),
+                        'cacheKey' => hash('sha256', (string) $department->getUpdatedAt()->getTimestamp()),
+                    ])
+                    : null,
                 'recents' => $this->dossierViewFactory->getRecentDossiersForDepartment(5, $department),
                 'facets' => $facetResult,
                 'department' => $department,

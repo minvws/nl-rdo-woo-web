@@ -2,6 +2,20 @@
 
 # Release notes
 
+## v1.14.0
+
+*3 juli 2025*
+
+### Balie
+
+Het is nu mogelijk om los van een advies, een adviesaanvraag te publiceren.
+Reden hiervoor is dat het advies en de adviesaanvraag door andere bestuursorganen gepubliceerd kunnen worden.
+Aan de adviesaanvraag kan een link toe worden gevoegd die verwijst naar het advies bijbehorend aan de adviesaanvraag.
+
+### Website
+
+Op de website kan nu gezocht worden op adviesaanvragen. Dit is mogelijk via zowel de zoekfunctionaliteit als de filters.
+
 ## v1.13.0
 
 *25 juni 2025*

@@ -107,9 +107,9 @@ enum AttachmentType: string implements TranslatableInterface
     }
 
     /**
-     * @phpstan-return AttachmentTypeArray
-     *
      * @return array<string,string>
+     *
+     * @phpstan-return AttachmentTypeArray
      */
     public function toArray(TranslatorInterface $translator, ?string $locale = null): array
     {

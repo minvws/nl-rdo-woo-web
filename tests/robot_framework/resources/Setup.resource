@@ -14,6 +14,7 @@ Library             OTP
 Resource            Admin.resource
 Resource            Public.resource
 
+
 *** Variables ***
 ${ENVIRONMENT}  ${EMPTY}
 ${HEADLESS}     ${EMPTY}

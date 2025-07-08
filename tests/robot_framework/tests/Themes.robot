@@ -7,6 +7,7 @@ Suite Setup         Suite Setup Generic
 Test Setup          Go To Public
 Test Tags           ci  themes
 
+
 *** Test Cases ***
 Covid19 Theme Page Accessible
   Skip

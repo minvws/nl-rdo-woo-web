@@ -150,7 +150,7 @@ final class DossierPathHelperTest extends MockeryTestCase
         $dossier->shouldReceive('getType')->andReturn(DossierType::REQUEST_FOR_ADVICE);
 
         $this->router->expects('generate')->with(
-            'app_request_for_advice_detail',
+            'app_requestforadvice_detail',
             [
                 'prefix' => 'dos-prefix',
                 'dossierId' => 'dos-nr',

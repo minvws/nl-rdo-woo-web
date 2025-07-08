@@ -20,9 +20,8 @@
             <tbody>
                 {% for page in pages %}
                     <tr>
-                        <td>
-                            {% set landingPageUrl = PUBLIC_BASE_URL ~ '/' ~ page.slug %}
-                            <a class="bhr-a" href="{{ landingPageUrl }}" data-e2e-name="content-page-url">{{ landingPageUrl }}</a>
+                        <td data-e2e-name="content-page-slug">
+                            {{ page.slug }}
                         </td>
                         <td>{{ page.title }}
                         <td><a class="bhr-a" href="{{ path('app_admin_content_page_edit', {slug: page.slug}) }}" data-e2e-name="content-page-edit">{{ 'admin.global.edit' | trans }}</a></td>

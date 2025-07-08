@@ -6,18 +6,27 @@ import DepartmentLogoManager from './DepartmentLogoManager.vue';
 describe('The "DepartmentLogoManager" component', () => {
   let fetchSpy: MockInstance;
 
-  const createComponent = (logoEndpoint: string | null = null) =>
-    mount(DepartmentLogoManager, {
+  type createComponentOptions = {
+    hasLogo?: boolean;
+  };
+
+  const createComponent = (options: createComponentOptions = {}) => {
+    const { hasLogo = false } = options;
+
+    return mount(DepartmentLogoManager, {
       props: {
         deleteEndpoint: 'mocked-delete-endpoint',
-        logoEndpoint,
+        logoEndpoint: 'mocked-logo-endpoint',
         uploadEndpoint: 'mocked-upload-endpoint',
+        departmentId: 'department-id',
+        hasLogo: hasLogo,
       },
       shallow: true,
       global: {
         renderStubDefaultSlot: true,
       },
     });
+  };
 
   const getUploadAreaComponent = (component: VueWrapper) =>
     component.findComponent({ name: 'UploadArea' });
@@ -48,11 +57,6 @@ describe('The "DepartmentLogoManager" component', () => {
       'uploaded',
       createTestFile({ name: 'test.svg' }),
       'mocked-upload-id',
-      {
-        department: {
-          asset_endpoint: 'mocked-returned-logo-endpoint',
-        },
-      },
     );
   };
 
@@ -91,7 +95,7 @@ describe('The "DepartmentLogoManager" component', () => {
 
   describe('when there is a logo', () => {
     test('should display the logo and a button to remove it', () => {
-      const component = createComponent('mocked-logo-endpoint');
+      const component = createComponent({ hasLogo: true });
 
       expect(getImageElement(component).attributes('src')).toBe(
         'mocked-logo-endpoint',
@@ -100,7 +104,7 @@ describe('The "DepartmentLogoManager" component', () => {
     });
 
     test('should not display the label and the upload area', () => {
-      const component = createComponent('mocked-logo-endpoint');
+      const component = createComponent({ hasLogo: true });
 
       expect(getLabelElement(component).exists()).toBe(false);
       expect(getUploadAreaComponent(component).exists()).toBe(false);
@@ -109,11 +113,13 @@ describe('The "DepartmentLogoManager" component', () => {
 
   describe('when a file is uploaded', () => {
     test('should display the logo which path can be found in the "logoEndpoint" property', async () => {
+      vi.spyOn(Date, 'now').mockReturnValue(1234567890);
+
       const component = createComponent();
 
       await mockFileIsUploaded(component);
       expect(getImageElement(component).attributes('src')).toBe(
-        'mocked-returned-logo-endpoint',
+        '/mocked-logo-endpoint?cacheKey=1234567890',
       );
     });
   });
@@ -142,7 +148,7 @@ describe('The "DepartmentLogoManager" component', () => {
 
   describe('the message saying the logo was removed', () => {
     test('should be displayed when a file is removed', async () => {
-      const component = createComponent('mocked-logo-endpoint');
+      const component = createComponent({ hasLogo: true });
 
       expect(hasLogoRemovedMessage(component)).toBe(false);
 
@@ -151,7 +157,7 @@ describe('The "DepartmentLogoManager" component', () => {
     });
 
     test('should no longer be displayed when a file is uploaded', async () => {
-      const component = createComponent('mocked-logo-endpoint');
+      const component = createComponent({ hasLogo: true });
 
       await getRemoveButtonElement(component).trigger('click');
       expect(hasLogoRemovedMessage(component)).toBe(true);
@@ -169,7 +175,7 @@ describe('The "DepartmentLogoManager" component', () => {
     });
 
     test('should make a DELETE request to the "deleteEndpoint" property', async () => {
-      const component = createComponent('mocked-logo-endpoint');
+      const component = createComponent({ hasLogo: true });
 
       expect(fetchSpy).not.toHaveBeenCalledWith('mocked-delete-endpoint');
 
@@ -180,7 +186,7 @@ describe('The "DepartmentLogoManager" component', () => {
     });
 
     test('should hide the logo and the remove button and display the label and the upload area', async () => {
-      const component = createComponent('mocked-logo-endpoint');
+      const component = createComponent({ hasLogo: true });
 
       expect(getImageElement(component).exists()).toBe(true);
       expect(getRemoveButtonElement(component).exists()).toBe(true);

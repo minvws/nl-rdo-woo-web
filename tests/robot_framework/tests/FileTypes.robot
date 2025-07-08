@@ -7,6 +7,7 @@ Suite Setup         Suite Setup
 Test Setup          Go To Admin
 Test Tags           ci  filetypes
 
+
 *** Test Cases ***
 Create a dossier with different filetypes using individual files, zip and 7z
   Create New Dossier  woo-decision

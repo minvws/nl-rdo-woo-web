@@ -16,4 +16,14 @@ class ContentExtractException extends \RuntimeException
             $entity->getId()->toRfc4122(),
         ));
     }
+
+    public static function forCannotCreateLazyFileReferenceForPage(): self
+    {
+        return new self('Cannot use a lazy file reference for a page');
+    }
+
+    public static function forNoLocalFileInContentExtractOptions(): self
+    {
+        return new self('No local file in content extract options');
+    }
 }

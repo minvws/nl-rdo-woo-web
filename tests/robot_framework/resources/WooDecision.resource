@@ -5,6 +5,8 @@ Library             DebugLibrary
 Library             FakerLibrary
 Resource            Admin.resource
 Resource            Dossier.resource
+Resource            TestData.resource
+
 
 *** Variables ***
 ${ENVIRONMENT}          ${EMPTY}
@@ -31,6 +33,18 @@ Publish Test WooDecision
   Click Continue To Publish
   Publish Dossier And Return To Admin Home  ${publication_status}
   Log  Dossier reference: ${DOSSIER_REFERENCE}
+
+Publish Generated Test WooDecision
+  [Arguments]
+  ...  ${prefix}=E2E-A
+  ...  ${publication_status}=Gepubliceerd
+  Generate Test Data Set  woo-decision
+  Publish Test WooDecision
+  ...  production_report=${PRODUCTION_REPORT}
+  ...  documents=${DOCUMENTS}
+  ...  number_of_documents=${NUMBER_OF_DOCUMENTS}
+  ...  prefix=${prefix}
+  ...  publication_status=${publication_status}
 
 Fill Out WooDecision Details
   [Arguments]  ${decision}  ${has_attachment}=${FALSE}

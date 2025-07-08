@@ -6,8 +6,8 @@ namespace App\Domain\Upload\WooDecision;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use App\Domain\Upload\Event\UploadValidatedEvent;
 use App\Domain\Upload\Process\EntityUploadStorer;
-use App\Domain\Uploader\Event\UploadValidatedEvent;
 use App\Service\Uploader\UploadGroupId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Uid\Uuid;

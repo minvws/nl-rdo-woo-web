@@ -15,15 +15,15 @@ class ContentPage
     use TimestampableTrait;
 
     #[ORM\Id]
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(length: 50)]
     #[Assert\Sequentially([
-        new Assert\Length(min: 2, max: 20),
+        new Assert\Length(min: 2, max: 50),
         new Assert\Regex(pattern: '/^[a-z0-9-]+$/i', message: 'use_only_letters_numbers_and_dashes'),
     ])]
     private string $slug;
 
-    #[ORM\Column(length: 100, nullable: false)]
-    #[Assert\Length(min: 1, max: 100)]
+    #[ORM\Column(length: 200, nullable: false)]
+    #[Assert\Length(min: 1, max: 200)]
     private string $title;
 
     #[ORM\Column(type: 'text', nullable: false)]
@@ -42,7 +42,7 @@ class ContentPage
         return $this->slug;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -52,7 +52,7 @@ class ContentPage
         $this->title = $title;
     }
 
-    public function getContent(): ?string
+    public function getContent(): string
     {
         return $this->content;
     }

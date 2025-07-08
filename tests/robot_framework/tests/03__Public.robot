@@ -2,13 +2,14 @@
 Documentation       Tests that focus on the public pages.
 ...                 This is named 03 because we want to run this after 02, so we have content to search for.
 ...                 To run only this suite, run the tag 'public-init'.
-Resource            ../resources/Setup.resource
-Resource            ../resources/Public.resource
 Resource            ../resources/Dossier.resource
+Resource            ../resources/Setup.resource
 Library             DependencyLibrary
+Library             FakerLibrary
 Suite Setup         Suite Setup
 Test Setup          Test Setup
 Test Tags           ci  public  public-init
+
 
 *** Test Cases ***
 Filter Options For Dossiers
@@ -85,6 +86,19 @@ Filter on dates
   Select Filter Options - Date  date_from=${tomorrow}  date_to=01-01-2030
   Verify Search Results Date Range  date_from=${tomorrow}  date_to=01-01-2030
 
+Clear all filters
+  Select Filter Options - Dossier  woo-decision
+  Select Filter Options - Document Type  pdf
+  Filter Pill Count Should Be  5
+  Click Clear All Filters
+  Filter Pill Count Should Be  0
+
+Start new search link when no search results
+  Search On Public For  36b832f7-045e-4b8f-b1eb-13e07381cc67  0
+  Compare Search Result Summary  0  0
+  Click Start A New Search
+  Search Results Should Not Be Zero
+
 
 *** Keywords ***
 Suite Setup
@@ -131,3 +145,13 @@ Verify Search Results Date Range
       ...  msg=Date ${date} is not within the range of ${date_from} and ${date_to}
     END
   END
+
+Filter Pill Count Should Be
+  [Arguments]  ${count}
+  Get Element Count  //*[@data-e2e-name="facet-pill"]  should be  ${count}
+
+Search Results Should Not Be Zero
+  ${results} =  Get Search Result Count
+  ${dossier} =  Get Search Dossier Count
+  Should Not Be Equal As Numbers  ${results}  0
+  Should Not Be Equal As Numbers  ${dossier}  0

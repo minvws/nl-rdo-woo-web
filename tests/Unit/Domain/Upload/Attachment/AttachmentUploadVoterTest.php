@@ -6,8 +6,8 @@ namespace App\Tests\Unit\Domain\Upload\Attachment;
 
 use App\Domain\Upload\Attachment\AttachmentUploadVoter;
 use App\Domain\Upload\Dossier\DossierUploadRequestValidator;
-use App\Domain\Uploader\UploadRequest;
-use App\Domain\Uploader\UploadService;
+use App\Domain\Upload\UploadRequest;
+use App\Domain\Upload\UploadService;
 use App\Service\Uploader\UploadGroupId;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

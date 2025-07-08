@@ -203,6 +203,8 @@ tasks:
     cmds:
       - task: dc:shell
         vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --group=example --append" }
+      - task: dc:shell
+        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --group=vws --append" }
 
   app:migrate:diff:
     desc: Run (doctrine) database migrations diff
@@ -334,6 +336,12 @@ tasks:
       - task: dc:shell
         vars: { CLI_ARGS: "app composer syncdotenv" }
 
+  app:postdeploy:
+    desc: Run postdeploy script
+    cmds:
+      - task: dc:shell
+        vars: { CLI_ARGS: "app bin/console woopie:post-deploy" }
+
   app:update:
     desc: (re) Pull dependencies, run migrations, build front-end and sync .env
     aliases: [app:refresh]
@@ -347,6 +355,7 @@ tasks:
       - task: app:syncdotenv
       - task: docs:build:ci
       - task: minio:create-buckets
+      - task: app:postdeploy
 
   d:create-cache-volumes:
     cmds:

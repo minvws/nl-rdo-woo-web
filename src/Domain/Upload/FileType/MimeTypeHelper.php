@@ -7,8 +7,6 @@ namespace App\Domain\Upload\FileType;
 use App\Domain\Upload\UploadedFile;
 use App\Service\Uploader\UploadGroupId;
 use League\MimeTypeDetection\FinfoMimeTypeDetector;
-use Oneup\UploaderBundle\Uploader\File\FileInterface;
-use Oneup\UploaderBundle\Uploader\File\FilesystemFile;
 use Symfony\Component\HttpFoundation\File\File;
 
 readonly class MimeTypeHelper
@@ -30,7 +28,7 @@ readonly class MimeTypeHelper
         );
     }
 
-    public function detectMimeType(FileInterface|File|UploadedFile|FilesystemFile $file): ?string
+    public function detectMimeType(File|UploadedFile $file): ?string
     {
         $detector = new FinfoMimeTypeDetector();
 
@@ -45,16 +43,10 @@ readonly class MimeTypeHelper
         );
     }
 
-    private function getOriginalFileName(FileInterface|File|UploadedFile|FilesystemFile $file): string
+    private function getOriginalFileName(File|UploadedFile $file): string
     {
-        if ($file instanceof FilesystemFile) {
-            return $file->getClientOriginalName();
-        }
-
-        if ($file instanceof UploadedFile) {
-            return $file->getOriginalFilename();
-        }
-
-        return '';
+        return $file instanceof UploadedFile
+            ? $file->getOriginalFilename()
+            : '';
     }
 }

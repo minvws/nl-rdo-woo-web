@@ -42,7 +42,7 @@ class Document extends AbstractPublicationItem
     )]
     private Collection $dossiers;
 
-    #[ORM\Column(length: 255, unique: true, nullable: false)]
+    #[ORM\Column(length: 255, nullable: false)]
     private string $documentNr;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]

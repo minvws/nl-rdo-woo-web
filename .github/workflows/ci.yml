@@ -147,17 +147,9 @@ jobs:
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
 
-  test-pr:
-    name: 'Test PR suite'
-    if: ${{ github.event_name == 'pull_request' }}
-    uses: minvws/nl-rdo-woo-web-private/.github/workflows/e2e-ci.yml@main
-    secrets: inherit
-    with:
-      test_tag: 'ci'
-
   test:
     name: 'Test full suite'
-    if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
+    if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || github.event_name == 'pull_request' }}
     uses: minvws/nl-rdo-woo-web-private/.github/workflows/e2e-ci.yml@main
     secrets: inherit
     with:

@@ -221,4 +221,30 @@ class SearchParametersTest extends UnitTestCase
             $parameters->withoutFacetFilter($dateFacetDefinition, 'from', '2021-01-15'),
         );
     }
+
+    public function testWithoutFacetFilters(): void
+    {
+        $dateFacetDefinition = new DateFacet();
+
+        $dateFacetInput = DateFacetInput::fromParameterBag(
+            $dateFacetDefinition,
+            new ParameterBag([
+                'dt' => [
+                    'from' => '2021-01-15',
+                    'to' => '2024-01-15',
+                ],
+            ])
+        );
+
+        $parameters = new SearchParameters(
+            facetInputs: new FacetInputCollection(...[
+                FacetKey::DATE->value => $dateFacetInput,
+            ]),
+            query: 'foo',
+        );
+
+        $this->assertMatchesObjectSnapshot(
+            $parameters->withoutFacetFilters(),
+        );
+    }
 }

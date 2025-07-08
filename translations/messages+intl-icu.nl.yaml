@@ -758,6 +758,7 @@ public.search.label: "Zoeken"
 public.search.label.results: "Ga naar de zoekresultaten"
 public.search.filter_results: "Filter resultaten"
 public.search.filter_remove: "Filter verwijderen"
+public.search.clear_all_filters: "Alle filters verwijderen"
 public.search.invalid_date_period: "Kies een periode waarbij de einddatum na de startdatum ligt."
 
 public.search.no_search_results.title: "Geen zoekresultaten"
@@ -766,14 +767,13 @@ public.search.suggestions: "Suggesties"
 public.search.check_spelling: "Controleer de spelling van uw zoekopdracht"
 public.search.try_different_search_term: "Probeer een andere zoekterm"
 public.search.use_less_keywords: "Gebruik minder zoekwoorden"
+public.search.start_new_search: "Start een nieuwe zoekopdracht"
 
 public.search.only_first_set_displayed: "De eerste <span class='font-bold'>{display_count} resultaten</span> van uw zoekopdracht worden getoond."
 public.search.refine_results: "Verfijn uw zoekopdracht door middel van specifieke zoektermen en de beschikbare filteropties."
 
 public.intro.label.oga: "WooPlatform"
 public.intro.description.oga: "Openbaar gemaakte informatie"
-public.intro.maintext.oga.paragraph-1: "Iedereen heeft recht op informatie over wat de overheid doet, hoe ze dat doet en waarom. Bestuursorganen moeten die informatie uit zichzelf geven, of als iemand daarom vraagt. De informatie wordt dan openbaar."
-public.intro.maintext.oga.paragraph-2: 'Op dit platform vindt u informatie die openbaar is gemaakt op grond van de <a href="https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo">Wet open overheid (Woo)</a> door het Ministerie van Volksgezondheid, Welzijn en Sport en aan haar verwante (zelfstandig) bestuursorganen. Het platform zal de komende periode aangevuld worden met meer informatie.'
 public.intro.more_about_platform: "Meer over dit platform"
 public.publications.recent_publications: "Recente publicaties"
 
@@ -781,19 +781,6 @@ public.department.public_information_by_department: "Openbaar gemaakte informati
 public.department.public_information_default_description: "Op deze pagina vindt u een overzicht van de informatie die door {department} openbaar gemaakt is op grond van de Wet open overheid."
 public.department.description: "Op dit platform vindt u informatie die openbaar is gemaakt op grond van de Wet open overheid door het Ministerie van Volksgezondheid, Welzijn en Sport en aan haar verwante (zelfstandig) bestuursorganen. Het platform zal de komende periode aangevuld worden met meer informatie."
 public.department.view_by_department: "Bekijk de openbaar gemaakte informatie per bestuursorgaan."
-
-public.other-publications.title: "Andere publicaties van VWS"
-public.other-publications.processing_register: "Verwerkingsregister"
-public.other-publications.algorithm_register: "Algoritmeregister"
-public.other-publications.github_vws: "Overzicht broncode van het ministerie van VWS op GitHub"
-
-public.woo-process.title: "Een Woo-verzoek indienen"
-public.woo-process.description: "U mag informatie opvragen over wat de overheid doet. Dat is vastgelegd in de <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Wet open overheid (Woo)</a>. U vraagt informatie op via een Woo-verzoek. Voordat u een Woo-verzoek indient:"
-public.woo-process.step-1: "Controleert u of de informatie die u zoekt al openbaar is. Kijk bijvoorbeeld op <a href='https://www.rijksoverheid.nl/documenten'>rijksoverheid.nl</a>, <a href='https://zoek.officielebekendmakingen.nl/uitgebreidzoeken/parlementair'>het archief van de Eerste Kamer en de Tweede Kamer</a> of <a href='https://open.overheid.nl/'>open.overheid.nl</a> of de website van het bestuursorgaan."
-public.woo-process.step-2: "Gaat u na bij welk bestuursorgaan u het verzoek moet indienen."
-public.woo-process.step-3: "Geeft u zo precies mogelijk aan welke informatie u zoekt: over welk onderwerp, met welke betrokken personen en uit welke periode."
-public.woo-process.step-4: "Deelt u uw telefoonnummer in het verzoek. Mogelijk belt het bestuursorgaan u met extra vragen om uw verzoek te duiden."
-public.woo-process.step-regarding-vws: "Heeft u een verzoek voor het ministerie van Volksgezondheid, Welzijn en Sport (VWS) en gaat het over de COVID-19 periode? Bekijk de pagina <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/aanpak-vws-woo-verzoeken-corona'>Aanpak VWS Woo-verzoeken corona</a>. Voor overige verzoeken verwijzen wij u naar <a href='https://www.rijksoverheid.nl/ministeries/ministerie-van-volksgezondheid-welzijn-en-sport/contact/woo-verzoek-indienen'>Woo-verzoek indienen bij het ministerie van VWS</a>."
 
 public.browse.title: "Zoek per categorie"
 public.browse.facets.title: "Zoek via de categorieën door openbaar gemaakte informatie"
@@ -856,7 +843,7 @@ public.inquiry.page_title: "Besluiten en documenten voor zaaknummer {case_number
 public.inquiry.decisions_for_case: "Er {are_or_is} {number_of_decisions} genomen voor het verzoek om informatie te openbaren met zaaknummer {case_number}"
 
 public.documents.viewer.click_on_page: "Klik op een pagina om de {fileInfo} ({fileSize} - {pages}) te openen in uw browser"
-public.documents.viewer.more_than_50: "Pagina 1 - 50 van {total_pages}."
+public.documents.viewer.more_than_50: "Pagina 1 - {page_limit} van {total_pages}."
 public.documents.viewer.document_preview: "Pagina-voorvertoning"
 public.documents.viewer.skip_document_preview: "Sla pagina-voorvertoning over"
 public.documents.viewer.back_to_document_preview: "Ga terug naar pagina-voorvertoning"
@@ -1315,15 +1302,16 @@ public.search.type.advice_main_document: 'Advies'
 
 #START request for advice
 public.dossiers.request-for-advice.tagline: "Adviesaanvraag met omschrijving:"
-public.dossiers.request-for-advice.description: "Een (on)gevraagd adviesaanvraag over een ontwerp van wet- of regelgeving of een ander onderwerp."
+public.dossiers.request-for-advice.description: "De aanvraag van een advies over een ontwerp van wet- of regelgeving of een ander onderwerp."
+public.dossiers.request-for-advice.link: "Link naar het advies"
 public.request-for-advice.disposition.date: "Datum:"
-public.documents.type.request-for-advice: "Adviesaanvragen"
-public.documents.type.request-for-advice_main_document: "Adviesaanvraag"
+public.documents.type.request_for_advice: "Adviesaanvragen"
+public.documents.type.request_for_advice_main_document: "Adviesaanvraag"
 public.dossiers.request-for-advice.about: "Over deze adviesaanvraag"
 public.dossiers.request-for-advice.attachments_for: "Bijlagen bij deze adviesaanvraag"
 public.dossiers.request-for-advice.date: "Datum:"
 dossier.type.request-for-advice: "Adviesaanvraag"
-dossier.type.request-for-advice.description: "Adviezen over ontwerpen van wet- en regelgeving en andere onderwerpen"
+dossier.type.request-for-advice.description: "Adviesaanvraag over ontwerpen van wet- en regelgeving en andere onderwerpen"
 admin.dossiers.request-for-advice.step.details: 'Basisgegevens'
 admin.dossiers.request-for-advice.complete_step.details: 'Maak eerst basisgegevens compleet'
 admin.dossiers.request-for-advice.step.content: 'Adviesaanvraag'
@@ -1340,6 +1328,9 @@ admin.dossiers.request-for-advice.form.content.document_label: 'Adviesaanvraag'
 admin.dossiers.request-for-advice.form.content.document_help: 'Upload minimaal de Adviesaanvraag'
 admin.dossiers.request-for-advice.form.content.request_for_advice_label: 'Adviesaanvraag'
 admin.dossiers.request-for-advice.form.content.attachments_help: ''
+admin.dossiers.request-for-advice.link: 'Link naar advies'
+admin.dossiers.request-for-advice.form.content.link_label: 'Link naar advies'
+admin.dossiers.request-for-advice.form.content.link_description: 'Voeg de volledige URL toe van de publicatie waar deze adviesaanvraag een relatie mee heeft.'
 admin.dossiers.request-for-advice.form.publication.publication_date_label: 'Datum openbare publicatie'
 admin.dossiers.request-for-advice.form.publication.publication_date_help: 'Kies de datum waarop de adviesaanvraag voor iedereen publiek toegankelijk wordt.'
 admin.dossiers.request-for-advice.create.success: '<strong>Adviesaanvraag klaarzetten gelukt:</strong> De publicatie wordt voorbereid.'
@@ -1358,8 +1349,8 @@ history.request-for-advice.main_document_added.private: 'Nieuwe adviesaanvraag t
 history.request-for-advice.main_document_updated.private: 'Adviesaanvraag gewijzigd ({filename})'
 history.request-for-advice.main_document_updated.public: 'Adviesaanvraag vervangen'
 history.request-for-advice.main_document_deleted.private: 'Adviesaanvraag verwijderd ({filename})'
-public.search.type_description.request-for-advice: 'Over ontwerpen van wet- en regelgeving'
-public.search.type.request-for-advice_main_document: 'Adviesaanvraag'
+public.search.type_description.request_for_advice: 'De aanvraag van een advies'
+public.search.type.request_for_advice_main_document: 'Hoofddocument'
 #END request for advice
 
 admin.dossiers.action.label.ingest: 'Volledig opnieuw indexeren (inclusief document inhoud)'
@@ -1415,15 +1406,11 @@ public.search.type.complaint_judgement_main_document: 'Hoofddocument'
 public.search.type_description.investigation_report: 'Beantwoording van onderzoeksvragen'
 public.search.type.investigation_report_main_document: 'Hoofddocument'
 
-public.theme.covid-19.menu_name: 'Thema COVID-19'
-public.theme.covid-19.page_title: 'Alle COVID-19 gerelateerde besluiten'
-public.theme.covid-19.page_text: 'Op deze pagina kunt u zoeken in alle COVID-19 gerelateerde Wob- en Woo-besluiten.'
-
-admin.content_pages.manage: "Content pagina's"
-admin.content_pages.manage_help: "Deze link biedt toegang tot beheerdersacties voor content pagina's."
-admin.content-page.slug: "URL"
+admin.content_pages.manage: "Content"
+admin.content_pages.manage_help: "Deze link biedt toegang tot beheerdersacties voor content."
+admin.content-page.slug: "Sleutel"
 admin.content-page.title: "Titel"
-admin.content-page.title_help: "Deze wordt gebruikt als HTML pagina titel (H1)"
+admin.content-page.title_help: "Deze wordt gebruikt als HTML titel"
 admin.content-page.content: "Inhoud"
-admin.content-page.modified: "De content pagina is aangepast"
-admin.content-page.edit_title: "Wijzig content voor pagina {slug}"
+admin.content-page.modified: "De content is aangepast"
+admin.content-page.edit_title: "Wijzig {slug}"

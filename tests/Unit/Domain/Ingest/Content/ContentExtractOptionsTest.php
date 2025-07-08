@@ -73,4 +73,15 @@ class ContentExtractOptionsTest extends MockeryTestCase
             $options->getPageNumber(),
         );
     }
+
+    public function testWithLocalFile(): void
+    {
+        $options = ContentExtractOptions::create()->withLocalFile($localFile = '/foo/bar.txt');
+
+        self::assertTrue($options->hasLocalFile());
+        self::assertEquals(
+            $localFile,
+            $options->getLocalFile(),
+        );
+    }
 }

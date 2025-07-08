@@ -6,6 +6,7 @@ Suite Setup         Suite Setup
 Test Setup          Go To Public
 Test Tags           ci  landingpages
 
+
 *** Test Cases ***
 Enable landingpages
   Login Admin
@@ -65,7 +66,7 @@ Create Custom Landingpage
   ...  //*[@data-e2e-name="landing-page-body"]/div
   ...  innerHTML
   ...  contains
-  ...  <p></p><p><span class="font-bold">OhCeeWee</span></p>\n<p><span class="italic">Test</span></p>\n<ul>\n<li>item</li>\n<li>item</li>\n</ul>\n<ol>\n<li>eerste</li>\n<li>tweede</li>\n</ol>
+  ...  <p><span class="font-bold">OhCeeWee</span></p>\n<p><span class="italic">Test</span></p>\n<ul>\n<li>item</li>\n<li>item</li>\n</ul>\n<ol>\n<li>eerste</li>\n<li>tweede</li>\n</ol>
 
 Remove Logo From Custom Landingpage
   Go To Admin

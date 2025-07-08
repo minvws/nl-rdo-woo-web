@@ -2,7 +2,6 @@
     {% set formattedFileType = file.type|upper %}
     {% set formattedFileSize = file.size != "0" ? file.size | size : ""  %}
     {% set numberOfPages = file.pages | length %}
-    {% set maxNumberOfPagesToDisplay = 50 %}
     <a
         class="focus:mb-4 woo-skip-link"
         href="#below-carousel"
@@ -10,14 +9,14 @@
     >{{ 'public.documents.viewer.skip_document_preview' | trans }}</a>
 
     <p class="pb-1 woo-muted text-sm">
-        {% if numberOfPages > maxNumberOfPagesToDisplay %}{{ 'public.documents.viewer.more_than_50' | trans({ total_pages: numberOfPages }) }}{% endif %}
+        {% if numberOfPages > THUMBNAIL_LIMIT %}{{ 'public.documents.viewer.more_than_50' | trans({ total_pages: numberOfPages, page_limit: THUMBNAIL_LIMIT }) }}{% endif %}
         {{ "public.documents.viewer.click_on_page" | trans({ fileInfo: formattedFileType, fileSize: formattedFileSize, pages: 'global.number_of_pages' | trans({ count: numberOfPages }) }) }}
     </p>
 
     <div class="min-h-[333px]">
         <section class="block woo-carousel" aria-label="{{ 'public.documents.viewer.document_preview' | trans }}">
             <ol class="woo-carousel__list" data-e2e-name="preview-list">
-                {% for page in file.pages[:maxNumberOfPagesToDisplay] %}
+                {% for page in file.pages[:THUMBNAIL_LIMIT] %}
                     <li>
                         {% if page.hasThumbnail %}
                             <a class="woo-carousel__a" href="{{ page.viewUrl }}">

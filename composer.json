@@ -37,12 +37,11 @@
         "martin-georgiev/postgresql-for-doctrine": "^3.0",
         "mhujer/breadcrumbs-bundle": "^1.5",
         "minvws/audit-logger": "^0.4.0",
-        "minvws/audit-logger-bundle": "^0.5.0",
+        "minvws/audit-logger-bundle": "0.5.1-rc.1",
         "minvws/horsebattery": "^1.1",
-        "minvws/icore-php-typearray": "^0.0",
+        "minvws/icore-php-typearray": "^0.0.6",
         "nesbot/carbon": "^3.7",
         "nikic/php-parser": "^5.0",
-        "oneup/uploader-bundle": "^5.0.1",
         "paragonie/halite": "^5.1",
         "pentatrion/vite-bundle": "^8.0",
         "php-amqplib/rabbitmq-bundle": "^2.11",
@@ -222,19 +221,10 @@
         }
     },
     "repositories": {
-        "minvws/audit-logger": {
-            "type": "vcs",
-            "url": "git@github.com:minvws/nl-rdo-php-audit-logger.git"
-        },
         "minvws/audit-logger-bundle": {
             "type": "vcs",
             "url": "git@github.com:minvws/nl-rdo-php-audit-logger-bundle.git"
-        },
-        "minvws/icore-php-typearray": {
-            "type": "vcs",
-            "url": "git@github.com:minvws/icore-php-typearray.git"
         }
-
     },
     "require-dev": {
         "dama/doctrine-test-bundle": "^8.2",

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Upload\Dossier;
 
 use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Uploader\UploadRequest;
-use App\Domain\Uploader\UploadService;
+use App\Domain\Upload\UploadRequest;
+use App\Domain\Upload\UploadService;
 use App\Service\Uploader\UploadGroupId;
 use Symfony\Bundle\SecurityBundle\Security;
 

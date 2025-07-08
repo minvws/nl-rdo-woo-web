@@ -14,6 +14,7 @@ final readonly class RequestForAdvice
     public function __construct(
         private CommonDossierProperties $commonDossier,
         public \DateTimeImmutable $date,
+        public string $link,
     ) {
     }
 }

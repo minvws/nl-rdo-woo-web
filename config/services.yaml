@@ -6,6 +6,7 @@ parameters:
 
     available_locales: ['en', 'nl']
     public_base_url: '%env(PUBLIC_BASE_URL)%'
+    thumbnail_limit: 50
 
 imports:
     - { resource: services/default_autowire.yaml }
@@ -162,21 +163,6 @@ services:
         arguments:
             $cache: '@content_extract_cache'
 
-    App\Service\Uploader\UploaderNamer:
-        public: true
-
-    oneup_uploader.chunks_storage:
-        class: \App\Service\Uploader\FilesystemStorage
-        arguments:
-            $directory: '%oneup_uploader.chunks.storage.directory%'
-
-    Oneup\UploaderBundle\Uploader\Storage\FilesystemOrphanageStorage:
-        factory:
-            - '@oneup_uploader.orphanage_manager'
-            - 'get'
-        arguments:
-            $key: 'general'
-
     extractor.7z:
         class: App\Domain\Upload\Extractor\Extractor
         public: true
@@ -193,7 +179,7 @@ services:
         arguments:
             $fileSizeLimit: '%env(CLAM_AV_MAX_FILESIZE)%'
 
-    App\Domain\Uploader\Handler\S3\S3UploadHelper:
+    App\Domain\Upload\Handler\S3\S3UploadHelper:
         arguments:
             $bucket: '%env(STORAGE_MINIO_UPLOAD_BUCKET)%'
 

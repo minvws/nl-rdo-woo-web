@@ -6,9 +6,9 @@ namespace App\Tests\Unit\Domain\Ingest\Process\PdfPage;
 
 use App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand;
 use App\Domain\Ingest\Process\PdfPage\IngestPdfPageHandler;
+use App\Domain\Ingest\Process\PdfPage\PdfPageProcessor;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Worker\PdfProcessor;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -18,7 +18,7 @@ use Symfony\Component\Uid\Uuid;
 
 final class IngestPdfPageHandlerTest extends UnitTestCase
 {
-    private PdfProcessor&MockInterface $processor;
+    private PdfPageProcessor&MockInterface $processor;
     private EntityManagerInterface&MockInterface $doctrine;
     private LoggerInterface&MockInterface $logger;
     private EntityRepository&MockInterface $repository;
@@ -27,7 +27,7 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->processor = \Mockery::mock(PdfProcessor::class);
+        $this->processor = \Mockery::mock(PdfPageProcessor::class);
         $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->repository = \Mockery::mock(EntityRepository::class);
@@ -48,7 +48,7 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
 
-        $this->processor->shouldReceive('processEntityPage')->once()->with($entity, $pageNr, $forceRefresh);
+        $this->processor->shouldReceive('processPage')->once()->with($entity, $pageNr, $forceRefresh);
 
         $handler = new IngestPdfPageHandler($this->processor, $this->doctrine, $this->logger);
         $handler->__invoke($message);
@@ -69,7 +69,7 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
 
-        $this->processor->shouldReceive('processEntityPage')->once()->with($entity, $pageNr, $forceRefresh);
+        $this->processor->shouldReceive('processPage')->once()->with($entity, $pageNr, $forceRefresh);
 
         $handler = new IngestPdfPageHandler($this->processor, $this->doctrine, $this->logger);
         $handler->__invoke($message);
@@ -113,7 +113,7 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
 
-        $this->processor->shouldReceive('processEntityPage')->once()->andThrow($thrownException = new \RuntimeException('My exception'));
+        $this->processor->shouldReceive('processPage')->once()->andThrow($thrownException = new \RuntimeException('My exception'));
 
         $this->logger->shouldReceive('error')->once()->with('Error processing document in IngestPdfPageHandler', [
             'id' => $id,

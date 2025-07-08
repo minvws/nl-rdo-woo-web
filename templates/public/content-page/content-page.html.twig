@@ -8,7 +8,7 @@
             <h1 class="woo-h1 woo-h1-spacing font-normal">{{ page.title }}</h1>
 
             <div class="woo-rich-text">
-                <p>{{ page.content | render_markdown | raw }}</p>
+                {{ page.content | render_markdown | raw }}
             </div>
         </div>
     </section>

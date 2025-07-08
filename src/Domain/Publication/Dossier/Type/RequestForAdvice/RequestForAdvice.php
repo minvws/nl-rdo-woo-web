@@ -38,12 +38,35 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
     #[ORM\OneToMany(targetEntity: RequestForAdviceAttachment::class, mappedBy: 'dossier')]
     private Collection $attachments;
 
+    #[ORM\Column(length: 255)]
+    #[Assert\Url(groups: [DossierValidationGroup::CONTENT->value])]
+    private string $link = '';
+
     public function __construct()
     {
         parent::__construct();
 
         $this->attachments = new ArrayCollection();
         $this->document = null;
+    }
+
+    #[\Override]
+    public function setDateFrom(?\DateTimeImmutable $dateFrom): static
+    {
+        $this->dateFrom = $dateFrom;
+        $this->dateTo = $dateFrom;
+
+        return $this;
+    }
+
+    public function getLink(): string
+    {
+        return $this->link;
+    }
+
+    public function setLink(string $link): void
+    {
+        $this->link = $link;
     }
 
     public function getType(): DossierType

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Domain\Uploader\UploadRequest;
-use App\Domain\Uploader\UploadService;
+use App\Domain\Upload\UploadRequest;
+use App\Domain\Upload\UploadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +20,7 @@ final class UploadController extends AbstractController
     }
 
     #[Route('/balie/upload', name: 'app_admin_upload', methods: ['POST', 'PUT', 'PATCH'], format: 'json')]
-    #[IsGranted('AuthMatrix.dossier.update')]
+    #[IsGranted('AuthMatrix.upload.create')]
     public function upload(Request $request): JsonResponse
     {
         $result = $this->uploadService->handleUploadRequest(

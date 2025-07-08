@@ -25,7 +25,7 @@ tasks:
       HEADLESS: false
     cmds:
       - task: :up
-      - source .venv/bin/activate && robot  --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:docker-local tests/robot_framework
+      - source .venv/bin/activate && robot --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:docker-local tests/robot_framework
 
   run-test:
     aliases: [run-tst]
@@ -36,7 +36,7 @@ tasks:
       URL_ADMIN: balie.test.woo.rdobeheer.nl/balie
       HEADLESS: false
     cmds:
-      - source .venv/bin/activate && robot  --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:test tests/robot_framework
+      - source .venv/bin/activate && robot --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:test tests/robot_framework
 
   run-acc:
     desc: Run Robot tests with browser on ACC
@@ -46,7 +46,7 @@ tasks:
       URL_ADMIN: balie.acc.woo.rdobeheer.nl/balie
       HEADLESS: false
     cmds:
-      - source .venv/bin/activate && robot  --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:acc tests/robot_framework
+      - source .venv/bin/activate && robot --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:acc tests/robot_framework
 
   run-mobile:
     desc: Run Robot tests with browser on Docker
@@ -58,7 +58,7 @@ tasks:
       DEVICE: iPhone 14
     cmds:
       - task: :up
-      - source .venv/bin/activate && robot  --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:docker-local tests/robot_framework
+      - source .venv/bin/activate && robot --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:docker-local tests/robot_framework
 
   run-headless:
     desc: Run Robot tests with headless browser on Docker

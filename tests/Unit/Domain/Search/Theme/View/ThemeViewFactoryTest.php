@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Theme\View;
 
-use App\Domain\Search\Theme\Covid19QueryConditionBuilder;
-use App\Domain\Search\Theme\Covid19Theme;
 use App\Domain\Search\Theme\ViewModel\ThemeViewFactory;
 use App\Tests\Unit\UnitTestCase;
+use App\Vws\Search\Theme\Covid19QueryConditionBuilder;
+use App\Vws\Search\Theme\Covid19Theme;
 
 class ThemeViewFactoryTest extends UnitTestCase
 {

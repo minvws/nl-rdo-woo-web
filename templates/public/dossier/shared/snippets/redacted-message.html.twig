@@ -1,12 +1,12 @@
 <div class="woo-rich-text woo-readable-width {{ (hasGrounds ?? false) ? 'mt-4' : '' }}">
-    <p>
-        {{ 'public.documents.redacted_data.comments' | trans }}
-    </p>
-    <p>
-        {% if (department.feedbackContent is not empty) %}
+    {% if (department.feedbackContent is not empty) %}
             {{ department.feedbackContent | render_markdown | raw }}
-        {% else %}
+    {% else %}
+        <p>
+            {{ 'public.documents.redacted_data.comments' | trans }}
+        </p>
+        <p>
             {{ 'public.global.contact' | trans({ '{ministry}': department.name }) | raw }}. {{ 'public.documents.redacted_data.find_contact' | trans | raw }}
-        {% endif %}
-    </p>
+        </p>
+    {% endif %}
 </div>

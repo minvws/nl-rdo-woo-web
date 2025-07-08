@@ -60,7 +60,7 @@ framework:
             App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUpdateCommand: high
             App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawDocumentCommand: high
             App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawAllDocumentsCommand: high
-            App\Domain\Uploader\Command\ValidateUploadCommand: high
+            App\Domain\Upload\Command\ValidateUploadCommand: high
 
             App\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand: ingestor
             App\Domain\Ingest\Process\Dossier\IngestDossierCommand: ingestor

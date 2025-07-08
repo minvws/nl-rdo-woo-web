@@ -9,8 +9,8 @@ use App\Api\Admin\WooDecisionAttachment\WooDecisionAttachmentDto;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Uploader\Handler\UploadHandlerInterface;
-use App\Domain\Uploader\UploadEntity;
+use App\Domain\Upload\Handler\UploadHandlerInterface;
+use App\Domain\Upload\UploadEntity;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionAttachmentFactory;
@@ -53,7 +53,7 @@ final class WooDecisionAttachmentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         WooDecisionAttachmentFactory::createMany(5, ['dossier' => $dossier]);
 
@@ -104,7 +104,7 @@ final class WooDecisionAttachmentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         static::createClient()
             ->loginUser($user, 'balie')
@@ -125,9 +125,9 @@ final class WooDecisionAttachmentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        $upload = UploadEntityFactory::new()->create([
+        $upload = UploadEntityFactory::createOne([
             'uploadGroupId' => UploadGroupId::ATTACHMENTS,
             'context' => new InputBag([
                 'dossierId' => $dossier->getId()->toRfc4122(),
@@ -198,7 +198,7 @@ final class WooDecisionAttachmentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         static::createClient()
             ->loginUser($user, 'balie')
@@ -349,7 +349,7 @@ final class WooDecisionAttachmentTest extends ApiTestCase
                 'organisation' => $user->getOrganisation(),
                 'status' => DossierStatus::CONCEPT,
             ]),
-        ]);
+        ])->_real();
 
         static::createClient()
             ->loginUser($user, 'balie')
@@ -370,7 +370,7 @@ final class WooDecisionAttachmentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         static::createClient()
             ->loginUser($user, 'balie')
@@ -445,7 +445,7 @@ final class WooDecisionAttachmentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         static::createClient()
             ->loginUser($user, 'balie')
@@ -478,7 +478,7 @@ final class WooDecisionAttachmentTest extends ApiTestCase
             'dossier' => WooDecisionFactory::createOne([
                 'organisation' => $user->getOrganisation(),
             ]),
-        ]);
+        ])->_real();
 
         static::createClient()
             ->loginUser($user, 'balie')

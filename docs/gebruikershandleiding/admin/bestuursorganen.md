@@ -6,7 +6,7 @@
 ```
   
 :::{admonition} Note
-:class: notification
+:class: note
 Deze pagina is alleen beschikbaar voor Super Beheerders.
 :::
 

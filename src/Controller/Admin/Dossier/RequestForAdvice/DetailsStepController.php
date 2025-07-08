@@ -39,7 +39,7 @@ class DetailsStepController extends AbstractController
 
     #[Route(
         path: '/balie/dossier/request-for-advice/details/create',
-        name: 'app_admin_dossier_request_for_advice_details_create',
+        name: 'app_admin_dossier_requestforadvice_details_create',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create')]
@@ -68,7 +68,7 @@ class DetailsStepController extends AbstractController
 
     #[Route(
         path: '/balie/dossier/request-for-advice/details/concept/{prefix}/{dossierId}',
-        name: 'app_admin_dossier_request_for_advice_details_concept',
+        name: 'app_admin_dossier_requestforadvice_details_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
@@ -107,7 +107,7 @@ class DetailsStepController extends AbstractController
 
     #[Route(
         path: '/balie/dossier/request-for-advice/details/edit/{prefix}/{dossierId}',
-        name: 'app_admin_dossier_request_for_advice_details_edit',
+        name: 'app_admin_dossier_requestforadvice_details_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]

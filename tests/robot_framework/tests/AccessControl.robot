@@ -19,6 +19,7 @@ Test Teardown       Run Keyword If Test Failed  No-Click Logout
 Test Timeout        5 minutes  # For yet unknown reasons, this testsuite sometimes runs endlessly until the Github job timeout is reached, ruining the whole testrun. Therefore this suite has a test timeout of 5 minutes.
 Test Tags           ci  accesscontrol
 
+
 *** Variables ***
 ${EMAIL}        ${EMPTY}
 ${PASSWORD}     ${EMPTY}
@@ -110,7 +111,6 @@ Elastic
 
 *** Keywords ***
 Suite Setup
-  Cleansheet
   Suite Setup Generic
   Login Admin
   Create New Organisation  Test Org 1  E2E Test Department 1  TESTORG1
@@ -224,13 +224,9 @@ Verify Permissions On Inquiries
   ...  ${read}
   ...  ${administration}
   Set Credentials By Role  ${role}
-  Cleansheet
   Login Admin  # as default admin user who may create dossiers
   Select Organisation  organisation=E2E Test Organisation
-  Publish Test WooDecision
-  ...  production_report=tests/robot_framework/files/inquiries/productierapport2.xlsx
-  ...  documents=tests/robot_framework/files/inquiries/documenten2.zip
-  ...  number_of_documents=3
+  Publish Generated Test WooDecision
   Login Admin  username=${EMAIL}  password=${PASSWORD}  otp_secret=${OTP}
   IF  ${read} and ${create}
     Select Organisation  organisation=E2E Test Organisation
@@ -264,20 +260,11 @@ Verify Permissions On Dossiers
     Menu Does Not Contain Item  Publicaties
   ELSE
     IF  ${create}
-      Cleansheet
       Click Publications
       Select Organisation  organisation=E2E Test Organisation
-      Publish Test WooDecision
-      ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 openbaar.xlsx
-      ...  documents=tests/robot_framework/files/woodecision/documenten - 2.zip
-      ...  number_of_documents=2
-      ...  publication_status=Gepubliceerd
+      Publish Generated Test WooDecision  publication_status=Gepubliceerd
       VAR  ${dossier_reference_published} =  ${DOSSIER_REFERENCE}
-      Publish Test WooDecision
-      ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 andere.xlsx
-      ...  documents=tests/robot_framework/files/woodecision/documenten - 2 andere.zip
-      ...  number_of_documents=2
-      ...  publication_status=Concept
+      Publish Generated Test WooDecision  publication_status=Concept
       VAR  ${dossier_reference_unpublished} =  ${DOSSIER_REFERENCE}
       IF  ${published_dossiers}
         IF  ${update}
@@ -343,7 +330,7 @@ Verify Permissions On Documents
   Set Credentials By Role  ${role}
   Login Admin  username=${EMAIL}  password=${PASSWORD}  otp_secret=${OTP}
   Select Organisation  organisation=E2E Test Organisation
-  Select Openbaar Dossier
+  Select First Public Dossier
   IF  ${update}
     Click Documents Edit
   ELSE

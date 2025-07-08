@@ -9,6 +9,12 @@
             <caption class="sr-only">
                 {{ title | default(fallbackTitle) }}
             </caption>
+            <thead class="sr-only">
+                <tr>
+                    <th scope="col">{{ 'global.document_type' | trans }}</th>
+                    <th scope="col">{{ 'global.document_name' | trans }}</th>
+                </tr>
+            </thead>
             <tbody>
                 {% for attachment in attachments %}
                 <tr data-e2e-name="dossier-attachments-row">

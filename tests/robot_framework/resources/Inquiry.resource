@@ -5,6 +5,7 @@ Library             Browser
 Library             DebugLibrary
 Resource            Generic.resource
 
+
 *** Keywords ***
 Verify Existence Of Inquiry
   [Arguments]  ${inquiry_number}

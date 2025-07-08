@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Storage;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\EntityWithFileInfo;
 use Psr\Log\LoggerInterface;
 
@@ -48,8 +47,6 @@ abstract class StorageService implements StorageAliveInterface
     ) {
     }
 
-    abstract protected function generatePagePath(EntityWithFileInfo $entity, int $pageNr): string;
-
     protected function getRootPathForEntity(EntityWithFileInfo $entity): string
     {
         return ($this->rootPathGenerator)($entity);
@@ -73,25 +70,6 @@ abstract class StorageService implements StorageAliveInterface
         return $this->remoteFilesystem->writeStream($remotePath, $stream);
     }
 
-    protected function doDeleteAllFilesForEntity(EntityWithFileInfo $entity, string $remotePath): bool
-    {
-        if (! $this->remoteFilesystem->delete($remotePath)) {
-            return false;
-        }
-
-        if ($entity->getFileInfo()->hasPages()) {
-            $pageCount = $this->getPageCount($entity);
-            for ($pageNr = 1; $pageNr <= $pageCount; $pageNr++) {
-                $path = $this->generatePagePath($entity, $pageNr);
-                if (! $this->remoteFilesystem->delete($path)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
     /**
      * This will read in-memory. You probably do not want to do this for large files and use retrieveResource() instead.
      */
@@ -112,20 +90,5 @@ abstract class StorageService implements StorageAliveInterface
         }
 
         return true;
-    }
-
-    private function getPageCount(EntityWithFileInfo $entity): int
-    {
-        $pageCount = $entity->getFileInfo()->isPaginatable()
-            ? $entity->getFileInfo()->getPageCount()
-            : null;
-
-        // This acts like a fallback, so if the value is set in the FileInfo it would be used instead of the one on the
-        // Document it elf
-        if (is_null($pageCount) && $entity instanceof Document) {
-            return $entity->getPageCount();
-        }
-
-        return $pageCount ?? 0;
     }
 }

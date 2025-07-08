@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Command\Cron;
 
 use App\Command\Cron\CleanUploads;
-use App\Domain\Uploader\UploadCleaner;
+use App\Domain\Upload\UploadCleaner;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 

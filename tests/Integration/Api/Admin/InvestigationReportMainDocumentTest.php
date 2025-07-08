@@ -9,8 +9,8 @@ use App\Api\Admin\InvestigationReportMainDocument\InvestigationReportMainDocumen
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Uploader\Handler\UploadHandlerInterface;
-use App\Domain\Uploader\UploadEntity;
+use App\Domain\Upload\Handler\UploadHandlerInterface;
+use App\Domain\Upload\UploadEntity;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
@@ -49,7 +49,7 @@ final class InvestigationReportMainDocumentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         $response = static::createClient()
             ->loginUser($user, 'balie')
@@ -64,7 +64,7 @@ final class InvestigationReportMainDocumentTest extends ApiTestCase
             );
         $this->assertCount(0, $response->toArray(), 'Expected no main documents yet');
 
-        $upload = UploadEntityFactory::new()->create([
+        $upload = UploadEntityFactory::createOne([
             'uploadGroupId' => UploadGroupId::MAIN_DOCUMENTS,
             'context' => new InputBag([
                 'dossierId' => $dossier->getId()->toRfc4122(),
@@ -198,7 +198,7 @@ final class InvestigationReportMainDocumentTest extends ApiTestCase
         $dossier = InvestigationReportFactory::createOne([
             'organisation' => $user->getOrganisation(),
             'status' => DossierStatus::CONCEPT,
-        ]);
+        ])->_real();
 
         $investigationReportMainDocument = InvestigationReportMainDocumentFactory::createOne([
             'dossier' => $dossier,
@@ -229,7 +229,7 @@ final class InvestigationReportMainDocumentTest extends ApiTestCase
         $dossier = InvestigationReportFactory::createOne([
             'organisation' => $user->getOrganisation(),
             'status' => DossierStatus::PUBLISHED,
-        ]);
+        ])->_real();
 
         InvestigationReportMainDocumentFactory::createOne(['dossier' => $dossier]);
 
@@ -251,7 +251,7 @@ final class InvestigationReportMainDocumentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         $data = [
             'formalDate' => CarbonImmutable::yesterday()->format('Y-m-d'),

@@ -9,10 +9,10 @@ use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\Document
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use App\Domain\Upload\Event\UploadValidatedEvent;
 use App\Domain\Upload\Process\EntityUploadStorer;
+use App\Domain\Upload\UploadEntity;
 use App\Domain\Upload\WooDecision\DocumentUploadHandler;
-use App\Domain\Uploader\Event\UploadValidatedEvent;
-use App\Domain\Uploader\UploadEntity;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;

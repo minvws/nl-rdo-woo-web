@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Api\Admin\Uploader\Status;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
-use App\Domain\Uploader\UploadStatus;
+use App\Domain\Upload\UploadStatus;
 use App\Tests\Factory\UploadEntityFactory;
 use App\Tests\Factory\UserFactory;
 use App\Tests\Integration\IntegrationTestTrait;

@@ -13,12 +13,14 @@ Resource            ../resources/Organisations.resource
 Resource            ../resources/Subjects.resource
 Resource            ../resources/OtherPublication.resource
 Resource            ../resources/Advice.resource
+Resource            ../resources/RequestForAdvice.resource
 Resource            ../resources/TestData.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Teardown       Run Keyword If Test Failed  Go To Admin
 Test Template       Create Test Dossier
 Test Tags           ci  testdossiers  public-init  sitemap-init
+
 
 *** Test Cases ***                                    type                  publication_status    has_attachment    decision
 Woo-besluit, Concept, Openbaarmaking                  woo-decision          Concept               ${FALSE}          Openbaarmaking
@@ -51,10 +53,14 @@ Overig, Concept                                       other-publication     Conc
 Overig, Gepubliceerd                                  other-publication     Gepubliceerd          ${FALSE}
 Overig, Gepubliceerd, Bijlage                         other-publication     Gepubliceerd          ${TRUE}
 Overig, Gepland                                       other-publication     Gepland               ${FALSE}
-Advies, Concept  advice  Concept  ${FALSE}
-Advies, Gepubliceerd  advice  Gepubliceerd  ${FALSE}
-Advies, Gepubliceerd, Bijlage  advice  Gepubliceerd  ${TRUE}
-Advies, Gepland  advice  Gepland  ${FALSE}
+Advies, Concept                                       advice                Concept               ${FALSE}
+Advies, Gepubliceerd                                  advice                Gepubliceerd          ${FALSE}
+Advies, Gepubliceerd, Bijlage                         advice                Gepubliceerd          ${TRUE}
+Advies, Gepland                                       advice                Gepland               ${FALSE}
+Adviesaanvraag, Concept                               request-for-advice    Concept               ${FALSE}
+Adviesaanvraag, Gepubliceerd                          request-for-advice    Gepubliceerd          ${FALSE}
+Adviesaanvraag, Gepubliceerd, Bijlage                 request-for-advice    Gepubliceerd          ${TRUE}
+Adviesaanvraag, Gepland                               request-for-advice    Gepland               ${FALSE}
 
 
 *** Keywords ***
@@ -91,5 +97,7 @@ Create Test Dossier
     Fill Out Other Publication Details  ${has_attachment}
   ELSE IF  "${type}" == "advice"
     Fill Out Advice Details  ${has_attachment}
+  ELSE IF  "${type}" == "request-for-advice"
+    Fill Out Request For Advice Details  ${has_attachment}
   END
   Publish Dossier And Return To Admin Home  ${publication_status}

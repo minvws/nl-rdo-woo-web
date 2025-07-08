@@ -31,9 +31,11 @@
                     <div {{ vue_component('GenericController', {
                         componentName: 'DepartmentLogoManager',
 
+                        departmentId: department.departmentId,
                         deleteEndpoint: department.deleteLogoEndpoint,
                         logoEndpoint: department.logoEndpoint,
                         uploadEndpoint: department.uploadLogoEndpoint,
+                        hasLogo: department.hasLogo,
                     }) }}>
                         <div class="min-h-14"></div>
                     </div>

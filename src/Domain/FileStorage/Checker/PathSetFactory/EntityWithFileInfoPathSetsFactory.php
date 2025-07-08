@@ -16,7 +16,6 @@ use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionR
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Webmozart\Assert\Assert;
@@ -28,8 +27,8 @@ readonly class EntityWithFileInfoPathSetsFactory implements PathSetsFactoryInter
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private EntityStorageService $entityStorageService,
         private ThumbnailStorageService $thumbnailStorageService,
+        private int $thumbnailLimit,
     ) {
     }
 
@@ -57,7 +56,6 @@ readonly class EntityWithFileInfoPathSetsFactory implements PathSetsFactoryInter
         $entities = $repository->createQueryBuilder('e')->getQuery()->toIterable();
 
         $filePaths = [];
-        $pagePaths = [];
         $thumbPaths = [];
         foreach ($entities as $entity) {
             Assert::isInstanceOf($entity, EntityWithFileInfo::class);
@@ -67,9 +65,8 @@ readonly class EntityWithFileInfoPathSetsFactory implements PathSetsFactoryInter
                 $uuid = $entity->getId()->toRfc4122();
                 $filePaths[$path] = $uuid;
                 if ($entity->getFileInfo()->hasPages()) {
-                    for ($i = 1; $i <= $entity->getFileInfo()->getPageCount(); $i++) {
-                        $pagePaths[$this->entityStorageService->generatePagePath($entity, $i)] = $uuid;
-                        $thumbPaths[$this->thumbnailStorageService->generatePagePath($entity, $i)] = $uuid;
+                    for ($i = 1; $i <= $entity->getFileInfo()->getPageCount() && $i <= $this->thumbnailLimit; $i++) {
+                        $thumbPaths[$this->thumbnailStorageService->generateThumbPath($entity, $i)] = $uuid;
                     }
                 }
             }
@@ -79,10 +76,6 @@ readonly class EntityWithFileInfoPathSetsFactory implements PathSetsFactoryInter
 
         if ($filePaths !== []) {
             yield new PathSet($name, FileStorageType::DOCUMENT, $filePaths);
-        }
-
-        if ($thumbPaths !== []) {
-            yield new PathSet($name . 'Page', FileStorageType::DOCUMENT, $pagePaths);
         }
 
         if ($thumbPaths !== []) {

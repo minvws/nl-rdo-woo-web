@@ -7,6 +7,7 @@ Resource            ../resources/Organisations.resource
 Suite Setup         Suite Setup
 Test Tags           ci  documentation
 
+
 *** Test Cases ***
 Validate Documentation
   Click Documentation Link In Footer

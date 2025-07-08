@@ -9,8 +9,8 @@ use App\Api\Admin\InvestigationReportAttachment\InvestigationReportAttachmentDto
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Uploader\Handler\UploadHandlerInterface;
-use App\Domain\Uploader\UploadEntity;
+use App\Domain\Upload\Handler\UploadHandlerInterface;
+use App\Domain\Upload\UploadEntity;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachmentFactory;
@@ -54,7 +54,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         InvestigationReportAttachmentFactory::createMany(5, ['dossier' => $dossier]);
 
@@ -105,7 +105,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         static::createClient()
             ->loginUser($user, 'balie')
@@ -126,9 +126,9 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        $upload = UploadEntityFactory::new()->create([
+        $upload = UploadEntityFactory::createOne([
             'uploadGroupId' => UploadGroupId::ATTACHMENTS,
             'context' => new InputBag([
                 'dossierId' => $dossier->getId()->toRfc4122(),
@@ -199,7 +199,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         static::createClient()
             ->loginUser($user, 'balie')
@@ -385,7 +385,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         static::createClient()
             ->loginUser($user, 'balie')
@@ -460,7 +460,7 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         static::createClient()
             ->loginUser($user, 'balie')

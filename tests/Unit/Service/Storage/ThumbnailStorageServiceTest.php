@@ -21,6 +21,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
     private LocalFilesystem&MockInterface $localFilesystem;
     private LoggerInterface&MockInterface $logger;
     private StorageRootPathGenerator&MockInterface $rootPathGenerator;
+    private int $thumbnailLimit = 13;
 
     protected function setUp(): void
     {
@@ -63,7 +64,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
 
         $service = $this->getStorageService();
         $service
-            ->shouldReceive('generatePagePath')
+            ->shouldReceive('generateThumbPath')
             ->once()
             ->with($entity, $pageNr = 1)
             ->andReturn($remotePath = 'remote-path');
@@ -92,7 +93,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
 
         $service = $this->getStorageService();
         $service
-            ->shouldReceive('generatePagePath')
+            ->shouldReceive('generateThumbPath')
             ->once()
             ->with($entity, $pageNr = 1)
             ->andReturn($remotePath = 'remote-path');
@@ -117,7 +118,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
         $entity = \Mockery::mock(EntityWithFileInfo::class);
 
         $service = $this->getStorageService();
-        $service->shouldReceive('generatePagePath')
+        $service->shouldReceive('generateThumbPath')
             ->once()
             ->with($entity, $pageNr = 1)
             ->andReturn($remotePath = 'remote-path');
@@ -138,7 +139,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
         $entity = \Mockery::mock(EntityWithFileInfo::class);
 
         $service = $this->getStorageService();
-        $service->shouldReceive('generatePagePath')
+        $service->shouldReceive('generateThumbPath')
             ->once()
             ->with($entity, $pageNr = 1)
             ->andReturn($path = 'path');
@@ -171,24 +172,10 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
         $entity->shouldReceive('getFileInfo')
             ->andReturn($fileInfo);
 
-        $this->rootPathGenerator
-            ->shouldReceive('__invoke')
-            ->once()
-            ->with($entity)
-            ->andReturn($rootPath = 'root-path');
-
-        $path = sprintf('%s/thumbs/thumb.png', $rootPath);
-
-        $this->remoteFilesystem
-            ->shouldReceive('delete')
-            ->once()
-            ->with($path)
-            ->andReturnTrue();
-
         $service = $this->getStorageService();
 
         $service
-            ->shouldReceive('generatePagePath')
+            ->shouldReceive('generateThumbPath')
             ->once()
             ->with($entity, 1)
             ->andReturn('remote-path/1');
@@ -199,7 +186,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
             ->andReturnTrue();
 
         $service
-            ->shouldReceive('generatePagePath')
+            ->shouldReceive('generateThumbPath')
             ->once()
             ->with($entity, 2)
             ->andReturn('remote-path/2');
@@ -210,7 +197,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
             ->andReturnTrue();
 
         $service
-            ->shouldReceive('generatePagePath')
+            ->shouldReceive('generateThumbPath')
             ->once()
             ->with($entity, 3)
             ->andReturn('remote-path/3');
@@ -233,6 +220,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
             $this->localFilesystem,
             $this->logger,
             $this->rootPathGenerator,
+            $this->thumbnailLimit,
         ])
             ->shouldAllowMockingProtectedMethods()
             ->makePartial();

@@ -78,6 +78,8 @@
                     <span class="break-words">{{ dossier.summary }}</span>
                 </twig:Admin:Definition>
 
+                {% block dossier_link %}{% endblock %}
+
                 <twig:Admin:Definition term="{{ documentLabel }}">
                     {% if mainDocument is defined and mainDocument is not null %}
                         <twig:Admin:DownloadFile

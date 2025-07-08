@@ -8,6 +8,7 @@ Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
 Test Tags           ci  woodecision  pr
 
+
 *** Variables ***
 ${DOSSIER_REFERENCE}    ${EMPTY}
 
@@ -48,7 +49,6 @@ Upload a production report with N public files and a zip with N-1 files
   Upload Documents  tests/robot_framework/files/woodecision/documenten - 10-1.zip
   Verify Document Upload Remaining  Nog te uploaden: 1 van 10 documenten.
   Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet  Er moet nog 1 document geüpload worden.
-
 
 Upload a production report with N public files and a zip with N+1 files
   Create New Dossier  woo-decision

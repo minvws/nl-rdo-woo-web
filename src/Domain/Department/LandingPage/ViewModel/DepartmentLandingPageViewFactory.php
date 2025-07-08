@@ -17,22 +17,21 @@ final readonly class DepartmentLandingPageViewFactory
     public function make(Department $department): DepartmentLandingPage
     {
         return new DepartmentLandingPage(
+            departmentId: $department->getId(),
             name: $department->getName(),
-            deleteLogoEndpoint: $this->urlGenerator->generate('api_uploader_department_remove_logo', ['departmentId' => $department->getId()]),
-            logoEndpoint: $this->getLogoEndpoint($department),
-            uploadLogoEndpoint: $this->urlGenerator->generate('_uploader_upload_department', ['departmentId' => $department->getId()]),
-        );
-    }
-
-    private function getLogoEndpoint(Department $department): ?string
-    {
-        if (! $department->getFileInfo()->isUploaded()) {
-            return null;
-        }
-
-        return $this->urlGenerator->generate(
-            'app_admin_department_assets_download',
-            ['id' => $department->getId(), 'file' => $department->getFileInfo()->getName()],
+            deleteLogoEndpoint: $this->urlGenerator->generate(
+                'api_uploader_department_remove_logo',
+                ['departmentId' => $department->getId()],
+            ),
+            logoEndpoint: $this->urlGenerator->generate(
+                'app_admin_department_logo_download',
+                [
+                    'id' => $department->getId(),
+                    'cacheKey' => hash('sha256', (string) $department->getUpdatedAt()->getTimestamp()),
+                ],
+            ),
+            uploadLogoEndpoint: $this->urlGenerator->generate('app_admin_upload'),
+            hasLogo: $department->getFileInfo()->isUploaded(),
         );
     }
 }

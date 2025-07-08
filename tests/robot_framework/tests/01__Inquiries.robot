@@ -11,6 +11,7 @@ Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
 Test Tags           ci  inquiries
 
+
 *** Test Cases ***
 Preview inquiry access
   [Documentation]  Verify preview access to a dossier using inquiry page

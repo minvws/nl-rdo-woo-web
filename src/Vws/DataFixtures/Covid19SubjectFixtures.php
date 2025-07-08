@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Vws\DataFixtures;
 
 use App\Domain\Publication\Subject\Subject;
-use App\Domain\Search\Theme\Covid19Subject;
 use App\Entity\Organisation;
+use App\Vws\Search\Theme\Covid19Subject;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;

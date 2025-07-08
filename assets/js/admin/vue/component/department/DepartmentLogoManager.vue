@@ -2,19 +2,25 @@
 import Alert from '@admin-fe/component/Alert.vue';
 import Icon from '@admin-fe/component/Icon.vue';
 import UploadArea from '@admin-fe/component/file/upload/UploadArea.vue';
-import type { UploadSuccessData } from '@js/admin/utils';
 import { ref } from 'vue';
 
 interface Props {
   deleteEndpoint: string;
-  logoEndpoint: string | null;
+  logoEndpoint: string;
   uploadEndpoint: string;
+  departmentId: string;
+  hasLogo: boolean;
 }
 
 const props = defineProps<Props>();
-const logoEndpoint = ref<string | null>(props.logoEndpoint);
+const logoEndpoint = ref(props.logoEndpoint);
 const shouldDisplayLogoAddedMessage = ref(false);
 const shouldDisplayLogoRemovedMessage = ref(false);
+const hasLogo = ref(props.hasLogo);
+const payload: Record<string, string> = {
+  groupId: 'department',
+  departmentId: props.departmentId,
+};
 
 const removeLogo = async () => {
   await fetch(props.deleteEndpoint, {
@@ -23,24 +29,31 @@ const removeLogo = async () => {
 
   shouldDisplayLogoAddedMessage.value = false;
   shouldDisplayLogoRemovedMessage.value = true;
-  logoEndpoint.value = null;
+  hasLogo.value = false;
 };
 
-const onUploaded = (
-  _file: File,
-  _uploadId: string,
-  uploadSuccessData: UploadSuccessData<
-    Record<'department', { asset_endpoint: string }>
-  >,
-) => {
+const updateCacheKey = (urlInput: string): string => {
+  const dummyBase = 'https://example.nl';
+  const url = new URL(urlInput, dummyBase);
+  const params = url.searchParams;
+
+  params.set('cacheKey', Date.now().toString());
+
+  url.search = params.toString();
+
+  return url.pathname + (url.search ? url.search : '');
+};
+
+const onUploaded = () => {
   shouldDisplayLogoRemovedMessage.value = false;
   shouldDisplayLogoAddedMessage.value = true;
-  logoEndpoint.value = uploadSuccessData.department.asset_endpoint;
+  hasLogo.value = true;
+  logoEndpoint.value = updateCacheKey(logoEndpoint.value);
 };
 </script>
 
 <template>
-  <template v-if="logoEndpoint">
+  <template v-if="hasLogo">
     <div v-if="shouldDisplayLogoAddedMessage" class="pb-6">
       <Alert type="success">
         <p>Logo opgeslagen</p>
@@ -80,7 +93,7 @@ const onUploaded = (
       :max-file-size="1024 * 1024 * 10"
       id="file"
       name="file"
-      :payload="{ groupId: 'department' }"
+      :payload="payload"
     />
   </template>
 </template>

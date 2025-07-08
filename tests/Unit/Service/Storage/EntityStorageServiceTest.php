@@ -80,54 +80,6 @@ class EntityStorageServiceTest extends UnitTestCase
         $this->assertFalse($result);
     }
 
-    public function testRetrieveResourcePage(): void
-    {
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
-
-        $this->rootPathGenerator
-            ->shouldReceive('__invoke')
-            ->with($entity)
-            ->andReturn('rootPath');
-
-        $remotePath = 'rootPath/pages/page-1.pdf';
-
-        $this->remoteFilesystem
-            ->shouldReceive('readStream')
-            ->with($remotePath)
-            ->andReturn($stream = $this->getTempResource());
-
-        $result = $this->getStorageService()->retrieveResourcePage($entity, 1);
-
-        $this->assertIsResource($stream);
-        $this->assertSame($stream, $result);
-    }
-
-    public function testStorePage(): void
-    {
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
-        $splFileInfo = \Mockery::mock(\SplFileInfo::class);
-        $splFileInfo->shouldReceive('getPathname')->andReturn($pathName = 'pathName');
-
-        $this->rootPathGenerator
-            ->shouldReceive('__invoke')
-            ->with($entity)
-            ->andReturn('rootPath');
-
-        $this->localFilesystem
-            ->shouldReceive('createStream')
-            ->with($pathName, 'r')
-            ->andReturn($stream = $this->getTempResource());
-
-        $this->remoteFilesystem
-            ->shouldReceive('writeStream')
-            ->with('rootPath/pages/page-1.pdf', $stream)
-            ->andReturnTrue();
-
-        $result = $this->getStorageService()->storePage($splFileInfo, $entity, 1);
-
-        $this->assertTrue($result);
-    }
-
     public function testRetrieveResourceEntity(): void
     {
         $fileInfo = \Mockery::mock(FileInfo::class);
@@ -315,28 +267,6 @@ class EntityStorageServiceTest extends UnitTestCase
         $this->assertFalse($result);
     }
 
-    public function testDownloadPage(): void
-    {
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
-        $pageNr = 1;
-
-        $service = $this->getStorageService();
-        $service
-            ->shouldReceive('generatePagePath')
-            ->once()
-            ->with($entity, $pageNr)
-            ->andReturn($remotePath = 'pagePath');
-        $service
-            ->shouldReceive('download')
-            ->once()
-            ->with($remotePath)
-            ->andReturn($localPath = 'localPath');
-
-        $result = $service->downloadPage($entity, $pageNr);
-
-        $this->assertSame($localPath, $result);
-    }
-
     public function testDownloadEntity(): void
     {
         $fileInfo = \Mockery::mock(FileInfo::class);
@@ -390,11 +320,7 @@ class EntityStorageServiceTest extends UnitTestCase
             ->once()
             ->withSomeOfArgs($entity)
             ->andReturn($remotePath = 'pagePath');
-        $service
-            ->shouldReceive('doDeleteAllFilesForEntity')
-            ->once()
-            ->with($entity, $remotePath)
-            ->andReturnTrue();
+        $this->remoteFilesystem->expects('delete')->with($remotePath)->andReturnTrue();
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             static function (EntityFileUpdateEvent $message) use ($entityId) {

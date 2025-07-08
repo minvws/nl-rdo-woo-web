@@ -4,3 +4,7 @@ admin.global.platform_title: "Beheer platform woo-publicaties Ministerie van VWS
 public.intro.label.oga: "OpenVWS"
 public.intro.description.oga: "Openbaar gemaakte informatie door het ministerie van Volksgezondheid, Welzijn en Sport"
 public.global.logo.text: "Ministerie van Volksgezondheid, Welzijn en Sport"
+
+public.theme.covid-19.menu_name: 'Thema COVID-19'
+public.theme.covid-19.page_title: 'Alle COVID-19 gerelateerde besluiten'
+public.theme.covid-19.page_text: 'Op deze pagina kunt u zoeken in alle COVID-19 gerelateerde Wob- en Woo-besluiten.'

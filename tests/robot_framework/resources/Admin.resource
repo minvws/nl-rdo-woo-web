@@ -7,6 +7,7 @@ Library             OTP
 Library             ${CURDIR}/../libraries/QR.py
 Resource            ../resources/Generic.resource
 
+
 *** Variables ***
 ${ATTACHMENT_FILENAME}  ${EMPTY}
 ${ATTACHMENT_LOCATION}  ${EMPTY}

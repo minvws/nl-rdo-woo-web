@@ -18,7 +18,6 @@ use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionR
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use App\Domain\Publication\FileInfo;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Service\Storage\EntityStorageService;
 use App\Service\Storage\ThumbnailStorageService;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -30,15 +29,15 @@ class EntityWithFileInfoPathSetsFactoryTest extends UnitTestCase
 {
     private EntityWithFileInfoPathSetsFactory $factory;
     private EntityManagerInterface&MockInterface $entityManager;
-    private EntityStorageService&MockInterface $entityStorageService;
     private ThumbnailStorageService&MockInterface $thumbnailStorageService;
+    private int $thumbnailLimit = 2;
 
     public function setUp(): void
     {
         $this->factory = new EntityWithFileInfoPathSetsFactory(
             $this->entityManager = \Mockery::mock(EntityManagerInterface::class),
-            $this->entityStorageService = \Mockery::mock(EntityStorageService::class),
             $this->thumbnailStorageService = \Mockery::mock(ThumbnailStorageService::class),
+            $this->thumbnailLimit,
         );
     }
 
@@ -57,16 +56,13 @@ class EntityWithFileInfoPathSetsFactoryTest extends UnitTestCase
         $fileInfoA = new FileInfo();
         $fileInfoA->setUploaded(true);
         $fileInfoA->setPath('/doc/a');
-        $fileInfoA->setPageCount(2);
+        $fileInfoA->setPageCount(3);
 
         $docA->shouldReceive('getFileInfo')->andReturn($fileInfoA);
         $docA->shouldReceive('getId')->andReturn($uuidA = Uuid::v6());
 
-        $this->entityStorageService->expects('generatePagePath')->with($docA, 1)->andReturn('/doc/a/page/1');
-        $this->entityStorageService->expects('generatePagePath')->with($docA, 2)->andReturn('/doc/a/page/2');
-
-        $this->thumbnailStorageService->expects('generatePagePath')->with($docA, 1)->andReturn('/doc/a/thumb/1');
-        $this->thumbnailStorageService->expects('generatePagePath')->with($docA, 2)->andReturn('/doc/a/thumb/2');
+        $this->thumbnailStorageService->expects('generateThumbPath')->with($docA, 1)->andReturn('/doc/a/thumb/1');
+        $this->thumbnailStorageService->expects('generateThumbPath')->with($docA, 2)->andReturn('/doc/a/thumb/2');
 
         $docB->shouldReceive('getFileInfo->getPath')->andReturnNull();
 
@@ -99,14 +95,6 @@ class EntityWithFileInfoPathSetsFactoryTest extends UnitTestCase
                     [
                         '/doc/a' => $uuidA->toRfc4122(),
                         '/doc/c' => $uuidC->toRfc4122(),
-                    ],
-                ),
-                new PathSet(
-                    'DocumentPage',
-                    FileStorageType::DOCUMENT,
-                    [
-                        '/doc/a/page/1' => $uuidA->toRfc4122(),
-                        '/doc/a/page/2' => $uuidA->toRfc4122(),
                     ],
                 ),
                 new PathSet(

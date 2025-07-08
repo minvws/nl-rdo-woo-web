@@ -68,6 +68,22 @@ final readonly class SearchParameters
         );
     }
 
+    public function withoutFacetFilters(): self
+    {
+        return new self(
+            facetInputs: new FacetInputCollection(),
+            operator: $this->operator,
+            limit: $this->limit,
+            offset: $this->offset,
+            pagination: $this->pagination,
+            aggregations: $this->aggregations,
+            query: $this->query,
+            searchType: $this->searchType,
+            sortField: $this->sortField,
+            sortOrder: $this->sortOrder,
+        );
+    }
+
     public function withQueryString(string $query): self
     {
         return new self(

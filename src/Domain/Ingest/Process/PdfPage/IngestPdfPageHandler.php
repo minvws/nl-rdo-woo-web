@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Ingest\Process\PdfPage;
 
-use App\Service\Worker\PdfProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -16,7 +15,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 final readonly class IngestPdfPageHandler
 {
     public function __construct(
-        private PdfProcessor $processor,
+        private PdfPageProcessor $processor,
         private EntityManagerInterface $doctrine,
         private LoggerInterface $logger,
     ) {
@@ -36,7 +35,7 @@ final readonly class IngestPdfPageHandler
         }
 
         try {
-            $this->processor->processEntityPage($entity, $message->getPageNr(), $message->getForceRefresh());
+            $this->processor->processPage($entity, $message->getPageNr(), $message->getForceRefresh());
         } catch (\Exception $e) {
             $this->logger->error('Error processing document in IngestPdfPageHandler', [
                 'id' => $message->getEntityId(),

@@ -6,7 +6,7 @@ namespace App\Domain\Ingest\Content\Extractor\Tika;
 
 use App\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Ingest\Content\LazyFileReference;
+use App\Domain\Ingest\Content\FileReferenceInterface;
 use App\Domain\Publication\FileInfo;
 
 readonly class TikaExtractor implements ContentExtractorInterface
@@ -16,7 +16,7 @@ readonly class TikaExtractor implements ContentExtractorInterface
     ) {
     }
 
-    public function getContent(FileInfo $fileInfo, LazyFileReference $fileReference): string
+    public function getContent(FileInfo $fileInfo, FileReferenceInterface $fileReference): string
     {
         $tikaData = $this->tikaService->extract(
             $fileReference->getPath(),

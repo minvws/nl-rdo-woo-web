@@ -6,6 +6,7 @@ Library             DebugLibrary
 Resource            ../resources/Setup.resource
 Test Tags           ci  sitemap  sitemap-init
 
+
 *** Variables ***
 ${URL_PUBLIC}   ${EMPTY}
 

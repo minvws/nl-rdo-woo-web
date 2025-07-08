@@ -50,25 +50,6 @@ class EntityStorageService extends StorageService
     }
 
     /**
-     * Retrieves the resource/stream of a page of an entity. Returns NULL when we cannot read the file.
-     *
-     * @return resource|null
-     */
-    public function retrieveResourcePage(EntityWithFileInfo $entity, int $pageNr)
-    {
-        $remotePath = $this->generatePagePath($entity, $pageNr);
-
-        return $this->remoteFilesystem->readStream($remotePath);
-    }
-
-    public function storePage(\SplFileInfo $localFile, EntityWithFileInfo $entity, int $pageNr): bool
-    {
-        $remotePath = $this->generatePagePath($entity, $pageNr);
-
-        return $this->doStore($localFile, $remotePath);
-    }
-
-    /**
      * @return resource|null
      */
     public function retrieveResourceEntity(EntityWithFileInfo $entity)
@@ -161,13 +142,6 @@ class EntityStorageService extends StorageService
         return $localPath;
     }
 
-    public function downloadPage(EntityWithFileInfo $entity, int $pageNr): string|false
-    {
-        $remotePath = $this->generatePagePath($entity, $pageNr);
-
-        return $this->download($remotePath);
-    }
-
     public function downloadEntity(EntityWithFileInfo $entity): string|false
     {
         $remotePath = $this->generateEntityPath($entity);
@@ -202,16 +176,12 @@ class EntityStorageService extends StorageService
             EntityFileUpdateEvent::forEntity($entity)
         );
 
-        $path = $this->generateEntityPath($entity);
+        $remotePath = $this->generateEntityPath($entity);
+        if (! $this->remoteFilesystem->delete($remotePath)) {
+            return false;
+        }
 
-        return $this->doDeleteAllFilesForEntity($entity, $path);
-    }
-
-    public function generatePagePath(EntityWithFileInfo $entity, int $pageNr): string
-    {
-        $rootPath = $this->getRootPathForEntity($entity);
-
-        return sprintf('%s/pages/page-%d.pdf', $rootPath, $pageNr);
+        return true;
     }
 
     public function generateEntityPath(EntityWithFileInfo $entity, ?string $filename = null): string

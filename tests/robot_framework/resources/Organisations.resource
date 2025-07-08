@@ -4,6 +4,7 @@ Library             String
 Library             Browser
 Library             DebugLibrary
 
+
 *** Keywords ***
 Click Organisation Selector
   Click  //*[@data-e2e-name="organisation-switcher"]

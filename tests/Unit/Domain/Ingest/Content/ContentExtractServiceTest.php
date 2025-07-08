@@ -9,7 +9,7 @@ use App\Domain\Ingest\Content\ContentExtractOptions;
 use App\Domain\Ingest\Content\ContentExtractService;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Ingest\Content\LazyFileReference;
+use App\Domain\Ingest\Content\FileReferenceInterface;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Publication\FileInfo;
 use App\Service\Storage\EntityStorageService;
@@ -55,7 +55,7 @@ class ContentExtractServiceTest extends UnitTestCase
 
         $extracts = $this->service->getExtracts(
             $entity,
-            ContentExtractOptions::create()->withAllExtractors(),
+            ContentExtractOptions::create()->withAllExtractors()->withLocalFile('/foo/bar.pdf'),
         );
 
         self::assertTrue($extracts->isFailure());
@@ -84,7 +84,7 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
         $this->extractorA->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
         $this->extractorA->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, LazyFileReference $fileReference) use ($contentA) {
+            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentA) {
                 $fileReference->getPath();
 
                 return $contentA;
@@ -95,7 +95,7 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
         $this->extractorB->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
         $this->extractorB->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, LazyFileReference $fileReference) use ($contentB) {
+            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentB) {
                 $fileReference->getPath();
 
                 return $contentB;
@@ -138,7 +138,7 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
         $this->extractorA->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
         $this->extractorA->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, LazyFileReference $fileReference) use ($contentA) {
+            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentA) {
                 $fileReference->getPath();
 
                 return $contentA;
@@ -149,7 +149,7 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
         $this->extractorB->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
         $this->extractorB->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, LazyFileReference $fileReference) use ($contentB) {
+            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentB) {
                 $fileReference->getPath();
 
                 return $contentB;
@@ -193,7 +193,6 @@ class ContentExtractServiceTest extends UnitTestCase
 
         $this->entityStorage
             ->expects('downloadEntity')
-            ->twice()
             ->with($entity)
             ->andReturn($localFile = __DIR__ . DIRECTORY_SEPARATOR . 'dummy.txt');
 
@@ -203,7 +202,7 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
         $this->extractorA->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
         $this->extractorA->expects('getContent')->twice()->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, LazyFileReference $fileReference) use ($contentA) {
+            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentA) {
                 $fileReference->getPath();
 
                 return $contentA;
@@ -214,18 +213,18 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
         $this->extractorB->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
         $this->extractorB->expects('getContent')->twice()->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, LazyFileReference $fileReference) use ($contentB) {
+            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentB) {
                 $fileReference->getPath();
 
                 return $contentB;
             }
         );
 
-        $this->entityStorage->expects('removeDownload')->twice()->with($localFile);
+        $this->entityStorage->expects('removeDownload')->with($localFile);
 
         $extracts = $this->service->getExtracts(
             $entity,
-            ContentExtractOptions::create()->withAllExtractors(),
+            ContentExtractOptions::create()->withAllExtractors()->withLocalFile($localFile),
         );
 
         self::assertEquals(
@@ -256,11 +255,7 @@ class ContentExtractServiceTest extends UnitTestCase
         $entity->shouldReceive('getId')->andReturn(Uuid::v6());
         $entity->shouldReceive('getFileCacheKey')->andReturn('entitycachekey');
 
-        $this->entityStorage
-            ->expects('downloadEntity')
-            ->with($entity)
-            ->andReturn($localFile = __DIR__ . DIRECTORY_SEPARATOR . 'dummy.txt');
-
+        $localFile = __DIR__ . DIRECTORY_SEPARATOR . 'dummy.txt';
         $this->entityStorage->expects('setHash')->with($entity, $localFile);
 
         $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
@@ -270,18 +265,16 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
         $this->extractorB->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
         $this->extractorB->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, LazyFileReference $fileReference) use ($contentB) {
+            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentB) {
                 $fileReference->getPath();
 
                 return $contentB;
             }
         );
 
-        $this->entityStorage->expects('removeDownload')->with($localFile);
-
         $extracts = $this->service->getExtracts(
             $entity,
-            ContentExtractOptions::create()->withAllExtractors(),
+            ContentExtractOptions::create()->withAllExtractors()->withLocalFile($localFile),
         );
 
         self::assertEquals(
@@ -309,13 +302,11 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->entityStorage->expects('setHash')->with($entity, $dummyDocumentFile);
         $this->entityStorage->expects('removeDownload')->with($dummyDocumentFile);
 
-        $this->entityStorage->expects('downloadPage')->with($entity, 123)->andReturn($dummyFile);
-
         $contentA = "A line1\nA line 2";
         $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
         $this->extractorA->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
         $this->extractorA->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, LazyFileReference $fileReference) use ($contentA) {
+            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentA) {
                 $fileReference->getPath();
 
                 return $contentA;
@@ -326,18 +317,16 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
         $this->extractorB->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
         $this->extractorB->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, LazyFileReference $fileReference) use ($contentB) {
+            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentB) {
                 $fileReference->getPath();
 
                 return $contentB;
             }
         );
 
-        $this->entityStorage->expects('removeDownload')->with($dummyFile);
-
         $extracts = $this->service->getExtracts(
             $entity,
-            ContentExtractOptions::create()->withAllExtractors()->withPageNumber(123),
+            ContentExtractOptions::create()->withAllExtractors()->withPageNumber(123)->withLocalFile($dummyFile),
         );
 
         self::assertEquals(
@@ -421,7 +410,7 @@ class ContentExtractServiceTest extends UnitTestCase
 
         $extracts = $this->service->getExtracts(
             $entity,
-            ContentExtractOptions::create()->withAllExtractors(),
+            ContentExtractOptions::create()->withAllExtractors()->withLocalFile('/foo/bar.pdf'),
         );
 
         self::assertTrue($extracts->isFailure(), 'Extracts is marked as failure');

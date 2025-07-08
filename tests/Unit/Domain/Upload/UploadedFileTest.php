@@ -7,7 +7,6 @@ namespace App\Tests\Unit\Domain\Upload;
 use App\Domain\Upload\UploadedFile;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
-use Oneup\UploaderBundle\Uploader\File\FileInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
 final class UploadedFileTest extends UnitTestCase
@@ -36,24 +35,10 @@ final class UploadedFileTest extends UnitTestCase
         $this->assertSame($expectedOriginalFilename, $uploadedFile->getOriginalFilename());
     }
 
-    public function testFromFileWithFileInterface(): void
-    {
-        /** @var FileInterface&MockInterface $oneupFile */
-        $oneupFile = \Mockery::mock(FileInterface::class);
-        $oneupFile->shouldReceive('getPathname')->andReturn($expectedFilename = 'filename');
-
-        $uploadedFile = UploadedFile::fromFile($oneupFile, $expectedOriginalFilename = 'originalFilename.txt');
-
-        $this->assertInstanceOf(UploadedFile::class, $uploadedFile);
-        $this->assertInstanceOf(\SplFileInfo::class, $uploadedFile);
-        $this->assertSame($expectedFilename, $uploadedFile->getPathname());
-        $this->assertSame($expectedOriginalFilename, $uploadedFile->getOriginalFilename());
-    }
-
     public function testFromFileWithSymfonyFile(): void
     {
         /** @var File&MockInterface $symfonyFile */
-        $symfonyFile = \Mockery::mock(FileInterface::class);
+        $symfonyFile = \Mockery::mock(File::class);
         $symfonyFile->shouldReceive('getPathname')->andReturn($expectedFilename = 'filename');
 
         $uploadedFile = UploadedFile::fromFile($symfonyFile, $expectedOriginalFilename = 'originalFilename.txt');

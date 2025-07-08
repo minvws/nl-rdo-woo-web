@@ -9,8 +9,8 @@ use App\Api\Admin\RequestForAdviceMainDocument\RequestForAdviceMainDocumentDto;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Uploader\Handler\UploadHandlerInterface;
-use App\Domain\Uploader\UploadEntity;
+use App\Domain\Upload\Handler\UploadHandlerInterface;
+use App\Domain\Upload\UploadEntity;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceFactory;
@@ -47,7 +47,7 @@ final class RequestForAdviceMainDocumentTest extends ApiTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
 
-        $dossier = RequestForAdviceFactory::createOne(['organisation' => $user->getOrganisation()]);
+        $dossier = RequestForAdviceFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
         $response = static::createClient()
             ->loginUser($user, 'balie')
@@ -62,7 +62,7 @@ final class RequestForAdviceMainDocumentTest extends ApiTestCase
             );
         $this->assertCount(0, $response->toArray(), 'Expected no main documents yet');
 
-        $upload = UploadEntityFactory::new()->create([
+        $upload = UploadEntityFactory::createOne([
             'uploadGroupId' => UploadGroupId::MAIN_DOCUMENTS,
             'context' => new InputBag([
                 'dossierId' => $dossier->getId()->toRfc4122(),
@@ -92,7 +92,7 @@ final class RequestForAdviceMainDocumentTest extends ApiTestCase
         $data = [
             'formalDate' => CarbonImmutable::yesterday()->format('Y-m-d'),
             'internalReference' => 'foo bar',
-            'type' => AttachmentType::EVALUATION_REPORT->value,
+            'type' => AttachmentType::REQUEST_FOR_ADVICE->value,
             'language' => AttachmentLanguage::DUTCH->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $upload->getUploadId(),
@@ -196,11 +196,11 @@ final class RequestForAdviceMainDocumentTest extends ApiTestCase
         $dossier = RequestForAdviceFactory::createOne([
             'organisation' => $user->getOrganisation(),
             'status' => DossierStatus::CONCEPT,
-        ]);
+        ])->_real();
 
         $RequestForAdviceMainDocument = RequestForAdviceMainDocumentFactory::createOne([
             'dossier' => $dossier,
-        ]);
+        ])->_real();
 
         static::createClient()
             ->loginUser($user, 'balie')
@@ -227,7 +227,7 @@ final class RequestForAdviceMainDocumentTest extends ApiTestCase
         $dossier = RequestForAdviceFactory::createOne([
             'organisation' => $user->getOrganisation(),
             'status' => DossierStatus::PUBLISHED,
-        ]);
+        ])->_real();
 
         RequestForAdviceMainDocumentFactory::createOne(['dossier' => $dossier]);
 

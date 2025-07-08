@@ -27,7 +27,7 @@ class DetailsType extends AbstractDossierStepType
         $this->addDateField($builder);
         $this->addInternalReferenceField($builder);
         $this->addDepartmentsField($builder);
-        $this->addSubjectField($builder, 'admin.dossiers.request_for_advice.form.details.subject_help');
+        $this->addSubjectField($builder, 'admin.dossiers.request-for-advice.form.details.subject_help');
         $this->addNewDossierFields($builder);
         $this->addSubmits($builder);
     }

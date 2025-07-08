@@ -31,7 +31,7 @@ class RequestForAdviceController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/overig/{prefix}/{dossierId}', name: 'app_request_for_advice_detail', methods: ['GET'])]
+    #[Route('/adviesaanvraag/{prefix}/{dossierId}', name: 'app_requestforadvice_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] RequestForAdvice $requestForAdvice,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
@@ -50,8 +50,8 @@ class RequestForAdviceController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/overig/{prefix}/{dossierId}/document',
-        name: 'app_request_for_advice_document_detail',
+        '/adviesaanvraag/{prefix}/{dossierId}/document',
+        name: 'app_requestforadvice_document_detail',
         methods: ['GET'],
     )]
     public function documentDetail(
@@ -61,7 +61,7 @@ class RequestForAdviceController extends AbstractController
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('dossier.type.request-for-advice', 'app_request_for_advice_detail', [
+        $breadcrumbs->addRouteItem('dossier.type.request-for-advice', 'app_requestforadvice_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
             'dossierId' => $dossier->getDossierNr(),
         ]);
@@ -81,8 +81,8 @@ class RequestForAdviceController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/overig/{prefix}/{dossierId}/bijlage/{attachmentId}',
-        name: 'app_request_for_advice_attachment_detail',
+        '/adviesaanvraag/{prefix}/{dossierId}/bijlage/{attachmentId}',
+        name: 'app_requestforadvice_attachment_detail',
         methods: ['GET'],
     )]
     public function attachmentDetail(
@@ -94,7 +94,7 @@ class RequestForAdviceController extends AbstractController
         $attachmentViewModel = $this->attachmentViewFactory->make($dossier, $attachment);
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('dossier.type.request-for-advice', 'app_request_for_advice_detail', [
+        $breadcrumbs->addRouteItem('dossier.type.request-for-advice', 'app_requestforadvice_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
             'dossierId' => $dossier->getDossierNr(),
         ]);

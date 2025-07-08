@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Domain\Upload\Process;
 
 use App\Domain\Publication\EntityWithFileInfo;
+use App\Domain\Upload\AssetsNamer;
+use App\Domain\Upload\Exception\UploadException;
 use App\Domain\Upload\FileType\FileType;
-use App\Domain\Uploader\Exception\UploadException;
-use App\Domain\Uploader\UploadEntity;
-use App\Domain\Uploader\UploadEntityRepository;
-use App\Domain\Uploader\UploadService;
+use App\Domain\Upload\UploadEntity;
+use App\Domain\Upload\UploadEntityRepository;
+use App\Domain\Upload\UploadService;
+use App\Entity\Department;
 use App\Service\Storage\EntityStorageService;
 use App\SourceType;
 use League\Flysystem\FilesystemOperator;
@@ -20,8 +22,10 @@ readonly class EntityUploadStorer
     public function __construct(
         private UploadService $uploadService,
         private FilesystemOperator $documentStorage,
+        private FilesystemOperator $assetsStorage,
         private EntityStorageService $entityStorageService,
         private UploadEntityRepository $uploadEntityRepository,
+        private AssetsNamer $assetsNamer,
     ) {
     }
 
@@ -30,15 +34,8 @@ readonly class EntityUploadStorer
         EntityWithFileInfo $targetEntity,
     ): void {
         $filePath = $this->entityStorageService->generateEntityPath($targetEntity, $uploadEntity->getFilename());
-        $this->uploadService->moveUploadToStorage($uploadEntity, $this->documentStorage, $filePath);
 
-        $size = $uploadEntity->getSize();
-        Assert::notNull($size);
-
-        $targetEntity->getFileInfo()->setMimetype($uploadEntity->getMimetype());
-        $targetEntity->getFileInfo()->setSize($size);
-        $targetEntity->getFileInfo()->setPath($filePath);
-        $targetEntity->getFileInfo()->setUploaded(true);
+        $this->doStore($this->documentStorage, $filePath, $uploadEntity, $targetEntity);
     }
 
     public function storeUploadForEntityWithSourceTypeAndName(
@@ -56,5 +53,34 @@ readonly class EntityUploadStorer
         $targetEntity->getFileInfo()->setSourceType($fileType ? SourceType::fromFileType($fileType) : SourceType::UNKNOWN);
 
         $targetEntity->getFileInfo()->setName($uploadEntity->getFilename());
+    }
+
+    public function storeDepartmentAssetForEntity(UploadEntity $uploadEntity, Department $targetEntity): void
+    {
+        $filename = $uploadEntity->getFilename();
+        Assert::string($filename);
+
+        $filePath = $this->assetsNamer->getDepartmentLogo($targetEntity, pathinfo($filename, PATHINFO_EXTENSION));
+
+        $this->doStore($this->assetsStorage, $filePath, $uploadEntity, $targetEntity);
+
+        $targetEntity->getFileInfo()->setName($uploadEntity->getFilename());
+    }
+
+    private function doStore(
+        FilesystemOperator $storage,
+        string $filePath,
+        UploadEntity $uploadEntity,
+        EntityWithFileInfo $targetEntity,
+    ): void {
+        $this->uploadService->moveUploadToStorage($uploadEntity, $storage, $filePath);
+
+        $size = $uploadEntity->getSize();
+        Assert::notNull($size);
+
+        $targetEntity->getFileInfo()->setMimetype($uploadEntity->getMimetype());
+        $targetEntity->getFileInfo()->setSize($size);
+        $targetEntity->getFileInfo()->setPath($filePath);
+        $targetEntity->getFileInfo()->setUploaded(true);
     }
 }

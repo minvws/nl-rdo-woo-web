@@ -8,9 +8,5 @@
 {% endblock %}
 
 {% block about %}
-    <twig:Public:Publication:About
-        document="{{ document }}"
-        dossier="{{ dossier }}"
-        title="{{ 'public.dossiers.request-for-advice.about' | trans }}"
-    />
+    {% include 'public/dossier/request-for-advice/snippets/about.html.twig' %}
 {% endblock %}

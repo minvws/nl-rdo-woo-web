@@ -1,6 +1,13 @@
 {% import "public/macros/facet.html.twig" as macro %}
 
-<h2 class="woo-h2 woo-h2-spacing">Filters</h2>
+<h2 class="woo-h2 woo-h3-spacing">Filters</h2>
+
+{% if result.searchParameters.hasActiveFacets %}
+<a class="woo-btn-bordered-blue text-sm rounded-full h-9 w-full mb-4" href="?{{ result.searchParameters.withoutFacetFilters.queryParameters.all | url_encode }}#search-results-list" data-e2e-name="clear-all-filters">
+    {{ 'public.search.clear_all_filters' | trans }}
+    <twig:Public:Icon class="ml-1" name="cross" size="16" />
+</a>
+{% endif %}
 
 <form class="form-filters" method="post" action="">
     <fieldset>

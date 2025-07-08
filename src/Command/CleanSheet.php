@@ -12,7 +12,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\History\History;
 use App\Domain\Publication\Subject\Subject;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
-use App\Domain\Uploader\UploadEntity;
+use App\Domain\Upload\UploadEntity;
 use App\Domain\WooIndex\WooIndexSitemapService;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;

@@ -30,4 +30,15 @@ class RequestForAdviceAttachment extends AbstractAttachment
         $this->language = $language;
         $this->fileInfo->setPaginatable(true);
     }
+
+    /**
+     * @return list<AttachmentType>
+     */
+    public static function getAllowedTypes(): array
+    {
+        return AttachmentType::getCasesWithout(
+            AttachmentType::ADVICE,
+            AttachmentType::REQUEST_FOR_ADVICE,
+        );
+    }
 }
