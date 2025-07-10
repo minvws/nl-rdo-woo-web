@@ -1,11 +1,10 @@
 *** Settings ***
 Documentation       Tests that focus on using the inquiry system
 ...                 This is named 01 because we want to run this first, when the queue is empty, because the first test waits for the queue to be empty.
-Resource            ../resources/Setup.resource
-Resource            ../resources/WooDecision.resource
 Resource            ../resources/Inquiry.resource
 Resource            ../resources/Organisations.resource
-Library             Collections
+Resource            ../resources/Setup.resource
+Resource            ../resources/WooDecision.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin

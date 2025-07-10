@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Domain\Department\Department;
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Department;
-use App\Entity\Organisation;
-use App\SourceType;
+use App\Domain\Publication\SourceType;
 use App\Tests\Faker\FakerFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Faker\Generator;

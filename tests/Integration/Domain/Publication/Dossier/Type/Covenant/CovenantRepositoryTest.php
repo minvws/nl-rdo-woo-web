@@ -6,7 +6,7 @@ namespace App\Tests\Integration\Domain\Publication\Dossier\Type\Covenant;
 
 use App\Domain\Publication\Dossier\Type\Covenant\CovenantRepository;
 use App\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use App\Tests\Integration\IntegrationTestTrait;

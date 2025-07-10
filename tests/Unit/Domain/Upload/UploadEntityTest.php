@@ -8,7 +8,7 @@ use App\Domain\Upload\Exception\UploadException;
 use App\Domain\Upload\Exception\UploadValidationException;
 use App\Domain\Upload\UploadEntity;
 use App\Domain\Upload\UploadStatus;
-use App\Entity\User;
+use App\Service\Security\User;
 use App\Service\Uploader\UploadGroupId;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

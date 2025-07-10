@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Department\Twig;
 
+use App\Domain\Department\DepartmentRepository;
 use App\Domain\Department\Twig\Departments;
-use App\Repository\DepartmentRepository;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Symfony\Contracts\Cache\CacheInterface;

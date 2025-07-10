@@ -1,10 +1,10 @@
 *** Settings ***
 Documentation       Resource file containing custom keywords for the Admin section, or Balie in Dutch.
 Library             String
+Library             ${CURDIR}/../libraries/QR.py
 Library             Browser
 Library             DebugLibrary
 Library             OTP
-Library             ${CURDIR}/../libraries/QR.py
 Resource            ../resources/Generic.resource
 
 

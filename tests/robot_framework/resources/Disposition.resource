@@ -22,7 +22,7 @@ Fill Out Disposition Details
 
 Upload Disposition
   [Arguments]  ${disposition_location}
-  ${path}  ${file_name} =  Split Path  ${disposition_location}
+  ${_}  ${file_name} =  Split Path  ${disposition_location}
   Click  " Beschikking toevoegen... "
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${FILE_LOCATION}
   Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}  timeout=10s

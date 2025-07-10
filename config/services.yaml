@@ -112,11 +112,7 @@ services:
         arguments:
             $redis: '@snc_redis.session'
 
-    App\EventSubscriber\AppModeListener:
-        arguments:
-            $appMode: '%env(APP_MODE)%'
-
-    App\Session\EncryptedSessionProxy:
+    App\Service\Security\Session\EncryptedSessionProxy:
         arguments:
             - '@Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler'
             - '%env(APP_SECRET)%'
@@ -134,10 +130,6 @@ services:
               credentials:
                 key: '%env(STORAGE_MINIO_ACCESS_KEY)%'
                 secret: '%env(STORAGE_MINIO_SECRET_KEY)%'
-
-    App\EventSubscriber\SecurityHeaderSubscriber:
-        arguments:
-            $appMode: '%env(APP_MODE)%'
 
     App\Service\Security\Authorization\AuthorizationMatrix:
         arguments:

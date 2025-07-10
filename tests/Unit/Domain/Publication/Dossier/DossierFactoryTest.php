@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier;
 
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\DossierFactory;
 use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Entity\Organisation;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

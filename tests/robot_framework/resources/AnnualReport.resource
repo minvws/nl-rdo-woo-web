@@ -22,7 +22,7 @@ Fill Out Annual Report Details
 
 Upload Annual Report
   [Arguments]  ${annual_report_location}
-  ${path}  ${file_name} =  Split Path  ${annual_report_location}
+  ${_}  ${file_name} =  Split Path  ${annual_report_location}
   Click  " Jaarplan of jaarverslag toevoegen... "
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${annual_report_location}
   Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}  timeout=10s

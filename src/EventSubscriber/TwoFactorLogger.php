@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use App\Entity\LoginActivity;
-use App\Entity\User;
+use App\Service\Security\LoginActivity\LoginActivity;
+use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Event\TwoFactorAuthenticationEvent;

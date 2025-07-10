@@ -10,7 +10,6 @@ use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\Document
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateType;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\ValueObject\DossierUploadStatus;
 
 final readonly class UploadStatusDtoFactory
 {
@@ -20,7 +19,7 @@ final readonly class UploadStatusDtoFactory
 
     public function make(WooDecision $wooDecision, DocumentFileSet $documentFileSet): UploadStatusDto
     {
-        $dossierUploadStatus = new DossierUploadStatus($wooDecision);
+        $dossierUploadStatus = $wooDecision->getUploadStatus();
 
         return new UploadStatusDto(
             wooDecision: $wooDecision,

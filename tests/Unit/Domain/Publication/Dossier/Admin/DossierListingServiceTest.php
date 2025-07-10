@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Admin;
 
+use App\Domain\Department\Department;
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\Admin\DossierFilterParameters;
 use App\Domain\Publication\Dossier\Admin\DossierListingService;
 use App\Domain\Publication\Dossier\Admin\DossierQueryConditions;
@@ -12,8 +14,6 @@ use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Entity\Department;
-use App\Entity\Organisation;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Doctrine\Common\Collections\ArrayCollection;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Department\Exception;
 
-use App\Entity\Department;
+use App\Domain\Department\Department;
 
 final class DepartmentAssetNotFound extends \RuntimeException implements DepartmentException
 {

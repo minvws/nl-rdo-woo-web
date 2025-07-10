@@ -6,9 +6,9 @@ namespace App\Tests\Unit\Service;
 
 use App\Domain\Organisation\Event\OrganisationCreatedEvent;
 use App\Domain\Organisation\Event\OrganisationUpdatedEvent;
-use App\Entity\Organisation;
-use App\Entity\User;
+use App\Domain\Organisation\Organisation;
 use App\Service\OrganisationService;
+use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

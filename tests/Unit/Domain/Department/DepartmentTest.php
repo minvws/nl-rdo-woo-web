@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Department;
 
+use App\Domain\Department\Department;
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\FileInfo;
-use App\Entity\Department;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class DepartmentTest extends MockeryTestCase
@@ -42,5 +43,38 @@ class DepartmentTest extends MockeryTestCase
         $department->setFileInfo($fileInfo);
 
         self::assertSame($fileInfo, $department->getFileInfo());
+    }
+
+    public function testSetAndGetShortTag(): void
+    {
+        $department = new Department();
+        $department->setShortTag($tag = 'foo');
+
+        self::assertEquals($tag, $department->getShortTag());
+    }
+
+    public function testGetNameAndShort(): void
+    {
+        $department = new Department();
+        $department->setShortTag('foo');
+        $department->setName('bar');
+
+        self::assertEquals('bar (foo)', $department->nameAndShort());
+    }
+
+    public function testAddAndRemoveOrganisation(): void
+    {
+        $department = new Department();
+
+        $organisation = \Mockery::mock(Organisation::class);
+        $organisation->expects('addDepartment')->with($department);
+
+        $department->addOrganisation($organisation);
+
+        self::assertEquals([$organisation], $department->getOrganisations()->toArray());
+
+        $department->removeOrganisation($organisation);
+
+        self::assertEquals([], $department->getOrganisations()->toArray());
     }
 }

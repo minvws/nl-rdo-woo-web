@@ -7,6 +7,7 @@ services:
             $configPageLimit: '%configPageLimit%'
             Psr\Log\LoggerInterface $logger: '@App\Service\Logging\EnrichedPsrLogger'
             string $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
+            string $appMode: '%env(APP_MODE)%'
             int $thumbnailLimit: '%thumbnail_limit%'
 
     App\:

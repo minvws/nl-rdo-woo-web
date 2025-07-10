@@ -47,8 +47,8 @@ framework:
                     multiplier: 2
 
         routing:
-            App\Message\InitiateElasticRolloverMessage: high
-            App\Message\SetElasticAliasMessage: high
+            App\Domain\Search\Index\Rollover\InitiateElasticRolloverCommand: high
+            App\Domain\Search\Index\Rollover\SetElasticAliasCommand: high
             App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ProductionReportProcessRunCommand: high
             App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\GenerateInventoryCommand: high
             App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand: high
@@ -64,14 +64,14 @@ framework:
 
             App\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand: ingestor
             App\Domain\Ingest\Process\Dossier\IngestDossierCommand: ingestor
-            App\Domain\Ingest\Process\Pdf\IngestPdfCommand: ingestor           # Ingests a complete PDF document and fires a message for each page
+            App\Domain\Ingest\Process\Pdf\IngestPdfCommand: ingestor           # Ingests a complete PDF document and fires a command for each page
             App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand: ingestor
             App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand: ingestor   # Ingests a single PDF page from a PDF document
             App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand: ingestor
             App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand: ingestor
 
             App\Domain\Search\Index\Dossier\IndexDossierCommand: esupdater     # Updates the dossier in the elastic index
-            App\Message\UpdateDepartmentMessage: esupdater             # Updates the dossier in the elastic index
+            App\Domain\Department\UpdateDepartmentCommand: esupdater             # Updates the dossier in the elastic index
             App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\RemoveDocumentCommand: esupdater
             App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent: esupdater
             App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent: esupdater

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Publication\Dossier;
 
 use App\Doctrine\TimestampableTrait;
+use App\Domain\Department\Department;
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\Type\Advice\Advice;
 use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
@@ -18,8 +20,6 @@ use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Validator as DossierValidator;
 use App\Domain\Publication\Subject\Subject;
-use App\Entity\Department;
-use App\Entity\Organisation;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

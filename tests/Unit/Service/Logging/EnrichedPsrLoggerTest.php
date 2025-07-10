@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Logging;
 
-use App\Entity\User;
 use App\Service\Logging\EnrichedPsrLogger;
+use App\Service\Security\User;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Monolog\Formatter\NormalizerFormatter;

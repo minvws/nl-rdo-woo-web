@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier;
 
+use App\Domain\Department\Department;
+use App\Domain\Department\DepartmentRepository;
 use App\Domain\Publication\Dossier\Admin\DossierFilterParameters;
 use App\Domain\Publication\Dossier\Admin\DossierListingService;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Entity\Department;
-use App\Repository\DepartmentRepository;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

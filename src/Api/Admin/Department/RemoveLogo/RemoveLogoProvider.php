@@ -6,8 +6,8 @@ namespace App\Api\Admin\Department\RemoveLogo;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Entity\Department;
-use App\Repository\DepartmentRepository;
+use App\Domain\Department\Department;
+use App\Domain\Department\DepartmentRepository;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 

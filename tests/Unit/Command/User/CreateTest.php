@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Command\User;
 
 use App\Command\User\Create;
-use App\Entity\Organisation;
+use App\Domain\Organisation\Organisation;
 use App\Service\Totp;
 use App\Service\UserService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;

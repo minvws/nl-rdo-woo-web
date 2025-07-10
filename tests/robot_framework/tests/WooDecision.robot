@@ -1,8 +1,8 @@
 *** Settings ***
 Documentation       Tests for the WooDecision information category.
-Resource            ../resources/Setup.resource
 Resource            ../resources/Dossier.resource
 Resource            ../resources/Organisations.resource
+Resource            ../resources/Setup.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin

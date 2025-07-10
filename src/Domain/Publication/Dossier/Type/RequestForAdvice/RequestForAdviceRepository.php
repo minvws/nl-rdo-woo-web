@@ -7,7 +7,7 @@ namespace App\Domain\Publication\Dossier\Type\RequestForAdvice;
 use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
 use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use App\Domain\Search\Result\Dossier\RequestForAdvice\RequestForAdviceSearchResult;
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**

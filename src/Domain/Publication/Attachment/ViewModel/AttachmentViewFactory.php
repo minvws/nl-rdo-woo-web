@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Attachment\ViewModel;
 
-use App\Citation;
 use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use App\Domain\Publication\Citation;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 readonly class AttachmentViewFactory

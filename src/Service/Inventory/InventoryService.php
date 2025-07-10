@@ -7,11 +7,11 @@ namespace App\Service\Inventory;
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\SourceType;
 use App\Exception\ProcessInventoryException;
 use App\Service\Inventory\Reader\InventoryReaderFactory;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
 use App\Service\Storage\EntityStorageService;
-use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**

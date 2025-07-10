@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
-use App\Entity\User;
-use App\Repository\UserRepository;
 use App\Service\Security\Event\UserDisableEvent;
 use App\Service\Security\Event\UserEnableEvent;
 use App\Service\Security\Event\UserUpdatedEvent;
+use App\Service\Security\User;
+use App\Service\Security\UserRepository;
 use App\Service\UserService;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;

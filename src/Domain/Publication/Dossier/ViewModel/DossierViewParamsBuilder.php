@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\ViewModel;
 
+use App\Domain\Department\DepartmentRepository;
 use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
 use App\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
@@ -11,7 +12,6 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Repository\DepartmentRepository;
 use App\Service\DossierWizard\DossierWizardStatus;
 use Symfony\Component\Form\FormInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;

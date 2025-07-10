@@ -1,9 +1,13 @@
+*** Comments ***
+# robocop: off=too-many-arguments,too-long-keyword
+
+
 *** Settings ***
 Documentation       Resource file with generic keywords.
-Library             String
 Library             DateTime
-Library             DateTimeTZ
+Library             String
 Library             Browser
+Library             DateTimeTZ
 Library             DebugLibrary
 Resource            Generic.resource
 
@@ -34,30 +38,6 @@ Initiate Search
 Verify Search Result Count
   [Arguments]  ${result_string}
   Get Text  //*[@id="js-number-of-search-results"]  contains  ${result_string}
-
-Verify Listed Document In Dossier
-  [Arguments]  ${document_number}  ${name}  ${date}
-  Get Text  //*[@data-e2e-name="documents-section"]  *=  ${document_number}
-  Get Text  //*[@data-e2e-name="documents-section"]  *=  ${name}
-  Get Text  //*[@data-e2e-name="documents-section"]  *=  ${date}
-
-Categories Contain Items  [Arguments]  ${category}  ${item}  ${count}
-  IF  $category == "Onderwerp"
-    Get Text  //*[@data-e2e-name="categories-Onderwerp"]  contains  ${item}
-    Get Text  //*[@data-e2e-name="categories-Onderwerp"]  contains  ${count}
-  END
-  IF  $category == "Type bronbestand"
-    Get Text  //*[@data-e2e-name="categories-Type bronbestand"]  contains  ${item}
-    Get Text  //*[@data-e2e-name="categories-Type bronbestand"]  contains  ${count}
-  END
-  IF  $category == "Soort besluit"
-    Get Text  //*[@data-e2e-name="categories-Soort besluit"]  contains  ${item}
-    Get Text  //*[@data-e2e-name="categories-Soort besluit"]  contains  ${count}
-  END
-  IF  $category == "Uitzonderingsgrond"
-    Get Text  //*[@data-e2e-name="categories-Uitzonderingsgrond"]  contains  ${item}
-    Get Text  //*[@data-e2e-name="categories-Uitzonderingsgrond"]  contains  ${count}
-  END
 
 Check Document Existence On Public
   [Documentation]  The document with the given ID should NOT be visible on public
@@ -236,7 +216,7 @@ Navigate To Covid19 Theme Page
 
 Verify Document Preview
   [Documentation]  Should contain three items and the alt text of the images should say Pagina #
-  Get Element Count  //ol[@data-e2e-name="preview-list"]/li  >=  1
+  Get Element Count  //ol[@data-e2e-name="preview-list"]/li  assertion_operator=>=  assertion_expected=1
   Get Attribute  (//ol[@data-e2e-name="preview-list"]/li)[1]//img  alt  contains  Pagina 1
 
 Click Clear All Filters

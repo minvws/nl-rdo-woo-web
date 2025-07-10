@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Vws\AuditLog;
 
-use App\Entity\User;
+use App\Service\Security\User;
 use App\Vws\AuditLog\TwoFactorAuditLogger;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\UserLoginLogEvent;

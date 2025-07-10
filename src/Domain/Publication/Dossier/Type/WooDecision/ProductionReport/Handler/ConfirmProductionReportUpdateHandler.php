@@ -11,7 +11,7 @@ use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use App\Exception\ProductionReportUpdaterException;
 use App\Service\HistoryService;
-use App\Utils;
+use App\Service\Utils\Utils;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

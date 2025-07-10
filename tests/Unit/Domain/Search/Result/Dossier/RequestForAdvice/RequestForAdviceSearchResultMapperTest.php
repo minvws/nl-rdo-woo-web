@@ -10,7 +10,7 @@ use App\Domain\Search\Index\Schema\ElasticField;
 use App\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use App\Domain\Search\Result\Dossier\RequestForAdvice\RequestForAdviceSearchResultMapper;
 use App\Domain\Search\Result\ResultEntryInterface;
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

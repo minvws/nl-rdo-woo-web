@@ -7,27 +7,6 @@ Resource            Generic.resource
 
 
 *** Keywords ***
-Verify Existence Of Inquiry
-  [Arguments]  ${inquiry_number}
-  Get Text  css=#inhoud > div > div.bhr-card  contains  ${inquiry_number}
-
-Verify Inquiry Summary
-  [Arguments]  ${decision_name}  ${document_summary_string}
-  Get Text  //body  *=  ${decision_name}
-  Get Text  //body  *=  ${document_summary_string}
-
-Verify Documents Summary In Inquiry Overview
-  [Arguments]  ${document_summary_string}
-  Get Text  //body  *=  ${document_summary_string}
-
-Verify Document Listed In Inquiry Overview
-  [Arguments]  ${document_name}
-  Get Text  //body  *=  ${document_name}
-
-Verify Decision Listed In Inquiry Overview
-  [Arguments]  ${decision_name}
-  Get Text  //body  *=  ${decision_name}
-
 Click Inquiries
   Click  " Zaken "
 
@@ -123,10 +102,6 @@ Select Prefix When Linking Inquiries
     Select Options By  id=inquiry_link_documents_form_prefix  text  ${prefix}
   END
   Set Browser Timeout  ${old_timeout}
-
-Verify Inquiry Document Count
-  [Arguments]  ${inquiry}  ${count}
-  Get Text  //*[@data-e2e-name="inquiry-list"]//tr[contains(.,'${inquiry}')]/td[3]  equals  ${count}
 
 Download Inquiry Archive
   [Arguments]  ${number_of_documents}

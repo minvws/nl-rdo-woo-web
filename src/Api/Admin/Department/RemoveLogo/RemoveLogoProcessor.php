@@ -6,8 +6,8 @@ namespace App\Api\Admin\Department\RemoveLogo;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use App\Domain\Department\Department;
 use App\Domain\Department\DepartmentFileService;
-use App\Entity\Department;
 use Webmozart\Assert\Assert;
 
 final readonly class RemoveLogoProcessor implements ProcessorInterface

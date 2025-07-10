@@ -9,7 +9,7 @@ use App\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
 use App\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use App\Domain\Search\Result\Dossier\DossierSearchResultEntry;
 use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

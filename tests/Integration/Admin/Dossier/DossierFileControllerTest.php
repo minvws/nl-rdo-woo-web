@@ -15,7 +15,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMain
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\EntityWithFileInfo;
-use App\Entity\User;
+use App\Service\Security\User;
 use App\Tests\Factory\DocumentFactory;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\InventoryFactory;

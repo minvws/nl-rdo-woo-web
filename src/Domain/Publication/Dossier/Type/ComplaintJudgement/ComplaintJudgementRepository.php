@@ -7,7 +7,7 @@ namespace App\Domain\Publication\Dossier\Type\ComplaintJudgement;
 use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
 use App\Domain\Search\Result\Dossier\ComplaintJudgement\ComplaintJudgementSearchResult;
 use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**

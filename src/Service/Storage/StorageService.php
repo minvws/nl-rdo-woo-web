@@ -9,9 +9,9 @@ use Psr\Log\LoggerInterface;
 
 /**
  * This class is responsible for storing and retrieving file content based on an entity that implements
- * \App\Entity\EntityWithFileInfo. It is a wrapper around the storage adapter so the rest of the system does not need to
- * know anything about the storage adapter. This way, we can use simple local filesystem or even more complex adapters
- * like S3.
+ * \App\Domain\Publication\EntityWithFileInfo. It is a wrapper around the storage adapter so the rest of the system does
+ * not need to know anything about the storage adapter. This way, we can use simple local filesystem or even more
+ * complex adapters like S3.
  *
  * Generate a path based on the entity id and the file name. This will partition the files in a 2-level deep
  * directory structure based on the entity id.

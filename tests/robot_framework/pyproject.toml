@@ -15,6 +15,7 @@ ignore = [
     "sleep-keyword-used",
     "too-long-test-case",
     "too-many-calls-in-test-case",
+    "too-many-calls-in-keyword",
 ]
 
 [tool.robocop.format]
@@ -59,4 +60,5 @@ configure = [
     "NormalizeNewLines.test_case_lines=1",
     "NormalizeNewLines.keyword_lines=1",
     "NormalizeNewLines.consecutive_lines=0",
+    "RenameVariables.unknown_variables_case=upper",
 ]

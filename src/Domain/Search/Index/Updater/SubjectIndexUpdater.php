@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Search\Index\Updater;
 
 use App\Domain\Publication\Subject\Subject;
+use App\Domain\Search\Index\ElasticConfig;
 use App\Domain\Search\Index\Schema\ElasticNestedField;
 use App\Domain\Search\Index\Schema\ElasticPath;
-use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 
 readonly class SubjectIndexUpdater

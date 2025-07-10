@@ -6,7 +6,6 @@ namespace App\Domain\Department;
 
 use App\Domain\Department\Exception\DepartmentAssetNotFound;
 use App\Domain\Publication\EntityWithFileInfo;
-use App\Entity\Department;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;

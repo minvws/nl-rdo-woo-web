@@ -71,12 +71,11 @@ const defaultFileInfo = computed(() => {
 
     <a
       v-else-if="props.withdrawUrl"
-      class="bhr-btn-ghost-danger w-16"
+      class="bhr-a px-4 content-center"
       data-e2e-name="withdraw-file"
       :href="props.withdrawUrl"
     >
-      <Icon color="fill-current" :size="18" name="trash-bin" />
-      <span class="sr-only">{{ props.fileName }} intrekken</span>
+      Intrekken<span class="sr-only"> ({{ props.fileName }})</span>
     </a>
   </div>
 </template>

@@ -2,19 +2,17 @@
 Documentation       Tests that create all types of dossiers with a few variations.
 ...                 This is named 02 because we want to run this before we run the 03 Public suite, so we have content to search for.
 ...                 This does not run a cleansheet, so you might get errors when running this for a second time.
-Resource            ../resources/Setup.resource
-Resource            ../resources/Dossier.resource
+Resource            ../resources/Advice.resource
+Resource            ../resources/AnnualReport.resource
+Resource            ../resources/ComplaintJudgement.resource
 Resource            ../resources/Covenant.resource
 Resource            ../resources/Disposition.resource
-Resource            ../resources/AnnualReport.resource
 Resource            ../resources/InvestigationReport.resource
-Resource            ../resources/ComplaintJudgement.resource
 Resource            ../resources/Organisations.resource
-Resource            ../resources/Subjects.resource
 Resource            ../resources/OtherPublication.resource
-Resource            ../resources/Advice.resource
 Resource            ../resources/RequestForAdvice.resource
-Resource            ../resources/TestData.resource
+Resource            ../resources/Setup.resource
+Resource            ../resources/Subjects.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Teardown       Run Keyword If Test Failed  Go To Admin

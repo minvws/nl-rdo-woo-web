@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Validator;
 
-use App\Entity\User;
+use App\Service\Security\User;
 use App\Tests\Unit\UnitTestCase;
 use App\Validator\NotTheSamePassword;
 use App\Validator\NotTheSamePasswordValidator;

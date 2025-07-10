@@ -75,7 +75,7 @@ jobs:
           name: reports
           path: tests/robot_framework/results
       - name: Publish test result summary to GitHub
-        uses: minvws/nl-rdo-github-action-robotframework-test-summary@v0.4.1
+        uses: minvws/nl-rdo-github-action-robotframework-test-summary@v0.4.2
         if: always()
         with:
           output_file: 'tests/robot_framework/results/output.xml'

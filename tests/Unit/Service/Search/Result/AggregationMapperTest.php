@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Search\Result;
 
-use App\Citation;
+use App\Domain\Publication\Citation;
+use App\Domain\Publication\SourceType;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\Schema\ElasticField;
 use App\Domain\Search\Query\Facet\Definition\DepartmentFacet;
@@ -17,7 +18,6 @@ use App\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
 use App\Domain\Search\Query\SearchParameters;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Result\AggregationMapper;
-use App\SourceType;
 use MinVWS\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

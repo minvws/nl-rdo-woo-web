@@ -10,7 +10,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\Process\FileStorer;
 use App\Domain\Upload\UploadedFile;
 use App\Service\HistoryService;
-use App\Utils;
+use App\Service\Utils\Utils;
 use Psr\Log\LoggerInterface;
 
 readonly class DocumentFileProcessor

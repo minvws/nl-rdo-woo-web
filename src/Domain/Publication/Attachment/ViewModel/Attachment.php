@@ -7,8 +7,8 @@ namespace App\Domain\Publication\Attachment\ViewModel;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
 use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
+use App\Domain\Publication\SourceType;
 use App\Domain\Search\Result\SubType\SubTypeViewModelInterface;
-use App\SourceType;
 
 readonly class Attachment implements SubTypeViewModelInterface
 {

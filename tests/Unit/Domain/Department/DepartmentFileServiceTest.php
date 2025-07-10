@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Department;
 
+use App\Domain\Department\Department;
 use App\Domain\Department\DepartmentFileService;
 use App\Domain\Department\Exception\DepartmentAssetNotFound;
 use App\Domain\Publication\FileInfo;
-use App\Entity\Department;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;

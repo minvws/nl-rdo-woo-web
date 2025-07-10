@@ -22,7 +22,7 @@ Fill Out Other Publication Details
 
 Upload Informatiestuk
   [Arguments]  ${other_publication_location}
-  ${path}  ${file_name} =  Split Path  ${other_publication_location}
+  ${_}  ${file_name} =  Split Path  ${other_publication_location}
   Click  " Informatiestuk toevoegen... "
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${other_publication_location}
   Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}  timeout=10s

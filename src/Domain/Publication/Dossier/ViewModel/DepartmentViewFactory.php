@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\ViewModel;
 
-use App\Entity\Department as DepartmentEntity;
+use App\Domain\Department\Department as DepartmentEntity;
 use Doctrine\Common\Collections\Collection;
 
 readonly class DepartmentViewFactory

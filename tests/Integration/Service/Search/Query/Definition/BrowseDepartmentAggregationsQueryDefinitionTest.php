@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Service\Search\Query\Definition;
 
+use App\Domain\Department\Department;
 use App\Domain\Search\Query\SearchParametersFactory;
-use App\Entity\Department;
 use App\Service\Search\Query\Definition\BrowseDepartmentAggregationsQueryDefinition;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

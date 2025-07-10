@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Result\Dossier;
 
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 
 interface ProvidesDossierTypeSearchResultInterface
 {

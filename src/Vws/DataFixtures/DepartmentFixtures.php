@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Vws\DataFixtures;
 
-use App\Entity\Department;
+use App\Domain\Department\Department;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;

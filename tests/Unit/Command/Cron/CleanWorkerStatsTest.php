@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Command\Cron;
 
 use App\Command\Cron\CleanWorkerStats;
-use App\Repository\WorkerStatsRepository;
+use App\Service\Stats\WorkerStatsRepository;
 use Carbon\CarbonImmutable;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Symfony\Component\Console\Command\Command;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload;
 
-use App\Entity\User;
+use App\Service\Security\User;
 use App\Service\Uploader\UploadGroupId;
 use Carbon\CarbonImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

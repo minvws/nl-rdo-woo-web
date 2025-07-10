@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Inquiry;
 
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Entity\Organisation;
 use App\Service\Inquiry\DocumentCaseNumbers;
 use App\Service\Inquiry\InquiryChangeset;
 use Doctrine\Common\Collections\ArrayCollection;

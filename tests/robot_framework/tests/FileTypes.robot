@@ -1,8 +1,8 @@
 *** Settings ***
 Documentation       Tests that focus on testing the different supported file types for WooDecisions.
+Resource            ../resources/Organisations.resource
 Resource            ../resources/Setup.resource
 Resource            ../resources/WooDecision.resource
-Resource            ../resources/Organisations.resource
 Suite Setup         Suite Setup
 Test Setup          Go To Admin
 Test Tags           ci  filetypes

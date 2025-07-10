@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Domain\Department\Department;
 use App\Domain\Department\DepartmentFileService;
 use App\Domain\Department\DepartmentService;
-use App\Entity\Department;
 use App\Service\DownloadResponseHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

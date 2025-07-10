@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Query\Facet\Definition;
 
-use App\Citation;
+use App\Domain\Publication\Citation;
 use App\Domain\Search\Index\Schema\ElasticField;
 use App\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
 use App\Domain\Search\Query\Facet\DisplayValue\TranslatedFacetDisplayValue;

@@ -1,7 +1,7 @@
 *** Settings ***
 Documentation       Tests that focus on testing the content pages
-Resource            ../resources/Setup.resource
 Resource            ../resources/Organisations.resource
+Resource            ../resources/Setup.resource
 Library             FakerLibrary
 Suite Setup         Suite Setup
 Test Setup          Go To Admin

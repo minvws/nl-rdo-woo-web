@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Service\Search\Query\Definition;
 
 use App\Api\Admin\Publication\Search\SearchResultType;
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Search\Query\SearchParametersFactory;
-use App\Entity\Organisation;
 use App\Service\Search\Query\Definition\AdminDossiersAndDocumentsQueryDefinition;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use PHPUnit\Framework\Attributes\Group;

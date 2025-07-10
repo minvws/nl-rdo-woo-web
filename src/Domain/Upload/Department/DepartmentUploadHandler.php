@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Department;
 
+use App\Domain\Department\DepartmentRepository;
 use App\Domain\Upload\Event\UploadValidatedEvent;
 use App\Domain\Upload\Process\EntityUploadStorer;
-use App\Repository\DepartmentRepository;
 use App\Service\Uploader\UploadGroupId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Uid\Uuid;

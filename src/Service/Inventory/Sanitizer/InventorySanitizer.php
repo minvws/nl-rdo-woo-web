@@ -6,10 +6,10 @@ namespace App\Service\Inventory\Sanitizer;
 
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Publication\FileInfo;
+use App\Domain\Publication\SourceType;
 use App\Exception\InventorySanitizerException;
 use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterface;
 use App\Service\Storage\EntityStorageService;
-use App\SourceType;
 use Doctrine\ORM\EntityManagerInterface;
 
 readonly class InventorySanitizer

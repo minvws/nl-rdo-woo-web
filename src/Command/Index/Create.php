@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command\Index;
 
+use App\Domain\Search\Index\ElasticConfig;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use App\Domain\Search\Index\Rollover\MappingService;
-use App\ElasticConfig;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

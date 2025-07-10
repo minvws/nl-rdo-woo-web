@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Query\Facet\Definition;
 
+use App\Domain\Publication\SourceType;
 use App\Domain\Search\Index\Schema\ElasticField;
 use App\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
 use App\Domain\Search\Query\Facet\DisplayValue\TranslatableFacetDisplayValue;
@@ -17,7 +18,6 @@ use App\Service\Search\Query\Aggregation\TermsAggregationStrategy;
 use App\Service\Search\Query\Filter\FilterInterface;
 use App\Service\Search\Query\Filter\OrTermFilter;
 use App\Service\Search\Query\Filter\SubTypesOnlyFilter;
-use App\SourceType;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**

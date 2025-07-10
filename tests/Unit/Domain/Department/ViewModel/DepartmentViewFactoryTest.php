@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Department\ViewModel;
 
+use App\Domain\Department\Department;
 use App\Domain\Department\ViewModel\DepartmentViewFactory;
-use App\Entity\Department;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;

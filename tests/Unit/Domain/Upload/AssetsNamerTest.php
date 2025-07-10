@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload;
 
+use App\Domain\Department\Department;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Upload\AssetsNamer;
-use App\Entity\Department;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\Uid\Uuid;

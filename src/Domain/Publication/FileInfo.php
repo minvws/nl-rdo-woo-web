@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication;
 
-use App\SourceType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Department;
 
+use App\Domain\Department\Department as DepartmentEntity;
 use App\Domain\Department\ViewModel\Department;
 use App\Domain\Department\ViewModel\DepartmentViewFactory;
-use App\Entity\Department as DepartmentEntity;
-use App\Repository\DepartmentRepository;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Twig\Environment;

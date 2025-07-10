@@ -8,7 +8,7 @@ use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\Schema\ElasticField;
 use App\Domain\Search\Result\HighlightMapperTrait;
 use App\Domain\Search\Result\ResultEntryInterface;
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
 
 readonly class DossierSearchResultBaseMapper

@@ -1,5 +1,5 @@
 *** Comments ***
-# robocop: off=no-global-variable
+# robocop: off=no-global-variable,unused-variable
 
 
 *** Settings ***
@@ -8,8 +8,8 @@ Library             DateTime
 Library             OperatingSystem
 Library             Process
 Library             String
-Library             DateTimeTZ
 Library             Browser
+Library             DateTimeTZ
 Library             OTP
 Resource            Admin.resource
 Resource            Public.resource
@@ -122,8 +122,7 @@ Open Browser And BaseUrl
 
 Create Woo Admin User
   [Documentation]  Creates a super admin user using the CLI, that can be used for all robot tests. Returns the temporary password.
-  ${make_user_command} =  Set Variable
-  ...  task app:user:create -- "${TST_BALIE_USER}" "Robot Admin" --super-admin
+  VAR  ${make_user_command} =  task app:user:create -- "${TST_BALIE_USER}" "Robot Admin" --super-admin
   Run Process  ${make_user_command}  shell=True  alias=create_admin
   ${stdout}  ${stderr} =  Get Process Result  create_admin  stdout=True  stderr=True
   Should Be Empty  ${stderr}  Error creating admin user: ${stdout}
@@ -139,14 +138,12 @@ Close Symfony Dev Bar
   IF  ${c}>0  Click  //body/div/div[3]/button
 
 Clear Local Secret
-  ${command} =  Set Variable  sed -ri '' 's/SECRET_WOO_LOCAL=[0-9A-Z]*/SECRET_WOO_LOCAL=/g' ~/.zshrc
+  VAR  ${command} =  sed -ri '' 's/SECRET_WOO_LOCAL=[0-9A-Z]*/SECRET_WOO_LOCAL=/g' ~/.zshrc
   Run Process  ${command}  shell=True  alias=clear_secret
   ${stdout}  ${stderr} =  Get Process Result  clear_secret  stdout=True  stderr=True
   Should Be Empty  ${stderr}  Error clearing local secret: ${stdout}
 
 Load VWS Fixtures
-  # This fails because the VWS department is already loaded in https://github.com/minvws/nl-rdo-woo-web-private/blob/273f83b6160bc29d73ac95a5f2d1523cff65cbd3/migrations/Version20230929070108.php#L25, thus creating a unique constraint error.
-  # Fixing this is nasty, so for now we choose to disable tests that require this.
   Run Process  task rf:fixtures:load:vws  shell=True  alias=shell
   ${result} =  Get Process Result  shell
   Should Be Empty  ${result.stderr}

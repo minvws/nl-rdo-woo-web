@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Entity\User;
 use App\Form\User\ChangePasswordType;
-use App\Roles;
+use App\Service\Security\Roles;
+use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

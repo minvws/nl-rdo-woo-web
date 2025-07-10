@@ -6,7 +6,7 @@ namespace App\Command;
 
 use App\Domain\FileStorage\Checker\FileStorageChecker;
 use App\Domain\FileStorage\OrphanedFileMover;
-use App\Utils;
+use App\Service\Utils\Utils;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;

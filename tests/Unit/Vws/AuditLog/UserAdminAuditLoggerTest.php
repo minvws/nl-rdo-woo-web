@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Vws\AuditLog;
 
-use App\Entity\User;
 use App\Service\Security\Event\UserCreatedEvent;
 use App\Service\Security\Event\UserDisableEvent;
 use App\Service\Security\Event\UserEnableEvent;
 use App\Service\Security\Event\UserResetEvent;
 use App\Service\Security\Event\UserUpdatedEvent;
+use App\Service\Security\User;
 use App\Vws\AuditLog\UserAdminAuditLogger;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\AccountChangeLogEvent;

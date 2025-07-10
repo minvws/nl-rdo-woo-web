@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Twig\Runtime;
 
-use App\Utils;
+use App\Service\Utils\Utils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;

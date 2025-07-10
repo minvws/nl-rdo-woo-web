@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
+use App\Domain\Department\Department as DepartmentEntity;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
@@ -21,7 +22,6 @@ use App\Domain\Publication\Dossier\ViewModel\Subject as SubjectViewModel;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use App\Domain\Publication\Subject\Subject;
-use App\Entity\Department as DepartmentEntity;
 use App\Tests\Story\DepartmentEnum;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;

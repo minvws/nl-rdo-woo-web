@@ -1,8 +1,8 @@
 *** Settings ***
 Documentation       Simple set to be run in PR's for a quick validation. Currently unused becasue we now use the whole WooDecision set in PRs.
+Resource            ../resources/Organisations.resource
 Resource            ../resources/Setup.resource
 Resource            ../resources/WooDecision.resource
-Resource            ../resources/Organisations.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin

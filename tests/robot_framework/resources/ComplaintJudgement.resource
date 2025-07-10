@@ -1,9 +1,9 @@
 *** Settings ***
 Documentation       Resource file containing custom keywords for the Complaint Judgement information category
+Library             OperatingSystem
 Library             Browser
 Library             DebugLibrary
 Library             FakerLibrary
-Library             OperatingSystem
 
 
 *** Variables ***
@@ -20,7 +20,7 @@ Fill Out Complaint Judgement Details
 
 Upload Complaint Judgement
   [Arguments]  ${complaint_judgement_location}
-  ${path}  ${file_name} =  Split Path  ${complaint_judgement_location}
+  ${_}  ${file_name} =  Split Path  ${complaint_judgement_location}
   Click  " Klachtoordeel toevoegen... "
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${complaint_judgement_location}
   Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}  timeout=10s

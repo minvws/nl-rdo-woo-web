@@ -7,7 +7,7 @@ namespace App\Domain\Upload;
 use App\Doctrine\TimestampableTrait;
 use App\Domain\Upload\Exception\UploadException;
 use App\Domain\Upload\Exception\UploadValidationException;
-use App\Entity\User;
+use App\Service\Security\User;
 use App\Service\Uploader\UploadGroupId;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

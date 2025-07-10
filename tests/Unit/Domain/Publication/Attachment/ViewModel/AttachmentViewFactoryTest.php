@@ -18,8 +18,8 @@ use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportA
 use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\FileInfo;
-use App\Enum\ApplicationMode;
-use App\SourceType;
+use App\Domain\Publication\SourceType;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Matcher\Closure;

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\Rollover;
 
+use App\Domain\Search\Index\ElasticConfig;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
+use App\Domain\Search\Index\Rollover\InitiateElasticRolloverCommand;
 use App\Domain\Search\Index\Rollover\MainTypeCount;
 use App\Domain\Search\Index\Rollover\MappingService;
 use App\Domain\Search\Index\Rollover\RolloverCounter;
 use App\Domain\Search\Index\Rollover\RolloverParameters;
 use App\Domain\Search\Index\Rollover\RolloverService;
-use App\ElasticConfig;
-use App\Message\InitiateElasticRolloverMessage;
-use App\Message\SetElasticAliasMessage;
+use App\Domain\Search\Index\Rollover\SetElasticAliasCommand;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\Messenger\Envelope;
@@ -123,7 +123,7 @@ class RolloverServiceTest extends UnitTestCase
         $name = 'new-index';
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            static function (SetElasticAliasMessage $message) use ($name) {
+            static function (SetElasticAliasCommand $message) use ($name) {
                 self::assertEquals($name, $message->indexName);
                 self::assertEquals(ElasticConfig::READ_INDEX, $message->aliasName);
 
@@ -132,7 +132,7 @@ class RolloverServiceTest extends UnitTestCase
         ))->andReturns(new Envelope(new \stdClass()));
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            static function (SetElasticAliasMessage $message) use ($name) {
+            static function (SetElasticAliasCommand $message) use ($name) {
                 self::assertEquals($name, $message->indexName);
                 self::assertEquals(ElasticConfig::WRITE_INDEX, $message->aliasName);
 
@@ -148,7 +148,7 @@ class RolloverServiceTest extends UnitTestCase
         $params = new RolloverParameters(13);
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            static function (InitiateElasticRolloverMessage $message) use ($params) {
+            static function (InitiateElasticRolloverCommand $message) use ($params) {
                 self::assertEquals($params->getMappingVersion(), $message->mappingVersion);
 
                 return true;

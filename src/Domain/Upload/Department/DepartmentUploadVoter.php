@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload\Department;
 
+use App\Domain\Department\DepartmentRepository;
 use App\Domain\Department\DepartmentService;
 use App\Domain\Upload\UploadRequest;
 use App\Domain\Upload\UploadService;
-use App\Repository\DepartmentRepository;
 use App\Service\Uploader\UploadGroupId;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;

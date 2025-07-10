@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Security\Authorization;
 
-use App\Entity\Organisation;
-use App\Entity\User;
+use App\Domain\Organisation\Organisation;
 use App\Service\Security\OrganisationSwitcher;
+use App\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 

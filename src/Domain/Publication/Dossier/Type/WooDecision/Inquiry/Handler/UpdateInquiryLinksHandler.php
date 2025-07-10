@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
 
+use App\Domain\Organisation\OrganisationRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand;
-use App\Repository\OrganisationRepository;
 use App\Service\Inquiry\InquiryService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;

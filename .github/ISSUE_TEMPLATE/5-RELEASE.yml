@@ -83,6 +83,11 @@ body:
         - label: Is a release date present?
         - label: Are there any dependencies and/or is a specific release order required?
         - label: '*Approval PO*'
-        - label: '*Approval QA Lead*, the QA Lead will check this release checklist and the test report'
         - label: '*Approval IBMF*, add screenshot of checklist and explanation of any unchecked or striked out items'
-        - label: Inform iRealisatie Operations of a new version and request a release at `helpdesk@irealisatie.nl` (check [Operations Richtlijnen](https://github.com/minvws/nl-rdo-quality-coordination/blob/main/Operations/Richtlijnen/beheer.md#3-wijzigingenbeheer) for details)
+  - type: checkboxes
+    id: approvalleadqa
+    attributes:
+      label: Approval Lead QA
+      description: The procedure to request a production release is described in [Release-proces.md](https://github.com/minvws/nl-rdo-quality-coordination/blob/main/Kwaliteitsmanagement/Kwaliteitsaanpak/Release%20proces/Release-proces.md)
+      options:
+        - label: '*Approval QA Lead*, the QA Lead will check this release checklist and the test report and move the request for installation to Operations.'

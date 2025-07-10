@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Entity\Organisation;
-use App\Entity\User;
+use App\Domain\Organisation\Organisation;
 use App\Form\User\DisableUserFormType;
 use App\Form\User\EnableUserFormType;
 use App\Form\User\ResetCredentialsFormType;
 use App\Form\User\UserCreateFormType;
 use App\Form\User\UserInfoFormType;
-use App\Repository\UserRepository;
-use App\Roles;
 use App\Service\PaginatorFactory;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
+use App\Service\Security\Roles;
+use App\Service\Security\User;
+use App\Service\Security\UserRepository;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;

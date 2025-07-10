@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Subject;
 
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Entity\Organisation;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;

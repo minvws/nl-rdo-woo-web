@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Faker;
 
-use App\Citation;
+use App\Domain\Publication\Citation;
 use Faker\Generator;
 use Faker\Provider\Base;
 use Webmozart\Assert\Assert;

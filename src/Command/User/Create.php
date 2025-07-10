@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command\User;
 
-use App\Entity\Organisation;
-use App\Entity\User;
-use App\Roles;
+use App\Domain\Organisation\Organisation;
+use App\Service\Security\Roles;
+use App\Service\Security\User;
 use App\Service\Totp;
 use App\Service\UserService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;

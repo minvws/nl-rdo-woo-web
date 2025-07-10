@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Publication;
 
 use App\Domain\Publication\FileInfo;
-use App\SourceType;
+use App\Domain\Publication\SourceType;
 use App\Tests\Unit\UnitTestCase;
 
 final class FileInfoTest extends UnitTestCase

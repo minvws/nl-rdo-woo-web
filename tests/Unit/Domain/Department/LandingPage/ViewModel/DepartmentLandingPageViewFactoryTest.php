@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Department\LandingPage\ViewModel;
 
+use App\Domain\Department\Department;
 use App\Domain\Department\LandingPage\ViewModel\DepartmentLandingPageViewFactory;
 use App\Domain\Publication\FileInfo;
-use App\Entity\Department;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload\Process;
 
+use App\Domain\Department\Department;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use App\Domain\Publication\SourceType;
 use App\Domain\Upload\AssetsNamer;
 use App\Domain\Upload\Process\EntityUploadStorer;
 use App\Domain\Upload\UploadEntity;
 use App\Domain\Upload\UploadEntityRepository;
 use App\Domain\Upload\UploadService;
-use App\Entity\Department;
 use App\Service\Storage\EntityStorageService;
 use App\Service\Uploader\UploadGroupId;
-use App\SourceType;
 use App\Tests\Unit\UnitTestCase;
 use League\Flysystem\FilesystemOperator;
 use Mockery\MockInterface;

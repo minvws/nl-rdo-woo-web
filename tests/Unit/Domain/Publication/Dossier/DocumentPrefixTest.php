@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier;
 
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Entity\Organisation;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class DocumentPrefixTest extends MockeryTestCase

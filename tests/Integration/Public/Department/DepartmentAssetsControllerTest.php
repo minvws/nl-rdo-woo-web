@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Public\Department;
 
 use App\Domain\Publication\FileInfo;
-use App\SourceType;
+use App\Domain\Publication\SourceType;
 use App\Tests\Factory\DepartmentFactory;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Integration\IntegrationTestTrait;

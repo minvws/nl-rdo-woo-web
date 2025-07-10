@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Admin;
 
+use App\Domain\Department\Department;
 use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Entity\Department;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Doctrine\ORM\QueryBuilder;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Inventory;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\SourceType;
+use App\Domain\Publication\SourceType;
 
 /**
  * @SuppressWarnings("PHPMD.ExcessiveParameterList")

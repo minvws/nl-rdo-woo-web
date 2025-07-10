@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Search\Index\ElasticConfig;
 use App\Domain\Search\Index\ElasticDocument;
-use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 use App\Service\Elastic\ElasticService;
 use Elastic\Elasticsearch\Exception\ClientResponseException;

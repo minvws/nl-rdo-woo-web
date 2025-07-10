@@ -16,7 +16,7 @@ use App\Domain\Upload\UploadEntityRepository;
 use App\Domain\Upload\UploadRequest;
 use App\Domain\Upload\UploadService;
 use App\Domain\Upload\UploadStatus;
-use App\Entity\User;
+use App\Service\Security\User;
 use App\Service\Uploader\UploadGroupId;
 use League\Flysystem\FilesystemOperator;
 use Mockery\Adapter\Phpunit\MockeryTestCase;

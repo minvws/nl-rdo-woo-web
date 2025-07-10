@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\Dossier\DossierIndexer;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
-use App\Entity\Organisation;
 use App\Service\FakeDataGenerator;
 use App\Service\Inquiry\InquiryService;
 use App\Service\Logging\LoggingHelper;

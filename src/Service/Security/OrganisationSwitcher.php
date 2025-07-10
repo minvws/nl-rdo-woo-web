@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Security;
 
-use App\Entity\Organisation;
-use App\Entity\User;
-use App\Repository\OrganisationRepository;
-use App\Roles;
+use App\Domain\Organisation\Organisation;
+use App\Domain\Organisation\OrganisationRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Uid\Uuid;

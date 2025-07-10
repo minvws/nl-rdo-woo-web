@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\Dossier\Mapper;
 
-use App\Entity\Department;
+use App\Domain\Department\Department;
 
 readonly class DepartmentFieldMapper
 {

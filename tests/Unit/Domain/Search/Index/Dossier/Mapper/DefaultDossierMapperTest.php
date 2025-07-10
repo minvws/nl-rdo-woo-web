@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
+use App\Domain\Department\Department;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\DossierType;
@@ -13,7 +14,6 @@ use App\Domain\Search\Index\Dossier\Mapper\DefaultDossierMapper;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\Schema\ElasticField;
 use App\Domain\Search\Index\Schema\ElasticObjectField;
-use App\Entity\Department;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Uid\Uuid;

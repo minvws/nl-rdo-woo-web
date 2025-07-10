@@ -20,7 +20,6 @@ use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionR
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use App\Domain\Publication\MainDocument\EntityWithMainDocument;
 use App\Domain\Publication\MainDocument\HasMainDocument;
-use App\ValueObject\DossierUploadStatus;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;

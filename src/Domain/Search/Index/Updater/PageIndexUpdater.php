@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\Updater;
 
+use App\Domain\Search\Index\ElasticConfig;
 use App\Domain\Search\Index\Schema\ElasticField;
-use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 use Psr\Log\LoggerInterface;
 

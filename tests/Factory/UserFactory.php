@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Factory;
 
-use App\Entity\User;
-use App\Roles;
+use App\Service\Security\Roles;
+use App\Service\Security\User;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 

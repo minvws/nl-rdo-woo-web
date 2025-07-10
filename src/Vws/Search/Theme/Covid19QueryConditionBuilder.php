@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Vws\Search\Theme;
 
+use App\Domain\Organisation\OrganisationRepository;
 use App\Domain\Publication\Subject\Subject;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\Schema\ElasticField;
@@ -11,7 +12,6 @@ use App\Domain\Search\Index\Schema\ElasticNestedField;
 use App\Domain\Search\Index\Schema\ElasticPath;
 use App\Domain\Search\Query\Facet\FacetList;
 use App\Domain\Search\Query\SearchParameters;
-use App\Repository\OrganisationRepository;
 use App\Service\Search\Query\Condition\QueryConditionBuilderInterface;
 use App\Service\Search\Query\Dsl\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;

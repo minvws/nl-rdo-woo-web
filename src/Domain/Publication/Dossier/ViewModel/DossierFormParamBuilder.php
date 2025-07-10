@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\ViewModel;
 
+use App\Domain\Department\Department;
 use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Entity\Department;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Uid\Uuid;

@@ -58,7 +58,7 @@ Fill Out WooDecision Details
 
 Upload Besluitbrief
   [Arguments]  ${besluitbrief_location}
-  ${path}  ${besluitbrief_filename} =  Split Path  ${besluitbrief_location}
+  ${_}  ${besluitbrief_filename} =  Split Path  ${besluitbrief_location}
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${besluitbrief_location}
   Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${besluitbrief_filename}  timeout=10s
   Type Text  //dialog[@open]//input[@name="formalDate"]  01012022

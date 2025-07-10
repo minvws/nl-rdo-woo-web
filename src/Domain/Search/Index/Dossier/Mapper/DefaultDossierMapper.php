@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\Dossier\Mapper;
 
+use App\Domain\Department\Department;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Subject\Subject;
 use App\Domain\Search\Index\ElasticDocument;
@@ -11,7 +12,6 @@ use App\Domain\Search\Index\ElasticDocumentId;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\Schema\ElasticField;
 use App\Domain\Search\Index\Schema\ElasticObjectField;
-use App\Entity\Department;
 use App\Service\DateRangeConverter;
 use Symfony\Component\Uid\Uuid;
 

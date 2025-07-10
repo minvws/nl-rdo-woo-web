@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Admin;
 
-use App\Roles;
+use App\Service\Security\Roles;
 use App\Tests\Factory\UserFactory;
 use App\Tests\Integration\IntegrationTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;

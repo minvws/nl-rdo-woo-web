@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Security\Event;
 
-use App\Entity\User;
+use App\Service\Security\User;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
 
 readonly class UserUpdatedEvent

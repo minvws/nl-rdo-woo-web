@@ -11,7 +11,7 @@ use App\Domain\Upload\Exception\UploadValidationException;
 use App\Domain\Upload\Handler\UploadHandlerInterface;
 use App\Domain\Upload\Result\UploadCompletedResult;
 use App\Domain\Upload\Result\UploadResultInterface;
-use App\Entity\User;
+use App\Service\Security\User;
 use League\Flysystem\FilesystemOperator;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\SecurityBundle\Security;

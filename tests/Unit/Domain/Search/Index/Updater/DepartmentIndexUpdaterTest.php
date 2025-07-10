@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\Updater;
 
+use App\Domain\Department\Department;
 use App\Domain\Search\Index\Updater\DepartmentIndexUpdater;
-use App\Entity\Department;
 use App\Service\Elastic\ElasticClientInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

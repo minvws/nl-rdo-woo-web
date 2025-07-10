@@ -2,6 +2,20 @@
 
 # Release notes
 
+## v1.15.0
+
+*10 juli 2025*
+
+### Balie
+
+Er zijn in deze release geen wijzigingen voor de balie doorgevoerd.
+
+### Website
+
+Er is een knop 'Alle filters wissen' toegevoegd op de zoekpagina’s (inclusief COVID-19 thema). Ook is er nu de optie 'Start een nieuwe zoekopdracht' bij nul resultaten. Beide brengen je terug naar een lege zoekopdracht.
+
+Op documentpagina’s wordt nu bij elke bijlage het type getoond in plaats van de datum. Dit helpt bezoekers de aard van een bijlage sneller te begrijpen.
+
 ## v1.14.0
 
 *3 juli 2025*

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Upload\Department;
 
+use App\Domain\Department\Department;
+use App\Domain\Department\DepartmentRepository;
 use App\Domain\Upload\Department\DepartmentUploadHandler;
 use App\Domain\Upload\Event\UploadValidatedEvent;
 use App\Domain\Upload\Process\EntityUploadStorer;
 use App\Domain\Upload\UploadEntity;
-use App\Entity\Department;
-use App\Repository\DepartmentRepository;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;

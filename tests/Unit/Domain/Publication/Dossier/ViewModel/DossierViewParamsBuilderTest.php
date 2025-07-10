@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use App\Domain\Department\DepartmentRepository;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
 use App\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -13,7 +14,6 @@ use App\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
 use App\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Repository\DepartmentRepository;
 use App\Service\DossierWizard\DossierWizardStatus;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

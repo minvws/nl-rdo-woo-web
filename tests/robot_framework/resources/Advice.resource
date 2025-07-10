@@ -1,9 +1,9 @@
 *** Settings ***
 Documentation       Resource file containing custom keywords for the Advice information category
+Library             OperatingSystem
 Library             Browser
 Library             DebugLibrary
 Library             FakerLibrary
-Library             OperatingSystem
 Resource            Admin.resource
 
 
@@ -24,7 +24,7 @@ Fill Out Advice Details
 
 Upload Advice
   [Arguments]  ${advice_location}
-  ${path}  ${file_name} =  Split Path  ${advice_location}
+  ${_}  ${file_name} =  Split Path  ${advice_location}
   Click  " Advies toevoegen... "
   Wait Until Keyword Succeeds  3x  5s  Upload And Submit  ${file_name}  ${advice_location}
   Success Alert Is Visible
@@ -33,7 +33,7 @@ Upload Advice
 
 Upload Advice Request
   [Arguments]  ${advice_request_location}
-  ${path}  ${file_name} =  Split Path  ${advice_request_location}
+  ${_}  ${file_name} =  Split Path  ${advice_request_location}
   Click  " Adviesaanvraag toevoegen... "
   Wait Until Keyword Succeeds  3x  5s  Upload And Submit  ${file_name}  ${advice_request_location}
   Success Alert Is Visible

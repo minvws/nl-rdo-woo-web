@@ -3,8 +3,8 @@
 namespace App\Tests\Factory;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
+use App\Domain\Publication\SourceType;
 use App\Service\Storage\StorageRootPathGenerator;
-use App\SourceType;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;

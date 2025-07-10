@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Inventory\Reader;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\SourceType;
 use App\Exception\InventoryReaderException;
 use App\Service\FileReader\ColumnMapping;
 use App\Service\FileReader\FileReaderInterface;
@@ -12,7 +13,6 @@ use App\Service\FileReader\ReaderFactoryInterface;
 use App\Service\Inventory\DocumentMetadata;
 use App\Service\Inventory\InventoryDataHelper;
 use App\Service\Inventory\MetadataField;
-use App\SourceType;
 
 class InventoryReader implements InventoryReaderInterface
 {

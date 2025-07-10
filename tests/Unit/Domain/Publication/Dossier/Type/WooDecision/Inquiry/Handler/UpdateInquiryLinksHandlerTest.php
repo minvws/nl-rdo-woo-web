@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
 
+use App\Domain\Organisation\Organisation;
+use App\Domain\Organisation\OrganisationRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler\UpdateInquiryLinksHandler;
-use App\Entity\Organisation;
-use App\Repository\OrganisationRepository;
 use App\Service\Inquiry\InquiryService;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;

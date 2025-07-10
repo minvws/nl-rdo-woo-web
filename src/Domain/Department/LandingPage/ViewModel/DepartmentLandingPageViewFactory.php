@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Department\LandingPage\ViewModel;
 
-use App\Entity\Department;
+use App\Domain\Department\Department;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final readonly class DepartmentLandingPageViewFactory

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use App\Domain\Department\Department;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\ViewModel\DossierFormParamBuilder;
-use App\Entity\Department;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\FormError;

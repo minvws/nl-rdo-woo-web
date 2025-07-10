@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Department\Twig;
 
-use App\Repository\DepartmentRepository;
+use App\Domain\Department\DepartmentRepository;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 

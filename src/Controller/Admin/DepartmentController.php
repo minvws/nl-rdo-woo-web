@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Entity\Department;
+use App\Domain\Department\Department;
+use App\Domain\Department\DepartmentRepository;
+use App\Domain\Department\UpdateDepartmentCommand;
 use App\Form\DepartmentType;
-use App\Message\UpdateDepartmentMessage;
-use App\Repository\DepartmentRepository;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Knp\Component\Pager\PaginatorInterface;
@@ -87,7 +87,7 @@ class DepartmentController extends AbstractController
             $this->repository->save($department, true);
             $this->addFlash('backend', ['success' => $this->translator->trans('admin.department.modified')]);
 
-            $this->messageBus->dispatch(UpdateDepartmentMessage::forDepartment($department));
+            $this->messageBus->dispatch(UpdateDepartmentCommand::forDepartment($department));
 
             return $this->redirectToRoute('app_admin_departments');
         }

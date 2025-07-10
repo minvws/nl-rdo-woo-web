@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Security\Authorization;
 
-use App\Entity\Organisation;
-use App\Entity\User;
+use App\Domain\Organisation\Organisation;
 use App\Service\Security\Authorization\AuthorizationEntryRequestStore;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixException;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use App\Service\Security\Authorization\Entry;
 use App\Service\Security\OrganisationSwitcher;
+use App\Service\Security\User;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Symfony\Bundle\SecurityBundle\Security;

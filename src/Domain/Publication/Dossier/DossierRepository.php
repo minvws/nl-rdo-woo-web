@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier;
 
+use App\Domain\Department\Department;
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Entity\Department;
-use App\Entity\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;

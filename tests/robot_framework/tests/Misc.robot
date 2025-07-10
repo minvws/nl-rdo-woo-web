@@ -1,9 +1,8 @@
 *** Settings ***
 Documentation       A collection of miscellaneous tests.
-Resource            ../resources/Setup.resource
-Resource            ../resources/WooDecision.resource
 Resource            ../resources/Covenant.resource
 Resource            ../resources/Organisations.resource
+Resource            ../resources/Setup.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Organisation;
-use App\Entity\User;
-use App\Repository\UserRepository;
-use App\Roles;
+use App\Domain\Organisation\Organisation;
 use App\Service\Security\Event\UserCreatedEvent;
 use App\Service\Security\Event\UserDisableEvent;
 use App\Service\Security\Event\UserEnableEvent;
 use App\Service\Security\Event\UserResetEvent;
 use App\Service\Security\Event\UserUpdatedEvent;
+use App\Service\Security\Roles;
+use App\Service\Security\User;
+use App\Service\Security\UserRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;

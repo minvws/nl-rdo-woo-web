@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\Rollover;
 
+use App\Domain\Search\Index\ElasticConfig;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use App\Domain\Search\Index\Rollover\MappingService;
-use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 use App\Tests\Unit\UnitTestCase;
 use Elastic\Elasticsearch\Response\Elasticsearch;

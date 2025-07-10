@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Form\Organisation;
 
+use App\Domain\Department\Department;
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Entity\Department;
-use App\Entity\Organisation;
 use App\Form\DocumentPrefixType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

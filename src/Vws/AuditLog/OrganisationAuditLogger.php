@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Vws\AuditLog;
 
+use App\Domain\Department\Department;
 use App\Domain\Organisation\Event\OrganisationCreatedEvent;
 use App\Domain\Organisation\Event\OrganisationUpdatedEvent;
-use App\Entity\Department;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\OrganisationChangeLogEvent;
 use MinVWS\AuditLogger\Events\Logging\OrganisationCreatedLogEvent;

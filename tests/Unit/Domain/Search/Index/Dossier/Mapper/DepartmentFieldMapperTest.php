@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
+use App\Domain\Department\Department;
 use App\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
-use App\Entity\Department;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 

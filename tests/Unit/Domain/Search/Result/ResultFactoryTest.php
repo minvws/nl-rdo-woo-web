@@ -9,7 +9,7 @@ use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\ResultFactory;
 use App\Domain\Search\Result\SearchResultException;
 use App\Domain\Search\Result\SearchResultMapperInterface;
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

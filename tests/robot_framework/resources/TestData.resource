@@ -1,17 +1,20 @@
+*** Comments ***
+# robocop: off=no-test-variable
+
+
 *** Settings ***
 Documentation       Contains keywords for generating testdata.
+Library             DateTime
 Library             OperatingSystem
 Library             String
-Library             DateTime
+Library             ../libraries/LogDisable.py
+Library             ArchiveLibrary
 Library             Browser
 Library             DebugLibrary
-Library             FakerLibrary
-Library             ArchiveLibrary
 Library             ExcelLibrary
-Library             ../libraries/LogDisable.py
+Library             FakerLibrary
 Library             RPA.PDF
 Resource            Admin.resource
-Resource            Dossier.resource
 
 
 *** Variables ***
@@ -47,11 +50,12 @@ Generate Test Data Set
   RETURN  ${TEST_DATA_ROOT}
 
 Generate Test PDFs
-  [Documentation]  Generate test PDFs as ######.pdf files, filled with fake content, the provided number of times, and also a VWS*.pdf file as attachment when needed, to a `generated` folder in the test data root.
+  [Documentation]  Generate test PDFs as ######.pdf files, filled with fake content, the provided number of times, and
+  ...  also a VWS*.pdf file as attachment when needed, to a `generated` folder in the test data root.
   [Arguments]  ${number_of_files}  ${including_attachment}=${FALSE}
   ${uuid} =  FakerLibrary.Uuid 4
   VAR  ${test_data_location} =  ${TEST_DATA_ROOT}/generated/${uuid}
-  FOR  ${i}  IN RANGE  ${number_of_files}
+  FOR  ${_}  IN RANGE  ${number_of_files}
     ${file_id} =  FakerLibrary.Random Int  min=000000  max=999999
     Create PDF From Template  ${test_data_location}/${file_id}.pdf
   END
@@ -69,7 +73,7 @@ Create Test Production Report
   Open Excel Document  ${excel_file}  prodrep
   ${pdf_files} =  List Files In Directory  ${test_data_location}  pattern=[0-9]*.pdf
   FOR  ${pdf_file}  IN  @{pdf_files}
-    ${filename}  ${extension} =  Split String  ${pdf_file}  .
+    ${filename}  ${_} =  Split String  ${pdf_file}  .
     Add Row To Production Report  ${filename}
   END
   Save Excel Document  ${excel_file}
@@ -124,8 +128,7 @@ Clear TestData Folder
 Create PDF From Template
   [Arguments]  ${output_location}
   ${body} =  Generate Body Text
-  &{data} =  Create Dictionary
-  ...  body=${body}
+  VAR  &{data} =  body=${body}
   Template HTML To PDF
   ...  template=${PDF_TEMPLATE}
   ...  output_path=${output_location}

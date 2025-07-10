@@ -6,8 +6,8 @@ namespace App\Service;
 
 use App\Domain\Organisation\Event\OrganisationCreatedEvent;
 use App\Domain\Organisation\Event\OrganisationUpdatedEvent;
-use App\Entity\Organisation;
-use App\Entity\User;
+use App\Domain\Organisation\Organisation;
+use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use MinVWS\AuditLogger\AuditUser;
 use MinVWS\AuditLogger\Contracts\LoggableUser;

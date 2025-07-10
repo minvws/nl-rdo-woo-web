@@ -1,9 +1,9 @@
 *** Settings ***
 Documentation       Tests that verify the Sphinx documentation generation.
 Library             DebugLibrary
+Resource            ../resources/Organisations.resource
 Resource            ../resources/Setup.resource
 Resource            ../resources/WooDecision.resource
-Resource            ../resources/Organisations.resource
 Suite Setup         Suite Setup
 Test Tags           ci  documentation
 

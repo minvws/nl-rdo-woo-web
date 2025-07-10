@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Domain\Publication\Dossier\Type\Covenant;
 
+use App\Domain\Department\Department;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
-use App\Entity\Department;
 use App\Tests\Integration\IntegrationTestTrait;
 use Carbon\CarbonImmutable;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

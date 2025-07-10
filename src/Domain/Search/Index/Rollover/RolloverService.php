@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\Rollover;
 
+use App\Domain\Search\Index\ElasticConfig;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
-use App\ElasticConfig;
-use App\Message\InitiateElasticRolloverMessage;
-use App\Message\SetElasticAliasMessage;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class RolloverService
@@ -50,14 +48,14 @@ readonly class RolloverService
     public function makeLive(string $indexName): void
     {
         $this->messageBus->dispatch(
-            new SetElasticAliasMessage(
+            new SetElasticAliasCommand(
                 indexName: $indexName,
                 aliasName: ElasticConfig::READ_INDEX,
             )
         );
 
         $this->messageBus->dispatch(
-            new SetElasticAliasMessage(
+            new SetElasticAliasCommand(
                 indexName: $indexName,
                 aliasName: ElasticConfig::WRITE_INDEX,
             )
@@ -67,7 +65,7 @@ readonly class RolloverService
     public function initiateRollover(RolloverParameters $rollover): void
     {
         $this->messageBus->dispatch(
-            new InitiateElasticRolloverMessage(
+            new InitiateElasticRolloverCommand(
                 mappingVersion: $rollover->getMappingVersion(),
                 indexName: ElasticConfig::INDEX_PREFIX . date('Ymd-His'),
             )

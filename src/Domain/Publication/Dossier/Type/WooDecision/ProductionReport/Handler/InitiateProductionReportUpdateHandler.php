@@ -9,11 +9,11 @@ use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionR
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRunRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use App\Domain\Publication\SourceType;
 use App\Domain\Upload\FileType\FileType;
 use App\Exception\ProcessInventoryException;
 use App\Exception\ProductionReportUpdaterException;
 use App\Service\Storage\EntityStorageService;
-use App\SourceType;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 

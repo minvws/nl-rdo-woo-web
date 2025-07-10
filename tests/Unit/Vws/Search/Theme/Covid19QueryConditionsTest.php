@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Vws\Search\Theme;
 
+use App\Domain\Organisation\Organisation;
+use App\Domain\Organisation\OrganisationRepository;
 use App\Domain\Publication\Subject\Subject;
 use App\Domain\Search\Query\Facet\FacetList;
 use App\Domain\Search\Query\SearchParameters;
-use App\Entity\Organisation;
-use App\Repository\OrganisationRepository;
 use App\Tests\Unit\UnitTestCase;
 use App\Vws\Search\Theme\Covid19QueryConditionBuilder;
 use Doctrine\Common\Collections\ArrayCollection;

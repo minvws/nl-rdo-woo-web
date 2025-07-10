@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Logging;
 
-use App\Entity\User;
+use App\Service\Security\User;
 use Monolog\Formatter\NormalizerFormatter;
 use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Logger;

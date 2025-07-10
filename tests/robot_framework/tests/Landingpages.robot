@@ -1,7 +1,11 @@
+*** Comments ***
+# robocop: off=line-too-long
+
+
 *** Settings ***
 Documentation       Tests that focus on the department landingpages on public
-Resource            ../resources/Setup.resource
 Resource            ../resources/Departments.resource
+Resource            ../resources/Setup.resource
 Suite Setup         Suite Setup
 Test Setup          Go To Public
 Test Tags           ci  landingpages

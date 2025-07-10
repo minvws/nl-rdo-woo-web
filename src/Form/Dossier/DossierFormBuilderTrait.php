@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier;
 
+use App\Domain\Department\Department;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Subject\Subject;
-use App\Entity\Department;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

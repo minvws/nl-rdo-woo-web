@@ -5,8 +5,8 @@ Library             DateTime
 Library             OperatingSystem
 Library             Process
 Library             String
-Library             DebugLibrary
 Library             Browser
+Library             DebugLibrary
 
 
 *** Variables ***

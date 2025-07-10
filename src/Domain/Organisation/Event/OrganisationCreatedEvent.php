@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Organisation\Event;
 
-use App\Entity\Organisation;
+use App\Domain\Organisation\Organisation;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
 
 readonly class OrganisationCreatedEvent

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Vws\AuditLog;
 
 use App\Domain\Upload\AntiVirus\FileScannedEvent;
-use App\Entity\User;
+use App\Service\Security\User;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\FileUploadLogEvent;
 use Symfony\Bundle\SecurityBundle\Security;

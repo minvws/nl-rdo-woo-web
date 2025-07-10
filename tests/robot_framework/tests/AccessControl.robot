@@ -1,5 +1,5 @@
 *** Comments ***
-# robocop: off=too-many-arguments
+# robocop: off=too-many-arguments,too-long-keyword
 
 
 *** Settings ***
@@ -8,15 +8,16 @@ Library             String
 Library             Browser
 Library             DebugLibrary
 Library             OTP
-Resource            ../resources/Setup.resource
 Resource            ../resources/AccessControl.resource
 Resource            ../resources/Departments.resource
+Resource            ../resources/Inquiry.resource
+Resource            ../resources/Setup.resource
 Resource            ../resources/Subjects.resource
 Resource            ../resources/WooDecision.resource
-Resource            ../resources/Inquiry.resource
 Suite Setup         Suite Setup
 Test Teardown       Run Keyword If Test Failed  No-Click Logout
-Test Timeout        5 minutes  # For yet unknown reasons, this testsuite sometimes runs endlessly until the Github job timeout is reached, ruining the whole testrun. Therefore this suite has a test timeout of 5 minutes.
+# For yet unknown reasons, this testsuite sometimes runs endlessly until the Github job timeout is reached, ruining the whole testrun.
+Test Timeout        5 minutes
 Test Tags           ci  accesscontrol
 
 

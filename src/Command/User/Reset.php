@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command\User;
 
-use App\Entity\User;
+use App\Service\Security\UserRepository;
 use App\Service\UserService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,8 +13,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Reset extends Command
 {
-    public function __construct(protected UserService $userService, protected EntityManagerInterface $doctrine)
-    {
+    public function __construct(
+        private readonly UserService $userService,
+        private readonly UserRepository $userRepository,
+    ) {
         parent::__construct();
     }
 
@@ -35,7 +36,7 @@ class Reset extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $email = strval($input->getArgument('email'));
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['email' => $email]);
+        $user = $this->userRepository->findOneBy(['email' => $email]);
         if (! $user) {
             $output->writeln("User <info>{$email}</info> not found.");
 

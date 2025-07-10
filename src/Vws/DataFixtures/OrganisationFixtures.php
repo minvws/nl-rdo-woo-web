@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Vws\DataFixtures;
 
+use App\Domain\Department\Department;
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Entity\Department;
-use App\Entity\Organisation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;

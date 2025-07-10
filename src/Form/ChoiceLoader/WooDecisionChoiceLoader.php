@@ -6,8 +6,8 @@ namespace App\Form\ChoiceLoader;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Entity\User;
 use App\Service\Security\Authorization\AuthorizationMatrix;
+use App\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\ChoiceList\ArrayChoiceList;
 use Symfony\Component\Form\ChoiceList\ChoiceListInterface;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use App\Domain\Department\Department;
 use App\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
-use App\Entity\Department;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 

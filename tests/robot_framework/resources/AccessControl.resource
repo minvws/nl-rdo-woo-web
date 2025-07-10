@@ -1,13 +1,13 @@
 *** Comments ***
-# robocop: off=no-suite-variable
+# robocop: off=no-suite-variable,non-local-variables-should-be-uppercase
 
 
 *** Settings ***
 Documentation       Resource file containing custom keywords for Toegangsbeheer in the Balie.
 Library             String
+Library             ${CURDIR}/../libraries/QR.py
 Library             Browser
 Library             DebugLibrary
-Library             ${CURDIR}/../libraries/QR.py
 Resource            Admin.resource
 Resource            Organisations.resource
 
@@ -19,7 +19,7 @@ Click Access Control
 Create New User
   [Documentation]  Creates the user, logs in once to change the temp password and saves the credentials
   ...  in suite vars.
-  [Arguments]  ${role}  ${change_temp_password}=${TRUE}  ${store_creds}=${TRUE}  ${org_prefix}=
+  [Arguments]  ${role}  ${change_temp_password}=${TRUE}  ${store_creds}=${TRUE}  ${org_prefix}=${EMPTY}
   ${unique_id} =  Generate Random String  3  [NUMBERS][UPPER]
   ${unique_id} =  Convert To Lower Case  ${unique_id}
   VAR  ${name} =  ${role}_${org_prefix}_${unique_id}

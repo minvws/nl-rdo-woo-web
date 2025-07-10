@@ -16,8 +16,8 @@ Initiate local environment
   ...  password=${temp_password}
   ...  otp_secret=${TST_BALIE_OTP_SECRET}
   ...  new_password=${TST_BALIE_PASSWORD}
-# For disable reason see https://github.com/minvws/nl-rdo-woo-web-private/blob/273f83b6160bc29d73ac95a5f2d1523cff65cbd3/tests/robot_framework/resources/Setup.resource#L148
-#  Load VWS Fixtures
+  # We load fixtures here so they are refreshed after a task:reset, when this init routine usually is run
+  Load VWS Fixtures
   Load E2E Fixtures
 
 Get Local OTP Code
@@ -34,8 +34,7 @@ Cleansheet
 *** Keywords ***
 Write Otp Secret To Zshrc
   [Arguments]  ${otp_secret}
-  ${command} =  Set Variable
-  ...  sed -ri '' 's/SECRET_WOO_LOCAL=[0-9A-Z]*/SECRET_WOO_LOCAL=${otp_secret}/g' ~/.zshrc
+  VAR  ${command} =  sed -ri '' 's/SECRET_WOO_LOCAL=[0-9A-Z]*/SECRET_WOO_LOCAL=${otp_secret}/g' ~/.zshrc
   Run Process  ${command}  shell=True
   Log To Console  \nSECRET_WOO_LOCAL: ${otp_secret}
   Run Process  source ~/.zshrc  shell=True

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Form\ChoiceLoader;
 
 use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Entity\User;
 use App\Service\Security\Authorization\AuthorizationMatrix;
+use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\ChoiceList\ArrayChoiceList;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Twig\Runtime;
 
-use App\Citation;
+use App\Domain\Publication\Citation;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\DossierReference;
 use App\Domain\Publication\Dossier\ViewModel\DossierNotifications;

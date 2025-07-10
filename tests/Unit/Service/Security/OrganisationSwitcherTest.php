@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Security;
 
-use App\Entity\Organisation;
-use App\Entity\User;
-use App\Repository\OrganisationRepository;
-use App\Roles;
+use App\Domain\Organisation\Organisation;
+use App\Domain\Organisation\OrganisationRepository;
 use App\Service\Security\OrganisationSwitcher;
+use App\Service\Security\Roles;
+use App\Service\Security\User;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RequestStack;

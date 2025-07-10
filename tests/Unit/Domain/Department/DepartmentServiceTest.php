@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Department;
 
+use App\Domain\Department\Department as DepartmentEntity;
+use App\Domain\Department\DepartmentRepository;
 use App\Domain\Department\DepartmentService;
 use App\Domain\Department\ViewModel\Department;
 use App\Domain\Department\ViewModel\DepartmentViewFactory;
-use App\Entity\Department as DepartmentEntity;
-use App\Repository\DepartmentRepository;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use App\Tests\Unit\UnitTestCase;

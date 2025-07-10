@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Upload;
 
+use App\Domain\Department\Department;
 use App\Domain\Publication\EntityWithFileInfo;
-use App\Entity\Department;
 use App\Service\FilenameSanitizer;
 
 readonly class AssetsNamer

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Search\Query;
 
+use App\Domain\Department\Department;
 use App\Domain\Search\Query\Facet\Input\FacetInput;
 use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
 use App\Domain\Search\Query\Facet\Input\FacetInputFactory;
 use App\Domain\Search\Query\SearchParametersFactory;
-use App\Entity\Department;
 use App\Service\Search\Model\FacetKey;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

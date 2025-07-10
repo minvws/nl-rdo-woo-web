@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\EventSubscriber;
 
-use App\Entity\User;
 use App\EventSubscriber\TwoFactorLogger;
+use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;

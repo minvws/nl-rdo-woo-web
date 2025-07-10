@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision;
 
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
 use App\Domain\Publication\Dossier\Type\DossierReference;
@@ -12,8 +13,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
 use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use App\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
-use App\Entity\Organisation;
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Uuid;

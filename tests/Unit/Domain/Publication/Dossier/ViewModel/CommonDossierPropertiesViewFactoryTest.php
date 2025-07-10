@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use App\Domain\Department\Department as DepartmentEntity;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierType;
@@ -13,7 +14,6 @@ use App\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
 use App\Domain\Publication\Dossier\ViewModel\Subject as SubjectViewModel;
 use App\Domain\Publication\Dossier\ViewModel\SubjectViewFactory;
 use App\Domain\Publication\Subject\Subject;
-use App\Entity\Department as DepartmentEntity;
 use App\Tests\Story\DepartmentEnum;
 use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;

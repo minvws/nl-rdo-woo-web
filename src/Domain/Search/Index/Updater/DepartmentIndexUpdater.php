@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\Updater;
 
+use App\Domain\Department\Department;
 use App\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
+use App\Domain\Search\Index\ElasticConfig;
 use App\Domain\Search\Index\Schema\ElasticNestedField;
 use App\Domain\Search\Index\Schema\ElasticPath;
-use App\ElasticConfig;
-use App\Entity\Department;
 use App\Service\Elastic\ElasticClientInterface;
 
 readonly class DepartmentIndexUpdater

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Admin;
 
+use App\Domain\Department\Department;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Entity\Department;
 use Doctrine\ORM\QueryBuilder;
 
 class DossierQueryConditions

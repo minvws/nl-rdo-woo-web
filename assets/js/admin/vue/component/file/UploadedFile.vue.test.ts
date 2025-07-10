@@ -37,8 +37,7 @@ describe('The <UploadedFile /> component', () => {
   const getDeleteButton = (wrapper: VueWrapper) =>
     wrapper.find('button[type="button"]');
 
-  const getWithdrawLink = (wrapper: VueWrapper) =>
-    wrapper.find('a.bhr-btn-ghost-danger');
+  const getWithdrawLink = (wrapper: VueWrapper) => wrapper.find('a');
 
   it('should display the icon type', () => {
     expect(getMimeTypeIconComponent(createComponent()).props('mimeType')).toBe(

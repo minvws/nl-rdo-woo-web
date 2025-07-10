@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Inventory;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Publication\SourceType;
 use App\Exception\InventoryReaderException;
 use App\Service\FileReader\ExcelReaderFactory;
 use App\Service\Inventory\Reader\InventoryReaderFactory;
 use App\Service\Inventory\Reader\InventoryReaderInterface;
-use App\SourceType;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class InventoryReaderTest extends MockeryTestCase

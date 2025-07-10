@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Inquiry;
 
 use App\Domain\Ingest\IngestDispatcher;
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\BatchDownload\BatchDownloadService;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -15,7 +16,6 @@ use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use App\Domain\Search\SearchDispatcher;
-use App\Entity\Organisation;
 use App\Service\HistoryService;
 use App\Service\Inquiry\DocumentCaseNumbers;
 use App\Service\Inquiry\InquiryChangeset;

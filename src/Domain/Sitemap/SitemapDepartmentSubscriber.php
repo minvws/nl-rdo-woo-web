@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Sitemap;
 
-use App\Repository\DepartmentRepository;
+use App\Domain\Department\DepartmentRepository;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

@@ -8,11 +8,11 @@ use App\Domain\Search\Query\Facet\FacetDefinitionInterface;
 use App\Domain\Search\Query\Facet\Input\DateFacetInput;
 use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
 use App\Domain\Search\Query\Facet\Input\FacetInputInterface;
-use App\Enum\ApplicationMode;
 use App\Service\Search\Model\FacetKey;
 use App\Service\Search\Query\Condition\QueryConditionBuilderInterface;
 use App\Service\Search\Query\Sort\SortField;
 use App\Service\Search\Query\Sort\SortOrder;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 final readonly class SearchParameters

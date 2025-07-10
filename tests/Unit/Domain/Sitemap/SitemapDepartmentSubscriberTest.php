@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Sitemap;
 
+use App\Domain\Department\Department;
+use App\Domain\Department\DepartmentRepository;
 use App\Domain\Sitemap\SitemapDepartmentSubscriber;
-use App\Entity\Department;
-use App\Repository\DepartmentRepository;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Search\Result;
 
 use App\Domain\Search\Index\ElasticDocumentType;
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 

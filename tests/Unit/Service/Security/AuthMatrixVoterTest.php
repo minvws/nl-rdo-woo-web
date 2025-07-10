@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Security;
 
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierStatus;
-use App\Entity\Organisation;
-use App\Roles;
 use App\Service\Security\AuthMatrixVoter;
 use App\Service\Security\Authorization\AuthorizationEntryRequestStore;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use App\Service\Security\Authorization\Entry;
+use App\Service\Security\Roles;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;

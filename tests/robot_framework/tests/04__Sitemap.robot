@@ -1,8 +1,8 @@
 *** Settings ***
 Documentation       Tests that verify the DiWoo sitemap generation.
 Library             XML
-Library             RequestsLibrary
 Library             DebugLibrary
+Library             RequestsLibrary
 Resource            ../resources/Setup.resource
 Test Tags           ci  sitemap  sitemap-init
 

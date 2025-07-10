@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Search\Result\SubType\WooDecisionDocument;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use App\Domain\Publication\SourceType;
 use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
-use App\SourceType;
 use PHPUnit\Framework\TestCase;
 
 class DocumentViewModelTest extends TestCase

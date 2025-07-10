@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Vws\AuditLog;
 
+use App\Domain\Department\Department;
 use App\Domain\Organisation\Event\OrganisationCreatedEvent;
 use App\Domain\Organisation\Event\OrganisationUpdatedEvent;
-use App\Entity\Department;
-use App\Entity\Organisation;
-use App\Entity\User;
+use App\Domain\Organisation\Organisation;
+use App\Service\Security\User;
 use App\Vws\AuditLog\OrganisationAuditLogger;
 use Doctrine\Common\Collections\ArrayCollection;
 use MinVWS\AuditLogger\AuditLogger;

@@ -23,7 +23,7 @@ Fill Out Request For Advice Details
 
 Upload Request For Advice
   [Arguments]  ${advice_location}
-  ${path}  ${file_name} =  Split Path  ${advice_location}
+  ${_}  ${file_name} =  Split Path  ${advice_location}
   Click  " Adviesaanvraag toevoegen... "
   Wait Until Keyword Succeeds  3x  5s  Upload And Submit  ${file_name}  ${advice_location}
   Success Alert Is Visible

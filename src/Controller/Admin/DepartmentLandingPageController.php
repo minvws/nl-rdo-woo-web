@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Domain\Department\Department;
+use App\Domain\Department\DepartmentRepository;
 use App\Domain\Department\DepartmentService;
 use App\Domain\Department\LandingPage\ViewModel\DepartmentLandingPageViewFactory;
-use App\Entity\Department;
 use App\Form\LandingPageType;
-use App\Repository\DepartmentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

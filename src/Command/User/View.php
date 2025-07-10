@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command\User;
 
-use App\Entity\User;
+use App\Service\Security\User;
+use App\Service\Security\UserRepository;
 use App\Service\Totp;
-use App\Service\UserService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,9 +18,8 @@ use Symfony\Component\Process\Process;
 class View extends Command
 {
     public function __construct(
-        protected UserService $userService,
-        protected EntityManagerInterface $doctrine,
-        protected Totp $totp,
+        private readonly UserRepository $userRepository,
+        private readonly Totp $totp,
     ) {
         parent::__construct();
     }
@@ -42,7 +40,7 @@ class View extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $email = strval($input->getArgument('email'));
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['email' => $email]);
+        $user = $this->userRepository->findOneBy(['email' => $email]);
         if (! $user) {
             $output->writeln("User <info>{$email}</info> not found.");
 

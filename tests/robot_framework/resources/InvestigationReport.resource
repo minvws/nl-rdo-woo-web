@@ -22,7 +22,7 @@ Fill Out Investigation Report Details
 
 Upload Investigation Report
   [Arguments]  ${investigation_report_location}
-  ${path}  ${file_name} =  Split Path  ${investigation_report_location}
+  ${_}  ${file_name} =  Split Path  ${investigation_report_location}
   Click  " Onderzoeksrapport toevoegen... "
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${investigation_report_location}
   Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}  timeout=10s

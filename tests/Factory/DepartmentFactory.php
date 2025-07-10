@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Factory;
 
-use App\Entity\Department;
+use App\Domain\Department\Department;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

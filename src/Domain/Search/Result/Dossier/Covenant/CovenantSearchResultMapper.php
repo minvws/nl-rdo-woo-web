@@ -9,7 +9,7 @@ use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use App\Domain\Search\Result\ResultEntryInterface;
 use App\Domain\Search\Result\SearchResultMapperInterface;
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
 
 readonly class CovenantSearchResultMapper implements SearchResultMapperInterface

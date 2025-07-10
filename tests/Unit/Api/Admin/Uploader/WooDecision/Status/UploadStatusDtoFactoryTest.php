@@ -13,6 +13,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\Document
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateType;
+use App\Domain\Publication\Dossier\Type\WooDecision\DossierUploadStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\FileInfo;
 use App\Tests\Unit\UnitTestCase;
@@ -33,10 +34,17 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
+        $doc = \Mockery::mock(Document::class);
+        $uploadStatus = \Mockery::mock(DossierUploadStatus::class);
+        $uploadStatus->shouldReceive('getExpectedUploadCount')->andReturn(4);
+        $uploadStatus->shouldReceive('getUploadedDocuments')->andReturn(new ArrayCollection([$doc]));
+        $uploadStatus->shouldReceive('getMissingDocumentIds')->andReturn(new ArrayCollection(['1002', '1004', '1005']));
+
         /** @var WooDecision&MockInterface $wooDecision */
         $wooDecision = \Mockery::mock(WooDecision::class);
         $wooDecision->shouldReceive('getId')->andReturn(Uuid::fromString('00000000-0000-0000-0000-000000000001'));
         $wooDecision->shouldReceive('getDocuments')->andReturn($this->getDocuments());
+        $wooDecision->expects('getUploadStatus')->andReturn($uploadStatus);
 
         /** @var DocumentFileSet&MockInterface $documentFileSet */
         $documentFileSet = \Mockery::mock(DocumentFileSet::class);
@@ -68,10 +76,17 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
 
     public function testMakeWithChanges(): void
     {
+        $doc = \Mockery::mock(Document::class);
+        $uploadStatus = \Mockery::mock(DossierUploadStatus::class);
+        $uploadStatus->shouldReceive('getExpectedUploadCount')->andReturn(4);
+        $uploadStatus->shouldReceive('getUploadedDocuments')->andReturn(new ArrayCollection([$doc]));
+        $uploadStatus->shouldReceive('getMissingDocumentIds')->andReturn(new ArrayCollection(['1002', '1004', '1005']));
+
         /** @var WooDecision&MockInterface $wooDecision */
         $wooDecision = \Mockery::mock(WooDecision::class);
         $wooDecision->shouldReceive('getId')->andReturn(Uuid::fromString('00000000-0000-0000-0000-000000000001'));
         $wooDecision->shouldReceive('getDocuments')->andReturn($this->getDocuments());
+        $wooDecision->expects('getUploadStatus')->andReturn($uploadStatus);
 
         /** @var DocumentFileSet&MockInterface $documentFileSet */
         $documentFileSet = \Mockery::mock(DocumentFileSet::class);

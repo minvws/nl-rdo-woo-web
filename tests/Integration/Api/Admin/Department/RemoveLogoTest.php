@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Api\Admin\Department;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
+use App\Domain\Department\DepartmentRepository;
 use App\Domain\Publication\FileInfo;
-use App\Repository\DepartmentRepository;
-use App\SourceType;
+use App\Domain\Publication\SourceType;
 use App\Tests\Factory\DepartmentFactory;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\UserFactory;

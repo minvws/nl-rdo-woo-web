@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Subject;
 
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Subject\Event\SubjectUpdatedEvent;
 use App\Domain\Publication\Subject\Subject;
 use App\Domain\Publication\Subject\SubjectRepository;
 use App\Domain\Publication\Subject\SubjectService;
-use App\Entity\Organisation;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\ORM\Query;
 use Mockery\Adapter\Phpunit\MockeryTestCase;

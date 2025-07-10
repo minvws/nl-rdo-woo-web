@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Domain\Department\Department;
+use App\Domain\Department\DepartmentRepository;
+use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Entity\Department;
-use App\Entity\Organisation;
 use App\Form\Organisation\OrganisationFormType;
-use App\Repository\DepartmentRepository;
 use App\Service\OrganisationService;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\Common\Collections\Collection;

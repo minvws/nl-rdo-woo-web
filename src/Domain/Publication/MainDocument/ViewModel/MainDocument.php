@@ -6,8 +6,8 @@ namespace App\Domain\Publication\MainDocument\ViewModel;
 
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
+use App\Domain\Publication\SourceType;
 use App\Domain\Search\Result\SubType\SubTypeViewModelInterface;
-use App\SourceType;
 
 readonly class MainDocument implements SubTypeViewModelInterface
 {

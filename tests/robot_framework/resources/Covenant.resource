@@ -35,7 +35,7 @@ Select Second Party, Option 1
 
 Upload Covenant
   [Arguments]  ${covenant_location}
-  ${path}  ${file_name} =  Split Path  ${covenant_location}
+  ${_}  ${file_name} =  Split Path  ${covenant_location}
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${covenant_location}
   Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${file_name}  timeout=10s
   Type Text  //dialog[@open]//input[@name="formalDate"]  01012022

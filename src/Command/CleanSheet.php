@@ -14,7 +14,7 @@ use App\Domain\Publication\Subject\Subject;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use App\Domain\Upload\UploadEntity;
 use App\Domain\WooIndex\WooIndexSitemapService;
-use App\Entity\User;
+use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;

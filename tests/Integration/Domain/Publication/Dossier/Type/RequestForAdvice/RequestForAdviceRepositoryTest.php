@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Domain\Publication\Dossier\Type\RequestForAdvice;
 
 use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceRepository;
-use App\Enum\ApplicationMode;
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use App\Tests\Factory\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceFactory;
 use App\Tests\Integration\IntegrationTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

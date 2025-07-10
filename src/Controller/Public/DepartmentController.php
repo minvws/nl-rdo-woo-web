@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller\Public;
 
+use App\Domain\Department\Department;
 use App\Domain\Department\DepartmentService;
 use App\Domain\Publication\Dossier\ViewModel\DossierViewFactory;
 use App\Domain\Search\Query\SearchParametersFactory;
-use App\Entity\Department;
 use App\Service\Search\Query\Definition\BrowseDepartmentAggregationsQueryDefinition;
 use App\Service\Search\SearchService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Result;
 
-use App\Citation;
+use App\Domain\Publication\Citation;
 use App\Domain\Search\Index\Schema\ElasticField;
 use App\Domain\Search\Query\Facet\FacetDefinitions;
 use App\Domain\Search\Query\Facet\Input\FacetInputFactory;

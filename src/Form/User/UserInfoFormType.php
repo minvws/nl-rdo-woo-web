@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Form\User;
 
-use App\Entity\User;
-use App\Roles;
+use App\Service\Security\Roles;
+use App\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;

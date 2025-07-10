@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Stats\Handler;
 
-use App\Entity\WorkerStats;
+use App\Service\Stats\WorkerStats;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DoctrineHandler implements StatsHandlerInterface

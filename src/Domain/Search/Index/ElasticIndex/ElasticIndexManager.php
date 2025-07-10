@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\ElasticIndex;
 
+use App\Domain\Search\Index\ElasticConfig;
 use App\Domain\Search\Index\Rollover\MappingService;
-use App\ElasticConfig;
 use App\Service\Elastic\ElasticClientInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 
