@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Service\Inquiry;
 use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\DocumentPrefix;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use App\Service\Inquiry\CaseNumbers;
 use App\Service\Inquiry\DocumentCaseNumbers;
 use App\Service\Inquiry\InquiryChangeset;
 use App\Service\Inquiry\InquiryLinkImporter;
@@ -83,14 +84,14 @@ class InquiryLinkImporterTest extends MockeryTestCase
             ->expects('getDocumentCaseNrs')
             ->with($documentNrA)
             ->andReturn(
-                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), [])
+                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), CaseNumbers::empty())
             );
 
         $this->documentRepository
             ->expects('getDocumentCaseNrs')
             ->with($documentNrB)
             ->andReturn(
-                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), [])
+                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), CaseNumbers::empty())
             );
 
         $this->inquiryService->expects('applyChangesetAsync')->with(\Mockery::on(

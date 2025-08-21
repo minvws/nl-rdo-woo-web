@@ -114,6 +114,16 @@ class ExcelReader implements \IteratorAggregate, FileReaderInterface
 
     public function getOptionalInt(int $rowIndex, string $columnName): ?int
     {
-        return $this->hasColumn($columnName) ? $this->getInt($rowIndex, $columnName) : null;
+        if (! $this->hasColumn($columnName)) {
+            return null;
+        }
+
+        /** @var string|int $value */
+        $value = $this->getCell($rowIndex, $columnName);
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return intval($value);
     }
 }

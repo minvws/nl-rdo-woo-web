@@ -70,7 +70,7 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
             ElasticField::JUDGEMENT->value => $entity->getJudgement(),
             ElasticField::GROUNDS->value => $entity->getGrounds(),
             ElasticField::DATE_PERIOD->value => $entity->getPeriod(),
-            ElasticField::DOCUMENT_PAGES->value => $entity->getPageCount(),
+            ElasticField::DOCUMENT_PAGES->value => $entity->getFileInfo()->getPageCount(),
             ElasticNestedField::DOSSIERS->value => $dossiers,
             ElasticField::INQUIRY_IDS->value => $inquiryIds,
             ElasticField::PREFIXED_DOSSIER_NR->value => $prefixedDossierNrs,

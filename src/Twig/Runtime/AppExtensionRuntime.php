@@ -15,7 +15,7 @@ class AppExtensionRuntime implements RuntimeExtensionInterface
     {
     }
 
-    public function size(string $value): string
+    public function size(string|int $value): string
     {
         return Utils::size($value);
     }

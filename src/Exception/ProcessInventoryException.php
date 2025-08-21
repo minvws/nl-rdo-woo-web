@@ -6,6 +6,9 @@ namespace App\Exception;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 
+/**
+ * @SuppressWarnings("PHPMD.TooManyPublicMethods")
+ */
 class ProcessInventoryException extends TranslatableException
 {
     public static function forInventoryCannotBeStored(): self
@@ -40,6 +43,17 @@ class ProcessInventoryException extends TranslatableException
     public static function forNoChanges(): self
     {
         return new self('publication.dossier.error.no_inventory_changes');
+    }
+
+    public static function forMaxDocumentsExceeded(int $max): self
+    {
+        return new self(
+            'The maximum number of documents per dossier has been exceeded',
+            'publication.dossier.error.max_documents_exceeded',
+            [
+                '{max}' => strval($max),
+            ],
+        );
     }
 
     public static function forMaxRuntimeExceeded(): self

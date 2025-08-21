@@ -208,7 +208,7 @@ class AggregationMapperTest extends MockeryTestCase
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
-            ->with(FacetKey::TYPE, 'dossier', 'dossier.publication', 'dossier.document', 'dossier.attachment')
+            ->with(FacetKey::TYPE, 'dossier', 'dossier.publication')
             ->andReturn($facetInputA = \Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
@@ -276,6 +276,8 @@ class AggregationMapperTest extends MockeryTestCase
 
         self::assertCount(1, $result->getEntries());
         self::assertEquals('dossier', $result->getEntries()[0]->getKey());
+        self::assertEquals(9, $result->getEntries()[0]->getCount());
+        self::assertEquals(3, $result->getEntries()[0]->getCountWithoutSubEntries());
 
         $subEntries = $result->getEntries()[0]->getSubEntries();
         self::assertCount(3, $subEntries);
@@ -293,7 +295,7 @@ class AggregationMapperTest extends MockeryTestCase
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
-            ->with(FacetKey::TYPE, 'dossier', 'dossier.publication', 'dossier.document', 'dossier.attachment')
+            ->with(FacetKey::TYPE, 'dossier', 'dossier.publication')
             ->andReturn($facetInputA = \Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters

@@ -11,7 +11,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  color: 'fill-bhr-dim-gray',
+  color: 'fill-bhr-gray-700',
 });
 
 const getDimension = (dimension: 'height' | 'width') => {

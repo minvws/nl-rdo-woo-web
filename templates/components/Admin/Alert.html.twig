@@ -1,16 +1,16 @@
 <div class="bhr-alert {{ this.alertType }} {{ class }}">
     <div class="flex">
-        <span class="mr-4">
-            <twig:Admin:Icon color="{{ this.iconColor }}" name="{{ this.iconName }}" size="32" />
+        <span class="mr-2">
+            <twig:Admin:Icon color="{{ this.iconColor }}" name="{{ this.iconName }}" size="24" />
         </span>
 
-        <div class="grow pt-1.5">
+        <div class="grow pt-0.5">
             {% block content %}{% endblock %}
         </div>
     </div>
 
     {% if block('extra') is not empty %}
-        <div class="mt-4">
+        <div class="mt-4 ml-8">
             {% block extra %}{% endblock %}
         </div>
     {% endif %}

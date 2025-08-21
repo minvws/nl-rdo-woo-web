@@ -9,14 +9,12 @@ use App\Domain\Department\ViewModel\Department;
 use App\Domain\Department\ViewModel\DepartmentViewFactory;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
-use Twig\Environment;
 
 readonly class DepartmentService
 {
     public function __construct(
         private DepartmentRepository $repository,
         private DepartmentViewFactory $departmentViewFactory,
-        private Environment $twig,
         private AuthorizationMatrix $authorizationMatrix,
     ) {
     }
@@ -29,31 +27,8 @@ readonly class DepartmentService
         return $this->departmentViewFactory->makeCollection($this->repository->getAllPublicDepartments());
     }
 
-    public function getTemplate(DepartmentEntity $department): string
-    {
-        if (! $this->hasCustomTemplate($department)) {
-            return 'public/department/details_default.html.twig';
-        }
-
-        return $this->getCustomTemplatePath($department);
-    }
-
-    private function hasCustomTemplate(DepartmentEntity $department): bool
-    {
-        return $this->twig->getLoader()->exists($this->getCustomTemplatePath($department));
-    }
-
-    private function getCustomTemplatePath(DepartmentEntity $department): string
-    {
-        return 'public/department/custom/' . $department->getSlug() . '.html.twig';
-    }
-
     public function userCanEditLandingpage(DepartmentEntity $department): bool
     {
-        if ($this->hasCustomTemplate($department)) {
-            return false;
-        }
-
         if (! $this->authorizationMatrix->isAuthorized('department_landing_page', 'update')) {
             return false;
         }

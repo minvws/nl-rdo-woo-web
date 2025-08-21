@@ -176,7 +176,7 @@ onBeforeUnmount(() => {
             <button
               v-if="isDeleteButtonVisible"
               @click="onDelete"
-              class="cursor-pointer py-1 px-2 mr-2 hover-focus:text-bhr-maximum-red"
+              class="cursor-pointer py-1 px-2 mr-2 hover-focus:text-bhr-red-900"
               ref="deleteButtonElement"
               type="button"
             >
@@ -198,13 +198,13 @@ onBeforeUnmount(() => {
               />
               <Icon
                 v-if="isErrorVisible"
-                color="fill-bhr-maximum-red"
+                color="fill-bhr-red-900"
                 name="cross-rounded-filled"
                 :size="16"
               />
               <Icon
                 v-if="isSuccessVisible"
-                color="fill-bhr-philippine-green"
+                color="fill-bhr-green-800"
                 name="check-rounded-filled"
                 :size="16"
               />

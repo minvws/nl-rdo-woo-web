@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\OtherPublication;
 
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use App\Domain\Publication\Attachment\Entity\HasAttachments;
 use App\Domain\Publication\Dossier\AbstractDossier;
@@ -36,6 +37,7 @@ class OtherPublication extends AbstractDossier implements EntityWithAttachments,
 
     /** @var Collection<array-key,OtherPublicationAttachment> */
     #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: OtherPublicationAttachment::class)]
+    #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 
     public function __construct()

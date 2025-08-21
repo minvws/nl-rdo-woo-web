@@ -1,0 +1,3 @@
+@utility woo-badge {
+    @apply px-2 py-1 text-xs bg-woo-anti-flash-white text-woo-onyx;
+  }

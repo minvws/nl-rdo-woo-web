@@ -8,10 +8,10 @@ use App\Exception\ProcessInventoryException;
 
 class InventoryChangeset
 {
-    public const ADDED = 'create';
-    public const UPDATED = 'update';
-    public const DELETED = 'delete';
-    public const UNCHANGED = 'unchanged';
+    public const string ADDED = 'create';
+    public const string UPDATED = 'update';
+    public const string DELETED = 'delete';
+    public const string UNCHANGED = 'unchanged';
 
     public function __construct(
         /** @var array<string, string> */
@@ -90,6 +90,13 @@ class InventoryChangeset
                 self::UNCHANGED => 0,
             ]
         );
+    }
+
+    public function getResultingTotalDocumentCount(): int
+    {
+        $counts = $this->getCounts();
+
+        return $counts[self::UNCHANGED] + $counts[self::UPDATED] + $counts[self::ADDED];
     }
 
     /**

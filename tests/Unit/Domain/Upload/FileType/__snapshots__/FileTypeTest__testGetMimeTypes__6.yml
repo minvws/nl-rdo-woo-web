@@ -1,6 +1,0 @@
-fileType: Zip
-mimes:
-    - application/zip
-    - application/x-zip
-    - application/x-zip-compressed
-    - application/x-7z-compressed

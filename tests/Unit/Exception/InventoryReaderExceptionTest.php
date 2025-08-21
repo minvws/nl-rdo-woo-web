@@ -29,7 +29,7 @@ final class InventoryReaderExceptionTest extends TestCase
     {
         self::assertStringContainsString(
             '123',
-            InventoryReaderException::forMissingMatterInRow(123)->getMessage(),
+            InventoryReaderException::forInvalidMatterInRow(123, 2, 50)->getMessage(),
         );
     }
 

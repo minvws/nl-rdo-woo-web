@@ -28,8 +28,10 @@
                 <table class="woo-table">
                     <caption class="sr-only">{{ titleTranslationKey | trans }}</caption>
                     <thead>
-                        <th class="w-64 min-w-64" scope="col">{{ 'global.date' | trans() }}</th>
-                        <th class="min-w-64" scope="col">{{ "global.action" | trans() }}</th>
+                        <tr>
+                            <th class="w-64 min-w-64" scope="col">{{ 'global.date' | trans() }}</th>
+                            <th class="min-w-64" scope="col">{{ "global.action" | trans() }}</th>
+                        </tr>
                     </thead>
                     <tbody>
                     {% for entry in history %}

@@ -10,6 +10,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Search\Index\ElasticDocument;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\Schema\ElasticField;
+use App\Service\Inquiry\CaseNumbers;
 use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 
 #[AsTaggedItem(priority: 100)]
@@ -41,9 +42,7 @@ readonly class WooDecisionMapper implements ElasticDossierMapperInterface
             fn (Inquiry $inquiry) => $inquiry->getId()
         )->toArray();
 
-        $fields[ElasticField::INQUIRY_CASE_NRS->value] = $dossier->getInquiries()->map(
-            fn (Inquiry $inquiry) => $inquiry->getCasenr()
-        )->toArray();
+        $fields[ElasticField::INQUIRY_CASE_NRS->value] = CaseNumbers::forWooDecision($dossier)->values;
 
         return new ElasticDocument(
             $defaultDocument->getId(),

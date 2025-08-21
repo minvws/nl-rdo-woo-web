@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\RequestForAdvice;
 
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use App\Domain\Publication\Attachment\Entity\HasAttachments;
 use App\Domain\Publication\Dossier\AbstractDossier;
@@ -36,6 +37,7 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
 
     /** @var Collection<array-key,RequestForAdviceAttachment> */
     #[ORM\OneToMany(targetEntity: RequestForAdviceAttachment::class, mappedBy: 'dossier')]
+    #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 
     #[ORM\Column(length: 255)]

@@ -101,7 +101,6 @@ readonly class AggregationMapper
             foreach ($bucket->getIterable('[' . ElasticField::SUBLEVEL_TYPE->value . '][buckets]') as $subBucketKey => $subBucket) {
                 $subKey = $subBucket->getString(self::KEY);
                 $combinedKey = $key . '.' . $subKey;
-                $allKeys[] = $combinedKey;
                 $subEntries[] = new AggregationBucketEntry(
                     $combinedKey,
                     $subBucket->getInt(self::DOC_COUNT),
@@ -115,15 +114,16 @@ readonly class AggregationMapper
             }
 
             $entries[] = new AggregationBucketEntry(
-                $key,
-                $bucket->getInt(self::DOC_COUNT),
-                $facet->getDisplayValue($bucketKey, $key),
-                $searchParameters->withFacetInput(
+                key: $key,
+                count: $bucket->getInt(self::DOC_COUNT),
+                displayValue: $facet->getDisplayValue($bucketKey, $key),
+                parameters: $searchParameters->withFacetInput(
                     FacetKey::TYPE,
                     $this->facetInputFactory->createStringFacetInputForValue(FacetKey::TYPE, ...$allKeys)
                 ),
-                $searchParameters,
-                $subEntries,
+                parametersWithout: $searchParameters,
+                subEntries: $subEntries,
+                countWithoutSubEntries: $publicationCount,
             );
         }
 

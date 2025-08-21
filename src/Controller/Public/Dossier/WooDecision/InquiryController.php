@@ -25,7 +25,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 /**
  * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
@@ -78,7 +77,7 @@ class InquiryController extends AbstractController
         }
 
         $downloadUrl = $this->generateUrl(
-            'app_inquiry_download_zip_details',
+            'app_inquiry_download_zip',
             [
                 'token' => $inquiry->getToken(),
                 'filter' => $filter,
@@ -139,32 +138,21 @@ class InquiryController extends AbstractController
         return $this->downloadHelper->getResponseForEntityWithFileInfo($inquiry->getInventory());
     }
 
-    #[Route('/zaak/{token}/download/{filter}/details', name: 'app_inquiry_download_zip_details', methods: ['GET'])]
-    public function batch(
-        #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
-        string $filter,
-        Breadcrumbs $breadcrumbs,
-    ): Response {
-        $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem($inquiry->getCasenr(), 'app_inquiry_detail', ['token' => $inquiry->getToken()]);
-        $breadcrumbs->addItem('public.global.download');
-
-        return $this->render('public/dossier/woo-decision/shared/streaming-download.html.twig', [
-            'inquiry' => $inquiry,
-            'download' => $this->onDemandZipGenerator->getDetails(BatchDownloadScope::forInquiry($inquiry)),
-            'download_path' => $this->generateUrl('app_inquiry_download_zip', ['token' => $inquiry->getToken(), 'filter' => $filter]),
-        ]);
-    }
-
-    #[Route('/zaak/{token}/download/{filter}', name: 'app_inquiry_download_zip', methods: ['GET'])]
+    #[Route('/zaak/{token}/download/{filter}', name: 'app_inquiry_download_zip', methods: ['GET', 'POST'])]
     public function downloadZip(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
         string $filter,
     ): Response {
-        unset($filter);
+        if ($filter === InquiryFilterFormType::CASE) {
+            $scope = BatchDownloadScope::forInquiry($inquiry);
+        } else {
+            $dossier = $this->wooDecisionRepository->findOneBy(['dossierNr' => $filter]);
+            if (! $dossier || ! $this->isGranted(DossierVoter::VIEW, $dossier)) {
+                throw ViewingNotAllowedException::forDossier();
+            }
+            $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossier);
+        }
 
-        return $this->onDemandZipGenerator->getStreamedResponse(
-            BatchDownloadScope::forInquiry($inquiry),
-        );
+        return $this->onDemandZipGenerator->getStreamedResponse($scope);
     }
 }

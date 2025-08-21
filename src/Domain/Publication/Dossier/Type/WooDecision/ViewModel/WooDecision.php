@@ -36,4 +36,15 @@ final readonly class WooDecision
         public string $documentSearchUrl,
     ) {
     }
+
+    public function getResponsibilityContent(): ?string
+    {
+        foreach ($this->departments as $department) {
+            if ($department->responsibilityContent !== null) {
+                return $department->responsibilityContent;
+            }
+        }
+
+        return null;
+    }
 }

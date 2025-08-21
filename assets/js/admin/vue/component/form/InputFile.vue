@@ -11,16 +11,6 @@ import InputErrors from './InputErrors.vue';
 const emit = defineEmits(['uploaded', 'uploadError']);
 
 const props = defineProps({
-  allowedFileTypes: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  allowedMimeTypes: {
-    type: Array,
-    required: false,
-    default: () => [],
-  },
   allowMultiple: {
     type: Boolean,
     required: false,
@@ -29,6 +19,11 @@ const props = defineProps({
   enableAutoUpload: {
     type: Boolean,
     default: false,
+  },
+  fileLimits: {
+    type: Array,
+    required: true,
+    default: () => [],
   },
   hasFormRow: {
     type: Boolean,
@@ -41,10 +36,6 @@ const props = defineProps({
   },
   label: {
     type: String,
-    required: false,
-  },
-  maxFileSize: {
-    type: Number,
     required: false,
   },
   name: {
@@ -149,11 +140,9 @@ inject('form').addInput(inputStore);
       @uploaded="onUploaded"
       @uploadError="onUploadError"
       :allow-multiple="props.allowMultiple"
-      :allowed-file-types="props.allowedFileTypes"
-      :allowed-mime-types="props.allowedMimeTypes"
       :enable-auto-upload="props.enableAutoUpload"
+      :file-limits="props.fileLimits"
       :id="inputId"
-      :max-file-size="props.maxFileSize"
       :name="props.name"
       :payload="props.payload"
       :tip="props.tip"

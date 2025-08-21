@@ -27,13 +27,12 @@ final class PdfProcessorTest extends UnitTestCase
 
     public function testProcessEntity(): void
     {
-        $forceRefresh = true;
         $entity = \Mockery::mock(EntityWithFileInfo::class);
 
         $this->docContentExtractor
             ->expects('extract')
-            ->with($entity, $forceRefresh);
+            ->with($entity);
 
-        $this->processor->processEntity($entity, $forceRefresh);
+        $this->processor->processEntity($entity);
     }
 }

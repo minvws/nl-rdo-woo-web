@@ -42,6 +42,7 @@ class InventoryDocumentMapperTest extends UnitTestCase
         $dossier = \Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getDossierNr')->andReturn('tst-123');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('PREFIX');
+        $dossier->shouldReceive('getTitle')->andReturn('Foo Bar');
 
         $referredDocA = \Mockery::mock(Document::class);
         $referredDocA->shouldReceive('getDocumentNr')->andReturn($refDocIdA = 'PREFIX-matterA-A');

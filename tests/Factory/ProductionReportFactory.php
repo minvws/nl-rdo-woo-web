@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Factory;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;

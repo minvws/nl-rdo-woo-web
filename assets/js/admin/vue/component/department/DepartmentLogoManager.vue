@@ -86,11 +86,11 @@ const onUploaded = () => {
 
     <UploadArea
       @uploaded="onUploaded"
-      :allowed-file-types="['SVG']"
-      :allowed-mime-types="['image/svg+xml']"
       :enable-auto-upload="true"
       :endpoint="props.uploadEndpoint"
-      :max-file-size="1024 * 1024 * 10"
+      :file-limits="[
+        { size: 1024 * 1024 * 10, mimeTypes: ['image/svg+xml'], label: 'SVG' },
+      ]"
       id="file"
       name="file"
       :payload="payload"

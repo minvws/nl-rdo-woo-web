@@ -19,7 +19,6 @@ final class MarkdownExtension extends AbstractExtension
         return [
             new TwigFilter('render_markdown', $this->runtime->renderMarkdown(...), [
                 'is_safe' => ['html'],
-                'pre_escape' => 'html',
             ]),
         ];
     }

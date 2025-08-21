@@ -12,6 +12,7 @@ Click Inquiries
 
 Open Inquiry
   [Arguments]  ${inquiry_id}
+  Wait For Load State  networkidle
   Click With Reload Retry  //*[@data-e2e-name="inquiry-list"]//a[contains(.,'${inquiry_id}')]
 
 Verify Inquiry Dossiers
@@ -84,7 +85,7 @@ Link Inquiry To Documents
   [Arguments]  ${linking_excel}
   Upload File By Selector  id=inquiry_link_documents_form_upload  ${linking_excel}
   ${filename} =  Fetch From Right  ${linking_excel}  /
-  Wait For Condition  Text  //div[@class="bhr-upload-area__files-area"]  contains  ${filename}  timeout=10s
+  Wait For Condition  Text  //div[@class="bhr-upload-area__files-area"]  contains  ${filename}
   Select Prefix When Linking Inquiries  E2E-A
   Click  id=inquiry_link_documents_form_link
   Success Alert Is Visible  zaaknummers gekoppeld
@@ -104,10 +105,7 @@ Select Prefix When Linking Inquiries
   Set Browser Timeout  ${old_timeout}
 
 Download Inquiry Archive
-  [Arguments]  ${number_of_documents}
-  Click  //a[@data-e2e-name="download-documents"]
-  Get Text  //*[@data-e2e-name="nr-of-documents"]  equals  ${number_of_documents}
-  Generic Download Click  //a[@data-e2e-name="download-file-link"]  expected_extension=zip
+  Generic Download Click  //*[@data-e2e-name="download-documents-button"]  expected_extension=zip
 
 Click First Document In Inquiry
   Click  (//div[@data-e2e-name="inquiry-documents"]//tbody//a)[1]

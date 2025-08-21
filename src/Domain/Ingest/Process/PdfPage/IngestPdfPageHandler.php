@@ -26,7 +26,7 @@ final readonly class IngestPdfPageHandler
         $entity = $this->doctrine->getRepository($message->getEntityClass())->find($message->getEntityId());
         if (is_null($entity)) {
             $this->logger->warning('No entity found in IngestPdfPageHandler', [
-                'id' => $message->getEntityId(),
+                'id' => $message->getEntityId()->toRfc4122(),
                 'class' => $message->getEntityClass(),
                 'pageNr' => $message->getPageNr(),
             ]);
@@ -35,10 +35,10 @@ final readonly class IngestPdfPageHandler
         }
 
         try {
-            $this->processor->processPage($entity, $message->getPageNr(), $message->getForceRefresh());
+            $this->processor->processPage($entity, $message->getPageNr());
         } catch (\Exception $e) {
             $this->logger->error('Error processing document in IngestPdfPageHandler', [
-                'id' => $message->getEntityId(),
+                'id' => $message->getEntityId()->toRfc4122(),
                 'class' => $message->getEntityClass(),
                 'pageNr' => $message->getPageNr(),
                 'exception' => $e->getMessage(),

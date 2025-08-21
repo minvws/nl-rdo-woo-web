@@ -6,8 +6,8 @@ namespace App\Service\Inventory;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Service\Inquiry\CaseNumbers;
 
 readonly class DocumentComparator
 {
@@ -64,14 +64,12 @@ readonly class DocumentComparator
 
     private function hasCaseNrUpdate(Document $document, DocumentMetadata $metadata): bool
     {
-        $currentCaseNrs = $document->getInquiries()->map(
-            fn (Inquiry $inquiry) => $inquiry->getCasenr()
-        )->toArray();
-
+        $currentCaseNrs = CaseNumbers::forDocument($document);
         $newCaseNrs = $metadata->getCaseNumbers();
+        $addedCaseNrs = $newCaseNrs->getExtraValuesComparedToInput($currentCaseNrs);
 
         // Case removals in the production report are intentionally ignored, only additions should be seen as a change.
-        return count(array_diff($newCaseNrs, $currentCaseNrs)) > 0;
+        return $addedCaseNrs->isNotEmpty();
     }
 
     public function hasRefersToUpdate(WooDecision $dossier, Document $document, DocumentMetadata $metadata): bool

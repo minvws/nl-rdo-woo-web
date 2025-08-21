@@ -13,13 +13,11 @@ use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
-use Twig\Environment;
 
 final class DepartmentServiceTest extends UnitTestCase
 {
     private DepartmentRepository&MockInterface $repository;
     private DepartmentViewFactory&MockInterface $departmentViewFactory;
-    private Environment&MockInterface $twig;
     private AuthorizationMatrix&MockInterface $authorizationMatrix;
     private DepartmentService $departmentService;
 
@@ -29,13 +27,11 @@ final class DepartmentServiceTest extends UnitTestCase
 
         $this->repository = \Mockery::mock(DepartmentRepository::class);
         $this->departmentViewFactory = \Mockery::mock(DepartmentViewFactory::class);
-        $this->twig = \Mockery::mock(Environment::class);
         $this->authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
 
         $this->departmentService = new DepartmentService(
             $this->repository,
             $this->departmentViewFactory,
-            $this->twig,
             $this->authorizationMatrix,
         );
     }
@@ -63,56 +59,10 @@ final class DepartmentServiceTest extends UnitTestCase
         );
     }
 
-    public function testGetTemplateWithCustomPath(): void
-    {
-        $department = \Mockery::mock(DepartmentEntity::class);
-        $department->shouldReceive('getSlug')->andReturn('foo');
-
-        $expectedTemplatePath = 'public/department/custom/foo.html.twig';
-
-        $this->twig->expects('getLoader->exists')->with($expectedTemplatePath)->andReturnTrue();
-
-        self::assertEquals(
-            $expectedTemplatePath,
-            $this->departmentService->getTemplate($department),
-        );
-    }
-
-    public function testGetTemplateWithDefaultPath(): void
-    {
-        $department = \Mockery::mock(DepartmentEntity::class);
-        $department->shouldReceive('getSlug')->andReturn('foo');
-
-        $customTemplatePath = 'public/department/custom/foo.html.twig';
-
-        $this->twig->expects('getLoader->exists')->with($customTemplatePath)->andReturnFalse();
-
-        self::assertEquals(
-            'public/department/details_default.html.twig',
-            $this->departmentService->getTemplate($department),
-        );
-    }
-
-    public function testUserCanEditLandingpageReturnsFalseForDepartmentWithCustomTemplate(): void
-    {
-        $department = \Mockery::mock(DepartmentEntity::class);
-        $department->shouldReceive('getSlug')->andReturn('foo');
-
-        $expectedTemplatePath = 'public/department/custom/foo.html.twig';
-        $this->twig->expects('getLoader->exists')->with($expectedTemplatePath)->andReturnTrue();
-
-        self::assertFalse(
-            $this->departmentService->userCanEditLandingpage($department),
-        );
-    }
-
     public function testUserCanEditLandingpageReturnsFalseWithoutMatrixPermission(): void
     {
         $department = \Mockery::mock(DepartmentEntity::class);
         $department->shouldReceive('getSlug')->andReturn('foo');
-
-        $expectedTemplatePath = 'public/department/custom/foo.html.twig';
-        $this->twig->expects('getLoader->exists')->with($expectedTemplatePath)->andReturnFalse();
 
         $this->authorizationMatrix
             ->expects('isAuthorized')
@@ -128,9 +78,6 @@ final class DepartmentServiceTest extends UnitTestCase
     {
         $department = \Mockery::mock(DepartmentEntity::class);
         $department->shouldReceive('getSlug')->andReturn('foo');
-
-        $expectedTemplatePath = 'public/department/custom/foo.html.twig';
-        $this->twig->expects('getLoader->exists')->with($expectedTemplatePath)->andReturnFalse();
 
         $this->authorizationMatrix
             ->expects('isAuthorized')
@@ -151,9 +98,6 @@ final class DepartmentServiceTest extends UnitTestCase
     {
         $department = \Mockery::mock(DepartmentEntity::class);
         $department->shouldReceive('getSlug')->andReturn('foo');
-
-        $expectedTemplatePath = 'public/department/custom/foo.html.twig';
-        $this->twig->expects('getLoader->exists')->with($expectedTemplatePath)->andReturnFalse();
 
         $this->authorizationMatrix
             ->expects('isAuthorized')
@@ -179,9 +123,6 @@ final class DepartmentServiceTest extends UnitTestCase
     {
         $department = \Mockery::mock(DepartmentEntity::class);
         $department->shouldReceive('getSlug')->andReturn('foo');
-
-        $expectedTemplatePath = 'public/department/custom/foo.html.twig';
-        $this->twig->expects('getLoader->exists')->with($expectedTemplatePath)->andReturnFalse();
 
         $this->authorizationMatrix
             ->expects('isAuthorized')

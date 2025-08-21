@@ -82,8 +82,35 @@ class InventoryReaderTest extends MockeryTestCase
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
-        self::assertEquals(InventoryReaderException::forMissingMatterInRow(2), $result[0]->getException());
-        self::assertEquals(InventoryReaderException::forMissingMatterInRow(3), $result[1]->getException());
+        self::assertEquals(InventoryReaderException::forInvalidMatterInRow(2, 2, 50), $result[0]->getException());
+        self::assertEquals(InventoryReaderException::forInvalidMatterInRow(3, 2, 50), $result[1]->getException());
+    }
+
+    public function testInventoryReaderAddsExceptionsForTooLongRemark(): void
+    {
+        $this->reader->open(__DIR__ . '/inventory-remark-too-long.xlsx');
+
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
+
+        self::assertEquals(InventoryReaderException::forRemarkTooLong(3, 1000), $result[1]->getException());
+    }
+
+    public function testInventoryReaderAddsExceptionsForNegativeFamilyId(): void
+    {
+        $this->reader->open(__DIR__ . '/inventory-negative-family-id.xlsx');
+
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
+
+        self::assertEquals(InventoryReaderException::forInvalidFamilyId(3), $result[1]->getException());
+    }
+
+    public function testInventoryReaderAddsExceptionsForNegativeThreadId(): void
+    {
+        $this->reader->open(__DIR__ . '/inventory-negative-thread-id.xlsx');
+
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
+
+        self::assertEquals(InventoryReaderException::forInvalidThreadId(3), $result[1]->getException());
     }
 
     public function testInventoryReaderAddsExceptionsForSingleCharacterMatterCells(): void
@@ -92,8 +119,8 @@ class InventoryReaderTest extends MockeryTestCase
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
-        self::assertEquals(InventoryReaderException::forMissingMatterInRow(2), $result[0]->getException());
-        self::assertEquals(InventoryReaderException::forMissingMatterInRow(3), $result[1]->getException());
+        self::assertEquals(InventoryReaderException::forInvalidMatterInRow(2, 2, 50), $result[0]->getException());
+        self::assertEquals(InventoryReaderException::forInvalidMatterInRow(3, 2, 50), $result[1]->getException());
     }
 
     public function testInventoryWithEmptyDates(): void

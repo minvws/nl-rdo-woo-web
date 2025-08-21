@@ -1,0 +1,2 @@
+-- Add DELETE
+GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE inquiry_dossier TO woopie;

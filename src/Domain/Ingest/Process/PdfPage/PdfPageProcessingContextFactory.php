@@ -18,8 +18,12 @@ readonly class PdfPageProcessingContextFactory
     ) {
     }
 
-    public function createContext(EntityWithFileInfo $entity, int $pageNumber): PdfPageProcessingContext
+    public function createContext(EntityWithFileInfo $entity, int $pageNumber): ?PdfPageProcessingContext
     {
+        if (! $entity->getFileInfo()->isUploaded()) {
+            return null;
+        }
+
         $localPath = $this->downloadDocumentToLocalStorage($entity);
         $tempDir = $this->createTempDir();
 

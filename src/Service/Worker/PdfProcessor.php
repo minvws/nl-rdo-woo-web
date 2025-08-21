@@ -18,8 +18,8 @@ readonly class PdfProcessor
      * Processes a multi-page document
      *    - extracts the content of the PDF.
      */
-    public function processEntity(EntityWithFileInfo $entity, bool $forceRefresh): void
+    public function processEntity(EntityWithFileInfo $entity): void
     {
-        $this->docContentExtractor->extract($entity, $forceRefresh);
+        $this->docContentExtractor->extract($entity);
     }
 }

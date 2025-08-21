@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Service\Inquiry;
 
 use App\Domain\Organisation\Organisation;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Service\Inquiry\CaseNumbers;
 use App\Service\Inquiry\DocumentCaseNumbers;
 use App\Service\Inquiry\InquiryChangeset;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -35,15 +36,15 @@ class InquiryChangesetTest extends MockeryTestCase
         // Has no linked inquiries yet, so should be linked twice
         $docId123 = Uuid::v6();
         $this->changeset->updateCaseNrsForDocument(
-            new DocumentCaseNumbers($docId123, []),
-            ['case-1', 'case-2'],
+            new DocumentCaseNumbers($docId123, CaseNumbers::empty()),
+            new CaseNumbers(['case-1', 'case-2']),
         );
 
         // Has two new inquiry links (case-1 and case-3), one unmodified/existing (case-2) and one removed ('case-4')
         $docId456 = Uuid::v6();
         $this->changeset->updateCaseNrsForDocument(
-            new DocumentCaseNumbers($docId456, ['case-2', 'case-4']),
-            ['case-1', 'case-2', 'case-3']
+            new DocumentCaseNumbers($docId456, new CaseNumbers(['case-2', 'case-4'])),
+            new CaseNumbers(['case-1', 'case-2', 'case-3']),
         );
 
         // Dossier is added to case 3 and 4
@@ -51,7 +52,7 @@ class InquiryChangesetTest extends MockeryTestCase
         $dossier = \Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn($dossierId);
         $dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection());
-        $this->changeset->addCaseNrsForDossier($dossier, ['case-3', 'case-4']);
+        $this->changeset->addCaseNrsForDossier($dossier, new CaseNumbers(['case-3', 'case-4']));
 
         self::assertEquals(
             [

@@ -10,26 +10,25 @@ use App\Domain\Search\Index\Schema\ElasticPath;
 use App\Domain\Search\Query\SearchParameters;
 use App\Service\Search\Query\Dsl\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
+use Erichard\ElasticQueryBuilder\Query\NestedQuery;
 
 class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
 {
     #[\Override]
     public function createDocumentQuery(SearchParameters $searchParameters): BoolQuery
     {
-        $query = parent::createDocumentQuery($searchParameters);
-        $query->addShould(
-            Query::nested(
-                path: ElasticNestedField::DOSSIERS->value,
-                query: Query::simpleQueryString(
-                    fields: [
-                        ElasticPath::dossiersInquiryCaseNrs()->value,
-                    ],
-                    query: $searchParameters->query,
-                )
-            )
-        );
-
-        return $query;
+        return Query::bool(
+            should: [
+                $this->getNestedDossiersTitleAndSummaryQuery($searchParameters),
+                $this->getDocumentFilenameQuery($searchParameters),
+                $this->getDocumentNrQuery($searchParameters),
+                $this->getDocumentIdQuery($searchParameters),
+                $this->getCaseNrQuery($searchParameters),
+            ],
+            filter: [
+                $this->getTypeFilter(),
+            ],
+        )->setParams(['minimum_should_match' => 1]);
     }
 
     #[\Override]
@@ -44,5 +43,18 @@ class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
         );
 
         return $query;
+    }
+
+    private function getCaseNrQuery(SearchParameters $searchParameters): NestedQuery
+    {
+        return Query::nested(
+            path: ElasticNestedField::DOSSIERS->value,
+            query: Query::simpleQueryString(
+                fields: [
+                    ElasticPath::dossiersInquiryCaseNrs()->value,
+                ],
+                query: $searchParameters->query,
+            )
+        );
     }
 }

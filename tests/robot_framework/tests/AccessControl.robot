@@ -16,9 +16,7 @@ Resource            ../resources/Subjects.resource
 Resource            ../resources/WooDecision.resource
 Suite Setup         Suite Setup
 Test Teardown       Run Keyword If Test Failed  No-Click Logout
-# For yet unknown reasons, this testsuite sometimes runs endlessly until the Github job timeout is reached, ruining the whole testrun.
-Test Timeout        5 minutes
-Test Tags           ci  accesscontrol
+Test Tags           ci  accesscontrol  parallel
 
 
 *** Variables ***

@@ -23,16 +23,20 @@ describe('The "PublicationFileForm" component', () => {
   const createComponent = () =>
     mount(PublicationFileForm, {
       props: {
-        allowedFileTypes: ['mocked-file-type-1', 'mocked-file-type-2'],
-        allowedMimeTypes: ['mocked/mime-type-1', 'mocked/mime-type-2'],
-        allowMultiple: false,
         endpoint: 'mocked-endpoint',
         file: createMockedPublicationFile(),
+        fileLimits: [
+          {
+            mimeTypes: ['mocked/mime-type-1', 'mocked/mime-type-2'],
+            label: 'mocked-label',
+          },
+        ],
         fileTypeLabel: 'Mocked file type label',
         fileTypeOptions: [],
         groundOptions: [{ citation: 'mocked-citation', label: 'mocked-label' }],
         isEditMode: false,
         languageOptions: [{ label: 'Dutch', value: 'nl' }],
+        maxLength: 1,
         uploadGroupId: 'mocked-upload-group-id',
       },
       shallow: true,
@@ -77,9 +81,13 @@ describe('The "PublicationFileForm" component', () => {
 
   test('should display a file upload field', () => {
     expect(getFileUploadComponent().props()).toMatchObject({
-      allowedFileTypes: ['mocked-file-type-1', 'mocked-file-type-2'],
-      allowedMimeTypes: ['mocked/mime-type-1', 'mocked/mime-type-2'],
       fileInfo: null,
+      fileLimits: [
+        {
+          mimeTypes: ['mocked/mime-type-1', 'mocked/mime-type-2'],
+          label: 'mocked-label',
+        },
+      ],
       groupId: 'mocked-upload-group-id',
       displayMaxOneFileMessage: true,
     });

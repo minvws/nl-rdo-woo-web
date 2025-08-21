@@ -5,7 +5,6 @@ vars:
   MINIO_ALIAS: local
   MINIO_BUCKETS:
     - doc-bucket
-    - thumb-bucket
     - batch-bucket
     - woo-index-bucket
     - upload-bucket

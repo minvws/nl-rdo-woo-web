@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Inquiry;
 
 use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
@@ -16,9 +15,9 @@ use Webmozart\Assert\Assert;
  */
 class InquiryChangeset
 {
-    public const ADD_DOCUMENTS = 'add_documents';
-    public const DEL_DOCUMENTS = 'del_documents';
-    public const ADD_DOSSIERS = 'add_dossiers';
+    public const string ADD_DOCUMENTS = 'add_documents';
+    public const string DEL_DOCUMENTS = 'del_documents';
+    public const string ADD_DOSSIERS = 'add_dossiers';
 
     /**
      * @var array<string, array<string, array<Uuid>>>
@@ -30,38 +29,29 @@ class InquiryChangeset
     ) {
     }
 
-    /**
-     * @param string[] $updatedCaseNrs
-     */
-    public function updateCaseNrsForDocument(DocumentCaseNumbers $documentCaseNumbers, array $updatedCaseNrs): void
-    {
-        $currentCaseNumbers = $documentCaseNumbers->caseNrs;
+    public function updateCaseNrsForDocument(
+        DocumentCaseNumbers $documentCaseNumbers,
+        CaseNumbers $updatedCaseNumbers,
+    ): void {
+        $currentCaseNumbers = $documentCaseNumbers->caseNumbers;
         Assert::notNull($documentCaseNumbers->documentId);
 
-        $removeCaseNrs = array_diff($currentCaseNumbers, $updatedCaseNrs);
-        $this->addActionForCases($documentCaseNumbers->documentId, self::DEL_DOCUMENTS, $removeCaseNrs);
+        $caseNumbersToRemove = $updatedCaseNumbers->getMissingValuesComparedToInput($currentCaseNumbers);
+        $this->addActionForCases($documentCaseNumbers->documentId, self::DEL_DOCUMENTS, $caseNumbersToRemove);
 
-        $addCaseNrs = array_diff($updatedCaseNrs, $currentCaseNumbers);
-        $this->addActionForCases($documentCaseNumbers->documentId, self::ADD_DOCUMENTS, $addCaseNrs);
+        $caseNumbersToAdd = $updatedCaseNumbers->getExtraValuesComparedToInput($currentCaseNumbers);
+        $this->addActionForCases($documentCaseNumbers->documentId, self::ADD_DOCUMENTS, $caseNumbersToAdd);
     }
 
-    /**
-     * @param string[] $updatedCaseNrs
-     */
-    public function addCaseNrsForDossier(WooDecision $dossier, array $updatedCaseNrs): void
+    public function addCaseNrsForDossier(WooDecision $dossier, CaseNumbers $updatedCaseNumbers): void
     {
-        $currentCaseNumbers = $dossier->getInquiries()->map(
-            fn (Inquiry $inquiry) => $inquiry->getCasenr()
-        )->toArray();
+        $currentCaseNumbers = CaseNumbers::forWooDecision($dossier);
 
-        $addCaseNrs = array_diff($updatedCaseNrs, $currentCaseNumbers);
-        $this->addActionForCases($dossier->getId(), self::ADD_DOSSIERS, $addCaseNrs);
+        $caseNumbersToAdd = $updatedCaseNumbers->getExtraValuesComparedToInput($currentCaseNumbers);
+        $this->addActionForCases($dossier->getId(), self::ADD_DOSSIERS, $caseNumbersToAdd);
     }
 
-    /**
-     * @param string[] $caseNrs
-     */
-    private function addActionForCases(Uuid $id, string $action, array $caseNrs): void
+    private function addActionForCases(Uuid $id, string $action, CaseNumbers $caseNrs): void
     {
         foreach ($caseNrs as $caseNr) {
             if (! array_key_exists($caseNr, $this->changes)) {

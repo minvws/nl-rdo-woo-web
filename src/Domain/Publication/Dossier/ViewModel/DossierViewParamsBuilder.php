@@ -54,9 +54,7 @@ class DossierViewParamsBuilder
         );
 
         $this->params['documentLanguages'] = $this->attachmentLanguageFactory->makeAsArray();
-        $this->params['documentMimeTypes'] = $dossier->getMainDocumentEntityClass()::getUploadGroupId()->getMimeTypes();
-        $this->params['documentExtensions'] = $dossier->getMainDocumentEntityClass()::getUploadGroupId()->getExtensions();
-        $this->params['documentTypeNames'] = $dossier->getMainDocumentEntityClass()::getUploadGroupId()->getFileTypeNames();
+        $this->params['documentFileLimits'] = $dossier->getMainDocumentEntityClass()::getUploadGroupId()->getFileLimits();
         $this->params['grounds'] = $this->groundViewFactory->makeAsArray();
 
         return $this;
@@ -73,9 +71,7 @@ class DossierViewParamsBuilder
             $dossier->getAttachmentEntityClass()::getAllowedTypes(),
         );
 
-        $this->params['attachmentMimeTypes'] = $dossier->getAttachmentEntityClass()::getUploadGroupId()->getMimeTypes();
-        $this->params['attachmentExtensions'] = $dossier->getAttachmentEntityClass()::getUploadGroupId()->getExtensions();
-        $this->params['attachmentTypeNames'] = $dossier->getAttachmentEntityClass()::getUploadGroupId()->getFileTypeNames();
+        $this->params['attachmentFileLimits'] = $dossier->getAttachmentEntityClass()::getUploadGroupId()->getFileLimits();
         $this->params['attachmentLanguages'] = $this->attachmentLanguageFactory->makeAsArray();
         $this->params['grounds'] = $this->groundViewFactory->makeAsArray();
 

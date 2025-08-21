@@ -51,21 +51,6 @@
                                     }
                                 },
                                 {
-                                    "nested": {
-                                        "path": "pages",
-                                        "query": {
-                                            "simple_query_string": {
-                                                "query": "foo",
-                                                "fields": [
-                                                    "pages.content"
-                                                ],
-                                                "default_operator": "and",
-                                                "boost": 1
-                                            }
-                                        }
-                                    }
-                                },
-                                {
                                     "simple_query_string": {
                                         "query": "foo",
                                         "fields": [

@@ -36,7 +36,7 @@ Fill Out Basic Details
     Select Options By  id=details_date_from  value  ${date_from}
     Select Options By  id=details_date_to  value  ${date_to}
   END
-  Select Options By  //select[@name="details[departments][0]"]  index  1
+  Select Options By  //select[@name="details[departments][0]"]  text  E2E Test Department 1
   IF  '${type}' == 'woo-decision'
     Check Checkbox  id=details_publication_reason_1
     Select Options By  id=details_subject  label  E2E Test Subject
@@ -54,7 +54,7 @@ Select Random Subject
   Select Options By  //select[@name="details[subject]"]  index  ${random_index}
 
 Generate Dossier Reference Number
-  ${reference_number} =  Generate Random String  3  [NUMBERS][UPPER]
+  ${reference_number} =  Generate Random String  10  [NUMBERS][UPPER]
   VAR  ${DOSSIER_REFERENCE} =  ${reference_number}  scope=suite
 
 Search For A Publication
@@ -64,6 +64,12 @@ Search For A Publication
   Type Text  //div[@data-e2e-name="dossier-search"]//input  ${search_query_lowercase}  delay=50 ms  clear=${TRUE}
   Click
   ...  //div[@data-e2e-name="search-previews-results"]//table[@data-e2e-name="table-dossier"]//a[contains(@href,'${search_query_lowercase}')]
+
+Verify Admin Search Results
+  [Arguments]  ${search_query}  ${expexted_nr_of_results}
+  ${search_query_lowercase} =  Convert To Lower Case  ${search_query}
+  Type Text  //div[@data-e2e-name="dossier-search"]//input  ${search_query_lowercase}  delay=50 ms  clear=${TRUE}
+  Get Element Count  //div[@data-e2e-name="search-previews-results"]//tbody/tr  should be  ${expexted_nr_of_results}
 
 Click Documents Edit
   Click  //*[@data-e2e-name="documents-section"]//*[@data-e2e-name="edit-link"]
@@ -126,6 +132,7 @@ Select First Public Dossier
   Click  (//table[@data-e2e-name="dossiers-table"]/tbody/tr[td[contains(.,'Openbaar')]]//td//a)[1]
 
 Click Continue To Publish
+  Wait For Load State  networkidle
   Click  //*[@data-e2e-name="to-next-step-link"]
 
 Click Save And Prepare
@@ -136,3 +143,18 @@ Click Edit Details
 
 Edit Main Document
   Click  //*[@data-e2e-name="main-document"]//*[@data-e2e-name="edit-file"]
+
+Verify Publication Action Status
+  [Arguments]  ${dossier_reference}  ${expected_action}
+  Click Publications
+  IF  '${expected_action}' != '${EMPTY}'
+    Get Text
+    ...  //table[@data-e2e-name="dossiers-table"]//tr[contains(.,'${dossier_reference}')]/td[7]
+    ...  contains
+    ...  ${expected_action}
+  ELSE
+    Get Text
+    ...  //table[@data-e2e-name="dossiers-table"]//tr[contains(.,'${dossier_reference}')]/td[7]
+    ...  equals
+    ...  ${EMPTY}
+  END

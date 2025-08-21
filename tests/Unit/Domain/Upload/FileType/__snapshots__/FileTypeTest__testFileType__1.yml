@@ -1,0 +1,63 @@
+-
+    maxUploadSize: 1073741824
+    extensions: [pdf]
+    typeName: PDF
+    mimeTypes: [application/pdf, application/acrobat, application/nappdf, application/x-pdf, image/pdf]
+    name: PDF
+    value: pdf
+-
+    maxUploadSize: 1073741824
+    extensions: [xls, xlsx, ods, odf, csv]
+    typeName: Excel
+    mimeTypes: [application/vnd.ms-excel, application/msexcel, application/x-msexcel, zz-application/zz-winassoc-xls, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.oasis.opendocument.spreadsheet, application/vnd.oasis.opendocument.formula, text/csv, application/csv, text/x-comma-separated-values, text/x-csv]
+    name: XLS
+    value: xls
+-
+    maxUploadSize: 1073741824
+    extensions: [doc, docx, odt]
+    typeName: Word
+    mimeTypes: [application/msword, application/vnd.ms-word, application/x-msword, zz-application/zz-winassoc-doc, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.oasis.opendocument.text]
+    name: DOC
+    value: doc
+-
+    maxUploadSize: 1073741824
+    extensions: [txt, rdf]
+    typeName: Word
+    mimeTypes: [text/plain, application/rdf+xml, text/rdf]
+    name: TXT
+    value: txt
+-
+    maxUploadSize: 1073741824
+    extensions: [pps, ppsx, ppt, pptx, odp]
+    typeName: PowerPoint
+    mimeTypes: [application/mspowerpoint, application/powerpoint, application/vnd.ms-powerpoint, application/x-mspowerpoint, application/vnd.openxmlformats-officedocument.presentationml.slideshow, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.oasis.opendocument.presentation]
+    name: PPT
+    value: ppt
+-
+    maxUploadSize: 4294967296
+    extensions: [zip, 7z]
+    typeName: Zip
+    mimeTypes: [application/zip, application/x-zip, application/x-zip-compressed, application/x-7z-compressed]
+    name: ZIP
+    value: zip
+-
+    maxUploadSize: 1073741824
+    extensions: [aac, mp3, wav, opus]
+    typeName: Audio
+    mimeTypes: [audio/aac, audio/x-aac, audio/x-hx-aac-adts, audio/mpeg, audio/mp3, audio/x-mp3, audio/x-mpeg, audio/x-mpg, audio/wav, audio/vnd.wave, audio/wave, audio/x-wav, audio/ogg, audio/x-ogg, audio/x-opus+ogg]
+    name: AUDIO
+    value: audio
+-
+    maxUploadSize: 1073741824
+    extensions: [wmv, avi, mp4, mov, m4a, mpg, asf]
+    typeName: Video
+    mimeTypes: [audio/x-ms-wmv, video/x-ms-wmv, video/avi, video/divx, video/msvideo, video/vnd.avi, video/vnd.divx, video/x-avi, video/x-msvideo, video/mp4, video/mp4v-es, video/x-m4v, video/quicktime, audio/mp4, audio/m4a, audio/x-m4a, video/mpeg, video/mpeg-system, video/x-mpeg, video/x-mpeg-system, video/x-mpeg2, application/vnd.ms-asf, video/x-ms-asf, video/x-ms-asf-plugin, video/x-ms-wm]
+    name: VIDEO
+    value: video
+-
+    maxUploadSize: 104857600
+    extensions: [svg]
+    typeName: 'Vector Image'
+    mimeTypes: [image/svg+xml, image/svg]
+    name: VECTOR_IMAGE
+    value: vector-image

@@ -25,7 +25,7 @@ Upload Annual Report
   ${_}  ${file_name} =  Split Path  ${annual_report_location}
   Click  " Jaarplan of jaarverslag toevoegen... "
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${annual_report_location}
-  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}  timeout=10s
+  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}
   Select Options By  //dialog[@open]//select[@name="type"]  text  jaarplan
   Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
   Click  //dialog[@open]//button[@type="submit"]

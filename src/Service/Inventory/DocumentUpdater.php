@@ -10,6 +10,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDispatcher;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Service\Storage\EntityStorageService;
+use App\Service\Storage\ThumbnailStorageService;
 
 /**
  * This class will process updates to documents based on DocumentMetadata parsed from an inventory.
@@ -18,6 +19,7 @@ readonly class DocumentUpdater
 {
     public function __construct(
         private EntityStorageService $entityStorageService,
+        private ThumbnailStorageService $thumbStorage,
         private DocumentRepository $documentRepository,
         private DocumentDispatcher $documentDispatcher,
         private IngestDispatcher $ingestDispatcher,
@@ -92,8 +94,8 @@ readonly class DocumentUpdater
     {
         if (! $document->shouldBeUploaded()) {
             $this->entityStorageService->deleteAllFilesForEntity($document);
+            $this->thumbStorage->deleteAllThumbsForEntity($document);
             $document->getFileInfo()->removeFileProperties();
-            $document->setPageCount(0);
         }
     }
 

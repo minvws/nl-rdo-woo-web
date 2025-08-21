@@ -10,13 +10,11 @@ describe('the <InputFile /> component', () => {
   const createComponent = (options: Partial<Options> = {}) =>
     mount(InputFile, {
       props: {
-        allowedFileTypes: [],
-        allowedMimeTypes: [],
         allowMultiple: false,
         enableAutoUpload: false,
+        fileLimits: [{ size: 1234 }],
         helpText: options.helpText,
         label: 'Mocked label',
-        maxFileSize: 1234,
         name: 'mocked_name',
         payload: {},
         tip: 'mocked tip',
@@ -69,11 +67,9 @@ describe('the <InputFile /> component', () => {
     expect(uploadAreaComponent.props()).toEqual(
       expect.objectContaining({
         allowMultiple: false,
-        allowedFileTypes: [],
-        allowedMimeTypes: [],
         enableAutoUpload: false,
         endpoint: undefined,
-        maxFileSize: 1234,
+        fileLimits: [{ size: 1234 }],
         name: 'mocked_name',
         payload: {},
         tip: 'mocked tip',

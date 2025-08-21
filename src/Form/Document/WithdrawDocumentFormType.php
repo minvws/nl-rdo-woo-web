@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
@@ -38,6 +39,10 @@ class WithdrawDocumentFormType extends AbstractType
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),
+                    new Length(
+                        min: 1,
+                        max: 1000,
+                    ),
                 ],
                 'attr' => [
                     'class' => 'w-full',

@@ -21,7 +21,7 @@ class FileInfo
     private ?string $hash = null;
 
     #[ORM\Column(type: Types::BIGINT, nullable: false)]
-    private string $size = '0';
+    private int $size = 0;
 
     /* The type of the local file on disk. This is mostly a PDF. These are the types that can be ingested by the workers */
     #[ORM\Column(length: 255, nullable: true)]
@@ -87,12 +87,12 @@ class FileInfo
 
     public function getSize(): int
     {
-        return intval($this->size);
+        return $this->size;
     }
 
     public function setSize(int $size): self
     {
-        $this->size = strval($size);
+        $this->size = $size;
 
         return $this;
     }
@@ -175,6 +175,9 @@ class FileInfo
         $this->setUploaded(false);
         $this->setPath(null);
         $this->setPageCount(null);
+        $this->setHash(null);
+        $this->setSize(0);
+        $this->setType(null);
     }
 
     /** @phpstan-assert-if-true !null $this->getPageCount() */

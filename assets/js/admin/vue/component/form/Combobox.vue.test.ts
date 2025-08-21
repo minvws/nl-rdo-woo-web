@@ -30,6 +30,8 @@ describe('The "Combobox" component', () => {
         autoFocus: options.autoFocus,
         forbiddenValues: options.forbiddenValues ?? [],
         label: 'Mocked label',
+        maxLength: 10,
+        minLength: 2,
         options: ['Mocked option 1', 'Mocked option 2', 'Mocked option 3'],
         value: options.value ?? '',
       },

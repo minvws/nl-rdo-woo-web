@@ -4,4 +4,6 @@ framework:
             content_extract_cache:
                 adapter: cache.adapter.redis_tag_aware
                 provider: snc_redis.ingest
-
+            metadata_extract_cache:
+                adapter: cache.adapter.redis
+                provider: snc_redis.ingest

@@ -51,7 +51,10 @@ const toggleButtonText = computed(
 
     <template #extra>
       <output class="block">
-        <ul class="grid grid-cols-4 gap-x-4">
+        <ul
+          class="grid grid-cols-4 gap-x-4"
+          data-e2e-name="missing-documents-list"
+        >
           <li
             v-for="documentName in visibleDocuments"
             :key="documentName"

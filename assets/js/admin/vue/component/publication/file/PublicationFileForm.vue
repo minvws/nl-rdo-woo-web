@@ -6,6 +6,7 @@ import type { FileInfo } from '@admin-fe/component/form/interface';
 import { useFormStore } from '@admin-fe/composables';
 import { validators, type FormValue } from '@admin-fe/form';
 import type { SelectOptions } from '@admin-fe/form/interface';
+import type { FileUploadLimit } from '@js/admin/utils/file/interface';
 import { computed, nextTick, ref, watch } from 'vue';
 import InputDate from './input/InputDate.vue';
 import InputFileTypes from './input/InputFileTypes.vue';
@@ -21,19 +22,18 @@ import {
 } from './interface';
 
 interface Props {
-  allowedFileTypes: string[];
-  allowedMimeTypes: string[];
-  allowMultiple: boolean;
   dateLabel?: string;
+  dossierId?: null | string;
   endpoint: string;
   file: PublicationFile;
+  fileLimits: FileUploadLimit[];
   fileTypeLabel: string;
   fileTypeOptions: PublicationFileTypes;
   groundOptions: GroundOptions;
   isEditMode?: boolean;
   languageOptions: SelectOptions;
+  maxLength?: number;
   uploadGroupId: string;
-  dossierId?: null | string;
 }
 
 interface Emits {
@@ -42,11 +42,11 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  allowedFileTypes: () => [],
-  allowedMimeTypes: () => [],
+  fileLimits: () => [],
   groundOptions: () => [],
   isEditMode: false,
   languageOptions: () => [],
+  maxLength: 1,
 });
 
 const emit = defineEmits<Emits>();
@@ -140,12 +140,11 @@ watch(
     :store="formStore"
   >
     <InputFileUpload
-      :allowed-file-types="props.allowedFileTypes"
-      :allowed-mime-types="props.allowedMimeTypes"
-      :display-max-one-file-message="!props.allowMultiple"
-      :file-info="fileInfo"
-      :group-id="props.uploadGroupId"
+      :display-max-one-file-message="props.maxLength === 1"
       :dossier-id="props.dossierId"
+      :file-info="fileInfo"
+      :file-limits="props.fileLimits"
+      :group-id="props.uploadGroupId"
     />
 
     <InputReference :value="internalReference" />
@@ -159,7 +158,7 @@ watch(
     <InputGrounds :options="props.groundOptions" :values="grounds" />
 
     <div v-if="hasSubmitError" class="mb-6" data-e2e-name="save-failed">
-      <Alert type="danger">
+      <Alert type="warning">
         Het opslaan van "{{ file.name }}" is mislukt. Probeer het later opnieuw.
       </Alert>
     </div>

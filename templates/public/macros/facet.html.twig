@@ -20,7 +20,7 @@ Display facet with hyperlinks
                 {# parenthesis around searchkey are important, otherwise it will be used as a literal 'searchkey' value #}
                 <twig:Public:ArrowedLink
                     to="{{ path('app_search', entry.queryParams) }}"
-                    suffix="{{ entry.count }}"
+                    suffix="{{ entry.countWithoutSubEntries }}"
                 >
                     {% set description = facet.description(entryIndex, entry.key) %}
 
@@ -62,7 +62,7 @@ Display facet with hyperlinks
                 {# parenthesis around searchkey are important, otherwise it will be used as a literal 'searchkey' value #}
                 <twig:Public:ArrowedLink
                     to="{{ path('app_search', entry.queryParams) }}"
-                    suffix="{{ entry.count }}"
+                    suffix="{{ entry.countWithoutSubEntries }}"
                 >
                     {% set description = facet.description(entryIndex, entry.key) %}
                     {%- if description is not null -%}
@@ -88,14 +88,14 @@ Display facet with hyperlinks
         {% set title = facet.title(key, value) | trans ~ ': ' ~ facet.displayValue(key, value) | trans %}
         <li class="mb-2" data-e2e-name="facet-pill">
             <a
-                class="bg-woo-anti-flash-white text-woo-davys-grey leading-none text-sm py-1.5 px-3 rounded-2xl js-active-filter-pill group"
+                class="woo-badge js-active-filter-pill group"
                 data-key="{{ facet.requestParameter }}[{% if not(key matches '/^\\d+$/') %}{{ key }}{% endif %}]"
                 data-value="{{ value }}"
                 href="{{ path('app_search', searchParameters.withoutFacetFilter(facet, key, value).queryParameters.all) }}"
             >
                 <span class="sr-only">{{ 'public.search.filter_remove' | trans }}</span>
                 <span class="group-hover:line-through group-focus:line-through">{{ title }}</span>
-                <twig:Public:Icon class="ml-1" color="fill-woo-davys-grey" name="cross" size="16" />
+                <twig:Public:Icon class="ml-1" name="cross" size="16" />
             </a>
         </li>
     {% endif %}

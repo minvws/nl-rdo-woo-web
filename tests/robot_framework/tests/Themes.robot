@@ -4,7 +4,7 @@ Resource            ../resources/Dossier.resource
 Resource            ../resources/Setup.resource
 Suite Setup         Suite Setup Generic
 Test Setup          Go To Public
-Test Tags           ci  themes
+Test Tags           ci  themes  parallel
 
 
 *** Test Cases ***

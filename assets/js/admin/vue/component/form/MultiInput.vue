@@ -88,15 +88,15 @@ const canAddItem = computed(() => {
   const itemsLength = items.value.length;
   const immutableValuesLength = props.immutableValues.length;
 
+  if (props.maxLength) {
+    return itemsLength + immutableValuesLength < props.maxLength;
+  }
+
   if (
     optionsLength > 0 &&
     itemsLength + immutableValuesLength >= optionsLength
   ) {
     return false;
-  }
-
-  if (props.maxLength) {
-    return itemsLength + immutableValuesLength < props.maxLength;
   }
 
   return true;

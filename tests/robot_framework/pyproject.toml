@@ -1,3 +1,30 @@
+[project]
+name = "nl-rdo-woo-web-private"
+description = "This python project contains Robot Framework end-to-end tests for the Woo publishing platform."
+readme = "README.md"
+version = "1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "pyotp>=2.9.0",
+    "pyzbar>=0.1.9",
+    "robocorp-truststore>=0.9.1",
+    "robotframework>=7.1.0",
+    "robotframework-archivelibrary>=0.4.3",
+    "robotframework-browser>=19.5.1",
+    "robotframework-datetime-tz>=1.0.6",
+    "robotframework-debuglibrary>=2.5.0",
+    "robotframework-dependencylibrary>=4.0.1",
+    "robotframework-excellib>=2.0.1",
+    "robotframework-faker>=5.0.0",
+    "robotframework-otp>=1.1.0",
+    "robotframework-pabot>=4.3.2",
+    "robotframework-requests>=0.9.7",
+    "robotframework-retryfailed>=0.2.0",
+    "robotframework-robocop>=6.5",
+    "robotframework-tidy>=4.17.0",
+    "rpaframework-pdf>=8.0.1",
+]
+
 [tool.robocop.lint]
 select = [
     "ALL"
@@ -61,4 +88,5 @@ configure = [
     "NormalizeNewLines.keyword_lines=1",
     "NormalizeNewLines.consecutive_lines=0",
     "RenameVariables.unknown_variables_case=upper",
+    "RenameTestCases.capitalize_each_word=True",
 ]

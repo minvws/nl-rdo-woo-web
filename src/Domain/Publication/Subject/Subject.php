@@ -20,7 +20,7 @@ class Subject
     #[ORM\Column(type: 'uuid', unique: true)]
     private Uuid $id;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50)]
     #[Assert\Length(min: 1, max: 50)]
     private string $name;
 

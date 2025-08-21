@@ -20,16 +20,18 @@ use Doctrine\ORM\EntityManagerInterface;
  *
  * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
-class InventoryRunProcessor
+readonly class InventoryRunProcessor
 {
+    public const int MAX_DOCUMENTS = 50_000;
+
     public function __construct(
-        private readonly EntityManagerInterface $doctrine,
-        private readonly LoggingHelper $loggingHelper,
-        private readonly InventoryComparator $inventoryComparator,
-        private readonly InventoryUpdater $inventoryUpdater,
-        private readonly InventoryService $inventoryService,
-        private readonly DossierService $dossierService,
-        private readonly ProgressUpdater $progressUpdater,
+        private EntityManagerInterface $doctrine,
+        private LoggingHelper $loggingHelper,
+        private InventoryComparator $inventoryComparator,
+        private InventoryUpdater $inventoryUpdater,
+        private InventoryService $inventoryService,
+        private DossierService $dossierService,
+        private ProgressUpdater $progressUpdater,
     ) {
     }
 
@@ -81,6 +83,10 @@ class InventoryRunProcessor
 
         if ($changeset->hasNoChanges() && $run->hasNoErrors()) {
             $run->addGenericException(ProcessInventoryException::forNoChanges());
+        }
+
+        if ($changeset->getResultingTotalDocumentCount() > self::MAX_DOCUMENTS) {
+            $run->addGenericException(ProcessInventoryException::forMaxDocumentsExceeded(self::MAX_DOCUMENTS));
         }
 
         if ($run->hasErrors()) {

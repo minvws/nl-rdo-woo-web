@@ -12,10 +12,10 @@ use App\Form\ChoiceLoader\DocumentPrefixChoiceLoader;
 use App\Form\ChoiceLoader\WooDecisionChoiceLoader;
 use App\Form\Inquiry\InquiryLinkDocumentsFormType;
 use App\Form\Inquiry\InquiryLinkDossierFormType;
+use App\Service\Inquiry\CaseNumbers;
 use App\Service\Inquiry\InquiryChangeset;
 use App\Service\Inquiry\InquiryLinkImporter;
 use App\Service\Inquiry\InquiryService;
-use App\Service\Inventory\InventoryDataHelper;
 use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -127,7 +127,9 @@ class InquiryController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $inquiryChangeset = new InquiryChangeset($this->authorizationMatrix->getActiveOrganisation());
-            $caseNrs = InventoryDataHelper::separateValues(strval($form->get('map')->getData()), ',');
+            $caseNrs = CaseNumbers::fromCommaSeparatedString(
+                strval($form->get('map')->getData()),
+            );
 
             /** @var WooDecision[] $dossiers */
             $dossiers = $form->get('dossiers')->getData();

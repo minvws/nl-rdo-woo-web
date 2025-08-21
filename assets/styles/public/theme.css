@@ -1,21 +1,25 @@
 @theme {
     --breakpoint-xs: 30rem;
 
+    --color-woo-gray-700: #495057;
+
+    /* Deprecated colors */
     --color-woo-anti-flash-white: #f3f3f3;
     --color-woo-ateneo-blue: #003f71;
+    --color-woo-boston-university-red: #c30000;
     --color-woo-chinese-silver: #ccc;
     --color-woo-cornsilk: #fff4dc;
+    --color-woo-dark-candy-apple-red: #a00000;
     --color-woo-davys-grey: #535353;
     --color-woo-dim-gray: #696969;
+    --color-woo-japanese-laurel: #358734;
+    --color-woo-maximum-red: #d52a1e;
+    --color-woo-onyx: #343a40;
     --color-woo-platinum: #e6e6e6;
     --color-woo-plum: #814081;
-    --color-woo-dark-candy-apple-red: #a00000;
-    --color-woo-maximum-red: #d52a1e;
-    --color-woo-boston-university-red: #c30000;
+    --color-woo-san-felix: #1d611c;
     --color-woo-sea-blue: #01689b;
     --color-woo-spanish-gray: #999999;
-    --color-woo-japanese-laurel: #358734;
-    --color-woo-san-felix: #1d611c;
 
     --font-sans: 'RO Sans Web', 'system-ui', 'sans-serif';
     --font-serif: 'RO Serif Web', 'serif';

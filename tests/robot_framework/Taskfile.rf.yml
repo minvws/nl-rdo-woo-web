@@ -1,87 +1,105 @@
 # https://taskfile.dev
 version: "3"
 
+env:
+  VIRTUAL_ENV: ""
+
 tasks:
   venv:
     desc: Create virtual environment
-    dir: ../../
     cmds:
-      - python3 -m venv .venv --clear --upgrade-deps
-      - source .venv/bin/activate && pip install -r tests/robot_framework/requirements.txt  --use-feature=truststore
-      - source .venv/bin/activate && rfbrowser init
+      - uv venv --clear
+      - uv sync
+      - uv run rfbrowser init
 
   dependency:upgrade:
     desc: Upgrade all RF dependencies
     cmds:
-     - pip-compile --upgrade --output-file=- > requirements.txt
+     - uv lock --upgrade
 
-  run:
-    aliases: [test, run-local]
+  init:
+    desc: Initiates your local app for the E2E tests. Run after a `task reset` or your initial setup.
+    cmds:
+      - task: fixtures:load:e2e
+      - task: run-local
+        vars:
+          tag: init
+
+  run-local:
     desc: Run Robot tests with browser on Docker
-    dir: ../../
     env:
-      URL_PUBLIC: localhost:8000
-      URL_ADMIN: localhost:8000/balie
+      URL_PUBLIC: http://localhost:8000
+      URL_ADMIN: http://localhost:8000/balie
       HEADLESS: false
     cmds:
       - task: :up
-      - source .venv/bin/activate && robot --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:docker-local tests/robot_framework
+      - uv run robot --outputdir results --include '{{.tag}}' --variable ENVIRONMENT:docker-local .
 
   run-test:
     aliases: [run-tst]
     desc: Run Robot tests with browser on TEST
-    dir: ../../
     env:
-      URL_PUBLIC: web.test.woo.rdobeheer.nl
-      URL_ADMIN: balie.test.woo.rdobeheer.nl/balie
+      URL_PUBLIC: https://web.test.woo.rdobeheer.nl
+      URL_ADMIN: https://balie.test.woo.rdobeheer.nl/balie
       HEADLESS: false
     cmds:
-      - source .venv/bin/activate && robot --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:test tests/robot_framework
+      - uv run robot --outputdir results --include '{{.tag}}' --variable ENVIRONMENT:test .
 
   run-acc:
     desc: Run Robot tests with browser on ACC
-    dir: ../../
     env:
-      URL_PUBLIC: web.acc.woo.rdobeheer.nl
-      URL_ADMIN: balie.acc.woo.rdobeheer.nl/balie
+      URL_PUBLIC: https://web.acc.woo.irealisatie.nl
+      URL_ADMIN: https://balie.acc.woo.irealisatie.nl/balie
       HEADLESS: false
     cmds:
-      - source .venv/bin/activate && robot --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:acc tests/robot_framework
+      - uv run robot --outputdir results --include '{{.tag}}' --variable ENVIRONMENT:acc .
 
   run-mobile:
     desc: Run Robot tests with browser on Docker
-    dir: ../../
     env:
-      URL_PUBLIC: localhost:8000
-      URL_ADMIN: localhost:8000/balie
+      URL_PUBLIC: http://localhost:8000
+      URL_ADMIN: http://localhost:8000/balie
       HEADLESS: false
       DEVICE: iPhone 14
     cmds:
       - task: :up
-      - source .venv/bin/activate && robot --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:docker-local tests/robot_framework
+      - uv run robot --outputdir results --include '{{.tag}}' --variable ENVIRONMENT:docker-local .
 
-  run-headless:
-    desc: Run Robot tests with headless browser on Docker
-    dir: ../../
+  run-ci-sequential:
+    desc: Run all CI Robot tests with headless browser on Docker, parallel where possible.
     env:
-      URL_PUBLIC: localhost:8000
-      URL_ADMIN: localhost:8000/balie
+      URL_PUBLIC: http://localhost:8000
+      URL_ADMIN: http://localhost:8000/balie
       HEADLESS: true
     cmds:
       - task: :up
-      - source .venv/bin/activate && robot --outputdir tests/robot_framework/results --include '{{.tag}}' --variable ENVIRONMENT:docker-local tests/robot_framework
+      - uv run robot --outputdir results --include '{{ .tag | default "ci" }}' --exclude 'init' --variable ENVIRONMENT:docker-local .
+
+  run-ci-parallel:
+    aliases: [run-ci]
+    desc: Run all CI Robot tests with headless browser on Docker, parallel where possible.
+    env:
+      URL_PUBLIC: http://localhost:8000
+      URL_ADMIN: http://localhost:8000/balie
+      HEADLESS: true
+    cmds:
+      - task: :up
+      - cmd: uv run pabot --processes 8 --outputdir results --output output-pabot.xml --log NONE --report NONE  --include 'parallel' --variable ENVIRONMENT:docker-local .
+        ignore_error: true
+      - uv run rebot --output results/output-pabot.xml --log NONE --report NONE --name 'Parallel run' --nostatusrc results/output-pabot.xml
+      - cmd: uv run robot --outputdir results --output output-robot.xml --log NONE --report NONE --name 'Sequential run' --include 'ci' --exclude 'parallel' --exclude 'init' --variable ENVIRONMENT:docker-local .
+        ignore_error: true
+      - uv run rebot --output results/output.xml --name 'Robot Framework' --log results/log.html --report results/report.html --nostatusrc results/output-robot.xml results/output-pabot.xml
 
   check:
     desc: Run Robocop check
-    dir: ../../
     cmds:
-      - source .venv/bin/activate && robocop check --config tests/robot_framework/pyproject.toml
+      - uv run robocop check
 
   format:
     desc: Run Robocop format
-    dir: ../../
     cmds:
-      - source .venv/bin/activate && robocop format --config tests/robot_framework/pyproject.toml
+      - uv run robocop format
 
   cleansheet:
     desc: Run for Robot customized cleansheet
@@ -106,3 +124,8 @@ tasks:
     cmds:
       - task: :dc:shell
         vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --append --group=e2e" }
+
+  otp:
+    desc: Returns an OTP code from the local secret
+    cmds:
+      - python -c "import os, pyotp; print(pyotp.TOTP(os.environ['SECRET_WOO_LOCAL']).now())"

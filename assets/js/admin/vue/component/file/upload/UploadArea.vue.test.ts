@@ -3,21 +3,25 @@ import { describe, expect, test } from 'vitest';
 import UploadArea from './UploadArea.vue';
 
 describe('The "UploadArea" component', () => {
-  const mockedAllowedFileTypes = ['mocked-extension-1', 'mocked-extension-2'];
   const mockedMaxFileSize = 1000;
   const mockedAllowedMimeTypes = ['mocked-mime-type-1', 'mocked-mime-type-2'];
+  const mockedFileLimits = [
+    {
+      size: mockedMaxFileSize,
+      mimeTypes: mockedAllowedMimeTypes,
+      label: 'mocked-label',
+    },
+  ];
 
   const createComponent = () =>
     mount(UploadArea, {
       props: {
-        allowedFileTypes: mockedAllowedFileTypes,
-        allowedMimeTypes: mockedAllowedMimeTypes,
         allowMultiple: true,
         enableAutoUpload: false,
         endpoint: 'mocked-upload-endpoint',
         groupId: 'mocked-group-id',
+        fileLimits: mockedFileLimits,
         id: 'mocked-id',
-        maxFileSize: mockedMaxFileSize,
         name: 'mocked-name',
         tip: 'mocked-tip',
         uploadedFileInfo: null,
@@ -47,12 +51,7 @@ describe('The "UploadArea" component', () => {
     const childComponent = component.findComponent({ name: 'InvalidFiles' });
 
     expect(childComponent.exists()).toBe(true);
-    expect(childComponent.props('allowedFileTypes')).toEqual(
-      mockedAllowedFileTypes,
-    );
-    expect(childComponent.props('allowedMimeTypes')).toEqual(
-      mockedAllowedMimeTypes,
-    );
+    expect(childComponent.props('limits')).toEqual(mockedFileLimits);
   });
 
   test('should display a list of posibly dangerous files', () => {

@@ -42,6 +42,7 @@ readonly class InventorySanitizer
             'Opgeschort',
             'Gerelateerd ID',
             'Locatie gerelateerd ID',
+            'Besluitnaam',
         );
 
         foreach ($dataProvider->getDocuments() as $document) {

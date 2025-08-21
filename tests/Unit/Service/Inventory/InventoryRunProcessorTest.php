@@ -111,6 +111,7 @@ class InventoryRunProcessorTest extends MockeryTestCase
     {
         $changeset = \Mockery::mock(InventoryChangeset::class);
         $changeset->shouldReceive('hasNoChanges')->andReturnFalse();
+        $changeset->shouldReceive('getResultingTotalDocumentCount')->andReturn(234);
 
         $this->run->shouldReceive('hasErrors')->andReturnFalse();
         $this->run->shouldReceive('isFinal')->andReturnTrue();
@@ -142,6 +143,27 @@ class InventoryRunProcessorTest extends MockeryTestCase
 
         $this->entityManager->expects('persist')->with($this->dossier);
         $this->entityManager->expects('refresh')->with($this->dossier);
+
+        $this->runProcessor->process($this->run);
+    }
+
+    public function testProcessAddsExceptionToResultWhenMaxDocumentsIsExceeded(): void
+    {
+        $changeset = \Mockery::mock(InventoryChangeset::class);
+        $changeset->shouldReceive('hasNoChanges')->andReturnFalse();
+        $changeset->shouldReceive('getResultingTotalDocumentCount')->andReturn(InventoryRunProcessor::MAX_DOCUMENTS + 1);
+
+        $this->run->shouldReceive('hasErrors')->andReturnTrue();
+        $this->run->shouldReceive('isFinal')->andReturnTrue();
+        $this->run->shouldReceive('isPending')->andReturnTrue();
+        $this->run->shouldReceive('isConfirmed')->andReturnFalse();
+        $this->run->shouldReceive('getChangeset')->andReturn($changeset);
+        $this->run->expects('addGenericException');
+        $this->run->expects('fail');
+
+        $this->progressUpdater->shouldReceive('updateProgressForRun');
+
+        $this->inventoryComparator->expects('determineChangeset')->andReturn($changeset);
 
         $this->runProcessor->process($this->run);
     }

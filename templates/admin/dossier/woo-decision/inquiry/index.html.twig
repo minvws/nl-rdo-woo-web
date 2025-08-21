@@ -30,7 +30,7 @@
                 {% for row in pagination %}
                     <tr>
                         <td>
-                            <a class="bhr-a js-bhr-clickable-row-link" href="{{ PUBLIC_BASE_URL ~ path('app_inquiry_detail', { token: row.inquiry.token }) }}">
+                            <a class="bhr-a js-bhr-clickable-row-link break-all" href="{{ PUBLIC_BASE_URL ~ path('app_inquiry_detail', { token: row.inquiry.token }) }}">
                                 {{ row.inquiry.casenr }}
                             </a>
                         </td>

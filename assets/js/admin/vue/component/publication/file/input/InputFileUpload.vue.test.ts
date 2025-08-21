@@ -4,16 +4,19 @@ import InputFileUpload from './InputFileUpload.vue';
 import { createTestFile } from '@js/test';
 
 describe('The "InputFileUpload" component', () => {
-  const allowedFileTypes = ['mocked-extension-1', 'mocked-extension-2'];
-  const allowedMimeTypes = ['mocked/mime-type-1', 'mocked/mime-type-2'];
+  const mockedFileLimits = [
+    {
+      mimeTypes: ['mocked/mime-type-1', 'mocked/mime-type-2'],
+      label: 'mocked-label',
+    },
+  ];
 
   const createComponent = (displayMaxOneFileMessage = false) =>
     mount(InputFileUpload, {
       props: {
-        allowedFileTypes,
-        allowedMimeTypes,
         displayMaxOneFileMessage,
         fileInfo: null,
+        fileLimits: mockedFileLimits,
         groupId: 'mocked-group-id',
         value: 'mocked-value',
       },
@@ -40,15 +43,9 @@ describe('The "InputFileUpload" component', () => {
     });
   });
 
-  test('should pass the provided allowed mime types', () => {
-    expect(getInputFileComponent().props('allowedMimeTypes')).toEqual(
-      allowedMimeTypes,
-    );
-  });
-
-  test('should pass the provided allowed extensions', () => {
-    expect(getInputFileComponent().props('allowedFileTypes')).toEqual(
-      allowedFileTypes,
+  test('should pass the provided file limits', () => {
+    expect(getInputFileComponent().props('fileLimits')).toEqual(
+      mockedFileLimits,
     );
   });
 

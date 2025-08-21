@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import Alert from '@admin-fe/component/Alert.vue';
 import Dialog from '@admin-fe/component/Dialog.vue';
+import { UPLOAD_AREA_ENDPOINT } from '@admin-fe/component/file/upload/static';
 import Icon from '@admin-fe/component/Icon.vue';
 import type { SelectOptions } from '@admin-fe/form/interface';
 import { validateResponse } from '@js/admin/utils';
+import type { FileUploadLimit } from '@js/admin/utils/file/interface';
 import { useFocusWithin } from '@vueuse/core';
-import { computed, nextTick, useTemplateRef, ref, provide } from 'vue';
+import { computed, nextTick, provide, ref, useTemplateRef } from 'vue';
 import {
   findFileTypeLabelByValue,
   getValuesFromPublicationFileTypes,
@@ -18,33 +20,30 @@ import {
 } from './interface';
 import PublicationFileForm from './PublicationFileForm.vue';
 import PublicationFilesList from './PublicationFilesList.vue';
-import { UPLOAD_AREA_ENDPOINT } from '../../../../vue/component/file/upload/static';
 
 interface Props {
-  allowedFileTypes: string[];
-  allowedMimeTypes: string[];
-  allowMultiple?: boolean;
   canDelete: boolean;
   dateLabel?: string;
+  dossierId?: null | string;
   endpoint: string;
-  uploadEndpoint?: null | string;
   e2eName?: string;
+  fileLimits: FileUploadLimit[];
   fileTypeOptions: PublicationFileTypes;
   groundOptions: GroundOptions;
   languageOptions: SelectOptions;
+  maxLength?: number;
   readableFileType?: string;
+  uploadEndpoint?: null | string;
   uploadGroupId: string;
-  dossierId?: null | string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  allowedFileTypes: () => [],
-  allowedMimeTypes: () => [],
-  allowMultiple: true,
   canDelete: false,
+  fileLimits: () => [],
   fileTypeOptions: () => [],
   groundOptions: () => [],
   languageOptions: () => [],
+  maxLength: 1,
 });
 
 const createEmptyPublicationFile = (): PublicationFile => ({
@@ -96,8 +95,8 @@ const updatedFile = ref<{
 }>({ action: null, file: null });
 
 const hasFiles = computed(() => files.value.size > 0);
-const isAddFileButtonVisible = computed(() =>
-  props.allowMultiple ? true : !hasFiles.value,
+const isAddFileButtonVisible = computed(
+  () => files.value.size < props.maxLength,
 );
 const isEditMode = computed(() => Boolean(currentFile.value.id));
 const dialogTitle = computed(() =>
@@ -245,19 +244,18 @@ retrieveFiles();
       <PublicationFileForm
         @cancel="onCancel"
         @saved="onSaved"
-        :allowed-file-types="props.allowedFileTypes"
-        :allowed-mime-types="props.allowedMimeTypes"
-        :allow-multiple="props.allowMultiple"
         :date-label="props.dateLabel"
+        :dossier-id="props.dossierId"
         :endpoint="props.endpoint"
         :file="currentFile"
+        :file-limits="props.fileLimits"
         :file-type-label="fileTypeLabel"
         :file-type-options="props.fileTypeOptions"
         :ground-options="props.groundOptions"
         :is-edit-mode="isEditMode"
         :language-options="props.languageOptions"
+        :max-length="props.maxLength"
         :upload-group-id="props.uploadGroupId"
-        :dossier-id="props.dossierId"
       />
     </Dialog>
   </Teleport>

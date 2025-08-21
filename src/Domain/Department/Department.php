@@ -31,17 +31,17 @@ class Department implements EntityWithFileInfo
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 100, unique: true)]
     #[Assert\Length(min: 2, max: 100)]
     private string $name;
 
     #[ORM\Column(length: 20, unique: true, nullable: true)]
-    #[Assert\Length(min: 2, max: 10)]
+    #[Assert\Length(min: 2, max: 20)]
     private ?string $shortTag = null;
 
-    #[ORM\Column(length: 20, unique: true)]
+    #[ORM\Column(length: 100, unique: true)]
     #[Assert\Sequentially([
-        new Assert\Length(min: 2, max: 20),
+        new Assert\Length(min: 2, max: 100),
         new Assert\Type(type: ['alnum'], message: 'use_only_letters_and_numbers'),
     ])]
     private string $slug;
@@ -57,11 +57,17 @@ class Department implements EntityWithFileInfo
     #[Assert\Length(min: 1, max: 100)]
     private ?string $landingPageTitle;
 
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(length: 10_000, nullable: true)]
+    #[Assert\Length(max: 10_000)]
     private ?string $landingPageDescription;
 
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(length: 10_000, nullable: true)]
+    #[Assert\Length(max: 10_000)]
     private ?string $feedbackContent;
+
+    #[ORM\Column(length: 1000, nullable: true)]
+    #[Assert\Length(max: 1000)]
+    private ?string $responsibilityContent;
 
     #[ORM\Embedded(class: FileInfo::class, columnPrefix: 'file_')]
     #[Assert\Valid()]
@@ -206,5 +212,15 @@ class Department implements EntityWithFileInfo
     public function setFeedbackContent(?string $feedbackContent): void
     {
         $this->feedbackContent = $feedbackContent;
+    }
+
+    public function getResponsibilityContent(): ?string
+    {
+        return $this->responsibilityContent;
+    }
+
+    public function setResponsibilityContent(?string $responsibilityContent): void
+    {
+        $this->responsibilityContent = $responsibilityContent;
     }
 }

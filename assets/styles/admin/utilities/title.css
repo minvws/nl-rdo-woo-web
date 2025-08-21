@@ -1,9 +1,9 @@
 @utility bhr-title-lg {
-  @apply font-bold text-5xl break-words;
+  @apply font-bold text-5xl break-all;
 }
 
 @utility bhr-title {
-  @apply font-bold text-3xl break-words;
+  @apply font-bold text-3xl break-all;
 }
 
 @utility bhr-title--fixed-width {
@@ -11,5 +11,5 @@
 }
 
 @utility bhr-title-sm {
-  @apply font-bold text-2xl print:text-xl break-words;
+  @apply font-bold text-2xl print:text-xl break-all;
 }

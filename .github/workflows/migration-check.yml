@@ -1,86 +1,117 @@
-name: Check for missing migrations
+name: Check migrations
 
 on:
   workflow_call:
-    secrets:
-      REPO_READ_ONLY_TOKEN:
-        required: true
-        description: ''
 
 jobs:
-  sync:
-    name: Sync
+  missing_migrations:
+    name: Check for missing migrations
     runs-on: ubuntu-24.04
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
-      - name: Checkout db
-        uses: actions/checkout@v4
-        with:
-          repository: minvws/nl-rdo-databases
-          ref: 'main'
-          token: ${{ secrets.repo_read_only_token }}
-          path: './database'
-
+        uses: actions/checkout@v5
       - name: Check for missing migrations
         id: migration_check
         run: |
-          # Run the script and store the output
           set +e
-          OUT="$(sh .github/scripts/check-missing-migrations.sh)"
-          RETVAL=$?
+          output="$(
+            echo "🕵️‍♀️ Checking for missing migrations..."
+            echo
+            retval=0
+            for ver in $(ls -1 migrations | cut -c 8-21); do
+              ls -1R migrations/sql | grep "$ver" > /dev/null
+              if [ $? -ne 0 ]; then
+                echo "⚠️ Missing migration: $ver"
+                retval=1
+              fi
+            done
+            exit $retval
+          )"
+          exit_code=$?
           set -e
 
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64 | tr -dc 'a-zA-Z0-9')
           {
-            echo "output<<$EOF"
-            echo "$OUT"
-            echo "$EOF"
-            if [[ $RETVAL -eq 1 ]] ; then
-              echo "missing_migrations=true"
-            else
-              echo "missing_migrations=false"
-            fi
+            echo "output<<EOF"
+            echo "$output"
+            echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Debug it
-        run: |
-          echo ${{ steps }}
-          echo $GITHUB_OUTPUT
-          echo $GITHUB_STATE
-
-      # Find the comment
+          if [[ $exit_code -eq 1 ]]; then
+            echo "missing_migrations=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "missing_migrations=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Find Comment
         uses: peter-evans/find-comment@v3
-        id: fc
+        id: find_comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
           body-includes: Missing Database Migrations
-
-        # Create a comment when migrations are missing in the db repo
       - name: Create comment
-        if: contains(steps.migration_check.outputs.missing_migrations, 'true')
+        if: ${{ contains(steps.migration_check.outputs.missing_migrations, 'true') }}
         uses: peter-evans/create-or-update-comment@v4
         with:
-          comment-id: ${{ steps.fc.outputs.comment-id }}
+          comment-id: ${{ steps.find_comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           edit-mode: replace
           body: |
-            ## 🦙🦙 Missing Database Migrations detected
+            ## 🚨 Missing Database Migrations detected 🚨
             ```
             ${{ steps.migration_check.outputs.output }}
             ```
-            👨‍💻 Please run `php bin/console woopie:sql:dump` to create the SQL migrations files, and add them to the database repository to get rid of this message.
+            👨‍💻 Please run `php bin/console woopie:sql:dump` to create the SQL migrations files, and add them to the
+            database directory in this repository at `./migrations/sql` to get rid of this message.
 
       - name: Remove comment if no missing migrations
-        if: ${{ contains(steps.git.outputs.missing_migrations, 'false') && steps.fc.outputs.comment-id != '' }}
+        if: ${{ contains(steps.migration_check.outputs.missing_migrations, 'false') && steps.find_comment.outputs.comment-id != '' }}
         uses: actions/github-script@v7
         with:
           script: |
             github.rest.issues.deleteComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              comment_id: ${{ steps.fc.outputs.comment-id }}
+              comment_id: ${{ steps.find_comment.outputs.comment-id }}
             })
+
+  lint_import_and_check_migrations:
+    name: Lint, import and check migrations
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:14.10-bookworm
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: woo_db
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Install required packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install libecpg-dev postgresql-client
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pgsanity
+      - name: Run tests SQL scripts
+        run: find  ./migrations/sql/v* -type f -name '*.sql' | sort -V | xargs -I % sh -c "echo %; sed -e 's/\\\\c */-- \\\\c /g' % | pgsanity"
+      - name: Combine all SQL
+        run: find  ./migrations/sql/v* -type f -name '*.sql' | sort -V | xargs cat > woo_db.merged.sql
+      - name: Import woo_db.merged.sql
+        run: PGPASSWORD=postgres psql -U postgres -d woo_db -h 127.0.0.1 < woo_db.merged.sql 2>&1 | tee woo_db.log
+      - name: Show and count ERRORs
+        run: |
+          if [ `grep -c ERROR woo_db.log` -ne 0 ]; then grep ERROR woo_db.log; fi
+          exit `grep -c ERROR woo_db.log`

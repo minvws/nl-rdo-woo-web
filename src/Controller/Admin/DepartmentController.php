@@ -80,6 +80,7 @@ class DepartmentController extends AbstractController
     #[IsGranted('AuthMatrix.department.update')]
     public function modify(Request $request, Department $department): Response
     {
+        $currentDepartment = clone $department;
         $form = $this->createForm(DepartmentType::class, $department);
 
         $form->handleRequest($request);
@@ -93,7 +94,7 @@ class DepartmentController extends AbstractController
         }
 
         return $this->render('admin/departments/edit.html.twig', [
-            'department' => $department,
+            'department' => $currentDepartment,
             'form' => $form->createView(),
         ]);
     }

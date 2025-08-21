@@ -10,6 +10,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Publication\SourceType;
+use App\Service\Inquiry\CaseNumbers;
 use App\Service\Inventory\DocumentComparator;
 use App\Service\Inventory\DocumentMetadata;
 use App\Service\Inventory\DocumentNumber;
@@ -70,7 +71,7 @@ class DocumentComparatorTest extends MockeryTestCase
         $metadata->expects('getDate')->twice()->andReturnNull();
         $metadata->expects('getSourceType')->twice()->andReturn(SourceType::EMAIL);
         $metadata->expects('getFilename')->twice()->andReturn('foo.txt');
-        $metadata->expects('getCaseNumbers')->twice()->andReturn([]);
+        $metadata->expects('getCaseNumbers')->twice()->andReturn(CaseNumbers::empty());
         $metadata->expects('getRefersTo')->twice()->andReturn([]);
 
         $changeset = $this->documentComparator->getChangeset($this->dossier, $document, $metadata);
@@ -115,7 +116,7 @@ class DocumentComparatorTest extends MockeryTestCase
         $metadata->expects('getDate')->twice()->andReturnNull();
         $metadata->expects('getSourceType')->twice()->andReturn(SourceType::EMAIL);
         $metadata->expects('getFilename')->twice()->andReturn('foo.txt');
-        $metadata->expects('getCaseNumbers')->twice()->andReturn([]);
+        $metadata->expects('getCaseNumbers')->twice()->andReturn(CaseNumbers::empty());
         $metadata->expects('getRefersTo')->twice()->andReturn([]);
 
         $changeset = $this->documentComparator->getChangeset($this->dossier, $document, $metadata);

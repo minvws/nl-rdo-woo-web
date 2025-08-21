@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision;
 
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use App\Domain\Publication\Attachment\Entity\HasAttachments;
 use App\Domain\Publication\Dossier\AbstractDossier;
@@ -82,6 +83,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
 
     /** @var Collection<array-key,WooDecisionAttachment> */
     #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: WooDecisionAttachment::class)]
+    #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 
     public function __construct()

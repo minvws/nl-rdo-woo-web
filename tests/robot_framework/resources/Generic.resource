@@ -36,6 +36,14 @@ Generic Download Click
     ...  ignore_case=${TRUE}
     ...  msg=Filename '${file_object}[suggestedFilename]' should contain the extension '.${expected_extension}'
   END
+  ${file_name} =  Rename Downloaded Object To Original File Name  ${file_object}
+  RETURN  ${file_name}
+
+Rename Downloaded Object To Original File Name
+  [Arguments]  ${file_object}
+  ${path}  ${_} =  Split Path  ${file_object}[saveAs]
+  Move File  source=${file_object}[saveAs]  destination=${path}/${file_object}[suggestedFilename]
+  RETURN  ${path}/${file_object}[suggestedFilename]
 
 Generic Download URL
   [Documentation]  Downloads a file through url, after which the download is verified if it's not 0 bytes.
@@ -48,7 +56,16 @@ Generic Download URL
 
 Verify Page Error
   [Arguments]  ${error_code}
-  Get Text  //h2[@class="exception-http"]  contains  ${error_code}
+  ${url} =  Get Url
+  IF  'localhost' in '${url}' # Locally we get a detailed Symfony error page
+    Get Text  //h2[@class="exception-http"]  contains  ${error_code}
+  ELSE IF  '${error_code}' == '404'
+    Get Text  //h1  contains  Pagina niet gevonden
+  ELSE IF  '${error_code}' == '403'
+    Get Text  //h1  contains  Log in alstublieft
+  ELSE
+    Fatal Error  Not supported yet
+  END
 
 Abbreviate To First Letters
   [Documentation]  Example: an input of 'E2E Test Organisation' would result in 'PO'
@@ -103,6 +120,5 @@ Success Alert Is Visible
   END
 
 Verify Image
-  [Arguments]  ${selector}  ${expected_min_height}
-  ${bounding_box} =  Get BoundingBox  ${selector}
-  Should Be True  ${bounding_box.height} > ${expected_min_height}
+  [Arguments]  ${selector}
+  Wait For Elements State  ${selector}  visible  2min

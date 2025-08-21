@@ -2,12 +2,11 @@
     {{ form_row(form.summary) }}
 
     <twig:Admin:Publication:ManageDocument
-        allowedFileTypes="{{ documentTypeNames }}"
-        allowedMimeTypes="{{ documentMimeTypes }}"
         canDelete="{{ canDeleteDocument }}"
         documentType="{{ 'admin.dossiers.other-publication.document' | trans }}"
         documentTypes="{{ documentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/other-publication-document' }}"
+        fileLimits="{{ documentFileLimits | default([])}}"
         formField="{{ form.document }}"
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.other-publication.form.content.document_help' | trans }}"
@@ -17,11 +16,10 @@
     />
 
     <twig:Admin:Publication:ManageAttachments
-        allowedFileTypes="{{ attachmentTypeNames }}"
-        allowedMimeTypes="{{ attachmentMimeTypes }}"
         canDelete="{{ canDeleteAttachments }}"
         documentTypes="{{ attachmentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/other-publication-attachments' }}"
+        fileLimits="{{ attachmentFileLimits | default([])}}"
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.other-publication.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"

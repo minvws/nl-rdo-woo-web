@@ -6,32 +6,32 @@ namespace App\Service\Inventory;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Domain\Publication\SourceType;
+use App\Service\Inquiry\CaseNumbers;
 
 /**
  * @SuppressWarnings("PHPMD.ExcessiveParameterList")
  */
-class DocumentMetadata
+readonly class DocumentMetadata
 {
     public function __construct(
-        private readonly ?\DateTimeImmutable $date,
-        private readonly string $filename,
-        private readonly ?int $familyId,
-        private readonly SourceType $sourceType,
+        private ?\DateTimeImmutable $date,
+        private string $filename,
+        private ?int $familyId,
+        private SourceType $sourceType,
         /** @var string[] */
-        private readonly array $grounds,
-        private readonly string $id,
-        private readonly Judgement $judgement,
-        private readonly ?string $period,
-        private readonly ?int $threadId,
+        private array $grounds,
+        private string $id,
+        private Judgement $judgement,
+        private ?string $period,
+        private ?int $threadId,
+        private CaseNumbers $caseNumbers,
+        private bool $suspended,
         /** @var string[] */
-        private readonly array $caseNumbers,
-        private readonly bool $suspended,
+        private array $links,
+        private ?string $remark,
+        private string $matter,
         /** @var string[] */
-        private readonly array $links,
-        private readonly ?string $remark,
-        private readonly string $matter,
-        /** @var string[] */
-        private readonly array $refersTo,
+        private array $refersTo,
     ) {
     }
 
@@ -88,10 +88,7 @@ class DocumentMetadata
         return $this->threadId;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getCaseNumbers(): array
+    public function getCaseNumbers(): CaseNumbers
     {
         return $this->caseNumbers;
     }

@@ -90,7 +90,7 @@ class DocumentRepository extends ServiceEntityRepository
     public function pagecount(): int
     {
         $result = $this->createqueryBuilder('d')
-            ->select('sum(d.pageCount)')
+            ->select('sum(d.fileInfo.pageCount)')
             ->getQuery()
             ->getSingleScalarResult();
 
@@ -239,14 +239,16 @@ class DocumentRepository extends ServiceEntityRepository
     /**
      * @return Document[]
      */
-    public function getAllInquiryDocumentsWithDossiers(Inquiry $inquiry): array
+    public function getPublicInquiryDocumentsWithDossiers(Inquiry $inquiry): array
     {
         $qb = $this->createQueryBuilder('doc')
             ->select('doc', 'dos')
             ->innerJoin('doc.dossiers', 'dos')
             ->innerJoin('doc.inquiries', 'doc_inq')
             ->where('doc_inq.id = :inquiryId')
+            ->andWhere('dos.status IN (:statuses)')
             ->setParameter('inquiryId', $inquiry->getId())
+            ->setParameter('statuses', DossierStatus::publiclyAvailableCases())
         ;
 
         return $qb->getQuery()->getResult();
@@ -302,7 +304,7 @@ class DocumentRepository extends ServiceEntityRepository
                     doc.fileInfo.sourceType,
                     doc.fileInfo.uploaded,
                     doc.fileInfo.size,
-                    doc.pageCount,
+                    doc.fileInfo.pageCount,
                     doc.judgement,
                     doc.documentDate
                 )',

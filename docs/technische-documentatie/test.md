@@ -15,7 +15,7 @@
 
 ## All use cases
 
-We have written all use cases in [test-use-cases.md](test-use-cases.md).
+We have written all use cases in [test-cases.md](test-cases.md).
 
 ## Robot Framework
 
@@ -43,6 +43,7 @@ Make sure WOO is running locally. Read the [development_install](development_ins
 - Download and install pip <https://pypi.org/project/pip/>
 - Download and install npm
 - Download and install zbar
+- Download and install uv
 
 ## Step 2: Install Robot Framework
 
@@ -64,7 +65,7 @@ export SECRET_WOO_LOCAL=REPLACEABLE
 Then create the aforementioned admin user by either follow the instructions in [development_install](development_install.md) or running the following testcase:
 
 ```shell
-task rf:run-local tag=init
+task rf:init
 ```
 
 Note that you have to restart your shell for any following `task rf:test` calls, otherwise it won't know the new secret.
@@ -72,22 +73,31 @@ Note that you have to restart your shell for any following `task rf:test` calls,
 If you ever need an OTP code to login manually, use the following testcase:
 
 ```shell
-task rf:run-local tag=otp
+task rf:otp
 ```
 
 ## Step 4: Run tests locally
 
 ### CI tests
 
-To execute the CI tests use the following command:
+To execute all the CI tests use the following command. It will run the sequential set first, then the parallel one and afterwards it will combine the output into one report.
+The parallel set is identified by the tag `parallel`, so it can easily be extended in the future.
 
 ```shell
-task rf:run-local tag=ci
+task rf:run-ci
+```
+
+To run all the CI tests sequentially, the following command can be used:
+
+```shell
+task rf:run-ci-sequential
 ```
 
 ### Any other testsuite
 
 To execute any other testsuite locally, provide the testsuite's tag as parameter to the command mentioned above. The testsuite's tag can be found at the top of each `.robot` file, as can be seen here: [https://github.com/minvws/nl-rdo-woo-web-private/blob/13d615779580699d743ff24a1f7ff45ae2eb9111/tests/robot_framework/tests/02__TestDossiers.robot#L26](https://github.com/minvws/nl-rdo-woo-web-private/blob/13d615779580699d743ff24a1f7ff45ae2eb9111/tests/robot_framework/tests/02__TestDossiers.robot#L26)
+
+This command will always run the tests sequential.
 
 ```shell
 task rf:run-local tag=testdossiers
@@ -125,5 +135,5 @@ task rf:run-acc tag=pr
 ## Dependency management
 
 The dependencies for Robot Framework in this project are managed using a `requirements.in` and `requirements.txt` file.
-To add dependencies, add them to the `requirements.in` file and run `dependency:export`, which will generate/update the `requirements.txt`.
+To add dependencies, add them to the `requirements.in` file and run `dependency:upgrade`, which will generate/update the `requirements.txt`.
 Installation of the necessary dependencies is handled through the commands mentioned above.

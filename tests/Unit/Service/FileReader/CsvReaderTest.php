@@ -9,30 +9,28 @@ use App\Service\FileReader\CsvReader;
 use App\Service\FileReader\HeaderMap;
 use App\Service\Inventory\MetadataField;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\MockInterface;
 
 class CsvReaderTest extends MockeryTestCase
 {
     private CsvReader $csvReader;
+    private HeaderMap&MockInterface $headerMap;
 
     public function setUp(): void
     {
-        $headerMap = \Mockery::mock(HeaderMap::class);
-        $headerMap->shouldReceive('has')->with('id')->andReturnTrue();
-        $headerMap->shouldReceive('getCellCoordinate')->with('id')->andReturn(1);
-        $headerMap->shouldReceive('has')->with('subject')->andReturnTrue();
-        $headerMap->shouldReceive('getCellCoordinate')->with('subject')->andReturn(8);
-        $headerMap->shouldReceive('has')->with('foobar')->andReturnFalse();
-        $headerMap->shouldReceive('has')->with('family')->andReturnTrue();
-        $headerMap->shouldReceive('getCellCoordinate')->with('family')->andReturn(0);
-        $headerMap->shouldReceive('has')->with('date')->andReturnTrue();
-        $headerMap->shouldReceive('getCellCoordinate')->with('date')->andReturn(5);
-        $headerMap->shouldReceive('has')->with('non-existent-column')->andReturnFalse();
+        $this->headerMap = \Mockery::mock(HeaderMap::class);
 
-        $this->csvReader = new CsvReader(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.csv', $headerMap);
+        $this->csvReader = new CsvReader(
+            __DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.csv',
+            $this->headerMap,
+        );
     }
 
     public function testIteratorSkipsFirstRowAndEmptyRows(): void
     {
+        $this->headerMap->shouldReceive('has')->with('id')->andReturnTrue();
+        $this->headerMap->shouldReceive('getCellCoordinate')->with('id')->andReturn(1);
+
         $ids = [];
         foreach ($this->csvReader as $rowIndex => $data) {
             $ids[] = $this->csvReader->getInt($rowIndex, MetadataField::ID->value);
@@ -46,6 +44,8 @@ class CsvReaderTest extends MockeryTestCase
 
     public function testGetOptionalStringReturnsNullForNonExistingColumn(): void
     {
+        $this->headerMap->shouldReceive('has')->with('foobar')->andReturnFalse();
+
         $values = [];
         foreach ($this->csvReader as $rowIndex => $data) {
             $values[] = $this->csvReader->getOptionalString($rowIndex, 'foobar');
@@ -59,6 +59,9 @@ class CsvReaderTest extends MockeryTestCase
 
     public function testGetOptionalIntReturnsValueForExistingColumnWhenFilled(): void
     {
+        $this->headerMap->shouldReceive('has')->with('family')->andReturnTrue();
+        $this->headerMap->shouldReceive('getCellCoordinate')->with('family')->andReturn(0);
+
         $familyIds = [];
         foreach ($this->csvReader as $rowIndex => $data) {
             $familyIds[] = $this->csvReader->getOptionalInt($rowIndex, 'family');
@@ -72,6 +75,8 @@ class CsvReaderTest extends MockeryTestCase
 
     public function testGetOptionalIntReturnsNullForNonExistingColumn(): void
     {
+        $this->headerMap->shouldReceive('has')->with('foobar')->andReturnFalse();
+
         $values = [];
         foreach ($this->csvReader as $rowIndex => $data) {
             $values[] = $this->csvReader->getOptionalInt($rowIndex, 'foobar');
@@ -83,8 +88,21 @@ class CsvReaderTest extends MockeryTestCase
         );
     }
 
+    public function testGetOptionalIntReturnsNullForEmptyColumn(): void
+    {
+        $this->headerMap->shouldReceive('has')->with('family')->andReturnTrue();
+        $this->headerMap->shouldReceive('getCellCoordinate')->with('family')->andReturn('');
+
+        self::assertNull(
+            $this->csvReader->getOptionalInt(1, 'family'),
+        );
+    }
+
     public function testGetDateTimeReturnsValueForExistingColumnWhenFilledAndThrowsExceptionForMissingValue(): void
     {
+        $this->headerMap->shouldReceive('has')->with('date')->andReturnTrue();
+        $this->headerMap->shouldReceive('getCellCoordinate')->with('date')->andReturn(5);
+
         $rows = iterator_to_array($this->csvReader);
 
         // First row has a valid date
@@ -101,6 +119,9 @@ class CsvReaderTest extends MockeryTestCase
 
     public function testGetDateTimeThrowsExceptionForInvalidDate(): void
     {
+        $this->headerMap->shouldReceive('has')->with('subject')->andReturnTrue();
+        $this->headerMap->shouldReceive('getCellCoordinate')->with('subject')->andReturn(8);
+
         $this->expectException(FileReaderException::class);
 
         foreach ($this->csvReader as $rowIndex => $data) {
@@ -110,6 +131,9 @@ class CsvReaderTest extends MockeryTestCase
 
     public function testGetOptionalDateTimeReturnsValueForExistingColumnWhenFilled(): void
     {
+        $this->headerMap->shouldReceive('has')->with('date')->andReturnTrue();
+        $this->headerMap->shouldReceive('getCellCoordinate')->with('date')->andReturn(5);
+
         $dates = [];
         foreach ($this->csvReader as $rowIndex => $data) {
             $dates[] = $this->csvReader->getOptionalDateTime($rowIndex, 'date');
@@ -123,6 +147,8 @@ class CsvReaderTest extends MockeryTestCase
 
     public function testGetOptionalDateTimeReturnsNullForNonExistingColumn(): void
     {
+        $this->headerMap->shouldReceive('has')->with('non-existent-column')->andReturnFalse();
+
         $dates = [];
         foreach ($this->csvReader as $rowIndex => $data) {
             $dates[] = $this->csvReader->getOptionalDateTime($rowIndex, 'non-existent-column');

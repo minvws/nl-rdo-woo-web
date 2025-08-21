@@ -21,6 +21,10 @@ services:
         bind:
             Psr\Log\LoggerInterface $logger: '@App\Service\Logging\EnrichedPsrLogger'
 
+    App\Service\Security\ApplicationMode\ApplicationMode:
+        factory: ['App\Service\Security\ApplicationMode\ApplicationMode', 'fromEnvVar']
+        arguments: [ '%env(APP_MODE)%' ]
+
     App\Domain\Search\Index\Rollover\MappingService:
         arguments:
             $rootDir: '%kernel.project_dir%'
@@ -89,6 +93,10 @@ services:
             $defaultLocale: '%kernel.default_locale%'
             $allowedLocales: '%available_locales%'
 
+    App\EventSubscriber\ApiVersionHeaderSubscriber:
+        arguments:
+            $apiVersion: '%api_platform.version%'
+
     App\Service\Totp:
         arguments:
             $issuer: '%env(TOTP_ISSUER)%'
@@ -151,10 +159,6 @@ services:
         arguments:
             $translator: '@translator.default'
 
-    App\Domain\Ingest\Content\Event\ContentExtractCacheInvalidator:
-        arguments:
-            $cache: '@content_extract_cache'
-
     extractor.7z:
         class: App\Domain\Upload\Extractor\Extractor
         public: true
@@ -174,6 +178,10 @@ services:
     App\Domain\Upload\Handler\S3\S3UploadHelper:
         arguments:
             $bucket: '%env(STORAGE_MINIO_UPLOAD_BUCKET)%'
+
+    League\MimeTypeDetection\FinfoMimeTypeDetector:
+        arguments:
+            $bufferSampleSize: !php/const App\Domain\Upload\FileType\MimeTypeHelper::SAMPLE_SIZE
 
 when@dev:
     services: &services_dev

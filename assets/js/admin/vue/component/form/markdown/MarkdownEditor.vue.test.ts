@@ -24,8 +24,17 @@ describe('The "MarkdownEditor" component', () => {
         name: 'mocked-name',
         value,
       },
+      shallow: true,
+      global: {
+        renderStubDefaultSlot: true,
+      },
     });
   };
+
+  const getDialogComponent = (wrapper: VueWrapper) =>
+    wrapper.findComponent({ name: 'Dialog' });
+  const toggleHelp = (wrapper: VueWrapper) =>
+    wrapper.find('[aria-haspopup="dialog"]').trigger('click');
 
   const getTextareaElement = (wrapper: VueWrapper) => wrapper.find('textarea');
   const getTextareaValue = (wrapper: VueWrapper) =>
@@ -34,7 +43,9 @@ describe('The "MarkdownEditor" component', () => {
     wrapper.find('.preview').element.innerHTML;
 
   const getToolbarButtonAt = (wrapper: VueWrapper, index: number) =>
-    wrapper.findAll('button').at(index) as DOMWrapper<HTMLButtonElement>;
+    wrapper
+      .findAll('.toolbar-button')
+      .at(index) as DOMWrapper<HTMLButtonElement>;
   const toggleBold = (wrapper: VueWrapper) => toggleToolbarButtonAt(wrapper, 0);
   const toggleItalic = (wrapper: VueWrapper) =>
     toggleToolbarButtonAt(wrapper, 1);
@@ -225,5 +236,26 @@ describe('The "MarkdownEditor" component', () => {
     await toggleLink(component);
     expect(getTextareaValue(component)).toBe('This i[s a lin](url)k');
     expect(getSelectedText(component)).toBe('url');
+  });
+
+  describe('the help dialog', () => {
+    test('should be invisible by default', async () => {
+      expect(getDialogComponent(createComponent()).props('modelValue')).toBe(
+        false,
+      );
+    });
+
+    test('should be visible when the help button is clicked', async () => {
+      const component = createComponent();
+      await toggleHelp(component);
+      expect(getDialogComponent(component).props('modelValue')).toBe(true);
+    });
+
+    test('should close when the close button is clicked', async () => {
+      const component = createComponent();
+      await toggleHelp(component);
+      await getDialogComponent(component).find('button').trigger('click');
+      expect(getDialogComponent(component).props('modelValue')).toBe(false);
+    });
   });
 });

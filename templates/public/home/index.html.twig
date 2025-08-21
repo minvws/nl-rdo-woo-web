@@ -11,7 +11,7 @@
                     <span class="font-normal">{{ intro.title }}</span>
                 </h1>
 
-                {{ intro.content | render_markdown | raw }}
+                {{ intro.content | render_markdown }}
 
                 <p><twig:Public:ArrowedBoldLink to="{{ path('app_about') }}">{{ 'public.intro.more_about_platform' | trans }}</twig:Public:ArrowedBoldLink></p>
             </section>
@@ -37,10 +37,10 @@
         <div class="woo-container woo-container--sm">
             <div class="woo-rich-text">
                 <h2>{{ other_publications.title }}</h2>
-                {{ other_publications.content | render_markdown | raw }}
+                {{ other_publications.content | render_markdown }}
 
                 <h2>{{ woo_request.title }}</h2>
-                {{ woo_request.content | render_markdown | raw }}
+                {{ woo_request.content | render_markdown }}
             </div>
         </div>
     </section>

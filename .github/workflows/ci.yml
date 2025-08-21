@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Setup node
@@ -41,16 +41,16 @@ jobs:
         run: npm audit
       - name: Install PHP
         uses: shivammathur/setup-php@master
-        if: always()
+        if: ${{ always() }}
         with:
           php-version: ${{ env.PHP_VERSION }}
       - name: 'Composer install'
-        if: always()
+        if: ${{ always() }}
         env:
           COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.REPO_READ_ONLY_TOKEN }}"}}'
         run: composer install  --no-interaction --no-scripts --no-progress --prefer-dist --no-ansi --ignore-platform-reqs
       - name: 'Security Check: composer'
-        if: always()
+        if: ${{ always() }}
         run: composer audit
 
   validate:
@@ -73,7 +73,7 @@ jobs:
         options: --health-cmd "rabbitmqctl node_health_check" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Setup node
@@ -85,44 +85,44 @@ jobs:
       - name: Install npm dependencies
         run: npm ci --ignore-scripts
       - name: 'Linting: javascript'
-        if: always()
+        if: ${{ always() }}
         run: |
           npm run jslint:json
           sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace@g' reports/eslint.json
       - name: 'Linting: Markdown'
         uses: DavidAnson/markdownlint-cli2-action@v20
-        if: always()
+        if: ${{ always() }}
       - name: 'Linting: REUSE'
         uses: fsfe/reuse-action@v5
-        if: always()
+        if: ${{ always() }}
       - name: 'Unit tests: front-end'
-        if: always()
+        if: ${{ always() }}
         run: npm test
       - name: Install PHP
         uses: shivammathur/setup-php@master
-        if: always()
+        if: ${{ always() }}
         with:
           php-version: ${{ env.PHP_VERSION }}
           extensions: zip, pgsql, pcov
       - name: 'Composer install'
-        if: always()
+        if: ${{ always() }}
         env:
           COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.REPO_READ_ONLY_TOKEN }}"}}'
         run: composer install  --no-interaction --no-scripts --no-progress --prefer-dist --no-ansi
       - name: Build npm
-        if: always()
+        if: ${{ always() }}
         run: npm run build
       - name: 'Linting: PHP CodeSniffer'
-        if: always()
+        if: ${{ always() }}
         run: vendor/bin/phpcs
       - name: 'Linting: PHP CS Fixer'
-        if: always()
+        if: ${{ always() }}
         run: vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
       - name: 'Linting: PHPmd'
-        if: always()
+        if: ${{ always() }}
         run: vendor/bin/phpmd src/ text ruleset.phpmd.xml
       - name: Copy .env.ci to .env.local
-        if: always()
+        if: ${{ always() }}
         run: cp .env.ci .env.test.local
       - name: 'Linting: Twig'
         if: success()
@@ -137,10 +137,10 @@ jobs:
           mkdir -p reports
           vendor/bin/phpstan analyse --error-format=prettyJson | tee reports/phpstan.json
       - name: Migrate Test DB
-        if: always()
+        if: ${{ always() }}
         run: bin/console doctrine:schema:create --no-interaction --env=test
       - name: 'Unit tests: PHP'
-        if: always()
+        if: ${{ always() }}
         run: php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit -d --without-creating-snapshots --log-junit=reports/report-phpunit.xml --coverage-clover=reports/coverage-phpunit.xml
       - name: Run SonarCloud scanner
         uses: minvws/nl-irealisatie-generic-pipelines/.github/actions/sonarcloud@main

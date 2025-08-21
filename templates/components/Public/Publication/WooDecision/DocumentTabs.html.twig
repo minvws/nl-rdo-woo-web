@@ -1,19 +1,21 @@
-{% set hasPublicDocuments = publicDocuments | length > 0 %}
-{% set hasAlreadyPublicDocuments = alreadyPublicDocuments | length > 0 %}
-{% set hasNotPublicDocuments = notPublicDocuments | length > 0 %}
-{% set hasNotOnlineDocuments = notOnlineDocuments | length > 0 %}
+{% set tabPaginators = [
+    publicDocuments,
+    alreadyPublicDocuments,
+    notPublicDocuments,
+    notOnlineDocuments,
+] %}
 
-{% set tabPaginators = [] %}
-{% set tabPaginators = tabPaginators | merge(hasPublicDocuments ? [publicDocuments] : []) %}
-{% set tabPaginators = tabPaginators | merge(hasAlreadyPublicDocuments ? [alreadyPublicDocuments] : []) %}
-{% set tabPaginators = tabPaginators | merge(hasNotPublicDocuments ? [notPublicDocuments] : []) %}
-{% set tabPaginators = tabPaginators | merge(hasNotOnlineDocuments ? [notOnlineDocuments] : []) %}
+{% set publicationTypes = [
+    'public.documents.match_request' | trans,
+    'public.documents.already_public_short' | trans,
+    'public.documents.not_made_public' | trans,
+    'public.documents.not_yet_online' | trans,
+] %}
 
 {% set tabButtonTitles = [] %}
-{% set tabButtonTitles = tabButtonTitles | merge(hasPublicDocuments ? ['public.documents.match_request' | trans] : []) %}
-{% set tabButtonTitles = tabButtonTitles | merge(hasAlreadyPublicDocuments ? ['public.documents.already_public_short' | trans] : []) %}
-{% set tabButtonTitles = tabButtonTitles | merge(hasNotPublicDocuments ? ['public.documents.not_made_public' | trans] : []) %}
-{% set tabButtonTitles = tabButtonTitles | merge(hasNotOnlineDocuments ? ['public.documents.not_yet_online' | trans] : []) %}
+{% for publicationType in publicationTypes %}
+    {% set tabButtonTitles = tabButtonTitles|merge([publicationType ~ ' (' ~ tabPaginators[loop.index0] | length ~ ')']) %}
+{% endfor %}
 
 {% set tabsName = 'documenten' %}
 <twig:Public:Tabs
@@ -33,8 +35,12 @@
                 dossier="{{ dossier | default(null) }}"
                 fragment="{{ '#tabs-' ~ tabsName ~ '-button-' ~ loop.index }}"
                 isSortable="{{ true }}"
-                title="{{ buttonTitles[loop.index0] }}"
-            />
+                title="{{ tabButtonTitles[loop.index0] }}"
+            >
+                {% if paginator | length == 0 %}
+                    {{ 'public.publication.no_documents_within_publication' | trans({ status: publicationTypes[loop.index0] | lower }) }}.
+                {% endif %}
+            </twig:Public:Publication:WooDecision:DocumentsTable>
         </twig:Tab:Content>
     {% endfor %}
 </twig:Public:Tabs>

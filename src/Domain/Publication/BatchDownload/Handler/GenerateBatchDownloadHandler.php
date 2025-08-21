@@ -25,16 +25,12 @@ readonly class GenerateBatchDownloadHandler
         $batch = $this->repository->find($message->uuid);
         if (! $batch) {
             $this->logger->error('Cannot find batch download entity', [
-                'id' => $message->uuid,
+                'id' => $message->uuid->toRfc4122(),
             ]);
 
             return;
         }
 
-        if (! $this->zipGenerator->generateArchive($batch)) {
-            $this->logger->error('Failed to generate ZIP archive file', [
-                'id' => $message->uuid->toRfc4122(),
-            ]);
-        }
+        $this->zipGenerator->generateArchive($batch);
     }
 }

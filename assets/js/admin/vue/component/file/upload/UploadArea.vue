@@ -2,12 +2,9 @@
 import Icon from '@admin-fe/component/Icon.vue';
 import UploadedFile from '@admin-fe/component/file/UploadedFile.vue';
 import {
-  areFilesEqual,
+  collectFileLimitMimeTypes,
   filterDataTransferFiles,
-  formatFileSize,
-  formatList,
-  isValidMaxFileSize,
-  MimeTypes,
+  hasFileUploadLimits,
   validateFiles,
 } from '@js/admin/utils';
 import { uniqueId } from '@utils';
@@ -17,12 +14,12 @@ import {
   inject,
   onBeforeUnmount,
   provide,
-  useSlots,
   ref,
+  useSlots,
   watch,
 } from 'vue';
-import AlreadyUploadedFiles from './AlreadyUploadedFiles.vue';
 import DangerousFiles from './DangerousFiles.vue';
+import FileLimits from './FileLimits.vue';
 import InvalidFiles from './InvalidFiles.vue';
 import SelectedFiles from './SelectedFiles.vue';
 import UploadVisual from './UploadVisual.vue';
@@ -40,14 +37,6 @@ const emit = defineEmits([
 ]);
 
 const props = defineProps({
-  allowedFileTypes: {
-    type: Array,
-    default: () => ['PDF'],
-  },
-  allowedMimeTypes: {
-    type: Array,
-    default: () => [...MimeTypes.Pdf],
-  },
   allowMultiple: {
     type: Boolean,
     default: false,
@@ -59,11 +48,12 @@ const props = defineProps({
   endpoint: {
     type: String,
   },
+  fileLimits: {
+    type: Array,
+    default: () => [],
+  },
   id: {
     type: String,
-  },
-  maxFileSize: {
-    type: Number,
   },
   name: {
     type: String,
@@ -101,11 +91,9 @@ const id = props.id || uniqueId('upload-area');
 const idOfFileLimitationsElement = `${id}-file-limitations`;
 const idOfTipElement = `${id}-tip`;
 const idOfSelectFilesElement = `${id}-select-files`;
-const hasMaxFileSize = isValidMaxFileSize(props.maxFileSize);
-const hasAllowedMimeTypes = props.allowedMimeTypes.length > 0;
-const hasFileLimitations = hasMaxFileSize || hasAllowedMimeTypes;
-const formattedFileSize = formatFileSize(props.maxFileSize);
-const formattedAllowedFileTypes = formatList(props.allowedFileTypes, 'of');
+const hasFileLimitations = hasFileUploadLimits(props.fileLimits);
+const allowedMimeTypes = collectFileLimitMimeTypes(props.fileLimits);
+const hasAllowedMimeTypes = allowedMimeTypes.length > 0;
 const formattedFileOrFiles = props.allowMultiple ? 'Bestanden' : 'Bestand';
 const invalidSizeFiles = ref([]);
 const invalidTypeFiles = ref([]);
@@ -113,7 +101,6 @@ const dangerousFiles = ref([]);
 const selectedFiles = ref(new Map());
 const uploadedFile = ref(createUploadedFileInfo());
 const uploadedFiles = ref([]);
-const alreadyUploadedFiles = ref([]);
 const failedFiles = ref([]);
 const isUploading = computed(() => {
   if (!props.enableAutoUpload) {
@@ -228,8 +215,7 @@ const onFilesSelected = (event) => {
 const addFiles = (files) => {
   const { invalidSize, invalidType, valid } = validateFiles(
     [...files],
-    props.allowedMimeTypes,
-    props.maxFileSize,
+    props.fileLimits,
   );
   invalidSizeFiles.value = [...invalidSize];
   invalidTypeFiles.value = [...invalidType];
@@ -237,20 +223,6 @@ const addFiles = (files) => {
   const limitedFiles = limitFiles(valid);
 
   [...limitedFiles].forEach((file) => {
-    if (
-      alreadyHasFile(file, [
-        ...selectedFiles.value.values(),
-        ...alreadyUploadedFiles.value,
-      ])
-    ) {
-      return;
-    }
-
-    if (alreadyHasFile(file, [...uploadedFiles.value])) {
-      alreadyUploadedFiles.value.push(file);
-      return;
-    }
-
     if (!props.allowMultiple) {
       selectedFiles.value.clear();
     }
@@ -269,9 +241,6 @@ const limitFiles = (files) => {
 
   return files;
 };
-
-const alreadyHasFile = (file, files) =>
-  files.some((currentFile) => areFilesEqual(currentFile, file));
 
 const onDelete = (fileId) => {
   selectedFiles.value.delete(fileId);
@@ -331,6 +300,10 @@ const updateInputValue = () => {
   emit('selected', inputElement.value.files);
 };
 
+const resetInputValue = () => {
+  inputElement.value.files = new DataTransfer().files;
+};
+
 const cleanup = () => {
   abortController.abort();
 };
@@ -343,6 +316,9 @@ watch(
   () => props.uploadedFileInfo,
   () => {
     uploadedFile.value = createUploadedFileInfo();
+    if (!uploadedFile.value) {
+      resetInputValue();
+    }
   },
 );
 
@@ -378,32 +354,23 @@ watch(isUploading, (value) => emit('isUploading', value));
           class="bhr-upload-area__select-files"
           :id="idOfSelectFilesElement"
         >
-          <span class="font-bold text-bhr-sea-blue">
+          <span class="font-bold text-bhr-blue-800">
             {{ formattedFileOrFiles }} selecteren
           </span>
           of hierin slepen
         </span>
 
-        <span
+        <FileLimits
           v-if="hasFileLimitations"
+          :file-or-files="formattedFileOrFiles"
           :id="idOfFileLimitationsElement"
-          class="bhr-upload-area__file-limits"
-        >
-          <span v-if="hasAllowedMimeTypes">
-            {{ formattedFileOrFiles }} van het type
-            {{ formattedAllowedFileTypes }}
-          </span>
-          <span v-if="hasMaxFileSize">
-            (max {{ formattedFileSize }} per bestand)
-          </span>
-        </span>
+          :limits="props.fileLimits"
+        />
       </button>
 
       <input
         @change="onFilesSelected"
-        :accept="
-          hasAllowedMimeTypes ? props.allowedMimeTypes.join(',') : undefined
-        "
+        :accept="hasAllowedMimeTypes ? allowedMimeTypes.join(',') : undefined"
         :id="id"
         :multiple="props.allowMultiple ? 'multiple' : undefined"
         :name="props.name"
@@ -430,14 +397,15 @@ watch(isUploading, (value) => emit('isUploading', value));
 
       <output class="block text-left">
         <InvalidFiles
-          :allowed-file-types="props.allowedFileTypes"
-          :allowed-mime-types="props.allowedMimeTypes"
           :files="invalidTypeFiles"
+          :have-invalid-size="false"
+          :limits="props.fileLimits"
         />
 
         <InvalidFiles
           :files="invalidSizeFiles"
-          :max-file-size="props.maxFileSize"
+          :have-invalid-size="true"
+          :limits="props.fileLimits"
         />
 
         <DangerousFiles
@@ -445,8 +413,6 @@ watch(isUploading, (value) => emit('isUploading', value));
           :files="dangerousFiles"
           class="mb-4"
         />
-
-        <AlreadyUploadedFiles :files="alreadyUploadedFiles" class="mb-4" />
       </output>
 
       <div

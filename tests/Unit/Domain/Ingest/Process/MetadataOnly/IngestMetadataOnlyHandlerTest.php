@@ -6,7 +6,6 @@ namespace App\Tests\Unit\Domain\Ingest\Process\MetadataOnly;
 
 use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
 use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use App\Tests\Unit\UnitTestCase;
@@ -36,13 +35,12 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
     public function testInvokeWithoutForce(): void
     {
         $message = new IngestMetadataOnlyCommand(
-            \Mockery::mock(Uuid::class),
+            Uuid::v6(),
             $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
             false,
         );
 
-        // @TODO should be replaced by an instance of EntityWithFileInfo
-        $entity = \Mockery::mock(Document::class);
+        $entity = \Mockery::mock(EntityWithFileInfo::class);
 
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
@@ -55,13 +53,12 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
     public function testInvokeWithForce(): void
     {
         $message = new IngestMetadataOnlyCommand(
-            \Mockery::mock(Uuid::class),
+            Uuid::v6(),
             $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
             true,
         );
 
-        // @TODO should be replaced by an instance of EntityWithFileInfo
-        $entity = \Mockery::mock(Document::class);
+        $entity = \Mockery::mock(EntityWithFileInfo::class);
 
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
@@ -74,7 +71,7 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
     public function testInvokeWhenEntityCannotBeFound(): void
     {
         $message = new IngestMetadataOnlyCommand(
-            $id = \Mockery::mock(Uuid::class),
+            $id = Uuid::v6(),
             $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
             false,
         );
@@ -82,7 +79,7 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturnNull();
         $this->logger->shouldReceive('warning')->once()->with('No entity found in IngestMetadataOnlyHandler', [
-            'id' => $id,
+            'id' => $id->toRfc4122(),
             'class' => $entityClass,
         ]);
         $this->subTypeIndexer->shouldNotReceive('index');
@@ -94,20 +91,19 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
     public function testInvokeWhenUpdatingDocumentThrowsAnException(): void
     {
         $message = new IngestMetadataOnlyCommand(
-            $id = \Mockery::mock(Uuid::class),
+            $id = Uuid::v6(),
             $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
             false,
         );
 
-        // @TODO should be replaced by an instance of EntityWithFileInfo
-        $entity = \Mockery::mock(Document::class);
+        $entity = \Mockery::mock(EntityWithFileInfo::class);
 
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
         $this->subTypeIndexer->shouldReceive('index')->andThrow($thrownException = new \RuntimeException('My exception'));
 
         $this->logger->shouldReceive('error')->once()->with('Failed to update ES document in IngestMetadataOnlyHandler', [
-            'id' => $id,
+            'id' => $id->toRfc4122(),
             'class' => $entityClass,
             'exception' => $thrownException->getMessage(),
         ]);

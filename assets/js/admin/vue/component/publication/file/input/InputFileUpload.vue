@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import InputFile from '@admin-fe/component/form/InputFile.vue';
-import { validators } from '@admin-fe/form';
 import type { FileInfo } from '@admin-fe/component/form/interface';
+import { validators } from '@admin-fe/form';
+import type { FileUploadLimit } from '@js/admin/utils/file/interface';
 
 interface Props {
-  allowedFileTypes: string[];
-  allowedMimeTypes: string[];
   displayMaxOneFileMessage?: boolean;
-  fileInfo: FileInfo | null;
-  groupId: string;
   dossierId?: null | string;
+  fileInfo: FileInfo | null;
+  fileLimits: FileUploadLimit[];
+  groupId: string;
 }
 
 interface Payload {
@@ -23,10 +23,9 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  allowedFileTypes: () => [],
-  allowedMimeTypes: () => [],
   displayMaxOneFileMessage: false,
   fileInfo: null,
+  fileLimits: () => [],
   groupId: '',
 });
 
@@ -46,9 +45,8 @@ const helpText = props.displayMaxOneFileMessage
   <InputFile
     @uploaded="(file: File) => emit('uploaded', file)"
     @uploadError="() => emit('uploadError')"
-    :allowed-file-types="props.allowedFileTypes"
-    :allowed-mime-types="props.allowedMimeTypes"
     :enable-auto-upload="true"
+    :file-limits="props.fileLimits"
     :help-text="helpText"
     :payload="payload"
     :uploaded-file-info="props.fileInfo"

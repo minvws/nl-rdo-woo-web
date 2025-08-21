@@ -70,7 +70,7 @@
                         <th class="bhr-row-head" scope="row">Zaaknummers</th>
                         <td data-e2e-name="inquiries">
                             {% for inquiry in document.inquiries %}
-                                {{ inquiry.caseNr }}{% if not loop.last %}, {% endif %}
+                                <span class="break-all">{{ inquiry.caseNr }}</span>{% if not loop.last %}, {% endif %}
                             {% endfor %}
                         </td>
                     </tr>
@@ -104,7 +104,7 @@
                     </tr>
                     <tr>
                         <th class="bhr-row-head" scope="row">Aantal pagina's</th>
-                        <td>{{ document.pageCount }}</td>
+                        <td>{{ document.fileInfo.pageCount }}</td>
                     </tr>
                 </tbody>
             </table>

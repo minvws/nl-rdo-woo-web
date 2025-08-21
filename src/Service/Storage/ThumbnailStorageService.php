@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Storage;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\EntityWithFileInfo;
 use Psr\Log\LoggerInterface;
 
@@ -70,19 +69,17 @@ class ThumbnailStorageService extends StorageService
         return $this->remoteFilesystem->fileSize($path);
     }
 
-    public function deleteAllThumbsForEntity(EntityWithFileInfo $entity): bool
+    public function deleteAllThumbsForEntity(EntityWithFileInfo $entity): void
     {
-        if ($entity->getFileInfo()->hasPages()) {
-            $pageCount = $this->getPageCount($entity);
-            for ($pageNr = 1; $pageNr <= $pageCount && $pageNr <= $this->thumbnailLimit; $pageNr++) {
-                $path = $this->generateThumbPath($entity, $pageNr);
-                if (! $this->remoteFilesystem->delete($path)) {
-                    return false;
-                }
-            }
+        if (! $entity->getFileInfo()->hasPages()) {
+            return;
         }
 
-        return true;
+        $pageCount = $this->getPageCount($entity);
+        for ($pageNr = 1; $pageNr <= $pageCount && $pageNr <= $this->thumbnailLimit; $pageNr++) {
+            $path = $this->generateThumbPath($entity, $pageNr);
+            $this->remoteFilesystem->delete($path);
+        }
     }
 
     public function generateThumbPath(EntityWithFileInfo $entity, int $pageNr): string
@@ -97,12 +94,6 @@ class ThumbnailStorageService extends StorageService
         $pageCount = $entity->getFileInfo()->isPaginatable()
             ? $entity->getFileInfo()->getPageCount()
             : null;
-
-        // This acts like a fallback, so if the value is set in the FileInfo it would be used instead of the one on the
-        // Document itself
-        if (is_null($pageCount) && $entity instanceof Document) {
-            return $entity->getPageCount();
-        }
 
         return $pageCount ?? 0;
     }

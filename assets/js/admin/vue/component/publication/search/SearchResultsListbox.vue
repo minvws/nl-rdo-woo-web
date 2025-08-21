@@ -134,7 +134,7 @@ watch(() => props.results, resetSelectedResultId);
       @pointerout="onMouseOut"
       :key="result.id"
       :aria-selected="isSelected(result.id)"
-      class="py-2 px-3 border-b border-bhr-platinum bhr-clickable-row"
+      class="py-2 px-3 border-b border-bhr-gray-300 bhr-clickable-row"
       :class="{ 'bhr-outline': isSelected(result.id) }"
       role="option"
     >

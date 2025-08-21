@@ -85,4 +85,19 @@ enum UploadGroupId: string
 
         return array_values(array_unique($names));
     }
+
+    /**
+     * @return list<array{label:string,mimeTypes:list<string>,size:int}>
+     */
+    public function getFileLimits(): array
+    {
+        return array_map(
+            fn (FileType $type): array => [
+                'label' => $type->getTypeName(),
+                'mimeTypes' => $type->getMimeTypes(),
+                'size' => $type->getMaxUploadSize(),
+            ],
+            $this->getFileTypes(),
+        );
+    }
 }

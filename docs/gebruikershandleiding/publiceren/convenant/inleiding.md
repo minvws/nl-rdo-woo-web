@@ -1,7 +1,7 @@
 # Inleiding
 
 In deze handleiding vind je alle informatie die je nodig hebt om een convenant succesvol te publiceren. Het is belangrijk
-dat je al een account hebt met de rechten ‘publicatiebeheer’ in het uploadportaal, zodat je een publicatie kunt doen op
+dat je al een account hebt met de rechten ‘publicatiebeheer’ in het uploadportaal, zodat je kan publiceren op
 het publicatieplatform.
 
 Als je inlogt in het uploadportaal kom je terecht in het overzicht 'Alle publicaties'.

@@ -9,6 +9,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use App\Tests\Factory\DocumentFactory;
+use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\InquiryFactory;
 use App\Tests\Factory\OrganisationFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
@@ -16,6 +17,7 @@ use App\Tests\Integration\IntegrationTestTrait;
 use App\Tests\Story\WooIndexWooDecisionStory;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Persistence\Proxy;
@@ -157,11 +159,15 @@ final class DocumentRepositoryTest extends KernelTestCase
     {
         DocumentFactory::createOne([
             'documentNr' => 'FOO-123',
-            'pageCount' => 100,
+            'fileInfo' => FileInfoFactory::createone([
+                'pageCount' => 100,
+            ]),
         ]);
         DocumentFactory::createOne([
             'documentNr' => 'FOO-456',
-            'pageCount' => 100,
+            'fileInfo' => FileInfoFactory::createone([
+                'pageCount' => 100,
+            ]),
         ]);
 
         self::assertEquals(200, $this->repository->pagecount());
@@ -500,6 +506,50 @@ final class DocumentRepositoryTest extends KernelTestCase
 
         self::assertFalse($documentCaseNrs->isDocumentNotFound());
         self::assertEquals($document->getId(), $documentCaseNrs->documentId);
-        self::assertEquals($documentCaseNrs->caseNrs, [$caseNr]);
+        self::assertEquals($documentCaseNrs->caseNumbers->values, [$caseNr]);
+    }
+
+    public function testGetPublicInquiryDocumentsWithDossiers(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+
+        $dossierA = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
+        $documentA1 = DocumentFactory::createOne(['dossiers' => [$dossierA]]);
+        $documentA2 = DocumentFactory::createOne(['dossiers' => [$dossierA]]);
+
+        $dossierB = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
+        $documentB1 = DocumentFactory::createOne(['dossiers' => [$dossierB]]);
+
+        $dossierConcept = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::CONCEPT]);
+        $documentConcept = DocumentFactory::createOne(['dossiers' => [$dossierConcept]]);
+
+        $inquiry = InquiryFactory::createOne([
+            'caseNr' => 'FOO-123',
+            'dossiers' => [
+                $dossierA,
+                $dossierB,
+                $dossierConcept,
+            ],
+            'documents' => [
+                $documentA1,
+                $documentA2,
+                $documentB1,
+                $documentConcept,
+            ],
+            'organisation' => $organisation,
+        ]);
+
+        self::assertEqualsCanonicalizing(
+            [
+                $documentA1->getId(),
+                $documentA2->getId(),
+                $documentB1->getId(),
+                // Important: the document from the concept dossier must be excluded!
+            ],
+            array_map(
+                static fn (Document $document): Uuid => $document->getId(),
+                $this->repository->getPublicInquiryDocumentsWithDossiers($inquiry),
+            ),
+        );
     }
 }

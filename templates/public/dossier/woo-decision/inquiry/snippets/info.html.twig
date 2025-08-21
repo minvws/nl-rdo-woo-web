@@ -1,7 +1,7 @@
 <div class="bg-woo-anti-flash-white p-6">
     <div class="woo-readable-width" data-e2e-name="inquiry-info">
     {% if dossiers.count > 0 %}
-        <p class="woo-p font-bold">
+        <p class="woo-p font-bold break-all">
             {{
                 'public.inquiry.decisions_for_case' | trans({
                     '{are_or_is}': 'public.global.are_or_is' | trans({ 'count': dossiers.count }),
@@ -34,16 +34,11 @@
                 <a class="woo-a" href="{{ searchAllUrl }}">{{ 'global.search_through_all' | trans }}</a>
             </li>
             <li>
-                <a class="woo-a" href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}">{{ 'public.inquiries.download_inventory' | trans({'{casenumber}': inquiry.casenr}) }}</a>
+                <a class="woo-a" href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}" data-e2e-name="download-inventory">{{ 'public.inquiries.download_inventory' | trans({'{casenumber}': inquiry.casenr}) }}</a>
             </li>
-            {% if public_docs.count > 0 %}
-            <li>
-                <a class="woo-a" href="{{ downloadUrl }}" data-e2e-name="download-documents">{{ 'public.documents.archive.download' | trans }}</a>
-            </li>
-            {% endif %}
         </ul>
     {% else %}
-        <p>
+        <p class="break-all">
             {{ 'public.inquiries.no_docs_available' | trans({'casenumber': inquiry.casenr}) }}
         </p>
     {% endif %}

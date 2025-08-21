@@ -75,6 +75,7 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
         $fileInfo->shouldReceive('getType')->andReturn('pdf');
         $fileInfo->shouldReceive('getSourceType')->andReturn(SourceType::DOC);
         $fileInfo->shouldReceive('getName')->andReturn('foo.bar');
+        $fileInfo->shouldReceive('getPageCount')->andReturn(13);
 
         $referredDocumentA = \Mockery::mock(Document::class);
         $referredDocumentA->shouldReceive('getDocumentNr')->andReturn('doc-456');
@@ -96,7 +97,6 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
         $document->shouldReceive('getJudgement')->andReturn(Judgement::PARTIAL_PUBLIC);
         $document->shouldReceive('getGrounds')->andReturn(['x', 'y']);
         $document->shouldReceive('getPeriod')->andReturn('foo-bar');
-        $document->shouldReceive('getPageCount')->andReturn(13);
 
         $this->assertMatchesSnapshot(
             $this->mapper->map($document, ['foo'], [1 => 'bar']),

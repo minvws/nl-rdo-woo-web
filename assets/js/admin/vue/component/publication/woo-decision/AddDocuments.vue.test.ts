@@ -29,11 +29,15 @@ describe('The "AddDocuments" component', () => {
   const createComponent = () =>
     mount(AddDocuments, {
       props: {
-        allowedFileTypes: ['pdf'],
-        allowedMimeTypes: ['application/pdf'],
         dossierId: 'mocked-dossier-id',
+        fileLimits: [
+          {
+            size: 1000000,
+            mimeTypes: ['application/pdf'],
+            label: 'PDF',
+          },
+        ],
         isComplete: false,
-        maxFileSize: 1000000,
         processEndpoint: 'https://mocked-process-endpoint.mock',
         statusEndpoint: 'https://mocked-status-endpoint.mock',
         uploadEndpoint: 'https://mocked-upload-endpoint.mock',
@@ -41,26 +45,35 @@ describe('The "AddDocuments" component', () => {
         continueLaterUrl: '#mocked-continue-later-url',
         confirmEndpoint: 'mocked-confirm-endpoint',
         rejectEndpoint: 'mocked-reject-endpoint',
+        maxCombinedFileSize: 123456789,
       },
       shallow: true,
       global: {
+        stubs: {
+          Alert: false,
+        },
         renderStubDefaultSlot: true,
       },
     });
 
   test('should render the "UploadDocuments" component', () => {
     expect(getUploadDocumentsComponent(createComponent()).props()).toEqual({
-      allowedFileTypes: ['pdf'],
-      allowedMimeTypes: ['application/pdf'],
       dossierId: 'mocked-dossier-id',
+      fileLimits: [
+        {
+          size: 1000000,
+          mimeTypes: ['application/pdf'],
+          label: 'PDF',
+        },
+      ],
       isComplete: false,
-      maxFileSize: 1000000,
       mode: 'add',
       confirmEndpoint: 'mocked-confirm-endpoint',
       rejectEndpoint: 'mocked-reject-endpoint',
       processEndpoint: 'https://mocked-process-endpoint.mock',
       statusEndpoint: 'https://mocked-status-endpoint.mock',
       uploadEndpoint: 'https://mocked-upload-endpoint.mock',
+      maxCombinedFileSize: 123456789,
     });
   });
 

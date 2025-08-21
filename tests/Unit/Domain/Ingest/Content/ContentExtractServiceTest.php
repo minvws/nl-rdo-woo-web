@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Ingest\Content;
 
-use App\Domain\Ingest\Content\ContentExtractCacheKeyGenerator;
 use App\Domain\Ingest\Content\ContentExtractOptions;
 use App\Domain\Ingest\Content\ContentExtractService;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
@@ -17,8 +16,6 @@ use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
-use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Component\Uid\Uuid;
 
 class ContentExtractServiceTest extends UnitTestCase
@@ -34,8 +31,6 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->service = new ContentExtractService(
             $this->entityStorage = \Mockery::mock(EntityStorageService::class),
             $this->logger = \Mockery::mock(LoggerInterface::class),
-            new TagAwareAdapter(new ArrayAdapter()),
-            new ContentExtractCacheKeyGenerator(),
             [
                 $this->extractorA = \Mockery::mock(ContentExtractorInterface::class),
                 $this->extractorB = \Mockery::mock(ContentExtractorInterface::class),
@@ -71,7 +66,6 @@ class ContentExtractServiceTest extends UnitTestCase
         $entity = \Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $entity->shouldReceive('getId')->andReturn(Uuid::v6());
-        $entity->shouldReceive('getFileCacheKey')->andReturn('entitycachekey');
 
         $this->entityStorage
             ->expects('downloadEntity')
@@ -107,134 +101,6 @@ class ContentExtractServiceTest extends UnitTestCase
         $extracts = $this->service->getExtracts(
             $entity,
             ContentExtractOptions::create()->withAllExtractors(),
-        );
-
-        self::assertEquals(
-            $contentA . PHP_EOL . $contentB,
-            $extracts->getCombinedContent(),
-        );
-    }
-
-    public function testGetExtractsUsesCacheForSecondRun(): void
-    {
-        $fileInfo = \Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
-        $fileInfo->shouldReceive('getHash')->once()->andReturnNull();
-        $fileInfo->shouldReceive('getHash')->andReturn('1295d266e56f7e3c42a2b5163bf0c4c7b4c3fb7640e7d3f14c65c85343b81ca4');
-
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $entity->shouldReceive('getId')->andReturn(Uuid::v6());
-        $entity->shouldReceive('getFileCacheKey')->andReturn('entitycachekey');
-
-        $this->entityStorage
-            ->expects('downloadEntity')
-            ->with($entity)
-            ->andReturn($localFile = __DIR__ . DIRECTORY_SEPARATOR . 'dummy.txt');
-
-        $this->entityStorage->expects('setHash')->with($entity, $localFile);
-
-        $contentA = "A line1\nA line 2";
-        $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
-        $this->extractorA->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
-        $this->extractorA->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentA) {
-                $fileReference->getPath();
-
-                return $contentA;
-            }
-        );
-
-        $contentB = "B line1\nB line 2";
-        $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
-        $this->extractorB->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
-        $this->extractorB->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentB) {
-                $fileReference->getPath();
-
-                return $contentB;
-            }
-        );
-
-        $this->entityStorage->expects('removeDownload')->with($localFile);
-
-        $extracts = $this->service->getExtracts(
-            $entity,
-            ContentExtractOptions::create()->withAllExtractors(),
-        );
-
-        self::assertEquals(
-            $contentA . PHP_EOL . $contentB,
-            $extracts->getCombinedContent(),
-        );
-
-        $extracts = $this->service->getExtracts(
-            $entity,
-            ContentExtractOptions::create()->withAllExtractors(),
-        );
-
-        self::assertEquals(
-            $contentA . PHP_EOL . $contentB,
-            $extracts->getCombinedContent(),
-        );
-    }
-
-    public function testDoubleExtractShouldCallExtractorTwiceWhenRefreshIsTrueForTheSecondRun(): void
-    {
-        $fileInfo = \Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
-        $fileInfo->shouldReceive('getHash')->once()->andReturnNull();
-        $fileInfo->shouldReceive('getHash')->andReturn('1295d266e56f7e3c42a2b5163bf0c4c7b4c3fb7640e7d3f14c65c85343b81ca4');
-
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $entity->shouldReceive('getId')->andReturn(Uuid::v6());
-        $entity->shouldReceive('getFileCacheKey')->andReturn('entitycachekey');
-
-        $this->entityStorage
-            ->expects('downloadEntity')
-            ->with($entity)
-            ->andReturn($localFile = __DIR__ . DIRECTORY_SEPARATOR . 'dummy.txt');
-
-        $this->entityStorage->expects('setHash')->with($entity, $localFile);
-
-        $contentA = "A line1\nA line 2";
-        $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
-        $this->extractorA->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
-        $this->extractorA->expects('getContent')->twice()->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentA) {
-                $fileReference->getPath();
-
-                return $contentA;
-            }
-        );
-
-        $contentB = "B line1\nB line 2";
-        $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
-        $this->extractorB->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
-        $this->extractorB->expects('getContent')->twice()->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentB) {
-                $fileReference->getPath();
-
-                return $contentB;
-            }
-        );
-
-        $this->entityStorage->expects('removeDownload')->with($localFile);
-
-        $extracts = $this->service->getExtracts(
-            $entity,
-            ContentExtractOptions::create()->withAllExtractors()->withLocalFile($localFile),
-        );
-
-        self::assertEquals(
-            $contentA . PHP_EOL . $contentB,
-            $extracts->getCombinedContent(),
-        );
-
-        $extracts = $this->service->getExtracts(
-            $entity,
-            ContentExtractOptions::create()->withAllExtractors()->withRefresh(),
         );
 
         self::assertEquals(
@@ -253,7 +119,6 @@ class ContentExtractServiceTest extends UnitTestCase
         $entity = \Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $entity->shouldReceive('getId')->andReturn(Uuid::v6());
-        $entity->shouldReceive('getFileCacheKey')->andReturn('entitycachekey');
 
         $localFile = __DIR__ . DIRECTORY_SEPARATOR . 'dummy.txt';
         $this->entityStorage->expects('setHash')->with($entity, $localFile);
@@ -293,7 +158,6 @@ class ContentExtractServiceTest extends UnitTestCase
         $entity = \Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $entity->shouldReceive('getId')->andReturn(Uuid::v6());
-        $entity->shouldReceive('getFileCacheKey')->andReturn('entitycachekey');
 
         $dummyFile = __DIR__ . DIRECTORY_SEPARATOR . 'dummy.txt';
         $dummyDocumentFile = 'foo/bar.txt';
@@ -361,8 +225,6 @@ class ContentExtractServiceTest extends UnitTestCase
         $service = new ContentExtractService(
             $this->entityStorage,
             $this->logger,
-            new TagAwareAdapter(new ArrayAdapter()),
-            new ContentExtractCacheKeyGenerator(),
             [
                 $this->extractorA,
             ],
@@ -386,7 +248,6 @@ class ContentExtractServiceTest extends UnitTestCase
         $entity = \Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $entity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
-        $entity->shouldReceive('getFileCacheKey')->andReturn('entitycachekey');
 
         $this->logger->shouldReceive('log')->with(
             LogLevel::WARNING,

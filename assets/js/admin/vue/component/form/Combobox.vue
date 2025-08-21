@@ -16,6 +16,8 @@ interface Props {
   errors?: InputValidationErrors;
   forbiddenValues?: string[];
   label: string;
+  maxLength?: number;
+  minLength?: number;
   name?: string;
   options: string[];
   value?: string;
@@ -199,6 +201,10 @@ const createValidators = (forbiddenValues: string[]) => {
     inputValidators.push(validators.forbidden(forbiddenValues));
   }
 
+  if (props.minLength) {
+    inputValidators.push(validators.minLength(props.minLength));
+  }
+
   return inputValidators;
 };
 
@@ -271,6 +277,7 @@ onMounted(() => {
           :name="name"
           class="bhr-input-text w-full pr-12"
           :class="{ 'bhr-input-text--invalid': inputStore.hasVisibleErrors }"
+          :maxlength="maxLength"
           ref="inputElement"
           role="combobox"
           type="text"
@@ -287,7 +294,7 @@ onMounted(() => {
         >
           <Icon
             :class="{ 'rotate-180': hasVisibleList }"
-            color="fill-bhr-dim-gray"
+            color="fill-bhr-gray-700"
             name="chevron-down"
             :size="24"
           />

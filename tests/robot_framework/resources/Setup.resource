@@ -26,23 +26,14 @@ Suite Setup Generic
   Set DateTime Variables
   Set URL Variables
   IF  '${ENVIRONMENT}' == 'docker-local'
-    # If run locally, the user should have been created manually (still) using the tag=init, so we set the OTP code from the local env var
+    # If run locally, the user should have been created manually using the tag=init, so we set the OTP code from the local env var.
     Open Browser And BaseUrl
     Set Credential Variables  ${TST_BALIE_USER}  ${TST_BALIE_PASSWORD}  %{SECRET_WOO_LOCAL}
   ELSE IF  '${ENVIRONMENT}' == 'docker-ci'
-    # On first run of this keyword, create a user
-    IF  '${ADMIN_OTP_SECRET}' == '${EMPTY}'
-      ${temp_password} =  Create Woo Admin User
-      Open Browser And BaseUrl
-      # Log in once to change the temp password
-      ${new_password} =  Login Admin
-      ...  username=${TST_BALIE_USER}
-      ...  password=${temp_password}
-      ...  otp_secret=${TST_BALIE_OTP_SECRET}
-      Set Credential Variables  ${TST_BALIE_USER}  ${new_password}  ${TST_BALIE_OTP_SECRET}
-    ELSE
-      Open Browser And BaseUrl
-    END
+    # Since this can be called through pabot as well, the user is created first in 00__Setup.robot and OTP secret stored in the env var.
+    ${admin_otp_secret} =  Get Environment Variable  ADMIN_OTP_SECRET  EMPTY
+    Open Browser And BaseUrl
+    Set Credential Variables  ${TST_BALIE_USER}  ${TST_BALIE_PASSWORD}  ${admin_otp_secret}
   ELSE IF  '${ENVIRONMENT}' == 'test'
     Open Browser And BaseUrl  http_username=%{USERNAME_WOO_TEST}  http_password=%{PASSWORD_WOO_TEST}
     Set Credential Variables  %{EMAIL_WOO_TEST_BALIE}  %{PASSWORD_WOO_TEST_BALIE}  %{SECRET_WOO_TEST_BALIE}
@@ -51,10 +42,11 @@ Suite Setup Generic
     Set Credential Variables  %{EMAIL_WOO_STAGING_BALIE}  %{PASSWORD_WOO_STAGING_BALIE}  %{SECRET_WOO_STAGING_BALIE}
   END
   Close Symfony Dev Bar
+  Set Browser Timeout  30s
 
 Set URL Variables
-  VAR  ${URL_PUBLIC} =  http://%{URL_PUBLIC}  scope=global
-  VAR  ${URL_ADMIN} =  http://%{URL_ADMIN}  scope=global
+  VAR  ${URL_PUBLIC} =  %{URL_PUBLIC}  scope=global
+  VAR  ${URL_ADMIN} =  %{URL_ADMIN}  scope=global
 
 Set Credential Variables
   [Arguments]  ${username}  ${password}  ${otp_secret}

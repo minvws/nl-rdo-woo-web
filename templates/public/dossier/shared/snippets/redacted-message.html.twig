@@ -1,6 +1,6 @@
 <div class="woo-rich-text woo-readable-width {{ (hasGrounds ?? false) ? 'mt-4' : '' }}">
     {% if (department.feedbackContent is not empty) %}
-            {{ department.feedbackContent | render_markdown | raw }}
+            {{ department.feedbackContent | render_markdown }}
     {% else %}
         <p>
             {{ 'public.documents.redacted_data.comments' | trans }}

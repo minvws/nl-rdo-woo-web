@@ -17,6 +17,7 @@ De publicatie en bijbehorende documenten kunnen zowel gevonden worden op basis v
 :caption: Inhoudsopgave
 
 advies/index
+adviesaanvraag/index
 beschikking/index
 convenant/index
 jaarplan-en-jaarverslag/index

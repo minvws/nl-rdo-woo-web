@@ -1,6 +1,5 @@
 parameters:
     document_path: '%kernel.project_dir%/var/documents'
-    thumbnail_path: '%kernel.project_dir%/var/thumbnails'
     batch_path: '%kernel.project_dir%/var/batches'
     woo_index_path: '%kernel.project_dir%/var/woo_index'
     upload_path: '%kernel.project_dir%/var/uploader'
@@ -13,10 +12,6 @@ flysystem:
             adapter: 'lazy'
             options:
                 source: 'document.storage.%env(STORAGE_DOCUMENT_ADAPTER)%'
-        thumbnail.storage:
-            adapter: 'lazy'
-            options:
-                source: 'thumbnail.storage.%env(STORAGE_THUMBNAIL_ADAPTER)%'
         batch.storage:
             adapter: 'lazy'
             options:
@@ -49,14 +44,6 @@ flysystem:
             options:
                 client: 'Aws\S3\S3Client'
                 bucket: '%env(STORAGE_MINIO_DOCUMENT_BUCKET)%'
-
-        thumbnail.storage.aws:
-            adapter: 'aws'
-            visibility: 'public'
-            directory_visibility: 'public'
-            options:
-                client: 'Aws\S3\S3Client'
-                bucket: '%env(STORAGE_MINIO_THUMBNAIL_BUCKET)%'
 
         batch.storage.aws:
             adapter: 'aws'
@@ -106,12 +93,6 @@ flysystem:
                     dir:
                         public: 0o775
                         private: 0o700
-
-        thumbnail.storage.local:
-            <<: *document.storage.local
-            options:
-                <<: *document.storage.local.options
-                directory: '%thumbnail_path%'
 
         batch.storage.local:
             <<: *document.storage.local

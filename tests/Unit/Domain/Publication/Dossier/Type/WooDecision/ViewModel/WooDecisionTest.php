@@ -19,41 +19,38 @@ use Webmozart\Assert\Assert;
 
 final class WooDecisionTest extends UnitTestCase
 {
-    public function testIsExternalDepartmentResponsibleReturnsFalseWithOneVwsDepartment(): void
+    public function testGetResponsibilityContent(): void
     {
-        $department = new Department(name: DepartmentEnum::VWS->value, feedbackContent: null);
-
-        /** @var ArrayCollection<array-key,Department> $departments */
-        $departments = new ArrayCollection([$department]);
-
-        $wooDecision = $this->getWooDecision($departments);
-
-        $this->assertFalse($wooDecision->isExternalDepartmentResponsible());
-    }
-
-    public function testIsExternalDepartmentResponsibleReturnsTrueWithOneNonVwsDepartment(): void
-    {
-        $department = new Department(name: 'ministry of muggles', feedbackContent: null);
-
-        /** @var ArrayCollection<array-key,Department> $departments */
-        $departments = new ArrayCollection([$department]);
-
-        $wooDecision = $this->getWooDecision($departments);
-
-        $this->assertTrue($wooDecision->isExternalDepartmentResponsible());
-    }
-
-    public function testIsExternalDepartmentResponsibleUsesFirstWithMultipleDepartments(): void
-    {
-        $departmentOne = new Department(name: 'ministry of muggles', feedbackContent: null);
-        $departmentTwo = new Department(name: DepartmentEnum::VWS->value, feedbackContent: null);
-
-        /** @var ArrayCollection<array-key,Department> $departments */
+        $departmentOne = new Department(
+            name: 'ministry of muggles',
+            feedbackContent: null,
+            responsibilityContent: null,
+        );
+        $departmentTwo = new Department(
+            name: DepartmentEnum::VWS->value,
+            feedbackContent: null,
+            responsibilityContent: 'This is a responsibility content',
+        );
         $departments = new ArrayCollection([$departmentOne, $departmentTwo]);
 
         $wooDecision = $this->getWooDecision($departments);
 
-        $this->assertTrue($wooDecision->isExternalDepartmentResponsible());
+        $this->assertSame(
+            'This is a responsibility content',
+            $wooDecision->getResponsibilityContent(),
+        );
+    }
+
+    public function testGetResponsibilityContentReturnsNullWhenNoDepartmentHasContent(): void
+    {
+        $departmentOne = new Department(
+            name: 'ministry of muggles',
+            feedbackContent: null,
+            responsibilityContent: null,
+        );
+        $wooDecision = $this->getWooDecision(new ArrayCollection([$departmentOne]));
+
+        $this->assertNull($wooDecision->getResponsibilityContent());
     }
 
     /**
@@ -64,8 +61,8 @@ final class WooDecisionTest extends UnitTestCase
         $dossierCounts = \Mockery::mock(DossierCounts::class);
         $mainDocument = \Mockery::mock(MainDocument::class);
 
-        $department = $departments->first();
-        Assert::notFalse($department);
+        $mainDepartment = $departments->first();
+        Assert::isInstanceOf($mainDepartment, Department::class);
 
         return new WooDecision(
             new CommonDossierProperties(
@@ -76,7 +73,7 @@ final class WooDecisionTest extends UnitTestCase
                 title: 'title',
                 pageTitle: 'pageTitle',
                 publicationDate: new \DateTimeImmutable(),
-                mainDepartment: $department,
+                mainDepartment: $mainDepartment,
                 summary: 'summary',
                 type: DossierType::WOO_DECISION,
                 subject: null,

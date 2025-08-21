@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\EventSubscriber;
 
 use App\EventSubscriber\LoginLogger;
-use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\User;
+use App\Service\Security\UserRouteHelper;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
@@ -23,19 +23,19 @@ class LoginLoggerTest extends MockeryTestCase
 {
     private LoggerInterface&MockInterface $logger;
     private RouterInterface&MockInterface $router;
-    private AuthorizationMatrix&MockInterface $authorizationMatrix;
+    private UserRouteHelper&MockInterface $userRouteHelper;
     private LoginLogger $subscriber;
 
     public function setUp(): void
     {
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->router = \Mockery::mock(RouterInterface::class);
-        $this->authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
+        $this->userRouteHelper = \Mockery::mock(UserRouteHelper::class);
 
         $this->subscriber = new LoginLogger(
             $this->logger,
             $this->router,
-            $this->authorizationMatrix,
+            $this->userRouteHelper,
         );
     }
 
@@ -64,9 +64,9 @@ class LoginLoggerTest extends MockeryTestCase
         $event = \Mockery::mock(LoginSuccessEvent::class);
         $event->expects('getUser')->andReturn($user);
 
-        $this->authorizationMatrix->expects('isAuthorized')->andReturnFalse();
+        $this->userRouteHelper->expects('getDefaultIndexRouteName')->andReturn('foo');
 
-        $this->router->expects('generate')->with('app_admin_users')->andReturn($url = 'foo/bar');
+        $this->router->expects('generate')->with('foo')->andReturn($url = 'foo/bar');
 
         $event->expects('setResponse')->with(\Mockery::on(
             static function (RedirectResponse $response) use ($url): bool {

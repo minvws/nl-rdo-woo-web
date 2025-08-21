@@ -62,7 +62,7 @@ abstract class AbstractDossier
     #[ORM\Column(type: 'uuid', unique: true)]
     protected Uuid $id;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50)]
     #[Assert\Length(min: 3, max: 50, groups: [DossierValidationGroup::DETAILS->value])]
     #[Assert\Regex(
         pattern: '/^[a-z0-9-]+$/i',
@@ -140,6 +140,7 @@ abstract class AbstractDossier
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value, DossierValidationGroup::CONTENT->value])]
+    #[Assert\Length(min: 1, max: 1000, groups: [DossierValidationGroup::DECISION->value, DossierValidationGroup::CONTENT->value])]
     protected string $summary = '';
 
     #[ORM\Column(length: 255)]
@@ -158,6 +159,7 @@ abstract class AbstractDossier
     protected Organisation $organisation;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(max: 255, groups: [DossierValidationGroup::DETAILS->value])]
     protected string $internalReference = '';
 
     #[ORM\ManyToOne(inversedBy: 'dossiers')]

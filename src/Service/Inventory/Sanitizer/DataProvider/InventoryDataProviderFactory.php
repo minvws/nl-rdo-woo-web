@@ -27,7 +27,7 @@ readonly class InventoryDataProviderFactory
     {
         return new InquiryInventoryDataProvider(
             $inquiry,
-            $this->documentRepository->getAllInquiryDocumentsWithDossiers($inquiry),
+            $this->documentRepository->getPublicInquiryDocumentsWithDossiers($inquiry),
         );
     }
 }

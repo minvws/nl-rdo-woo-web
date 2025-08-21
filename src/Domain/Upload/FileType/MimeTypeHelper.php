@@ -13,6 +13,11 @@ readonly class MimeTypeHelper
 {
     public const int SAMPLE_SIZE = 16 * 1024 * 1024;
 
+    public function __construct(
+        private FinfoMimeTypeDetector $mimeTypeDetector,
+    ) {
+    }
+
     public function isValidForUploadGroup(
         ?string $mimeType,
         UploadGroupId $groupId,
@@ -28,25 +33,20 @@ readonly class MimeTypeHelper
         );
     }
 
-    public function detectMimeType(File|UploadedFile $file): ?string
+    public function detectMimeType(string $path, string $contents): ?string
     {
-        $detector = new FinfoMimeTypeDetector();
+        return $this->mimeTypeDetector->detectMimeType($path, $contents);
+    }
 
-        $startOfFileContent = file_get_contents($file->getPathname(), length: self::SAMPLE_SIZE);
-        if (! $startOfFileContent) {
-            return null;
-        }
-
-        return $detector->detectMimeType(
-            $this->getOriginalFileName($file),
-            $startOfFileContent,
-        );
+    public function detectMimeTypeFromPath(File|UploadedFile $file): ?string
+    {
+        return $this->mimeTypeDetector->detectMimeTypeFromPath($this->getOriginalFileName($file));
     }
 
     private function getOriginalFileName(File|UploadedFile $file): string
     {
         return $file instanceof UploadedFile
             ? $file->getOriginalFilename()
-            : '';
+            : $file->getFilename();
     }
 }

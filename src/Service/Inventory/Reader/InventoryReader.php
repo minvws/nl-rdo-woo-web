@@ -10,20 +10,29 @@ use App\Exception\InventoryReaderException;
 use App\Service\FileReader\ColumnMapping;
 use App\Service\FileReader\FileReaderInterface;
 use App\Service\FileReader\ReaderFactoryInterface;
+use App\Service\Inquiry\CaseNumbers;
 use App\Service\Inventory\DocumentMetadata;
 use App\Service\Inventory\InventoryDataHelper;
 use App\Service\Inventory\MetadataField;
 
+/**
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ */
 class InventoryReader implements InventoryReaderInterface
 {
+    private const int MAX_LINK_LENGTH = 2048;
+    private const int MAX_FILENAME_LENGTH = 500;
+    private const int MAX_REMARK_LENGTH = 1000;
+    private const int MIN_DOCUMENT_ID_LENGTH = 1;
+    private const int MAX_DOCUMENT_ID_LENGTH = 170;
+    private const int MIN_MATTER_LENGTH = 2;
+    private const int MAX_MATTER_LENGTH = 50;
+
     /**
      * @var ColumnMapping[]
      */
     private readonly array $mappings;
     private FileReaderInterface $reader;
-
-    public const MAX_LINK_SIZE = 2048;
-    public const MAX_FILE_SIZE = 1024;
 
     public function __construct(
         private readonly ReaderFactoryInterface $readerFactory,
@@ -69,21 +78,8 @@ class InventoryReader implements InventoryReaderInterface
      */
     protected function mapRow(int $rowIdx): DocumentMetadata
     {
-        $documentId = $this->reader->getString($rowIdx, MetadataField::ID->value);
-        if (empty($documentId)) {
-            throw InventoryReaderException::forMissingDocumentIdInRow($rowIdx);
-        }
-        if (preg_match('/[^a-z0-9.]/i', $documentId)) {
-            throw InventoryReaderException::forInvalidDocumentId($rowIdx);
-        }
-
-        $matter = $this->reader->getString($rowIdx, MetadataField::MATTER->value);
-        if (mb_strlen($matter) < 2) {
-            throw InventoryReaderException::forMissingMatterInRow($rowIdx);
-        }
-
         $links = $this->getLinks($rowIdx);
-        $remark = $this->reader->getOptionalString($rowIdx, MetadataField::REMARK->value);
+        $remark = $this->getRemark($rowIdx);
 
         // In old documents, it's possible that the link is in the remark column
         if (count($links) === 0 && is_string($remark) && str_starts_with($remark, 'http')) {
@@ -91,26 +87,21 @@ class InventoryReader implements InventoryReaderInterface
             $remark = null;
         }
 
-        $filename = $this->reader->getString($rowIdx, MetadataField::DOCUMENT->value);
-        if (strlen($filename) > self::MAX_FILE_SIZE) {
-            throw InventoryReaderException::forFileTooLong($filename, $rowIdx);
-        }
-
         return new DocumentMetadata(
             date: $this->reader->getOptionalDateTime($rowIdx, MetadataField::DATE->value),
-            filename: $filename,
-            familyId: $this->reader->getOptionalInt($rowIdx, MetadataField::FAMILY->value),
+            filename: $this->getFilename($rowIdx),
+            familyId: $this->getFamilyId($rowIdx),
             sourceType: SourceType::create($this->reader->getOptionalString($rowIdx, MetadataField::SOURCETYPE->value)),
             grounds: InventoryDataHelper::getGrounds($this->reader->getString($rowIdx, MetadataField::GROUND->value)),
-            id: $documentId,
+            id: $this->getDocumentId($rowIdx),
             judgement: InventoryDataHelper::judgement($this->reader->getString($rowIdx, MetadataField::JUDGEMENT->value)),
             period: null,
-            threadId: $this->reader->getOptionalInt($rowIdx, MetadataField::THREADID->value),
-            caseNumbers: InventoryDataHelper::separateValues($this->reader->getOptionalString($rowIdx, MetadataField::CASENR->value)),
+            threadId: $this->getThreadId($rowIdx),
+            caseNumbers: $this->getCaseNumbers($rowIdx),
             suspended: InventoryDataHelper::isTrue($this->reader->getOptionalString($rowIdx, MetadataField::SUSPENDED->value)),
             links: $links,
             remark: $remark,
-            matter: $matter,
+            matter: $this->getMatter($rowIdx),
             refersTo: InventoryDataHelper::separateValues($this->reader->getOptionalString($rowIdx, MetadataField::REFERS_TO->value)),
         );
     }
@@ -128,11 +119,94 @@ class InventoryReader implements InventoryReaderInterface
         $links = InventoryDataHelper::separateValues($this->reader->getOptionalString($rowIdx, MetadataField::LINK->value), '|');
 
         foreach ($links as $link) {
-            if ($link && strlen($link) > self::MAX_LINK_SIZE) {
+            if ($link && strlen($link) > self::MAX_LINK_LENGTH) {
                 throw InventoryReaderException::forLinkTooLong($link, $rowIdx);
             }
         }
 
         return $links;
+    }
+
+    private function getRemark(int $rowIdx): ?string
+    {
+        $remark = $this->reader->getOptionalString($rowIdx, MetadataField::REMARK->value);
+        if ($remark !== null && mb_strlen($remark) > self::MAX_REMARK_LENGTH) {
+            throw InventoryReaderException::forRemarkTooLong($rowIdx, self::MAX_REMARK_LENGTH);
+        }
+
+        return $remark;
+    }
+
+    private function getFamilyId(int $rowIdx): ?int
+    {
+        $familyId = $this->reader->getOptionalInt($rowIdx, MetadataField::FAMILY->value);
+        if ($familyId !== null && $familyId < 1) {
+            throw InventoryReaderException::forInvalidFamilyId($rowIdx);
+        }
+
+        return $familyId;
+    }
+
+    private function getThreadId(int $rowIdx): ?int
+    {
+        $threadId = $this->reader->getOptionalInt($rowIdx, MetadataField::THREADID->value);
+        if ($threadId !== null && $threadId < 1) {
+            throw InventoryReaderException::forInvalidThreadId($rowIdx);
+        }
+
+        return $threadId;
+    }
+
+    private function getDocumentId(int $rowIdx): string
+    {
+        $documentId = $this->reader->getString($rowIdx, MetadataField::ID->value);
+        if (empty($documentId)) {
+            throw InventoryReaderException::forMissingDocumentIdInRow($rowIdx);
+        }
+
+        $length = mb_strlen($documentId);
+        if ($length < self::MIN_DOCUMENT_ID_LENGTH || $length > self::MAX_DOCUMENT_ID_LENGTH) {
+            throw InventoryReaderException::forInvalidDocumentIdLength($rowIdx, self::MIN_DOCUMENT_ID_LENGTH, self::MAX_DOCUMENT_ID_LENGTH);
+        }
+
+        if (preg_match('/[^a-z0-9.]/i', $documentId)) {
+            throw InventoryReaderException::forInvalidDocumentId($rowIdx);
+        }
+
+        return $documentId;
+    }
+
+    private function getFilename(int $rowIdx): string
+    {
+        $filename = $this->reader->getString($rowIdx, MetadataField::DOCUMENT->value);
+        if (strlen($filename) > self::MAX_FILENAME_LENGTH) {
+            throw InventoryReaderException::forFileTooLong($filename, $rowIdx);
+        }
+
+        return $filename;
+    }
+
+    private function getCaseNumbers(int $rowIdx): CaseNumbers
+    {
+        $caseNumbersInput = $this->reader->getOptionalString($rowIdx, MetadataField::CASENR->value);
+        try {
+            $caseNumbers = CaseNumbers::fromCommaSeparatedString($caseNumbersInput);
+        } catch (\InvalidArgumentException) {
+            throw InventoryReaderException::forCaseNumbersInvalid($caseNumbersInput ?? '', $rowIdx);
+        }
+
+        return $caseNumbers;
+    }
+
+    private function getMatter(int $rowIdx): string
+    {
+        $matter = $this->reader->getString($rowIdx, MetadataField::MATTER->value);
+
+        $length = mb_strlen($matter);
+        if ($length < self::MIN_MATTER_LENGTH || $length > self::MAX_MATTER_LENGTH) {
+            throw InventoryReaderException::forInvalidMatterInRow($rowIdx, self::MIN_MATTER_LENGTH, self::MAX_MATTER_LENGTH);
+        }
+
+        return $matter;
     }
 }

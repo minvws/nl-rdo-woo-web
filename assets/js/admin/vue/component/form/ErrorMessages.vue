@@ -18,10 +18,10 @@ const hasMessages = computed(() => numberOfMessages.value > 0);
 <template>
   <div class="flex pb-3" :id="id" v-if="hasMessages">
     <span class="mr-2">
-      <Icon color="fill-bhr-maximum-red" name="exclamation-filled" />
+      <Icon color="fill-bhr-red-900" name="exclamation-filled" />
     </span>
 
-    <div class="text-bhr-maximum-red">
+    <div class="text-bhr-red-900">
       <ul v-if="numberOfMessages > 1" class="bhr-ul">
         <li
           v-for="(message, index) in props.messages"

@@ -2,13 +2,12 @@
     {{ form_row(form.summary) }}
 
     <twig:Admin:Publication:ManageDocument
-        allowedFileTypes="{{ documentTypeNames }}"
-        allowedMimeTypes="{{ documentMimeTypes }}"
         canDelete="{{ canDeleteDocument }}"
         documentType="{{ 'admin.dossiers.advice.document' | trans }}"
         documentTypes="{{ documentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/advice-document' }}"
         e2eName="advice"
+        fileLimits="{{ documentFileLimits | default([])}}"
         formField="{{ form.document }}"
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.advice.form.content.document_help' | trans }}"
@@ -20,29 +19,29 @@
     {% set attachmentsApiEndpoint = '/balie/api/dossiers/' ~ dossier.id ~ '/advice-attachments' %}
 
      <twig:Admin:Publication:ManageAttachments
-        allowedFileTypes="{{ attachmentTypeNames }}"
-        allowedMimeTypes="{{ attachmentMimeTypes }}"
         allowMultiple="{{ false }}"
         canDelete="{{ canDeleteAttachments }}"
         documentTypes="{{ requestForAdviceTypes }}"
         endpoint="{{ attachmentsApiEndpoint }}"
         e2eName="request-for-advice"
+        fileLimits="{{ attachmentFileLimits | default([])}}"
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.advice.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"
+        maxLength="{{ 1 }}"
         title="{{ 'admin.dossiers.advice.form.content.request_for_advice_label' | trans }}"
         dossierId="{{ dossier.id }}"
     />
 
     <twig:Admin:Publication:ManageAttachments
-        allowedFileTypes="{{ attachmentTypeNames }}"
-        allowedMimeTypes="{{ attachmentMimeTypes }}"
         canDelete="{{ canDeleteAttachments }}"
         documentTypes="{{ attachmentTypes }}"
         endpoint="{{ attachmentsApiEndpoint }}"
+        fileLimits="{{ attachmentFileLimits | default([])}}"
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.advice.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"
+        maxLength="{{ 49 }}"
         dossierId="{{ dossier.id }}"
     />
 

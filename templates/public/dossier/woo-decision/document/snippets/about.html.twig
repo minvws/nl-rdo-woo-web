@@ -24,7 +24,7 @@
                     <th class="woo-table-cell-light" scope="row">{{ 'categories.category.source_file' | trans }}</th>
                     <td data-e2e-name="source-type">
                         <twig:Public:FileIcon type="{{ document.entity.fileInfo.sourceType.value }}" class="mr-1 -mt-0.5" />
-                        {{ document.entity.fileInfo.sourceType | trans }}{% if document.entity.isUploaded and document.entity.pageCount > 0 %}, {{ document.entity.pageCount }} pagina's{% endif %}
+                        {{ document.entity.fileInfo.sourceType | trans }}{% if document.entity.isUploaded and document.entity.fileInfo.pageCount > 0 %}, {{ document.entity.fileInfo.pageCount }} pagina's{% endif %}
                     </td>
                 </tr>
                 {% endif %}
@@ -67,7 +67,7 @@
                 {% if hasGrounds or isDownloadable %}
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ isDownloadable ? 'public.documents.redacted_data' | trans : 'global.grounds' | trans }}</th>
-                    <td>
+                    <td data-e2e-name="grounds">
                         {% if hasGrounds %}
                         <ul>
                             {% for ground in document.entity.grounds %}

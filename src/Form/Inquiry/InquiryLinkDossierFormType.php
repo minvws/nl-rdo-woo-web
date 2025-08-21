@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Form\Inquiry;
 
+use App\Service\Inquiry\CaseNumbers;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @template-extends AbstractType<InquiryLinkDossierFormType>
@@ -32,6 +35,7 @@ class InquiryLinkDossierFormType extends AbstractType
                 'required' => true,
                 'constraints' => [
                     new NotBlank(['message' => 'Enter a case number or multiple case numbers, separate multiple case numbers with commas']),
+                    new Callback($this->validateCaseNumbers(...)),
                 ],
             ])
             ->add('dossiers', ChoiceType::class, [
@@ -74,5 +78,19 @@ class InquiryLinkDossierFormType extends AbstractType
         $resolver->setDefaults([
             'choices' => [],
         ]);
+    }
+
+    /**
+     * This validates if all given prefixes in the collection are unique (not adding the same value twice).
+     */
+    public function validateCaseNumbers(string $input, ExecutionContextInterface $context): void
+    {
+        try {
+            CaseNumbers::fromCommaSeparatedString($input);
+        } catch (\InvalidArgumentException) {
+            $context
+                ->buildViolation('casenumbers_invalid')
+                ->addViolation();
+        }
     }
 }

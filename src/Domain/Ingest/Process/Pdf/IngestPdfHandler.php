@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Ingest\Process\Pdf;
 
 use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Worker\Pdf\Extractor\PagecountExtractor;
 use App\Service\Worker\PdfProcessor;
@@ -15,7 +14,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Webmozart\Assert\Assert;
 
 /**
- * Ingest a PDF file into the system. It will extract all pages fromm the pdf and emits a message for each page.
+ * Ingest a PDF file into the system. It will extract all pages from the pdf and emits a message for each page.
  */
 #[AsMessageHandler]
 final readonly class IngestPdfHandler
@@ -34,7 +33,7 @@ final readonly class IngestPdfHandler
         $entity = $this->doctrine->getRepository($message->getEntityClass())->find($message->getEntityId());
         if (is_null($entity)) {
             $this->logger->warning('No entity found in IngestPdfHandler', [
-                'id' => $message->getEntityId(),
+                'id' => $message->getEntityId()->toRfc4122(),
                 'class' => $message->getEntityClass(),
             ]);
 
@@ -45,32 +44,30 @@ final readonly class IngestPdfHandler
         Assert::isInstanceOf($entity, EntityWithFileInfo::class);
         Assert::true($entity->getFileInfo()->isPaginatable(), 'Entity is not paginatable');
 
-        // Create extractor or cached extractor based on the given options
-        $this->extractor->extract($entity, $message->getForceRefresh());
-        $result = $this->extractor->getOutput();
-        $pageCount = $result?->isSuccessful() ? $result->numberOfPages : 0;
+        $this->ensurePageCountIsSet($entity);
 
-        $this->updatePageCount($entity, $pageCount);
-
-        // Process document and store in elastic as a whole
-        $this->processor->processEntity($entity, $message->getForceRefresh());
+        // Process document and store in elastic as a whole, including extracted metadata
+        $this->processor->processEntity($entity);
 
         // Go and ingest all pages in the document
-        for ($i = 1; $i <= $pageCount; $i++) {
+        for ($pageNr = 1; $pageNr <= $entity->getFileInfo()->getPageCount(); $pageNr++) {
             $this->ingestDispatcher->dispatchIngestPdfPageCommand(
                 $message->getEntityId(),
                 $message->getEntityClass(),
-                $message->getForceRefresh(),
-                $i,
+                $pageNr,
             );
         }
     }
 
-    private function updatePageCount(EntityWithFileInfo $entity, int $pageCount): void
+    private function ensurePageCountIsSet(EntityWithFileInfo $entity): void
     {
-        if ($entity instanceof Document) {
-            $entity->setPageCount($pageCount);
+        if ($entity->getFileInfo()->getPageCount() !== null) {
+            return;
         }
+
+        $this->extractor->extract($entity);
+        $result = $this->extractor->getOutput();
+        $pageCount = $result?->isSuccessful() ? $result->numberOfPages : 0;
 
         $entity->getFileInfo()->setPageCount($pageCount);
 

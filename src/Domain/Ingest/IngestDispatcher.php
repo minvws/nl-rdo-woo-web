@@ -79,10 +79,10 @@ readonly class IngestDispatcher
     /**
      * @param class-string<EntityWithFileInfo> $entityClass
      */
-    public function dispatchIngestPdfPageCommand(Uuid $entityId, string $entityClass, bool $forceRefresh, int $pageNr): void
+    public function dispatchIngestPdfPageCommand(Uuid $entityId, string $entityClass, int $pageNr): void
     {
         $this->messageBus->dispatch(
-            new IngestPdfPageCommand($entityId, $entityClass, $forceRefresh, $pageNr),
+            new IngestPdfPageCommand($entityId, $entityClass, $pageNr),
         );
     }
 

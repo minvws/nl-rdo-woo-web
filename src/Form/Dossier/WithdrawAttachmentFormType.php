@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Dossier;
 
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -11,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
@@ -38,6 +40,10 @@ class WithdrawAttachmentFormType extends AbstractType
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),
+                    new Length(
+                        min: AbstractAttachment::WITHDRAW_EXPLANATION_MIN_LENGTH,
+                        max: AbstractAttachment::WITHDRAW_EXPLANATION_MAX_LENGTH,
+                    ),
                 ],
                 'attr' => [
                     'class' => 'w-full',

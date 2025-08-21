@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import Alert from '@admin-fe/component/Alert.vue';
 import ErrorMessages from '@admin-fe/component/form/ErrorMessages.vue';
+import type { FileUploadLimit } from '@js/admin/utils/file/interface';
 import { ref } from 'vue';
 import UploadDocuments from './UploadDocuments.vue';
 
 interface Props {
-  allowedFileTypes: string[];
-  allowedMimeTypes: string[];
   dossierId: string;
+  fileLimits: FileUploadLimit[];
   isComplete: boolean;
-  maxFileSize: number;
   confirmEndpoint: string;
   rejectEndpoint: string;
   processEndpoint: string;
@@ -17,11 +16,11 @@ interface Props {
   uploadEndpoint: string;
   nextStepUrl: string;
   continueLaterUrl: string;
+  maxCombinedFileSize: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  allowedFileTypes: () => [],
-  allowedMimeTypes: () => [],
+  fileLimits: () => [],
 });
 
 const showCannotContinueMessage = ref(false);
@@ -45,22 +44,24 @@ const onComplete = () => {
 <template>
   <UploadDocuments
     @on-complete="onComplete"
-    :allowed-file-types="props.allowedFileTypes"
-    :allowed-mime-types="props.allowedMimeTypes"
     :dossier-id="props.dossierId"
     :is-complete="props.isComplete"
-    :max-file-size="props.maxFileSize"
+    :file-limits="props.fileLimits"
     mode="add"
     :confirm-endpoint="props.confirmEndpoint"
     :reject-endpoint="props.rejectEndpoint"
     :process-endpoint="props.processEndpoint"
     :status-endpoint="props.statusEndpoint"
     :upload-endpoint="props.uploadEndpoint"
+    :max-combined-file-size="props.maxCombinedFileSize"
   />
 
   <Alert v-if="isComplete" type="success" data-e2e-name="upload-completed">
-    <strong>Uploaden gelukt:</strong> Alle documenten uit het productierapport
-    zijn geüpload.
+    <h2 class="font-semibold">Uploaden gelukt</h2>
+
+    <template #extra>
+      <p>Alle documenten uit het productierapport zijn geüpload.</p>
+    </template>
   </Alert>
 
   <div class="mt-4">

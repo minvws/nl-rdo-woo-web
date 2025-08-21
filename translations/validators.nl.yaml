@@ -142,7 +142,7 @@ date_max_5_year_in_future: 'Datum mag niet meer dan 5 jaar in de toekomst liggen
 use_only_letters_numbers_and_dashes: 'Gebruik alleen letters, cijfers en verbindingstekens. Haal niet-toegestane karakters eruit.'
 use_only_letters_and_numbers: 'Gebruik alleen letters en cijfers. Haal niet-toegestane karakters eruit.'
 date_must_not_be_in_future: 'Deze datum mag niet in de toekomst liggen'
-at_least_two_parties_required: 'Vul minimaal 2 partijen in'
+min_max_parties: 'Vul minimaal 2 en maximaal 10 partijen in'
 at_least_one_department_required: 'Kies minimaal 1 bestuursorgaan'
 at_least_one_prefix_required: 'Vul minimaal 1 prefix in'
 no_double_prefixes_allowed: 'Er mogen geen dubbele prefixes ingevoerd worden'
@@ -159,3 +159,4 @@ admin.user.password.validation.same_current: 'Je nieuwe wachtwoord mag niet hetz
 admin.user.password.validation.common: 'Het gekozen wachtwoord is niet veilig'
 subject_already_exists: 'Dit onderwerp bestaat al'
 alpha_numeric_dash_only: 'Prefix mag alleen bestaan uit letters, cijfers en streepjes'
+casenumbers_invalid: "Zaaknummers mogen alleen letters, cijfers en verbindingstekens bevatten. Maximale lengte is 255 tekens."

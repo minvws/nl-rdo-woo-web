@@ -37,7 +37,7 @@ Upload Covenant
   [Arguments]  ${covenant_location}
   ${_}  ${file_name} =  Split Path  ${covenant_location}
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${covenant_location}
-  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${file_name}  timeout=10s
+  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${file_name}
   Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
   Click  //dialog[@open]//button[@type="submit"]
   Wait For Condition  Text  //*[@id="inhoud"]  contains  Convenant '${file_name}' is
@@ -45,8 +45,8 @@ Upload Covenant
 Publish Test Covenant
   [Arguments]  ${publication_status}=Gepubliceerd  ${has_attachment}=${FALSE}
   VAR  ${type} =  covenant
-  Create New Dossier  ${type}
   Generate Test Data Set  ${type}  ${has_attachment}
+  Create New Dossier  ${type}
   Fill Out Basic Details  type=${type}
   Fill Out Covenant Details  ${has_attachment}
   Publish Dossier And Return To Admin Home  ${publication_status}

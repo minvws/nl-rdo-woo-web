@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Inquiry;
 
+use App\Domain\Upload\FileType\FileType as FileTypeEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -33,9 +34,14 @@ class InquiryLinkDocumentsFormType extends AbstractType
                 'constraints' => [
                     new File([
                         'maxSize' => '10024k',
+                        'mimeTypes' => FileTypeEnum::XLS->getMimeTypes(),
                         'mimeTypesMessage' => 'Please upload a valid spreadsheet',
                     ]),
                     new NotBlank(),
+                ],
+                'attr' => [
+                    'accept' => FileTypeEnum::XLS->getMimeTypes(),
+                    'typeName' => FileTypeEnum::XLS->getTypeName(),
                 ],
             ])
             ->add('prefix', ChoiceType::class, [

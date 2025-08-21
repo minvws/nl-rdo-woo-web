@@ -47,6 +47,7 @@ readonly class InventoryDocumentMapper
             $document->isSuspended() ? 'ja' : '',
             implode(';', $this->getRelatedDocumentIds($document)),
             implode(';', $this->getRelatedDocumentUrls($document)),
+            $dossier->getTitle() ?? '',
         ];
     }
 

@@ -30,7 +30,7 @@ final readonly class IngestTikaOnlyHandler
         $entity = $this->doctrine->getRepository($message->getEntityClass())->find($message->getEntityId());
         if (is_null($entity)) {
             $this->logger->warning('No entity found in IngestTikaOnlyHandler', [
-                'id' => $message->getEntityId(),
+                'id' => $message->getEntityId()->toRfc4122(),
                 'class' => $message->getEntityClass(),
             ]);
 
@@ -42,9 +42,7 @@ final readonly class IngestTikaOnlyHandler
 
         $extracts = $this->contentExtractService->getExtracts(
             $entity,
-            ContentExtractOptions::create()
-                ->withExtractor(ContentExtractorKey::TIKA)
-                ->withRefresh($message->getForceRefresh())
+            ContentExtractOptions::create()->withExtractor(ContentExtractorKey::TIKA),
         );
 
         try {

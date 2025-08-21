@@ -10,12 +10,7 @@ use App\Service\Storage\EntityStorageService;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 readonly class ContentExtractService
 {
     /**
@@ -24,8 +19,6 @@ readonly class ContentExtractService
     public function __construct(
         private EntityStorageService $entityStorage,
         private LoggerInterface $logger,
-        private CacheInterface $cache,
-        private ContentExtractCacheKeyGenerator $cacheKeyGenerator,
         #[AutowireIterator('woo_platform.ingest.content_extractor')]
         private iterable $extractors,
     ) {
@@ -59,7 +52,13 @@ readonly class ContentExtractService
                 }
 
                 $extracts->append(
-                    $this->getExtract($fileReference, $entity, $extractor, $options)
+                    new ContentExtract(
+                        $extractor->getKey(),
+                        $extractor->getContent(
+                            $entity->getFileInfo(),
+                            $fileReference,
+                        )
+                    ),
                 );
             }
 
@@ -74,38 +73,6 @@ readonly class ContentExtractService
         }
 
         return $extracts;
-    }
-
-    private function getExtract(
-        FileReferenceInterface $fileReference,
-        EntityWithFileInfo $entity,
-        ContentExtractorInterface $extractor,
-        ContentExtractOptions $options,
-    ): ContentExtract {
-        $cacheKey = $this->cacheKeyGenerator->generate(
-            $extractor->getKey(),
-            $entity,
-            $options,
-        );
-
-        if ($options->hasRefresh()) {
-            $this->cache->delete($cacheKey);
-        }
-
-        return $this->cache->get(
-            $cacheKey,
-            function (ItemInterface $item) use ($extractor, $fileReference, $entity): ContentExtract {
-                $item->tag([$entity->getId()->toRfc4122()]);
-
-                return new ContentExtract(
-                    $extractor->getKey(),
-                    $extractor->getContent(
-                        $entity->getFileInfo(),
-                        $fileReference,
-                    )
-                );
-            }
-        );
     }
 
     private function logWithContext(string $warning, EntityWithFileInfo $entity, string $level): void

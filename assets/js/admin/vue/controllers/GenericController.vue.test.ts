@@ -37,10 +37,14 @@ describe('The <GenericController /> component', () => {
     const component = createComponent({
       componentName: 'PublicationFiles',
 
-      allowedFileTypes: ['pdf'],
-      allowedMimeTypes: ['application/pdf'],
       canDelete: true,
       endpoint: 'mocked-endpoint',
+      fileLimits: [
+        {
+          mimeTypes: ['application/pdf'],
+          label: 'PDF',
+        },
+      ],
       fileTypeOptions: [],
       groundOptions: [],
       languageOptions: [],
@@ -48,10 +52,14 @@ describe('The <GenericController /> component', () => {
     });
 
     expect(findComponent('PublicationFiles', component).props()).toMatchObject({
-      allowedFileTypes: ['pdf'],
-      allowedMimeTypes: ['application/pdf'],
       canDelete: true,
       endpoint: 'mocked-endpoint',
+      fileLimits: [
+        {
+          mimeTypes: ['application/pdf'],
+          label: 'PDF',
+        },
+      ],
       fileTypeOptions: [],
       groundOptions: [],
       languageOptions: [],
@@ -138,15 +146,16 @@ describe('The <GenericController /> component', () => {
     const component = createComponent({
       componentName: 'UploadArea',
 
-      allowedFileTypes: [
-        'mocked-allowed-file-type-1',
-        'mocked-allowed-file-type-2',
-      ],
-      allowedMimeTypes: [
-        'mocked-allowed-mime-type-1',
-        'mocked-allowed-mime-type-2',
-      ],
       endpoint: 'mocked-endpoint',
+      fileLimits: [
+        {
+          mimeTypes: [
+            'mocked-allowed-mime-type-1',
+            'mocked-allowed-mime-type-2',
+          ],
+          label: 'mocked-label',
+        },
+      ],
       name: 'mocked-name',
       payload: {
         mocked: 'payload',
@@ -155,15 +164,16 @@ describe('The <GenericController /> component', () => {
     });
 
     expect(findComponent('UploadArea', component).props()).toMatchObject({
-      allowedFileTypes: [
-        'mocked-allowed-file-type-1',
-        'mocked-allowed-file-type-2',
-      ],
-      allowedMimeTypes: [
-        'mocked-allowed-mime-type-1',
-        'mocked-allowed-mime-type-2',
-      ],
       endpoint: 'mocked-endpoint',
+      fileLimits: [
+        {
+          mimeTypes: [
+            'mocked-allowed-mime-type-1',
+            'mocked-allowed-mime-type-2',
+          ],
+          label: 'mocked-label',
+        },
+      ],
       name: 'mocked-name',
       payload: {
         mocked: 'payload',
@@ -176,15 +186,16 @@ describe('The <GenericController /> component', () => {
     const component = createComponent({
       componentName: 'WooDecisionAddDocuments',
 
-      allowedFileTypes: [
-        'mocked-allowed-file-type-1',
-        'mocked-allowed-file-type-2',
-      ],
-      allowedMimeTypes: [
-        'mocked-allowed-mime-type-1',
-        'mocked-allowed-mime-type-2',
-      ],
       dossierId: 'mocked-dossier-id',
+      fileLimits: [
+        {
+          mimeTypes: [
+            'mocked-allowed-mime-type-1',
+            'mocked-allowed-mime-type-2',
+          ],
+          label: 'mocked-label',
+        },
+      ],
       isComplete: false,
       maxFileSize: 1000,
       confirmEndpoint: 'mocked-confirm-endpoint',
@@ -194,20 +205,20 @@ describe('The <GenericController /> component', () => {
       uploadEndpoint: 'mocked-upload-endpoint',
       nextStepUrl: 'mocked-next-step-url',
       continueLaterUrl: 'mocked-continue-later-url',
+      maxCombinedFileSize: 123456789,
     });
 
     expect(findComponent('AddDocuments', component).props()).toMatchObject({
-      allowedFileTypes: [
-        'mocked-allowed-file-type-1',
-        'mocked-allowed-file-type-2',
-      ],
-      allowedMimeTypes: [
-        'mocked-allowed-mime-type-1',
-        'mocked-allowed-mime-type-2',
-      ],
       dossierId: 'mocked-dossier-id',
-      isComplete: false,
-      maxFileSize: 1000,
+      fileLimits: [
+        {
+          mimeTypes: [
+            'mocked-allowed-mime-type-1',
+            'mocked-allowed-mime-type-2',
+          ],
+          label: 'mocked-label',
+        },
+      ],
       confirmEndpoint: 'mocked-confirm-endpoint',
       rejectEndpoint: 'mocked-reject-endpoint',
       processEndpoint: 'mocked-process-endpoint',
@@ -215,6 +226,7 @@ describe('The <GenericController /> component', () => {
       uploadEndpoint: 'mocked-upload-endpoint',
       nextStepUrl: 'mocked-next-step-url',
       continueLaterUrl: 'mocked-continue-later-url',
+      maxCombinedFileSize: 123456789,
     });
   });
 
@@ -222,43 +234,46 @@ describe('The <GenericController /> component', () => {
     const component = createComponent({
       componentName: 'WooDecisionUploadDocuments',
 
-      allowedFileTypes: [
-        'mocked-allowed-file-type-1',
-        'mocked-allowed-file-type-2',
-      ],
-      allowedMimeTypes: [
-        'mocked-allowed-mime-type-1',
-        'mocked-allowed-mime-type-2',
-      ],
       dossierId: 'mocked-dossier-id',
+      fileLimits: [
+        {
+          mimeTypes: [
+            'mocked-allowed-mime-type-1',
+            'mocked-allowed-mime-type-2',
+          ],
+          label: 'mocked-label',
+          size: 1000,
+        },
+      ],
       isComplete: false,
-      maxFileSize: 1000,
       mode: 'replace',
       confirmEndpoint: 'mocked-confirm-endpoint',
       rejectEndpoint: 'mocked-reject-endpoint',
       processEndpoint: 'mocked-process-endpoint',
       statusEndpoint: 'mocked-status-endpoint',
       uploadEndpoint: 'mocked-upload-endpoint',
+      maxCombinedFileSize: 123456789,
     });
 
     expect(findComponent('UploadDocuments', component).props()).toMatchObject({
-      allowedFileTypes: [
-        'mocked-allowed-file-type-1',
-        'mocked-allowed-file-type-2',
-      ],
-      allowedMimeTypes: [
-        'mocked-allowed-mime-type-1',
-        'mocked-allowed-mime-type-2',
-      ],
       dossierId: 'mocked-dossier-id',
-      isComplete: false,
-      maxFileSize: 1000,
+      fileLimits: [
+        {
+          mimeTypes: [
+            'mocked-allowed-mime-type-1',
+            'mocked-allowed-mime-type-2',
+          ],
+          label: 'mocked-label',
+          size: 1000,
+        },
+      ],
       mode: 'replace',
       confirmEndpoint: 'mocked-confirm-endpoint',
       rejectEndpoint: 'mocked-reject-endpoint',
       processEndpoint: 'mocked-process-endpoint',
       statusEndpoint: 'mocked-status-endpoint',
       uploadEndpoint: 'mocked-upload-endpoint',
+      maxCombinedFileSize: 123456789,
     });
   });
 
@@ -315,6 +330,8 @@ describe('The <GenericController /> component', () => {
       componentName: 'DepartmentLogoManager',
 
       deleteEndpoint: 'mocked-delete-endpoint',
+      departmentId: 'mocked-department-id',
+      hasLogo: true,
       logoEndpoint: 'mocked-logo-endpoint',
       uploadEndpoint: 'mocked-upload-endpoint',
     });
@@ -323,6 +340,8 @@ describe('The <GenericController /> component', () => {
       findComponent('DepartmentLogoManager', component).props(),
     ).toMatchObject({
       deleteEndpoint: 'mocked-delete-endpoint',
+      departmentId: 'mocked-department-id',
+      hasLogo: true,
       logoEndpoint: 'mocked-logo-endpoint',
       uploadEndpoint: 'mocked-upload-endpoint',
     });

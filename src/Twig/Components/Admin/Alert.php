@@ -15,25 +15,27 @@ class Alert
 
     public function mount(string $type): void
     {
-        $validTypes = ['danger', 'info', 'success'];
+        $validTypes = ['danger', 'info', 'success', 'warning'];
         $this->type = in_array($type, $validTypes) ? $type : 'success';
     }
 
     public function getIconName(): string
     {
         return match ($this->type) {
-            'danger' => 'exclamation-filled-colored',
-            'info' => 'info-rounded-filled',
-            default => 'check-rounded-filled',
+            'danger' => 'alert-circle',
+            'info' => 'info-circle',
+            'warning' => 'alert-triangle',
+            default => 'circle-check',
         };
     }
 
     public function getIconColor(): string
     {
         return match ($this->type) {
-            'danger' => 'fill-current',
-            'info' => 'fill-bhr-blue-800',
-            default => 'fill-bhr-philippine-green',
+            'danger' => 'stroke-bhr-red-700',
+            'info' => 'stroke-bhr-blue-700',
+            'warning' => 'stroke-bhr-yellow-800',
+            default => 'stroke-bhr-green-700',
         };
     }
 
@@ -42,6 +44,7 @@ class Alert
         return match ($this->type) {
             'danger' => 'bhr-alert--danger',
             'info' => 'bhr-alert--info',
+            'warning' => 'bhr-alert--warning',
             default => 'bhr-alert--success',
         };
     }

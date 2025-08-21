@@ -70,7 +70,11 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->departmentViewFactory
             ->shouldReceive('make')
             ->with($department)
-            ->andReturn($expectedDepartment = new Department(DepartmentEnum::VWS->value, feedbackContent: null));
+            ->andReturn($expectedDepartment = new Department(
+                DepartmentEnum::VWS->value,
+                feedbackContent: null,
+                responsibilityContent: null,
+            ));
 
         $this->departmentViewFactory
             ->shouldReceive('makeCollection')
@@ -102,7 +106,11 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
                 publicationDate: $publicationDate = new \DateTimeImmutable(),
-                mainDepartment: $expectedMainDepartment = new Department(DepartmentEnum::VWS->value, feedbackContent: null),
+                mainDepartment: $expectedMainDepartment = new Department(
+                    name: DepartmentEnum::VWS->value,
+                    feedbackContent: null,
+                    responsibilityContent: null,
+                ),
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::COVENANT,
                 subject: $expectedSubject = \Mockery::mock(SubjectViewModel::class),
@@ -123,7 +131,6 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->assertNull($result->dateFrom);
         $this->assertSame($expectedDateTo, $result->dateTo);
         $this->assertSame(PublicationReason::WOO_REQUEST, $result->publicationReason);
-        $this->assertFalse($result->isExternalDepartmentResponsible());
         $this->assertSame($expectedUuid, $result->getDossierId());
         $this->assertSame($expectedDossierNr, $result->getDossierNr());
         $this->assertSame($expectedDocumentPrefix, $result->getDocumentPrefix());
@@ -139,7 +146,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->assertEquals($expectedDocumentSearchUrl, $result->documentSearchUrl);
     }
 
-    public function testMakeWithWooDecisionInPreviewWithNonVwsDepartment(): void
+    public function testMakeWithWooDecisionInPreview(): void
     {
         $department = \Mockery::mock(DepartmentEntity::class);
         /** @var ArrayCollection<array-key,DepartmentEntity> $departments */
@@ -150,7 +157,11 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->departmentViewFactory
             ->shouldReceive('make')
             ->with($department)
-            ->andReturn($expectedDepartment = new Department('my department', feedbackContent: null));
+            ->andReturn($expectedDepartment = new Department(
+                name: 'my department',
+                feedbackContent: null,
+                responsibilityContent: null,
+            ));
         $this->departmentViewFactory
             ->shouldReceive('makeCollection')
             ->with($departments)
@@ -166,7 +177,11 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
                 publicationDate: $publicationDate = new \DateTimeImmutable(),
-                mainDepartment: $expectedMainDepartment = new Department(name: DepartmentEnum::JV->value, feedbackContent: null),
+                mainDepartment: $expectedMainDepartment = new Department(
+                    name: DepartmentEnum::JV->value,
+                    feedbackContent: null,
+                    responsibilityContent: null,
+                ),
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::COVENANT,
                 subject: $expectedSubject = \Mockery::mock(SubjectViewModel::class),
@@ -202,7 +217,6 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->assertNull($result->dateFrom);
         $this->assertSame($expectedDateTo, $result->dateTo);
         $this->assertSame(PublicationReason::WOO_REQUEST, $result->publicationReason);
-        $this->assertTrue($result->isExternalDepartmentResponsible());
         $this->assertTrue($result->hasSubject());
         $this->assertSame($expectedUuid, $result->getDossierId());
         $this->assertSame($expectedDossierNr, $result->getDossierNr());

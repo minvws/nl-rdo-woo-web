@@ -55,7 +55,11 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
         $this->departmentViewFactory
             ->shouldReceive('make')
             ->with($department)
-            ->andReturn($expectedMainDepartment = new Department(DepartmentEnum::VWS->value, feedbackContent: null));
+            ->andReturn($expectedMainDepartment = new Department(
+                name: DepartmentEnum::VWS->value,
+                feedbackContent: null,
+                responsibilityContent: null,
+            ));
 
         /** @var AbstractDossier&MockInterface $dossier */
         $dossier = \Mockery::mock(AbstractDossier::class);
@@ -110,7 +114,11 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
         $this->departmentViewFactory
             ->shouldReceive('make')
             ->with($department)
-            ->andReturn($expectedMainDepartment = new Department(DepartmentEnum::VWS->value, feedbackContent: null));
+            ->andReturn($expectedMainDepartment = new Department(
+                name: DepartmentEnum::VWS->value,
+                feedbackContent: null,
+                responsibilityContent: null,
+            ));
 
         /** @var AbstractDossier&MockInterface $dossier */
         $dossier = \Mockery::mock(AbstractDossier::class);

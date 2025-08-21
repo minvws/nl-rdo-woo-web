@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form\Dossier\WooDecision;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use App\Domain\Upload\FileType\FileType as FileTypeEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -17,14 +18,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class InventoryType extends AbstractType
 {
-    protected const SPREADSHEET_MIMETYPES = [
-        'text/csv',
-        'application/xls',
-        'application/vnd.ms-excel',
-        'application/vnd.oasis.opendocument.spreadsheet',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    ];
-
     /**
      * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
@@ -41,14 +34,14 @@ class InventoryType extends AbstractType
                 'constraints' => [
                     new File([
                         'maxSize' => '10024k',
-                        'mimeTypes' => self::SPREADSHEET_MIMETYPES,
+                        'mimeTypes' => FileTypeEnum::XLS->getMimeTypes(),
                         'mimeTypesMessage' => 'Please upload a valid spreadsheet',
                     ]),
                     new NotBlank(),
                 ],
                 'attr' => [
-                    'accept' => self::SPREADSHEET_MIMETYPES,
-                    'typeNames' => ['Excel'],
+                    'accept' => FileTypeEnum::XLS->getMimeTypes(),
+                    'typeName' => FileTypeEnum::XLS->getTypeName(),
                 ],
             ])
             ->add('submit', SubmitType::class, [

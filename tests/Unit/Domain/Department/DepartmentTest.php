@@ -35,6 +35,14 @@ class DepartmentTest extends MockeryTestCase
         self::assertEquals($content, $department->getFeedbackContent());
     }
 
+    public function testSetAndGetResponsibilityContent(): void
+    {
+        $department = new Department();
+        $department->setResponsibilityContent($content = 'foo');
+
+        self::assertEquals($content, $department->getResponsibilityContent());
+    }
+
     public function testSetAndGetFileInfo(): void
     {
         $department = new Department();

@@ -53,7 +53,7 @@ readonly class DocumentFileProcessor
         $this->fileStorer->storeForDocument($file, $document, $documentId);
 
         if ($document->isWithdrawn() && $dossier->getStatus()->isPubliclyAvailable()) {
-            $document->republish();
+            $document->removeWithdrawn();
             $this->documentRepository->save($document, true);
         }
 

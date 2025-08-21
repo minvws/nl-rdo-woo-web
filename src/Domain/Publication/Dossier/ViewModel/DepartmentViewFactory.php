@@ -24,6 +24,7 @@ readonly class DepartmentViewFactory
         return new Department(
             name: $entity->getName(),
             feedbackContent: $entity->getFeedbackContent(),
+            responsibilityContent: $entity->getResponsibilityContent(),
         );
     }
 }

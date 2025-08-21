@@ -74,12 +74,16 @@ describe('The "DepartmentLogoManager" component', () => {
 
       expect(getLabelElement(component).attributes('for')).toBe('file');
       expect(getUploadAreaComponent(component).props()).toMatchObject({
-        allowedFileTypes: ['SVG'],
-        allowedMimeTypes: ['image/svg+xml'],
         enableAutoUpload: true,
         endpoint: 'mocked-upload-endpoint',
+        fileLimits: [
+          {
+            size: 1024 * 1024 * 10,
+            mimeTypes: ['image/svg+xml'],
+            label: 'SVG',
+          },
+        ],
         id: 'file',
-        maxFileSize: 1024 * 1024 * 10,
         name: 'file',
         payload: { groupId: 'department' },
       });

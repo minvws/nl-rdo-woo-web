@@ -1,10 +1,10 @@
 <div {{ vue_component('GenericController', {
     componentName: componentName,
 
-    allowedFileTypes: uploadGroupId.fileTypeNames,
-    allowedMimeTypes: uploadGroupId.mimeTypes,
     dossierId: dossier.id,
+    fileLimits: uploadGroupId.fileLimits | default([]),
     maxFileSize: 1024 * 1024 * 1024 * 5,
+    maxCombinedFileSize: constant('App\\Domain\\Publication\\Dossier\\Type\\WooDecision\\DocumentFile\\TotalDocumentFileSizeValidator::MAX_SIZE'),
     nextStepUrl: nextStepUrl | default,
     continueLaterUrl: continueLaterUrl | default,
     confirmEndpoint: path('api_uploader_woo_decision_confirm_changes', { dossierId: dossier.id }),

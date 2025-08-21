@@ -384,14 +384,15 @@ admin.user.deactivated_users: "Gedeactiveerde gebruikers"
 admin.user.active_admins: "Actieve beheerders"
 admin.user.deactivated_admins: "Gedeactiveerde beheerders"
 admin.department.name: "Naam"
-admin.department.name_help: "Naam van het bestuursorgaan (minimaal 2 karakters)"
+admin.department.name_help: "Naam van het bestuursorgaan (minimaal 2 en maximaal 100 karakters)"
 admin.department.abbreviation: "Afkorting"
-admin.department.abbreviation_help: "Afkorting van het bestuursorgaan (minimaal 2 en maximaal 10 karakters)"
+admin.department.abbreviation_help: "Afkorting van het bestuursorgaan (minimaal 2 en maximaal 20 karakters)"
 admin.department.slug: "URL landingspagina"
-admin.department.slug_help: "Deze naam komt direct achter het domein (minimaal 2 en maximaal 20 letters of cijfers)"
+admin.department.slug_help: "Deze naam komt direct achter het domein (minimaal 2 en maximaal 100 letters of cijfers)"
 admin.department.public: "Zichtbaar op de website"
 admin.department.public_help: "Schakelt landingspagina in en tonen in overzicht 'Bekijk per bestuursorgaan'"
-admin.department.feedback_content.description: 'Tekst over verantwoordelijkheid en contact opnemen'
+admin.department.feedback_content.description: 'Tekst over contact opnemen'
+admin.department.responsibility_content.description: 'Tekst over verantwoordelijkheid'
 admin.department.landingpage_not_editable: "niet bewerkbaar"
 admin.user.role.super_admin: "Super beheerder"
 admin.user.role.super_admin.desc: "Alle rechten (inclusief beheer van de Beheerder rol)."
@@ -636,7 +637,8 @@ admin.dossiers.documents.number_to_upload: >-
     other{Er moeten nog # document(en) geüpload worden.}
   }
 admin.dossiers.documents.needs_upload: "Nog te uploaden"
-admin.dossiers.documents.needs_work: '<strong>Documenten vereisen aandacht</strong><br>Bekijk de sectie <a class="bhr-a" href="#documents">“Documenten”</a> voor meer informatie over de status van de documenten.'
+admin.dossiers.documents.needs_work.title: 'Documenten vereisen aandacht'
+admin.dossiers.documents.needs_work.text: 'Bekijk de sectie "<a class="bhr-a" href="#documents">Documenten</a>" voor meer informatie over de status van de documenten.'
 
 admin.inquiries.case_number: "Zaaknummer"
 admin.inquiries.case_numbers: "Alle zaaknummers"
@@ -686,8 +688,6 @@ public.global.has_or_have: >-
     other{hebben}
   }
 public.global.contact: "Neem dan contact op met <span class='font-bold'>{ministry}</span>"
-public.global.contact_other: "{source} valt niet onder de verantwoordelijkheid van het Ministerie van Volksgezondheid, Welzijn en Sport. Voor vragen of toelichting verwijzen we naar het <span class='font-bold'>{ministry}</span>."
-public.dossier.this_dossier: "dit besluit"
 public.document.this_document: "dit document"
 public.documents.request_info: "Hieronder meer informatie over dat verzoek en het besluit"
 public.documents.match_request: "(Deels) openbaar gemaakt"
@@ -742,6 +742,7 @@ public.documents.type.dossier: "Woo-besluiten"
 public.documents.type.covenant: "Convenanten"
 public.documents.type.annual_report: "Jaarplannen en jaarverslagen"
 
+public.publication.no_documents_within_publication: 'Er zijn geen documenten met de status "{status}" binnen deze publicatie'
 public.publication.woo_request_explanation: "Een Woo-verzoek is een verzoek om toegang tot overheidsinformatie in Nederland volgens de Wet open overheid. Een Wob-verzoek is een officieel verzoek aan een overheidsinstantie om specifieke informatie of documenten openbaar te maken volgens de Wet openbaarheid van bestuur."
 public.publication.woo_request_more: "Meer weten over Woo/Wob-verzoeken"
 
@@ -882,10 +883,10 @@ public.documents.exclusive_access: "U heeft t/m {date} exclusief toegang tot dez
 public.documents.document_history: "Geschiedenis van dit document"
 public.attachments.attachment_withdrawn: "Deze bijlage is op dit moment niet beschikbaar. Deze is op {date} ingetrokken. De reden dat de bijlage is ingetrokken: {reason}."
 
-
+public.dossiers.of_which_made_public: "waarvan {count} openbaargemaakt"
 public.dossiers.type: "Informatiecategorie"
 public.dossiers.subject: "Onderwerp"
-public.dossiers.scope: "Omvang openbaarmaking"
+public.dossiers.scope: "Omvang publicatie"
 public.dossiers.inventory_list: Inventarislijst
 public.dossiers.production_report: "Productierapport"
 public.dossiers.not_applicable: 'Niet van toepassing op besluit "{decision}"'
@@ -1024,12 +1025,18 @@ publication.dossier.error.organisation_mismatch: "Er is een fout opgetreden bij 
 publication.dossier.error.reading_cell: "Er is een fout opgetreden bij het lezen van het productierapport, controleer de structuur"
 publication.dossier.error.missing_document_number: "Rij {rownumber} heeft geen documentnummer"
 publication.dossier.error.invalid_document_number: "Rij {rownumber} heeft een ongeldig documentnummer"
-publication.dossier.error.missing_matter: "Rij {rownumber} heeft geen matter van minimaal 2 tekens"
+publication.dossier.error.invalid_document_id_length: "Rij {rownumber} heeft een ongeldig documentnummer, lengte minimaal {min} en maximaal {max} tekens"
+publication.dossier.error.invalid_family_id: "Rij {rownumber} heeft een ongeldige familie / family id"
+publication.dossier.error.invalid_thread_id: "Rij {rownumber} heeft een ongeldige thread id"
+publication.dossier.error.invalid_matter: "Rij {rownumber} heeft geen matter van minimaal {min} en maximaal {max} tekens"
+publication.dossier.error.remark_too_long: "Rij {rownumber} heeft een te lange toelichting / opmerking (max {max} tekens)"
 publication.dossier.error.link_too_long: "Rij {rownumber} heeft een te lange link (max 2048 tekens)"
 publication.dossier.error.file_name_too_long: "Rij {rownumber} heeft een te lange bestandsnaam (max 1024 tekens)"
+publication.dossier.error.casenumbers_invalid: "Rij {rownumber} bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
 publication.dossier.error.generic_document_row_exception: "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
 publication.dossier.error.processing_inventory: "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
 publication.dossier.error.no_inventory_changes: "Het nieuwe productierapport is gelijk aan het huidige rapport"
+publication.dossier.error.max_documents_exceeded: "Het maximaal aantal documenten per dossier ({max}) wordt overschreden"
 publication.dossier.error.missing_document: "Document {documentNumber} mist in het productierapport"
 publication.dossier.error.referred_document_does_not_exist: "Gerelateerd ID {documentNumber} is niet bekend"
 publication.dossier.error.document_not_unique: "Het documentnummer {documentNumber} is niet uniek binnen het productierapport"

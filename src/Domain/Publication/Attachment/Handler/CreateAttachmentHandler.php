@@ -49,6 +49,15 @@ readonly class CreateAttachmentHandler
             throw new ValidationFailedException($entity, $violations);
         }
 
+        // Add to the dossier and validate this too, which enforces the max nr of attachments
+        $entity->getDossier()->addAttachment($entity);
+        $violations = $this->validator->validate($entity->getDossier());
+        if ($violations->count() > 0) {
+            throw new ValidationFailedException($entity->getDossier(), $violations);
+        }
+
+        $attachmentRepository->save($entity);
+
         $this->uploadStorer->storeUploadForEntityWithSourceTypeAndName($entity, $command->uploadFileReference);
 
         $attachmentRepository->save($entity, true);

@@ -8,33 +8,31 @@ use App\Exception\FileReaderException;
 use App\Service\FileReader\ExcelReader;
 use App\Service\FileReader\HeaderMap;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\MockInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class ExcelReaderTest extends MockeryTestCase
 {
     private ExcelReader $excelReader;
+    private HeaderMap&MockInterface $headerMap;
 
     public function setUp(): void
     {
-        $headerMap = \Mockery::mock(HeaderMap::class);
-        $headerMap->shouldReceive('has')->with('id')->andReturnTrue();
-        $headerMap->shouldReceive('getCellCoordinate')->with('id')->andReturn('B');
-        $headerMap->shouldReceive('has')->with('subject')->andReturnTrue();
-        $headerMap->shouldReceive('getCellCoordinate')->with('subject')->andReturn('I');
-        $headerMap->shouldReceive('has')->with('foobar')->andReturnFalse();
-        $headerMap->shouldReceive('has')->with('family')->andReturnTrue();
-        $headerMap->shouldReceive('getCellCoordinate')->with('family')->andReturn('A');
-        $headerMap->shouldReceive('has')->with('date')->andReturnTrue();
-        $headerMap->shouldReceive('getCellCoordinate')->with('date')->andReturn('F');
-        $headerMap->shouldReceive('has')->with('non-existent-column')->andReturnFalse();
+        $this->headerMap = \Mockery::mock(HeaderMap::class);
 
         // The worksheet is unfortunately very hard to mock accurately
         $worksheet = IOFactory::load(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.xlsx');
-        $this->excelReader = new ExcelReader($worksheet->getSheet(0), $headerMap);
+        $this->excelReader = new ExcelReader(
+            $worksheet->getSheet(0),
+            $this->headerMap,
+        );
     }
 
     public function testIteratorSkipsFirstRowAndEmptyRows(): void
     {
+        $this->headerMap->shouldReceive('has')->with('id')->andReturnTrue();
+        $this->headerMap->shouldReceive('getCellCoordinate')->with('id')->andReturn('B');
+
         $ids = [];
         foreach ($this->excelReader as $row) {
             $ids[] = $this->excelReader->getInt($row->getRowIndex(), 'id');
@@ -48,6 +46,8 @@ class ExcelReaderTest extends MockeryTestCase
 
     public function testGetOptionalStringReturnsNullForNonExistingColumn(): void
     {
+        $this->headerMap->shouldReceive('has')->with('foobar')->andReturnFalse();
+
         $values = [];
         foreach ($this->excelReader as $row) {
             $values[] = $this->excelReader->getOptionalString($row->getRowIndex(), 'foobar');
@@ -61,6 +61,9 @@ class ExcelReaderTest extends MockeryTestCase
 
     public function testGetOptionalIntReturnsValueForExistingColumnWhenFilled(): void
     {
+        $this->headerMap->shouldReceive('has')->with('family')->andReturnTrue();
+        $this->headerMap->shouldReceive('getCellCoordinate')->with('family')->andReturn('A');
+
         $familyIds = [];
         foreach ($this->excelReader as $row) {
             $familyIds[] = $this->excelReader->getOptionalInt($row->getRowIndex(), 'family');
@@ -74,6 +77,8 @@ class ExcelReaderTest extends MockeryTestCase
 
     public function testGetOptionalIntReturnsNullForNonExistingColumn(): void
     {
+        $this->headerMap->shouldReceive('has')->with('foobar')->andReturnFalse();
+
         $values = [];
         foreach ($this->excelReader as $row) {
             $values[] = $this->excelReader->getOptionalInt($row->getRowIndex(), 'foobar');
@@ -87,6 +92,9 @@ class ExcelReaderTest extends MockeryTestCase
 
     public function testGetDateTimeReturnsValueForExistingColumnWhenFilledAndThrowsExceptionForMissingValue(): void
     {
+        $this->headerMap->shouldReceive('has')->with('date')->andReturnTrue();
+        $this->headerMap->shouldReceive('getCellCoordinate')->with('date')->andReturn('F');
+
         $rows = iterator_to_array($this->excelReader, false);
 
         // First row has a valid date
@@ -102,6 +110,9 @@ class ExcelReaderTest extends MockeryTestCase
 
     public function testGetDateTimeThrowsExceptionForInvalidDate(): void
     {
+        $this->headerMap->shouldReceive('has')->with('subject')->andReturnTrue();
+        $this->headerMap->shouldReceive('getCellCoordinate')->with('subject')->andReturn('I');
+
         $this->expectException(FileReaderException::class);
 
         foreach ($this->excelReader as $row) {
@@ -111,6 +122,9 @@ class ExcelReaderTest extends MockeryTestCase
 
     public function testGetOptionalDateTimeReturnsValueForExistingColumnWhenFilled(): void
     {
+        $this->headerMap->shouldReceive('has')->with('date')->andReturnTrue();
+        $this->headerMap->shouldReceive('getCellCoordinate')->with('date')->andReturn('F');
+
         $dates = [];
         foreach ($this->excelReader as $row) {
             $dates[] = $this->excelReader->getOptionalDateTime($row->getRowIndex(), 'date');
@@ -124,6 +138,8 @@ class ExcelReaderTest extends MockeryTestCase
 
     public function testGetOptionalDateTimeReturnsNullForNonExistingColumn(): void
     {
+        $this->headerMap->shouldReceive('has')->with('non-existent-column')->andReturnFalse();
+
         $dates = [];
         foreach ($this->excelReader as $row) {
             $dates[] = $this->excelReader->getOptionalDateTime($row->getRowIndex(), 'non-existent-column');

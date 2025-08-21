@@ -25,7 +25,7 @@ Upload Investigation Report
   ${_}  ${file_name} =  Split Path  ${investigation_report_location}
   Click  " Onderzoeksrapport toevoegen... "
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${investigation_report_location}
-  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}  timeout=10s
+  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}
   Select Options By  //dialog[@open]//select[@name="type"]  text  onderzoeksrapport
   Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
   Click  //dialog[@open]//button[@type="submit"]

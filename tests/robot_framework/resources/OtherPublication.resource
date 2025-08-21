@@ -25,7 +25,7 @@ Upload Informatiestuk
   ${_}  ${file_name} =  Split Path  ${other_publication_location}
   Click  " Informatiestuk toevoegen... "
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${other_publication_location}
-  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}  timeout=10s
+  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}
   Select Options By  //dialog[@open]//select[@name="type"]  text  overig
   Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
   Click  //dialog[@open]//button[@type="submit"]

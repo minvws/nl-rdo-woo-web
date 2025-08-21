@@ -5,7 +5,6 @@ import {
   formatFileSize,
   getFileTypeByMimeType,
   getIconNameByMimeType,
-  isValidMaxFileSize,
 } from './file';
 
 describe('The file utility functions', () => {
@@ -122,15 +121,6 @@ describe('The file utility functions', () => {
       expect(areFilesEqual(file1, file3)).toBe(false);
       expect(areFilesEqual(file1, file4)).toBe(false);
       expect(areFilesEqual(file2, file4)).toBe(false);
-    });
-  });
-
-  describe('the "isValidMaxFileSize" function', () => {
-    test('should return true if the provided max file size is larger than 0', () => {
-      expect(isValidMaxFileSize(0)).toBe(false);
-      expect(isValidMaxFileSize(-100)).toBe(false);
-      expect(isValidMaxFileSize(1)).toBe(true);
-      expect(isValidMaxFileSize(500)).toBe(true);
     });
   });
 });

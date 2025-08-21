@@ -44,8 +44,6 @@ final class DocumentFactory extends PersistentProxyObjectFactory
             'familyId' => $documentId,
             'documentId' => $documentId,
             'threadId' => 0,
-            'pageCount' => self::faker()->numberBetween(1, 20),
-            'summary' => self::faker()->paragraph(),
             'grounds' => self::faker()->groundsBetween(),
             'judgement' => $judgement,
             'links' => array_filter([$this->faker()->optional()->url()]),

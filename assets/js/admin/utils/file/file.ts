@@ -1,4 +1,4 @@
-import { formatNumber, isNumber } from '@utils';
+import { formatNumber } from '@utils';
 
 export const MimeTypes: Readonly<Record<string, string[]>> = {
   Audio: ['audio/aac', 'audio/mp3', 'audio/ogg', 'audio/vnd.wav'],
@@ -95,9 +95,6 @@ export const getFileTypeByMimeType = (mimeType: string) => {
     ) ?? 'onbekend'
   );
 };
-
-export const isValidMaxFileSize = (maxFileSize: unknown): boolean =>
-  isNumber(maxFileSize) && Number(maxFileSize) > 0;
 
 export const areFilesEqual = (file1: File, file2: File) => {
   const properties: (keyof File)[] = ['lastModified', 'name', 'size', 'type'];

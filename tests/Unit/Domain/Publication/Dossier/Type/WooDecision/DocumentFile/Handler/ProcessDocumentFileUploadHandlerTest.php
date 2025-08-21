@@ -101,12 +101,12 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $document->shouldReceive('shouldBeUploaded')->with(true)->andReturnTrue();
 
         $this->mimeTypeHelper
-            ->expects('detectMimeType')
+            ->expects('detectMimeTypeFromPath')
             ->with($fileA)
             ->andReturn('application/pdf');
 
         $this->mimeTypeHelper
-            ->expects('detectMimeType')
+            ->expects('detectMimeTypeFromPath')
             ->with($fileB)
             ->andReturn('application/pdf');
 
@@ -181,12 +181,12 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $document->shouldReceive('isUploaded')->andReturnFalse();
 
         $this->mimeTypeHelper
-            ->expects('detectMimeType')
+            ->expects('detectMimeTypeFromPath')
             ->with($fileA)
             ->andReturn('application/pdf');
 
         $this->mimeTypeHelper
-            ->expects('detectMimeType')
+            ->expects('detectMimeTypeFromPath')
             ->with($fileB)
             ->andReturn('application/pdf');
 
@@ -257,12 +257,12 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $document->shouldReceive('shouldBeUploaded')->with(true)->andReturnFalse();
 
         $this->mimeTypeHelper
-            ->expects('detectMimeType')
+            ->expects('detectMimeTypeFromPath')
             ->with($fileA)
             ->andReturn('application/pdf');
 
         $this->mimeTypeHelper
-            ->expects('detectMimeType')
+            ->expects('detectMimeTypeFromPath')
             ->with($fileB)
             ->andReturn('application/pdf');
 
@@ -377,12 +377,12 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $document->shouldReceive('shouldBeUploaded')->with(true)->andReturnFalse();
 
         $this->mimeTypeHelper
-            ->expects('detectMimeType')
+            ->expects('detectMimeTypeFromPath')
             ->with($fileA)
             ->andReturn('application/pdf');
 
         $this->mimeTypeHelper
-            ->expects('detectMimeType')
+            ->expects('detectMimeTypeFromPath')
             ->with($fileB)
             ->andReturn('application/pdf');
 

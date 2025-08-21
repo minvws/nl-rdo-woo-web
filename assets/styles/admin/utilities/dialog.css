@@ -15,5 +15,6 @@
 }
 
 @utility bhr-dialog__close-btn {
+  @apply bhr-btn-ghost-primary;
   @apply absolute top-0 right-0 p-6;
 }

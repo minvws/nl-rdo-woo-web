@@ -1,25 +1,32 @@
-import { formatFileSize, formatList } from '@js/admin/utils';
 import { createTestFile } from '@js/test';
 import { VueWrapper, mount } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 import InvalidFiles from './InvalidFiles.vue';
 
 describe('The "InvalidFiles" component', () => {
-  const mockedAllowedFileTypes = ['mocked-extension-1', 'mocked-extension-2'];
-  const mockedAllowedMimeTypes = ['mocked-mime-type-1', 'mocked-mime-type-2'];
   const mockedFiles = [
     createTestFile({ name: 'mocked-file-1' }),
     createTestFile({ name: 'mocked-file-2' }),
   ];
-  const mockedMaxFileSize = 1000;
 
-  const createComponent = (files: File[] = mockedFiles, isTypeError = true) =>
+  const mockedFileLimits = [
+    {
+      size: 1000,
+      mimeTypes: ['mocked-mime-type-1', 'mocked-mime-type-2'],
+      label: 'mocked-label',
+    },
+  ];
+
+  const createComponent = (
+    files: File[] = mockedFiles,
+    haveInvalidSize = false,
+    limits = mockedFileLimits,
+  ) =>
     mount(InvalidFiles, {
       props: {
-        allowedFileTypes: isTypeError ? mockedAllowedFileTypes : [],
-        allowedMimeTypes: isTypeError ? mockedAllowedMimeTypes : [],
         files,
-        maxFileSize: isTypeError ? undefined : mockedMaxFileSize,
+        limits,
+        haveInvalidSize,
       },
       shallow: true,
       global: {
@@ -61,24 +68,41 @@ describe('The "InvalidFiles" component', () => {
   });
 
   test('should display the allowed file types when the provided files have an invalid type', () => {
-    const expectedText = `Alleen bestanden van het type ${formatList(
-      mockedAllowedFileTypes,
-      'en',
-    )} zijn toegestaan.`;
-
-    expect(createComponent().text()).toContain(expectedText);
-    expect(createComponent(undefined, false).text()).not.toContain(
-      expectedText,
-    );
-  });
-
-  test('should display the max allowed file size when the provided files have an invalid size', () => {
-    const expectedText = `De maximale bestandsgrootte per bestand is ${formatFileSize(
-      mockedMaxFileSize,
-    )}.`;
+    const expectedText =
+      'Alleen bestanden van het type mocked-label zijn toegestaan.';
 
     expect(createComponent(undefined, false).text()).toContain(expectedText);
     expect(createComponent(undefined, true).text()).not.toContain(expectedText);
+  });
+
+  test('should display the max allowed file size when the provided files have an invalid size', () => {
+    const limits = [
+      {
+        size: 1024 * 1024,
+        mimeTypes: ['mocked-mime-type-1'],
+        label: 'mocked-label',
+      },
+      {
+        size: 1024 * 1024,
+        mimeTypes: ['mocked-mime-type-2'],
+        label: 'mocked-label-2',
+      },
+      {
+        size: 1024 * 1024 * 2,
+        mimeTypes: ['mocked-mime-type-3'],
+        label: 'mocked-label-3',
+      },
+    ];
+
+    const expectedText =
+      'De maximale bestandsgrootte per bestand is 1 MB (mocked-label, mocked-label-2) of 2 MB (mocked-label-3)';
+
+    expect(createComponent(undefined, true, limits).text()).toContain(
+      expectedText,
+    );
+    expect(createComponent(undefined, false, limits).text()).not.toContain(
+      expectedText,
+    );
   });
 
   test('should display nothing when no files are provided', () => {

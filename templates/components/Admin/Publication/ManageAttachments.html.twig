@@ -5,18 +5,17 @@
     <div data-e2e-name="attachments" {{ vue_component('GenericController', {
         componentName: 'PublicationFiles',
 
-        allowedFileTypes: allowedFileTypes | default([]),
-        allowedMimeTypes: allowedMimeTypes | default([]),
-        allowMultiple: allowMultiple ?? true,
         canDelete: canDelete,
+        dossierId: dossierId | default(null),
         endpoint: endpoint,
-        uploadEndpoint: uploadEndpoint | default(null),
         e2eName: e2eName | default('attachments'),
+        fileLimits: fileLimits | default([]),
         fileTypeOptions: documentTypes,
         groundOptions: grounds,
         languageOptions: languages,
+        maxLength: maxLength | default(50),
+        uploadEndpoint: uploadEndpoint | default(null),
         uploadGroupId: "attachments",
-        dossierId: dossierId | default(null),
     }) }}>
         <div class="min-h-14"></div>
     </div>

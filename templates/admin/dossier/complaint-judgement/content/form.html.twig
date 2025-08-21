@@ -2,12 +2,11 @@
     {{ form_row(form.summary) }}
 
     <twig:Admin:Publication:ManageDocument
-        allowedFileTypes="{{ documentTypeNames }}"
-        allowedMimeTypes="{{ documentMimeTypes }}"
         canDelete="{{ canDeleteDocument }}"
         documentType="{{ 'admin.dossiers.complaint-judgement.document' | trans }}"
         documentTypes="{{ documentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/complaint-judgement-document' }}"
+        fileLimits="{{ documentFileLimits | default([])}}"
         formField="{{ form.document }}"
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.complaint-judgement.form.content.document_help' | trans }}"

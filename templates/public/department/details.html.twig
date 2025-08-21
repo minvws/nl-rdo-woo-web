@@ -1,0 +1,57 @@
+{% extends 'public/base.html.twig' %}
+
+{% set page_title = department.name %}
+
+{% block search_form_top %}<twig:Public:SearchForm />{% endblock %}
+
+{% block body %}
+    <section class="woo-container woo-container--sm pb-16">
+        {% if logoPath is defined %}
+            <img class="{{ logoClass | default('') }}" src="{{ logoPath }}" alt="Logo {{ department.name }}">
+        {% endif %}
+
+        {% block department_content %}
+            {% if departmentLogo is not null %}
+                <img class="mb-4 max-w-[400px]" src="{{ departmentLogo }}" alt="Bestuursorgaan Logo" data-e2e-name="landing-page-img">
+            {% endif %}
+
+            <div class="woo-readable-width" data-e2e-name="landing-page-body">
+                <h1 class="woo-h1 woo-h1-spacing font-normal">{{ department.landingPageTitle | default('public.department.public_information_by_department' | trans({ department: department.name })) }}</h1>
+
+                <div class="woo-rich-text">
+                    {% if (department.landingPageDescription is not empty) %}
+                        {{ department.landingPageDescription | render_markdown }}
+                    {% else %}
+                        <p>{{ 'public.department.public_information_default_description' | trans({ department: department.name }) | raw }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endblock %}
+    </section>
+
+    {% if facets.resultCount > 0 %}
+        {% import "public/macros/facet.html.twig" as macro %}
+
+        <section class="bg-woo-anti-flash-white py-8 lg:py-16">
+            <div class="woo-container woo-container--sm pb-10">
+                <h2 class="woo-h2 woo-readable-width">{{ 'public.browse.title' | trans | raw }}</h2>
+            </div>
+
+            <div class="woo-container">
+                {{ macro.facet_preview('categories.category.type' | trans, constant('App\\Service\\Search\\Model\\FacetKey::TYPE'), facets) }}
+                {{ macro.facet_preview('categories.category.grounds' | trans, constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), facets) }}
+                {{ macro.facet_preview('categories.category.subject' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT'), facets) }}
+                {{ macro.facet_preview('categories.category.source_file' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SOURCE'), facets) }}
+                {{ macro.facet_preview('categories.category.judgement' | trans, constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), facets) }}
+            </div>
+        </section>
+    {% endif %}
+
+    {% if recents | default([]) | length > 0 %}
+        <section class="woo-container woo-container--sm pt-16">
+            {% include "public/department/snippets/recent-publications.html.twig" with {
+                hasLinkToAll: false
+            } %}
+        </section>
+    {% endif %}
+{% endblock %}

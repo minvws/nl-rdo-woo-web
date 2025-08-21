@@ -13,12 +13,17 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InquiryRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Inquiry
 {
     use TimestampableTrait;
+
+    public const int CASENUMBER_MIN_LENGTH = 1;
+    public const int CASENUMBER_MAX_LENGTH = 255;
+    public const string CASENUMBER_REGEX = '/^[a-z0-9-]+$/i';
 
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
@@ -27,6 +32,11 @@ class Inquiry
     private Uuid $id;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(min: self::CASENUMBER_MIN_LENGTH, max: self::CASENUMBER_MAX_LENGTH)]
+    #[Assert\Regex(
+        pattern: self::CASENUMBER_REGEX,
+        message: 'use_only_letters_numbers_and_dashes',
+    )]
     private string $casenr;
 
     /** @var Collection<array-key,Document> */

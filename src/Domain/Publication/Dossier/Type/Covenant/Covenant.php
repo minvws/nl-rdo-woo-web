@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\Covenant;
 
+use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use App\Domain\Publication\Attachment\Entity\HasAttachments;
 use App\Domain\Publication\Dossier\AbstractDossier;
@@ -30,15 +31,24 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
     /** @use HasMainDocument<CovenantMainDocument> */
     use HasMainDocument;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 2048)]
     #[Assert\Url(groups: [DossierValidationGroup::CONTENT->value])]
+    #[Assert\Length(min: 0, max: 2048, groups: [DossierValidationGroup::CONTENT->value])]
     protected string $previousVersionLink = '';
 
     /** @var list<string> */
     #[ORM\Column(type: Types::JSON, nullable: false)]
-    #[Assert\Count(min: 2, minMessage: 'at_least_two_parties_required', groups: [DossierValidationGroup::CONTENT->value])]
+    #[Assert\Count(
+        min: 2,
+        max: 10,
+        minMessage: 'min_max_parties',
+        groups: [DossierValidationGroup::CONTENT->value],
+    )]
     #[Assert\All(
-        constraints: [new Assert\NotBlank()],
+        constraints: [
+            new Assert\NotBlank(),
+            new Assert\Length(min: 2, max: 100),
+        ],
         groups: [DossierValidationGroup::CONTENT->value],
     )]
     private array $parties = [];
@@ -50,6 +60,7 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
 
     /** @var Collection<array-key,CovenantAttachment> */
     #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: CovenantAttachment::class)]
+    #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 
     public function __construct()

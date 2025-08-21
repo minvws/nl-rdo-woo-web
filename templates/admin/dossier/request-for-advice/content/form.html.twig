@@ -3,12 +3,11 @@
     {{ form_row(form.link) }}
 
     <twig:Admin:Publication:ManageDocument
-        allowedFileTypes="{{ documentTypeNames }}"
-        allowedMimeTypes="{{ documentMimeTypes }}"
         canDelete="{{ canDeleteDocument }}"
         documentType="{{ 'admin.dossiers.request-for-advice.document' | trans }}"
         documentTypes="{{ documentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/request-for-advice-document' }}"
+        fileLimits="{{ documentFileLimits | default([])}}"
         formField="{{ form.document }}"
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.request-for-advice.form.content.document_help' | trans }}"
@@ -18,11 +17,10 @@
     />
 
     <twig:Admin:Publication:ManageAttachments
-        allowedFileTypes="{{ attachmentTypeNames }}"
-        allowedMimeTypes="{{ attachmentMimeTypes }}"
         canDelete="{{ canDeleteAttachments }}"
         documentTypes="{{ attachmentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/request-for-advice-attachments' }}"
+        fileLimits="{{ attachmentFileLimits | default([])}}"
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.request-for-advice.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"

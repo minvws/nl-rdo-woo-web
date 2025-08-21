@@ -27,10 +27,12 @@
         </div>
     </dl>
 
-    {% if dossier.isExternalDepartmentResponsible %}
-    <div class="pt-10">
+    {% if dossier.responsibilityContent is not null %}
+    <div class="pt-10" data-e2e-name="responsible">
         <twig:Public:Notification>
-            <p>{{ 'public.global.contact_other' | trans({ '{source}': 'public.dossier.this_dossier' | trans | capitalize, '{ministry}': dossier.mainDepartment.name }) | raw }}</p>
+            <div class="woo-rich-text">
+                {{ dossier.responsibilityContent | render_markdown }}
+            </div>
         </twig:Public:Notification>
     </div>
     {% endif %}

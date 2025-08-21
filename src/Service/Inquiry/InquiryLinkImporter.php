@@ -12,6 +12,9 @@ use App\Exception\InventoryReaderException;
 use App\Exception\TranslatableException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+/**
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ */
 readonly class InquiryLinkImporter
 {
     public function __construct(
@@ -63,7 +66,7 @@ readonly class InquiryLinkImporter
                     throw InquiryLinkImportException::forMissingDocument($documentNr);
                 }
 
-                $inquiryChangeset->updateCaseNrsForDocument($documentCaseNrs, $caseNrs);
+                $inquiryChangeset->updateCaseNrsForDocument($documentCaseNrs, new CaseNumbers($caseNrs));
             } catch (TranslatableException $exception) {
                 $result->addRowException($rowNr, $exception);
             }

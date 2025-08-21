@@ -13,8 +13,7 @@ class AuditLogGenerateKey extends Command
     protected function configure(): void
     {
         $this->setName('woopie:auditlog:generate-keys')
-            ->setDescription('Creates a new keypair for auditlog encryption')
-            ->setHelp('Creates a new keypair for auditlog encryption');
+            ->setDescription('Creates a new keypair for auditlog encryption');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

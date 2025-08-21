@@ -19,6 +19,7 @@ readonly class AggregationBucketEntry
         private SearchParameters $parameters,
         private SearchParameters $parametersWithout,
         private array $subEntries = [],
+        private ?int $countWithoutSubEntries = null,
     ) {
     }
 
@@ -30,6 +31,11 @@ readonly class AggregationBucketEntry
     public function getCount(): int
     {
         return $this->count;
+    }
+
+    public function getCountWithoutSubEntries(): int
+    {
+        return $this->countWithoutSubEntries ?? $this->count;
     }
 
     public function getDisplayValue(): FacetDisplayValueInterface

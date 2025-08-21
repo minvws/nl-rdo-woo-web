@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { md } from './markdownit';
+import Dialog from '@admin-fe/component/Dialog.vue';
+import Icon from '@admin-fe/component/Icon.vue';
 import { getHelpId } from '@admin-fe/form';
-import FormHelp from '../FormHelp.vue';
-import Icon from '../../Icon.vue';
+import { md } from './markdownit';
 import { ref, useTemplateRef, nextTick } from 'vue';
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
 const props = defineProps<Props>();
 const markdown = ref(props.value?.replace(/\r/g, '') ?? '');
 const textarea = useTemplateRef<HTMLTextAreaElement>('textarea');
+const isDialogOpen = ref(false);
 
 const NUMBERED_LIST_PATTERN = /^\d+\.\s/;
 const BULLET_LIST_PATTERN = /^[-*]\s/;
@@ -428,10 +429,59 @@ const onBulletList = () => {
 </script>
 
 <template>
-  <FormHelp :input-id="props.id">
-    <p>Je kunt tekst op de volgende manier opmaken:</p>
+  <div class="flex justify-between">
+    <div class="flex">
+      <button class="toolbar-button" type="button" @click="onBold">
+        <Icon name="format-bold" color="fill-current" :size="24" />
+        <span class="sr-only">Tekst dikgedrukt of niet-dikgedrukt maken</span>
+      </button>
+      <button class="toolbar-button" type="button" @click="onItalic">
+        <Icon name="format-italic" color="fill-current" :size="24" />
+        <span class="sr-only">Tekst cursief of niet-cursief maken</span>
+      </button>
+      <button class="toolbar-button" type="button" @click="onLink">
+        <Icon name="format-link" color="fill-current" :size="24" />
+        <span class="sr-only">Link toevoegen</span>
+      </button>
+      <button class="toolbar-button" type="button" @click="onBulletList">
+        <Icon name="format-list-bullet" color="fill-current" :size="24" />
+        <span class="sr-only">Ongenummerde lijst toevoegen of weghalen</span>
+      </button>
+      <button class="toolbar-button" type="button" @click="onNumberList">
+        <Icon name="format-list-number" color="fill-current" :size="24" />
+        <span class="sr-only">Genummerde lijst toevoegen of weghalen</span>
+      </button>
+    </div>
 
-    <table class="bhr-table my-2">
+    <button
+      @click="isDialogOpen = true"
+      aria-haspopup="dialog"
+      class="bhr-btn-ghost-primary"
+      type="button"
+    >
+      Wat is Markdown en hoe werkt het?
+    </button>
+  </div>
+
+  <textarea
+    :aria-describedby="getHelpId(props.id)"
+    :id="props.id"
+    :name="props.name"
+    class="bhr-textarea min-h-60"
+    ref="textarea"
+    v-model="markdown"
+  />
+
+  <h2 class="bhr-label mt-4">Preview</h2>
+  <div class="preview bhr-content" v-html="md.render(markdown)" />
+
+  <Dialog v-model="isDialogOpen" title="Wat is markdown en hoe werkt het?">
+    <p>
+      Markdown is een opmaaktaal waarmee je tekst in verschillende stijlen kunt
+      opmaken. Hiervoor gebruik je leestekens zoals sterretjes of streepjes.
+    </p>
+
+    <table class="bhr-table my-6">
       <thead>
         <tr>
           <th class="bhr-column-head bhr-column-head--gray">Tekst</th>
@@ -487,65 +537,29 @@ const onBulletList = () => {
         </tr>
       </tbody>
     </table>
-  </FormHelp>
 
-  <div class="toolbar">
-    <button class="toolbar__button" type="button" @click="onBold">
-      <Icon name="format-bold" class="toolbar__icon" :size="24" />
-      <span class="sr-only">Tekst dikgedrukt of niet-dikgedrukt maken</span>
+    <button
+      @click="isDialogOpen = false"
+      class="bhr-btn-filled-primary"
+      type="button"
+    >
+      Sluit dit venster
     </button>
-    <button class="toolbar__button" type="button" @click="onItalic">
-      <Icon name="format-italic" class="toolbar__icon" :size="24" />
-      <span class="sr-only">Tekst cursief of niet-cursief maken</span>
-    </button>
-    <button class="toolbar__button" type="button" @click="onLink">
-      <Icon name="format-link" class="toolbar__icon" :size="24" />
-      <span class="sr-only">Link toevoegen</span>
-    </button>
-    <button class="toolbar__button" type="button" @click="onBulletList">
-      <Icon name="format-list-bullet" class="toolbar__icon" :size="24" />
-      <span class="sr-only">Ongenummerde lijst toevoegen of weghalen</span>
-    </button>
-    <button class="toolbar__button" type="button" @click="onNumberList">
-      <Icon name="format-list-number" class="toolbar__icon" :size="24" />
-      <span class="sr-only">Genummerde lijst toevoegen of weghalen</span>
-    </button>
-  </div>
-
-  <textarea
-    :aria-describedby="getHelpId(props.id)"
-    :id="props.id"
-    :name="props.name"
-    class="textarea"
-    ref="textarea"
-    v-model="markdown"
-  />
-
-  <h2 class="sr-only">Voorvertoning</h2>
-  <div class="preview bhr-content" v-html="md.render(markdown)" />
+  </Dialog>
 </template>
 
 <style lang="postcss" scoped>
 @reference '../../../../../../styles/admin/index.css';
 
-.toolbar {
-  @apply flex border border-b-0 border-bhr-light-silver;
-}
-
-.toolbar__button {
-  @apply w-10 aspect-square border-r border-bhr-light-silver;
-
-  &:hover,
-  &:focus {
-    @apply bg-bhr-platinum;
-  }
-}
-
-.textarea {
-  @apply bhr-textarea block rounded-none min-h-60;
+.toolbar-button {
+  @apply bhr-btn-ghost-primary w-10 aspect-square;
 }
 
 .preview {
-  @apply p-4 border border-t-0 border-bhr-light-silver text-lg;
+  @apply p-2 pl-4 text-lg;
+
+  &:not(:empty) {
+    @apply border-l border-bhr-gray-500;
+  }
 }
 </style>

@@ -69,7 +69,7 @@ class DepartmentController extends AbstractController
         $facetResult = $this->searchService->getResult($this->aggregationsQueryDefinition, $searchParameters);
 
         return $this->render(
-            $this->departmentService->getTemplate($department),
+            'public/department/details.html.twig',
             [
                 'departmentLogo' => $department->getFileInfo()->isUploaded()
                     ? $this->generateUrl('app_department_logo_download', [

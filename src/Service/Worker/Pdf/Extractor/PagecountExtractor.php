@@ -28,11 +28,8 @@ class PagecountExtractor implements EntityExtractorInterface, OutputExtractorInt
     ) {
     }
 
-    public function extract(EntityWithFileInfo $entity, bool $forceRefresh): void
+    public function extract(EntityWithFileInfo $entity): void
     {
-        // TODO: Cache was removed for #2142, to be improved and restored in #2144
-        unset($forceRefresh);
-
         $this->output = $this->extractPageCountFromPdf($entity);
     }
 

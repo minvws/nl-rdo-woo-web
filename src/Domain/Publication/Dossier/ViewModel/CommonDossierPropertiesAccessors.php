@@ -75,9 +75,4 @@ trait CommonDossierPropertiesAccessors
     {
         return $this->getCommonDossier()->subject !== null;
     }
-
-    public function isExternalDepartmentResponsible(): bool
-    {
-        return $this->getMainDepartment()->name !== 'ministerie van Volksgezondheid, Welzijn en Sport';
-    }
 }

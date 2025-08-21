@@ -32,7 +32,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const items = ref<MultiInputItem[]>([]);
-const multiInputComponent = useTemplateRef<MultiInput>('multiInputComponent');
+const multiInputComponent = useTemplateRef<typeof MultiInput>(
+  'multiInputComponent',
+);
 
 const updateItem = (value: string, itemId: string) => {
   multiInputComponent.value?.updateItem(value, itemId);

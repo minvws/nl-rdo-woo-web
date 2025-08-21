@@ -5,7 +5,7 @@ Resource            ../resources/Setup.resource
 Library             FakerLibrary
 Suite Setup         Suite Setup
 Test Setup          Go To Admin
-Test Tags           ci  contentpages
+Test Tags           ci  contentpages  parallel
 
 
 *** Test Cases ***

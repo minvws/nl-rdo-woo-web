@@ -1,20 +1,17 @@
-import { isValidMaxFileSize } from './file';
+import type { FileUploadLimit } from './interface';
+import { collectFileLimitMimeTypes } from './limits';
 
-export const validateFiles = (
-  files: File[],
-  mimeTypes: string[],
-  maxFileSize?: number,
-) => {
+export const validateFiles = (files: File[], limits: FileUploadLimit[]) => {
   const invalidSizeFiles = new Set<File>();
   const invalidTypeFiles = new Set<File>();
   const validFiles = new Set<File>();
 
-  const mimeTypesSet = new Set(mimeTypes);
-  const hasValidMimeTypesDefined = mimeTypesSet.size > 0;
-  const hasValidMaxFileSize = isValidMaxFileSize(maxFileSize);
+  const allowedMimeTypes = new Set(collectFileLimitMimeTypes(limits));
+
+  const hasAllowedMimeTypes = allowedMimeTypes.size > 0;
 
   const hasValidMimeType = (file: File) => {
-    if (!hasValidMimeTypesDefined) {
+    if (!hasAllowedMimeTypes) {
       return true;
     }
 
@@ -23,15 +20,19 @@ export const validateFiles = (
       return true;
     }
 
-    return mimeTypesSet.has(file.type);
+    return allowedMimeTypes.has(file.type);
   };
 
   const hasValidSize = (file: File) => {
-    if (!hasValidMaxFileSize) {
-      return true;
+    const limitForMimeType = limits.find((limit) =>
+      limit.mimeTypes.includes(file.type),
+    );
+
+    if (limitForMimeType?.size) {
+      return file.size <= limitForMimeType.size;
     }
 
-    return file.size <= (maxFileSize as number);
+    return true;
   };
 
   files.forEach((file) => {

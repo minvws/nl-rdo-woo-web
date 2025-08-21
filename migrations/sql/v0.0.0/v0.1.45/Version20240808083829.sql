@@ -1,0 +1,15 @@
+-- Migration Version20240808083829
+-- Generated on 2024-08-12 05:43:59 by bin/console woopie:sql:dump
+--
+
+CREATE TABLE subject (id UUID NOT NULL, organisation_id UUID NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id));
+CREATE INDEX IDX_FBCE3E7A9E6B1585 ON subject (organisation_id);
+COMMENT ON COLUMN subject.id IS '(DC2Type:uuid)';
+COMMENT ON COLUMN subject.organisation_id IS '(DC2Type:uuid)';
+ALTER TABLE subject ADD CONSTRAINT FK_FBCE3E7A9E6B1585 FOREIGN KEY (organisation_id) REFERENCES organisation (id) NOT DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE dossier ADD subject_id UUID DEFAULT NULL;
+COMMENT ON COLUMN dossier.subject_id IS '(DC2Type:uuid)';
+ALTER TABLE dossier ADD CONSTRAINT FK_3D48E03723EDC87 FOREIGN KEY (subject_id) REFERENCES subject (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE;
+CREATE INDEX IDX_3D48E03723EDC87 ON dossier (subject_id);
+
+GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE subject TO woopie;

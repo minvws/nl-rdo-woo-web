@@ -1,0 +1,1 @@
+GRANT SELECT,INSERT,UPDATE ON TABLE raw_inventory TO woopie;

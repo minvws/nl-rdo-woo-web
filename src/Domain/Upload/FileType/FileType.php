@@ -8,6 +8,12 @@ use Symfony\Component\Mime\MimeTypes;
 
 enum FileType: string
 {
+    /**
+     * Constants for file size limits in bytes.
+     */
+    private const MB = 1024 * 1024; // 1 MiB in bytes
+    private const GB = 1024 * self::MB; // 1 GiB in bytes
+
     case PDF = 'pdf';
     case XLS = 'xls';
     case DOC = 'doc';
@@ -31,6 +37,15 @@ enum FileType: string
         }
 
         return null;
+    }
+
+    public function getMaxUploadSize(): int
+    {
+        return match ($this) {
+            self::ZIP => 4 * self::GB,
+            self::VECTOR_IMAGE => 100 * self::MB,
+            default => self::GB,
+        };
     }
 
     /**

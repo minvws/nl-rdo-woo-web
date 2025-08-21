@@ -5,17 +5,13 @@ declare(strict_types=1);
 namespace App\Service\Inquiry;
 
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Symfony\Component\Uid\Uuid;
 
 class DocumentCaseNumbers
 {
-    /**
-     * @param array<string> $caseNrs
-     */
     public function __construct(
         public ?Uuid $documentId,
-        public array $caseNrs,
+        public CaseNumbers $caseNumbers,
     ) {
     }
 
@@ -30,7 +26,7 @@ class DocumentCaseNumbers
     public static function fromArray(array $data): self
     {
         if (count($data) === 0) {
-            return new self(null, []);
+            return new self(null, CaseNumbers::empty());
         }
 
         $documentId = $data[0]['id'];
@@ -43,16 +39,14 @@ class DocumentCaseNumbers
             $inquiryNrs[] = $row['casenr'];
         }
 
-        return new self($documentId, $inquiryNrs);
+        return new self($documentId, new CaseNumbers($inquiryNrs));
     }
 
     public static function fromDocumentEntity(Document $document): self
     {
         return new self(
             $document->getId(),
-            $document->getInquiries()->map(
-                fn (Inquiry $inquiry) => $inquiry->getCasenr()
-            )->toArray(),
+            CaseNumbers::forDocument($document),
         );
     }
 }

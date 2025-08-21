@@ -9,11 +9,6 @@
 /vendor/
 ###< symfony/framework-bundle ###
 
-.phpunit.cache
-.phpcs-cache
-hashes.json
-lib/
-
 ###> pentatrion/vite-bundle ###
 /node_modules/
 /public/build/
@@ -24,37 +19,36 @@ lib/
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
 ### Robot Framework ###
 /tests/robot_framework/results
 /tests/robot_framework/libraries/__pycache__
 /tests/robot_framework/files/generated
 .venv
-### Robot Framework ###
+.pabotsuitenames
 
-### Virtu ###
 /env
-### Virtu ###
-
-### Editor and private files
 /*.hidden
-### Editor and private files
-#
 
 /coverage
 /database
+
 /public/sitemap*.xml
+/public/documentatie/
 
 Taskfile.yml
 .task
 auth.json
 .npmrc.auth
 .phpstan.cache
-
-###> phpstan/phpstan ###
-phpstan.neon
-###< phpstan/phpstan ###
-
-phpunit.xml
-stdout.txt
-
-/public/documentatie/
+.phpcs-cache
+hashes.json
+lib/

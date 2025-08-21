@@ -24,7 +24,7 @@ final readonly class IngestMetadataOnlyHandler
         $entity = $this->doctrine->getRepository($message->getEntityClass())->find($message->getEntityId());
         if (is_null($entity)) {
             $this->logger->warning('No entity found in IngestMetadataOnlyHandler', [
-                'id' => $message->getEntityId(),
+                'id' => $message->getEntityId()->toRfc4122(),
                 'class' => $message->getEntityClass(),
             ]);
 
@@ -40,7 +40,7 @@ final readonly class IngestMetadataOnlyHandler
             );
         } catch (\Exception $e) {
             $this->logger->error('Failed to update ES document in IngestMetadataOnlyHandler', [
-                'id' => $message->getEntityId(),
+                'id' => $message->getEntityId()->toRfc4122(),
                 'class' => $message->getEntityClass(),
                 'exception' => $e->getMessage(),
             ]);

@@ -23,16 +23,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks]
 class Document extends AbstractPublicationItem
 {
-    // Number of pages for word based documents
-    #[ORM\Column(nullable: false)]
-    private int $pageCount = 0;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $summary = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $title = null;
-
     /** @var Collection<array-key,WooDecision> */
     #[ORM\ManyToMany(targetEntity: WooDecision::class, inversedBy: 'documents')]
     #[ORM\JoinTable(
@@ -51,7 +41,7 @@ class Document extends AbstractPublicationItem
     #[ORM\Column(nullable: true)]
     private ?int $familyId = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(length: 170, nullable: true)]
     private ?string $documentId = null;
 
     #[ORM\Column(nullable: true)]
@@ -76,7 +66,7 @@ class Document extends AbstractPublicationItem
     #[ORM\Column(length: 255, nullable: true, enumType: DocumentWithdrawReason::class)]
     private ?DocumentWithdrawReason $withdrawReason = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 1000, nullable: true)]
     private ?string $withdrawExplanation = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
@@ -90,7 +80,7 @@ class Document extends AbstractPublicationItem
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private array $links = [];
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 1000, nullable: true)]
     private ?string $remark = null;
 
     /** @var Collection<int, self> */
@@ -113,42 +103,6 @@ class Document extends AbstractPublicationItem
         $this->refersTo = new ArrayCollection();
         $this->referredBy = new ArrayCollection();
         $this->fileInfo->setPaginatable(true);
-    }
-
-    public function getPageCount(): int
-    {
-        return $this->pageCount;
-    }
-
-    public function setPageCount(int $pageCount): self
-    {
-        $this->pageCount = $pageCount;
-
-        return $this;
-    }
-
-    public function getSummary(): ?string
-    {
-        return $this->summary;
-    }
-
-    public function setSummary(?string $summary): self
-    {
-        $this->summary = $summary;
-
-        return $this;
-    }
-
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    public function setTitle(?string $title): self
-    {
-        $this->title = $title;
-
-        return $this;
     }
 
     public function getDocumentNr(): string
@@ -219,6 +173,10 @@ class Document extends AbstractPublicationItem
     public function setJudgement(Judgement $judgement): self
     {
         $this->judgement = $judgement;
+
+        if ($judgement->isNotPublic()) {
+            $this->removeWithdrawn();
+        }
 
         return $this;
     }
@@ -415,7 +373,7 @@ class Document extends AbstractPublicationItem
         $this->fileInfo->removeFileProperties();
     }
 
-    public function republish(): void
+    public function removeWithdrawn(): void
     {
         $this->withdrawn = false;
         $this->withdrawReason = null;

@@ -91,7 +91,7 @@ readonly class ProcessDocumentFileUploadHandler
         $dossier = $documentFileSet->getDossier();
         foreach ($fileIterator as $file) {
             /** @var UploadedFile $file */
-            $mimeType = $this->mimeTypeHelper->detectMimeType($file);
+            $mimeType = $this->mimeTypeHelper->detectMimeTypeFromPath($file);
             if (! $this->mimeTypeHelper->isValidForUploadGroup($mimeType, UploadGroupId::WOO_DECISION_DOCUMENTS)) {
                 $this->logger->info('Unsupported mimetype, skipping file', [
                     'filename' => $file->getOriginalFilename(),

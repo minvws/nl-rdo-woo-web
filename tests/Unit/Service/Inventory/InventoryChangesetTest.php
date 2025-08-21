@@ -146,4 +146,21 @@ class InventoryChangesetTest extends MockeryTestCase
 
         self::assertEquals([], $changeset->getAll());
     }
+
+    public function testGetResultingTotalDocumentCount(): void
+    {
+        $documentNumberA = DocumentNumber::fromString('test', 'x', '123A');
+        $documentNumberB = DocumentNumber::fromString('test', 'x', '123B');
+        $documentNumberC = DocumentNumber::fromString('test', 'x', '123C');
+        $documentNumberD = DocumentNumber::fromString('test', 'x', '123D');
+
+        $changeset = new InventoryChangeset();
+        $changeset->markAsAdded($documentNumberA);
+        $changeset->markAsDeleted($documentNumberB->getValue());
+        $changeset->markAsUnchanged($documentNumberC);
+        $changeset->markAsUpdated($documentNumberD);
+
+        // One added + one unchanged + one updated and don't count the deleted one = 3
+        self::assertEquals(3, $changeset->getResultingTotalDocumentCount());
+    }
 }

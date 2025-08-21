@@ -19,7 +19,7 @@ class DocumentCaseNumbersTest extends MockeryTestCase
 
         self::assertTrue($documentCaseNumbers->isDocumentNotFound());
         self::assertEquals(null, $documentCaseNumbers->documentId);
-        self::assertEquals([], $documentCaseNumbers->caseNrs);
+        self::assertEquals([], $documentCaseNumbers->caseNumbers->values);
     }
 
     public function testFromArrayWithoutCaseNumbers(): void
@@ -33,7 +33,7 @@ class DocumentCaseNumbersTest extends MockeryTestCase
 
         self::assertFalse($documentCaseNumbers->isDocumentNotFound());
         self::assertEquals($documentId, $documentCaseNumbers->documentId);
-        self::assertEquals([], $documentCaseNumbers->caseNrs);
+        self::assertEquals([], $documentCaseNumbers->caseNumbers->values);
     }
 
     public function testFromArrayWithCaseNumbers(): void
@@ -52,7 +52,7 @@ class DocumentCaseNumbersTest extends MockeryTestCase
 
         self::assertFalse($documentCaseNumbers->isDocumentNotFound());
         self::assertEquals($documentId, $documentCaseNumbers->documentId);
-        self::assertEquals([$caseNr1, $caseNr2], $documentCaseNumbers->caseNrs);
+        self::assertEquals([$caseNr1, $caseNr2], $documentCaseNumbers->caseNumbers->values);
     }
 
     public function testFromDocumentEntity(): void
@@ -71,6 +71,6 @@ class DocumentCaseNumbersTest extends MockeryTestCase
 
         self::assertFalse($documentCaseNumbers->isDocumentNotFound());
         self::assertEquals($documentId, $documentCaseNumbers->documentId);
-        self::assertEquals([$caseNr1, $caseNr2], $documentCaseNumbers->caseNrs);
+        self::assertEquals([$caseNr1, $caseNr2], $documentCaseNumbers->caseNumbers->values);
     }
 }

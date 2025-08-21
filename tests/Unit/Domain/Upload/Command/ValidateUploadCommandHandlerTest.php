@@ -10,6 +10,7 @@ use App\Domain\Upload\Command\ValidateUploadCommand;
 use App\Domain\Upload\Command\ValidateUploadCommandHandler;
 use App\Domain\Upload\Exception\UploadException;
 use App\Domain\Upload\Exception\UploadValidationException;
+use App\Domain\Upload\FileType\FileType;
 use App\Domain\Upload\FileType\MimeTypeHelper;
 use App\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
 use App\Domain\Upload\UploadEntity;
@@ -59,7 +60,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(123);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
-        $uploadEntity->shouldReceive('getFilename')->andReturn('foo.bar');
+        $uploadEntity->shouldReceive('getFilename')->andReturn($filename = 'foo.bar');
         $uploadEntity->shouldReceive('getStatus')->andReturn(UploadStatus::UPLOADED);
 
         $this->clamAvFileScanner->expects('getFileSizeLimit')->andReturn(1024);
@@ -70,7 +71,12 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
             ->expects('copyUploadToFilesystem')
             ->with($uploadEntity, $this->workingCopyStorage, $uploadId, null);
 
-        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn('file data content');
+        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn($contents = 'file data content');
+
+        $this->mimeTypeHelper
+            ->shouldReceive('detectMimeType')
+            ->with($filename, $contents)
+            ->andReturnNull();
 
         $this->uploadService
             ->expects('failValidation')
@@ -100,7 +106,54 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
         $this->handler->__invoke($command);
     }
 
-    public function testTooLargePdfFailsValidation(): void
+    public function testTooLargePdfFailsMaxUploadSizeValidation(): void
+    {
+        $uuid = Uuid::v6();
+        $uploadId = 'foo-123';
+        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
+        $uploadEntity->shouldReceive('getSize')->andReturn(FileType::PDF->getMaxUploadSize() + 1);
+        $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
+        $uploadEntity->shouldReceive('getFilename')->andReturn($filename = 'foo.pdf');
+        $uploadEntity->shouldReceive('getStatus')->andReturn(UploadStatus::UPLOADED);
+        $uploadEntity->shouldReceive('getUploadGroupId')->andReturn($groupId = UploadGroupId::WOO_DECISION_DOCUMENTS);
+
+        $this->clamAvFileScanner->expects('getFileSizeLimit')->andReturn(10 * 1024 * 1024 * 1024); // 10 GiB
+
+        $this->uploadService
+            ->expects('copyUploadToFilesystem')
+            ->with($uploadEntity, $this->workingCopyStorage, $uploadId, null);
+
+        $this->uploadEntityRepository->expects('find')->with($uuid)->andReturn($uploadEntity);
+
+        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn($contents = 'file data content');
+
+        $this->mimeTypeHelper
+            ->shouldReceive('detectMimeType')
+            ->with($filename, $contents)
+            ->andReturn($mimeType = 'application/pdf');
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with($mimeType, $groupId)
+            ->andReturnTrue();
+
+        $expectedExceptionMessage = UploadValidationException::forFilesizeExceeded($uploadEntity, FileType::PDF)
+            ->getMessage();
+
+        $this->uploadService
+            ->expects('failValidation')
+            ->with(
+                $uploadEntity,
+                \Mockery::on(fn (UploadValidationException $exception): bool => $exception->getMessage() === $expectedExceptionMessage),
+            );
+
+        $command = new ValidateUploadCommand($uuid);
+
+        $this->handler->__invoke($command);
+    }
+
+    public function testTooLargeNonZipFileFailsClamAvFileSizeValidation(): void
     {
         $uuid = Uuid::v6();
         $uploadId = 'foo-123';
@@ -108,7 +161,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(2048);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
-        $uploadEntity->shouldReceive('getFilename')->andReturn('foo.pdf');
+        $uploadEntity->shouldReceive('getFilename')->andReturn($filename = 'foo.pdf');
         $uploadEntity->shouldReceive('getStatus')->andReturn(UploadStatus::UPLOADED);
         $uploadEntity->shouldReceive('getUploadGroupId')->andReturn($groupId = UploadGroupId::WOO_DECISION_DOCUMENTS);
 
@@ -120,13 +173,27 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
             ->expects('copyUploadToFilesystem')
             ->with($uploadEntity, $this->workingCopyStorage, $uploadId, $this->mimeTypeHelper::SAMPLE_SIZE);
 
-        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn('file data content');
+        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn($contents = 'file data content');
+        $this->workingCopyStorage->expects('readStream')->with($uploadId)->andReturn($data = 'file data stream');
 
-        $this->mimeTypeHelper->expects('isValidForUploadGroup')->with('application/pdf', $groupId)->andReturnFalse();
+        $this->mimeTypeHelper
+            ->shouldReceive('detectMimeType')
+            ->with($filename, $contents)
+            ->andReturn($mimeType = 'application/pdf');
 
+        $this->mimeTypeHelper->expects('isValidForUploadGroup')->with($mimeType, $groupId)->andReturnTrue();
+
+        $this->sevenZipFileStrategy->expects('supports')->with('pdf', $mimeType)->andReturnfalse();
+
+        $this->clamAvFileScanner->expects('scanResource')->with($uploadId, $data)->andReturn(FileScanResult::MAX_SIZE_EXCEEDED);
+
+        $expectedExceptionMessage = UploadValidationException::forUnsafeFile()->getMessage();
         $this->uploadService
             ->expects('failValidation')
-            ->with($uploadEntity, \Mockery::type(UploadValidationException::class));
+            ->with(
+                $uploadEntity,
+                \Mockery::on(fn (UploadValidationException $exception): bool => $exception->getMessage() === $expectedExceptionMessage),
+            );
 
         $command = new ValidateUploadCommand($uuid);
 
@@ -141,7 +208,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(2048);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
-        $uploadEntity->shouldReceive('getFilename')->andReturn('foo.zip');
+        $uploadEntity->shouldReceive('getFilename')->andReturn($filename = 'foo.zip');
         $uploadEntity->shouldReceive('getStatus')->andReturn(UploadStatus::UPLOADED);
         $uploadEntity->shouldReceive('getUploadGroupId')->andReturn($groupId = UploadGroupId::WOO_DECISION_DOCUMENTS);
 
@@ -153,12 +220,17 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
             ->expects('copyUploadToFilesystem')
             ->with($uploadEntity, $this->workingCopyStorage, $uploadId, $this->mimeTypeHelper::SAMPLE_SIZE);
 
-        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn('file data content');
+        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn($contents = 'file data content');
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
             ->with($mimeType = 'application/zip', $groupId)
             ->andReturnTrue();
+
+        $this->mimeTypeHelper
+            ->shouldReceive('detectMimeType')
+            ->with($filename, $contents)
+            ->andReturn($mimeType);
 
         $this->sevenZipFileStrategy->expects('supports')->with('zip', $mimeType)->andReturnTrue();
 
@@ -177,7 +249,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(124);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
-        $uploadEntity->shouldReceive('getFilename')->andReturn('foo.pdf');
+        $uploadEntity->shouldReceive('getFilename')->andReturn($filename = 'foo.pdf');
         $uploadEntity->shouldReceive('getStatus')->andReturn(UploadStatus::UPLOADED);
         $uploadEntity->shouldReceive('getUploadGroupId')->andReturn($groupId = UploadGroupId::WOO_DECISION_DOCUMENTS);
 
@@ -189,11 +261,16 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
             ->expects('copyUploadToFilesystem')
             ->with($uploadEntity, $this->workingCopyStorage, $uploadId, null);
 
-        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn('file data content');
+        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn($contents = 'file data content');
+
+        $this->mimeTypeHelper
+            ->shouldReceive('detectMimeType')
+            ->with($filename, $contents)
+            ->andReturn($mimeType = 'application/pdf');
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('application/pdf', $groupId)
+            ->with($mimeType, $groupId)
             ->andReturnFalse();
 
         $this->uploadService
@@ -213,7 +290,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(124);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
-        $uploadEntity->shouldReceive('getFilename')->andReturn('foo.pdf');
+        $uploadEntity->shouldReceive('getFilename')->andReturn($filename = 'foo.pdf');
         $uploadEntity->shouldReceive('getStatus')->andReturn(UploadStatus::UPLOADED);
         $uploadEntity->shouldReceive('getUploadGroupId')->andReturn($groupId = UploadGroupId::WOO_DECISION_DOCUMENTS);
 
@@ -225,12 +302,17 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
             ->expects('copyUploadToFilesystem')
             ->with($uploadEntity, $this->workingCopyStorage, $uploadId, null);
 
-        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn('file data content');
+        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn($contents = 'file data content');
         $this->workingCopyStorage->expects('readStream')->with($uploadId)->andReturn($data = 'file data stream');
 
         $this->mimeTypeHelper
+            ->shouldReceive('detectMimeType')
+            ->with($filename, $contents)
+            ->andReturn($mimeType = 'application/pdf');
+
+        $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('application/pdf', $groupId)
+            ->with($mimeType, $groupId)
             ->andReturnTrue();
 
         $this->clamAvFileScanner->expects('scanResource')->with($uploadId, $data)->andReturn(FileScanResult::UNSAFE);
@@ -252,7 +334,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(124);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
-        $uploadEntity->shouldReceive('getFilename')->andReturn('foo.pdf');
+        $uploadEntity->shouldReceive('getFilename')->andReturn($filename = 'foo.pdf');
         $uploadEntity->shouldReceive('getStatus')->andReturn(UploadStatus::UPLOADED);
         $uploadEntity->shouldReceive('getUploadGroupId')->andReturn($groupId = UploadGroupId::WOO_DECISION_DOCUMENTS);
 
@@ -264,12 +346,17 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
             ->expects('copyUploadToFilesystem')
             ->with($uploadEntity, $this->workingCopyStorage, $uploadId, null);
 
-        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn('file data content');
+        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn($contents = 'file data content');
         $this->workingCopyStorage->expects('readStream')->with($uploadId)->andReturn($data = 'file data stream');
 
         $this->mimeTypeHelper
+            ->shouldReceive('detectMimeType')
+            ->with($filename, $contents)
+            ->andReturn($mimeType = 'application/pdf');
+
+        $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with($mimeType = 'application/pdf', $groupId)
+            ->with($mimeType, $groupId)
             ->andReturnTrue();
 
         $this->clamAvFileScanner->expects('scanResource')->with($uploadId, $data)->andReturn(FileScanResult::SAFE);

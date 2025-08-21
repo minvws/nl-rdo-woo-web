@@ -44,7 +44,17 @@ class DepartmentType extends AbstractType
                 'help' => 'admin.department.public_help',
             ])
             ->add('feedback_content', TextareaType::class, [
+                'property_path' => 'feedbackContent',
                 'label' => 'admin.department.feedback_content.description',
+                'required' => false,
+                'empty_data' => '',
+                'attr' => [
+                    'data-is-markdown' => 'true',
+                ],
+            ])
+            ->add('responsibility_content', TextareaType::class, [
+                'property_path' => 'responsibilityContent',
+                'label' => 'admin.department.responsibility_content.description',
                 'required' => false,
                 'empty_data' => '',
                 'attr' => [

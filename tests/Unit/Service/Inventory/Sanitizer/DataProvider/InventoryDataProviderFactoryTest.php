@@ -63,7 +63,7 @@ class InventoryDataProviderFactoryTest extends MockeryTestCase
         $inquiry->expects('getInventory')->andReturn($inventory = \Mockery::mock(InquiryInventory::class));
 
         $this->documentRepository
-            ->expects('getAllInquiryDocumentsWithDossiers')
+            ->expects('getPublicInquiryDocumentsWithDossiers')
             ->with($inquiry)
             ->andReturn([$this->docA, $this->docB]);
 

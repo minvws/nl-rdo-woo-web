@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
-use Doctrine\DBAL\Platforms\PostgreSQL120Platform;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -17,11 +16,6 @@ final class Version20250630085436 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->abortIf(
-            ! $this->connection->getDatabasePlatform() instanceof PostgreSQL120Platform,
-            "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\PostgreSQL120Platform'."
-        );
-
         $this->addSql(<<<'SQL'
             CREATE TABLE organisation (id UUID NOT NULL, name VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))
         SQL);

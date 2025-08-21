@@ -112,7 +112,7 @@ class CsvReader implements FileReaderInterface
     public function getOptionalInt(int $rowIndex, string $columnName): ?int
     {
         $value = $this->getCell($rowIndex, $columnName);
-        if ($value === null) {
+        if ($value === null || $value === '') {
             return null;
         }
 

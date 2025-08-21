@@ -23,7 +23,7 @@
                     {% for inquiry in inquiries %}
                         <tr>
                             <td>
-                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_inquiry_administration_details', {casenr: inquiry.casenr}) }}">
+                                <a class="bhr-a js-bhr-clickable-row-link break-all" href="{{ path('app_admin_inquiry_administration_details', {casenr: inquiry.casenr}) }}">
                                     {{ inquiry.casenr }}
                                 </a>
                             </td>

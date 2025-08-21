@@ -8,6 +8,9 @@
         label: 'Partij',
         legend: 'Partijen in het convenant',
         minLength: 2,
+        minValueLength: 2,
+        maxLength: 10,
+        maxValueLength: 10,
         name: 'content_form[parties]',
         options: departments,
         submitErrors: partiesErrors,
@@ -19,12 +22,11 @@
     {{ form_row(form.summary) }}
 
     <twig:Admin:Publication:ManageDocument
-        allowedFileTypes="{{ documentTypeNames }}"
-        allowedMimeTypes="{{ documentMimeTypes }}"
         canDelete="{{ canDeleteDocument }}"
         documentType="{{ 'admin.dossiers.covenant.document' | trans }}"
         documentTypes="{{ documentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-document' }}"
+        fileLimits="{{ documentFileLimits | default([])}}"
         formField="{{ form.document }}"
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.covenant.form.content.document_help' | trans }}"
@@ -36,11 +38,10 @@
     {{ form_row(form.previous_version_link) }}
 
     <twig:Admin:Publication:ManageAttachments
-        allowedFileTypes="{{ attachmentTypeNames }}"
-        allowedMimeTypes="{{ attachmentMimeTypes }}"
         canDelete="{{ canDeleteAttachments }}"
         documentTypes="{{ attachmentTypes }}"
         endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/covenant-attachments' }}"
+        fileLimits="{{ attachmentFileLimits | default([])}}"
         grounds="{{ grounds }}"
         helpText="{{ 'admin.dossiers.covenant.form.content.attachments_help' | trans }}"
         languages="{{ attachmentLanguages }}"

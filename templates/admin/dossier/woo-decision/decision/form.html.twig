@@ -14,13 +14,12 @@
 {{ form_row(form.summary) }}
 
 <twig:Admin:Publication:ManageDocument
-    allowedFileTypes="{{ documentTypeNames }}"
-    allowedMimeTypes="{{ documentMimeTypes }}"
     canDelete="{{ canDeleteDocument }}"
     dateLabel="{{ 'Datum waarop het besluit genomen is' }}"
     documentType="{{ 'admin.dossiers.woo-decision.document' | trans }}"
     documentTypes="{{ documentTypes }}"
     endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/woo-decision-main-document' }}"
+    fileLimits="{{ documentFileLimits | default([])}}"
     formField="{{ form.document }}"
     grounds="{{ grounds }}"
     helpText="{{ 'admin.dossiers.woo-decision.form.content.document_help' | trans }}"
@@ -30,11 +29,10 @@
 />
 
 <twig:Admin:Publication:ManageAttachments
-    allowedFileTypes="{{ attachmentTypeNames }}"
-    allowedMimeTypes="{{ attachmentMimeTypes }}"
     canDelete="{{ canDeleteAttachments }}"
     documentTypes="{{ attachmentTypes }}"
     endpoint="{{'/balie/api/dossiers/' ~ dossier.id ~ '/decision-attachments'}}"
+    fileLimits="{{ attachmentFileLimits | default([])}}"
     grounds="{{ grounds }}"
     helpText="{{ 'admin.dossiers.woo-decision.form.content.attachments_help' | trans }}"
     languages="{{ attachmentLanguages }}"

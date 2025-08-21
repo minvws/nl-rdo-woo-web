@@ -87,6 +87,7 @@ class EntityStorageService extends StorageService
         $foundationFile = new File($localFile->getPathname());
         $file->setMimetype($foundationFile->getMimeType());
         $file->setUploaded(true);
+        $file->setPageCount(null);
 
         $this->doctrine->persist($entity);
 

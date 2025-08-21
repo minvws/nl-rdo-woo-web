@@ -1,4 +1,5 @@
 import { SelectOptions } from '@admin-fe/form/interface';
+import type { FileUploadLimit } from '@js/admin/utils/file/interface';
 import { createMockedAttachmentType } from '@js/test';
 import { flushPromises, mount } from '@vue/test-utils';
 import {
@@ -10,9 +11,9 @@ import {
   test,
   vi,
 } from 'vitest';
+import { ref, unref } from 'vue';
 import { GroundOptions, PublicationFileTypes } from './interface';
 import PublicationFiles from './PublicationFiles.vue';
-import { ref, unref } from 'vue';
 
 const isFocusWithin = ref(true);
 
@@ -65,20 +66,18 @@ describe('The "PublicationFiles" component', () => {
   });
 
   interface CreateComponentOptions {
-    allowedFileTypes: string[];
-    allowedMimeTypes: string[];
-    allowMultiple: boolean;
+    fileLimits: FileUploadLimit[];
     fileTypeOptions: PublicationFileTypes;
     groundOptions: GroundOptions;
     languageOptions: SelectOptions;
+    maxLength: number;
     readableFileType?: string;
   }
 
   const createComponent = (options: Partial<CreateComponentOptions> = {}) => {
     const {
-      allowedFileTypes = [],
-      allowedMimeTypes = [],
-      allowMultiple = true,
+      fileLimits = [],
+      maxLength = 2,
       fileTypeOptions = mockedPublicationFileTypes,
       groundOptions = [],
       languageOptions = [],
@@ -87,15 +86,14 @@ describe('The "PublicationFiles" component', () => {
 
     return mount(PublicationFiles, {
       props: {
-        allowedFileTypes,
-        allowedMimeTypes,
-        allowMultiple,
         canDelete: false,
         endpoint: 'https://mocked-endpoint.com',
         e2eName: 'mocked-e2e-name',
+        fileLimits,
         fileTypeOptions,
         groundOptions,
         languageOptions,
+        maxLength,
         readableFileType,
         uploadGroupId: 'mocked-upload-group-id',
       },
@@ -197,7 +195,7 @@ describe('The "PublicationFiles" component', () => {
   describe('the readable document type', () => {
     test('should equal the property "readableFileType" when it is provided', () => {
       const component = createComponent({
-        allowMultiple: false,
+        maxLength: 1,
         readableFileType: 'mocked-readable-file-type',
       });
 

@@ -22,6 +22,7 @@ The Woo platform is based on the Symfony framework and uses Elasticsearch as sea
 - For updating or local setup troubleshooting, see the [Update](docs/technische-documentatie/update.md) documentation
 - For Elasticsearch, see the [Elasticsearch](docs/technische-documentatie/elastic_index.md) documentation.
 - For platform console commands, see the [Commands](docs/technische-documentatie/commands.md) documentation.
+- For testing, see the [Test](docs/technische-documentatie/test.md) documentation
 
 ## Roles and permissions
 

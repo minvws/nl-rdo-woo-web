@@ -9,6 +9,7 @@ readonly class Department
     public function __construct(
         public string $name,
         public ?string $feedbackContent,
+        public ?string $responsibilityContent,
     ) {
     }
 }

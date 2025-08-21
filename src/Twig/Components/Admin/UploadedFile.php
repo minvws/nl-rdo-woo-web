@@ -12,6 +12,6 @@ class UploadedFile
     public ?string $deleteUrl = null;
     public ?string $downloadUrl = null;
     public string $fileName;
-    public ?string $fileSize = null;
+    public int $fileSize = 0;
     public ?string $mimeType = null;
 }

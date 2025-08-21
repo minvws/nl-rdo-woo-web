@@ -28,6 +28,7 @@ trait DossierFormBuilderTrait
                 'class' => 'bhr-input-text w-full',
             ],
             'empty_data' => '',
+            'property_path' => 'internalReference',
         ]);
     }
 

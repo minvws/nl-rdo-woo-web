@@ -22,23 +22,26 @@ The following environment variables are used by the application:
 ### Global settings
 
 | Variable             | Description                                                   | Default value           |
-| -------------------- | ------------------------------------------------------------- | ----------------------- |
+| -------------------- | ------------------------------------------------------------- |-------------------------|
 | `APP_ENV`            | The application environment.                                  | `prod`                  |
 | `APP_DEBUG`          | Whether the application is in debug mode.                     | `false`                 |
 | `APP_SECRET`         | Unique secret for creating signatures (rememberme, CSRF etc). | `null`                  |
 | `SITE_NAME`          | The name of the site. Used only for displaying purposes.      | het publicatieplatform  |
 | `COOKIE_NAME`        | The name of session cookie to use.                            | `WOOPID`                |
 | `TOTP_ISSUER`        | Issuer of the TOTP tokens, used in 2fa for the totp URI       | `localhost`             |
-| `APP_MODE`           | Application mode (see below)                                  | `BOTH`                  |
+| `APP_MODE`           | Application mode (see below)                                  | `ALL`                   |
 | `PUBLIC_BASE_URL`    | The url of the FRONTEND site                                  | `http://localhost:8000` |
 | `PIWIK_ANALYTICS_ID` | Identification number for Piwik analytics                     | `0`                     |
 
 Cookie names should be prefixed with `__Host-` when running on HTTPS. However, this will break the application when running on
 HTTP, for instance, during development.
 
-The `APP_MODE` defines how the given instance behaves. It can be `BOTH`, `FRONTEND` or `BACKEND`. When `BOTH` is used, the instance
-can run both as a frontend and a backend. If `FRONTEND` is used, the instance will only run as a frontend and the admin panel will not be available.
-When `BACKEND` is used, the instance will only run as a backend and the frontend will not be available.
+The `APP_MODE` defines how the given instance behaves. It can be `ALL`, `FRONTEND`, `BACKEND` or `API`.
+
+- When `ALL` is used, all application modes are available in a single environment.
+- When `FRONTEND` is used, the instance will only run as a frontend. The admin and API will not be available.
+- When `BACKEND` is used, the instance will only run as a backend. The frontend and API will not be available.
+- When `API` is used, the instance will only run as an API. The frontend and backend will not be available.
 
 ### Database settings
 
@@ -95,7 +98,6 @@ to create your own storage adapter since internally it will be using flysystem.
 | Variable                         | Description                                                           | Default value      |
 |----------------------------------|-----------------------------------------------------------------------|--------------------|
 | `STORAGE_DOCUMENT_ADAPTER`       | Which adapter to use for document storage (`aws` or `local`)          | `local`            |
-| `STORAGE_THUMBNAIL_ADAPTER`      | Which adapter to use for thumbnail storage (`aws` or `local`)         | `local`            |
 | `STORAGE_BATCH_ADAPTER`          | Which adapter to use for archive storage (`aws` or `local`)           | `local`            |
 | `STORAGE_WOO_INDEX_ADAPTER`      | Which adapter to use for WooIndex sitemaps storage (`aws` or `local`) | `local`            |
 | `STORAGE_UPLOAD_ADAPTER`         | Which adapter to use for upload storage (`aws` or `local`)            | `local`            |
@@ -105,7 +107,6 @@ to create your own storage adapter since internally it will be using flysystem.
 | `STORAGE_MINIO_ACCESS_KEY`       | The AWS/Minio access key                                              | ``                 |
 | `STORAGE_MINIO_SECRET_KEY`       | The AWS/Minio secret key                                              | ``                 |
 | `STORAGE_MINIO_DOCUMENT_BUCKET`  | Bucket for document storage                                           | `doc-bucket`       |
-| `STORAGE_MINIO_THUMBNAIL_BUCKET` | Bucket for thumbnail storage                                          | `thumb-bucket`     |
 | `STORAGE_MINIO_BATCH_BUCKET`     | Bucket for archive storage                                            | `batch-bucket`     |
 | `STORAGE_MINIO_WOO_INDEX_BUCKET` | Bucket for WooIndex sitemap storage                                   | `woo-index-bucket` |
 | `STORAGE_MINIO_UPLOAD_BUCKET`    | Bucket for temporary upload storage                                   | `upload-bucket`    |

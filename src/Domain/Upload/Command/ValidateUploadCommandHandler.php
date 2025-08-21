@@ -7,16 +7,20 @@ namespace App\Domain\Upload\Command;
 use App\Domain\Upload\AntiVirus\ClamAvFileScanner;
 use App\Domain\Upload\Exception\UploadException;
 use App\Domain\Upload\Exception\UploadValidationException;
+use App\Domain\Upload\FileType\FileType;
 use App\Domain\Upload\FileType\MimeTypeHelper;
 use App\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
 use App\Domain\Upload\UploadEntity;
 use App\Domain\Upload\UploadEntityRepository;
 use App\Domain\Upload\UploadService;
 use League\Flysystem\FilesystemOperator;
-use League\MimeTypeDetection\FinfoMimeTypeDetector;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
+/**
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ */
 #[AsMessageHandler]
 readonly class ValidateUploadCommandHandler
 {
@@ -45,6 +49,9 @@ readonly class ValidateUploadCommandHandler
 
         try {
             $mimeType = $this->validateMimetype($uploadEntity);
+
+            $this->validateUploadSize($uploadEntity, $mimeType);
+
             $this->scanFileContents($uploadEntity, $mimeType, $scanSizeExceeded);
         } catch (UploadValidationException $exception) {
             $this->uploadService->failValidation($uploadEntity, $exception);
@@ -71,8 +78,7 @@ readonly class ValidateUploadCommandHandler
 
     private function validateMimetype(UploadEntity $uploadEntity): string
     {
-        $detector = new FinfoMimeTypeDetector();
-        $mimeType = $detector->detectMimeType(
+        $mimeType = $this->mimeTypeHelper->detectMimeType(
             $uploadEntity->getFilename() ?? '',
             $this->workingCopyStorage->read($uploadEntity->getUploadId()),
         );
@@ -86,6 +92,19 @@ readonly class ValidateUploadCommandHandler
         }
 
         return $mimeType;
+    }
+
+    private function validateUploadSize(UploadEntity $uploadEntity, string $mimeType): void
+    {
+        $fileType = FileType::fromMimeType($mimeType);
+        Assert::isInstanceOf($fileType, FileType::class);
+
+        $size = $uploadEntity->getSize();
+        Assert::notNull($size);
+
+        if ($size > $fileType->getMaxUploadSize()) {
+            throw UploadValidationException::forFilesizeExceeded($uploadEntity, $fileType);
+        }
     }
 
     private function scanFileContents(UploadEntity $uploadEntity, string $mimeType, bool $scanSizeExceeded): void

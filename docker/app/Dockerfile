@@ -1,6 +1,6 @@
 FROM minio/mc:RELEASE.2025-02-15T10-36-16Z AS mc
 
-FROM php:8.3.23-apache-bookworm
+FROM php:8.3.24-apache-bookworm
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 

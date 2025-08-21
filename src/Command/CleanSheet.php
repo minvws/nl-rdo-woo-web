@@ -48,8 +48,7 @@ class CleanSheet extends Command
     protected function configure(): void
     {
         $this->setName('woopie:dev:clean-sheet')
-            ->setDescription('Resets data from search index, database and message queue.')
-            ->setHelp('Resets data from search index, database and message queue')
+            ->setDescription('Resets data from search index, database, file storage and message queue.')
             ->setDefinition([
                 new InputOption('force', null, InputOption::VALUE_NONE, 'Force the operation without confirmation'),
                 new InputOption('users', 'u', InputOption::VALUE_NONE, 'Reset users'),

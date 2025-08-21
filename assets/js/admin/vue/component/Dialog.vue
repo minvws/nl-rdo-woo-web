@@ -57,7 +57,7 @@ watch(isOpen, (value) => {
       <form method="dialog">
         <button class="bhr-dialog__close-btn">
           <span class="sr-only">Sluit venster</span>
-          <Icon name="cross" />
+          <Icon name="cross" color="fill-current" />
         </button>
       </form>
     </div>

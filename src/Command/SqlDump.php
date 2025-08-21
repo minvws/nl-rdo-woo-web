@@ -8,35 +8,45 @@ use App\Service\SqlDump\NodeVisitor;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 use PhpParser\PhpVersion;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Finder\Finder;
 
+/**
+ * @codeCoverageIgnore This command should get refactored and get full coverage then.
+ */
+#[AsCommand(name: 'woopie:sql:dump', description: 'Dumps SQL from migrations')]
 class SqlDump extends Command
 {
+    public const SQL_MIGRATION_PATH = __DIR__ . '/../../migrations/sql';
+
     protected function configure(): void
     {
-        $this->setName('woopie:sql:dump')
-            ->setDescription('Dumps SQL from migrations')
+        $this
             ->setHelp('Dumps SQL from migrations')
-            ->setDefinition([
-                // new InputOption('force-refresh', 'f', InputOption::VALUE_NONE, 'Skip any caching'),
-            ])
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite existing sql files')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        unset($input);
         unset($output);
 
         $parser = (new ParserFactory())->createForVersion(PhpVersion::fromString('7.0'));
         $finder = new Finder();
         foreach ($finder->in(__DIR__ . '/../../migrations')->files()->name('*.php') as $file) {
-            $sqlFilename = $file->getBasename('.php') . '.sql';
-            $f = fopen($sqlFilename, 'w');
+            $sqlFilename = $this->getSqlFilename($file);
+            $sqlFullpath = sprintf('%s/%s', self::SQL_MIGRATION_PATH, $sqlFilename);
+
+            if (file_exists($sqlFullpath) && ! $input->getOption('force')) {
+                continue;
+            }
+
+            $f = fopen($sqlFullpath, 'w');
             if (! $f) {
                 throw new \Exception("Could not open file $sqlFilename for writing");
             }
@@ -61,5 +71,12 @@ class SqlDump extends Command
         }
 
         return 0;
+    }
+
+    private function getSqlFilename(\SplFileInfo $file): string
+    {
+        $basename = ltrim(strtolower($file->getBasename('.php')), 'version');
+
+        return sprintf('%s.sql', $basename);
     }
 }

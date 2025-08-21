@@ -35,7 +35,7 @@ Login Admin
   Fill Text  id=inputEmail  ${username}
   Fill Text  id=inputPassword  ${password}
   Click  " Inloggen "
-  Wait For Elements State  //*[@data-e2e-name="login-error"]  detached  timeout=1s
+  Parse Potential Login Error
   ${otp} =  Get Otp  ${otp_secret}
   Fill Text  id=auth-code  ${otp}
   Click  " Controleren "
@@ -52,21 +52,29 @@ Login Admin
   Log  Logged in as: ${username}
   RETURN  ${password}
 
+Parse Potential Login Error
+  ${login_error_visible} =  Get Element Count  //*[@data-e2e-name="login-error"]
+  IF  ${login_error_visible}
+    ${login_error} =  Get Text  //*[@data-e2e-name="login-error"]
+    IF  'Te veel onjuiste inlogpogingen' in '${login_error}'
+      Fatal Error
+      ...  Login gave 'Too many failed login attempts', did you open a new terminal after running 'task rf:init'?
+    ELSE
+      Fatal Error  ${login_error}
+    END
+  END
+
 Click Log Out
   Click  //*[@data-e2e-name="logout-link"]
 
 No-Click Logout
-  IF  '${ENVIRONMENT}' == 'docker-local' or '${ENVIRONMENT}' == 'docker-ci'
-    Go To  %{URL_ADMIN}/logout
-  ELSE
-    Go To  https://%{URL_ADMIN}/logout
-  END
+  Go To  %{URL_ADMIN}/logout
 
 Upload Attachment
   [Arguments]  ${type}  ${date}=01012022
-  Click  " Bijlage toevoegen... "
+  Click  //*[@data-e2e-name="attachments"]//*[@data-e2e-name="add-file"]
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${ATTACHMENT_LOCATION}
-  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${ATTACHMENT_FILENAME}  timeout=10s
+  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${ATTACHMENT_FILENAME}
   Select Options By  //dialog[@open]//select[@name="type"]  text  ${type}
   Type Text  //dialog[@open]//input[@name="formalDate"]  ${date}
   Click  //dialog[@open]//button[@type="submit"]
@@ -74,12 +82,11 @@ Upload Attachment
 
 Wait For Queue To Empty
   New Page  %{URL_ADMIN}/stats
-  Wait Until Keyword Succeeds  10min  15s  Is Queue Empty
+  Wait Until Keyword Succeeds  10min  5s  Is Queue Empty
   Close Page
 
 Is Queue Empty
   Reload
-  Take Screenshot
   VAR  @{elements} =
   ...  //*[@data-e2e-name="rabbitmq-stats"]//tr[contains(.,'es_updates')]/td[3]
   ...  //*[@data-e2e-name="rabbitmq-stats"]//tr[contains(.,'global')]/td[3]

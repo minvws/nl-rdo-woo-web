@@ -10,7 +10,7 @@ Test Tags           single
 
 
 *** Test Cases ***
-Create a WooDecision
+Create A WooDecision
   Publish Generated Test WooDecision
 
 

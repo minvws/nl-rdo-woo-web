@@ -1,0 +1,20 @@
+cache-control:
+    - 'no-cache, private'
+strict-transport-security:
+    - 'max-age=31536000; includeSubDomains; preload'
+x-content-type-options:
+    - nosniff
+referrer-policy:
+    - same-origin
+permissions-policy:
+    - 'accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(self), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=()'
+x-dns-prefetch-control:
+    - 'off'
+x-download-options:
+    - noopen
+x-permitted-cross-domain-policies:
+    - 'off'
+x-xss-protection:
+    - '1; mode=block'
+content-security-policy:
+    - "default-src 'self'; frame-ancestors 'self'; form-action 'self'; base-uri 'self'; connect-src 'self' https://statistiek.rijksoverheid.nl; script-src 'self' https://statistiek.rijksoverheid.nl 'nonce-foo'; style-src 'self' 'nonce-foo'; img-src 'self' data:; font-src 'self'"

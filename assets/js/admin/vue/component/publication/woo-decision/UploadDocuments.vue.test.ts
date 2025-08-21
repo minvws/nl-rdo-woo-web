@@ -23,17 +23,18 @@ describe('The "<UploadDocuments />" component', () => {
     const { isComplete = false, mode = 'add' } = options;
     return mount(UploadDocuments, {
       props: {
-        allowedFileTypes: ['pdf'],
-        allowedMimeTypes: ['application/pdf'],
         dossierId: 'mocked-dossier-id',
+        fileLimits: [
+          { size: 1024 * 2, mimeTypes: ['application/pdf'], label: 'PDF' },
+        ],
         isComplete,
-        maxFileSize: 1000000,
         mode,
         confirmEndpoint: 'mocked-confirm-endpoint',
         rejectEndpoint: 'mocked-reject-endpoint',
         processEndpoint: 'mocked-process-endpoint',
         statusEndpoint: 'mocked-status-endpoint',
         uploadEndpoint: 'mocked-upload-endpoint',
+        maxCombinedFileSize: 123456789,
       },
       shallow: true,
       global: {
@@ -61,6 +62,9 @@ describe('The "<UploadDocuments />" component', () => {
   const getMissingDocumentsComponent = (component: VueWrapper) =>
     component.findComponent({ name: 'MissingDocuments' });
 
+  const getMaxCombinedSizeExceededComponent = (component: VueWrapper) =>
+    component.findComponent({ name: 'MaxCombinedSizeExceeded' });
+
   const waitForNumberOfStatusResponses = async (numberOfResponses: number) => {
     for (let i = 0; i < numberOfResponses; i++) {
       await waitForNextStatusResponse();
@@ -73,27 +77,25 @@ describe('The "<UploadDocuments />" component', () => {
     await nextTick();
   };
 
+  type StatusResponse = z.TypeOf<typeof wooDecisionUploadStatusResponseSchema>;
+
+  const createStatusResponse = (properties: Partial<StatusResponse> = {}) =>
+    Promise.resolve({
+      json: () =>
+        Promise.resolve({
+          canProcess: false,
+          currentDocumentsCount: 3,
+          dossierId: '123',
+          expectedDocumentsCount: 3,
+          missingDocuments: [],
+          status: UploadStatus.OpenForUploads,
+          uploadedFiles: [],
+          ...properties,
+        }),
+    });
+
   beforeEach(() => {
     vi.useFakeTimers();
-
-    type StatusResponse = z.TypeOf<
-      typeof wooDecisionUploadStatusResponseSchema
-    >;
-
-    const createStatusResponse = (properties: Partial<StatusResponse> = {}) =>
-      Promise.resolve({
-        json: () =>
-          Promise.resolve({
-            canProcess: false,
-            currentDocumentsCount: 3,
-            dossierId: '123',
-            expectedDocumentsCount: 3,
-            missingDocuments: [],
-            status: UploadStatus.OpenForUploads,
-            uploadedFiles: [],
-            ...properties,
-          }),
-      });
 
     window.fetch = vi
       .fn()
@@ -155,13 +157,13 @@ describe('The "<UploadDocuments />" component', () => {
       expect(
         getUploadAreaComponent(createComponent({ mode: 'replace' })).props(),
       ).toMatchObject({
-        allowedFileTypes: ['pdf'],
-        allowedMimeTypes: ['application/pdf'],
         allowMultiple: true,
         enableAutoUpload: true,
         endpoint: 'mocked-upload-endpoint',
+        fileLimits: [
+          { size: 1024 * 2, mimeTypes: ['application/pdf'], label: 'PDF' },
+        ],
         id: 'upload-area-dossier-files',
-        maxFileSize: 1000000,
         payload: {
           dossierId: 'mocked-dossier-id',
           groupId: 'woo-decision-documents',
@@ -262,5 +264,33 @@ describe('The "<UploadDocuments />" component', () => {
     await waitForNumberOfStatusResponses(4);
 
     expect(getIsProcessingComponent(component).exists()).toBe(true);
+  });
+
+  describe('the max combined size exceeded component', () => {
+    beforeEach(() => {
+      window.fetch = vi.fn().mockImplementation(() =>
+        createStatusResponse({
+          status: UploadStatus.MaxSizeExceeded,
+        }),
+      );
+    });
+
+    test('should not be displayed by default', async () => {
+      const component = createComponent();
+
+      expect(getMaxCombinedSizeExceededComponent(component).exists()).toBe(
+        false,
+      );
+
+      await waitForNumberOfStatusResponses(1);
+
+      const maxCombinedSizeExceededComponent =
+        getMaxCombinedSizeExceededComponent(component);
+      expect(maxCombinedSizeExceededComponent.exists()).toBe(true);
+      expect(maxCombinedSizeExceededComponent.props()).toMatchObject({
+        maxSize: 123456789,
+        rejectEndpoint: 'mocked-reject-endpoint',
+      });
+    });
   });
 });

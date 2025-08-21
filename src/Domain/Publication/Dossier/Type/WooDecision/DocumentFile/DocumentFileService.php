@@ -14,6 +14,9 @@ use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\UploadedFile;
 use App\Service\Storage\EntityStorageService;
 
+/**
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ */
 readonly class DocumentFileService
 {
     public function __construct(
@@ -21,6 +24,7 @@ readonly class DocumentFileService
         private DocumentFileSetRepository $documentFileSetRepository,
         private DocumentFileUploadRepository $documentFileUploadRepository,
         private EntityStorageService $entityStorageService,
+        private TotalDocumentFileSizeValidator $totalDocumentFileSizeValidator,
     ) {
     }
 
@@ -120,13 +124,21 @@ readonly class DocumentFileService
 
     public function rejectUpdates(WooDecision $wooDecision): void
     {
-        if (! $wooDecision->getStatus()->isPubliclyAvailableOrScheduled()) {
-            throw DocumentFileSetException::forCannotConfirmUpdates($wooDecision);
+        $documentFileSet = $this->getDocumentFileSet($wooDecision);
+        if ($documentFileSet->getStatus()->isMaxSizeExceeded()) {
+            // When the max size is exceeded, the updates can always be rejected, independent of dossier status
+            $this->updateStatus($documentFileSet, DocumentFileSetStatus::REJECTED);
+
+            return;
         }
 
-        $documentFileSet = $this->getDocumentFileSet($wooDecision);
+        if (! $wooDecision->getStatus()->isPubliclyAvailableOrScheduled()) {
+            // In other cases: only non-concept dossiers support rejecting
+            throw DocumentFileSetException::forCannotRejectUpdates($wooDecision);
+        }
+
         if (! $documentFileSet->getStatus()->needsConfirmation()) {
-            throw DocumentFileSetException::forCannotConfirmUpdates($documentFileSet);
+            throw DocumentFileSetException::forCannotRejectUpdates($documentFileSet);
         }
 
         $this->updateStatus($documentFileSet, DocumentFileSetStatus::REJECTED);
@@ -135,6 +147,12 @@ readonly class DocumentFileService
     public function checkProcessingUploadsCompletion(DocumentFileSet $documentFileSet): void
     {
         if ($this->documentFileSetRepository->countUploadsToProcess($documentFileSet) > 0) {
+            return;
+        }
+
+        if ($this->totalDocumentFileSizeValidator->exceedsMaxSizeWithUpdatesApplied($documentFileSet)) {
+            $this->updateStatus($documentFileSet, DocumentFileSetStatus::MAX_SIZE_EXCEEDED);
+
             return;
         }
 

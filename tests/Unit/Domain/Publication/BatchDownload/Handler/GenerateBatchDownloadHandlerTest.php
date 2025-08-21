@@ -65,24 +65,4 @@ class GenerateBatchDownloadHandlerTest extends MockeryTestCase
 
         $this->handler->__invoke(new GenerateBatchDownloadCommand($uuid));
     }
-
-    public function testErrorIsLoggedWhenZipGeneratorReturnsFalse(): void
-    {
-        $uuid = Uuid::v6();
-        $batchDownload = \Mockery::mock(BatchDownload::class);
-
-        $this->repository
-            ->shouldReceive('find')
-            ->with($uuid)
-            ->andReturn($batchDownload);
-
-        $this->zipGenerator
-            ->expects('generateArchive')
-            ->with($batchDownload)
-            ->andReturnFalse();
-
-        $this->logger->expects('error');
-
-        $this->handler->__invoke(new GenerateBatchDownloadCommand($uuid));
-    }
 }

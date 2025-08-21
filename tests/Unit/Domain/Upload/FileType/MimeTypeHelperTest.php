@@ -7,15 +7,19 @@ namespace App\Tests\Unit\Domain\Upload\FileType;
 use App\Domain\Upload\FileType\MimeTypeHelper;
 use App\Domain\Upload\UploadedFile;
 use App\Service\Uploader\UploadGroupId;
+use League\MimeTypeDetection\FinfoMimeTypeDetector;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\MockInterface;
 
 class MimeTypeHelperTest extends MockeryTestCase
 {
+    private FinfoMimeTypeDetector&MockInterface $mimeTypeDetector;
     private MimeTypeHelper $helper;
 
     public function setUp(): void
     {
-        $this->helper = new MimeTypeHelper();
+        $this->mimeTypeDetector = \Mockery::mock(FinfoMimeTypeDetector::class);
+        $this->helper = new MimeTypeHelper($this->mimeTypeDetector);
 
         parent::setUp();
     }
@@ -34,27 +38,35 @@ class MimeTypeHelperTest extends MockeryTestCase
         );
     }
 
-    public function testDetectMimetypeForBat(): void
+    public function testDetectMimetypeFromPath(): void
     {
         $upload = \Mockery::mock(UploadedFile::class);
-        $upload->shouldReceive('getOriginalFilename')->andReturn('1234.bat');
-        $upload->shouldReceive('getPathname')->andReturn(__DIR__ . '/invalid-upload.bat');
+        $upload->shouldReceive('getOriginalFilename')->andReturn($filename = 'upload.bat');
+        $upload->shouldReceive('getPathname')->andReturn('/var/www/foobar/upload.bat');
+
+        $this->mimeTypeDetector
+            ->shouldReceive('detectMimeTypeFromPath')
+            ->with($filename)
+            ->andReturn($mimeType = 'application/x-msdownload');
 
         self::assertEquals(
-            $this->helper->detectMimeType($upload),
-            'application/x-msdownload',
+            $mimeType,
+            $this->helper->detectMimeTypeFromPath($upload),
         );
     }
 
-    public function testDetectMimetypeForCsv(): void
+    public function testDetectMimetype(): void
     {
-        $upload = \Mockery::mock(UploadedFile::class);
-        $upload->shouldReceive('getOriginalFilename')->andReturn('1234.bat');
-        $upload->shouldReceive('getPathname')->andReturn(__DIR__ . '/valid-upload-file.csv');
+        $pathname = '/var/www/foobar/upload-file.csv';
+
+        $this->mimeTypeDetector
+            ->shouldReceive('detectMimeType')
+            ->with($pathname, $contents = 'some contents')
+            ->andReturn($mimeType = 'text/csv');
 
         self::assertEquals(
-            $this->helper->detectMimeType($upload),
-            'text/csv',
+            $mimeType,
+            $this->helper->detectMimeType($pathname, $contents),
         );
     }
 }

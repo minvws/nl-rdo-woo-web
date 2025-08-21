@@ -5,7 +5,7 @@ Resource            ../resources/Organisations.resource
 Resource            ../resources/Setup.resource
 Resource            ../resources/WooDecision.resource
 Suite Setup         Suite Setup
-Test Tags           ci  documentation
+Test Tags           ci  documentation  parallel
 
 
 *** Test Cases ***
@@ -13,7 +13,7 @@ Validate Documentation
   Click Documentation Link In Footer
   Get Text  //section//h1  contains  Welkom bij de documentatie van het publicatieplatform
   Verify Index Item  Publiceren
-  Verify Image  (//section//img)[1]  100
+  Verify Image  (//section//img)[1]
 
 Validate Link In WooDecision Upload Step
   Go To Admin

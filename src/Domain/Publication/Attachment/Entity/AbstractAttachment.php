@@ -42,6 +42,10 @@ abstract class AbstractAttachment implements EntityWithFileInfo
 {
     use AttachmentAndMainDocumentEntityTrait;
 
+    public const int MAX_ATTACHMENTS_PER_DOSSIER = 50;
+    public const int WITHDRAW_EXPLANATION_MIN_LENGTH = 1;
+    public const int WITHDRAW_EXPLANATION_MAX_LENGTH = 1000;
+
     #[ORM\ManyToOne(targetEntity: AbstractDossier::class)]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
     protected AbstractDossier $dossier;
@@ -105,6 +109,12 @@ abstract class AbstractAttachment implements EntityWithFileInfo
         if (! $this->canWithdraw()) {
             throw AttachmentWithdrawException::forCannotWithdraw();
         }
+
+        Assert::lengthBetween(
+            $explanation,
+            self::WITHDRAW_EXPLANATION_MIN_LENGTH,
+            self::WITHDRAW_EXPLANATION_MAX_LENGTH,
+        );
 
         $this->withdrawn = true;
         $this->withdrawReason = $reason;
