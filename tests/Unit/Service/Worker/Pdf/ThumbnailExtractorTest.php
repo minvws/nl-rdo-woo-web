@@ -126,41 +126,4 @@ final class ThumbnailExtractorTest extends UnitTestCase
 
         $this->extractor->extractSinglePagePdfThumbnail($context);
     }
-
-    public function testNeedsThumbGenerationReturnsFalseForPageNumberExceedingLimit(): void
-    {
-        $pageNr = 345;
-        $context = \Mockery::mock(PdfPageProcessingContext::class);
-        $context->shouldReceive('getPageNumber')->andReturn($pageNr);
-
-        self::assertFalse($this->extractor->needsThumbGeneration($context));
-    }
-
-    public function testNeedsThumbGenerationReturnsTrueWhenThumbIsMissing(): void
-    {
-        $pageNr = 1;
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
-
-        $context = \Mockery::mock(PdfPageProcessingContext::class);
-        $context->shouldReceive('getPageNumber')->andReturn($pageNr);
-        $context->shouldReceive('getEntity')->andReturn($entity);
-
-        $this->thumbnailStorageService->expects('exists')->with($entity, $pageNr)->andReturnFalse();
-
-        self::assertTrue($this->extractor->needsThumbGeneration($context));
-    }
-
-    public function testNeedsThumbGenerationReturnsFalseWhenThumbAlreadyExists(): void
-    {
-        $pageNr = 1;
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
-
-        $context = \Mockery::mock(PdfPageProcessingContext::class);
-        $context->shouldReceive('getPageNumber')->andReturn($pageNr);
-        $context->shouldReceive('getEntity')->andReturn($entity);
-
-        $this->thumbnailStorageService->expects('exists')->with($entity, $pageNr)->andReturnTrue();
-
-        self::assertFalse($this->extractor->needsThumbGeneration($context));
-    }
 }

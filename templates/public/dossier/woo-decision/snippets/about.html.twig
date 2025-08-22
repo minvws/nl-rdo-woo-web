@@ -37,22 +37,22 @@
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.scope' | trans }}</th>
                     <td  data-e2e-name="dossier-metadata-size">
-                        <div class="flex">
-                            <div class="grow mr-4">
-                                {% if dossier.counts.hasDocuments %}
-                                    <div data-e2e-name="dossier-document-count">{{ 'global.number_of_documents' | trans({'count': dossier.counts.totalDocumentCount})}}</div>
-                                    <div class="text-woo-gray-700 pt-1">
-                                        {{ 'public.dossiers.of_which_made_public' | trans({ count: dossier.counts.publicDocumentCount | format_number(locale=('lang' | trans)) }) }}
-                                    </div>
-                                {% else %}
-                                    {{ 'global.no_documents' | trans }}
-                                {% endif %}
-                            </div>
+                        <span>
+                        {% if dossier.counts.hasDocuments %}
+                            <span data-e2e-name="dossier-document-count">{{ 'global.number_of_documents' | trans({'count': dossier.counts.documentCount})}}</span>{% if dossier.counts.hasDocuments and dossier.counts.hasPages %},{% endif %}
+                        {% endif %}
 
-                            {% if dossier.counts.hasDocuments %}
-                                <a class="woo-a" data-e2e-name="download-inventory-file-link" href="{{ path('app_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::INVENTORY').value}) }}" download>{{ 'public.dossiers.inventory_list' | trans }}</a>
+                        {% if dossier.counts.hasPages %}
+                            {{ 'global.number_of_pages' | trans({'count': dossier.counts.pageCount})}}
                             {% endif %}
-                        </div>
+
+                        {% if not dossier.counts.hasPages and not dossier.counts.hasDocuments %}
+                            {{ 'global.no_documents' | trans }}
+                        {% endif %}
+                        </span>
+                        {% if dossier.counts.hasDocuments or dossier.counts.hasPages %}
+                        <a class="woo-a" data-e2e-name="download-inventory-file-link" href="{{ path('app_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::INVENTORY').value}) }}" download>{{ 'public.dossiers.inventory_list' | trans }}</a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% if dossier.hasSubject %}

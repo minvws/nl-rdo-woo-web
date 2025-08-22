@@ -12,8 +12,7 @@ class TranslatableExceptionTest extends UnitTestCase
 {
     public function testTrans(): void
     {
-        $exception = new class($message = 'foo', $translationKey = 'bar', $placeholders = ['x' => 'y']) extends TranslatableException {
-        };
+        $exception = new class($message = 'foo', $translationKey = 'bar', $placeholders = ['x' => 'y']) extends TranslatableException {};
 
         $locale = 'nl_NL';
 

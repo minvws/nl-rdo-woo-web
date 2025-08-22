@@ -140,7 +140,7 @@ defineExpose({
       type="button"
       @click="resetQuery"
     >
-      <Icon name="cross" color="fill-bhr-gray-600" :size="20" />
+      <Icon name="cross" color="fill-bhr-spanish-gray" :size="20" />
       <span class="sr-only">Wis tekstinvoer</span>
     </button>
     <span

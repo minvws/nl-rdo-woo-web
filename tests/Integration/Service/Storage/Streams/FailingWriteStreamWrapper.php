@@ -6,8 +6,6 @@ namespace App\Tests\Integration\Service\Storage\Streams;
 
 /**
  * @see https://www.php.net/manual/en/class.streamwrapper.php
- *
- * @phpcs:disabled PSR1.Methods.CamelCapsMethodName.NotCamelCaps
  */
 class FailingWriteStreamWrapper extends StreamWrapper
 {

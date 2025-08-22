@@ -2,7 +2,7 @@
   @apply flex flex-nowrap w-full overflow-x-auto relative;
 
   &::before {
-    @apply content-[''] absolute h-px bottom-0 inset-x-0 bg-bhr-gray-600;
+    @apply content-[''] absolute h-px bottom-0 inset-x-0 bg-bhr-spanish-gray;
   }
 }
 
@@ -11,7 +11,7 @@
 }
 
 @utility bhr-tab-button {
-  @apply text-bhr-gray-700 font-bold leading-tight p-2 border-b-2 border-transparent transition-colors hover-focus:text-bhr-blue-800 hover-focus:border-bhr-blue-800 relative z-1;
-  @apply aria-selected:text-bhr-blue-800 aria-selected:border-bhr-blue-800;
+  @apply text-bhr-dim-gray font-bold leading-tight p-2 border-b-2 border-transparent transition-colors hover-focus:text-bhr-sea-blue hover-focus:border-bhr-sea-blue relative z-1;
+  @apply aria-selected:text-bhr-sea-blue aria-selected:border-bhr-sea-blue;
   @apply focus:-outline-offset-2;
 }

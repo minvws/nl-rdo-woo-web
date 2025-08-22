@@ -11,7 +11,6 @@ enum DocumentFileSetStatus: string
     case NEEDS_CONFIRMATION = 'needs_confirmation';
     case CONFIRMED = 'confirmed';
     case REJECTED = 'rejected';
-    case MAX_SIZE_EXCEEDED = 'max_size_exceeded';
     case PROCESSING_UPDATES = 'processing_updates';
     case COMPLETED = 'completed';
     case NO_CHANGES = 'no_changes';
@@ -48,10 +47,5 @@ enum DocumentFileSetStatus: string
     public function isConfirmed(): bool
     {
         return $this === self::CONFIRMED;
-    }
-
-    public function isMaxSizeExceeded(): bool
-    {
-        return $this === self::MAX_SIZE_EXCEEDED;
     }
 }

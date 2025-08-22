@@ -6,7 +6,6 @@ namespace App\Tests\Unit\Service\Worker\Pdf;
 
 use App\Domain\Ingest\Content\Extractor\Tika\TikaService;
 use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use App\Service\Stats\WorkerStatsService;
 use App\Service\Storage\EntityStorageService;
@@ -15,18 +14,15 @@ use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Contracts\Cache\CacheInterface;
 
 final class EntityMetaDataExtractorTest extends UnitTestCase
 {
-    private LoggerInterface&MockInterface $logger;
-    private EntityStorageService&MockInterface $entityStorageService;
-    private SubTypeIndexer&MockInterface $subTypeIndexer;
-    private TikaService&MockInterface $tika;
-    private WorkerStatsService&MockInterface $statsService;
-    private EntityWithFileInfo&MockInterface $entity;
-    private CacheInterface&MockInterface $cache;
-    private FileInfo&MockInterface $fileInfo;
+    protected LoggerInterface&MockInterface $logger;
+    protected EntityStorageService&MockInterface $entityStorageService;
+    protected SubTypeIndexer&MockInterface $subTypeIndexer;
+    protected TikaService&MockInterface $tika;
+    protected WorkerStatsService&MockInterface $statsService;
+    protected EntityWithFileInfo&MockInterface $entity;
 
     protected function setUp(): void
     {
@@ -37,23 +33,11 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
         $this->tika = \Mockery::mock(TikaService::class);
         $this->statsService = \Mockery::mock(WorkerStatsService::class);
-
-        $this->fileInfo = \Mockery::mock(FileInfo::class);
-        $this->fileInfo->shouldReceive('getHash')->andReturn('foobar');
-
         $this->entity = \Mockery::mock(EntityWithFileInfo::class);
-        $this->entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
-
-        $this->cache = \Mockery::mock(CacheInterface::class);
     }
 
-    public function testExtractWithCacheMiss(): void
+    public function testExtract(): void
     {
-        $this->cache
-            ->shouldReceive('get')
-            ->with('foobar-tika-metadata', \Mockery::type('callable'))
-            ->andReturnUsing(fn (string $key, \Closure $closure) => $closure());
-
         $this->entityStorageService
             ->shouldReceive('downloadEntity')
             ->once()
@@ -117,44 +101,11 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
                 return true;
             }));
 
-        $this->getExtractor()->extract($this->entity);
-    }
-
-    public function testExtractWithCacheHit(): void
-    {
-        $this->cache
-            ->shouldReceive('get')
-            ->with('foobar-tika-metadata', \Mockery::type('callable'))
-            ->andReturn($metadata = ['key' => 'value']);
-
-        $this->subTypeIndexer
-            ->shouldReceive('index')
-            ->once()
-            ->with($this->entity, \Mockery::on(function (array $data) use ($metadata) {
-                $this->assertSame($metadata, $data);
-
-                return true;
-            }));
-
-        $this->statsService
-            ->shouldReceive('measure')
-            ->once()
-            ->with('index.entity', \Mockery::on(function (\Closure $closure) {
-                $closure();
-
-                return true;
-            }));
-
-        $this->getExtractor()->extract($this->entity);
+        $this->getExtractor()->extract($this->entity, false);
     }
 
     public function testExtractWhenFetchingEntityFromStorageFails(): void
     {
-        $this->cache
-            ->shouldReceive('get')
-            ->with('foobar-tika-metadata', \Mockery::type('callable'))
-            ->andReturnUsing(fn (string $key, \Closure $closure) => $closure());
-
         $this->entityStorageService
             ->shouldReceive('downloadEntity')
             ->once()
@@ -200,16 +151,11 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
                 return true;
             }));
 
-        $this->getExtractor()->extract($this->entity);
+        $this->getExtractor()->extract($this->entity, false);
     }
 
     public function testExtractWhenIndexingOfEntityFails(): void
     {
-        $this->cache
-            ->shouldReceive('get')
-            ->with('foobar-tika-metadata', \Mockery::type('callable'))
-            ->andReturnUsing(fn (string $key, \Closure $closure) => $closure());
-
         $this->entityStorageService
             ->shouldReceive('downloadEntity')
             ->once()
@@ -273,14 +219,10 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('index.entity', \Mockery::on(static function (\Closure $closure) use ($exception) {
-                try {
-                    $closure();
-                } catch (\Throwable $e) {
-                    return $exception === $e;
-                }
+            ->with('index.entity', \Mockery::on(function (\Closure $closure) {
+                $closure();
 
-                return false;
+                return true;
             }));
 
         $this->logger
@@ -292,7 +234,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
                 'exception' => $exception->getMessage(),
             ]);
 
-        $this->getExtractor()->extract($this->entity);
+        $this->getExtractor()->extract($this->entity, false);
     }
 
     private function getExtractor(): EntityMetaDataExtractor
@@ -302,8 +244,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             $this->entityStorageService,
             $this->subTypeIndexer,
             $this->tika,
-            $this->statsService,
-            $this->cache,
+            $this->statsService
         );
     }
 }

@@ -38,16 +38,4 @@ readonly class ThumbnailExtractor
             $context->getPageNumber(),
         );
     }
-
-    public function needsThumbGeneration(PdfPageProcessingContext $context): bool
-    {
-        if ($context->getPageNumber() > $this->thumbnailLimit) {
-            return false;
-        }
-
-        return ! $this->thumbnailStorage->exists(
-            $context->getEntity(),
-            $context->getPageNumber(),
-        );
-    }
 }

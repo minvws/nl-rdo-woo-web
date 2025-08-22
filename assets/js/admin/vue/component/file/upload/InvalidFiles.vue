@@ -50,12 +50,8 @@ const reason = props.haveInvalidSize ? 'te groot' : 'van een ongeldig type';
 </script>
 
 <template>
-  <div
-    class="mb-4"
-    v-if="numberOfFiles > 0"
-    data-e2e-name="invalid-files-warning"
-  >
-    <Alert type="warning">
+  <div class="mb-4" v-if="numberOfFiles > 0">
+    <Alert type="danger">
       <p>
         <template v-if="numberOfFiles === 1"
           >Het bestand "{{ firstFile.name }}" werd genegeerd omdat het

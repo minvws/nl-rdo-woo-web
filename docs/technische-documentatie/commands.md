@@ -4,31 +4,32 @@
 - [Woo Platform commands](#woo-platform-commands)
   - [Cron commands](#cron-commands)
     - [Upload cleanup](#upload-cleanup)
-    - [Archives cleanup](#archives-cleanup)
-    - [Document fileset cleanup](#document-fileset-cleanup)
-    - [Inventory processrun cleanup](#inventory-processrun-cleanup)
-    - [Publish scheduled dossiers](#publish-scheduled-dossiers)
+    -[Archives cleanup](#archives-cleanup)
+    -[Document fileset cleanup](#document-fileset-cleanup)
+    -[Inventory processrun cleanup](#inventory-processrun-cleanup)
+    -[Publish scheduled dossiers](#publish-scheduled-dossiers)
   - [Console commands](#console-commands)
     - [Production check](#production-check)
     - [Page check](#page-check)
     - [Index management](#index-management)
-    - [Ingestion](#ingestion)
-    - [User management](#user-management)
-    - [Document location](#document-location)
-    - [Woo-index](#woo-index)
-    - [File-storage check](#file-storage-check)
-    - [Post deploy](#post-deploy)
-    - [BatchDownload refresh](#batchdownload-refresh)
-    - [Move orphaned files](#move-orphaned-files)
-    - [Cleanup worker status](#cleanup-worker-status)
-    - [Inventory refresh](#inventory-refresh)
-    - [Generate database key](#generate-database-key)
-    - [Generate auditlog key](#generate-auditlog-key)
-    - [Normalize document grounds](#normalize-document-grounds)
-  - [Development commands](#development-commands)
-    - [SQL dump](#sql-dump)
-    - [Clean sheet](#clean-sheet)
-    - [Content extraction](#content-extraction)
+    -[Ingestion](#ingestion)
+    -[User management](#user-management)
+    -[Document location](#document-location)
+    -[Woo-index](#woo-index)
+    -[File-storage check](#file-storage-check)
+    -[Post deploy](#post-deploy)
+    -[BatchDownload refresh](#batchdownload-refresh)
+    -[Move orphaned files](#move-orphaned-files)
+    -[Cleanup worker status](#cleanup-worker-status)
+    -[Inventory refresh](#inventory-refresh)
+    -[Generate database key](#generate-database-key)
+    -[Generate auditlog key](#generate-auditlog-key)
+    -[Normalize document grounds](#normalize-document-grounds)
+  -[Development commands](#development-commands)
+    -[SQL dump](#sql-dump)
+    -[Document generation](#document-generation)
+    -[Clean sheet](#clean-sheet)
+    -[Content extraction](#content-extraction)
 <!-- TOC -->
 
 ## Cron commands
@@ -259,6 +260,14 @@ bin/console woopie:sql:dump
 ```
 
 Converts doctrine migrations (PHP code) into plain SQL files
+
+### Document generation
+
+```shell
+bin/console woopie:generate:documents
+```
+
+This command will generate a large set of documents (database only) for testing purposes.
 
 ### Clean sheet
 

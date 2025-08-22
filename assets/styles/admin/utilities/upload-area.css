@@ -1,5 +1,5 @@
 @utility bhr-upload-area {
-  @apply border border-bhr-gray-300 text-bhr-gray-700 rounded-xl text-center relative px-4;
+  @apply border border-bhr-platinum text-bhr-dim-gray rounded-xl text-center relative px-4;
 }
 
 @utility bhr-upload-area__button {
@@ -7,7 +7,7 @@
 }
 
 @utility bhr-upload-area__input {
-  @apply block border-t border-bhr-gray-300 cursor-pointer py-4 text-bhr-gray-700 w-full;
+  @apply block border-t border-bhr-platinum cursor-pointer py-4 text-bhr-dim-gray w-full;
 
   &::file-selector-button {
     @apply sr-only;
@@ -27,7 +27,7 @@
 }
 
 @utility bhr-upload-area__files-area {
-  @apply border-t border-bhr-gray-300 text-left;
+  @apply border-t border-bhr-platinum text-left;
 }
 
 @utility bhr-upload-area__no-files {
@@ -45,14 +45,14 @@
   }
 
   &[value]::-webkit-progress-bar {
-    @apply bg-bhr-gray-100;
+    @apply bg-bhr-anti-flash-white;
   }
 
   &[value]::-webkit-progress-value {
-    @apply bg-bhr-green-800;
+    @apply bg-bhr-philippine-green;
   }
 
   &[value]::-moz-progress-bar {
-    @apply bg-bhr-green-800;
+    @apply bg-bhr-philippine-green;
   }
 }

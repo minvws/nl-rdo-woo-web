@@ -1,5 +1,5 @@
 @utility bhr-file {
-  @apply border border-bhr-gray-300 flex first:rounded-t-xl last:rounded-b-xl not-first:-mt-px;
+  @apply border border-bhr-platinum flex first:rounded-t-xl last:rounded-b-xl not-first:-mt-px;
 }
 
 @utility bhr-file__left {
@@ -19,11 +19,11 @@
 }
 
 @utility bhr-file__file-info {
-  @apply text-sm text-bhr-gray-700;
+  @apply text-sm text-bhr-independence;
 }
 
 @utility bhr-file__delete {
-  @apply p-4 text-bhr-gray-700 hover-focus:text-bhr-red-900 content-center;
+  @apply p-4 text-bhr-dim-gray hover-focus:text-bhr-maximum-red content-center;
 }
 
 @utility bhr-file__download {

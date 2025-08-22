@@ -37,7 +37,8 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
             ->select(sprintf(
                 'new %s(
                     COUNT(doc),
-                    SUM(CASE WHEN doc.judgement IN (:judgements) THEN 1 ELSE 0 END)
+                    COALESCE(SUM(doc.pageCount),0),
+                    SUM(CASE WHEN doc.fileInfo.uploaded = true THEN 1 ELSE 0 END)
                 )',
                 DossierCounts::class,
             ))
@@ -45,7 +46,6 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
             ->leftJoin('dos.documents', 'doc')
             ->groupBy('dos.id')
             ->setParameter('dossier', $dossier)
-            ->setParameter('judgements', Judgement::atLeastPartialPublicValues())
             ->getQuery()
             ->getSingleResult();
     }

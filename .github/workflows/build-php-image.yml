@@ -19,7 +19,7 @@ jobs:
           - linux/arm64
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
       - name: Cache Docker layers
         uses: actions/cache@v4
         with:
@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
       - name: Image name
         id: image_name
         uses: ASzc/change-string-case-action@v6
@@ -109,7 +109,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Download digests
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v4
         with:
           path: /tmp/digests
           pattern: digests-*

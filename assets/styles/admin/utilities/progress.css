@@ -4,7 +4,7 @@
   }
 
   &[value]::-webkit-progress-bar {
-    @apply bg-bhr-gray-100;
+    @apply bg-bhr-anti-flash-white;
   }
 
   &[value]::-webkit-progress-value {

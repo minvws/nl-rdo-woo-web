@@ -7,11 +7,13 @@ namespace App\Controller\Admin;
 use App\Domain\Department\Department;
 use App\Domain\Department\DepartmentRepository;
 use App\Domain\Organisation\Organisation;
-use App\Domain\Organisation\OrganisationRepository;
 use App\Domain\Publication\Dossier\DocumentPrefix;
 use App\Form\Organisation\OrganisationFormType;
 use App\Service\OrganisationService;
+use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManagerInterface;
+use MinVWS\AuditLogger\AuditLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -20,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -28,9 +31,11 @@ use Webmozart\Assert\Assert;
 class OrganisationController extends AbstractController
 {
     public function __construct(
-        private readonly OrganisationRepository $organisationRepository,
-        private readonly DepartmentRepository $departmentRepository,
-        private readonly OrganisationService $organisationService,
+        protected EntityManagerInterface $doctrine,
+        protected OrganisationService $organisationService,
+        protected TranslatorInterface $translator,
+        protected AuditLogger $auditLogger,
+        protected AuthorizationMatrix $authorizationMatrix,
     ) {
     }
 
@@ -38,7 +43,7 @@ class OrganisationController extends AbstractController
     #[IsGranted('AuthMatrix.organisation.read')]
     public function index(): Response
     {
-        $organisations = $this->organisationRepository->getAllSortedByName();
+        $organisations = $this->doctrine->getRepository(Organisation::class)->findAll();
 
         return $this->render('admin/organisation/index.html.twig', [
             'organisations' => $organisations,
@@ -104,7 +109,9 @@ class OrganisationController extends AbstractController
      */
     private function getDepartmentsOptions(): array
     {
-        $departments = $this->departmentRepository->findAllSortedByName();
+        /** @var DepartmentRepository $departmentRepository */
+        $departmentRepository = $this->doctrine->getRepository(Department::class);
+        $departments = $departmentRepository->findAllSortedByName();
 
         return array_map(
             static fn (Department $department) => [

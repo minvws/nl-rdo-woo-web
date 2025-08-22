@@ -41,18 +41,15 @@
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'public.dossiers.scope' | trans }}</th>
                     <td data-e2e-name="dossier-publication-size">
-                        <div class="flex">
-                            {% if dossier.counts.hasDocuments %}
-                                <div class="grow">
-                                    {{ 'global.number_of_documents' | trans({'count': dossier.counts.totalDocumentCount})}}
-                                    <div class="text-woo-gray-700 pt-1">
-                                        {{ 'public.dossiers.of_which_made_public' | trans({ count: dossier.counts.publicDocumentCount | format_number(locale=('lang' | trans)) }) }}
-                                    </div>
-                                </div>
-                            {% endif %}
+                        {% if dossier.counts.hasDocuments %}
+                            {{ 'global.number_of_documents' | trans({'count': dossier.counts.documentCount})}}{% if dossier.counts.hasDocuments and dossier.counts.hasPages %},{% endif %}
+                        {% endif %}
 
-                            <a class="woo-a" href="{{ path('app_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::INVENTORY').value}) }}" download>{{ 'public.dossiers.inventory_list' | trans }}</a>
-                        </div>
+                        {% if dossier.counts.hasPages %}
+                            {{ 'global.number_of_pages' | trans({'count': dossier.counts.pageCount})}}
+                        {% endif %}
+
+                        <a class="woo-a" href="{{ path('app_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::INVENTORY').value}) }}" download>{{ 'public.dossiers.inventory_list' | trans }}</a>
                     </td>
                 </tr>
             </tbody>

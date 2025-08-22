@@ -1,37 +1,34 @@
 @theme {
-    --color-bhr-blue-50: #e7f5ff;
-    --color-bhr-blue-100: #d0ebff;
-    --color-bhr-blue-700: #1c7ed6;
     --color-bhr-blue-800: #1971c2;
     --color-bhr-blue-900: #1864ab;
-    --color-bhr-grape-50: #f8f0fc;
-    --color-bhr-grape-900: #862e9c;
-    --color-bhr-gray-100: #f1f3f5;
-    --color-bhr-gray-200: #ced4da;
-    --color-bhr-gray-300: #dee2e6;
-    --color-bhr-gray-400: #ced4da;
-    --color-bhr-gray-500: #adb5bd;
-    --color-bhr-gray-600: #868e96;
-    --color-bhr-gray-700: #495057;
-    --color-bhr-gray-800: #343a40;
-    --color-bhr-gray-900: #212529;
-    --color-bhr-green-50: #ebfbee;
-    --color-bhr-green-700: #37b24d;
-    --color-bhr-green-800: #2f9e44;
-    --color-bhr-green-900: #277c38;
-    --color-bhr-indigo-50: #edf2ff;
-    --color-bhr-indigo-900: #364fc7;
-    --color-bhr-red-50: #fff5f5;
-    --color-bhr-red-100: #ffe3e3;
-    --color-bhr-red-700: #f03e3e;
+    --color-bhr-grey-200: #CED4DA;
     --color-bhr-red-800: #e03131;
     --color-bhr-red-900: #c92a2a;
-    --color-bhr-yellow-50: #fff9db;
-    --color-bhr-yellow-100: #fff3bf;
-    --color-bhr-yellow-400: #ffd43b;
-    --color-bhr-yellow-800: #f08c00;
 
-    --color-bhr-windsor-tan: #ad5a00;
+    /** Deprecated colors */
+    --color-bhr-anti-flash-white: #f3f3f3;
+    --color-bhr-black-olive: #404040;
+    --color-bhr-chinese-silver: #ccc;
+    --color-bhr-dim-gray: #696969;
+    --color-bhr-independence: #475467;
+    --color-bhr-light-silver: #d0d5dd;
+    --color-bhr-platinum: #e6e6e6;
+    --color-bhr-spanish-gray: #949494;
+    --color-bhr-sea-blue: #01689b; /* link color */
+    --color-bhr-ateneo-blue: #004161; /* link hover color */
+    --color-bhr-blue-sapphire: #085585; /* primary button border color */
+    --color-bhr-lavender-web: #e5f0f9;
+    --color-bhr-azureish-white: #d9ebf7;
+    --color-bhr-eerie-black: #1d1d1d; /* top bar bg color */
+    --color-bhr-davys-grey: #535353; /* top bar active link bg color */
+    --color-bhr-maximum-red: #d52a1e;
+    --color-bhr-philippine-green: #027a48;
+    --color-bhr-japanese-laurel: #348834; /* confirmation icon fill color */
+    --color-bhr-chinese-white: #e1eddb; /* confirmation icon fill color */
+    --color-bhr-pale-pink: #f9dfdd;
+    --color-bhr-plum: #814081; /* purple */
+    --color-bhr-cornsilk: #fff4dc;
+    --color-bhr-orange-yellow: #ffb71a;
 
     --font-sans: 'RO Sans Web', 'system-ui', 'sans-serif';
 

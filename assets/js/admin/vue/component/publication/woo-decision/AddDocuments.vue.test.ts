@@ -45,13 +45,9 @@ describe('The "AddDocuments" component', () => {
         continueLaterUrl: '#mocked-continue-later-url',
         confirmEndpoint: 'mocked-confirm-endpoint',
         rejectEndpoint: 'mocked-reject-endpoint',
-        maxCombinedFileSize: 123456789,
       },
       shallow: true,
       global: {
-        stubs: {
-          Alert: false,
-        },
         renderStubDefaultSlot: true,
       },
     });
@@ -73,7 +69,6 @@ describe('The "AddDocuments" component', () => {
       processEndpoint: 'https://mocked-process-endpoint.mock',
       statusEndpoint: 'https://mocked-status-endpoint.mock',
       uploadEndpoint: 'https://mocked-upload-endpoint.mock',
-      maxCombinedFileSize: 123456789,
     });
   });
 

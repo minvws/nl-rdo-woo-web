@@ -25,6 +25,18 @@ parameters:
 			path: src/Api/Admin/Uploader/WooDecision/Status/UploadStatusDtoFactory.php
 
 		-
+			message: '#^Method Doctrine\\Persistence\\ObjectManager\:\:clear\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Command/GenerateDocuments.php
+
+		-
+			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Command/GenerateDocuments.php
+
+		-
 			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 2
@@ -603,13 +615,13 @@ parameters:
 		-
 			message: '#^Cannot call method andReturnTrue\(\) on mixed\.$#'
 			identifier: method.nonObject
-			count: 1
+			count: 2
 			path: tests/Unit/Domain/Ingest/Process/Pdf/IngestPdfHandlerTest.php
 
 		-
 			message: '#^Cannot call method once\(\) on mixed\.$#'
 			identifier: method.nonObject
-			count: 1
+			count: 2
 			path: tests/Unit/Domain/Ingest/Process/Pdf/IngestPdfHandlerTest.php
 
 		-

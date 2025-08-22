@@ -1,7 +1,13 @@
 @utility bhr-a {
-  @apply text-bhr-blue-800 underline hover-focus:text-bhr-blue-900;
+  @apply text-bhr-sea-blue
+            underline
+            hover-focus:text-bhr-ateneo-blue
+            visited:text-bhr-plum;
+}
 
-  &:visited {
-    @apply text-bhr-grape-900 hover-focus:text-bhr-grape-900;
-  }
+@utility bhr-a--inherit-color {
+  @apply text-inherit
+            hover-focus:text-inherit
+            hover-focus:no-underline
+            visited:text-inherit;
 }

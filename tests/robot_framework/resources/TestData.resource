@@ -18,7 +18,8 @@ Resource            Admin.resource
 
 
 *** Variables ***
-${TEST_DATA_ROOT}               files
+${TEST_DATA_ROOT}               tests/robot_framework/files
+${DUMMY_PDF}                    ${TEST_DATA_ROOT}/dummy.pdf
 ${PRODUCTION_REPORT_TEMPLATE}   ${TEST_DATA_ROOT}/production_report_template.xlsx
 ${PDF_TEMPLATE}                 ${TEST_DATA_ROOT}/template.html
 
@@ -28,92 +29,71 @@ Generate Test Data Set
   [Documentation]  Generates test data and stores their location in environment variables with test scope.
   [Arguments]  ${type}  ${has_attachment}=${FALSE}
   IF  '${type}' == 'woo-decision'
-    VAR  ${nr_of_documents} =  5
-    ${location} =  Generate Test Documents  ${nr_of_documents}  ${has_attachment}
+    ${location} =  Generate Test PDFs  5  ${has_attachment}
     ${production_report_location} =  Create Test Production Report  ${location}
-    Create Zip From Files In Directory  ${location}  filename=${location}/Archive.zip
+    Create Zip From Files In Directory  ${location}  filename=${location}/Archive.zip  compression=bzip2
     VAR  ${PRODUCTION_REPORT} =  ${production_report_location}  scope=test
     VAR  ${DOCUMENTS} =  ${location}/Archive.zip  scope=test
-    VAR  ${NUMBER_OF_DOCUMENTS} =  ${nr_of_documents}  scope=test
+    VAR  ${NUMBER_OF_DOCUMENTS} =  5  scope=test
   ELSE
-    ${location} =  Generate Test Documents  1  ${has_attachment}
-    ${files} =  List Files In Directory  ${location}  pattern=*.txt
+    ${location} =  Generate Test PDFs  1  ${has_attachment}
+    ${files} =  List Files In Directory  ${location}  pattern=*.pdf
     ${file_one} =  Get From List  ${files}  0
     VAR  ${FILE_LOCATION} =  ${location}/${file_one}  scope=test
   END
   IF  ${has_attachment}
-    ${files} =  List Files In Directory  ${location}  pattern=VWS*.txt
+    ${files} =  List Files In Directory  ${location}  pattern=VWS*.pdf
     ${attachment_file} =  Get From List  ${files}  0
     VAR  ${ATTACHMENT_FILENAME} =  ${attachment_file}  scope=test
     VAR  ${ATTACHMENT_LOCATION} =  ${location}/${attachment_file}  scope=test
   END
   RETURN  ${TEST_DATA_ROOT}
 
-Create Unique TestData Location
-  ${uuid} =  FakerLibrary.Uuid 4
-  Create Directory  ${TEST_DATA_ROOT}/generated/${uuid}
-  RETURN  ${TEST_DATA_ROOT}/generated/${uuid}
-
-Generate Test Documents
-  [Documentation]  Generate test documnents as ######.txt files, filled with fake content, the provided number of times, and
-  ...  also a VWS*.txt file as attachment when needed, to a `generated` folder in the test data root.
+Generate Test PDFs
+  [Documentation]  Generate test PDFs as ######.pdf files, filled with fake content, the provided number of times, and
+  ...  also a VWS*.pdf file as attachment when needed, to a `generated` folder in the test data root.
   [Arguments]  ${number_of_files}  ${including_attachment}=${FALSE}
-  ${test_data_location} =  Create Unique TestData Location
+  ${uuid} =  FakerLibrary.Uuid 4
+  VAR  ${test_data_location} =  ${TEST_DATA_ROOT}/generated/${uuid}
   FOR  ${_}  IN RANGE  ${number_of_files}
-    ${file_id} =  FakerLibrary.Random Int  min=100000  max=999999
-    Create TXT Document  ${test_data_location}/${file_id}.txt
+    ${file_id} =  FakerLibrary.Random Int  min=000000  max=999999
+    Create PDF From Template  ${test_data_location}/${file_id}.pdf
   END
   IF  ${including_attachment}
     ${file_name} =  FakerLibrary.Sentence  nb_words=5
-    Create TXT Document  ${test_data_location}/VWS_${file_name}txt
+    Create PDF From Template  ${test_data_location}/VWS_${file_name}pdf
   END
   RETURN  ${test_data_location}
 
 Create Test Production Report
   [Documentation]  Creates a production report Excel file for the PDFs found in the given test data location.
   [Arguments]  ${test_data_location}
-  @{rows} =  Parse TXT Files Into Excel Rows  ${test_data_location}
   VAR  ${excel_file} =  ${test_data_location}/production_report.xlsx
-  Copy File  ${PRODUCTION_REPORT_TEMPLATE}  ${excel_file}
-  Write Rows To Excel File  ${excel_file}  @{rows}
-  RETURN  ${excel_file}
-
-Parse TXT Files Into Excel Rows
-  [Documentation]  All PDF files excluding any starting with VWS_, since those are used as attachments.
-  [Arguments]  ${test_data_location}
-  ${files} =  List Files In Directory  ${test_data_location}  pattern=[!V][!W][!S]*.txt
-  VAR  @{rows} =
-  FOR  ${file}  IN  @{files}
-    ${filename}  ${_} =  Split String  ${file}  .
-    @{row_data} =  Create New Row Data  ${filename}
-    Append To List  ${rows}  ${row_data}
-  END
-  RETURN  @{rows}
-
-Generate Dummy Production Report
-  [Documentation]  Generates a production report Excel file, without basing it on actual files
-  [Arguments]  ${nr_of_rows}
-  ${test_data_location} =  Create Unique TestData Location
-  VAR  ${excel_file} =  ${test_data_location}/production_report.xlsx
-  VAR  @{rows} =
   Copy File  ${PRODUCTION_REPORT_TEMPLATE}  ${excel_file}
   Open Excel Document  ${excel_file}  prodrep
-  FOR  ${_}  IN RANGE  ${nr_of_rows}
-    ${filename} =  Generate Random Filename
-    @{row_data} =  Create New Row Data  ${filename}
-    Append To List  ${rows}  ${row_data}
+  ${pdf_files} =  List Files In Directory  ${test_data_location}  pattern=[0-9]*.pdf
+  FOR  ${pdf_file}  IN  @{pdf_files}
+    ${filename}  ${_} =  Split String  ${pdf_file}  .
+    Add Row To Production Report  ${filename}
   END
-  Write Rows To Excel File  ${excel_file}  @{rows}
+  Save Excel Document  ${excel_file}
+  Close All Excel Documents
   RETURN  ${excel_file}
+
+Add Row To Production Report
+  [Arguments]  ${document_id}
+  ${row_data} =  Create New Row Data  ${document_id}
+  ${column_content} =  Read Excel Column  0
+  ${nr_of_rows} =  Get Length  ${column_content}
+  Write Excel Row  row_num=${nr_of_rows+1}  row_data=@{row_data}
 
 Create New Row Data
   [Arguments]  ${document_id}
-  # Define each column
   VAR  ${matter} =  WOO
   VAR  ${family} =  1
   VAR  ${email_thread_id} =  1
   ${document_name} =  FakerLibrary.Sentence
-  ${document_name} =  Catenate  ${document_name}txt
+  ${document_name} =  Catenate  ${document_name}pdf
   VAR  ${file_type} =  Word Processing
   ${date} =  FakerLibrary.Date This Year
   ${date} =  Convert Date  ${date}  result_format=%d/%m/%Y 12:00 AM UTC
@@ -123,8 +103,8 @@ Create New Row Data
   VAR  ${toelichting} =  ${EMPTY}
   VAR  ${publieke_link} =  ${EMPTY}
   VAR  ${gerelateerd_id} =  ${EMPTY}
-  VAR  ${zaaknummer} =  ${EMPTY}
-  # Create array of fields
+  VAR  ${zaaknummer} =  2025-05
+  #
   VAR  @{row_data} =
   ...  ${document_id}
   ...  ${matter}
@@ -142,19 +122,10 @@ Create New Row Data
   ...  ${zaaknummer}
   RETURN  @{row_data}
 
-Write Rows To Excel File
-  [Arguments]  ${excel_file}  @{rows}
-  Open Excel Document  ${excel_file}  prodrep
-  Write Excel Rows  rows_data=@{rows}  rows_offset=1  col_offset=0
-  Save Excel Document  ${excel_file}
-  Close All Excel Documents
-
 Clear TestData Folder
-  ${directory_exists} =  Run Keyword And Return Status  Directory Should Exist  ${TEST_DATA_ROOT}/generated
-  IF  ${directory_exists}  Empty Directory  ${TEST_DATA_ROOT}/generated
+  Empty Directory  ${TEST_DATA_ROOT}/generated
 
 Create PDF From Template
-  [Documentation]  Currently not used anymore, replaced with Create TXT Document
   [Arguments]  ${output_location}
   ${body} =  Generate Body Text
   VAR  &{data} =  body=${body}
@@ -168,21 +139,11 @@ Create PDF From Template
   ${body_length} =  Get Length  ${body}
   Evaluate  ${body_length} > ${pdf_length}
 
-Create TXT Document
-  [Arguments]  ${output_location}
-  ${body} =  Generate Body Text
-  Create File  ${output_location}  ${body}
-
 Generate Body Text
-  VAR  ${nr_of_paragraphs} =  2
+  VAR  ${nr_of_paragraphs} =  ${6}
   VAR  ${body} =  ${EMPTY}
   FOR  ${_}  IN RANGE  1  ${nr_of_paragraphs}
     ${paragraph} =  FakerLibrary.Paragraph  nb_sentences=20
     ${body} =  Catenate  ${body}  <p>  ${paragraph}  </p>
   END
   RETURN  ${body}
-
-Generate Random Filename
-  ${file_name} =  FakerLibrary.Uuid 4
-  ${file_name} =  Remove String  ${file_name}  -
-  RETURN  ${file_name}

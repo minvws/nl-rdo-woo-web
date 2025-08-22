@@ -27,6 +27,14 @@ final class DocumentTest extends MockeryTestCase
         self::assertTrue($document->getDossiers()->isEmpty());
     }
 
+    public function testSetAndGetPageCount(): void
+    {
+        $document = new Document();
+
+        $document->setPageCount($pageCount = 10);
+        self::assertEquals($pageCount, $document->getPageCount());
+    }
+
     public function testSetAndGetDocumentNr(): void
     {
         $document = new Document();
@@ -112,7 +120,7 @@ final class DocumentTest extends MockeryTestCase
         self::assertFalse($document->isSuspended());
     }
 
-    public function testWithdrawAndRemoveWithdrawn(): void
+    public function testWithdrawAndRepublish(): void
     {
         $document = new Document();
 
@@ -122,7 +130,7 @@ final class DocumentTest extends MockeryTestCase
         self::assertEquals($explanation, $document->getWithdrawExplanation());
         self::assertNotNull($document->getWithdrawDate());
 
-        $document->removeWithdrawn();
+        $document->republish();
         self::assertFalse($document->isWithdrawn());
         self::assertNull($document->getWithdrawReason());
         self::assertEquals('', $document->getWithdrawExplanation());
@@ -205,23 +213,6 @@ final class DocumentTest extends MockeryTestCase
         $document->withdraw(DocumentWithdrawReason::DATA_IN_FILE, 'oops');
 
         self::assertTrue($document->shouldBeUploaded(true));
-    }
-
-    public function testSettingJudgementToNotPublicRemovesWithdrawn(): void
-    {
-        $document = new Document();
-
-        $document->withdraw($reason = DocumentWithdrawReason::DATA_IN_DOCUMENT, $explanation = 'oops');
-        self::assertTrue($document->isWithdrawn());
-        self::assertEquals($reason, $document->getWithdrawReason());
-        self::assertEquals($explanation, $document->getWithdrawExplanation());
-        self::assertNotNull($document->getWithdrawDate());
-
-        $document->setJudgement(Judgement::NOT_PUBLIC);
-        self::assertFalse($document->isWithdrawn());
-        self::assertNull($document->getWithdrawReason());
-        self::assertEquals('', $document->getWithdrawExplanation());
-        self::assertNull($document->getWithdrawDate());
     }
 
     public function testShouldBeUploadedReturnsFalseWhenJudgementIsMissing(): void

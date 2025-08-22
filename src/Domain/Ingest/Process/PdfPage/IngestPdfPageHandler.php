@@ -35,7 +35,7 @@ final readonly class IngestPdfPageHandler
         }
 
         try {
-            $this->processor->processPage($entity, $message->getPageNr());
+            $this->processor->processPage($entity, $message->getPageNr(), $message->getForceRefresh());
         } catch (\Exception $e) {
             $this->logger->error('Error processing document in IngestPdfPageHandler', [
                 'id' => $message->getEntityId()->toRfc4122(),

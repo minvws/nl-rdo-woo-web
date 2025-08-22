@@ -140,7 +140,7 @@ final class DocumentFileProcessorTest extends UnitTestCase
             ->andReturn($this->fileInfo);
 
         $this->document
-            ->expects('removeWithdrawn');
+            ->expects('republish');
 
         $this->documentRepository->expects('save')->with($this->document, true);
 

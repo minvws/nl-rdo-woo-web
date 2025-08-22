@@ -92,7 +92,7 @@
                                 {% set notifications = get_dossier_notifications(dossier).dossierNotifications %}
                                 {% if notifications is not empty %}
                                     <span class="inline-block">
-                                        <twig:Admin:Icon name="alert-triangle" color="stroke-bhr-yellow-800" />
+                                        <twig:Admin:Icon name="exclamation" color="fill-bhr-orange-yellow" />
                                         <span class="relative top-px">
                                             {% for notification in notifications %}
                                                 {% if loop.first %}

@@ -9,37 +9,37 @@ Test Tags           ci  filetypes
 
 
 *** Test Cases ***
-Create A Dossier With Different Filetypes Using Individual Files, Zip And 7z
+Create a dossier with different filetypes using individual files, zip and 7z
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=E2E-A
   Fill Out WooDecision Details  Openbaarmaking
-  Upload Production Report  files/filetypes/productierapport.xlsx
+  Upload Production Report  tests/robot_framework/files/filetypes/productierapport.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 15 van 15 documenten.
-  Upload And Process Documents  files/filetypes/presentation.zip
+  Upload Documents  tests/robot_framework/files/filetypes/presentation.zip
   Verify Document Upload Remaining  Nog te uploaden: 10 van 15 documenten.
-  Upload And Process Documents  files/filetypes/text.7z
+  Upload Documents  tests/robot_framework/files/filetypes/text.7z
   Verify Document Upload Remaining  Nog te uploaden: 8 van 15 documenten.
   VAR  @{files} =
-  ...  files/filetypes/16101.docx
-  ...  files/filetypes/16102.doc
-  ...  files/filetypes/16103.odt
-  Upload And Process Documents  @{files}
+  ...  tests/robot_framework/files/filetypes/16101.docx
+  ...  tests/robot_framework/files/filetypes/16102.doc
+  ...  tests/robot_framework/files/filetypes/16103.odt
+  Upload Documents  @{files}
   Verify Document Upload Remaining  Nog te uploaden: 5 van 15 documenten.
   VAR  @{files} =
-  ...  files/filetypes/16109.xlsx
-  ...  files/filetypes/16110.xls
-  ...  files/filetypes/16111.csv
-  Upload And Process Documents  @{files}
+  ...  tests/robot_framework/files/filetypes/16109.xlsx
+  ...  tests/robot_framework/files/filetypes/16110.xls
+  ...  tests/robot_framework/files/filetypes/16111.csv
+  Upload Documents  @{files}
   Verify Document Upload Remaining  Nog te uploaden: 2 van 15 documenten.
   VAR  @{files} =
-  ...  files/filetypes/16112.ods
-  ...  files/filetypes/16115.pdf
-  Upload And Process Documents  @{files}
+  ...  tests/robot_framework/files/filetypes/16112.ods
+  ...  tests/robot_framework/files/filetypes/16115.pdf
+  Upload Documents  @{files}
   Verify Document Upload Completed
   Click Continue To Publish
   Publish Dossier And Return To Admin Home
 
-Verify Filetypes Of Uploaded Dossier
+Verify filetypes of uploaded dossier
   Wait For Queue To Empty
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Public URL
@@ -59,7 +59,7 @@ Verify Filetypes Of Uploaded Dossier
   Verify Document Filetype  16114  Onbekend  RDF
   Verify Document Filetype  16115  PDF  PDF
 
-Verify Filetypes Available In Search
+Verify filetypes available in search
   [Template]  Search On Public For
   16101.docx  16101
   16102.doc  16102

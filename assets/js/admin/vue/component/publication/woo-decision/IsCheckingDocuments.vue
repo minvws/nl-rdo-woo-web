@@ -17,6 +17,6 @@ defineExpose({
       name="loader"
       :size="48"
     />
-    <p class="mt-4" data-e2e-name="checking">Bezig met controleren</p>
+    <p class="mt-4">Bezig met controleren</p>
   </div>
 </template>

@@ -214,7 +214,7 @@ Navigate To Covid19 Theme Page
   IF  ${hamburger_visible}  Click  //div[@data-e2e-name="hamburger"]
   Click  //a[@data-e2e-name="nav-Thema COVID-19"]
 
-Verify Document Preview Thumbnails
+Verify Document Preview
   [Documentation]  Should contain three items and the alt text of the images should say Pagina #
   Get Element Count  //ol[@data-e2e-name="preview-list"]/li  assertion_operator=>=  assertion_expected=1
   Get Attribute  (//ol[@data-e2e-name="preview-list"]/li)[1]//img  alt  contains  Pagina 1

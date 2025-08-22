@@ -14,37 +14,24 @@ final class IndexControllerTest extends WebTestCase
 {
     use IntegrationTestTrait;
 
-    #[DataProvider('indexRedirectData')]
-    public function testIndexRedirect(string $role, string $expectedLocation): void
+    public function testAdminAsSuperAdmin(): void
     {
         $client = static::createClient();
 
         $user = UserFactory::new()
+            ->asSuperAdmin()
             ->isEnabled()
-            ->create(['roles' => [$role]]);
+            ->create();
 
         $client
             ->loginUser($user->_real(), 'balie')
-            ->request('GET', '/balie');
+            ->request('GET', '/balie/admin');
 
-        $this->assertResponseRedirects($expectedLocation);
+        $this->assertResponseIsSuccessful();
     }
 
-    /**
-     * @return array<string,array{role:Roles::ROLE_*, expectedLocation:string}>
-     */
-    public static function indexRedirectData(): array
-    {
-        return [
-            Roles::ROLE_SUPER_ADMIN => ['role' => Roles::ROLE_SUPER_ADMIN, 'expectedLocation' => '/balie/dossiers'],
-            Roles::ROLE_ORGANISATION_ADMIN => ['role' => Roles::ROLE_ORGANISATION_ADMIN, 'expectedLocation' => '/balie/gebruikers'],
-            Roles::ROLE_DOSSIER_ADMIN => ['role' => Roles::ROLE_DOSSIER_ADMIN, 'expectedLocation' => '/balie/dossiers'],
-            Roles::ROLE_VIEW_ACCESS => ['role' => Roles::ROLE_VIEW_ACCESS, 'expectedLocation' => '/balie/dossiers'],
-        ];
-    }
-
-    #[DataProvider('adminResponsCodeData')]
-    public function testAdminResponseCode(string $role, int $expectedResponseCode): void
+    #[DataProvider('rolesData')]
+    public function testAdminRedirectsUser(string $role): void
     {
         $client = static::createClient();
 
@@ -56,19 +43,18 @@ final class IndexControllerTest extends WebTestCase
             ->loginUser($user->_real(), 'balie')
             ->request('GET', '/balie/admin');
 
-        $this->assertResponseStatusCodeSame($expectedResponseCode);
+        $this->assertResponseRedirects('/balie/dossiers', 302);
     }
 
     /**
-     * @return array<string,array{role:Roles::ROLE_*, expectedResponseCode:int}>
+     * @return array<string,array{role:Roles::ROLE_*}>
      */
-    public static function adminResponsCodeData(): array
+    public static function rolesData(): array
     {
         return [
-            Roles::ROLE_SUPER_ADMIN => ['role' => Roles::ROLE_SUPER_ADMIN, 'expectedResponseCode' => 200],
-            Roles::ROLE_ORGANISATION_ADMIN => ['role' => Roles::ROLE_ORGANISATION_ADMIN, 'expectedResponseCode' => 403],
-            Roles::ROLE_DOSSIER_ADMIN => ['role' => Roles::ROLE_DOSSIER_ADMIN, 'expectedResponseCode' => 403],
-            Roles::ROLE_VIEW_ACCESS => ['role' => Roles::ROLE_VIEW_ACCESS, 'expectedResponseCode' => 403],
+            Roles::ROLE_ORGANISATION_ADMIN => ['role' => Roles::ROLE_ORGANISATION_ADMIN],
+            Roles::ROLE_DOSSIER_ADMIN => ['role' => Roles::ROLE_DOSSIER_ADMIN],
+            Roles::ROLE_VIEW_ACCESS => ['role' => Roles::ROLE_VIEW_ACCESS],
         ];
     }
 }

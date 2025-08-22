@@ -23,28 +23,21 @@ final class AlertTest extends MockeryTestCase
         $this->alert->mount('danger');
 
         self::assertEquals(
-            'alert-circle',
+            'exclamation-filled-colored',
             $this->alert->getIconName(),
         );
 
         $this->alert->mount('info');
 
         self::assertEquals(
-            'info-circle',
-            $this->alert->getIconName(),
-        );
-
-        $this->alert->mount('warning');
-
-        self::assertEquals(
-            'alert-triangle',
+            'info-rounded-filled',
             $this->alert->getIconName(),
         );
 
         $this->alert->mount('');
 
         self::assertEquals(
-            'circle-check',
+            'check-rounded-filled',
             $this->alert->getIconName(),
         );
     }
@@ -54,28 +47,21 @@ final class AlertTest extends MockeryTestCase
         $this->alert->mount('danger');
 
         self::assertEquals(
-            'stroke-bhr-red-700',
+            'fill-current',
             $this->alert->getIconColor(),
         );
 
         $this->alert->mount('info');
 
         self::assertEquals(
-            'stroke-bhr-blue-700',
-            $this->alert->getIconColor(),
-        );
-
-        $this->alert->mount('warning');
-
-        self::assertEquals(
-            'stroke-bhr-yellow-800',
+            'fill-bhr-blue-800',
             $this->alert->getIconColor(),
         );
 
         $this->alert->mount('');
 
         self::assertEquals(
-            'stroke-bhr-green-700',
+            'fill-bhr-philippine-green',
             $this->alert->getIconColor(),
         );
     }
@@ -93,13 +79,6 @@ final class AlertTest extends MockeryTestCase
 
         self::assertEquals(
             'bhr-alert--info',
-            $this->alert->getAlertType(),
-        );
-
-        $this->alert->mount('warning');
-
-        self::assertEquals(
-            'bhr-alert--warning',
             $this->alert->getAlertType(),
         );
 

@@ -11,12 +11,12 @@
   }
 
   & tr {
-    @apply border-b border-bhr-gray-300;
+    @apply border-b border-bhr-platinum;
   }
 }
 
 @utility bhr-row-head {
-  @apply font-normal text-left text-bhr-gray-700;
+  @apply font-normal text-left text-bhr-dim-gray;
 }
 
 @utility bhr-column-head {
@@ -24,7 +24,7 @@
 }
 
 @utility bhr-column-head--gray {
-  @apply bg-bhr-gray-100 border-r border-bhr-gray-300 text-bhr-gray-700 last:border-r-0;
+  @apply bg-bhr-anti-flash-white border-r border-bhr-platinum text-bhr-independence last:border-r-0;
 }
 
 @utility bhr-fill-cell {

@@ -52,7 +52,7 @@
         </table>
     </div>
 
-    {% if isSortable and documents.fileInfo.pageCount is defined and documents.fileInfo.pageCount > 1 %}
+    {% if isSortable and documents.pageCount is defined and documents.pageCount > 1 %}
     <div class="pt-6">
         {{ knp_pagination_render(documents, null, {}, { 'fragment': fragment }) }}
     </div>

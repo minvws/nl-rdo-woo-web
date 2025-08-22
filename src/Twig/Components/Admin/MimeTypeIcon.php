@@ -13,7 +13,7 @@ class MimeTypeIcon
     private const string FILE_UNKNOWN = 'file-unknown';
 
     public ?string $class = '';
-    public ?string $color = 'fill-bhr-gray-700';
+    public ?string $color = 'fill-bhr-dim-gray';
     public ?string $mimeType = null;
     public ?int $size = 24;
 

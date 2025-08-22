@@ -72,7 +72,7 @@ No-Click Logout
 
 Upload Attachment
   [Arguments]  ${type}  ${date}=01012022
-  Click  //*[@data-e2e-name="attachments"]//*[@data-e2e-name="add-file"]
+  Click  " Bijlage toevoegen... "
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${ATTACHMENT_LOCATION}
   Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${ATTACHMENT_FILENAME}
   Select Options By  //dialog[@open]//select[@name="type"]  text  ${type}
@@ -82,11 +82,12 @@ Upload Attachment
 
 Wait For Queue To Empty
   New Page  %{URL_ADMIN}/stats
-  Wait Until Keyword Succeeds  10min  5s  Is Queue Empty
+  Wait Until Keyword Succeeds  10min  15s  Is Queue Empty
   Close Page
 
 Is Queue Empty
   Reload
+  Take Screenshot
   VAR  @{elements} =
   ...  //*[@data-e2e-name="rabbitmq-stats"]//tr[contains(.,'es_updates')]/td[3]
   ...  //*[@data-e2e-name="rabbitmq-stats"]//tr[contains(.,'global')]/td[3]

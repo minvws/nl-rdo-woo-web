@@ -22,26 +22,23 @@ The following environment variables are used by the application:
 ### Global settings
 
 | Variable             | Description                                                   | Default value           |
-| -------------------- | ------------------------------------------------------------- |-------------------------|
+| -------------------- | ------------------------------------------------------------- | ----------------------- |
 | `APP_ENV`            | The application environment.                                  | `prod`                  |
 | `APP_DEBUG`          | Whether the application is in debug mode.                     | `false`                 |
 | `APP_SECRET`         | Unique secret for creating signatures (rememberme, CSRF etc). | `null`                  |
 | `SITE_NAME`          | The name of the site. Used only for displaying purposes.      | het publicatieplatform  |
 | `COOKIE_NAME`        | The name of session cookie to use.                            | `WOOPID`                |
 | `TOTP_ISSUER`        | Issuer of the TOTP tokens, used in 2fa for the totp URI       | `localhost`             |
-| `APP_MODE`           | Application mode (see below)                                  | `ALL`                   |
+| `APP_MODE`           | Application mode (see below)                                  | `BOTH`                  |
 | `PUBLIC_BASE_URL`    | The url of the FRONTEND site                                  | `http://localhost:8000` |
 | `PIWIK_ANALYTICS_ID` | Identification number for Piwik analytics                     | `0`                     |
 
 Cookie names should be prefixed with `__Host-` when running on HTTPS. However, this will break the application when running on
 HTTP, for instance, during development.
 
-The `APP_MODE` defines how the given instance behaves. It can be `ALL`, `FRONTEND`, `BACKEND` or `API`.
-
-- When `ALL` is used, all application modes are available in a single environment.
-- When `FRONTEND` is used, the instance will only run as a frontend. The admin and API will not be available.
-- When `BACKEND` is used, the instance will only run as a backend. The frontend and API will not be available.
-- When `API` is used, the instance will only run as an API. The frontend and backend will not be available.
+The `APP_MODE` defines how the given instance behaves. It can be `BOTH`, `FRONTEND` or `BACKEND`. When `BOTH` is used, the instance
+can run both as a frontend and a backend. If `FRONTEND` is used, the instance will only run as a frontend and the admin panel will not be available.
+When `BACKEND` is used, the instance will only run as a backend and the frontend will not be available.
 
 ### Database settings
 

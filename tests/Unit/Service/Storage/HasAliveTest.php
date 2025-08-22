@@ -34,9 +34,7 @@ final class HasAliveTest extends UnitTestCase
         $this->storage
             ->shouldReceive('read')
             ->once()
-            ->andReturnUsing(function () use (&$hash) {
-                return $hash;
-            });
+            ->andReturnUsing(function () use (&$hash) { return $hash; });
         $this->storage->shouldReceive('delete')->once()->andReturnTrue();
 
         $this->assertTrue($instance->isAlive(), 'The storage is not alive');
@@ -101,9 +99,7 @@ final class HasAliveTest extends UnitTestCase
         $this->storage
             ->shouldReceive('read')
             ->once()
-            ->andReturnUsing(function () use (&$hash) {
-                return $hash;
-            });
+            ->andReturnUsing(function () use (&$hash) { return $hash; });
         $this->storage->shouldReceive('delete')->once()->andReturnFalse();
 
         $this->assertFalse($instance->isAlive(), 'The storage is alive');

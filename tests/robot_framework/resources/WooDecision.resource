@@ -28,7 +28,7 @@ Publish Test WooDecision
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  ${production_report}
   Verify Document Upload Remaining  Nog te uploaden: ${number_of_documents} van ${number_of_documents} document
-  Upload And Process Documents  ${documents}
+  Upload Documents  ${documents}
   Verify Document Upload Completed
   Click Continue To Publish
   Publish Dossier And Return To Admin Home  ${publication_status}
@@ -52,7 +52,7 @@ Fill Out WooDecision Details
   ${random_summary} =  Fakerlibrary.Text  200
   Fill Text  id=decision_summary  ${random_summary}
   Click  " Besluitbrief toevoegen... "
-  Upload Besluitbrief  files/woodecision/besluitbrief.txt
+  Upload Besluitbrief  tests/robot_framework/files/woodecision/besluitbrief.pdf
   IF  ${has_attachment}  Upload Attachment  staatscourant
   Click  "Opslaan en verder"
 
@@ -68,7 +68,7 @@ Upload Besluitbrief
 Upload Documents Step
   Upload Production Report  ${PRODUCTION_REPORT}
   Verify Document Upload Remaining  Nog te uploaden: ${NUMBER_OF_DOCUMENTS} van ${NUMBER_OF_DOCUMENTS} documenten.
-  Upload And Process Documents  ${DOCUMENTS}
+  Upload Documents  ${DOCUMENTS}
   Verify Document Upload Completed
   Click Continue To Publish
 
@@ -76,25 +76,24 @@ Upload Production Report
   [Arguments]  ${production_report_location}  ${expect_error}=${FALSE}
   Upload File By Selector  id=inventory_inventory  ${production_report_location}
   Click  //*[@id="inventory_submit"]
-  Wait For Elements State
-  ...  //*[@id="js-inventory-status"]//*[contains(.,"Bezig met het toepassen van het productierapport")]
-  ...  detached
   IF  not ${expect_error}
     Wait For Elements State
     ...  //*[@id="upload-area-dossier-files"]
     ...  visible
-    ...  message=Error(s) while uploading production report
+    ...  timeout=30s
+    ...  message=Error(s) while uploading
   END
 
 Verify Production Report Error
   [Arguments]  ${expected_result}
+  Wait For Elements State  //*[@id="inventory-error"]  visible  timeout=30s
   Get Text  //*[@id="inventory-error"]  contains  ${expected_result}
 
 Verify Document Upload Remaining
   [Arguments]  ${expected_result}
-  Wait For Condition  Text  //h3[@data-e2e-name="missingDocuments"]  contains  ${expected_result}
+  Wait For Condition  Text  //h3[@data-e2e-name="missingDocuments"]  contains  ${expected_result}  timeout=20s
 
-Upload And Process Documents
+Upload Documents
   [Arguments]  @{file_locations}
   Sleep  30ms  # sometimes the upload doesn't seem to select anything, so let's try a tiny wait here before we click
   Scroll To Element  //button[@data-e2e-name="process-documents"]
@@ -105,21 +104,25 @@ Upload And Process Documents
   ...  data-e2e-is-uploading
   ...  equals
   ...  false
-  Wait For Elements State  //*[@data-e2e-name="uploaded-files"]  attached
+  ...  timeout=30s
+  ...  message=Upload did not complete within timeout. You might want to try making the archive smaller to make it faster.
+  Sleep  1s
   Click Process Documents
-  Wait For Elements State  //*[@data-e2e-name="checking"]  detached
-  Wait For Elements State  //div[@data-e2e-name="upload-busy"]  detached
 
 Verify Document Upload Completed
   Scroll To Element  //*[@id="inhoud"]/div/div[2]
-  Wait For Elements State  //*[@data-e2e-name="upload-completed"]  attached
+  Wait For Elements State
+  ...  //*[@data-e2e-name="upload-completed"]
+  ...  visible
+  ...  timeout=30s
+  ...  message=Upload not completed within timeout
 
 Click Replace Report
   Click  //*[@data-e2e-name="replace-report"]
 
 Verify Production Report Replace
   [Arguments]  ${expected_result}
-  Wait For Condition  Text  id=js-inventory-status  contains  ${expected_result}
+  Wait For Condition  Text  id=js-inventory-status  contains  ${expected_result}  timeout=30s
 
 Click Confirm Production Report Replacement
   Click  //*[@data-e2e-name="confirm-replacement"]
@@ -128,11 +131,11 @@ Click Continue To Documents
   Click  //*[@data-e2e-name="continue-to-documents"]
 
 Click Process Documents
-  Wait For Load State  networkidle
   Click  //button[@data-e2e-name="process-documents"]
   Wait For Elements State
   ...  //button[@data-e2e-name="process-documents"]
   ...  detached
+  ...  timeout=30s
   ...  message=Click on Process Documents did not work
 
 Open Document In Dossier

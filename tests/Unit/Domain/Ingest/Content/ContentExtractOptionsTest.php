@@ -15,9 +15,17 @@ class ContentExtractOptionsTest extends MockeryTestCase
     {
         $options = ContentExtractOptions::create();
 
+        self::assertFalse($options->hasRefresh());
         self::assertFalse($options->hasPageNumber());
         self::assertNull($options->getPageNumber());
         self::assertCount(0, $options->getEnabledExtractors());
+    }
+
+    public function testWithRefresh(): void
+    {
+        $options = ContentExtractOptions::create()->withRefresh();
+
+        self::assertTrue($options->hasRefresh());
     }
 
     public function testWithAllExtractors(): void

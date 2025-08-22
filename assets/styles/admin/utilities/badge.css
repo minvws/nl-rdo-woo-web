@@ -1,24 +1,19 @@
 @utility bhr-badge {
-  @apply font-bold inline-block px-2 py-0.5 rounded-2xl text-sm whitespace-nowrap;
-  @apply bg-bhr-gray-100 text-bhr-gray-800;
+  @apply border-2 font-bold inline-block leading-none px-2 py-0.5 rounded-2xl text-sm whitespace-nowrap;
 }
 
 @utility bhr-badge--blue {
-  @apply bg-bhr-indigo-50 text-bhr-indigo-900;
+  @apply border-bhr-blue-800 text-bhr-blue-800;
 }
 
 @utility bhr-badge--green {
-  @apply bg-bhr-green-50 text-bhr-green-900;
+  @apply border-bhr-philippine-green text-bhr-philippine-green;
 }
 
 @utility bhr-badge--purple {
-  @apply bg-bhr-grape-50 text-bhr-grape-900;
+  @apply border-bhr-plum text-bhr-plum;
 }
 
 @utility bhr-badge--red {
-  @apply bg-bhr-red-50 text-bhr-red-900;
-}
-
-@utility bhr-badge--yellow {
-  @apply bg-bhr-yellow-50 text-bhr-windsor-tan;
+  @apply border-bhr-maximum-red text-bhr-maximum-red;
 }

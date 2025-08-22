@@ -10,7 +10,6 @@ use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use App\Service\Stats\WorkerStatsService;
 use App\Service\Storage\EntityStorageService;
 use Psr\Log\LoggerInterface;
-use Symfony\Contracts\Cache\CacheInterface;
 
 /**
  * Extractor that will extract and store content from a multi-paged (PDF) entity.
@@ -23,19 +22,15 @@ readonly class EntityMetaDataExtractor implements EntityExtractorInterface
         private SubTypeIndexer $subTypeIndexer,
         private TikaService $tika,
         private WorkerStatsService $statsService,
-        private CacheInterface $metadataExtractCache,
     ) {
     }
 
-    public function extract(EntityWithFileInfo $entity): void
+    public function extract(EntityWithFileInfo $entity, bool $forceRefresh): void
     {
-        $cacheKey = sprintf('%s-tika-metadata', $entity->getFileInfo()->getHash());
+        // TODO: Cache is removed for #2142, to be improved and restored in #2144
+        unset($forceRefresh);
 
-        /** @var array<array-key,string> $metaData */
-        $metaData = $this->metadataExtractCache->get(
-            $cacheKey,
-            fn () => $this->extractMetaDataFromPdf($entity),
-        );
+        $metaData = $this->extractMetaDataFromPdf($entity);
 
         $this->statsService->measure('index.entity', fn () => $this->indexEntity($entity, $metaData));
     }
@@ -43,7 +38,7 @@ readonly class EntityMetaDataExtractor implements EntityExtractorInterface
     /**
      * @return array<array-key,string>
      */
-    private function extractMetaDataFromPdf(EntityWithFileInfo $entity): array
+    protected function extractMetaDataFromPdf(EntityWithFileInfo $entity): array
     {
         /** @var string|false $localPdfPath */
         $localPdfPath = $this->statsService->measure(
@@ -76,7 +71,7 @@ readonly class EntityMetaDataExtractor implements EntityExtractorInterface
     /**
      * @param array<array-key,string> $tikaData
      */
-    private function indexEntity(EntityWithFileInfo $entity, array $tikaData): void
+    protected function indexEntity(EntityWithFileInfo $entity, array $tikaData): void
     {
         try {
             $this->subTypeIndexer->index($entity, $tikaData);
@@ -86,8 +81,6 @@ readonly class EntityMetaDataExtractor implements EntityExtractorInterface
                 'class' => $entity::class,
                 'exception' => $e->getMessage(),
             ]);
-
-            throw $e;
         }
     }
 }

@@ -23,7 +23,7 @@
         {% include "shared/piwik-script.html.twig" %}
     </head>
 
-    <body class="antialiased bg-bhr-gray-100 text-bhr-gray-900 flex min-h-screen flex-col text-base">
+    <body class="antialiased bg-bhr-anti-flash-white text-black flex min-h-screen flex-col text-base">
         {% set isAuthenticated = app.user and is_granted('ROLE_BALIE') %}
 
         {% macro nav_item(routeName, titleTranslationKey, routePattern, e2eName) %}
@@ -41,7 +41,7 @@
             </li>
         {% endmacro %}
 
-        <header class="bg-bhr-gray-900 print:hidden">
+        <header class="bg-bhr-eerie-black print:hidden">
             <div class="bhr-container">
                 {% if isAuthenticated %}
                 <button class="p-4 lg:hidden js-visibility-toggler" aria-controls="main-nav" aria-expanded="false">
@@ -73,7 +73,7 @@
                                     </summary>
                                     <div class="bhr-overlay-card max-w-sm mt-2 text-black flex flex-col px-0 pt-0 pb-2">
                                         <a
-                                            class="font-bold text-bhr-gray-700 text-right border-b border-bhr-gray-300 px-4 py-3"
+                                            class="font-bold text-bhr-davys-grey text-right border-b border-bhr-platinum px-4 py-3"
                                             href="{{ path('app_admin_user_organisation') }}"
                                             data-e2e-name="manage-organisations"
                                         >
@@ -136,7 +136,7 @@
 
         <footer class="pb-8 pt-16 px-4 two-thirds-one-third print:hidden">
             {% if isAuthenticated %}
-                <div class="leading-tight pb-4 pt-24 text-center text-bhr-gray-700">
+                <div class="leading-tight pb-4 pt-24 text-center text-bhr-dim-gray">
                     <h2 class="font-bold text-2xl">{{ SITE_NAME }}</h2>
                     <em>Publicatie/document management</em>
                 </div>

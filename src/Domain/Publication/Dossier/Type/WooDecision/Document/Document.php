@@ -23,6 +23,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks]
 class Document extends AbstractPublicationItem
 {
+    // Number of pages for word based documents
+    #[ORM\Column(nullable: false)]
+    private int $pageCount = 0;
+
     /** @var Collection<array-key,WooDecision> */
     #[ORM\ManyToMany(targetEntity: WooDecision::class, inversedBy: 'documents')]
     #[ORM\JoinTable(
@@ -105,6 +109,18 @@ class Document extends AbstractPublicationItem
         $this->fileInfo->setPaginatable(true);
     }
 
+    public function getPageCount(): int
+    {
+        return $this->pageCount;
+    }
+
+    public function setPageCount(int $pageCount): self
+    {
+        $this->pageCount = $pageCount;
+
+        return $this;
+    }
+
     public function getDocumentNr(): string
     {
         return $this->documentNr;
@@ -173,10 +189,6 @@ class Document extends AbstractPublicationItem
     public function setJudgement(Judgement $judgement): self
     {
         $this->judgement = $judgement;
-
-        if ($judgement->isNotPublic()) {
-            $this->removeWithdrawn();
-        }
 
         return $this;
     }
@@ -373,7 +385,7 @@ class Document extends AbstractPublicationItem
         $this->fileInfo->removeFileProperties();
     }
 
-    public function removeWithdrawn(): void
+    public function republish(): void
     {
         $this->withdrawn = false;
         $this->withdrawReason = null;

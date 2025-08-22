@@ -14,10 +14,10 @@ ${DOSSIER_REFERENCE}    ${EMPTY}
 
 
 *** Test Cases ***
-In A Public Dossier With N Public Files, Retract One Of The Documents
+In a public dossier with N public files, retract one of the documents
   Publish Test WooDecision
-  ...  production_report=files/woodecision/productierapport - 2 openbaar.xlsx
-  ...  documents=files/woodecision/documenten - 2.zip
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 openbaar.xlsx
+  ...  documents=tests/robot_framework/files/woodecision/documenten - 2.zip
   ...  number_of_documents=2
   ...  prefix=E2E-A8
   Search For A Publication  ${DOSSIER_REFERENCE}
@@ -28,10 +28,10 @@ In A Public Dossier With N Public Files, Retract One Of The Documents
   Verify Document Retraction  1001
   Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet en ingetrokken  Er is 1 document ingetrokken.
 
-In A Public Dossier With N Public Files, Retract All Documents Via The Danger Zone
+In a public dossier with N public files, retract all documents via the Danger Zone
   Publish Test WooDecision
-  ...  production_report=files/woodecision/productierapport - 2 openbaar.xlsx
-  ...  documents=files/woodecision/documenten - 2.zip
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 openbaar.xlsx
+  ...  documents=tests/robot_framework/files/woodecision/documenten - 2.zip
   ...  number_of_documents=2
   ...  prefix=E2E-A10
   Search For A Publication  ${DOSSIER_REFERENCE}
@@ -40,78 +40,85 @@ In A Public Dossier With N Public Files, Retract All Documents Via The Danger Zo
   Verify Document Retraction  1002
   Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet en ingetrokken  Er zijn 2 documenten ingetrokken.
 
-Upload A Production Report With N Public Files And A Zip With N-1 Files
+Upload a production report with N public files and a zip with N-1 files
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=E2E-A1
   Fill Out WooDecision Details  Openbaarmaking
-  Upload Production Report  files/woodecision/productierapport - 10 openbaar.xlsx
+  Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
-  Upload And Process Documents  files/woodecision/documenten - 10-1.zip
+  Upload Documents  tests/robot_framework/files/woodecision/documenten - 10-1.zip
   Verify Document Upload Remaining  Nog te uploaden: 1 van 10 documenten.
   Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet  Er moet nog 1 document geüpload worden.
 
-Upload A Production Report With N Public Files And A Zip With N+1 Files
+Upload a production report with N public files and a zip with N+1 files
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=E2E-A2
   Fill Out WooDecision Details  Openbaarmaking
-  Upload Production Report  files/woodecision/productierapport - 10 openbaar.xlsx
+  Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
-  Upload And Process Documents  files/woodecision/documenten - 10+1.zip
+  Upload Documents  tests/robot_framework/files/woodecision/documenten - 10+1.zip
   Verify Document Upload Completed
   Click Continue To Publish
   Publish Dossier And Return To Admin Home
   Check Document Existence On Public  This is a non-published document
 
-Upload A Production Report With N Public Files And A Zip With N Other Files
+Upload a production report with N public files and a zip with N other files
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=E2E-A3
   Fill Out WooDecision Details  Openbaarmaking
-  Upload Production Report  files/woodecision/productierapport - 10 openbaar.xlsx
+  Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
-  Upload And Process Documents  files/woodecision/documenten - 10 andere.zip
+  Upload Documents  tests/robot_framework/files/woodecision/documenten - 10 andere.zip
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
   Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet  Er moeten nog 10 document(en) geüpload worden.
 
-Upload A Production Report With N Public Files, M Non-public Files, And A Zip With N + M Files
+Upload a production report with N public files, M non-public files, and a zip with N + M files
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=E2E-A4
   Fill Out WooDecision Details  Openbaarmaking
-  Upload Production Report  files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
+  Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 8 van 8 documenten.
-  Upload And Process Documents  files/woodecision/documenten - 10.zip
+  Upload Documents  tests/robot_framework/files/woodecision/documenten - 10.zip
   Verify Document Upload Completed
   Click Continue To Publish
   Publish Dossier And Return To Admin Home
   Check Document Existence On Public  duizendacht
   Check Document Existence On Public  duizendtien
 
-Upload A Production Report With N Public Files, M Already Public Files, And A Zip With N + M Files
+Upload a production report with N public files, M already public files, and a zip with N + M files
   Publish Test WooDecision
-  ...  production_report=files/woodecision/productierapport - 2 openbaar.xlsx
-  ...  documents=files/woodecision/documenten - 2.zip
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 2 openbaar.xlsx
+  ...  documents=tests/robot_framework/files/woodecision/documenten - 2.zip
   ...  number_of_documents=2
   ...  prefix=E2E-A5
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=E2E-A5
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report
-  ...  files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
+  ...  tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
   ...  ${TRUE}
   Verify Production Report Error  Regel 1: documentnummer 1001 bestaat al in een ander dossier
   Verify Production Report Error  Regel 2: documentnummer 1002 bestaat al in een ander dossier
 
-In A Public Dossier With N Public And M Non-public Documents, Replace The Production Report With One Where 1 Non-public Document Has Been Made Public
+In a public dossier with N public and M non-public documents, replace the production report with one where 1 non-public document has been made public
   Publish Test WooDecision
-  ...  production_report=files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
-  ...  documents=files/woodecision/documenten - 8.zip
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
+  ...  documents=tests/robot_framework/files/woodecision/documenten - 8.zip
   ...  number_of_documents=8
   ...  prefix=E2E-A6
   Search For A Publication  ${DOSSIER_REFERENCE}
-  Replace Production Report
-  ...  files/woodecision/productierapport - 9 openbaar 1 niet openbaar.xlsx
-  ...  1 bestaand document wordt aangepast.
+  Click Documents Edit
+  Click Replace Report
+  Upload Production Report
+  ...  tests/robot_framework/files/woodecision/productierapport - 9 openbaar 1 niet openbaar.xlsx
+  ...  ${TRUE}
+  Verify Production Report Replace  Productierapport geüpload en gecontroleerd
+  Verify Production Report Replace  1 bestaand document wordt aangepast.
+  Click Confirm Production Report Replacement
+  Verify Production Report Replace  Het productierapport is succesvol vervangen.
+  Click Continue To Documents
   Verify Document Upload Remaining  Nog te uploaden: 1 van 9 documenten.
-  Upload And Process Documents  files/woodecision/1008.pdf
+  Upload Documents  tests/robot_framework/files/woodecision/1008.pdf
   Wait For Elements State  //div[@data-e2e-name="has-changes"]  attached  timeout=30s
   Get Text  //div[@data-e2e-name="has-changes"]  contains  1 document toevoegen
   Get Text  //div[@data-e2e-name="has-changes"]  contains  0 documenten opnieuw publiceren
@@ -123,16 +130,23 @@ In A Public Dossier With N Public And M Non-public Documents, Replace The Produc
   Click Publications
   Get Text  //table[@data-e2e-name="dossiers-table"]//tr[contains(.,'${DOSSIER_REFERENCE}')]  not contains  Incompleet
 
-In A Public Dossier With N Public And M Non-public Documents, Replace The Production Report With One Where 1 Public Document Has Been Made Non-public
+In a public dossier with N public and M non-public documents, replace the production report with one where 1 public document has been made non-public
   Publish Test WooDecision
-  ...  production_report=files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
-  ...  documents=files/woodecision/documenten - 8.zip
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
+  ...  documents=tests/robot_framework/files/woodecision/documenten - 8.zip
   ...  number_of_documents=8
   ...  prefix=E2E-A7
   Search For A Publication  ${DOSSIER_REFERENCE}
-  Replace Production Report
-  ...  files/woodecision/productierapport - 7 openbaar 3 niet openbaar.xlsx
-  ...  1 bestaand document wordt aangepast.
+  Click Documents Edit
+  Click Replace Report
+  Upload Production Report
+  ...  tests/robot_framework/files/woodecision/productierapport - 7 openbaar 3 niet openbaar.xlsx
+  ...  ${TRUE}
+  Verify Production Report Replace  Productierapport geüpload en gecontroleerd
+  Verify Production Report Replace  1 bestaand document wordt aangepast.
+  Click Confirm Production Report Replacement
+  Verify Production Report Replace  Het productierapport is succesvol vervangen.
+  Click Continue To Documents
   Open Document In Dossier  1009
   Verify Document History  Beoordeling aangepast naar niet openbaar
   Verify Document Details
@@ -141,16 +155,23 @@ In A Public Dossier With N Public And M Non-public Documents, Replace The Produc
   Click Public URL
   Verify Notification  besloten dit document niet openbaar te maken.
 
-In A Public Dossier With N Public Files, Replace The Production Report With One Where 1 Public Document Is Suspended
+In a public dossier with N public files, replace the production report with one where 1 public document is suspended
   Publish Test WooDecision
-  ...  production_report=files/woodecision/productierapport - 10 openbaar.xlsx
-  ...  documents=files/woodecision/documenten - 10.zip
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
+  ...  documents=tests/robot_framework/files/woodecision/documenten - 10.zip
   ...  number_of_documents=10
   ...  prefix=E2E-A9
   Search For A Publication  ${DOSSIER_REFERENCE}
-  Replace Production Report
-  ...  files/woodecision/productierapport - 10 openbaar 1 opgeschort.xlsx
-  ...  1 bestaand document wordt aangepast.
+  Click Documents Edit
+  Click Replace Report
+  Upload Production Report
+  ...  tests/robot_framework/files/woodecision/productierapport - 10 openbaar 1 opgeschort.xlsx
+  ...  ${TRUE}
+  Verify Production Report Replace  Productierapport geüpload en gecontroleerd
+  Verify Production Report Replace  1 bestaand document wordt aangepast.
+  Click Confirm Production Report Replacement
+  Verify Production Report Replace  Het productierapport is succesvol vervangen.
+  Click Continue To Documents
   Open Document In Dossier  1010
   Verify Document Details
   ...  download_type=niet van toepassing
@@ -162,13 +183,13 @@ In A Public Dossier With N Public Files, Replace The Production Report With One 
   Go To Admin
   Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet en opgeschort  Er is 1 document opgeschort.
 
-Create A Publication That Becomes Public In The Future
+Create a publication that becomes public in the future
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=E2E-A11
   Fill Out WooDecision Details  Openbaarmaking
-  Upload Production Report  files/woodecision/productierapport - 10 openbaar.xlsx
+  Upload Production Report  tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
-  Upload And Process Documents  files/woodecision/documenten - 10.zip
+  Upload Documents  tests/robot_framework/files/woodecision/documenten - 10.zip
   Verify Document Upload Completed
   Click Continue To Publish
   ${timestamp} =  Get Current Date
@@ -181,49 +202,29 @@ Create A Publication That Becomes Public In The Future
   Click  //*[@data-e2e-name="dossier-public-dossier-link"]
   Verify Page Error  404
 
-In A Public Dossier With N Public Files, Replace The Production Report With A Copy Where One Document Is Replaced With A New Document
+In a public dossier with N public files, replace the production report with a copy where one document is replaced with a new document
   Publish Test WooDecision
-  ...  production_report=files/woodecision/productierapport - 10 openbaar.xlsx
-  ...  documents=files/woodecision/documenten - 10.zip
+  ...  production_report=tests/robot_framework/files/woodecision/productierapport - 10 openbaar.xlsx
+  ...  documents=tests/robot_framework/files/woodecision/documenten - 10.zip
   ...  number_of_documents=10
   ...  prefix=E2E-A12
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Click Replace Report
   Upload Production Report
-  ...  files/woodecision/productierapport - 10 openbaar waarvan 1 verwisseld.xlsx
+  ...  tests/robot_framework/files/woodecision/productierapport - 10 openbaar waarvan 1 verwisseld.xlsx
   ...  ${TRUE}
   Verify Production Report Replace  1001 mist in het productierapport
 
-The Content Of The Published Pdf Should Not Show Up In The Admin Search
+The content of the published pdf should not show up in the admin search
   Publish Test WooDecision
-  ...  production_report=files/woodecision/halieborabotttejetoe/productierapport.xlsx
-  ...  documents=files/woodecision/halieborabotttejetoe/3453455.pdf
+  ...  production_report=tests/robot_framework/files/woodecision/halieborabotttejetoe/productierapport.xlsx
+  ...  documents=tests/robot_framework/files/woodecision/halieborabotttejetoe/documenten.zip
   ...  number_of_documents=1
   ...  prefix=E2E-A12
   Verify Admin Search Results  halieborabotttejetoe  0
   Verify Admin Search Results  random  1
   Verify Admin Search Results  Robot  1
-
-Retract A Document And Then Make It Non-public
-  Publish Test WooDecision
-  ...  production_report=files/woodecision/productierapport - 2 openbaar.xlsx
-  ...  documents=files/woodecision/documenten - 2.zip
-  ...  number_of_documents=2
-  ...  prefix=E2E-A13
-  Search For A Publication  ${DOSSIER_REFERENCE}
-  Click Documents Edit
-  Open Document In Dossier  1001
-  Retract Document
-  Click Breadcrumb Element  2
-  Verify Document Retraction  1001
-  Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet en ingetrokken  Er is 1 document ingetrokken.
-  Search For A Publication  ${DOSSIER_REFERENCE}
-  Replace Production Report
-  ...  files/woodecision/productierapport - 2 niet openbaar.xlsx
-  ...  2 bestaande documenten worden aangepast.
-  Click Breadcrumb Element  1
-  Verify Publication Action Status  ${DOSSIER_REFERENCE}  ${EMPTY}
 
 
 *** Keywords ***
@@ -280,15 +281,8 @@ Verify Publication Status
   Click Publication By Value  ${dossier_reference}
   Get Text  //*[@data-e2e-name="has-document-notifications"]  contains  Documenten vereisen aandacht
   Get Text  //*[@data-e2e-name="document-notifications"]  contains  ${expected_document_notification}
-  Verify Publication Action Status  ${dossier_reference}  ${expected_status}
-
-Replace Production Report
-  [Arguments]  ${replacement_production_report}  ${expected_replacement_message}
-  Click Documents Edit
-  Click Replace Report
-  Upload Production Report  ${replacement_production_report}  ${TRUE}
-  Verify Production Report Replace  Productierapport geüpload en gecontroleerd
-  Verify Production Report Replace  ${expected_replacement_message}
-  Click Confirm Production Report Replacement
-  Verify Production Report Replace  Het productierapport is succesvol vervangen.
-  Click Continue To Documents
+  Click Publications
+  Get Text
+  ...  //table[@data-e2e-name="dossiers-table"]//tr[contains(.,'${dossier_reference}')]
+  ...  contains
+  ...  ${expected_status}

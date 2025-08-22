@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
+use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\User;
-use App\Service\Security\UserRouteHelper;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -23,7 +23,7 @@ readonly class LoginLogger
     public function __construct(
         private LoggerInterface $logger,
         private RouterInterface $router,
-        private UserRouteHelper $userRouteHelper,
+        private AuthorizationMatrix $authorizationMatrix,
     ) {
     }
 
@@ -48,7 +48,12 @@ readonly class LoginLogger
             return;
         }
 
-        $landingUrl = $this->router->generate($this->userRouteHelper->getDefaultIndexRouteName());
+        // If the user has access to the dossier list this should always be used, with a fallback to user admin.
+        if ($this->authorizationMatrix->isAuthorized('dossier', 'read')) {
+            $landingUrl = $this->router->generate('app_admin_dossiers');
+        } else {
+            $landingUrl = $this->router->generate('app_admin_users');
+        }
 
         $event->setResponse(new RedirectResponse($landingUrl));
     }

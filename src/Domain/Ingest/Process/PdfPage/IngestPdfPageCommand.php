@@ -15,6 +15,7 @@ final readonly class IngestPdfPageCommand
     public function __construct(
         private Uuid $entityId,
         private string $entityClass,
+        private bool $forceRefresh,
         private int $pageNr,
     ) {
     }
@@ -30,6 +31,11 @@ final readonly class IngestPdfPageCommand
     public function getEntityClass(): string
     {
         return $this->entityClass;
+    }
+
+    public function getForceRefresh(): bool
+    {
+        return $this->forceRefresh;
     }
 
     public function getPageNr(): int

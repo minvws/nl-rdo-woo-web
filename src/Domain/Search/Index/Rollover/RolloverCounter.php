@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Search\Index\Rollover;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
 use App\Domain\Search\Index\ElasticDocumentType;
 use App\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
@@ -178,8 +177,10 @@ readonly class RolloverCounter
          * mismatch the count used for the sum is adjusted to 1 when the pageCount is null.
          * Unless the file is not uploaded, in that case 0 must be used as the pageCount. This can be a valid state,
          * for instance for WooDecision Document entities with a judgement 'already public'.
+         *
+         * @var array{count: int, pages: int}
          */
-        $queryBuilder = $repository->createQueryBuilder('e')
+        return $repository->createQueryBuilder('e')
             ->select('COUNT(e.id) as count')
             ->addSelect('SUM(
                     CASE
@@ -190,16 +191,8 @@ readonly class RolloverCounter
                         ELSE
                             e.fileInfo.pageCount
                     END
-                ) as pages');
-
-        // Special case for attachments: when withdrawn they are completely excluded from indexing, unlike documents.
-        if (is_subclass_of($class, AbstractAttachment::class)) {
-            $queryBuilder->where('e.withdrawn = false');
-        }
-
-        /**
-         * @var array{count: int, pages: int}
-         */
-        return $queryBuilder->getQuery()->getSingleResult();
+                ) as pages')
+            ->getQuery()
+            ->getSingleResult();
     }
 }

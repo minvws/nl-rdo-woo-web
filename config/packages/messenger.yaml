@@ -6,7 +6,6 @@ framework:
                     allow_no_handlers: true
                 middleware:
                     - doctrine_ping_connection
-        default_bus: command_bus
 #        failure_transport: failed
         serializer:
             default_serializer: messenger.transport.symfony_serializer

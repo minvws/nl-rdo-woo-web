@@ -69,7 +69,7 @@ class RolloverCounterTest extends UnitTestCase
 
         $this->mockSubTypeRepository(Document::class, 8, 16);
         $this->mockSubTypeRepository(WooDecisionMainDocument::class, 1, 1);
-        $this->mockSubTypeRepository(WooDecisionAttachment::class, 1, 1, true);
+        $this->mockSubTypeRepository(WooDecisionAttachment::class, 1, 1);
         $this->mockSubTypeRepository(ComplaintJudgementMainDocument::class, 1, 1);
 
         $this->dossierTypeManager->shouldReceive('getAllConfigs')->andReturn([
@@ -108,28 +108,20 @@ class RolloverCounterTest extends UnitTestCase
     /**
      * @param class-string $entityClass
      */
-    private function mockSubTypeRepository(
-        string $entityClass,
-        int $count,
-        int $pageCount,
-        bool $expectWhere = false,
-    ): void {
+    private function mockSubTypeRepository(string $entityClass, int $count, int $pageCount): void
+    {
         $repository = \Mockery::mock(ServiceEntityRepository::class);
         $queryBuilder = \Mockery::mock(QueryBuilder::class);
 
-        $repository->expects('createQueryBuilder')->andReturn($queryBuilder);
+        $repository->shouldReceive('createQueryBuilder')->andReturn($queryBuilder);
 
-        // Chaining does not work when method return type of method call is static:
-        $queryBuilder->expects('select')->andReturnSelf();
-        $queryBuilder->expects('addSelect')->andReturnSelf();
-        $queryBuilder->expects('getQuery->getSingleResult')->andReturn([
+        // Chaning does not work when method return type of method call is static:
+        $queryBuilder->shouldReceive('select')->andReturnSelf();
+        $queryBuilder->shouldReceive('addSelect')->andReturnSelf();
+        $queryBuilder->shouldReceive('getQuery->getSingleResult')->andReturn([
             'count' => $count,
             'pageCount' => $pageCount,
         ]);
-
-        if ($expectWhere) {
-            $queryBuilder->expects('where')->andReturnSelf();
-        }
 
         $this->entityManager->expects('getRepository')->with($entityClass)->andReturn($repository);
     }

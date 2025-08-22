@@ -20,7 +20,6 @@ import {
 } from './interface';
 import IsCheckingDocuments from './IsCheckingDocuments.vue';
 import IsProcessingDocuments from './IsProcessingDocuments.vue';
-import MaxCombinedSizeExceeded from './MaxCombinedSizeExceeded.vue';
 import MissingDocuments from './MissingDocuments.vue';
 import UploadedDocuments from './UploadedDocuments.vue';
 
@@ -34,7 +33,6 @@ interface Props {
   processEndpoint: string;
   statusEndpoint: string;
   uploadEndpoint: string;
-  maxCombinedFileSize: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -81,9 +79,6 @@ const showIsChecking = computed(
 const showDocumentChanges = computed(
   () => uploadStatusResponse.value?.status === UploadStatus.NeedsConfirmation,
 );
-const showMaxSizeExceededError = computed(
-  () => uploadStatusResponse.value?.status === UploadStatus.MaxSizeExceeded,
-);
 
 const showIsProcessing = computed(() => {
   const { value } = uploadStatusResponse;
@@ -97,7 +92,7 @@ const showIsProcessing = computed(() => {
 });
 
 const showMissingDocuments = computed(() => {
-  if (showIsChecking.value || showMaxSizeExceededError.value) {
+  if (showIsChecking.value) {
     return false;
   }
 
@@ -129,8 +124,7 @@ const isUploadAreaVisible = computed(() => {
   if (
     showIsChecking.value ||
     showIsProcessing.value ||
-    showDocumentChanges.value ||
-    showMaxSizeExceededError.value
+    showDocumentChanges.value
   ) {
     return false;
   }
@@ -138,9 +132,6 @@ const isUploadAreaVisible = computed(() => {
   return isComplete.value === false;
 });
 const wrapperElement = useTemplateRef<HTMLDivElement>('wrapperElement');
-const maxCombinedSizeExceededComponent = useTemplateRef<
-  InstanceType<typeof MaxCombinedSizeExceeded>
->('maxCombinedSizeExceededComponent');
 const uploadAreaComponent = useTemplateRef<ComponentPublicInstance>(
   'uploadAreaComponent',
 );
@@ -232,12 +223,6 @@ const moveFocus = async () => {
     return;
   }
 
-  if (showMaxSizeExceededError.value) {
-    await nextTick();
-    maxCombinedSizeExceededComponent.value?.setFocus();
-    return;
-  }
-
   const currentElementWithFocus = document.activeElement as HTMLElement;
   await nextTick();
 
@@ -315,14 +300,6 @@ onBeforeUnmount(() => stopCheckingStatus());
       />
 
       <IsCheckingDocuments v-if="showIsChecking" ref="isCheckingComponent" />
-
-      <MaxCombinedSizeExceeded
-        v-if="showMaxSizeExceededError"
-        ref="maxCombinedSizeExceededComponent"
-        @rejected="checkStatus"
-        :reject-endpoint="props.rejectEndpoint"
-        :max-size="props.maxCombinedFileSize"
-      />
 
       <div :class="{ 'mt-4': isUploadAreaVisible }" v-if="showMissingDocuments">
         <MissingDocuments

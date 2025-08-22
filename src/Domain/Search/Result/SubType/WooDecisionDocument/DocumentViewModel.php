@@ -12,7 +12,6 @@ use App\Domain\Search\Result\SubType\SubTypeViewModelInterface;
 readonly class DocumentViewModel implements SubTypeViewModelInterface
 {
     public FileInfo $fileInfo;
-    public int $pageCount;
 
     public function __construct(
         public string $documentId,
@@ -21,7 +20,7 @@ readonly class DocumentViewModel implements SubTypeViewModelInterface
         public SourceType $fileSourceType,
         bool $fileUploaded,
         int $fileSize,
-        ?int $pageCount,
+        public int $pageCount,
         public Judgement $judgement,
         public ?\DateTimeImmutable $documentDate,
     ) {
@@ -31,7 +30,5 @@ readonly class DocumentViewModel implements SubTypeViewModelInterface
             $fileUploaded,
             $fileSize,
         );
-
-        $this->pageCount = $pageCount ?? 0;
     }
 }

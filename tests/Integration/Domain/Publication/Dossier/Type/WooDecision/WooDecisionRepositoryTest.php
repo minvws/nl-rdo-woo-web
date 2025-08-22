@@ -39,25 +39,40 @@ final class WooDecisionRepositoryTest extends KernelTestCase
         $wooDecision = WooDecisionFactory::createOne();
 
         DocumentFactory::createone([
+            'pageCount' => 5,
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createone([
+                'uploaded' => true,
+            ]),
         ]);
 
         DocumentFactory::createone([
+            'pageCount' => 2,
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createone([
+                'uploaded' => true,
+            ]),
         ]);
 
         DocumentFactory::createone([
+            'pageCount' => 7,
             'dossiers' => [$wooDecision],
-            'judgement' => Judgement::NOT_PUBLIC,
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createone([
+                'uploaded' => true,
+            ]),
         ]);
 
         $result = $this->getRepository()->getDossierCounts($wooDecision->_real());
 
-        $this->assertSame(3, $result->getTotalDocumentCount());
+        $this->assertSame(3, $result->getDocumentCount());
         $this->assertTrue($result->hasDocuments());
-        $this->assertSame(2, $result->getPublicDocumentCount());
+        $this->assertSame(14, $result->getPageCount());
+        $this->assertTrue($result->hasPages());
+        $this->assertSame(3, $result->getUploadCount());
+        $this->assertTrue($result->hasUploads());
     }
 
     public function testGetDossierReferencesForDocument(): void
@@ -83,29 +98,29 @@ final class WooDecisionRepositoryTest extends KernelTestCase
         $wooDecision = WooDecisionFactory::createOne();
 
         DocumentFactory::createone([
+            'pageCount' => 5,
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
             'fileInfo' => FileInfoFactory::createone([
                 'uploaded' => true,
-                'pageCount' => 5,
             ]),
         ]);
 
         DocumentFactory::createone([
+            'pageCount' => 2,
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
             'fileInfo' => FileInfoFactory::createone([
                 'uploaded' => true,
-                'pageCount' => 2,
             ]),
         ]);
 
         DocumentFactory::createone([
+            'pageCount' => 7,
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
             'fileInfo' => FileInfoFactory::createone([
                 'uploaded' => true,
-                'pageCount' => 7,
             ]),
         ]);
 

@@ -167,14 +167,16 @@ class IngestDispatcherTest extends UnitTestCase
     {
         $entityId = Uuid::v6();
         $entityClass = Document::class;
+        $refresh = true;
         $page = 123;
 
         $this->messageBus
             ->expects('dispatch')
             ->with(\Mockery::on(
-                static function (IngestPdfPageCommand $command) use ($entityClass, $entityId, $page) {
+                static function (IngestPdfPageCommand $command) use ($entityClass, $entityId, $refresh, $page) {
                     self::assertEquals($entityId, $command->getEntityId());
                     self::assertEquals($entityClass, $command->getEntityClass());
+                    self::assertEquals($refresh, $command->getForceRefresh());
                     self::assertEquals($page, $command->getPageNr());
 
                     return true;
@@ -182,7 +184,7 @@ class IngestDispatcherTest extends UnitTestCase
             ))
             ->andReturns(new Envelope(new \stdClass()));
 
-        $this->dispatcher->dispatchIngestPdfPageCommand($entityId, $entityClass, $page);
+        $this->dispatcher->dispatchIngestPdfPageCommand($entityId, $entityClass, $refresh, $page);
     }
 
     public function testDispatchIngestTikaOnlyCommand(): void

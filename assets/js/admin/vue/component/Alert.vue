@@ -3,7 +3,7 @@ import { useSlots } from 'vue';
 import Icon from './Icon.vue';
 
 interface Props {
-  type?: 'success' | 'info' | 'danger' | 'warning';
+  type?: 'success' | 'info' | 'danger';
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -18,8 +18,6 @@ const getAlertTypeClass = () => {
       return 'bhr-alert--danger';
     case 'info':
       return 'bhr-alert--info';
-    case 'warning':
-      return 'bhr-alert--warning';
     default:
       return 'bhr-alert--success';
   }
@@ -28,26 +26,22 @@ const getAlertTypeClass = () => {
 const getIconColor = () => {
   switch (props.type) {
     case 'danger':
-      return 'stroke-bhr-red-700';
+      return 'fill-current';
     case 'info':
-      return 'stroke-bhr-blue-700';
-    case 'warning':
-      return 'stroke-bhr-yellow-800';
+      return 'fill-bhr-blue-800';
     default:
-      return 'stroke-bhr-green-700';
+      return 'fill-bhr-philippine-green';
   }
 };
 
 const getIconName = () => {
   switch (props.type) {
     case 'danger':
-      return 'alert-circle';
+      return 'exclamation-filled-colored';
     case 'info':
-      return 'info-circle';
-    case 'warning':
-      return 'alert-triangle';
+      return 'info-rounded-filled';
     default:
-      return 'circle-check';
+      return 'check-rounded-filled';
   }
 };
 
@@ -63,16 +57,16 @@ const iconName = getIconName();
     </template>
 
     <div class="flex">
-      <span class="mr-2">
-        <Icon :color="iconColor" :name="iconName" :size="24" />
+      <span class="mr-4">
+        <Icon :color="iconColor" :name="iconName" :size="32" />
       </span>
 
-      <div class="grow pt-0.5">
+      <div class="grow pt-1.5">
         <slot />
       </div>
     </div>
 
-    <div v-if="slots.extra" class="mt-4 ml-8">
+    <div v-if="slots.extra" class="mt-4">
       <slot name="extra"></slot>
     </div>
   </div>

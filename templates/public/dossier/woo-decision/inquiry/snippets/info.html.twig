@@ -34,7 +34,7 @@
                 <a class="woo-a" href="{{ searchAllUrl }}">{{ 'global.search_through_all' | trans }}</a>
             </li>
             <li>
-                <a class="woo-a" href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}" data-e2e-name="download-inventory">{{ 'public.inquiries.download_inventory' | trans({'{casenumber}': inquiry.casenr}) }}</a>
+                <a class="woo-a" href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}">{{ 'public.inquiries.download_inventory' | trans({'{casenumber}': inquiry.casenr}) }}</a>
             </li>
         </ul>
     {% else %}

@@ -82,12 +82,8 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
         $downloadType = \Mockery::mock(BatchDownloadTypeInterface::class);
         $downloadType
             ->shouldReceive('getFileBaseName')
-            ->with(\Mockery::on(
-                static function (BatchDownloadScope $scope) use ($wooDecision, $inquiry): bool {
-                    return $scope->wooDecision === $wooDecision && $scope->inquiry === $inquiry;
-                }
-            ))
-            ->andReturn('file-base-name');
+            ->with(\Mockery::on(fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $wooDecision && $scope->inquiry === $inquiry)
+            )->andReturn('file-base-name');
 
         $this->s3Client->shouldReceive('registerStreamWrapperV2')->once();
         $this->streamFactory
@@ -111,9 +107,7 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
             ->shouldReceive('close')
             ->once();
 
-        $this->s3Client
-            ->shouldReceive('deleteObject')->with(['Bucket' => self::BATCH_BUCKET, 'Key' => self::BATCH_FILE_NAME])
-            ->once();
+        $this->s3Client->shouldReceive('deleteObject')->with(['Bucket' => self::BATCH_BUCKET, 'Key' => self::BATCH_FILE_NAME])->once();
 
         $this->expectExceptionObject($ex);
 
@@ -132,12 +126,8 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
         $downloadType = \Mockery::mock(BatchDownloadTypeInterface::class);
         $downloadType
             ->shouldReceive('getFileBaseName')
-            ->with(\Mockery::on(
-                static function (BatchDownloadScope $scope) use ($wooDecision, $inquiry): bool {
-                    return $scope->wooDecision === $wooDecision && $scope->inquiry === $inquiry;
-                }
-            ))
-            ->andReturn('file-base-name');
+            ->with(\Mockery::on(fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $wooDecision && $scope->inquiry === $inquiry)
+            )->andReturn('file-base-name');
 
         $this->s3Client->shouldReceive('registerStreamWrapperV2')->once();
         $this->streamFactory
@@ -390,12 +380,8 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
         $downloadType = \Mockery::mock(BatchDownloadTypeInterface::class);
         $downloadType
             ->shouldReceive('getFileBaseName')
-            ->with(\Mockery::on(
-                function (BatchDownloadScope $scope) use ($wooDecision, $inquiry): bool {
-                    return $scope->wooDecision === $wooDecision && $scope->inquiry === $inquiry;
-                }
-            ))
-            ->andReturn($basename = 'file-base-name');
+            ->with(\Mockery::on(fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $wooDecision && $scope->inquiry === $inquiry)
+            )->andReturn($basename = 'file-base-name');
 
         $this->s3Client->shouldReceive('registerStreamWrapperV2')->once();
         $this->streamFactory

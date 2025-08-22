@@ -2,6 +2,41 @@
 
 # Release notes
 
+## v1.16.1
+
+*22 augustus 2025*
+
+### Balie
+
+Bij het intrekken van een bijlage is het prullenbak-icoon vervangen door een duidelijkere knop met de tekst "Intrekken", zodat gebruikers beter zien welke actie wordt uitgevoerd.
+
+De melding “Dit besluit valt niet onder de verantwoordelijkheid van het Ministerie van VWS” is nu configureerbaar per bestuursorgaan.
+Hierdoor kan per organisatie een eigen verantwoordelijkheidstekst worden ingesteld.
+
+De helptekst boven de Markdown editor is compacter gemaakt zodat er meer ruimte is voor het invoerveld.
+
+Er zijn verbeterde invoercontroles en maximale lengtes ingesteld op diverse velden (bestuursorganen, documenten, dossiers, bijlagen, zaaknummers, onderwerpen).
+Daarnaast is een technisch limiet ingesteld van maximaal 50.000 documenten per dossier.
+Dit zorgt voor betere datakwaliteit en platformstabiliteit.
+
+### Website
+
+Op publicatiedetailpagina’s wordt nu altijd minimaal één tab getoond met de documentstatus.
+Ook wordt per tab het aantal documenten weergegeven.
+Dit maakt de status van documenten duidelijker, ook als er slechts één status aanwezig is.
+
+Bij het klikken op een informatiecategorie, zoals “Woo-besluiten”, worden voortaan alleen de besluiten zelf getoond (zonder bijlagen of onderliggende documenten).
+Hierdoor klopt het weergegeven aantal besluiten en zijn zoekresultaten relevanter.
+
+De actieve filterknoppen op de website hebben een vernieuwde stijl gekregen, in lijn met het design system waarvan het platform gebruik maakt.
+
+De mogelijkheid om documenten per dossier te downloaden via de zaakpagina is hersteld.
+Dit was tijdelijk uitgeschakeld in verband met eerdere aanpassingen.
+
+In de inventarislijst op de zaakpagina wordt nu per document weergegeven bij welk besluit het hoort.
+Dit maakt het groeperen, filteren en analyseren van documenten eenvoudiger.
+De besluitnaam hebben we ook toegevoegd aan de inventarislijst bij een besluit en zal daar logischerwijs maar één waarde hebben.
+
 ## v1.15.0
 
 *10 juli 2025*

@@ -19,7 +19,6 @@ use App\Service\Inventory\DocumentMetadata;
 use App\Service\Inventory\DocumentNumber;
 use App\Service\Inventory\DocumentUpdater;
 use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\ThumbnailStorageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
@@ -28,7 +27,6 @@ use Symfony\Component\Uid\Uuid;
 class DocumentUpdaterTest extends MockeryTestCase
 {
     private MockInterface&EntityStorageService $entityStorageService;
-    private MockInterface&ThumbnailStorageService $thumbnailStorageService;
     private DocumentUpdater $documentUpdater;
     private DocumentDispatcher&MockInterface $documentDispatcher;
     private IngestDispatcher&MockInterface $ingestDispatcher;
@@ -39,7 +37,6 @@ class DocumentUpdaterTest extends MockeryTestCase
     {
         $this->repository = \Mockery::mock(DocumentRepository::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->thumbnailStorageService = \Mockery::mock(ThumbnailStorageService::class);
         $this->documentDispatcher = \Mockery::mock(DocumentDispatcher::class);
         $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
 
@@ -52,7 +49,6 @@ class DocumentUpdaterTest extends MockeryTestCase
 
         $this->documentUpdater = new DocumentUpdater(
             $this->entityStorageService,
-            $this->thumbnailStorageService,
             $this->repository,
             $this->documentDispatcher,
             $this->ingestDispatcher,
@@ -89,10 +85,9 @@ class DocumentUpdaterTest extends MockeryTestCase
 
         $this->repository->expects('save')->with($existingDocument);
 
-        $this->thumbnailStorageService->expects('deleteAllThumbsForEntity')->with($existingDocument);
-
         $this->entityStorageService->shouldReceive('deleteAllFilesForEntity')->with($existingDocument);
         $fileInfo->expects('removeFileProperties');
+        $existingDocument->expects('setPageCount')->with(0);
 
         $this->documentUpdater->databaseUpdate($documentMetadata, $this->dossier, $existingDocument);
     }

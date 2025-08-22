@@ -21,10 +21,6 @@ services:
         bind:
             Psr\Log\LoggerInterface $logger: '@App\Service\Logging\EnrichedPsrLogger'
 
-    App\Service\Security\ApplicationMode\ApplicationMode:
-        factory: ['App\Service\Security\ApplicationMode\ApplicationMode', 'fromEnvVar']
-        arguments: [ '%env(APP_MODE)%' ]
-
     App\Domain\Search\Index\Rollover\MappingService:
         arguments:
             $rootDir: '%kernel.project_dir%'
@@ -92,10 +88,6 @@ services:
         arguments:
             $defaultLocale: '%kernel.default_locale%'
             $allowedLocales: '%available_locales%'
-
-    App\EventSubscriber\ApiVersionHeaderSubscriber:
-        arguments:
-            $apiVersion: '%api_platform.version%'
 
     App\Service\Totp:
         arguments:

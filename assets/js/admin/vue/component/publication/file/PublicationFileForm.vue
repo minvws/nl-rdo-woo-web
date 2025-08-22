@@ -158,7 +158,7 @@ watch(
     <InputGrounds :options="props.groundOptions" :values="grounds" />
 
     <div v-if="hasSubmitError" class="mb-6" data-e2e-name="save-failed">
-      <Alert type="warning">
+      <Alert type="danger">
         Het opslaan van "{{ file.name }}" is mislukt. Probeer het later opnieuw.
       </Alert>
     </div>

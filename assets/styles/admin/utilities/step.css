@@ -23,7 +23,7 @@
 }
 
 @utility bhr-steps__icon--future {
-  @apply bg-bhr-gray-700;
+  @apply bg-bhr-dim-gray;
 }
 
 @utility bhr-steps__step-text {
@@ -44,7 +44,7 @@
 }
 
 @utility bhr-steps__progress {
-  @apply absolute bg-bhr-gray-700 w-full h-0.5 top-5;
+  @apply absolute bg-bhr-dim-gray w-full h-0.5 top-5;
 }
 
 @utility bhr-steps__progress-bar {

@@ -7,7 +7,7 @@
     <div class="bhr-container bhr-container--sm">
         {% if result is not null %}
             <div class="bhr-card" data-e2e-name="alerts">
-                <twig:Admin:Alert type="{{ result.isSuccessful ? 'success' : 'warning' }}">
+                <twig:Admin:Alert type="{{ result.isSuccessful ? 'success' : 'danger' }}">
                     <p class="font-bold">{{ 'admin.inquiries.number_of_cases_added' | trans({'count': result.addedRelationsCount}) }}</p>
 
                     <twig:block name="extra">

@@ -205,7 +205,6 @@ describe('The <GenericController /> component', () => {
       uploadEndpoint: 'mocked-upload-endpoint',
       nextStepUrl: 'mocked-next-step-url',
       continueLaterUrl: 'mocked-continue-later-url',
-      maxCombinedFileSize: 123456789,
     });
 
     expect(findComponent('AddDocuments', component).props()).toMatchObject({
@@ -226,7 +225,6 @@ describe('The <GenericController /> component', () => {
       uploadEndpoint: 'mocked-upload-endpoint',
       nextStepUrl: 'mocked-next-step-url',
       continueLaterUrl: 'mocked-continue-later-url',
-      maxCombinedFileSize: 123456789,
     });
   });
 
@@ -252,7 +250,6 @@ describe('The <GenericController /> component', () => {
       processEndpoint: 'mocked-process-endpoint',
       statusEndpoint: 'mocked-status-endpoint',
       uploadEndpoint: 'mocked-upload-endpoint',
-      maxCombinedFileSize: 123456789,
     });
 
     expect(findComponent('UploadDocuments', component).props()).toMatchObject({
@@ -273,7 +270,6 @@ describe('The <GenericController /> component', () => {
       processEndpoint: 'mocked-process-endpoint',
       statusEndpoint: 'mocked-status-endpoint',
       uploadEndpoint: 'mocked-upload-endpoint',
-      maxCombinedFileSize: 123456789,
     });
   });
 

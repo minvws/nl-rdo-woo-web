@@ -4,7 +4,7 @@ import Alert from './Alert.vue';
 
 describe('The "Alert" component', () => {
   interface Options {
-    type?: 'danger' | 'info' | 'success' | 'warning';
+    type?: 'danger' | 'info' | 'success';
   }
 
   const createComponent = (options: Options = {}) => {
@@ -53,7 +53,7 @@ describe('The "Alert" component', () => {
     });
 
     test('should display a danger icon', () => {
-      expect(getIconName(component)).toBe('alert-circle');
+      expect(getIconName(component)).toBe('exclamation-filled-colored');
     });
   });
 
@@ -65,7 +65,7 @@ describe('The "Alert" component', () => {
     });
 
     test('should display an info icon', () => {
-      expect(getIconName(component)).toBe('info-circle');
+      expect(getIconName(component)).toBe('info-rounded-filled');
     });
   });
 
@@ -77,19 +77,7 @@ describe('The "Alert" component', () => {
     });
 
     test('should display a checkmark icon', () => {
-      expect(getIconName(component)).toBe('circle-check');
-    });
-  });
-
-  describe('a warning alert', () => {
-    const component = createComponent({ type: 'warning' });
-
-    test('should be styled with warning colors', () => {
-      expect(component.classes()).toContain('bhr-alert--warning');
-    });
-
-    test('should display a checkmark icon', () => {
-      expect(getIconName(component)).toBe('alert-triangle');
+      expect(getIconName(component)).toBe('check-rounded-filled');
     });
   });
 });

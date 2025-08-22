@@ -15,15 +15,15 @@
             {% if app.user and is_granted('ROLE_BALIE')%}
                 <twig:Admin:Alert type="info">
                     {{ 'global.signed_in_as' | trans({'name': app.user.name|default('unknown user')}) }}.
-                    <a class="bhr-a" href="{{ path('app_logout') }}">{{ 'global.logout' | trans() }}</a>
+                    <a class="bhr-a bhr-a--inherit-color" href="{{ path('app_logout') }}">{{ 'global.logout' | trans() }}</a>
                 </twig:Admin:Alert>
             {% else %}
 
                 {% if error %}
                 <div class="mb-6" data-e2e-name="login-error">
-                    <twig:Admin:Alert type="danger">
+                    <twig:Admin:FormError>
                         {{ error.messageKey|trans(error.messageData, 'security') }}
-                    </twig:Admin:Alert>
+                    </twig:Admin:FormError>
                 </div>
                 {% endif %}
 

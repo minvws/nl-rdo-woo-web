@@ -20,10 +20,6 @@ Create Admin User And Do First Login
   ...  otp_secret=${TST_BALIE_OTP_SECRET}
   ...  new_password=${TST_BALIE_PASSWORD}
 
-Cleansheet
-  [Tags]  cleansheet
-  Cleansheet
-
 
 *** Keywords ***
 Write Otp Secret To Zshrc

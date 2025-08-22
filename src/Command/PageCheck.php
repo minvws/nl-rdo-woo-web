@@ -39,10 +39,10 @@ class PageCheck extends Command
             foreach ($dossier->getDocuments() as $document) {
                 // Get the count from elastic
                 $esDocument = $this->elasticService->getDocument(
-                    ElasticDocumentId::forObject($document),
+                    ElasticDocumentId::forObject($dossier),
                 );
 
-                for ($i = 1; $i <= $document->getFileInfo()->getpageCount(); $i++) {
+                for ($i = 1; $i <= $document->getpageCount(); $i++) {
                     if (! $this->pageExists($esDocument, $i)) {
                         $output->writeln(sprintf(
                             'Dossier %s Document %s Page %d does not exist in elastic...',
@@ -56,7 +56,7 @@ class PageCheck extends Command
             }
         }
 
-        return $failed ? Command::FAILURE : Command::SUCCESS;
+        return $failed ? 1 : 0;
     }
 
     protected function pageExists(TypeArray $esDocument, int $pageNr): bool

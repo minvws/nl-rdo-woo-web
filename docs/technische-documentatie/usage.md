@@ -3,11 +3,27 @@
 <!-- TOC -->
 - [Woo Platform](#woo-platform)
   - [Creating dossiers](#creating-dossiers)
+    - [Create dummy dossiers and documents](#create-dummy-dossiers-and-documents)
+    - [Create and upload real data](#create-and-upload-real-data)
 <!-- TOC -->
 
 You must create a dossier and add documents in order to use the site.
 
 ## Creating dossiers
+
+### Create dummy dossiers and documents
+
+You can either create a real dossier and upload real documents, or if you do not need to use the
+actual PDF file, you can generate dossiers and documents on the fly. For this, use the following
+command:
+
+```shell
+    docker-compose exec app bin/console woopie:generate:documents
+```
+
+Press ctrl-C when you feel you have enough documents.
+
+### Create and upload real data
 
 You can create a dossier after logging in at `localhost:8000/balie/dossiers`. Fill in the dossier
 you want, and add a XLS file as inventory file.

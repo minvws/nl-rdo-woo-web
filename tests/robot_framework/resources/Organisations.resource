@@ -3,7 +3,6 @@ Documentation       Resource file containing custom keywords for the Organisatio
 Library             String
 Library             Browser
 Library             DebugLibrary
-Library             FakerLibrary
 
 
 *** Keywords ***
@@ -130,15 +129,3 @@ Click Save Prefixes
     ...  attached
     ...  message=Error shown, even after retry
   END
-
-Add A Random Organisation Prefix
-  [Documentation]  Adds a random organisation prefix and returns it. Assumes there are already more then 1 prefixes.
-  Click Organisation Selector
-  Click Manage Organisations
-  Open Organisation Details  E2E Test Organisation
-  Select Responsible Department  E2E Test Department 1
-  ${random} =  FakerLibrary.Ean 13
-  ${prefix} =  Catenate  E2E-RAND-${random}
-  Add A New Organisation Prefix  ${prefix}
-  Click Save Prefixes
-  RETURN  ${prefix}

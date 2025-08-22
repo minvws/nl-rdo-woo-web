@@ -12,7 +12,7 @@ Test Tags           ci  landingpages  parallel
 
 
 *** Test Cases ***
-Enable Landingpages
+Enable landingpages
   Login Admin
   Click Departments
   Change Department Settings  E2E-DEP1  ${TRUE}
@@ -22,16 +22,16 @@ Enable Landingpages
   Get Text  //*[@data-e2e-name="departments"]  contains  E2E-DEP1
   Get Text  //*[@data-e2e-name="departments"]  contains  E2E-DEP2
 
-Existing Department Landingpage Works
+Existing department landingpage works
   Click Bekijk Per Bestuursorgaan
   Navigate To Individual Landingpage  E2E-DEP1  e2edep1
   Navigate To Individual Landingpage  E2E-DEP2  e2edep2
 
-Non-existing Department Landingpage Results In 404
+Non-existing department landingpage results in 404
   Go To  ${URL_PUBLIC}/huppeldepup
   Verify Page Error  404
 
-Invisble Landingpage Is Not Accessible
+Invisble landingpage is not accessible
   Go To Admin
   # Make landingpage invisible
   Click Departments
@@ -59,7 +59,7 @@ Create Custom Landingpage
   Success Alert Is Visible  De landingspagina is aangepast.
   Click Edit Department Landingpage  E2E-DEP3
   Click Logo Tab
-  Upload Logo  files/cheese.svg
+  Upload Logo  tests/robot_framework/files/cheese.svg
   Verify Image  //*[@id="tabs-landingspagina-content-2"]//img
   Click Departments
   Click Department Public URL  E2E-DEP3

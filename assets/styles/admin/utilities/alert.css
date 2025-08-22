@@ -1,19 +1,15 @@
 @utility bhr-alert {
-  @apply border p-4 leading-tight text-lg rounded-lg;
+  @apply p-6 leading-tight text-black text-lg;
 }
 
 @utility bhr-alert--danger {
-    @apply bg-bhr-red-100 border-bhr-red-700;
+  @apply bg-bhr-cornsilk;
 }
 
 @utility bhr-alert--info {
-  @apply bg-bhr-blue-50 border-bhr-blue-700;
+  @apply bg-bhr-azureish-white;
 }
 
 @utility bhr-alert--success {
-    @apply bg-bhr-green-50 border-bhr-green-700;
-}
-
-@utility bhr-alert--warning {
-  @apply bg-bhr-yellow-100 border-bhr-yellow-800;
+  @apply bg-bhr-chinese-white;
 }

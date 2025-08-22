@@ -17,7 +17,7 @@ const numberOfFiles = computed(() => props.files.length);
 
 <template>
   <div v-if="numberOfFiles > 0">
-    <Alert type="warning">
+    <Alert type="danger">
       <p>
         <template v-if="props.allowMultiple"
           >Er zijn mogelijke gevaren gevonden in de onderstaande bestanden. Ze

@@ -8,5 +8,5 @@ use App\Domain\Publication\EntityWithFileInfo;
 
 interface EntityExtractorInterface
 {
-    public function extract(EntityWithFileInfo $entity): void;
+    public function extract(EntityWithFileInfo $entity, bool $forceRefresh): void;
 }

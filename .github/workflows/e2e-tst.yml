@@ -19,7 +19,7 @@ jobs:
     name: 'Run E2E tests on Test'
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v4
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -50,7 +50,7 @@ jobs:
         name: reports
         path: tests/robot_framework/results
     - name: Publish test results
-      uses: minvws/nl-rdo-github-action-robotframework-test-summary@0.4.3
+      uses: minvws/nl-rdo-github-action-robotframework-test-summary@v0.4.2
       if: ${{ always() }}
       with:
         output_file: 'tests/robot_framework/results/output.xml'

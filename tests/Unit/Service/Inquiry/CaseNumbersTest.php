@@ -39,7 +39,7 @@ class CaseNumbersTest extends MockeryTestCase
 
     public function testConstructorSetValues(): void
     {
-        $caseNumbers = new CaseNumbers($input = ['foo', 'bar', 'foo-bar']);
+        $caseNumbers = new CaseNumbers($input = ['foo', 'bar', 'foo-bar', 'foo.bar']);
 
         self::assertEquals($input, $caseNumbers->values);
     }

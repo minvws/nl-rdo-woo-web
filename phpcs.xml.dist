@@ -11,7 +11,6 @@
     <rule ref="PSR12"/>
 
     <file>src/</file>
-    <file>tests/</file>
 
     <rule ref="vendor/slevomat/coding-standard/SlevomatCodingStandard/Sniffs/TypeHints/DeclareStrictTypesSniff.php" />
     <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
@@ -30,10 +29,6 @@
         <properties>
             <property name="lineLimit" value="150"/>
         </properties>
-    </rule>
-
-    <rule ref="PSR12.Classes.AnonClassDeclaration.SpaceAfterKeyword">
-        <severity>0</severity>
     </rule>
 
     <rule ref="Generic.PHP.ForbiddenFunctions">

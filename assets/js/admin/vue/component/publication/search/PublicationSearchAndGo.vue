@@ -52,7 +52,7 @@ const onResultsUpdated = (results: PublicationSearchResult[]) => {
     ></div>
     <div class="flex items-center">
       <label
-        class="block text-bhr-gray-700 mr-3 leading-tight"
+        class="block text-bhr-dim-gray mr-3 leading-tight"
         :for="PUBLICATION_SEARCH_INPUT_ID"
       >
         {{ props.label }}

@@ -1,6 +1,7 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
     secret: '%env(APP_SECRET)%'
+    #csrf_protection: true
     annotations: false
     http_method_override: false
     handle_all_throwables: true
@@ -32,11 +33,7 @@ framework:
         App\Domain\Department\Exception\DepartmentAssetNotFound:
             status_code: 404
     assets:
-        packages:
-            vite:
-                version_strategy: 'Pentatrion\ViteBundle\Asset\ViteAssetVersionStrategy'
-            api_platform:
-                version_strategy: null
+        version_strategy: 'Pentatrion\ViteBundle\Asset\ViteAssetVersionStrategy'
 
 when@test:
     framework:

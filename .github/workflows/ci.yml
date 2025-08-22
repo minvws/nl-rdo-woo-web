@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup node
@@ -73,7 +73,7 @@ jobs:
         options: --health-cmd "rabbitmqctl node_health_check" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup node
@@ -150,7 +150,7 @@ jobs:
   test:
     name: 'Test full suite'
     if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || github.event_name == 'pull_request' }}
-    uses: minvws/nl-rdo-woo-web-private/.github/workflows/e2e-ci.yml@main
+    uses: minvws/nl-rdo-woo-web-private/.github/workflows/e2e-ci.yml@release/v1.16.1
     secrets: inherit
     with:
       test_tag: 'ci'

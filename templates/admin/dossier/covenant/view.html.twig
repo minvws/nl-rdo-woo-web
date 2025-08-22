@@ -51,7 +51,7 @@
 {% block dossier_previous_link %}
     {% if dossier.previousVersionLink is not empty %}
         <twig:Admin:Definition term="{{ 'admin.dossiers.covenant.previous_version_link' | trans }}">
-            <a class="text-bhr-blue-800 underline" href="{{ dossier.previousVersionLink }}">{{ dossier.previousVersionLink }}</a>
+            <a class="text-bhr-sea-blue underline" href="{{ dossier.previousVersionLink }}">{{ dossier.previousVersionLink }}</a>
         </twig:Admin:Definition>
     {% endif %}
 {% endblock %}

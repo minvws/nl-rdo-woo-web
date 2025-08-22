@@ -16,15 +16,12 @@ use App\Service\Stats\WorkerStatsService;
 use App\Service\Worker\Pdf\Extractor\PageContentExtractor;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
-use Psr\Cache\CacheItemInterface;
-use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Uid\Uuid;
 
 final class PageContentExtractorTest extends UnitTestCase
 {
     private LoggerInterface&MockInterface $logger;
-    private CacheItemPoolInterface&MockInterface $cacheItemPool;
     private ContentExtractService&MockInterface $contentExtractService;
     private SubTypeIndexer&MockInterface $subTypeIndexer;
     private WorkerStatsService&MockInterface $statsService;
@@ -38,41 +35,26 @@ final class PageContentExtractorTest extends UnitTestCase
 
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->contentExtractService = \Mockery::mock(ContentExtractService::class);
-        $this->cacheItemPool = \Mockery::mock(CacheItemPoolInterface::class);
         $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
         $this->statsService = \Mockery::mock(WorkerStatsService::class);
-
-        $this->fileInfo = \Mockery::mock(FileInfo::class);
-        $this->fileInfo->shouldReceive('getHash')->andReturn('foobar');
-
         $this->entity = \Mockery::mock(EntityWithFileInfo::class);
-        $this->entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
+        $this->fileInfo = \Mockery::mock(FileInfo::class);
 
         $this->extractor = new PageContentExtractor(
             $this->logger,
             $this->subTypeIndexer,
             $this->contentExtractService,
             $this->statsService,
-            $this->cacheItemPool,
         );
     }
 
     public function testExtract(): void
     {
         $pageNr = 123;
-        $content = "lorem ipsum tika\nlorem ipsum tesseract";
-
-        $cacheItem = \Mockery::mock(CacheItemInterface::class);
-        $cacheItem->shouldReceive('isHit')->andReturn(false);
-        $cacheItem->shouldReceive('set')->with($content)->andReturnSelf();
-        $cacheItem->shouldReceive('get')->andReturn($content);
-        $this->cacheItemPool->expects('getItem')->with('foobar-' . $pageNr)->andReturn($cacheItem);
-        $this->cacheItemPool->expects('save')->with($cacheItem);
-
         $this->subTypeIndexer
             ->shouldReceive('updatePage')
             ->once()
-            ->with($this->entity, $pageNr, $content);
+            ->with($this->entity, $pageNr, "lorem ipsum tika\nlorem ipsum tesseract");
 
         $this->statsService
             ->shouldReceive('measure')
@@ -88,13 +70,15 @@ final class PageContentExtractorTest extends UnitTestCase
                 return true;
             }));
 
+        $text = "lorem ipsum tika\nlorem ipsum tesseract";
         $collection = \Mockery::mock(ContentExtractCollection::class);
-        $collection->shouldReceive('getCombinedContent')->andReturn($content);
+        $collection->shouldReceive('getCombinedContent')->andReturn($text);
 
         $this->contentExtractService
             ->expects('getExtracts')
             ->with($this->entity, \Mockery::on(
                 static function (ContentExtractOptions $options) use ($pageNr): bool {
+                    self::assertFalse($options->hasRefresh());
                     self::assertCount(count(ContentExtractorKey::cases()), $options->getEnabledExtractors());
                     self::assertEquals($pageNr, $options->getPageNumber());
 
@@ -108,52 +92,12 @@ final class PageContentExtractorTest extends UnitTestCase
         $context = new PdfPageProcessingContext($this->entity, $pageNr, $workDir, $localDocument);
         $context->setLocalPageDocument('/baz_123.pdf');
 
-        $this->extractor->extract($context);
-    }
-
-    public function testExtractWithCacheHit(): void
-    {
-        $pageNr = 123;
-        $content = "lorem ipsum tika\nlorem ipsum tesseract";
-
-        $cacheItem = \Mockery::mock(CacheItemInterface::class);
-        $cacheItem->shouldReceive('isHit')->andReturnTrue();
-        $cacheItem->shouldReceive('get')->andReturn($content);
-        $this->cacheItemPool->expects('getItem')->with('foobar-' . $pageNr)->andReturn($cacheItem);
-
-        $this->subTypeIndexer
-            ->shouldReceive('updatePage')
-            ->once()
-            ->with($this->entity, $pageNr, $content);
-
-        $this->statsService
-            ->shouldReceive('measure')
-            ->once()
-            ->with('index.full.entity', \Mockery::on(function (\Closure $closure) {
-                $closure();
-
-                return true;
-            }));
-
-        $workDir = '/foo/bar';
-        $localDocument = '/baz.pdf';
-        $context = new PdfPageProcessingContext($this->entity, $pageNr, $workDir, $localDocument);
-        $context->setLocalPageDocument('/baz_123.pdf');
-
-        $this->extractor->extract($context);
+        $this->extractor->extract($context, false);
     }
 
     public function testExtractWhenUpdatingSubTypePageIndexFails(): void
     {
         $pageNr = 123;
-        $content = "lorem ipsum tika\nlorem ipsum tesseract";
-
-        $cacheItem = \Mockery::mock(CacheItemInterface::class);
-        $cacheItem->shouldReceive('isHit')->andReturn(false);
-        $cacheItem->shouldReceive('set')->with($content)->andReturnSelf();
-        $cacheItem->shouldReceive('get')->andReturn($content);
-        $this->cacheItemPool->expects('getItem')->with('foobar-' . $pageNr)->andReturn($cacheItem);
-        $this->cacheItemPool->expects('save')->with($cacheItem);
 
         $this->entity
             ->shouldReceive('getFileInfo')
@@ -165,7 +109,7 @@ final class PageContentExtractorTest extends UnitTestCase
         $this->subTypeIndexer
             ->shouldReceive('updatePage')
             ->once()
-            ->with($this->entity, $pageNr, $content)
+            ->with($this->entity, $pageNr, "lorem ipsum tika\nlorem ipsum tesseract")
             ->andThrow($thrownException = new \RuntimeException('indexPage failed'));
 
         $this->statsService
@@ -182,13 +126,15 @@ final class PageContentExtractorTest extends UnitTestCase
                 return true;
             }));
 
+        $text = "lorem ipsum tika\nlorem ipsum tesseract";
         $collection = \Mockery::mock(ContentExtractCollection::class);
-        $collection->shouldReceive('getCombinedContent')->andReturn($content);
+        $collection->shouldReceive('getCombinedContent')->andReturn($text);
 
         $this->contentExtractService
             ->expects('getExtracts')
             ->with($this->entity, \Mockery::on(
                 static function (ContentExtractOptions $options) use ($pageNr): bool {
+                    self::assertFalse($options->hasRefresh());
                     self::assertCount(count(ContentExtractorKey::cases()), $options->getEnabledExtractors());
                     self::assertEquals($pageNr, $options->getPageNumber());
 
@@ -212,30 +158,6 @@ final class PageContentExtractorTest extends UnitTestCase
         $context = new PdfPageProcessingContext($this->entity, $pageNr, $workDir, $localDocument);
         $context->setLocalPageDocument('/baz_123.pdf');
 
-        $this->extractor->extract($context);
-    }
-
-    public function testHasCacheReturnsTrueForHit(): void
-    {
-        $pageNr = 123;
-
-        $cacheItem = \Mockery::mock(CacheItemInterface::class);
-        $cacheItem->shouldReceive('isHit')->andReturnTrue();
-
-        $this->cacheItemPool->expects('getItem')->with('foobar-' . $pageNr)->andReturn($cacheItem);
-
-        self::assertTrue($this->extractor->hasCache($this->entity, $pageNr));
-    }
-
-    public function testHasCacheReturnsFalseForMisse(): void
-    {
-        $pageNr = 123;
-
-        $cacheItem = \Mockery::mock(CacheItemInterface::class);
-        $cacheItem->shouldReceive('isHit')->andReturnFalse();
-
-        $this->cacheItemPool->expects('getItem')->with('foobar-' . $pageNr)->andReturn($cacheItem);
-
-        self::assertFalse($this->extractor->hasCache($this->entity, $pageNr));
+        $this->extractor->extract($context, false);
     }
 }

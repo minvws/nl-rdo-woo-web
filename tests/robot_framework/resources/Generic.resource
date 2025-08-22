@@ -36,14 +36,6 @@ Generic Download Click
     ...  ignore_case=${TRUE}
     ...  msg=Filename '${file_object}[suggestedFilename]' should contain the extension '.${expected_extension}'
   END
-  ${file_name} =  Rename Downloaded Object To Original File Name  ${file_object}
-  RETURN  ${file_name}
-
-Rename Downloaded Object To Original File Name
-  [Arguments]  ${file_object}
-  ${path}  ${_} =  Split Path  ${file_object}[saveAs]
-  Move File  source=${file_object}[saveAs]  destination=${path}/${file_object}[suggestedFilename]
-  RETURN  ${path}/${file_object}[suggestedFilename]
 
 Generic Download URL
   [Documentation]  Downloads a file through url, after which the download is verified if it's not 0 bytes.

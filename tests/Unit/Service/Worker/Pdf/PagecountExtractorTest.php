@@ -92,7 +92,7 @@ final class PagecountExtractorTest extends UnitTestCase
             $this->statsService,
         );
 
-        $extractor->extract($this->entity);
+        $extractor->extract($this->entity, forceRefresh: false);
 
         $this->assertSame($pdftkPageCountResult, $extractor->getOutput());
     }
@@ -137,7 +137,7 @@ final class PagecountExtractorTest extends UnitTestCase
             $this->statsService,
         );
 
-        $extractor->extract($this->entity);
+        $extractor->extract($this->entity, forceRefresh: false);
 
         $this->assertNull($extractor->getOutput());
     }
@@ -215,7 +215,7 @@ final class PagecountExtractorTest extends UnitTestCase
             $this->statsService,
         );
 
-        $extractor->extract($this->entity);
+        $extractor->extract($this->entity, forceRefresh: false);
 
         $this->assertSame($pdftkPageCountResult, $extractor->getOutput());
     }

@@ -23,7 +23,7 @@ class Inquiry
 
     public const int CASENUMBER_MIN_LENGTH = 1;
     public const int CASENUMBER_MAX_LENGTH = 255;
-    public const string CASENUMBER_REGEX = '/^[a-z0-9-]+$/i';
+    public const string CASENUMBER_REGEX = '/^[a-z0-9-.]+$/i';
 
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]

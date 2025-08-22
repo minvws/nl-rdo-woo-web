@@ -4,7 +4,7 @@
 
     <twig:Public:DownloadFilesForm
         action="{{ path('app_woodecision_batch', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) }}"
-        canDownload="{{ publicDocs.count > 0 }}"
+        canDownload="{{ dossier.counts.hasUploads and publicDocs.count > 0 }}"
         searchUrl="{{ dossier.documentSearchUrl }}"
     />
 

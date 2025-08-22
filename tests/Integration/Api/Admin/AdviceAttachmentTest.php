@@ -588,25 +588,4 @@ final class AdviceAttachmentTest extends ApiTestCase
             ],
         ];
     }
-
-    public function testVersionHeader(): void
-    {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
-
-        $dossier = AdviceFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
-
-        static::createClient()
-            ->loginUser($user, 'balie')
-            ->request(
-                Request::METHOD_GET,
-                sprintf('/balie/api/dossiers/%s/advice-attachments/%s', $dossier->getId(), Uuid::v6()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
-            );
-
-        self::assertResponseHeaderSame('API-Version', self::getContainer()->getParameter('api_platform.version'));
-    }
 }

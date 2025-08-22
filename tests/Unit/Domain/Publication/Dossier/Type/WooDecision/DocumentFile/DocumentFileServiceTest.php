@@ -13,7 +13,6 @@ use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\Document
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileSetRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUploadRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\TotalDocumentFileSizeValidator;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Domain\Upload\UploadedFile;
 use App\Service\Storage\EntityStorageService;
@@ -30,7 +29,6 @@ class DocumentFileServiceTest extends UnitTestCase
     private DocumentFileUploadRepository&MockInterface $documentFileUploadRepository;
     private WooDecision&MockInterface $wooDecision;
     private EntityStorageService&MockInterface $entityStorageService;
-    private TotalDocumentFileSizeValidator&MockInterface $totalDocumentFileSizeValidator;
     private DocumentFileService $service;
 
     public function setUp(): void
@@ -40,14 +38,12 @@ class DocumentFileServiceTest extends UnitTestCase
         $this->documentFileSetRepository = \Mockery::mock(DocumentFileSetRepository::class);
         $this->documentFileUploadRepository = \Mockery::mock(DocumentFileUploadRepository::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->totalDocumentFileSizeValidator = \Mockery::mock(TotalDocumentFileSizeValidator::class);
 
         $this->service = new DocumentFileService(
             $this->dispatcher,
             $this->documentFileSetRepository,
             $this->documentFileUploadRepository,
             $this->entityStorageService,
-            $this->totalDocumentFileSizeValidator,
         );
     }
 
@@ -355,7 +351,8 @@ class DocumentFileServiceTest extends UnitTestCase
             ->andReturn($documentFileSet);
 
         $documentFileSet
-            ->shouldReceive('getStatus')
+            ->expects('getStatus')
+            ->twice()
             ->andReturn(DocumentFileSetStatus::PROCESSING_UPLOADS);
 
         $this->expectException(DocumentFileSetException::class);
@@ -368,29 +365,8 @@ class DocumentFileServiceTest extends UnitTestCase
 
         $documentFileSet = \Mockery::mock(DocumentFileSet::class);
         $documentFileSet
-            ->shouldReceive('getStatus')
+            ->expects('getStatus')
             ->andReturn(DocumentFileSetStatus::NEEDS_CONFIRMATION);
-
-        $this->documentFileSetRepository
-            ->expects('findUncompletedByDossier')
-            ->with($this->wooDecision)
-            ->andReturn($documentFileSet);
-
-        $this->documentFileSetRepository
-            ->expects('updateStatusTransactionally')
-            ->with($documentFileSet, DocumentFileSetStatus::REJECTED);
-
-        $this->service->rejectUpdates($this->wooDecision);
-    }
-
-    public function testRejectUpdatesSuccessfullyForMaxSizeExceeded(): void
-    {
-        $this->wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
-
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
-        $documentFileSet
-            ->shouldReceive('getStatus')
-            ->andReturn(DocumentFileSetStatus::MAX_SIZE_EXCEEDED);
 
         $this->documentFileSetRepository
             ->expects('findUncompletedByDossier')
@@ -407,16 +383,6 @@ class DocumentFileServiceTest extends UnitTestCase
     #[DataProvider('getInvalidDossierStatusDataForRejectUpdates')]
     public function testRejectUpdatesThrowsExceptionForInvalidDossierStatus(DossierStatus $status): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
-        $documentFileSet
-            ->shouldReceive('getStatus')
-            ->andReturn(DocumentFileSetStatus::NEEDS_CONFIRMATION);
-
-        $this->documentFileSetRepository
-            ->expects('findUncompletedByDossier')
-            ->with($this->wooDecision)
-            ->andReturn($documentFileSet);
-
         $this->wooDecision->shouldReceive('getStatus')->andReturn($status);
         $this->wooDecision->shouldReceive('getId')->andReturn(Uuid::v6());
 
@@ -480,44 +446,7 @@ class DocumentFileServiceTest extends UnitTestCase
             ->with($this->wooDecision)
             ->andReturn($documentFileSet);
 
-        $this->totalDocumentFileSizeValidator
-            ->expects('exceedsMaxSizeWithUpdatesApplied')
-            ->with($documentFileSet)
-            ->andReturnFalse();
-
         $this->dispatcher->expects('dispatchProcessDocumentFileSetUpdatesCommand')->with($documentFileSet);
-
-        $this->service->checkProcessingUploadsCompletion($documentFileSet);
-    }
-
-    public function testCheckProcessingUploadsCompletionEnsuresTotalDocumentSizeIsNotExceeded(): void
-    {
-        $this->wooDecision
-            ->shouldReceive('getStatus')
-            ->andReturn(DossierStatus::CONCEPT);
-
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
-        $documentFileSet
-            ->shouldReceive('getDossier')
-            ->andReturn($this->wooDecision);
-
-        $this->documentFileSetRepository
-            ->expects('updateStatusTransactionally')
-            ->with($documentFileSet, DocumentFileSetStatus::MAX_SIZE_EXCEEDED);
-
-        $documentFileSet
-            ->shouldReceive('canConfirm')
-            ->andReturnTrue();
-
-        $this->documentFileSetRepository
-            ->expects('countUploadsToProcess')
-            ->with($documentFileSet)
-            ->andReturn(0);
-
-        $this->totalDocumentFileSizeValidator
-            ->expects('exceedsMaxSizeWithUpdatesApplied')
-            ->with($documentFileSet)
-            ->andReturnTrue();
 
         $this->service->checkProcessingUploadsCompletion($documentFileSet);
     }
@@ -541,11 +470,6 @@ class DocumentFileServiceTest extends UnitTestCase
         $this->documentFileSetRepository
             ->expects('updateStatusTransactionally')
             ->with($documentFileSet, DocumentFileSetStatus::NEEDS_CONFIRMATION);
-
-        $this->totalDocumentFileSizeValidator
-            ->expects('exceedsMaxSizeWithUpdatesApplied')
-            ->with($documentFileSet)
-            ->andReturnFalse();
 
         $this->service->checkProcessingUploadsCompletion($documentFileSet);
     }

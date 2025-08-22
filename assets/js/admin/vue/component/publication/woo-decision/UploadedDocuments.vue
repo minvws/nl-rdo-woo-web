@@ -17,14 +17,14 @@ const numberOfFiles = computed(() => props.files.length);
 
 <template>
   <div
-    class="bg-bhr-yellow-50 p-4 mb-4"
+    class="bg-bhr-cornsilk p-4 mb-4"
     v-if="numberOfFiles > 0"
     data-e2e-name="uploaded-files"
   >
     <h3 class="sr-only">Geüploade bestanden</h3>
 
     <ul
-      class="max-h-28 overflow-y-auto"
+      class="bg-bhr-cornsilk max-h-28 overflow-y-auto"
       :class="{
         'grid grid-cols-3 gap-x-4': numberOfFiles >= 3,
         'grid grid-cols-2 gap-x-4': numberOfFiles === 2,
@@ -43,7 +43,7 @@ const numberOfFiles = computed(() => props.files.length);
 
           <div>
             <Icon
-              color="fill-bhr-green-800"
+              color="fill-bhr-philippine-green"
               name="check-rounded-filled"
               :size="16"
             />

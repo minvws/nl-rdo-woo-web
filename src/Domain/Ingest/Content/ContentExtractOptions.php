@@ -9,6 +9,8 @@ use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 
 class ContentExtractOptions
 {
+    private bool $refresh = false;
+
     /**
      * @var array<array-key,ContentExtractorKey>
      */
@@ -21,6 +23,18 @@ class ContentExtractOptions
     public static function create(): self
     {
         return new self();
+    }
+
+    public function withRefresh(bool $refresh = true): self
+    {
+        $this->refresh = $refresh;
+
+        return $this;
+    }
+
+    public function hasRefresh(): bool
+    {
+        return $this->refresh;
     }
 
     public function withExtractor(ContentExtractorKey $key): self

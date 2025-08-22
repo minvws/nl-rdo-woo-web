@@ -559,7 +559,7 @@ const onBulletList = () => {
   @apply p-2 pl-4 text-lg;
 
   &:not(:empty) {
-    @apply border-l border-bhr-gray-500;
+    @apply border-l border-bhr-light-silver;
   }
 }
 </style>
