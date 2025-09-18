@@ -32,6 +32,20 @@ class DocumentFileSetException extends \RuntimeException
         ));
     }
 
+    public static function forCannotRejectUpdates(WooDecision|DocumentFileSet $entity): self
+    {
+        $message = match (true) {
+            $entity instanceof WooDecision => 'Cannot reject DocumentFileSet update because of invalid WooDecision status, id=%s, status=%s',
+            $entity instanceof DocumentFileSet => 'Cannot reject DocumentFileSet updates, id=%s, status=%s',
+        };
+
+        return new self(sprintf(
+            $message,
+            $entity->getId()->toRfc4122(),
+            $entity->getStatus()->value,
+        ));
+    }
+
     public static function forCannotUpdateStatus(DocumentFileSet $documentFileSet): self
     {
         return new self(sprintf(

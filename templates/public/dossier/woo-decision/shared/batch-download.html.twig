@@ -40,7 +40,7 @@
                     </tr>
                     <tr>
                         <th class="woo-table-cell-light" scope="row">{{ 'global.documents' | trans }}</th>
-                        <td>{{ batch.fileCount }}</td>
+                        <td>{{ batch.fileCount | format_number(locale=('lang' | trans)) }}</td>
                     </tr>
                     <tr>
                         <th class="woo-table-cell-light" scope="row">{{ "global.link" | trans }}</th>

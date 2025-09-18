@@ -9,6 +9,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use App\Tests\Factory\DocumentFactory;
+use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\InquiryFactory;
 use App\Tests\Factory\OrganisationFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
@@ -158,11 +159,15 @@ final class DocumentRepositoryTest extends KernelTestCase
     {
         DocumentFactory::createOne([
             'documentNr' => 'FOO-123',
-            'pageCount' => 100,
+            'fileInfo' => FileInfoFactory::createone([
+                'pageCount' => 100,
+            ]),
         ]);
         DocumentFactory::createOne([
             'documentNr' => 'FOO-456',
-            'pageCount' => 100,
+            'fileInfo' => FileInfoFactory::createone([
+                'pageCount' => 100,
+            ]),
         ]);
 
         self::assertEquals(200, $this->repository->pagecount());

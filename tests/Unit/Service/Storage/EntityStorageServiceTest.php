@@ -123,6 +123,7 @@ class EntityStorageServiceTest extends UnitTestCase
         $fileInfo->shouldReceive('getHash')->andReturn('old-hash');
         $fileInfo->shouldReceive('setHash')->with('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
         $fileInfo->shouldReceive('setUploaded')->with(true);
+        $fileInfo->shouldReceive('setPageCount')->with(null);
 
         $entity = \Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);

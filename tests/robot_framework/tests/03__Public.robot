@@ -53,7 +53,7 @@ Filter Options For Document Types
   ${result_count} =  Evaluate  ${result_count} - ${em_count}
   Compare Search Result Summary  ${result_count}  IGNORE
 
-Searching in dossier should only search in dossier
+Searching In Dossier Should Only Search In Dossier
   Select Filter Options - Dossier  woo-decision  documents=${False}  attachments=${False}  main_document=${FALSE}
   Click First Search Result With Documents
   ${number_of_documents} =  Get Text  //*[@data-e2e-name="dossier-document-count"]
@@ -66,7 +66,7 @@ Searching in dossier should only search in dossier
   Select Filter Options - Dossier  woo-decision  publications=${FALSE}
   Compare Search Result Summary  ${docs_in_dossier}  1
 
-Sorting on publication date
+Sorting On Publication Date
   [Documentation]  This test is functionally working, but the testdata is all published at the same date...
   Select Filter Options - Dossier  woo-decision  documents=${False}  attachments=${False}  main_document=${FALSE}
   Selecting Results Sorting  newest-first
@@ -74,7 +74,7 @@ Sorting on publication date
   Selecting Results Sorting  oldest-first
   Verify Search Results Sort Order  oldest-first
 
-Filter on dates
+Filter On Dates
   Select Filter Options - Dossier  woo-decision  publications=${FALSE}  documents=${TRUE}  attachments=${TRUE}
   ${today} =  Convert Date  date=${CURRENT_DATE}  result_format=%d-%m-%Y
   ${yesterday} =  Subtract Time From Date  date=${CURRENT_DATE}  time=1 day  result_format=%d-%m-%Y
@@ -86,14 +86,14 @@ Filter on dates
   Select Filter Options - Date  date_from=${tomorrow}  date_to=01-01-2030
   Verify Search Results Date Range  date_from=${tomorrow}  date_to=01-01-2030
 
-Clear all filters
+Clear All Filters
   Select Filter Options - Dossier  woo-decision
   Select Filter Options - Document Type  pdf
   Filter Pill Count Should Be  5
   Click Clear All Filters
   Filter Pill Count Should Be  0
 
-Start new search link when no search results
+Start New Search Link When No Search Results
   Search On Public For  36b832f7-045e-4b8f-b1eb-13e07381cc67  0
   Compare Search Result Summary  0  0
   Click Start A New Search

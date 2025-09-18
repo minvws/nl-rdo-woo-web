@@ -21,18 +21,26 @@ export default [
   eslintPluginPrettierRecommended,
   {
     rules: {
-      'max-len': ['error', 140, 2, {
-        ignoreUrls: true,
-        ignoreComments: false,
-        ignoreRegExpLiterals: true,
-        ignoreStrings: true,
-        ignoreTemplateLiterals: true,
-      }],
+      'max-len': [
+        'error',
+        140,
+        2,
+        {
+          ignoreUrls: true,
+          ignoreComments: false,
+          ignoreRegExpLiterals: true,
+          ignoreStrings: true,
+          ignoreTemplateLiterals: true,
+        },
+      ],
       'no-console': 'warn',
-      'no-param-reassign': ['error', {
-        props: true,
-        ignorePropertyModificationsForRegex: ['(E|e)lement$'],
-      }],
+      'no-param-reassign': [
+        'error',
+        {
+          props: true,
+          ignorePropertyModificationsForRegex: ['(E|e)lement$'],
+        },
+      ],
       quotes: ['error', 'single', { avoidEscape: true }],
       'vue/multi-word-component-names': 'off',
       'prettier/prettier': [
@@ -41,7 +49,7 @@ export default [
           singleQuote: true,
         },
       ],
-    }
+    },
   },
   // Override rules for test files
   {

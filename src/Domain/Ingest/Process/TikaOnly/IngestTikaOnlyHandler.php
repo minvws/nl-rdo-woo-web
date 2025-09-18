@@ -42,9 +42,7 @@ final readonly class IngestTikaOnlyHandler
 
         $extracts = $this->contentExtractService->getExtracts(
             $entity,
-            ContentExtractOptions::create()
-                ->withExtractor(ContentExtractorKey::TIKA)
-                ->withRefresh($message->getForceRefresh())
+            ContentExtractOptions::create()->withExtractor(ContentExtractorKey::TIKA),
         );
 
         try {

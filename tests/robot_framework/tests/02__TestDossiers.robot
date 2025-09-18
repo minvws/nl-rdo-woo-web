@@ -22,12 +22,12 @@ Test Tags           ci  testdossiers  public-init  sitemap-init
 
 *** Test Cases ***                                    type                  publication_status    has_attachment    decision
 Woo-besluit, Concept, Openbaarmaking                  woo-decision          Concept               ${FALSE}          Openbaarmaking
-Woo-besluit, Concept, Geen openbaarmaking             woo-decision          Concept               ${FALSE}          Geen openbaarmaking
+Woo-besluit, Concept, Geen Openbaarmaking             woo-decision          Concept               ${FALSE}          Geen openbaarmaking
 Woo-besluit, Gepubliceerd, Openbaarmaking             woo-decision          Gepubliceerd          ${FALSE}          Openbaarmaking
 Woo-besluit, Gepubliceerd, Openbaarmaking, Bijlage    woo-decision          Gepubliceerd          ${TRUE}           Openbaarmaking
-Woo-besluit, Gepubliceerd, Geen openbaarmaking        woo-decision          Gepubliceerd          ${FALSE}          Geen openbaarmaking
+Woo-besluit, Gepubliceerd, Geen Openbaarmaking        woo-decision          Gepubliceerd          ${FALSE}          Geen openbaarmaking
 Woo-besluit, Gepland, Openbaarmaking                  woo-decision          Gepland               ${FALSE}          Openbaarmaking
-Woo-besluit, Gepland, Geen openbaarmaking             woo-decision          Gepland               ${FALSE}          Geen openbaarmaking
+Woo-besluit, Gepland, Geen Openbaarmaking             woo-decision          Gepland               ${FALSE}          Geen openbaarmaking
 Convenant, Concept                                    covenant              Concept               ${FALSE}
 Convenant, Gepubliceerd                               covenant              Gepubliceerd          ${FALSE}
 Convenant, Gepubliceerd, Bijlage                      covenant              Gepubliceerd          ${TRUE}

@@ -11,51 +11,243 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  NODE_VERSION: 20
-  PHP_VERSION: 8.3
-  GH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }}
-
 jobs:
   migration_check:
     name: Check for missing migrations
-    if: ${{ github.event_name == 'pull_request' }}
+    if: github.event_name == 'pull_request'
     uses: minvws/nl-rdo-woo-web-private/.github/workflows/migration-check.yml@main
     secrets: inherit
 
-  audit:
-    name: Dependency Audit
+  setup-npm-cache:
+    name: Setup NPM cache
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  setup-composer-cache:
+    name: Setup Composer cache
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  audit-composer:
+    name: Dependency Audit Composer
+    runs-on: ubuntu-24.04
+    needs: [setup-composer-cache]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Security Check for composer
+        run: composer audit
+
+  audit-npm:
+    name: Dependency Audit NPM
+    runs-on: ubuntu-24.04
+    needs: [setup-npm-cache]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Audit check for NPM
+        run: npm audit
+
+  markdown:
+    name: Check Markdown files
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          registry-url: 'https://npm.pkg.github.com'
-      - name: 'Security Check: npm'
-        run: npm audit
-      - name: Install PHP
-        uses: shivammathur/setup-php@master
-        if: ${{ always() }}
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-      - name: 'Composer install'
-        if: ${{ always() }}
-        env:
-          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.REPO_READ_ONLY_TOKEN }}"}}'
-        run: composer install  --no-interaction --no-scripts --no-progress --prefer-dist --no-ansi --ignore-platform-reqs
-      - name: 'Security Check: composer'
-        if: ${{ always() }}
-        run: composer audit
+        uses: actions/checkout@v5
+      - name: Linting Markdown
+        uses: DavidAnson/markdownlint-cli2-action@v20
 
-  validate:
-    name: 'Build & validate'
+  reuse-compliance:
+    name: Check REUSE compliance
     runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Linting REUSE
+        uses: fsfe/reuse-action@v5
+
+  fe-linting:
+    name: Check front-end linting
+    runs-on: ubuntu-24.04
+    needs: [setup-npm-cache, audit-npm]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Linting JavaScript-files
+        run: npm run eslint:json
+      - name: Upload ESLint report
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-report
+          path: reports/eslint
+
+  fe-unit-tests:
+    name: Check front-end Unit tests
+    runs-on: ubuntu-24.04
+    needs: [setup-npm-cache, audit-npm]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Front-end Unit tests using Vitest
+        run: npm run test
+      - name: Upload Vitest coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-report
+          path: reports/vitest
+
+  be-linting-php-cs-fixer:
+    name: Check back-end PHP-CS-Fixer
+    runs-on: ubuntu-24.04
+    needs: [setup-composer-cache, audit-composer]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: PHP-CS-Fixer cache
+        uses: actions/cache@v4
+        with:
+          path: .php-cs-fixer.cache
+          key: php-cs-fixer-${{ hashFiles('.php-cs-fixer.dist.php',  'composer.lock') }}
+          restore-keys: php-cs-fixer-
+      - name: Linting using PHP CS Fixer
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
+
+  be-linting-codesniffer:
+    name: Check back-end CodeSniffer
+    runs-on: ubuntu-24.04
+    needs: [setup-composer-cache, audit-composer]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: CodeSniffer cache
+        uses: actions/cache@v4
+        with:
+          path: .phpcs-cache
+          key: codesniffer-${{ hashFiles('phpcs.xml.dist',  'composer.lock') }}
+          restore-keys: codesniffer-
+      - name: Linting using PHP CodeSniffer
+        run: vendor/bin/phpcs
+
+  be-linting-php-mess-detector:
+    name: Check back-end PHP Mess Detector
+    runs-on: ubuntu-24.04
+    needs: [setup-composer-cache, audit-composer]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: PHPMD cache
+        uses: actions/cache@v4
+        with:
+          path: .phpmd.result-cache.php
+          key: phpmd-${{ hashFiles('ruleset.phpmd.xml',  'composer.lock') }}
+          restore-keys: phpmd-
+      - name: Linting using PHP Mess Detector
+        run: vendor/bin/phpmd src/ text ruleset.phpmd.xml --cache
+
+  be-linting-twig:
+    name: Check back-end Twig template files
+    runs-on: ubuntu-24.04
+    needs: [setup-composer-cache, audit-composer]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Linting Twig
+        run: bin/console lint:twig templates
+
+  be-linting-yaml-translations:
+    name: Check YAML translation files
+    runs-on: ubuntu-24.04
+    needs: [setup-composer-cache, audit-composer]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Linting Translations
+        run: bin/console lint:yaml translations
+
+  be-static-code-analysis:
+    name: Check back-end Static Code Analysis
+    runs-on: ubuntu-24.04
+    needs: [setup-composer-cache, audit-composer]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: PHPStan cache
+        uses: actions/cache@v4
+        with:
+          path: .phpstan.cache
+          key: phpstan-${{ hashFiles('phpstan.dist.neon', 'phpstan-baseline.neon', 'composer.json', 'composer.lock') }}
+          restore-keys: phpstan-
+      - name: Static Code Analysis using PHPStan
+        run: vendor/bin/phpstan analyse --memory-limit=-1 --error-format=github -vvv
+      - name: Generate PHPStan analysis report
+        id: phpstan-report
+        if: always()
+        run: |
+          mkdir -p reports/phpstan
+          vendor/bin/phpstan analyse --memory-limit=-1 --error-format=json > reports/phpstan/phpstan.json
+      - name: Upload PHPStan analysis report
+        if: steps.phpstan-report.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpstan-report
+          path: reports/phpstan
+
+  be-migrations:
+    name: Check back-end migrations
+    runs-on: ubuntu-24.04
+    needs: [setup-composer-cache, audit-composer]
     services:
       postgres:
         image: postgres:14.10-bookworm
@@ -66,100 +258,121 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-      rabbitmq:
-        image: rabbitmq:3
-        ports:
-          - 5672:5672
-        options: --health-cmd "rabbitmqctl node_health_check" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Migrate Test DB
+        run: bin/console doctrine:schema:create --no-interaction --env=test
+
+  be-unit-tests:
+    name: Check back-end Unit tests
+    runs-on: ubuntu-24.04
+    needs: [setup-npm-cache, setup-composer-cache, audit-npm, audit-composer]
+    services:
+      postgres:
+        image: postgres:14.10-bookworm
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres_test
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-npm-build: true
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+        with:
+          coverage: pcov
+          extensions: zip, pgsql
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Back-end Unit tests using PHPUnit
+        run: php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit -d --without-creating-snapshots --log-junit=reports/phpunit/report-phpunit.xml --coverage-clover=reports/phpunit/coverage-phpunit.xml
+      - name: Upload PHPUnit coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpunit-report
+          path: reports/phpunit
+
+  sonarcloud:
+    name: Run SonarQube scanner
+    runs-on: ubuntu-24.04
+    needs:
+      - fe-unit-tests
+      - fe-linting
+      - be-static-code-analysis
+      - be-unit-tests
+    steps:
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          registry-url: 'https://npm.pkg.github.com'
-      - name: Install npm dependencies
-        run: npm ci --ignore-scripts
-      - name: 'Linting: javascript'
-        if: ${{ always() }}
+      - name: Create reports directories
         run: |
-          npm run jslint:json
-          sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace@g' reports/eslint.json
-      - name: 'Linting: Markdown'
-        uses: DavidAnson/markdownlint-cli2-action@v20
-        if: ${{ always() }}
-      - name: 'Linting: REUSE'
-        uses: fsfe/reuse-action@v5
-        if: ${{ always() }}
-      - name: 'Unit tests: front-end'
-        if: ${{ always() }}
-        run: npm test
-      - name: Install PHP
-        uses: shivammathur/setup-php@master
-        if: ${{ always() }}
+          mkdir -p reports/vitest
+          mkdir -p reports/eslint
+          mkdir -p reports/phpunit
+          mkdir -p reports/phpstan
+      - name: Download Vitest coverage report
+        uses: actions/download-artifact@v4
         with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: zip, pgsql, pcov
-      - name: 'Composer install'
-        if: ${{ always() }}
-        env:
-          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.REPO_READ_ONLY_TOKEN }}"}}'
-        run: composer install  --no-interaction --no-scripts --no-progress --prefer-dist --no-ansi
-      - name: Build npm
-        if: ${{ always() }}
-        run: npm run build
-      - name: 'Linting: PHP CodeSniffer'
-        if: ${{ always() }}
-        run: vendor/bin/phpcs
-      - name: 'Linting: PHP CS Fixer'
-        if: ${{ always() }}
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
-      - name: 'Linting: PHPmd'
-        if: ${{ always() }}
-        run: vendor/bin/phpmd src/ text ruleset.phpmd.xml
-      - name: Copy .env.ci to .env.local
-        if: ${{ always() }}
-        run: cp .env.ci .env.test.local
-      - name: 'Linting: Twig'
-        if: success()
-        run: bin/console lint:twig templates
-      - name: 'Linting: Translations'
-        if: success()
-        run: bin/console lint:yaml translations
-      - name: 'Static Code Analysis: PHPStan'
-        if: success()
-        run: |
-          set -eo pipefail
-          mkdir -p reports
-          vendor/bin/phpstan analyse --error-format=prettyJson | tee reports/phpstan.json
-      - name: Migrate Test DB
-        if: ${{ always() }}
-        run: bin/console doctrine:schema:create --no-interaction --env=test
-      - name: 'Unit tests: PHP'
-        if: ${{ always() }}
-        run: php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit -d --without-creating-snapshots --log-junit=reports/report-phpunit.xml --coverage-clover=reports/coverage-phpunit.xml
-      - name: Run SonarCloud scanner
-        uses: minvws/nl-irealisatie-generic-pipelines/.github/actions/sonarcloud@main
+          name: vitest-report
+          path: reports/vitest
+      - name: Download ESLint report
+        uses: actions/download-artifact@v4
+        with:
+          name: eslint-report
+          path: reports/eslint
+      - name: Download PHPUnit coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: phpunit-report
+          path: reports/phpunit
+      - name: Download PHPStan analysis report
+        uses: actions/download-artifact@v4
+        with:
+          name: phpstan-report
+          path: reports/phpstan
+      - name: Run SonarQube scan
+        uses: minvws/action-sonarqube@v1
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
 
-  test:
-    name: 'Test full suite'
+  e2e-tests:
+    name: Test full suite
     if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || github.event_name == 'pull_request' }}
-    uses: minvws/nl-rdo-woo-web-private/.github/workflows/e2e-ci.yml@release/v1.16.1
+    uses: minvws/nl-rdo-woo-web-private/.github/workflows/e2e-ci.yml@main
     secrets: inherit
     with:
-      test_tag: 'ci'
+      test_tag: ci
 
   package:
     name: Package
     needs:
-      - validate
-      - test
+      - audit-composer
+      - audit-npm
+      - markdown
+      - reuse-compliance
+      - fe-linting
+      - fe-unit-tests
+      - be-linting-php-cs-fixer
+      - be-linting-codesniffer
+      - be-linting-php-mess-detector
+      - be-linting-twig
+      - be-linting-yaml-translations
+      - be-static-code-analysis
+      - be-migrations
+      - be-unit-tests
+      - e2e-tests
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     uses: minvws/nl-rdo-woo-web-private/.github/workflows/package.yml@main
     secrets: inherit

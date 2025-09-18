@@ -1,0 +1,56 @@
+-
+    new: false
+    concept: true
+    scheduled: false
+    preview: false
+    published: false
+    newOrConcept: true
+    conceptOrScheduled: true
+    publiclyAvailable: false
+    publiclyAvailableOrScheduled: false
+    deleted: false
+    notDeleted: true
+    name: CONCEPT
+    value: concept
+-
+    new: false
+    concept: false
+    scheduled: true
+    preview: false
+    published: false
+    newOrConcept: false
+    conceptOrScheduled: true
+    publiclyAvailable: false
+    publiclyAvailableOrScheduled: true
+    deleted: false
+    notDeleted: true
+    name: SCHEDULED
+    value: scheduled
+-
+    new: false
+    concept: false
+    scheduled: false
+    preview: true
+    published: false
+    newOrConcept: false
+    conceptOrScheduled: false
+    publiclyAvailable: true
+    publiclyAvailableOrScheduled: true
+    deleted: false
+    notDeleted: true
+    name: PREVIEW
+    value: preview
+-
+    new: false
+    concept: false
+    scheduled: false
+    preview: false
+    published: true
+    newOrConcept: false
+    conceptOrScheduled: false
+    publiclyAvailable: true
+    publiclyAvailableOrScheduled: true
+    deleted: false
+    notDeleted: true
+    name: PUBLISHED
+    value: published

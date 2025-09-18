@@ -99,7 +99,7 @@
         <div class="flex gap-4">
             {% for item in field_set_fields|split(' ') %}
             <div>
-                {{- form_label(form.parent.children[item], null, { label_attr: { displayIsOptional: false }, label_class: 'block text-bhr-dim-gray text-lg mb-1' }) -}}
+                {{- form_label(form.parent.children[item], null, { label_attr: { displayIsOptional: false }, label_class: 'block text-bhr-gray-700 text-lg mb-1' }) -}}
                 {{- form_help(form.parent.children[item]) -}}
                 {{- form_errors(form.parent.children[item]) -}}
                 {{- form_widget(form.parent.children[item], widget_attr) -}}

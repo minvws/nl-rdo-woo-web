@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [
     vuePlugin(),
     symfonyPlugin({
-      stimulus: './assets/js/admin/vue/controllers.json',
+      stimulus: './assets/js/shared/vue-controllers.json',
     }),
   ],
 
@@ -16,6 +16,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         admin: './assets/js/admin/index.ts',
+        api: './assets/js/api/index.ts',
         public: './assets/js/public/index.ts',
         'worker-charts': './assets/js/misc/charts.js',
       },

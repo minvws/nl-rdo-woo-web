@@ -1,6 +1,6 @@
 FROM minio/mc:RELEASE.2025-02-15T10-36-16Z AS mc
 
-FROM php:8.3.23-apache-bookworm
+FROM php:8.3.25-apache-bookworm
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -102,7 +102,7 @@ RUN groupadd --gid "$USER_GID" "$USER" \
         /etc/fixuid \
         "/home/$USER/.composer" \
         "/home/$USER/.npm" \
-        "/home/$USER/.symfony5" \
+        "/home/$USER/.symfony5/log" \
         "/home/$USER/.mc" \
     && chown -R "$USER_UID":"$USER_GID" \
         "/home/$USER/.composer" \

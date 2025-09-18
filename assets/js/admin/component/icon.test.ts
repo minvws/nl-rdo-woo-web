@@ -19,7 +19,7 @@ describe('the "icon" function', () => {
     expect(icon({ ...properties })).toBe('mocked-icon-component');
     expect(iconFunctionality.icon).toHaveBeenCalledWith({
       ...properties,
-      color: 'fill-bhr-dim-gray',
+      color: 'fill-bhr-gray-700',
       filePath,
     });
   });

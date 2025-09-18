@@ -44,7 +44,7 @@ const defaultFileInfo = computed(() => {
       </span>
       <span class="bhr-file__info-area">
         <span
-          class="bhr-file__file-name group-hover:text-bhr-sea-blue group-focus:text-bhr-sea-blue break-all"
+          class="bhr-file__file-name group-hover:text-bhr-blue-800 group-focus:text-bhr-blue-800 break-all"
         >
           {{ props.fileName }}
         </span>

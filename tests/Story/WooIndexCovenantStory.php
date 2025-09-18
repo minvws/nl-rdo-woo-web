@@ -18,7 +18,7 @@ final class WooIndexCovenantStory extends Story
 {
     private readonly UuidV1 $v1Seed;
 
-    private int $_uuid_increment = 1;
+    private int $uuidIncrement = 1;
 
     public function __construct()
     {
@@ -69,7 +69,7 @@ final class WooIndexCovenantStory extends Story
 
     private function getUniqueUuid(): UuidV6
     {
-        $date = CarbonImmutable::create(year: 2023, month: 3, day: $this->_uuid_increment++, hour: 13, minute: 37, second: 42);
+        $date = CarbonImmutable::create(year: 2023, month: 3, day: $this->uuidIncrement++, hour: 13, minute: 37, second: 42);
 
         return new UuidV6(UuidV6::generate($date, $this->v1Seed));
     }

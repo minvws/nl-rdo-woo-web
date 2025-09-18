@@ -5,7 +5,7 @@ api_platform:
     formats:
         json: ['application/json']
     error_formats:
-        json: ['application/json']
+        jsonproblem: ["application/problem+json"]
     docs_formats:
         json: ['application/json']
         jsonopenapi: ['application/vnd.openapi+json']
@@ -19,16 +19,16 @@ api_platform:
         Doctrine\ORM\NoResultException: 404
     resource_class_directories:
       - '%kernel.project_dir%/src/Api'
+    enable_docs: true
     enable_entrypoint: false
-    enable_swagger: false
+    enable_swagger: true
     enable_swagger_ui: false
-    enable_docs: false
     enable_re_doc: false
+    asset_package: api_platform
+    use_symfony_listeners: true
 
 when@dev:
     api_platform:
-        enable_entrypoint: true
         enable_swagger: true
         enable_swagger_ui: true
         enable_docs: true
-        enable_re_doc: true

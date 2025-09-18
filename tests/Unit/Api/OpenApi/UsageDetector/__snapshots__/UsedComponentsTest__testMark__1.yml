@@ -1,0 +1,18 @@
+schemas:
+    FoobarSchema: true
+    TestSchema: true
+responses:
+    FoobarSchema: true
+parameters:
+    TestParameter: true
+    Nested: true
+examples:
+    FoobarExample: true
+    TestExample: true
+requestBodies: {  }
+headers: {  }
+securitySchemes: {  }
+links: {  }
+callbacks: {  }
+pathItems: {  }
+extensionProperties: {  }

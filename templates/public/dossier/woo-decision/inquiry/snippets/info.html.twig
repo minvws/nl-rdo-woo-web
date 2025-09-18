@@ -1,3 +1,5 @@
+{% import 'public/macros/document.html.twig' as macro %}
+
 <div class="bg-woo-anti-flash-white p-6">
     <div class="woo-readable-width" data-e2e-name="inquiry-info">
     {% if dossiers.count > 0 %}
@@ -15,10 +17,16 @@
         {% if hasListItems %}
         <ul class="woo-ul">
             {% if documentCount.public > 0 %}
-                <li class="woo-li">{{ "public.inquiries.documents_made_public" | trans({ 'count': documentCount.public }) }}</li>
+                <li class="woo-li">
+                    {{ "public.inquiries.documents_made_public" | trans({ 'count': documentCount.public }) }}
+                    {{ macro.withdrawn_and_suspended_count(documentCount.public_withdrawn, documentCount.public_suspended) }}
+                </li>
             {% endif %}
             {% if documentCount.partial_public > 0 %}
-                <li class="woo-li">{{ "public.inquiries.documents_made_partially_public" | trans({ 'count': documentCount.partial_public}) }}</li>
+                <li class="woo-li">
+                    {{ "public.inquiries.documents_made_partially_public" | trans({ 'count': documentCount.partial_public}) }}
+                    {{ macro.withdrawn_and_suspended_count(documentCount.partial_public_withdrawn, documentCount.partial_public_suspended) }}
+                </li>
             {% endif %}
             {% if documentCount.already_public > 0 %}
                 <li class="woo-li">{{ "public.inquiries.documents_were_already_public" | trans({ 'count': documentCount.already_public}) }}</li>
@@ -34,7 +42,7 @@
                 <a class="woo-a" href="{{ searchAllUrl }}">{{ 'global.search_through_all' | trans }}</a>
             </li>
             <li>
-                <a class="woo-a" href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}">{{ 'public.inquiries.download_inventory' | trans({'{casenumber}': inquiry.casenr}) }}</a>
+                <a class="woo-a" href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}" data-e2e-name="download-inventory">{{ 'public.inquiries.download_inventory' | trans({'{casenumber}': inquiry.casenr}) }}</a>
             </li>
         </ul>
     {% else %}

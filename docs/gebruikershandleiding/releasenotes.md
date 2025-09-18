@@ -2,6 +2,31 @@
 
 # Release notes
 
+## v1.17.0
+
+*18 augustus 2025*
+
+### Balie
+
+**Vernieuwd design voor badges**
+
+De visuele stijl van badges (labels) in de balie is vernieuwd en in lijn gebracht met ons design system. Dit zorgt voor een consistentere en modernere gebruikerservaring.
+
+**Vernieuwd design voor notificaties**
+
+Ook de notificaties in de balie zijn geüpdatet volgens het nieuwe design. Hierdoor zijn meldingen duidelijker zichtbaar en beter leesbaar voor gebruikers.
+
+### Website
+
+**Aantallen opgeschorte documenten zichtbaar bij besluitinformatie**
+
+Bij elk Woo-besluit wordt nu expliciet weergegeven hoeveel (deels) openbare documenten opgeschort zijn. Dit geeft bezoekers beter inzicht in het verschil tussen het aantal openbaar gemaakte documenten en wat daadwerkelijk gedownload kan worden.
+
+**Aantallen ingetrokken en opgeschorte documenten op zaakpagina's**
+
+Op de individuele zaakpagina's worden nu afzonderlijk weergegeven hoeveel documenten zijn ingetrokken en hoeveel zijn opgeschort.
+Deze aantallen verschijnen als aparte regels in het grijze informatieblok, mits er sprake is van minimaal één ingetrokken of opgeschort document.
+
 ## v1.16.1
 
 *22 augustus 2025*

@@ -5,34 +5,36 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Domain\Content\Page\ContentPage;
-use App\Service\Security\User;
+use App\Service\Security\Roles;
+use App\Service\Security\UserRouteHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class IndexController extends AbstractController
 {
+    public function __construct(
+        private readonly UserRouteHelper $userRouteHelper,
+    ) {
+    }
+
     #[Route('/balie', name: 'app_admin_index', methods: ['GET'])]
     public function index(): Response
     {
-        return $this->redirectToRoute('app_admin_dossiers');
+        return $this->redirectToRoute($this->userRouteHelper->getDefaultIndexRouteName());
     }
 
     #[Route('/balie/admin', name: 'app_admin', methods: ['GET'])]
+    #[IsGranted(Roles::ROLE_SUPER_ADMIN)]
     public function admin(Breadcrumbs $breadcrumbs): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-        if (! $user->hasRole('ROLE_SUPER_ADMIN')) {
-            return $this->redirectToRoute('app_admin_dossiers');
-        }
-
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem('global.admin');
 
-        return $this->render('admin/index.html.twig', []);
+        return $this->render('admin/index.html.twig');
     }
 
     public function contentPage(

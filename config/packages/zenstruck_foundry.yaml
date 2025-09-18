@@ -7,5 +7,8 @@ when@dev: &dev
             service: 'Faker\Generator'
         global_state:
             - App\Tests\Story\DepartmentStory
+        persistence:
+            # Flush only once per call of `PersistentObjectFactory::create()`
+            flush_once: true
 
 when@test: *dev

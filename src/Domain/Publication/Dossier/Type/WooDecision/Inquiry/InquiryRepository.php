@@ -138,8 +138,20 @@ class InquiryRepository extends ServiceEntityRepository
 
         foreach (Judgement::cases() as $judgement) {
             $queryBuilder
-                ->addSelect('SUM(CASE WHEN doc.judgement = :' . $judgement->value . ' THEN 1 ELSE 0 END) as ' . $judgement->value)
+                ->addSelect('SUM('
+                    . 'CASE WHEN doc.judgement = :' . $judgement->value . ' THEN 1 ELSE 0 END'
+                    . ') as ' . $judgement->value)
                 ->setParameter($judgement->value, $judgement->value);
+
+            if ($judgement->isAtLeastPartialPublic()) {
+                $queryBuilder
+                    ->addSelect('SUM('
+                        . 'CASE WHEN doc.judgement = :' . $judgement->value . ' AND doc.withdrawn=true  THEN 1 ELSE 0 END'
+                        . ') as ' . $judgement->value . '_withdrawn')
+                    ->addSelect('SUM('
+                        . ' CASE WHEN doc.judgement = :' . $judgement->value . ' AND doc.suspended=true THEN 1 ELSE 0 END'
+                        . ') as ' . $judgement->value . '_suspended');
+            }
         }
 
         /** @var array<string, int> */

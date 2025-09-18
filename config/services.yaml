@@ -21,6 +21,10 @@ services:
         bind:
             Psr\Log\LoggerInterface $logger: '@App\Service\Logging\EnrichedPsrLogger'
 
+    App\Service\Security\ApplicationMode\ApplicationMode:
+        factory: ['App\Service\Security\ApplicationMode\ApplicationMode', 'fromEnvVar']
+        arguments: [ '%env(APP_MODE)%' ]
+
     App\Domain\Search\Index\Rollover\MappingService:
         arguments:
             $rootDir: '%kernel.project_dir%'
@@ -88,6 +92,10 @@ services:
         arguments:
             $defaultLocale: '%kernel.default_locale%'
             $allowedLocales: '%available_locales%'
+
+    App\EventSubscriber\ApiVersionHeaderSubscriber:
+        arguments:
+            $apiVersion: '%api_platform.version%'
 
     App\Service\Totp:
         arguments:
@@ -174,6 +182,14 @@ services:
     League\MimeTypeDetection\FinfoMimeTypeDetector:
         arguments:
             $bufferSampleSize: !php/const App\Domain\Upload\FileType\MimeTypeHelper::SAMPLE_SIZE
+
+    App\Api\OpenApi\TaggingResourceMetadataCollectionFactory:
+        decorates: api_platform.metadata.resource.metadata_collection_factory
+        arguments: ['@.inner']
+
+    App\Api\OpenApi\GroupedOpenApiFactory:
+        decorates: api_platform.openapi.factory
+        arguments: ['@.inner']
 
 when@dev:
     services: &services_dev

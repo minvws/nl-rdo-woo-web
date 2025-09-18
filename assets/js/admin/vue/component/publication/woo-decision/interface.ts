@@ -5,6 +5,7 @@ export enum UploadStatus {
   ProcessingUploads = 'processing_uploads',
   NeedsConfirmation = 'needs_confirmation',
   Confirmed = 'confirmed',
+  MaxSizeExceeded = 'max_size_exceeded',
   Rejected = 'rejected',
   ProcessingUpdates = 'processing_updates',
   Completed = 'completed',

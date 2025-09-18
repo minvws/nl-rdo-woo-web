@@ -37,7 +37,7 @@
         "martin-georgiev/postgresql-for-doctrine": "^3.0",
         "mhujer/breadcrumbs-bundle": "^1.5",
         "minvws/audit-logger": "^0.4.0",
-        "minvws/audit-logger-bundle": "0.5.1-rc.1",
+        "minvws/audit-logger-bundle": "^0.5.3",
         "minvws/horsebattery": "^1.1",
         "minvws/icore-php-typearray": "^0.0.6",
         "nesbot/carbon": "^3.7",
@@ -46,7 +46,7 @@
         "pentatrion/vite-bundle": "^8.0",
         "php-amqplib/rabbitmq-bundle": "^2.11",
         "phpdocumentor/reflection-docblock": "^5.3",
-        "phpoffice/phpspreadsheet": "^4.0.0",
+        "phpoffice/phpspreadsheet": "^5.0.0",
         "predis/predis": "^2.2",
         "presta/sitemap-bundle": "^4.0.0",
         "psr/http-message": "^2.0",
@@ -169,6 +169,7 @@
         "checktype": "XDEBUG_MODE=off phpstan analyse --memory-limit=-1",
         "update-type-baseline": "XDEBUG_MODE=off phpstan --generate-baseline",
         "md": "XDEBUG_MODE=off phpmd src/ ansi ruleset.phpmd.xml",
+        "md:xml": "XDEBUG_MODE=off phpmd src/ xml ruleset.phpmd.xml --cache",
         "checktranslations": "XDEBUG_MODE=off bin/console lint:yaml translations",
         "checktemplates": [
             "XDEBUG_MODE=off APP_DEBUG=false APP_ENV=prod php bin/console cache:clear",
@@ -218,12 +219,6 @@
         "symfony": {
             "allow-contrib": false,
             "require": "6.4.*"
-        }
-    },
-    "repositories": {
-        "minvws/audit-logger-bundle": {
-            "type": "vcs",
-            "url": "git@github.com:minvws/nl-rdo-php-audit-logger-bundle.git"
         }
     },
     "require-dev": {

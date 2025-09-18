@@ -28,7 +28,7 @@
     </dl>
 
     {% if dossier.responsibilityContent is not null %}
-    <div class="pt-10">
+    <div class="pt-10" data-e2e-name="responsible">
         <twig:Public:Notification>
             <div class="woo-rich-text">
                 {{ dossier.responsibilityContent | render_markdown }}

@@ -12,14 +12,6 @@ body:
     attributes:
       label: "New version WOO-WEB on PROD:"
       placeholder: v1.12.0
-  - type: input
-    attributes:
-      label: "Current version WOO_DB on PROD:"
-      placeholder: v0.1.64
-  - type: input
-    attributes:
-      label: "New version WOO_DB on PROD:"
-      placeholder: v0.1.65
   - type: checkboxes
     attributes:
       label: ElasticSearch rollover required?
@@ -90,4 +82,4 @@ body:
       label: Approval Lead QA
       description: The procedure to request a production release is described in [Release-proces.md](https://github.com/minvws/nl-rdo-quality-coordination/blob/main/Kwaliteitsmanagement/Kwaliteitsaanpak/Release%20proces/Release-proces.md)
       options:
-        - label: '*Approval QA Lead*, the QA Lead will check this release checklist and the test report and move the request for installation to Operations.'
+        - label: '*Approval QA Lead*, the QA Lead will check this release checklist and the test report and add a screenshot of this checklist to the Zammad ticket and move the request for installation to Operations.'

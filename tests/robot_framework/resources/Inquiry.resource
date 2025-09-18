@@ -12,6 +12,7 @@ Click Inquiries
 
 Open Inquiry
   [Arguments]  ${inquiry_id}
+  Wait For Load State  networkidle
   Click With Reload Retry  //*[@data-e2e-name="inquiry-list"]//a[contains(.,'${inquiry_id}')]
 
 Verify Inquiry Dossiers

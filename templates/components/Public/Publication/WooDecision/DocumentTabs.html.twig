@@ -14,7 +14,7 @@
 
 {% set tabButtonTitles = [] %}
 {% for publicationType in publicationTypes %}
-    {% set tabButtonTitles = tabButtonTitles|merge([publicationType ~ ' (' ~ tabPaginators[loop.index0] | length ~ ')']) %}
+    {% set tabButtonTitles = tabButtonTitles|merge([publicationType ~ ' (' ~ tabPaginators[loop.index0].totalItemCount ~ ')']) %}
 {% endfor %}
 
 {% set tabsName = 'documenten' %}

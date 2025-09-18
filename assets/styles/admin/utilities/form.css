@@ -17,7 +17,7 @@
 
 @utility bhr-input-text {
   @apply border
-            border-bhr-dim-gray
+            border-bhr-gray-700
             leading-none
             p-3
             text-lg
@@ -25,7 +25,7 @@
             transition-opacity
             w-full
 
-            placeholder:text-bhr-dim-gray;
+            placeholder:text-bhr-gray-700;
 }
 
 @utility bhr-input-text--disabled {
@@ -33,7 +33,7 @@
 }
 
 @utility bhr-input-text--invalid {
-  @apply border-2 border-bhr-maximum-red;
+  @apply border-2 border-bhr-red-900;
 }
 
 @utility bhr-input-text--with-icon-after {
@@ -46,13 +46,13 @@
 
 @utility bhr-select {
   &::after {
-    @apply bg-bhr-dim-gray content-[''] pointer-events-none absolute -ml-8 mt-3 w-6 h-6;
+    @apply bg-bhr-gray-700 content-[''] pointer-events-none absolute -ml-8 mt-3 w-6 h-6;
     mask-image: url(@img/admin/chevron-down.svg);
   }
 }
 
 @utility bhr-select__select {
-  @apply appearance-none bhr-input-text w-auto pr-8 placeholder:text-bhr-dim-gray bg-white;
+  @apply appearance-none bhr-input-text w-auto pr-8 placeholder:text-bhr-gray-700 bg-white;
 }
 
 @utility bhr-select__select--invalid {
@@ -78,7 +78,7 @@
 
 @utility bhr-choice-input {
   /* radio or checkbox input */
-  @apply border border-bhr-dim-gray h-4 w-4 mr-2 mt-px;
+  @apply border border-bhr-gray-700 h-4 w-4 mr-2 mt-px;
 }
 
 @utility bhr-input-icon {
@@ -90,7 +90,7 @@
 }
 
 @utility bhr-value {
-  @apply bg-bhr-anti-flash-white inline-block min-w-[66%] py-4 px-6 print:py-2 print:px-3 print:bg-none print:border-2;
+  @apply bg-bhr-gray-100 inline-block min-w-[66%] py-4 px-6 print:py-2 print:px-3 print:bg-none print:border-2;
 }
 
 @utility bhr-form-row {
@@ -98,11 +98,11 @@
 }
 
 @utility bhr-form-row--invalid {
-  @apply border-l-2 border-bhr-maximum-red pl-4;
+  @apply border-l-2 border-bhr-red-900 pl-4;
 }
 
 @utility bhr-form-help {
-  @apply text-bhr-dim-gray;
+  @apply text-bhr-gray-700;
 }
 
 @utility bhr-form-help__do {

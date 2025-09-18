@@ -16,6 +16,7 @@ interface Props {
   uploadEndpoint: string;
   nextStepUrl: string;
   continueLaterUrl: string;
+  maxCombinedFileSize: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -52,11 +53,15 @@ const onComplete = () => {
     :process-endpoint="props.processEndpoint"
     :status-endpoint="props.statusEndpoint"
     :upload-endpoint="props.uploadEndpoint"
+    :max-combined-file-size="props.maxCombinedFileSize"
   />
 
   <Alert v-if="isComplete" type="success" data-e2e-name="upload-completed">
-    <strong>Uploaden gelukt:</strong> Alle documenten uit het productierapport
-    zijn geüpload.
+    <h2 class="font-semibold">Uploaden gelukt</h2>
+
+    <template #extra>
+      <p>Alle documenten uit het productierapport zijn geüpload.</p>
+    </template>
   </Alert>
 
   <div class="mt-4">

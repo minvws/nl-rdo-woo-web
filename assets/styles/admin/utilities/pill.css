@@ -1,5 +1,5 @@
 @utility bhr-pill {
-  @apply bg-bhr-anti-flash-white inline-block py-1 px-3 rounded-2xl relative;
+  @apply bg-bhr-gray-100 inline-block py-1 px-3 rounded-2xl relative;
 }
 
 @utility bhr-pill--with-icon {

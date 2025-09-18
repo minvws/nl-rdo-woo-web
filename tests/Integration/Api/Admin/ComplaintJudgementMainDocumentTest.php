@@ -30,6 +30,7 @@ use Symfony\Component\Validator\Constraints\Choice;
 final class ComplaintJudgementMainDocumentTest extends ApiTestCase
 {
     use IntegrationTestTrait;
+
     protected static ?bool $alwaysBootKernel = false;
 
     private UploadHandlerInterface&MockInterface $uploadHandler;

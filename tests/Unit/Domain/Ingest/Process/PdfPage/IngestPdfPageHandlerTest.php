@@ -38,7 +38,6 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
         $message = new IngestPdfPageCommand(
             Uuid::v6(),
             $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
-            $forceRefresh = false,
             $pageNr = 101,
         );
 
@@ -48,7 +47,7 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
 
-        $this->processor->shouldReceive('processPage')->once()->with($entity, $pageNr, $forceRefresh);
+        $this->processor->shouldReceive('processPage')->once()->with($entity, $pageNr);
 
         $handler = new IngestPdfPageHandler($this->processor, $this->doctrine, $this->logger);
         $handler->__invoke($message);
@@ -59,7 +58,6 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
         $message = new IngestPdfPageCommand(
             Uuid::v6(),
             $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
-            $forceRefresh = true,
             $pageNr = 101,
         );
 
@@ -69,7 +67,7 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
 
-        $this->processor->shouldReceive('processPage')->once()->with($entity, $pageNr, $forceRefresh);
+        $this->processor->shouldReceive('processPage')->once()->with($entity, $pageNr);
 
         $handler = new IngestPdfPageHandler($this->processor, $this->doctrine, $this->logger);
         $handler->__invoke($message);
@@ -80,7 +78,6 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
         $message = new IngestPdfPageCommand(
             $id = Uuid::v6(),
             $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
-            false,
             $pageNr = 101,
         );
 
@@ -103,7 +100,6 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
         $message = new IngestPdfPageCommand(
             $id = Uuid::v6(),
             $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
-            false,
             $pageNr = 101,
         );
 

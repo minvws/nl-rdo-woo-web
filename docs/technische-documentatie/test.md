@@ -43,6 +43,7 @@ Make sure WOO is running locally. Read the [development_install](development_ins
 - Download and install pip <https://pypi.org/project/pip/>
 - Download and install npm
 - Download and install zbar
+- Download and install uv
 
 ## Step 2: Install Robot Framework
 
@@ -72,7 +73,7 @@ Note that you have to restart your shell for any following `task rf:test` calls,
 If you ever need an OTP code to login manually, use the following testcase:
 
 ```shell
-task rf:run-local tag=otp
+task rf:otp
 ```
 
 ## Step 4: Run tests locally
@@ -134,5 +135,5 @@ task rf:run-acc tag=pr
 ## Dependency management
 
 The dependencies for Robot Framework in this project are managed using a `requirements.in` and `requirements.txt` file.
-To add dependencies, add them to the `requirements.in` file and run `dependency:export`, which will generate/update the `requirements.txt`.
+To add dependencies, add them to the `requirements.in` file and run `dependency:upgrade`, which will generate/update the `requirements.txt`.
 Installation of the necessary dependencies is handled through the commands mentioned above.

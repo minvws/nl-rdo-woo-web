@@ -1,3 +1,3 @@
 @utility bhr-clickable-row {
-  @apply cursor-pointer bg-white hover:bg-bhr-lavender-web focus-within:bg-bhr-lavender-web transition-colors;
+  @apply cursor-pointer bg-white hover:bg-bhr-blue-100 focus-within:bg-bhr-blue-100 transition-colors;
 }

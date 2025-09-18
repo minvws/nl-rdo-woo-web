@@ -1,0 +1,36 @@
+name: Setup node
+
+inputs:
+  # Note: All inputs are cast to string. Even default values of type bool or int etc.
+  node-version:
+    description: The node version
+    type: string
+    default: "20"
+  github-token:
+    description: Add a Github Token which will be used for fetching node and npm packages
+    type: string
+  run-npm-build:
+    description: Run npm build script
+    type: bool
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup node
+      uses: actions/setup-node@v4
+      id: setup-node
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+        registry-url: https://npm.pkg.github.com
+        token: ${{ inputs.github-token }}
+
+    - name: Install npm dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Run npm build
+      if: ${{ inputs.run-npm-build == 'true' }}
+      shell: bash
+      run: npm run build

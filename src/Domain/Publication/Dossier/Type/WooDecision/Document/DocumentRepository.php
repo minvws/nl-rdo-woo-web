@@ -90,7 +90,7 @@ class DocumentRepository extends ServiceEntityRepository
     public function pagecount(): int
     {
         $result = $this->createqueryBuilder('d')
-            ->select('sum(d.pageCount)')
+            ->select('sum(d.fileInfo.pageCount)')
             ->getQuery()
             ->getSingleScalarResult();
 
@@ -304,7 +304,7 @@ class DocumentRepository extends ServiceEntityRepository
                     doc.fileInfo.sourceType,
                     doc.fileInfo.uploaded,
                     doc.fileInfo.size,
-                    doc.pageCount,
+                    doc.fileInfo.pageCount,
                     doc.judgement,
                     doc.documentDate
                 )',

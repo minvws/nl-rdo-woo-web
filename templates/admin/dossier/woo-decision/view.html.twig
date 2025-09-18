@@ -10,7 +10,7 @@
 <div class="bhr-container bhr-container--sm">
     <div class="mb-8">
         <h1 class="mb-2">
-            <span class="block text-lg font-normal mb-2 text-bhr-black-olive">{{ 'admin.global.decision_on' | trans() }}</span>
+            <span class="block text-lg font-normal mb-2 text-bhr-gray-800">{{ 'admin.global.decision_on' | trans() }}</span>
             <span class="bhr-title-lg">{{ dossier.title }}</span>
         </h1>
         <span data-e2e-name="dossier-status"><twig:Admin:DossierStatusBadge status="{{ dossier.status }}" /></span>
@@ -18,8 +18,12 @@
 
     {% if notifications.hasAnyDocumentNotifications %}
         <div class="mb-4" data-e2e-name="has-document-notifications">
-            <twig:Admin:Alert type="danger">
-                {{ 'admin.dossiers.documents.needs_work' | trans | raw }}
+            <twig:Admin:Alert type="warning">
+                <strong>{{ 'admin.dossiers.documents.needs_work.title' | trans }}</strong>
+
+                <twig:block name="extra">
+                    {{ 'admin.dossiers.documents.needs_work.text' | trans | raw }}
+                </twig:block>
             </twig:Admin:Alert>
         </div>
     {% endif %}
@@ -176,7 +180,7 @@
 
             {% if notifications.hasAnyDocumentNotifications %}
                 <div class="my-4" data-e2e-name="document-notifications">
-                    <twig:Admin:Alert type="danger">
+                    <twig:Admin:Alert type="warning">
                         {% if notifications.missingUploads > 0 %}
                             {{ 'admin.dossiers.documents.number_to_upload' | trans({'count': notifications.missingUploads})}}
                         {% endif %}

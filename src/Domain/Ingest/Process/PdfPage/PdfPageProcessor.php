@@ -20,7 +20,7 @@ readonly class PdfPageProcessor
     ) {
     }
 
-    public function processPage(EntityWithFileInfo $entity, int $pageNr, bool $forceRefresh): void
+    public function processPage(EntityWithFileInfo $entity, int $pageNr): void
     {
         Assert::true($entity->getFileInfo()->isPaginatable(), 'Entity is not paginatable');
 
@@ -30,9 +30,19 @@ readonly class PdfPageProcessor
         }
 
         try {
-            $this->pageExtractor->extractSinglePagePdf($processingContext);
-            $this->thumbnailExtractor->extractSinglePagePdfThumbnail($processingContext);
-            $this->pageContentExtractor->extract($processingContext, $forceRefresh);
+            $needsThumbGeneration = $this->thumbnailExtractor->needsThumbGeneration($processingContext);
+            $contentCacheMissing = ! $this->pageContentExtractor->hasCache($entity, $pageNr);
+            if ($needsThumbGeneration || $contentCacheMissing) {
+                // Only download the file when actual processing is needed
+                $this->pageExtractor->extractSinglePagePdf($processingContext);
+            }
+
+            if ($needsThumbGeneration) {
+                $this->thumbnailExtractor->extractSinglePagePdfThumbnail($processingContext);
+            }
+
+            // Always executed because it also indexes content into ES, but in most cases this can be done from cache
+            $this->pageContentExtractor->extract($processingContext);
         } finally {
             $this->contextFactory->teardown($processingContext);
         }

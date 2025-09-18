@@ -1,0 +1,10 @@
+schemas:
+    - FoobarSchema
+    - TestSchema
+responses:
+    - FoobarSchema
+parameters:
+    - TestParameter
+examples:
+    - FoobarExample
+    - TestExample

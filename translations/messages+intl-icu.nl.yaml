@@ -637,7 +637,8 @@ admin.dossiers.documents.number_to_upload: >-
     other{Er moeten nog # document(en) geüpload worden.}
   }
 admin.dossiers.documents.needs_upload: "Nog te uploaden"
-admin.dossiers.documents.needs_work: '<strong>Documenten vereisen aandacht</strong><br>Bekijk de sectie <a class="bhr-a" href="#documents">“Documenten”</a> voor meer informatie over de status van de documenten.'
+admin.dossiers.documents.needs_work.title: 'Documenten vereisen aandacht'
+admin.dossiers.documents.needs_work.text: 'Bekijk de sectie "<a class="bhr-a" href="#documents">Documenten</a>" voor meer informatie over de status van de documenten.'
 
 admin.inquiries.case_number: "Zaaknummer"
 admin.inquiries.case_numbers: "Alle zaaknummers"
@@ -839,6 +840,8 @@ public.inquiries.documents_wont_be_published: >-
     other{# documenten worden niet openbaar gemaakt.}
   }
 
+public.inquiry.documents.of_which_withdrawn: "waarvan {count} ingetrokken"
+public.inquiry.documents.of_which_suspended: "waarvan {count} opgeschort"
 public.inquiry.page_title: "Besluiten en documenten voor zaaknummer {case_number}"
 public.inquiry.decisions_for_case: "Er {are_or_is} {number_of_decisions} genomen voor het verzoek om informatie te openbaren met zaaknummer {case_number}"
 
@@ -882,10 +885,10 @@ public.documents.exclusive_access: "U heeft t/m {date} exclusief toegang tot dez
 public.documents.document_history: "Geschiedenis van dit document"
 public.attachments.attachment_withdrawn: "Deze bijlage is op dit moment niet beschikbaar. Deze is op {date} ingetrokken. De reden dat de bijlage is ingetrokken: {reason}."
 
-
+public.dossiers.of_which_made_public: "waarvan {count} openbaar gemaakt"
 public.dossiers.type: "Informatiecategorie"
 public.dossiers.subject: "Onderwerp"
-public.dossiers.scope: "Omvang openbaarmaking"
+public.dossiers.scope: "Omvang publicatie"
 public.dossiers.inventory_list: Inventarislijst
 public.dossiers.production_report: "Productierapport"
 public.dossiers.not_applicable: 'Niet van toepassing op besluit "{decision}"'

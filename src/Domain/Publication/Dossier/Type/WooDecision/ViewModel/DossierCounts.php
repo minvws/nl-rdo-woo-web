@@ -4,42 +4,26 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
-class DossierCounts
+readonly class DossierCounts
 {
     public function __construct(
-        private readonly int $documentCount,
-        private readonly int $pageCount,
-        private readonly int $uploadCount,
+        private int $totalDocumentCount,
+        private int $publicDocumentCount,
     ) {
     }
 
-    public function getDocumentCount(): int
+    public function getTotalDocumentCount(): int
     {
-        return $this->documentCount;
+        return $this->totalDocumentCount;
     }
 
     public function hasDocuments(): bool
     {
-        return $this->documentCount > 0;
+        return $this->totalDocumentCount > 0;
     }
 
-    public function getPageCount(): int
+    public function getPublicDocumentCount(): int
     {
-        return $this->pageCount;
-    }
-
-    public function hasPages(): bool
-    {
-        return $this->pageCount > 0;
-    }
-
-    public function getUploadCount(): int
-    {
-        return $this->uploadCount;
-    }
-
-    public function hasUploads(): bool
-    {
-        return $this->uploadCount > 0;
+        return $this->publicDocumentCount;
     }
 }

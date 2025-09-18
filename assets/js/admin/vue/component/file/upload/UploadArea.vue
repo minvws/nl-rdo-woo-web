@@ -354,7 +354,7 @@ watch(isUploading, (value) => emit('isUploading', value));
           class="bhr-upload-area__select-files"
           :id="idOfSelectFilesElement"
         >
-          <span class="font-bold text-bhr-sea-blue">
+          <span class="font-bold text-bhr-blue-800">
             {{ formattedFileOrFiles }} selecteren
           </span>
           of hierin slepen

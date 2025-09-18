@@ -10,10 +10,14 @@ Resource            ../resources/Generic.resource
 Click Departments
   Click  "Bestuursorganen"
 
-Change Department Settings
-  [Arguments]  ${department}  ${visible}
+Click Specific Department
+  [Arguments]  ${department}
   Click
   ...  //*[@data-e2e-name="departments-table"]//td[normalize-space()='${department}']/preceding-sibling::td//*[@data-e2e-name="department-details-link"]
+
+Change Department Settings
+  [Arguments]  ${department}  ${visible}
+  Click Specific Department  ${department}
   IF  ${visible}
     Check Checkbox  //*[@id="department_public"]
   ELSE
@@ -40,7 +44,7 @@ Create New Department
   ELSE
     Uncheck Checkbox  id=department_public
   END
-  Click  id=department_submit
+  Click Save Department
   Success Alert Is Visible  Het bestuursorgaan is aangemaakt
   RETURN  ${short_tag}
 
@@ -73,8 +77,11 @@ Update Department
   ELSE
     Uncheck Checkbox  id=department_public
   END
-  Click  id=department_submit
+  Click Save Department
   Success Alert Is Visible  Het bestuursorgaan is aangepast
+
+Click Save Department
+  Click  id=department_submit
 
 Click Edit Department Landingpage
   [Arguments]  ${abbreviation}

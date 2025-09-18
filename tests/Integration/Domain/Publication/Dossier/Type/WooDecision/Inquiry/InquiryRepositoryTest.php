@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision\Inquiry;
 
 use App\Domain\Publication\Dossier\DossierStatus;
+use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Tests\Factory\DocumentFactory;
@@ -129,5 +130,52 @@ final class InquiryRepositoryTest extends KernelTestCase
             ->getResult();
 
         $this->assertEquals([$docB->_real()], $result);
+    }
+
+    public function testCountDocumentsByJudgement(): void
+    {
+        $organisation = OrganisationFactory::new()->create();
+        $wooDecision = WooDecisionFactory::new()->create([
+            'organisation' => $organisation,
+            'status' => $this->getFaker()->randomElement([DossierStatus::PREVIEW, DossierStatus::PUBLISHED]),
+        ]);
+
+        $documentsForWooDecision = DocumentFactory::createMany(2, ['dossiers' => [$wooDecision], 'judgement' => Judgement::NOT_PUBLIC]);
+
+        $documentsForWooDecision[] = DocumentFactory::createOne([
+            'dossiers' => [$wooDecision],
+            'judgement' => Judgement::PUBLIC,
+            'suspended' => true,
+        ]);
+
+        $documentsForWooDecision[] = DocumentFactory::createOne([
+            'dossiers' => [$wooDecision],
+            'judgement' => Judgement::PUBLIC,
+            'suspended' => true,
+        ]);
+
+        $withDrawnDocument = DocumentFactory::createOne(['dossiers' => [$wooDecision], 'judgement' => Judgement::PUBLIC]);
+        $withDrawnDocument->withdraw(DocumentWithdrawReason::DATA_IN_DOCUMENT, '');
+        $documentsForWooDecision[] = $withDrawnDocument;
+
+        $inquiry = InquiryFactory::createOne([
+            'organisation' => $organisation,
+            'dossiers' => [$wooDecision],
+            'documents' => [
+                ...$documentsForWooDecision,
+            ],
+        ])->_real();
+
+        $result = $this->repository->countDocumentsByJudgement($inquiry);
+
+        self::assertEquals(5, $result['total']);
+        self::assertEquals(3, $result['public']);
+        self::assertEquals(1, $result['public_withdrawn']);
+        self::assertEquals(2, $result['public_suspended']);
+        self::assertEquals(0, $result['partial_public']);
+        self::assertEquals(0, $result['partial_public_withdrawn']);
+        self::assertEquals(0, $result['partial_public_suspended']);
+        self::assertEquals(0, $result['already_public']);
+        self::assertEquals(2, $result['not_public']);
     }
 }

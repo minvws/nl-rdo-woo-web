@@ -21,7 +21,7 @@
 {% block dossier_link %}
     {% if dossier.link is not empty %}
         <twig:Admin:Definition term="{{ 'admin.dossiers.request-for-advice.link' | trans }}">
-            <a class="text-bhr-sea-blue underline" href="{{ dossier.link }}">{{ dossier.link }}</a>
+            <a class="text-bhr-blue-800 underline" href="{{ dossier.link }}">{{ dossier.link }}</a>
         </twig:Admin:Definition>
     {% endif %}
 {% endblock %}

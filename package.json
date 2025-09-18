@@ -5,14 +5,15 @@
     "scripts": {
         "build": "vite build",
         "watch": "vite build --watch",
-        "jslint": "eslint ./assets/js --config eslint.config.mjs",
-        "jslint:json": "npm run jslint --  --format json --output-file reports/eslint.json",
-        "jslint:fix": "npm run jslint -- --fix",
+        "eslint": "eslint ./assets/js --config eslint.config.mjs --ignore-pattern '**/*.d.ts'",
+        "eslint:json": "npm run eslint -- --format json --output-file reports/eslint/eslint.json",
+        "eslint:fix": "npm run eslint -- --fix",
         "n": "vite",
         "test": "vitest run --coverage",
         "test:watch": "vitest watch --coverage"
     },
     "dependencies": {
+        "@scalar/api-reference": "^1.34.6",
         "@symfony/stimulus-bridge": "^4.0.1",
         "@symfony/ux-vue": "file:assets/vendor/ux-vue",
         "@vueuse/core": "^13.4.0",
@@ -42,7 +43,7 @@
         "tailwindcss": "^4.0.14",
         "typescript": "^5.8.3",
         "typescript-eslint": "^8.34.1",
-        "vite": "^6.3.5",
+        "vite": "^6.3.6",
         "vite-plugin-symfony": "^8.1.1",
         "vitest": "^3.0.5",
         "zod": "^3.25.67"

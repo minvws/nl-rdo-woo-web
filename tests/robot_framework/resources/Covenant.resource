@@ -45,8 +45,8 @@ Upload Covenant
 Publish Test Covenant
   [Arguments]  ${publication_status}=Gepubliceerd  ${has_attachment}=${FALSE}
   VAR  ${type} =  covenant
-  Create New Dossier  ${type}
   Generate Test Data Set  ${type}  ${has_attachment}
+  Create New Dossier  ${type}
   Fill Out Basic Details  type=${type}
   Fill Out Covenant Details  ${has_attachment}
   Publish Dossier And Return To Admin Home  ${publication_status}

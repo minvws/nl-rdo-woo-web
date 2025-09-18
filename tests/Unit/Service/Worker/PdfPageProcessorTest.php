@@ -45,7 +45,7 @@ class PdfPageProcessorTest extends UnitTestCase
         $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnFalse();
 
         $this->expectException(InvalidArgumentException::class);
-        $this->processor->processPage($entity, 1, true);
+        $this->processor->processPage($entity, 1);
     }
 
     public function testProcessPageDoesNothingIfContextIsNull(): void
@@ -55,28 +55,55 @@ class PdfPageProcessorTest extends UnitTestCase
 
         $this->contextFactory->expects('createContext')->with($entity, 1)->andReturnNull();
 
-        $this->processor->processPage($entity, 1, true);
+        $this->processor->processPage($entity, 1);
     }
 
     public function testProcessPageCallsAllExtractorsSuccessfulAndInitiatesTeardown(): void
     {
+        $pageNr = 1;
+
         $entity = \Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnTrue();
 
         $context = \Mockery::mock(PdfPageProcessingContext::class);
-        $this->contextFactory->expects('createContext')->with($entity, 1)->andReturn($context);
+        $this->contextFactory->expects('createContext')->with($entity, $pageNr)->andReturn($context);
 
-        $this->pageContentExtractor->expects('extract')->with($context, true);
+        $this->pageContentExtractor->expects('hasCache')->with($entity, $pageNr)->andReturnFalse();
+        $this->pageContentExtractor->expects('extract')->with($context);
         $this->pageExtractor->expects('extractSinglePagePdf')->with($context);
+
+        $this->thumbnailExtractor->expects('needsThumbGeneration')->with($context)->andReturnTrue();
         $this->thumbnailExtractor->expects('extractSinglePagePdfThumbnail')->with($context);
 
         $this->contextFactory->expects('teardown')->with($context);
 
-        $this->processor->processPage($entity, 1, true);
+        $this->processor->processPage($entity, $pageNr);
+    }
+
+    public function testProcessPageCallsSkipsExtractorsWhenNotNeeded(): void
+    {
+        $pageNr = 1;
+
+        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnTrue();
+
+        $context = \Mockery::mock(PdfPageProcessingContext::class);
+        $this->contextFactory->expects('createContext')->with($entity, $pageNr)->andReturn($context);
+
+        $this->thumbnailExtractor->expects('needsThumbGeneration')->with($context)->andReturnFalse();
+
+        $this->pageContentExtractor->expects('hasCache')->with($entity, $pageNr)->andReturnTrue();
+        $this->pageContentExtractor->expects('extract')->with($context);
+
+        $this->contextFactory->expects('teardown')->with($context);
+
+        $this->processor->processPage($entity, $pageNr);
     }
 
     public function testProcessPageInitiatesTeardownEvenWhenAnExtractorFails(): void
     {
+        $pageNr = 1;
+
         $entity = \Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnTrue();
 
@@ -87,11 +114,14 @@ class PdfPageProcessorTest extends UnitTestCase
 
         $this->pageExtractor->expects('extractSinglePagePdf')->with($context);
         $this->thumbnailExtractor->expects('extractSinglePagePdfThumbnail')->andThrows($exception);
+        $this->thumbnailExtractor->expects('needsThumbGeneration')->with($context)->andReturnTrue();
+
+        $this->pageContentExtractor->expects('hasCache')->with($entity, $pageNr);
 
         $this->contextFactory->expects('teardown')->with($context);
 
         $this->expectExceptionObject($exception);
 
-        $this->processor->processPage($entity, 1, true);
+        $this->processor->processPage($entity, $pageNr);
     }
 }

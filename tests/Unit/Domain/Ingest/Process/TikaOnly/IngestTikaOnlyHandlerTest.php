@@ -86,7 +86,6 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
             ->expects('getExtracts')
             ->with($entity, \Mockery::on(
                 static function (ContentExtractOptions $options): bool {
-                    self::assertFalse($options->hasRefresh());
                     self::assertEquals([ContentExtractorKey::TIKA], array_values($options->getEnabledExtractors()));
 
                     return true;
@@ -135,7 +134,6 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
             ->expects('getExtracts')
             ->with($entity, \Mockery::on(
                 static function (ContentExtractOptions $options): bool {
-                    self::assertFalse($options->hasRefresh());
                     self::assertEquals([ContentExtractorKey::TIKA], array_values($options->getEnabledExtractors()));
 
                     return true;

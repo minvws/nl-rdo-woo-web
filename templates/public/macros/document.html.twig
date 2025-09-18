@@ -66,3 +66,26 @@
 {% macro document_url(document) %}
     <a class="woo-a" href="{{ path('app_document_detail', { prefix: document.dossiers.first.documentPrefix, dossierId: document.dossiers.first.dossierNr, documentId: document.documentNr }) }}">{{ document.fileInfo.name }}</a>
 {% endmacro %}
+
+{% macro withdrawn_and_suspended_count(withdrawnCount, suspendedCount) %}
+    {% if withdrawnCount > 0 or suspendedCount > 0 %}
+        {% set withdrawnText = 'public.inquiry.documents.of_which_withdrawn' | trans({ count: withdrawnCount }) %}
+        {% set suspendedText = 'public.inquiry.documents.of_which_suspended' | trans({ count: suspendedCount }) %}
+        <div class="text-woo-gray-700 pt-1">
+            {% if withdrawnCount > 0 and suspendedCount > 0 %}
+                <ul>
+                    <li>
+                        {{ withdrawnText }}
+                    </li>
+                    <li>
+                        {{ suspendedText }}
+                    </li>
+                </ul>
+            {% elseif withdrawnCount > 0 %}
+                {{ withdrawnText }}
+            {% elseif suspendedCount > 0 %}
+                {{ suspendedText }}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endmacro %}

@@ -294,7 +294,7 @@ onMounted(() => {
         >
           <Icon
             :class="{ 'rotate-180': hasVisibleList }"
-            color="fill-bhr-dim-gray"
+            color="fill-bhr-gray-700"
             name="chevron-down"
             :size="24"
           />

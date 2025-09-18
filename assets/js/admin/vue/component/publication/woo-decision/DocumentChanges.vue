@@ -75,7 +75,7 @@ const onReject = async () => {
 
   <template v-else-if="isRejected">
     <div class="mb-8">
-      <Alert type="danger">De acties zijn geannuleerd.</Alert>
+      <Alert type="warning">De acties zijn geannuleerd.</Alert>
     </div>
 
     <button @click="goBack" class="bhr-btn-filled-primary" type="button">

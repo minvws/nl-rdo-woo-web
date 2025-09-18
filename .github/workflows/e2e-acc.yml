@@ -10,50 +10,60 @@ on:
         default: 'testdossiers'
 
 env:
-  CR_PAT: "${{ secrets.REPO_READ_ONLY_TOKEN }}"
-  PYTHON_VERSION: 3.12
+  CR_PAT: ${{ secrets.GITHUB_TOKEN }}
   TEST_TAG: ${{ inputs.test_tag || 'testdossiers' }}
+  GH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }} # For gh cli tool
 
 jobs:
   e2e-robot-tests:
     name: 'Run E2E tests on Acceptance'
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-    - name: Initialize Robot Framework
-      run: |
-        sudo apt-get install --reinstall libpq-dev
-        sudo npx playwright install-deps
-        python -m pip install --upgrade pip
-        pip install -r tests/robot_framework/requirements.txt
-        rfbrowser init
-    - name: Run Robot Framework tests
-      env:
-        URL_PUBLIC: https://web.acc.woo.rdobeheer.nl
-        URL_ADMIN: https://balie.acc.woo.rdobeheer.nl/balie
-        HEADLESS: true
-        USERNAME_WOO_STAGING: ${{ secrets.USERNAME_WOO_STAGING }}
-        PASSWORD_WOO_STAGING: ${{ secrets.PASSWORD_WOO_STAGING }}
-        EMAIL_WOO_STAGING_BALIE: ${{ secrets.EMAIL_WOO_STAGING_BALIE }}
-        PASSWORD_WOO_STAGING_BALIE: ${{ secrets.PASSWORD_WOO_STAGING_BALIE }}
-        SECRET_WOO_STAGING_BALIE: ${{ secrets.SECRET_WOO_STAGING_BALIE }}
-      run: |
-        python -m robot --outputdir tests/robot_framework/results --xunit outputxunit.xml --include ${{ env.TEST_TAG }} --variable ENVIRONMENT:acc tests/robot_framework
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      if: ${{ always() }}
-      with:
-        name: reports
-        path: tests/robot_framework/results
-    - name: Publish test results
-      uses: minvws/nl-rdo-github-action-robotframework-test-summary@v0.4.2
-      if: ${{ always() }}
-      with:
-        output_file: 'tests/robot_framework/results/output.xml'
-        endpoints: 'https://web.acc.woo.rdobeheer.nl'
-        username: '${{ secrets.USERNAME_WOO_STAGING }}'
-        password: '${{ secrets.PASSWORD_WOO_STAGING }}'
+      - uses: actions/checkout@v5
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          repo-token: ${{ env.GH_TOKEN }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: tests/robot_framework/uv.lock
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: tests/robot_framework/pyproject.toml
+      - name: Prepare OS for tests
+        run: |
+          sudo apt-get install --reinstall libpq-dev
+          sudo npx playwright install-deps
+      - name: Create virtual environment
+        run: |
+          task rf:venv
+      - name: Run Robot Framework tests
+        working-directory: tests/robot_framework
+        env:
+          URL_PUBLIC: https://web.acc.woo.rdobeheer.nl
+          URL_ADMIN: https://balie.acc.woo.rdobeheer.nl/balie
+          HEADLESS: true
+          USERNAME_WOO_STAGING: ${{ secrets.USERNAME_WOO_STAGING }}
+          PASSWORD_WOO_STAGING: ${{ secrets.PASSWORD_WOO_STAGING }}
+          EMAIL_WOO_STAGING_BALIE: ${{ secrets.EMAIL_WOO_STAGING_BALIE }}
+          PASSWORD_WOO_STAGING_BALIE: ${{ secrets.PASSWORD_WOO_STAGING_BALIE }}
+          SECRET_WOO_STAGING_BALIE: ${{ secrets.SECRET_WOO_STAGING_BALIE }}
+        run: |
+          uv run robot --outputdir results --xunit outputxunit.xml --include ${{ env.TEST_TAG }} --variable ENVIRONMENT:acc .
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: reports
+          path: tests/robot_framework/results
+      - name: Publish test results
+        uses: minvws/action-robotframework-summary@v1.0.0
+        if: ${{ always() }}
+        with:
+          output_file: 'tests/robot_framework/results/output.xml'
+          endpoints: 'https://web.acc.woo.rdobeheer.nl'
+          username: '${{ secrets.USERNAME_WOO_STAGING }}'
+          password: '${{ secrets.PASSWORD_WOO_STAGING }}'

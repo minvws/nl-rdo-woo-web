@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation       A collection of miscellaneous tests.
 Resource            ../resources/Covenant.resource
+Resource            ../resources/Departments.resource
 Resource            ../resources/Organisations.resource
 Resource            ../resources/Setup.resource
 Suite Setup         Suite Setup
@@ -10,7 +11,7 @@ Test Tags           ci  misc
 
 
 *** Test Cases ***
-Replace main document on a public WooDecision
+Replace Main Document On A Public WooDecision
   Generate Test Data Set  woo-decision
   Publish Test WooDecision
   ...  production_report=${PRODUCTION_REPORT}
@@ -19,25 +20,25 @@ Replace main document on a public WooDecision
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Edit Decision
   Edit Main Document
-  Upload Besluitbrief  tests/robot_framework/files/dummy.pdf
+  Upload Besluitbrief  files/dummy.txt
 
-Replace main document on a public Covenant
+Replace Main Document On A Public Covenant
   Publish Test Covenant  has_attachment=${TRUE}
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Edit Details
   Edit Main Document
-  Upload Covenant  tests/robot_framework/files/dummy.pdf
+  Upload Covenant  files/dummy.txt
 
-Edit an existing main document
+Edit An Existing Main Document
+  [Documentation]  Relies on the previous test having created any kind of publication
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Edit Details
   Edit Main Document
   Fill Text  //dialog[@open]//input[@name="internalReference"]  1234567890
   Click  //dialog[@open]//button[@type="submit"]
-  # Implement 'Success Alert Is Visible' here, #4566
-  Wait For Condition  Text  //*[@id="inhoud"]  contains  is bijgewerkt
+  Success Alert Is Visible  is bijgewerkt
 
-Remove an attachment
+Remove An Attachment
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Edit Details
   ${attachment_file_name} =  Get Text
@@ -51,11 +52,11 @@ Remove an attachment
   Click Breadcrumb Element  2
   Get Text  id=inhoud  not contains  ${attachment_file_name}
 
-Verify document relations
+Verify Document Relations
   [Tags]  relations
   Publish Test WooDecision
-  ...  production_report=tests/robot_framework/files/woodecision/relations.xlsx
-  ...  documents=tests/robot_framework/files/woodecision/relations.zip
+  ...  production_report=files/woodecision/relations.xlsx
+  ...  documents=files/woodecision/relations.zip
   ...  number_of_documents=10
   ...  prefix=E2E-A
   Search For A Publication  ${DOSSIER_REFERENCE}
@@ -73,7 +74,7 @@ Verify document relations
   # Check email attachments
   Get Element Count  //*[@data-e2e-name="documents-section"][2]//tbody//tr  should be  5
 
-Replace main document on a preview WooDecision
+Replace Main Document On A Preview WooDecision
   Generate Test Data Set  woo-decision
   Publish Test WooDecision
   ...  production_report=${PRODUCTION_REPORT}
@@ -84,7 +85,21 @@ Replace main document on a preview WooDecision
   # Now we open the publication, edit the decision and upload a new main document (besluitbrief)
   Click Edit Decision
   Edit Main Document
-  Upload Besluitbrief  tests/robot_framework/files/dummy.pdf
+  Upload Besluitbrief  files/dummy.txt
+
+Update Department Texts
+  Click Departments
+  Click Specific Department  E2E-DEP1
+  Fill Text  //*[@id="department_feedback_content"]  Stuur drie rooksignalen voor zonsondergang
+  Fill Text  //*[@id="department_responsibility_content"]  Bassie is verantwoordelijk!
+  Click Save Department
+  Click Publications
+  Publish Generated Test WooDecision
+  Search For A Publication  ${DOSSIER_REFERENCE}
+  Click Public URL
+  Get Text  //*[@data-e2e-name="responsible"]  contains  Bassie is verantwoordelijk!
+  Click  (//*[@data-e2e-name="tabs-documenten-content-1"]//tbody//a)[1]
+  Get Text  //*[@data-e2e-name="grounds"]  contains  Stuur drie rooksignalen voor zonsondergang
 
 
 *** Keywords ***

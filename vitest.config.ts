@@ -17,6 +17,7 @@ export default defineConfig({
     include: ['**/*.test.ts'],
     coverage: {
       provider: 'istanbul',
+      reportsDirectory: './reports/vitest',
       reporter: ['text', 'lcov'],
       include: ['assets/js/**'],
     },

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
+use App\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -36,45 +39,9 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
         'X-XSS-Protection' => '1; mode=block',
     ];
 
-    /** @var array|string[][][] */
-    protected array $csp = [
-        'FRONTEND' => [
-            'default-src' => [self::CSP_SELF],
-            'frame-ancestors' => [self::CSP_SELF],
-            'form-action' => [self::CSP_SELF],
-            'base-uri' => [self::CSP_SELF],
-            'connect-src' => [self::CSP_SELF, self::CSP_STATS],
-            'script-src' => [self::CSP_SELF, self::CSP_STATS],
-            'style-src' => [self::CSP_SELF],
-            'img-src' => [self::CSP_SELF, self::CSP_DATA, self::CSP_STATS],
-            'font-src' => [self::CSP_SELF],
-        ],
-        'BALIE' => [
-            'default-src' => [self::CSP_SELF],
-            'frame-ancestors' => [self::CSP_SELF],
-            'form-action' => [self::CSP_SELF],
-            'base-uri' => [self::CSP_SELF],
-            'connect-src' => [self::CSP_SELF, self::CSP_STATS],
-            'script-src' => [self::CSP_SELF, self::CSP_STATS],
-            'style-src' => [self::CSP_SELF],
-            'img-src' => [self::CSP_SELF, self::CSP_DATA, self::CSP_STATS],
-            'font-src' => [self::CSP_SELF],
-        ],
-        'BOTH' => [
-            'default-src' => [self::CSP_SELF],
-            'frame-ancestors' => [self::CSP_SELF],
-            'form-action' => [self::CSP_SELF],
-            'base-uri' => [self::CSP_SELF],
-            'connect-src' => [self::CSP_SELF, self::CSP_STATS],
-            'script-src' => [self::CSP_SELF, self::CSP_STATS],
-            'style-src' => [self::CSP_SELF],
-            'img-src' => [self::CSP_SELF, self::CSP_DATA],
-            'font-src' => [self::CSP_SELF],
-        ],
-    ];
-
-    public function __construct(private readonly string $appMode)
-    {
+    public function __construct(
+        private readonly ApplicationMode $applicationMode,
+    ) {
     }
 
     public function onKernelRequest(RequestEvent $event): void
@@ -89,21 +56,90 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
     {
         $response = $event->getResponse();
 
+        $this->addSecurityHeaders($response);
+        $this->addContentSecurityPolicy($event);
+    }
+
+    private function addSecurityHeaders(Response $response): void
+    {
         foreach ($this->fields as $key => $value) {
             if (! $response->headers->has($key)) {
                 $response->headers->set($key, $value);
             }
         }
+    }
 
-        // Add nonce to CSP
-        $nonce = $event->getRequest()->attributes->get('csp_nonce');
+    private function addContentSecurityPolicy(ResponseEvent $event): void
+    {
+        $request = $event->getRequest();
+        $response = $event->getResponse();
+
+        $nonce = $request->attributes->get('csp_nonce');
         Assert::nullOrString($nonce);
 
-        $csp = $this->csp[$this->appMode] ?? $this->csp['BOTH'];
-        $csp['script-src'][] = "'nonce-" . $nonce . "'";
-        $csp['style-src'][] = "'nonce-" . $nonce . "'";
+        $csp = [
+            'default-src' => [self::CSP_SELF],
+            'frame-ancestors' => [self::CSP_SELF],
+            'form-action' => [self::CSP_SELF],
+            'base-uri' => [self::CSP_SELF],
+            'connect-src' => [self::CSP_SELF, self::CSP_STATS],
+            'script-src' => [self::CSP_SELF, self::CSP_STATS, "'nonce-" . $nonce . "'"],
+            'style-src' => $this->getStyleSrcDirective($request, $nonce),
+            'img-src' => [self::CSP_SELF, self::CSP_DATA],
+            'font-src' => $this->getFontSrcDirective($request),
+        ];
+
+        if (! $this->applicationMode->isAll()) {
+            $csp['img-src'] = [self::CSP_SELF, self::CSP_DATA, self::CSP_STATS];
+        }
 
         $response->headers->set('Content-Security-Policy', $this->buildCsp($csp));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function getStyleSrcDirective(Request $request, ?string $nonce): array
+    {
+        if ($this->isApiPlatformDocsRoute($request)) {
+            return [self::CSP_SELF, "'unsafe-inline'"];
+        }
+
+        return [self::CSP_SELF, "'nonce-" . $nonce . "'"];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function getFontSrcDirective(Request $request): array
+    {
+        if ($this->isScalarDocsRoute($request)) {
+            return [self::CSP_SELF, 'https://fonts.scalar.com'];
+        }
+
+        return [self::CSP_SELF];
+    }
+
+    private function isApiPlatformDocsRoute(Request $request): bool
+    {
+        $requestUri = $request->getRequestUri();
+        $routeName = $request->attributes->get('_route');
+
+        return str_starts_with($requestUri, '/balie/api/docs')
+               || (is_string($routeName) && $routeName === 'api_doc');
+    }
+
+    private function isScalarDocsRoute(Request $request): bool
+    {
+        $requestUri = $request->getRequestUri();
+        $routeName = $request->attributes->get('_route');
+
+        if (! ($this->applicationMode->isAll() || $this->applicationMode->isApi())) {
+            return false;
+        }
+
+        return str_starts_with($requestUri, '/api/docs')
+               || (is_string($routeName) && $routeName === 'app_api_docs');
     }
 
     public static function getSubscribedEvents(): array
@@ -115,7 +151,7 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param string[][] $csp
+     * @param array<array-key,array<array-key,string>> $csp
      */
     protected function buildCsp(array $csp): string
     {

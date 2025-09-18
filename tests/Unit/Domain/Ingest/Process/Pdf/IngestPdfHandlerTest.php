@@ -50,10 +50,11 @@ final class IngestPdfHandlerTest extends UnitTestCase
         );
     }
 
-    public function testInvokeWithoutForce(): void
+    public function testInvoke(): void
     {
         $fileInfo = \Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('isPaginatable')->once()->andReturnTrue();
+        $fileInfo->shouldReceive('getPageCount')->once()->andReturnNull();
 
         $entity = \Mockery::mock(Document::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
@@ -61,7 +62,7 @@ final class IngestPdfHandlerTest extends UnitTestCase
         $message = new IngestPdfCommand(
             $id = Uuid::v6(),
             $entityClass = $entity::class,
-            $forceRefresh = false,
+            false,
         );
 
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
@@ -70,7 +71,7 @@ final class IngestPdfHandlerTest extends UnitTestCase
 
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
 
-        $this->extractor->shouldReceive('extract')->once()->with($entity, $forceRefresh);
+        $this->extractor->shouldReceive('extract')->once()->with($entity);
 
         $pdftkPageCountResult = \Mockery::mock(PdftkPageCountResult::class);
         $pdftkPageCountResult->shouldReceive('isSuccessful')->once()->andReturnTrue();
@@ -78,53 +79,41 @@ final class IngestPdfHandlerTest extends UnitTestCase
 
         $this->extractor->shouldReceive('getOutPut')->once()->with()->andReturn($pdftkPageCountResult);
 
-        $entity->shouldReceive('setPageCount')->once()->with($pageCount);
         $fileInfo->shouldReceive('setPageCount')->once()->with($pageCount);
+        $fileInfo->shouldReceive('getPageCount')->andReturn($pageCount);
 
-        $this->processor->shouldReceive('processEntity')->once()->with($entity, $forceRefresh);
+        $this->processor->shouldReceive('processEntity')->once()->with($entity);
 
-        $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, $forceRefresh, 1);
-        $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, $forceRefresh, 2);
+        $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, 1);
+        $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, 2);
 
         $this->handler->__invoke($message);
     }
 
-    public function testInvokeWithForce(): void
+    public function testInvokeSkipsPageCountExtractWhenPageCountIsAlreadyAvailable(): void
     {
-        $message = new IngestPdfCommand(
-            $id = Uuid::v6(),
-            $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
-            $forceRefresh = true,
-        );
-
         $fileInfo = \Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('isPaginatable')->once()->andReturnTrue();
+        $fileInfo->shouldReceive('getPageCount')->andReturn(2);
 
-        // @TODO should be replaced by an instance of EntityWithFileInfo
         $entity = \Mockery::mock(Document::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
+
+        $message = new IngestPdfCommand(
+            $id = Uuid::v6(),
+            $entityClass = $entity::class,
+            false,
+        );
 
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->doctrine->shouldReceive('persist')->with($entity);
         $this->doctrine->shouldReceive('flush');
 
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
+        $this->processor->shouldReceive('processEntity')->once()->with($entity);
 
-        $this->extractor->shouldReceive('extract')->once()->with($entity, $forceRefresh);
-
-        $pdftkPageCountResult = \Mockery::mock(PdftkPageCountResult::class);
-        $pdftkPageCountResult->shouldReceive('isSuccessful')->once()->andReturnTrue();
-        $pdftkPageCountResult->numberOfPages = $pageCount = 2;
-
-        $this->extractor->shouldReceive('getOutPut')->once()->with()->andReturn($pdftkPageCountResult);
-
-        $entity->shouldReceive('setPageCount')->once()->with($pageCount);
-        $fileInfo->shouldReceive('setPageCount')->once()->with($pageCount);
-
-        $this->processor->shouldReceive('processEntity')->once()->with($entity, $forceRefresh);
-
-        $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, $forceRefresh, 1);
-        $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, $forceRefresh, 2);
+        $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, 1);
+        $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, 2);
 
         $this->handler->__invoke($message);
     }
@@ -152,7 +141,6 @@ final class IngestPdfHandlerTest extends UnitTestCase
         $this->doctrine->shouldNotReceive('flush');
         $this->extractor->shouldNotReceive('extract');
         $this->extractor->shouldNotReceive('getOutPut');
-        $entity->shouldNotReceive('setPageCount');
         $this->processor->shouldNotReceive('processEntity');
 
         $this->handler->__invoke($message);
