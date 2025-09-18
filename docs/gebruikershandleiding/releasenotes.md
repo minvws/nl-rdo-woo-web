@@ -4,7 +4,7 @@
 
 ## v1.17.0
 
-*18 augustus 2025*
+*18 september 2025*
 
 ### Balie
 
