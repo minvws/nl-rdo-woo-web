@@ -15,7 +15,7 @@ jobs:
   migration_check:
     name: Check for missing migrations
     if: github.event_name == 'pull_request'
-    uses: minvws/nl-rdo-woo-web-private/.github/workflows/migration-check.yml@main
+    uses: ./.github/workflows/migration-check.yml
     secrets: inherit
 
   setup-npm-cache:
@@ -350,7 +350,7 @@ jobs:
   e2e-tests:
     name: Test full suite
     if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || github.event_name == 'pull_request' }}
-    uses: minvws/nl-rdo-woo-web-private/.github/workflows/e2e-ci.yml@main
+    uses: ./.github/workflows/e2e-ci.yml
     secrets: inherit
     with:
       test_tag: ci
@@ -374,5 +374,5 @@ jobs:
       - be-unit-tests
       - e2e-tests
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-    uses: minvws/nl-rdo-woo-web-private/.github/workflows/package.yml@main
+    uses: ./.github/workflows/package.yml
     secrets: inherit
