@@ -8,6 +8,6 @@
 }
 
 @utility woo-logo__text {
-  @apply bottom-9 font-serif leading-none left-1/2 sr-only text-left;
-  @apply sm:not-sr-only sm:absolute sm:ml-[calc(calc(50px/2)+theme(space.4))] sm:text-lg sm:leading-none;
+  @apply bottom-8 font-serif leading-4 left-1/2 text-left text-sm absolute ml-[calc(calc(50px/2)+theme(space.4))];
+  @apply sm:text-lg sm:bottom-9 sm:leading-none;
 }

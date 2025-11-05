@@ -1,0 +1,6 @@
+results
+libraries/__pycache__
+files/generated
+.venv
+.pabotsuitenames
+.otp_secret

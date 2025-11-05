@@ -16,7 +16,7 @@ class ExcelReaderTest extends MockeryTestCase
     private ExcelReader $excelReader;
     private HeaderMap&MockInterface $headerMap;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->headerMap = \Mockery::mock(HeaderMap::class);
 

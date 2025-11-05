@@ -26,7 +26,7 @@ class CleanSheetTest extends MockeryTestCase
     private WooIndexSitemapService&MockInterface $wooIndexSitemapService;
     private Command&MockInterface $cacheClearCommand;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->indexService = \Mockery::mock(ElasticIndexManager::class);
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);

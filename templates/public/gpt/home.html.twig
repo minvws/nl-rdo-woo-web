@@ -1,0 +1,39 @@
+{% extends 'public/gpt/base.html.twig' %}
+
+{% block body %}
+<div class="woo-container woo-container--xs">
+    <h1 class="woo-h1 woo-h1-spacing text-center">
+        {{ 'public.gpt.home.title' | trans }} <twig:Public:Gpt:Beta />
+    </h1>
+
+    <div class="md:-mx-6">
+        <twig:Public:Gpt:SearchForm />
+    </div>
+
+    <div class="pt-16">
+        <h2 class="woo-h2 text-lg">{{ 'public.gpt.example_questions.title' | trans }}</h2>
+
+        {% set exampleQuestions = [
+            'public.gpt.example_questions.q1' | trans,
+            'public.gpt.example_questions.q2' | trans,
+            'public.gpt.example_questions.q3' | trans,
+        ] %}
+
+        <ul class="leading-tight">
+            {% for question in exampleQuestions %}
+            <li>
+                <a class="flex border border-woo-gray-50 p-4 mt-3 transition-colors hover-focus:bg-woo-gray-50" href="{{ path('app_gpt_home', { q: question }) }}">
+                    <span class="grow">
+                        {{ question }}
+                    </span>
+
+                    <span class="ml-1">
+                        <twig:Public:Icon class="ml-auto" color="fill-woo-gray-900" name="arrow-right" size="24" />
+                    </span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

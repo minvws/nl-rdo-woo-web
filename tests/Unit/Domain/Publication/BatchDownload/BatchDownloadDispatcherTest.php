@@ -18,7 +18,7 @@ class BatchDownloadDispatcherTest extends UnitTestCase
     private MessageBusInterface&MockInterface $messageBus;
     private BatchDownloadDispatcher $dispatcher;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
 

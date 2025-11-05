@@ -30,8 +30,11 @@ baseQueryConditions: null
 mode:
     accessibleDossierStatuses: [{ new: false, concept: false, scheduled: false, preview: true, published: false, newOrConcept: false, conceptOrScheduled: false, publiclyAvailable: true, publiclyAvailableOrScheduled: true, deleted: false, notDeleted: true, name: PREVIEW, value: preview }, { new: false, concept: false, scheduled: false, preview: false, published: true, newOrConcept: false, conceptOrScheduled: false, publiclyAvailable: true, publiclyAvailableOrScheduled: true, deleted: false, notDeleted: true, name: PUBLISHED, value: published }]
     admin: false
+    adminOrAll: false
     api: false
+    apiOrAll: false
     public: true
+    publicOrAll: true
     all: false
     name: PUBLIC
     value: FRONTEND

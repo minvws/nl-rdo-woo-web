@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Ingest\Process\TikaOnly;
 
+use App\Domain\Ingest\Content\ContentExtractCache;
 use App\Domain\Ingest\Content\ContentExtractOptions;
-use App\Domain\Ingest\Content\ContentExtractService;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
@@ -20,7 +20,7 @@ final readonly class IngestTikaOnlyHandler
     public function __construct(
         private EntityManagerInterface $doctrine,
         private LoggerInterface $logger,
-        private ContentExtractService $contentExtractService,
+        private ContentExtractCache $contentExtractCache,
         private SubTypeIndexer $subTypeIndexer,
     ) {
     }
@@ -40,7 +40,7 @@ final readonly class IngestTikaOnlyHandler
         /** @var EntityWithFileInfo $entity */
         Assert::isInstanceOf($entity, EntityWithFileInfo::class);
 
-        $extracts = $this->contentExtractService->getExtracts(
+        $extracts = $this->contentExtractCache->getCombinedExtracts(
             $entity,
             ContentExtractOptions::create()->withExtractor(ContentExtractorKey::TIKA),
         );
@@ -52,7 +52,7 @@ final readonly class IngestTikaOnlyHandler
                 [
                     [
                         'page_nr' => 0,
-                        'content' => $extracts->getCombinedContent(),
+                        'content' => $extracts,
                     ],
                 ]
             );

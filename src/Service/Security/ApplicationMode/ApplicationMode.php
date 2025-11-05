@@ -32,26 +32,46 @@ enum ApplicationMode: string
 
     public function isAdmin(): bool
     {
-        return $this === self::ADMIN;
+        return $this === ApplicationMode::ADMIN;
+    }
+
+    public function isAdminOrAll(): bool
+    {
+        return $this->isEnvironmentOrAll(ApplicationMode::ADMIN);
     }
 
     public function isApi(): bool
     {
-        return $this === self::API;
+        return $this === ApplicationMode::API;
+    }
+
+    public function isApiOrAll(): bool
+    {
+        return $this->isEnvironmentOrAll(ApplicationMode::API);
     }
 
     public function isPublic(): bool
     {
-        return $this === self::PUBLIC;
+        return $this === ApplicationMode::PUBLIC;
+    }
+
+    public function isPublicOrAll(): bool
+    {
+        return $this->isEnvironmentOrAll(ApplicationMode::PUBLIC);
     }
 
     public function isAll(): bool
     {
-        return $this === self::ALL;
+        return $this === ApplicationMode::ALL;
     }
 
     public static function fromEnvVar(string $value): self
     {
         return self::from(strtoupper($value));
+    }
+
+    private function isEnvironmentOrAll(ApplicationMode $applicationMode): bool
+    {
+        return $this === $applicationMode || $this->isAll();
     }
 }

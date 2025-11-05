@@ -17,7 +17,7 @@ final class DossierViewFactoryTest extends MockeryTestCase
     private DossierRepository&MockInterface $repository;
     private DossierViewFactory $factory;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(DossierRepository::class);
 

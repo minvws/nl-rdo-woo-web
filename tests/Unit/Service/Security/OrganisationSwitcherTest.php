@@ -24,7 +24,7 @@ class OrganisationSwitcherTest extends MockeryTestCase
     private OrganisationSwitcher $organisationSwitcher;
     private Session&MockInterface $session;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->user = \Mockery::mock(User::class);
 

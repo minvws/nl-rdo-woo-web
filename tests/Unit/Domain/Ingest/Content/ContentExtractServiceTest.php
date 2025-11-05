@@ -26,7 +26,7 @@ class ContentExtractServiceTest extends UnitTestCase
     private ContentExtractorInterface&MockInterface $extractorB;
     private ContentExtractService $service;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->service = new ContentExtractService(
             $this->entityStorage = \Mockery::mock(EntityStorageService::class),
@@ -76,9 +76,9 @@ class ContentExtractServiceTest extends UnitTestCase
 
         $contentA = "A line1\nA line 2";
         $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
-        $this->extractorA->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
-        $this->extractorA->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentA) {
+        $this->extractorA->shouldReceive('supports')->with($entity)->andReturnTrue();
+        $this->extractorA->expects('getContent')->with($entity, \Mockery::any())->andReturnUsing(
+            function (EntityWithFileInfo $entity, FileReferenceInterface $fileReference) use ($contentA) {
                 $fileReference->getPath();
 
                 return $contentA;
@@ -87,9 +87,9 @@ class ContentExtractServiceTest extends UnitTestCase
 
         $contentB = "B line1\nB line 2";
         $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
-        $this->extractorB->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
-        $this->extractorB->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentB) {
+        $this->extractorB->shouldReceive('supports')->with($entity)->andReturnTrue();
+        $this->extractorB->expects('getContent')->with($entity, \Mockery::any())->andReturnUsing(
+            function (EntityWithFileInfo $entity, FileReferenceInterface $fileReference) use ($contentB) {
                 $fileReference->getPath();
 
                 return $contentB;
@@ -124,13 +124,13 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->entityStorage->expects('setHash')->with($entity, $localFile);
 
         $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
-        $this->extractorA->shouldReceive('supports')->with($fileInfo)->andReturnFalse();
+        $this->extractorA->shouldReceive('supports')->with($entity)->andReturnFalse();
 
         $contentB = "B line1\nB line 2";
         $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
-        $this->extractorB->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
-        $this->extractorB->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentB) {
+        $this->extractorB->shouldReceive('supports')->with($entity)->andReturnTrue();
+        $this->extractorB->expects('getContent')->with($entity, \Mockery::any())->andReturnUsing(
+            function (EntityWithFileInfo $entity, FileReferenceInterface $fileReference) use ($contentB) {
                 $fileReference->getPath();
 
                 return $contentB;
@@ -168,9 +168,9 @@ class ContentExtractServiceTest extends UnitTestCase
 
         $contentA = "A line1\nA line 2";
         $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
-        $this->extractorA->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
-        $this->extractorA->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentA) {
+        $this->extractorA->shouldReceive('supports')->with($entity)->andReturnTrue();
+        $this->extractorA->expects('getContent')->with($entity, \Mockery::any())->andReturnUsing(
+            function (EntityWithFileInfo $entity, FileReferenceInterface $fileReference) use ($contentA) {
                 $fileReference->getPath();
 
                 return $contentA;
@@ -179,9 +179,9 @@ class ContentExtractServiceTest extends UnitTestCase
 
         $contentB = "B line1\nB line 2";
         $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
-        $this->extractorB->shouldReceive('supports')->with($fileInfo)->andReturnTrue();
-        $this->extractorB->expects('getContent')->with($fileInfo, \Mockery::any())->andReturnUsing(
-            function (FileInfo $fileInfo, FileReferenceInterface $fileReference) use ($contentB) {
+        $this->extractorB->shouldReceive('supports')->with($entity)->andReturnTrue();
+        $this->extractorB->expects('getContent')->with($entity, \Mockery::any())->andReturnUsing(
+            function (EntityWithFileInfo $entity, FileReferenceInterface $fileReference) use ($contentB) {
                 $fileReference->getPath();
 
                 return $contentB;

@@ -25,7 +25,7 @@ class BatchDownloadStorageTest extends MockeryTestCase
     private FilesystemOperator&MockInterface $filesystemOperator;
     private vfsStreamDirectory $virtualFilesystem;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->filesystemOperator = \Mockery::mock(FilesystemOperator::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);

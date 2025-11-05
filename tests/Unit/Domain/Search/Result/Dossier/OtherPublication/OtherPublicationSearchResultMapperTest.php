@@ -21,7 +21,7 @@ class OtherPublicationSearchResultMapperTest extends MockeryTestCase
     private OtherPublicationRepository&MockInterface $repository;
     private OtherPublicationSearchResultMapper $mapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->baseMapper = \Mockery::mock(DossierSearchResultBaseMapper::class);
         $this->repository = \Mockery::mock(OtherPublicationRepository::class);

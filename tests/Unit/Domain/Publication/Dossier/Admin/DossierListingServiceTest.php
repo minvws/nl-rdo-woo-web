@@ -32,7 +32,7 @@ class DossierListingServiceTest extends MockeryTestCase
     private DossierQueryConditions&MockInterface $queryConditions;
     private TranslatorInterface&MockInterface $translator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->organisation = \Mockery::mock(Organisation::class);
 

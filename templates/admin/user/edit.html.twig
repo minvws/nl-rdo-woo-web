@@ -70,9 +70,8 @@
 
             <div class="flex mt-8">
                 <div>
+                    {{ form_errors(user_reset_password) }}
                     {{ form_start(user_reset_password, {'attr': {'id': 'form_reset_password'}}) }}
-                    {% do user_reset_password.reset_2fa.setRendered %}
-                    {{ form_row(user_reset_password.reset_pw) }}
                     {{ form_row(user_reset_password.submit, {
                         'label': 'Reset password',
                         'id': 'reset_credentials_password_form_submit',
@@ -92,17 +91,16 @@
                 </div>
 
                 <div>
-                    {{ form_start(user_reset_2fa, {'attr': {'id': 'form_reset_2fa'}}) }}
-                    {% do user_reset_2fa.reset_pw.setRendered %}
-                    {{ form_row(user_reset_2fa.reset_2fa) }}
-                    {{ form_row(user_reset_2fa.submit, {
+                    {{ form_errors(user_reset_two_factor_auth) }}
+                    {{ form_start(user_reset_two_factor_auth, {'attr': {'id': 'form_reset_two_factor_auth'}}) }}
+                    {{ form_row(user_reset_two_factor_auth.submit, {
                         'label': 'Reset 2FA',
                         'id': 'reset_credentials_2fa_form_submit',
                         'attr': {
                             'class': 'bhr-btn-bordered-primary mt-6 js:hidden'
                         }
                     }) }}
-                    {{ form_end(user_reset_2fa) }}
+                    {{ form_end(user_reset_two_factor_auth) }}
                     <button
                         aria-haspopup="dialog"
                         class="bhr-btn-bordered-primary js-dialog-toggle no-js:hidden"

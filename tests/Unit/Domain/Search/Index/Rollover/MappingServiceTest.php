@@ -11,7 +11,7 @@ class MappingServiceTest extends UnitTestCase
 {
     private MappingService $mappingService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->mappingService = new MappingService(__DIR__);
 

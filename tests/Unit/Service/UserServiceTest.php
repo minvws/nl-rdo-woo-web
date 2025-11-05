@@ -6,17 +6,20 @@ namespace App\Tests\Unit\Service;
 
 use App\Service\Security\Event\UserDisableEvent;
 use App\Service\Security\Event\UserEnableEvent;
+use App\Service\Security\Event\UserResetEvent;
 use App\Service\Security\Event\UserUpdatedEvent;
 use App\Service\Security\User;
 use App\Service\Security\UserRepository;
 use App\Service\UserService;
 use App\Tests\Unit\UnitTestCase;
+use Minvws\HorseBattery\PasswordGenerator;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Uid\Uuid;
 
 class UserServiceTest extends UnitTestCase
@@ -27,9 +30,10 @@ class UserServiceTest extends UnitTestCase
     private LoggerInterface&MockInterface $logger;
     private EventDispatcherInterface&MockInterface $eventDispatcher;
     private TokenStorageInterface&MockInterface $tokenStorage;
+    private PasswordGenerator&MockInterface $passwordGenerator;
     private UserService $service;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -39,6 +43,7 @@ class UserServiceTest extends UnitTestCase
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->eventDispatcher = \Mockery::mock(EventDispatcherInterface::class);
         $this->tokenStorage = \Mockery::mock(TokenStorageInterface::class);
+        $this->passwordGenerator = \Mockery::mock(PasswordGenerator::class);
 
         $this->service = new UserService(
             $this->userRepository,
@@ -47,6 +52,7 @@ class UserServiceTest extends UnitTestCase
             $this->logger,
             $this->tokenStorage,
             $this->eventDispatcher,
+            $this->passwordGenerator,
         );
     }
 
@@ -131,5 +137,136 @@ class UserServiceTest extends UnitTestCase
         ));
 
         $this->service->enable($user, $actor);
+    }
+
+    public function testResetPassword(): void
+    {
+        $password = 'foo';
+        $passwordHash = 'bar';
+        $userId = Uuid::v6();
+
+        $user = \Mockery::mock(User::class);
+        $user->expects('setPassword')
+            ->once()
+            ->with($passwordHash);
+        $user->expects('setChangepwd')
+            ->once()
+            ->with(true);
+        $user->expects('getId')
+            ->once()
+            ->andReturn($userId);
+
+        $this->passwordGenerator->expects('generate')
+            ->once()
+            ->with(4)
+            ->andReturn($password);
+
+        $this->passwordHasher->expects('hashPassword')
+            ->with($user, $password)
+            ->once()
+            ->andReturn($passwordHash);
+
+        $this->userRepository->expects('save')
+            ->once()
+            ->with($user, true);
+
+        $this->logger->expects('info')
+            ->once()
+            ->with('User password reset', [
+                'user' => $userId,
+            ]);
+
+        $actor = \Mockery::mock(User::class);
+        $token = \Mockery::mock(TokenInterface::class);
+        $token->expects('getUser')
+            ->once()
+            ->andReturn($actor);
+
+        $this->tokenStorage->expects('getToken')
+            ->once()
+            ->andReturn($token);
+
+        $this->eventDispatcher->expects('dispatch')
+            ->once()
+            ->with(\Mockery::on(
+                static function (UserResetEvent $event) use ($user, $actor): bool {
+                    self::assertEquals($user, $event->user);
+                    self::assertEquals($actor, $event->actor);
+                    self::assertTrue($event->resetPassword);
+                    self::assertFalse($event->resetTwoFactorAuth);
+
+                    return true;
+                }
+            ));
+
+        $this->service->resetPassword($user);
+    }
+
+    public function testResetTwoFactorAuth(): void
+    {
+        $totpSecret = $this->getFaker()->slug(1);
+        $totpRecoveryCode = $this->getFaker()->slug(1);
+        $userId = Uuid::v6();
+
+        $user = \Mockery::mock(User::class);
+        $user->expects('setMfaToken')
+            ->once()
+            ->with($totpSecret);
+        $user->expects('setMfaRecovery')
+            ->once()
+            ->with([
+                $totpRecoveryCode,
+                $totpRecoveryCode,
+                $totpRecoveryCode,
+                $totpRecoveryCode,
+                $totpRecoveryCode,
+            ]);
+        $user->expects('getId')
+            ->once()
+            ->andReturn($userId);
+
+        $this->totp->expects('generateSecret')
+            ->once()
+            ->andReturn($totpSecret);
+
+        $this->passwordGenerator->expects('generate')
+            ->times(5)
+            ->with(4)
+            ->andReturn($totpRecoveryCode);
+
+        $this->userRepository->expects('save')
+            ->once()
+            ->with($user, true);
+
+        $this->logger->expects('info')
+            ->once()
+            ->with('User two factor auth reset', [
+                'user' => $userId,
+            ]);
+
+        $actor = \Mockery::mock(User::class);
+        $token = \Mockery::mock(TokenInterface::class);
+        $token->expects('getUser')
+            ->once()
+            ->andReturn($actor);
+
+        $this->tokenStorage->expects('getToken')
+            ->once()
+            ->andReturn($token);
+
+        $this->eventDispatcher->expects('dispatch')
+            ->once()
+            ->with(\Mockery::on(
+                static function (UserResetEvent $event) use ($user, $actor): bool {
+                    self::assertEquals($user, $event->user);
+                    self::assertEquals($actor, $event->actor);
+                    self::assertFalse($event->resetPassword);
+                    self::assertTrue($event->resetTwoFactorAuth);
+
+                    return true;
+                }
+            ));
+
+        $this->service->resetTwoFactorAuth($user);
     }
 }

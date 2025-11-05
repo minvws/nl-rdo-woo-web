@@ -21,7 +21,7 @@ class DispositionSearchResultMapperTest extends MockeryTestCase
     private DispositionRepository&MockInterface $repository;
     private DispositionSearchResultMapper $mapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->baseMapper = \Mockery::mock(DossierSearchResultBaseMapper::class);
         $this->repository = \Mockery::mock(DispositionRepository::class);

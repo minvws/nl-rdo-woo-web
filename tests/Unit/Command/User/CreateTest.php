@@ -22,7 +22,7 @@ class CreateTest extends MockeryTestCase
     private Totp&MockInterface $totp;
     private EntityManagerInterface&MockInterface $entityManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->userService = \Mockery::mock(UserService::class);
         $this->totp = \Mockery::mock(Totp::class);

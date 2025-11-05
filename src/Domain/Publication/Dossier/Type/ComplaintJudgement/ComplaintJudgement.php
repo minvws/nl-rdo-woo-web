@@ -21,7 +21,7 @@ class ComplaintJudgement extends AbstractDossier implements EntityWithMainDocume
     /** @use HasMainDocument<ComplaintJudgementMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ComplaintJudgementMainDocument::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ComplaintJudgementMainDocument::class, cascade: ['remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?ComplaintJudgementMainDocument $document;

@@ -11,6 +11,7 @@ use App\Exception\InquiryLinkImportException;
 use App\Exception\InventoryReaderException;
 use App\Exception\TranslatableException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Webmozart\Assert\InvalidArgumentException;
 
 /**
  * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
@@ -58,7 +59,7 @@ readonly class InquiryLinkImporter
         InquiryLinkImportResult $result,
     ): void {
         $rowNr = 0;
-        foreach ($this->parser->parse($uploadedFile, $prefix) as $documentNr => $caseNrs) {
+        foreach ($this->parser->parse($uploadedFile, $prefix) as $documentNr => $caseNumberValues) {
             $rowNr++;
             try {
                 $documentCaseNrs = $this->documentRepository->getDocumentCaseNrs($documentNr);
@@ -66,7 +67,13 @@ readonly class InquiryLinkImporter
                     throw InquiryLinkImportException::forMissingDocument($documentNr);
                 }
 
-                $inquiryChangeset->updateCaseNrsForDocument($documentCaseNrs, new CaseNumbers($caseNrs));
+                try {
+                    $caseNumbers = new CaseNumbers($caseNumberValues);
+                } catch (InvalidArgumentException) {
+                    throw InquiryLinkImportException::forInvalidCaseNumber($rowNr, $caseNumberValues);
+                }
+
+                $inquiryChangeset->updateCaseNrsForDocument($documentCaseNrs, $caseNumbers);
             } catch (TranslatableException $exception) {
                 $result->addRowException($rowNr, $exception);
             }

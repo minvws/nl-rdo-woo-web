@@ -3,17 +3,40 @@
 
   & th {
     @apply text-left whitespace-nowrap;
+
+    &[scope="col"] {
+      @apply text-woo-dark-blue-600;
+    }
   }
 
   & th,
   & td {
-    @apply align-top border-b border-woo-platinum py-2.5 px-2 first:pl-0 last:pr-0;
-    @apply align-top border-b border-woo-platinum py-2.5;
+    @apply align-top border-b border-woo-gray-200 py-2.5 px-2;
+
+    .woo-fill-cell {
+        @apply block -my-2.5 py-2.5 -mx-2 px-2;
+    }
+
+    &:first-child {
+        @apply pl-0;
+
+        .woo-fill-cell {
+            @apply pl-0 ml-0;
+        }
+    }
+
+    &:last-child {
+        @apply pr-0;
+
+        .woo-fill-cell {
+            @apply pr-0 mr-0;
+        }
+    }
   }
 }
 
 @utility woo-table-cell-light {
-  @apply text-woo-dim-gray font-normal;
+  @apply text-woo-gray-600 font-normal;
 }
 
 @utility woo-table-cell--wrap {

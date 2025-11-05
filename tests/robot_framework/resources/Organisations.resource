@@ -34,9 +34,10 @@ Click Create Organisation
 
 Click Save Organisation
   Click  //*[@id="organisation_form_submit"]
-  ${error_present} =  Get Element Count  //div[@id="organisation_form-error"]
-  IF  ${error_present} > 0
+  ${csfr_error_visible} =  Get Element Count  //*[contains(.,'CSRF')]
+  IF  ${csfr_error_visible} > 0
     # Retry on CSRF error, temp workaround for https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
+    Log  message=CSRF error found, retrying the click.  level=WARN
     Select Responsible Department  E2E Test Department 1
     Click  //*[@id="organisation_form_submit"]
     Get Element States
@@ -82,7 +83,7 @@ Create New Organisation
     END
     Click Save Organisation
   END
-  RETURN  ${prefix}
+  RETURN  ${prefix}  ${organisation_name}
 
 Update Organisation
   [Documentation]  If no params are provided, random numbers are added to the fields and checkbox is swapped.
@@ -119,20 +120,31 @@ Open Organisation Details
 
 Click Save Prefixes
   Click  //*[@id="organisation_form_submit"]
-  ${error_present} =  Get Element Count  //div[@id="organisation_form-error"]
-  IF  ${error_present} > 0
-    # Retry, temp workaround for CSRF issue https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
+  ${csfr_error_visible} =  Get Element Count  //*[contains(.,'CSRF')]
+  IF  ${csfr_error_visible} > 0
+    # Retry on CSRF error, another instance of https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
+    Log  message=CSRF error found, retrying the click.  level=WARN
     Select Responsible Department  E2E Test Department 1
     Click  //*[@id="organisation_form_submit"]
     Get Element States
-    ...  //div[@id="organisation_form-error"]
+    ...  //*[contains(.,'CSRF')]
     ...  not contains
     ...  attached
     ...  message=Error shown, even after retry
   END
+  # The following check has been added to check if the save went succesful in parallel execution. If the check fails, the upper keyword will retry it.
+  ${prefix_save_error} =  Get Element Count  //*[contains(.,'The prefix can only be set on creation, never updated')]
+  IF  ${prefix_save_error} > 0
+    Log  message=Saving prefixes failed due to parallel execution  level=WARN
+  END
+  Should Not Be Equal As Integers  ${prefix_save_error}  1
 
 Add A Random Organisation Prefix
   [Documentation]  Adds a random organisation prefix and returns it. Assumes there are already more then 1 prefixes.
+  ${prefix} =  Wait Until Keyword Succeeds  3x  1s  Inner Keyword Add A Random Organisation Prefix
+  RETURN  ${prefix}
+
+Inner Keyword Add A Random Organisation Prefix
   Click Organisation Selector
   Click Manage Organisations
   Open Organisation Details  E2E Test Organisation

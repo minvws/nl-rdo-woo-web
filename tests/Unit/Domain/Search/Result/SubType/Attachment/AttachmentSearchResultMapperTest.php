@@ -23,7 +23,7 @@ class AttachmentSearchResultMapperTest extends MockeryTestCase
     private AttachmentViewFactory&MockInterface $attachmentViewFactory;
     private AttachmentSearchResultMapper $mapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);
         $this->attachmentViewFactory = \Mockery::mock(AttachmentViewFactory::class);

@@ -10,10 +10,10 @@ use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Doctrine\ORM\EntityManagerInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-readonly class SitemapDocumentSubscriber implements EventSubscriberInterface
+readonly class SitemapDocumentSubscriber
 {
     public function __construct(
         private EntityManagerInterface $doctrine,
@@ -21,16 +21,7 @@ readonly class SitemapDocumentSubscriber implements EventSubscriberInterface
     ) {
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            SitemapPopulateEvent::class => ['populate', 0],
-        ];
-    }
-
+    #[AsEventListener(event: SitemapPopulateEvent::class)]
     public function populate(SitemapPopulateEvent $event): void
     {
         $dossierQuery = $this->dossierRepository->createQueryBuilder('d')

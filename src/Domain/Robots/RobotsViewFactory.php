@@ -10,6 +10,7 @@ final readonly class RobotsViewFactory
 {
     public function __construct(
         private WooIndexSitemapService $wooIndexSitemapService,
+        private string $publicBaseUrl,
     ) {
     }
 
@@ -17,6 +18,7 @@ final readonly class RobotsViewFactory
     {
         return new RobotsViewModel(
             wooIndexSitemap: $this->wooIndexSitemapService->getCurrentSitemapIndexUrl(),
+            publicBaseUrl: $this->publicBaseUrl,
         );
     }
 }

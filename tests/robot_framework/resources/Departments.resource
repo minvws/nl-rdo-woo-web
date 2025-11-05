@@ -92,7 +92,11 @@ Click Title And Description Tab
   Click  //*[@data-e2e-name="tabs-landingspagina-button-1"]
 
 Click Logo Tab
+  Wait Until Keyword Succeeds  3x  1s  Inner Keyword Click Logo Tab
+
+Inner Keyword Click Logo Tab
   Click  //*[@data-e2e-name="tabs-landingspagina-button-2"]
+  Wait For Elements State  //*[@data-e2e-name="tabs-landingspagina-content-2"]  visible
 
 Click Submit Landingpage
   Click  //*[@id="landing_page_submit"]

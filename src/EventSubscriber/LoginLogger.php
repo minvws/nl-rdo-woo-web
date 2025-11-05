@@ -15,9 +15,6 @@ use Symfony\Component\Security\Http\Event\LoginFailureEvent;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
 
-#[AsEventListener(event: LoginSuccessEvent::class, method: 'onAuthenticationSuccess')]
-#[AsEventListener(event: LoginFailureEvent::class, method: 'onAuthenticationFailure')]
-#[AsEventListener(event: LogoutEvent::class, method: 'onLogout')]
 readonly class LoginLogger
 {
     public function __construct(
@@ -27,6 +24,7 @@ readonly class LoginLogger
     ) {
     }
 
+    #[AsEventListener(event: LogoutEvent::class)]
     public function onLogout(LogoutEvent $event): void
     {
         /** @var User|null $user */
@@ -40,11 +38,11 @@ readonly class LoginLogger
         ]);
     }
 
+    #[AsEventListener(event: LoginSuccessEvent::class)]
     public function onAuthenticationSuccess(LoginSuccessEvent $event): void
     {
-        /** @var User $user */
         $user = $event->getUser();
-        if (! $user) {
+        if (! $user instanceof User) {
             return;
         }
 
@@ -53,6 +51,7 @@ readonly class LoginLogger
         $event->setResponse(new RedirectResponse($landingUrl));
     }
 
+    #[AsEventListener(event: LoginFailureEvent::class)]
     public function onAuthenticationFailure(LoginFailureEvent $event): void
     {
         $exception = $event->getException();

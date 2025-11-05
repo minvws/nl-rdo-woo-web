@@ -11,6 +11,7 @@ import { jsEnabled } from '@utils';
 import { init } from './init';
 
 let autoSubmitFormInitializeSpy: MockInstance;
+let collapsiblesInitializeSpy: MockInstance;
 let detailsComponentsInitializeSpy: MockInstance;
 let mainNavInitializeSpy: MockInstance;
 let searchResultsInitializeSpy: MockInstance;
@@ -38,6 +39,12 @@ describe('the main "init" function for the admin', () => {
     }),
   }));
 
+  vi.mock('./collapsibles', () => ({
+    collapsibles: () => ({
+      initialize: collapsiblesInitializeSpy,
+    }),
+  }));
+
   vi.mock('./main-nav', () => ({
     mainNav: () => ({
       initialize: mainNavInitializeSpy,
@@ -52,6 +59,7 @@ describe('the main "init" function for the admin', () => {
 
   beforeEach(() => {
     autoSubmitFormInitializeSpy = vi.fn();
+    collapsiblesInitializeSpy = vi.fn();
     detailsComponentsInitializeSpy = vi.fn();
     mainNavInitializeSpy = vi.fn();
     searchResultsInitializeSpy = vi.fn();
@@ -71,6 +79,7 @@ describe('the main "init" function for the admin', () => {
 
   test('should initialize the functionalities used on the public side', () => {
     expect(autoSubmitFormInitializeSpy).not.toHaveBeenCalled();
+    expect(collapsiblesInitializeSpy).not.toHaveBeenCalled();
     expect(detailsComponentsInitializeSpy).not.toHaveBeenCalled();
     expect(mainNavInitializeSpy).not.toHaveBeenCalled();
     expect(searchResultsInitializeSpy).not.toHaveBeenCalled();
@@ -78,6 +87,7 @@ describe('the main "init" function for the admin', () => {
 
     init();
     expect(autoSubmitFormInitializeSpy).toHaveBeenCalled();
+    expect(collapsiblesInitializeSpy).toHaveBeenCalled();
     expect(detailsComponentsInitializeSpy).toHaveBeenCalled();
     expect(mainNavInitializeSpy).toHaveBeenCalled();
     expect(searchResultsInitializeSpy).toHaveBeenCalled();

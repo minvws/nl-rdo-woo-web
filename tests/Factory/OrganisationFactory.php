@@ -21,7 +21,7 @@ final class OrganisationFactory extends PersistentProxyObjectFactory
     {
         return [
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'departments' => [DepartmentFactory::random()],
+            'departments' => [DepartmentFactory::new()],
             'name' => self::faker()->text(255),
             'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];

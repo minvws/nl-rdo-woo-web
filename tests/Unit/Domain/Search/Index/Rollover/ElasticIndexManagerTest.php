@@ -18,7 +18,7 @@ class ElasticIndexManagerTest extends UnitTestCase
     private ElasticClientInterface&MockInterface $elasticClient;
     private MappingService&MockInterface $mappingService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
         $this->mappingService = \Mockery::mock(MappingService::class);

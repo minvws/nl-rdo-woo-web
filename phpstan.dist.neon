@@ -4,6 +4,7 @@ includes:
 parameters:
     tmpDir: ./.phpstan.cache
     treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: true
     doctrine:
         objectManagerLoader: phpstan-doctrine-orm-bootstrap.php
     paths:

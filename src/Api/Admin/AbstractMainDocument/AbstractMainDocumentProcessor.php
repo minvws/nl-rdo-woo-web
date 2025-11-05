@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
+use App\Api\Admin\ApiDossierAccessChecker;
 use App\Api\Admin\Attachment\AttachmentCreateDto;
 use App\Api\Admin\Attachment\AttachmentUpdateDto;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
@@ -30,8 +31,10 @@ abstract class AbstractMainDocumentProcessor implements ProcessorInterface
 {
     use HandleTrait;
 
-    public function __construct(MessageBusInterface $messageBus)
-    {
+    public function __construct(
+        MessageBusInterface $messageBus,
+        private readonly ApiDossierAccessChecker $dossierAccessChecker,
+    ) {
         $this->messageBus = $messageBus;
     }
 
@@ -51,6 +54,7 @@ abstract class AbstractMainDocumentProcessor implements ProcessorInterface
         Assert::object($data);
 
         $dossierId = Uuid::fromString((string) $dossierId);
+        $this->dossierAccessChecker->ensureUserIsAllowedToUpdateDossier($dossierId);
 
         try {
             return match (true) {

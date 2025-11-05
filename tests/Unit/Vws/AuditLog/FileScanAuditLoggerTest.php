@@ -21,7 +21,7 @@ final class FileScanAuditLoggerTest extends MockeryTestCase
     private AuditLogger $auditLogger;
     private FileScanAuditLogger $fileScanLogger;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->internalAuditLogger = \Mockery::mock(AuditLoggerInterface::class);
         $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();

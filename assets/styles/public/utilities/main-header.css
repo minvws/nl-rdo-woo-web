@@ -1,5 +1,5 @@
 @utility woo-main-header__nav-search {
-  @apply bg-woo-sea-blue;
+  @apply bg-woo-dark-blue-600;
 }
 
 @utility woo-main-header__nav-search-container {

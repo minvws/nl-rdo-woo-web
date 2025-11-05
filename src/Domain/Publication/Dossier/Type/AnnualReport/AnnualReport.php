@@ -31,7 +31,7 @@ class AnnualReport extends AbstractDossier implements EntityWithAttachments, Ent
     /** @use HasMainDocument<AnnualReportMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AnnualReportMainDocument::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AnnualReportMainDocument::class, cascade: ['remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?AnnualReportMainDocument $document;

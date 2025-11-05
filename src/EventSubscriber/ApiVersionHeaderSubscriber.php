@@ -9,7 +9,6 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-#[AsEventListener(event: KernelEvents::RESPONSE, method: 'addVersionHeader', priority: EventPriorities::PRE_SERIALIZE)]
 readonly class ApiVersionHeaderSubscriber
 {
     public function __construct(
@@ -17,6 +16,7 @@ readonly class ApiVersionHeaderSubscriber
     ) {
     }
 
+    #[AsEventListener(event: KernelEvents::RESPONSE, priority: EventPriorities::PRE_SERIALIZE)]
     public function addVersionHeader(ResponseEvent $event): void
     {
         $response = $event->getResponse()->headers;

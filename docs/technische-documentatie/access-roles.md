@@ -13,6 +13,12 @@
 
 Source of this information: [auth_matrix.yaml](../../config/packages/auth_matrix.yaml)
 
+## Super admin
+
+| **Prefix**  | **Roles**        | **Permissions**                        | **Filters**             |
+|-------------|------------------|----------------------------------------|-------------------------|
+| super_admin | ROLE_SUPER_ADMIN | create: true, read: true, update: true | organisation_only: true |
+
 ## User
 
 | **Prefix** | **Roles**               | **Permissions**                                      | **Filters**              |

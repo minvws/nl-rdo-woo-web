@@ -21,7 +21,7 @@ class RevokedUrlServiceTest extends UnitTestCase
     private string $publicUrl = 'http://test/';
     private RevokedUrlService $service;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->documentRepository = \Mockery::mock(DocumentRepository::class);
         $this->router = \Mockery::mock(RouterInterface::class);

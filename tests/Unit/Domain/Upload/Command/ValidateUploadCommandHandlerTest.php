@@ -33,7 +33,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
     private SevenZipFileStrategy&MockInterface $sevenZipFileStrategy;
     private ValidateUploadCommandHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->uploadEntityRepository = \Mockery::mock(UploadEntityRepository::class);
         $this->uploadService = \Mockery::mock(UploadService::class);
@@ -135,7 +135,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with($mimeType, $groupId)
+            ->with('pdf', $mimeType, $groupId)
             ->andReturnTrue();
 
         $expectedExceptionMessage = UploadValidationException::forFilesizeExceeded($uploadEntity, FileType::PDF)
@@ -181,7 +181,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
             ->with($filename, $contents)
             ->andReturn($mimeType = 'application/pdf');
 
-        $this->mimeTypeHelper->expects('isValidForUploadGroup')->with($mimeType, $groupId)->andReturnTrue();
+        $this->mimeTypeHelper->expects('isValidForUploadGroup')->with('pdf', $mimeType, $groupId)->andReturnTrue();
 
         $this->sevenZipFileStrategy->expects('supports')->with('pdf', $mimeType)->andReturnfalse();
 
@@ -224,7 +224,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with($mimeType = 'application/zip', $groupId)
+            ->with('zip', $mimeType = 'application/zip', $groupId)
             ->andReturnTrue();
 
         $this->mimeTypeHelper
@@ -270,7 +270,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with($mimeType, $groupId)
+            ->with('pdf', $mimeType, $groupId)
             ->andReturnFalse();
 
         $this->uploadService
@@ -312,7 +312,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with($mimeType, $groupId)
+            ->with('pdf', $mimeType, $groupId)
             ->andReturnTrue();
 
         $this->clamAvFileScanner->expects('scanResource')->with($uploadId, $data)->andReturn(FileScanResult::UNSAFE);
@@ -356,7 +356,7 @@ class ValidateUploadCommandHandlerTest extends MockeryTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with($mimeType, $groupId)
+            ->with('pdf', $mimeType, $groupId)
             ->andReturnTrue();
 
         $this->clamAvFileScanner->expects('scanResource')->with($uploadId, $data)->andReturn(FileScanResult::SAFE);

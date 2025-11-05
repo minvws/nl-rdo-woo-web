@@ -23,4 +23,6 @@ interface DossierAdminActionInterface
     public function supports(AbstractDossier $dossier): bool;
 
     public function execute(AbstractDossier $dossier): void;
+
+    public function needsConfirmation(): bool;
 }

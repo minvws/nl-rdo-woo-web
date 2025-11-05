@@ -3,19 +3,17 @@
 
     <ul>
         {% for recentDossier in recents %}
-        <li>
-            <a class="block py-4 group" href="{{ dossier_details_path(recentDossier.reference) }}">
-                <h3 class="woo-h3 mb-1 text-woo-sea-blue group-hover:text-woo-ateneo-blue group-focus:text-woo-ateneo-blue group-hover:underline group-focus:underline group-visited:text-woo-plum!">{{ recentDossier.reference.title | default('public.dossiers.decision.no_title' | trans) }}</h3>
-                <div>
-                    <div class="font-bold">
-                        {{ 'global.published_on' | trans }} <time datetime="{{ recentDossier.publicationDate | date("Y-m-d") }}">{{ recentDossier.publicationDate | format_date('long') }}</time>
-                    </div>
+            <li class="pb-4">
+                <h3 class="woo-h3">
+                    <a class="block pb-1 pt-4 woo-a woo-a--reverse-underline" href="{{ dossier_details_path(recentDossier.reference) }}">
+                        {{ recentDossier.reference.title | default('public.dossiers.decision.no_title' | trans) }}
+                    </a>
+                </h3>
+                <div class="font-bold">
+                    {{ 'global.published_on' | trans }} <time datetime="{{ recentDossier.publicationDate | date("Y-m-d") }}">{{ recentDossier.publicationDate | format_date('long') }}</time>
                 </div>
-                <div>
-                    {{ recentDossier.reference.type | trans }}
-                </div>
-            </a>
-        </li>
+                {{ recentDossier.reference.type | trans }}
+            </li>
         {% endfor %}
     </ul>
 

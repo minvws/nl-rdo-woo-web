@@ -25,7 +25,7 @@ class DocumentComparatorTest extends MockeryTestCase
     private WooDecision&MockInterface $dossier;
     private DocumentRepository&MockInterface $repository;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossier = \Mockery::mock(WooDecision::class);
         $this->dossier->shouldReceive('getDocumentPrefix')->andReturn('prefix');

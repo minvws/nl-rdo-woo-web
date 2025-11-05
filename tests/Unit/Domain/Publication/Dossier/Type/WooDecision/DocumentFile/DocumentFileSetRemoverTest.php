@@ -20,7 +20,7 @@ class DocumentFileSetRemoverTest extends UnitTestCase
     private EntityStorageService&MockInterface $entityStorageService;
     private DocumentFileSetRemover $service;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->documentFileSetRepository = \Mockery::mock(DocumentFileSetRepository::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);

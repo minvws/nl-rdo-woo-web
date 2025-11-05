@@ -33,6 +33,7 @@ tasks:
       HEADLESS: false
     cmds:
       - task: :up
+      - task: clear-results
       - uv run robot --outputdir results --include '{{.tag}}' --variable ENVIRONMENT:docker-local .
 
   run-test:
@@ -63,6 +64,7 @@ tasks:
       DEVICE: iPhone 14
     cmds:
       - task: :up
+      - task: clear-results
       - uv run robot --outputdir results --include '{{.tag}}' --variable ENVIRONMENT:docker-local .
 
   run-ci-sequential:
@@ -73,6 +75,7 @@ tasks:
       HEADLESS: true
     cmds:
       - task: :up
+      - task: clear-results
       - uv run robot --outputdir results --include '{{ .tag | default "ci" }}' --exclude 'init' --variable ENVIRONMENT:docker-local .
 
   run-ci-parallel:
@@ -84,12 +87,19 @@ tasks:
       HEADLESS: true
     cmds:
       - task: :up
-      - cmd: uv run pabot --processes 8 --outputdir results --output output-pabot.xml --log NONE --report NONE  --include 'parallel' --variable ENVIRONMENT:docker-local .
-        ignore_error: true
-      - uv run rebot --output results/output-pabot.xml --log NONE --report NONE --name 'Parallel run' --nostatusrc results/output-pabot.xml
-      - cmd: uv run robot --outputdir results --output output-robot.xml --log NONE --report NONE --name 'Sequential run' --include 'ci' --exclude 'parallel' --exclude 'init' --variable ENVIRONMENT:docker-local .
-        ignore_error: true
-      - uv run rebot --output results/output.xml --name 'Robot Framework' --log results/log.html --report results/report.html --nostatusrc results/output-robot.xml results/output-pabot.xml
+      - task: clear-results
+      - cmd: uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include ci --exclude init --ordering order.txt --variable ENVIRONMENT:docker-local .
+
+  run-api:
+    desc: Run all API Robot tests
+    env:
+      URL_PUBLIC: http://localhost:8000
+      URL_ADMIN: http://localhost:8000/balie
+      HEADLESS: true
+    cmds:
+      - task: :up
+      - task: clear-results
+      - cmd: uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --variable ENVIRONMENT:docker-local .
 
   check:
     desc: Run Robocop check
@@ -105,7 +115,7 @@ tasks:
     desc: Run for Robot customized cleansheet
     cmds:
       - task: :dc:shell
-        vars: { CLI_ARGS: "app bin/console woopie:dev:clean-sheet --force {{.CLI_ARGS}}" }
+        vars: { SUB_CMD: "app bin/console woopie:dev:clean-sheet --force {{.CLI_ARGS}}" }
       - task: :minio:clear-buckets
 
   sitemap:
@@ -117,15 +127,21 @@ tasks:
     desc: Load the VWS fixtures, used by the Covid19 theme page
     cmds:
       - task: :dc:shell
-        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --append --group=vws" }
+        vars: { SUB_CMD: "app bin/console doctrine:fixtures:load --no-interaction --append --group=vws" }
 
   fixtures:load:e2e:
     desc: Load the E2E fixtures
     cmds:
       - task: :dc:shell
-        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --append --group=e2e" }
+        vars: { SUB_CMD: "app bin/console doctrine:fixtures:load --no-interaction --append --group=e2e" }
 
   otp:
-    desc: Returns an OTP code from the local secret
+    desc: Returns an OTP code from the secret in .otp_secret
     cmds:
-      - uv run python -c "import os, pyotp; print(pyotp.TOTP(os.environ['SECRET_WOO_LOCAL']).now())"
+      - uv run python -c "import pyotp; print(pyotp.TOTP(open('.otp_secret').read().strip()).now())"
+
+  clear-results:
+    desc: Empties the results folder
+    internal: true
+    cmds:
+      - cmd: rm -rf results/*

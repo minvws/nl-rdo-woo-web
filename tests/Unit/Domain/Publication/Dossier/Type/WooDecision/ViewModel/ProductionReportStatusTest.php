@@ -18,7 +18,7 @@ class ProductionReportStatusTest extends MockeryTestCase
     private ProductionReportProcessRun&MockInterface $processRun;
     private ProductionReportStatus $status;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->processRun = \Mockery::mock(ProductionReportProcessRun::class);
         $this->dossier = \Mockery::mock(WooDecision::class);

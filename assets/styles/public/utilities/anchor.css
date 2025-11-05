@@ -1,8 +1,10 @@
 @utility woo-a {
-  @apply text-woo-sea-blue
-            underline
-            hover-focus:text-woo-ateneo-blue
-            visited:text-woo-plum visited:hover-focus:text-woo-plum;
+  @apply text-woo-dark-blue-600 underline;
+  @apply visited:text-woo-ruby-red-800 visited:hover-focus:text-woo-ruby-red-800;
+}
+
+@utility woo-a--reverse-underline {
+  @apply no-underline hover-focus:underline;
 }
 
 @utility woo-a--with-icon-after {
@@ -10,8 +12,8 @@
 
   &::after {
     @apply content-[''] inline-block w-6 h-6 ml-1 relative top-px align-text-bottom;
-    @apply bg-woo-sea-blue visited:bg-woo-plum;
-    @apply hover-focus:bg-woo-ateneo-blue visited:hover-focus:bg-woo-plum;
+    @apply bg-woo-dark-blue-600;
+    @apply visited:bg-woo-ruby-red-800 visited:hover-focus:bg-woo-ruby-red-800;
   }
 }
 
@@ -25,7 +27,7 @@
 }
 
 @utility woo-a--search-result {
-  @apply text-woo-japanese-laurel
+  @apply text-woo-dark-green-600
         hover-focus:no-underline
-        visited:text-woo-san-felix visited:hover-focus:text-woo-san-felix;
+        visited:text-woo-dark-green-700 visited:hover-focus:text-woo-dark-green-700;
 }

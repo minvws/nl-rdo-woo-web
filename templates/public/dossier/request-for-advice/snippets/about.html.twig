@@ -59,6 +59,16 @@
                     </td>
                 </tr>
             {% endif %}
+            {% if dossier.advisoryBodies | length > 0 %}
+                <tr>
+                    <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'public.dossiers.request-for-advice.advisory-bodies' | trans }}</th>
+                    <td>
+                        {% for advisoryBody in dossier.advisoryBodies %}
+                            <p>{{ advisoryBody }}</p>
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endif %}
             </tbody>
         </table>
     </div>

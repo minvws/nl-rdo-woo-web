@@ -17,7 +17,7 @@ class InquiryLinkImportParserTest extends MockeryTestCase
 
     private InquiryLinkImportParser $parser;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->parser = new InquiryLinkImportParser(
             new ExcelReaderFactory(),

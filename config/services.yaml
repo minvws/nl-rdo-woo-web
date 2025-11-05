@@ -1,10 +1,12 @@
 parameters:
     configPageLimit: '%env(int:DOCUMENT_PAGE_LIMIT)%'
     env(DOCUMENT_PAGE_LIMIT): '0'
+    env(HAS_FEATURE_WOO_GPT): 'false'
 
     rabbitmq_stats_url: '%env(RABBITMQ_STATS_URL)%'
 
     available_locales: ['en', 'nl']
+    app_mode: '%env(APP_MODE)%'
     public_base_url: '%env(PUBLIC_BASE_URL)%'
     thumbnail_limit: 50
 
@@ -12,6 +14,8 @@ imports:
     - { resource: services/default_autowire.yaml }
     - { resource: services/woo_index.yaml }
     - { resource: services/batch_archiver.yaml }
+    - { resource: services/openapi_validator.yaml }
+    - { resource: services/publication_api.yaml }
 
 services:
     _defaults:
@@ -23,7 +27,7 @@ services:
 
     App\Service\Security\ApplicationMode\ApplicationMode:
         factory: ['App\Service\Security\ApplicationMode\ApplicationMode', 'fromEnvVar']
-        arguments: [ '%env(APP_MODE)%' ]
+        arguments: [ '%app_mode%' ]
 
     App\Domain\Search\Index\Rollover\MappingService:
         arguments:
@@ -153,7 +157,7 @@ services:
 
     App\Service\Inventory\Sanitizer\InventoryDocumentMapper:
         arguments:
-            $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
+            $publicBaseUrl: '%public_base_url%'
 
     App\Service\HistoryService:
         arguments:
@@ -183,13 +187,12 @@ services:
         arguments:
             $bufferSampleSize: !php/const App\Domain\Upload\FileType\MimeTypeHelper::SAMPLE_SIZE
 
-    App\Api\OpenApi\TaggingResourceMetadataCollectionFactory:
-        decorates: api_platform.metadata.resource.metadata_collection_factory
-        arguments: ['@.inner']
+    App\Domain\Robots\RobotsViewFactory:
+        arguments:
+            $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
 
-    App\Api\OpenApi\GroupedOpenApiFactory:
-        decorates: api_platform.openapi.factory
-        arguments: ['@.inner']
+    Minvws\HorseBattery\HorseBattery: ~
+    Minvws\HorseBattery\PasswordGenerator: '@Minvws\HorseBattery\HorseBattery'
 
 when@dev:
     services: &services_dev

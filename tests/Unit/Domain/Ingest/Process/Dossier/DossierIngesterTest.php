@@ -18,7 +18,7 @@ class DossierIngesterTest extends MockeryTestCase
     private WooDecisionIngestStrategy&MockInterface $wooDecisionIngester;
     private DossierIngester $ingester;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->defaultIngester = \Mockery::mock(DefaultDossierIngestStrategy::class);
         $this->wooDecisionIngester = \Mockery::mock(WooDecisionIngestStrategy::class);

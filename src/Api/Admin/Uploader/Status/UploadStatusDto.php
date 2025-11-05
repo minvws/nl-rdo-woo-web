@@ -7,21 +7,31 @@ namespace App\Api\Admin\Uploader\Status;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\OpenApi\Factory\OpenApiFactory;
+use ApiPlatform\OpenApi\Model\Operation;
 use App\Domain\Upload\Exception\UploadNotFoundException;
 use App\Domain\Upload\UploadEntity;
 use App\Domain\Upload\UploadStatus;
 use Symfony\Component\Uid\Uuid;
 
-#[ApiResource()]
-#[Get(
-    uriTemplate: '/uploader/upload/{uploadId}/status',
-    stateless: false,
-    exceptionToStatus: [
-        UploadNotFoundException::class => 404,
+#[ApiResource(
+    operations: [
+        new Get(
+            uriTemplate: '/balie/api/uploader/upload/{uploadId}/status',
+            stateless: false,
+            exceptionToStatus: [
+                UploadNotFoundException::class => 404,
+            ],
+            security: 'user.getId() === object.userId',
+            name: 'api_uploader_status',
+            provider: UploadStatusProvider::class,
+            openapi: new Operation(
+                extensionProperties: [
+                    OpenApiFactory::API_PLATFORM_TAG => ['admin'],
+                ],
+            ),
+        ),
     ],
-    security: 'user.getId() === object.userId',
-    name: 'api_uploader_status',
-    provider: UploadStatusProvider::class,
 )]
 readonly class UploadStatusDto
 {

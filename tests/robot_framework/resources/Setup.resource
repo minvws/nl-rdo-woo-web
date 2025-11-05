@@ -10,14 +10,16 @@ Library             Process
 Library             String
 Library             Browser
 Library             DateTimeTZ
+Library             DependencyLibrary
 Library             OTP
 Resource            Admin.resource
 Resource            Public.resource
 
 
 *** Variables ***
-${ENVIRONMENT}  ${EMPTY}
-${HEADLESS}     ${EMPTY}
+${ENVIRONMENT}      ${EMPTY}
+${HEADLESS}         ${EMPTY}
+${OTP_SECRET_PATH}  .otp_secret
 
 
 *** Keywords ***
@@ -25,14 +27,9 @@ Suite Setup Generic
   [Documentation]  Creates an admin user if there isn't any, then logs in to the admin interface.
   Set DateTime Variables
   Set URL Variables
-  IF  '${ENVIRONMENT}' == 'docker-local'
-    # If run locally, the user should have been created manually using the tag=init, so we set the OTP code from the local env var.
+  IF  '${ENVIRONMENT}' == 'docker-local' or '${ENVIRONMENT}' == 'docker-ci'
     Open Browser And BaseUrl
-    Set Credential Variables  ${TST_BALIE_USER}  ${TST_BALIE_PASSWORD}  %{SECRET_WOO_LOCAL}
-  ELSE IF  '${ENVIRONMENT}' == 'docker-ci'
-    # Since this can be called through pabot as well, the user is created first in 00__Setup.robot and OTP secret stored in the env var.
-    ${admin_otp_secret} =  Get Environment Variable  ADMIN_OTP_SECRET  EMPTY
-    Open Browser And BaseUrl
+    ${admin_otp_secret} =  Get OTP Secret
     Set Credential Variables  ${TST_BALIE_USER}  ${TST_BALIE_PASSWORD}  ${admin_otp_secret}
   ELSE IF  '${ENVIRONMENT}' == 'test'
     Open Browser And BaseUrl  http_username=%{USERNAME_WOO_TEST}  http_password=%{PASSWORD_WOO_TEST}
@@ -40,9 +37,11 @@ Suite Setup Generic
   ELSE IF  '${ENVIRONMENT}' == 'acc'
     Open Browser And BaseUrl  http_username=%{USERNAME_WOO_STAGING}  http_password=%{PASSWORD_WOO_STAGING}
     Set Credential Variables  %{EMAIL_WOO_STAGING_BALIE}  %{PASSWORD_WOO_STAGING_BALIE}  %{SECRET_WOO_STAGING_BALIE}
+  ELSE
+    Fatal Error  Env var ENVIRONMENT returned unsupported value '${ENVIRONMENT}'.
   END
   Close Symfony Dev Bar
-  Set Browser Timeout  30s
+  Set Browser Timeout  1 min
 
 Set URL Variables
   VAR  ${URL_PUBLIC} =  %{URL_PUBLIC}  scope=global
@@ -64,7 +63,7 @@ Cleansheet
   END
   IF  ${include_users}
     ${args} =  Catenate  ${args}  --users
-    Clear Local Secret
+    Clear OTP Secret
   END
   Run Process  task rf:cleansheet ${args}  shell=True  alias=cleansheet
   ${result} =  Get Process Result  cleansheet
@@ -129,11 +128,16 @@ Close Symfony Dev Bar
   ${c} =  Get Element Count  //body/div/div[3]/button
   IF  ${c}>0  Click  //body/div/div[3]/button
 
-Clear Local Secret
-  VAR  ${command} =  sed -ri '' 's/SECRET_WOO_LOCAL=[0-9A-Z]*/SECRET_WOO_LOCAL=/g' ~/.zshrc
-  Run Process  ${command}  shell=True  alias=clear_secret
-  ${stdout}  ${stderr} =  Get Process Result  clear_secret  stdout=True  stderr=True
-  Should Be Empty  ${stderr}  Error clearing local secret: ${stdout}
+Store OTP Secret
+  [Arguments]  ${otp_secret}
+  Create File  ${OTP_SECRET_PATH}  ${otp_secret}
+
+Get OTP Secret
+  ${otp_secret} =  Get File  ${OTP_SECRET_PATH}
+  RETURN  ${otp_secret}
+
+Clear OTP Secret
+  Remove File  ${OTP_SECRET_PATH}
 
 Load VWS Fixtures
   Run Process  task rf:fixtures:load:vws  shell=True  alias=shell

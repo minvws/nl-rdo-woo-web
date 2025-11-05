@@ -38,7 +38,7 @@ readonly class ConfirmProductionReportUpdateHandler
         $this->processRunRepository->save($run, true);
 
         $fileInfo = $run->getFileInfo();
-        $this->historyService->addDossierEntry($command->dossier, 'dossier_update_inventory', [
+        $this->historyService->addDossierEntry($command->dossier->getId(), 'dossier_update_inventory', [
             'filetype' => $fileInfo->getType(),
             'filename' => $fileInfo->getName(),
             'filesize' => Utils::getFileSize($run),

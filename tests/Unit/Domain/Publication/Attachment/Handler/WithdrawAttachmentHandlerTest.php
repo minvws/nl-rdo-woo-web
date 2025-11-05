@@ -26,7 +26,7 @@ class WithdrawAttachmentHandlerTest extends MockeryTestCase
     private WithdrawAttachmentHandler $handler;
     private AttachmentDeleter&MockInterface $deleter;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);
         $this->attachmentDispatcher = \Mockery::mock(AttachmentDispatcher::class);

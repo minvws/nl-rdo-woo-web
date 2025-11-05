@@ -1,4 +1,5 @@
 {% set uploadStatus = dossier.uploadStatus %}
+{% set isQueuedOrRunning = inventoryStatus.isQueued or inventoryStatus.isRunning %}
 
 <div class="bhr-card js-inventory-status-wrapper">
     <div class="text-lg pb-2">
@@ -7,6 +8,18 @@
         <p class="bhr-form-help mt-2 mb-3">
             Upload de Zylab rapportage die bij dit besluit hoort. Zie de <a target="_blank" class="bhr-a" href="{{ PUBLIC_BASE_URL }}/documentatie/publiceren/woo-besluit/productierapport.html" data-e2e-name="doc-link">documentatie</a> voor een voorbeeldrapport en meer toelichting.
         </p>
+
+        {% if dossier.isInventoryOptional and not dossier.hasProductionReport and not isQueuedOrRunning %}
+            <div class="mb-4">
+                <twig:Admin:Alert type="info">
+                    <p>{{ 'admin.inventory.optional_explanation.1' | trans({ 'button_name': 'global.save_and_continue' | trans }) }}</p>
+
+                    <twig:block name="extra">
+                        <p><strong>{{ 'global.attention' | trans }}:</strong> {{ 'admin.inventory.optional_explanation.2' | trans }}</p>
+                    </twig:block>
+                </twig:Admin:Alert>
+            </div>
+        {% endif %}
     </div>
 
     <div
@@ -20,7 +33,7 @@
         {% include 'admin/dossier/woo-decision/documents/processrun.html.twig' with { dossier: dossier, inventoryStatus: inventoryStatus } %}
     </div>
 
-    {% if inventoryStatus.isQueued or inventoryStatus.isRunning %}
+    {% if isQueuedOrRunning %}
         <div class="pt-8 js-inventory-status-continue-later">
             <a href="{{ path('app_admin_dossiers') }}" class="bhr-btn-bordered-primary ">{{ 'admin.global.continue_later' | trans }}</a>
         </div>

@@ -6,7 +6,7 @@ namespace App\EventSubscriber;
 
 use App\Service\Search\Result\Result;
 use Knp\Component\Pager\Event\ItemsEvent;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 /**
  * This subscriber will trigger when the paginator is used.
@@ -17,15 +17,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * This listener is needed because the paginator by default cannot handle already sliced
  * objects in combination with the item count of the paginator.
  */
-class PaginationCountSubscriber implements EventSubscriberInterface
+class PaginationCountSubscriber
 {
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            'knp_pager.items' => 'itemCount',
-        ];
-    }
-
+    #[AsEventListener(event: 'knp_pager.items')]
     public function itemCount(ItemsEvent $event): void
     {
         if (! $event->target instanceof Result) {

@@ -21,7 +21,7 @@ class InventoryDocumentMapperTest extends UnitTestCase
     private string $baseUrl = 'http://foo.bar/';
     private InventoryDocumentMapper $documentMapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->translator = \Mockery::mock(TranslatorInterface::class);
         $this->urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);

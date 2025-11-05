@@ -18,7 +18,7 @@ final class GenerateArchivesDossierAdminActionTest extends MockeryTestCase
     private BatchDownloadService&MockInterface $batchDownloadService;
     private GenerateArchivesDossierAdminAction $action;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
 
@@ -41,6 +41,11 @@ final class GenerateArchivesDossierAdminActionTest extends MockeryTestCase
     {
         self::assertTrue($this->action->supports(\Mockery::mock(WooDecision::class)));
         self::assertFalse($this->action->supports(\Mockery::mock(Covenant::class)));
+    }
+
+    public function testNeedsConfirmation(): void
+    {
+        self::assertFalse($this->action->needsConfirmation());
     }
 
     public function testExecute(): void

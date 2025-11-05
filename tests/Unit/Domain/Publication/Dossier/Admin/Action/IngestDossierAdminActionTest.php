@@ -17,7 +17,7 @@ final class IngestDossierAdminActionTest extends MockeryTestCase
     private IngestDispatcher&MockInterface $ingestDispatcher;
     private IngestDossierAdminAction $action;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
 
@@ -40,6 +40,11 @@ final class IngestDossierAdminActionTest extends MockeryTestCase
     {
         self::assertTrue($this->action->supports(\Mockery::mock(WooDecision::class)));
         self::assertTrue($this->action->supports(\Mockery::mock(Covenant::class)));
+    }
+
+    public function testNeedsConfirmation(): void
+    {
+        self::assertFalse($this->action->needsConfirmation());
     }
 
     public function testExecute(): void

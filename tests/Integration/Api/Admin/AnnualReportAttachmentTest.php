@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Api\Admin;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Api\Admin\AnnualReportAttachment\AnnualReportAttachmentDto;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -32,7 +31,7 @@ use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;
 
-final class AnnualReportAttachmentTest extends ApiTestCase
+final class AnnualReportAttachmentTest extends AdminApiTestCase
 {
     use IntegrationTestTrait;
 
@@ -58,16 +57,10 @@ final class AnnualReportAttachmentTest extends ApiTestCase
 
         AnnualReportAttachmentFactory::createMany(5, ['dossier' => $dossier]);
 
-        $response = static::createClient()
-            ->loginUser($user, 'balie')
+        $response = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/annual-report-attachments', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         self::assertResponseIsSuccessful();
@@ -85,16 +78,10 @@ final class AnnualReportAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/annual-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         self::assertResponseIsSuccessful();
@@ -107,16 +94,10 @@ final class AnnualReportAttachmentTest extends ApiTestCase
 
         $dossier = AnnualReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/annual-report-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -125,8 +106,8 @@ final class AnnualReportAttachmentTest extends ApiTestCase
     public function testCreateAnnualReportAttachment(): void
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
-
-        $dossier = AnnualReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
+        $organisation = $user->getOrganisation();
+        $dossier = AnnualReportFactory::createOne(['organisation' => $organisation])->_real();
 
         $upload = UploadEntityFactory::createOne([
             'uploadGroupId' => UploadGroupId::ATTACHMENTS,
@@ -154,16 +135,13 @@ final class AnnualReportAttachmentTest extends ApiTestCase
                 \Mockery::type('string'),
             );
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::setActiveOrganisation($organisation);
+
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_POST,
                 sprintf('/balie/api/dossiers/%s/annual-report-attachments', $dossier->getId()),
                 [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
                     'json' => [
                         'uploadUuid' => $upload->getUploadId(),
                         'type' => AttachmentType::PROGRESS_REPORT->value,
@@ -175,16 +153,10 @@ final class AnnualReportAttachmentTest extends ApiTestCase
 
         self::assertResponseIsSuccessful();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/annual-report-attachments', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         self::assertResponseIsSuccessful();
@@ -201,18 +173,11 @@ final class AnnualReportAttachmentTest extends ApiTestCase
 
         $dossier = AnnualReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_POST,
                 sprintf('/balie/api/dossiers/%s/annual-report-attachments', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json' => $input,
-                ],
+                ['json' => $input],
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -380,16 +345,10 @@ final class AnnualReportAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/annual-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         self::assertResponseIsSuccessful();
@@ -403,16 +362,10 @@ final class AnnualReportAttachmentTest extends ApiTestCase
             'organisation' => $user->getOrganisation(),
         ])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/annual-report-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -431,16 +384,11 @@ final class AnnualReportAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        $updateResponse = static::createClient()
-            ->loginUser($user, 'balie')
+        $updateResponse = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_PUT,
                 sprintf('/balie/api/dossiers/%s/annual-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
                 [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
                     'json' => [
                         'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
                         'type' => $attachment->getType()->value,
@@ -454,16 +402,10 @@ final class AnnualReportAttachmentTest extends ApiTestCase
         self::assertResponseIsSuccessful();
         self::assertMatchesResourceItemJsonSchema(AnnualReportAttachmentDto::class);
 
-        $getResponse = static::createClient()
-            ->loginUser($user, 'balie')
+        $getResponse = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/annual-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         self::assertResponseIsSuccessful();
@@ -478,16 +420,10 @@ final class AnnualReportAttachmentTest extends ApiTestCase
 
         $dossier = AnnualReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/annual-report-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -511,18 +447,11 @@ final class AnnualReportAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_PUT,
                 sprintf('/balie/api/dossiers/%s/annual-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json' => $input,
-                ],
+                ['json' => $input],
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);

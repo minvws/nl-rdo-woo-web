@@ -1,7 +1,4 @@
 @utility bhr-a {
-  @apply text-bhr-blue-800 underline hover-focus:text-bhr-blue-900;
-
-  &:visited {
-    @apply text-bhr-grape-900 hover-focus:text-bhr-grape-900;
-  }
+  @apply text-bhr-blue-800 underline;
+  @apply visited:text-bhr-grape-900 visited:hover-focus:text-bhr-grape-900;
 }

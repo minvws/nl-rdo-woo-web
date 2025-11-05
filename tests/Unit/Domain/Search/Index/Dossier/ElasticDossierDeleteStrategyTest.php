@@ -15,7 +15,7 @@ final class ElasticDossierDeleteStrategyTest extends MockeryTestCase
     private ElasticService&MockInterface $elasticService;
     private ElasticDossierDeleteStrategy $strategy;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->elasticService = \Mockery::mock(ElasticService::class);
         $this->strategy = new ElasticDossierDeleteStrategy($this->elasticService);
@@ -30,5 +30,19 @@ final class ElasticDossierDeleteStrategyTest extends MockeryTestCase
         $this->elasticService->expects('removeDossier')->with($dossier);
 
         $this->strategy->delete($dossier);
+    }
+
+    public function testDeleteWithOverride(): void
+    {
+        /** @var ElasticDossierDeleteStrategy&MockInterface $strategy */
+        $strategy = \Mockery::mock(ElasticDossierDeleteStrategy::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $dossier = \Mockery::mock(Covenant::class);
+
+        $strategy->expects('delete')->with($dossier);
+
+        $strategy->deleteWithOverride($dossier);
     }
 }

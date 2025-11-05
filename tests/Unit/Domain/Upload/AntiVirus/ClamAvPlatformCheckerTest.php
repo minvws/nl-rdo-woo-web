@@ -17,7 +17,7 @@ final class ClamAvPlatformCheckerTest extends MockeryTestCase
     private ClamAvClientFactory&MockInterface $clientFactory;
     private ClamAvPlatformChecker $checker;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->client = \Mockery::mock(Client::class);
 

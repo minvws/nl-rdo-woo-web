@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Ingest\Content\Extractor\Tika;
 
+use App\Domain\Ingest\Content\ContentExtractLogContext;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
@@ -19,8 +20,11 @@ readonly class TikaService
     /**
      * @return array<string,string>
      */
-    public function extract(string $sourcePath, string $contentType = 'application/pdf'): array
-    {
+    public function extract(
+        string $sourcePath,
+        string $contentType = 'application/pdf',
+        ?ContentExtractLogContext $logContext = null,
+    ): array {
         try {
             $result = $this->client
                 ->put(
@@ -29,6 +33,7 @@ readonly class TikaService
                         'headers' => [
                             'Accept' => 'application/json',
                             'Content-Type' => $contentType,
+                            'X-Tika-OCRmaxFileSizeToOcr' => 0,
                         ],
                         'body' => file_get_contents($sourcePath),
                     ],
@@ -37,6 +42,7 @@ readonly class TikaService
             $this->logger->error('Tika failed', [
                 'sourcePath' => $sourcePath,
                 'exception' => $e->getMessage(),
+                'context' => $logContext,
             ]);
 
             return [];

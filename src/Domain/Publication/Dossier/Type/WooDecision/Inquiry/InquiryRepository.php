@@ -56,46 +56,35 @@ class InquiryRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * @return array<int, array{title: string, dossierNr: string, doccount: int}>
-     */
-    public function getDocCountsByDossier(Inquiry $inquiry): array
-    {
-        /**
-         * @var array<int, array{title: string, dossierNr: string, doccount: int}>
-         */
-        return $this->getEntityManager()->createQueryBuilder()
-            ->select('dos.dossierNr', 'dos.title')
-            ->addSelect('count(doc) as doccount')
-            ->from(WooDecision::class, 'dos')
-            ->where('dos.status IN (:statuses)')
-            ->innerJoin('dos.inquiries', 'inq', Join::WITH, 'inq.id = :inquiryId')
-            ->innerJoin('dos.documents', 'doc')
-            ->innerJoin('doc.inquiries', 'doc_inq', Join::WITH, 'doc_inq.id = :inquiryId')
-            ->groupBy('dos.id')
-            ->orderBy('dos.decisionDate', 'DESC')
-            ->setParameter('inquiryId', $inquiry->getId())
-            ->setParameter('statuses', [
-                DossierStatus::PREVIEW,
-                DossierStatus::PUBLISHED,
-            ])
-            ->getQuery()
-            ->getArrayResult()
-        ;
-    }
-
     public function getQueryWithDocCountAndDossierCount(Organisation $organisation): Query
     {
+        $documentCountDQL = sprintf(
+            '(%s) AS documentCount',
+            $this->getEntityManager()->createQueryBuilder()
+                ->select('count(doc_sub.id)')
+                ->from(Inquiry::class, 'inq_sub_doc')
+                ->join('inq_sub_doc.documents', 'doc_sub')
+                ->where('inq_sub_doc.id = inq.id')
+                ->getDQL()
+        );
+
+        $dossierCountDQL = sprintf(
+            '(%s) AS dossierCount',
+            $this->getEntityManager()->createQueryBuilder()
+                ->select('count(dos_sub.id)')
+                ->from(Inquiry::class, 'inq_sub_dos')
+                ->join('inq_sub_dos.dossiers', 'dos_sub')
+                ->where('inq_sub_dos.id = inq.id')
+                ->getDQL()
+        );
+
         return $this->createQueryBuilder('inq')
             ->select('inq as inquiry')
             ->addSelect('inv')
-            ->addSelect('count(distinct(doc.id)) as documentCount')
-            ->addSelect('count(distinct(dos.id)) as dossierCount')
-            ->where('inq.organisation = :organisation')
-            ->leftJoin('inq.dossiers', 'dos')
-            ->leftJoin('inq.documents', 'doc')
+            ->addSelect($documentCountDQL)
+            ->addSelect($dossierCountDQL)
             ->leftJoin('inq.inventory', 'inv')
-            ->groupBy('inq.id, inv.id')
+            ->where('inq.organisation = :organisation')
             ->orderBy('inq.updatedAt', 'DESC')
             ->setParameter('organisation', $organisation)
             ->getQuery()
@@ -158,23 +147,6 @@ class InquiryRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getSingleResult();
     }
 
-    public function countDocumentsForPubliclyAvailableDossiers(Inquiry $inquiry): int
-    {
-        return intval($this->createQueryBuilder('inq')
-            ->select('count(doc)')
-            ->join('inq.documents', 'doc')
-            ->join('doc.dossiers', 'dos')
-            ->where('inq.id = :inquiryId')
-            ->andWhere('dos.status IN (:statuses)')
-            ->setParameter('inquiryId', $inquiry->getId())
-            ->setParameter('statuses', [
-                DossierStatus::PREVIEW,
-                DossierStatus::PUBLISHED,
-            ])
-            ->getQuery()
-            ->getSingleScalarResult());
-    }
-
     public function getDocumentsForPubliclyAvailableDossiers(Inquiry $inquiry): QueryBuilder
     {
         return $this->getEntityManager()->createQueryBuilder()
@@ -217,5 +189,38 @@ class InquiryRepository extends ServiceEntityRepository
         }
 
         return $queryBuilder;
+    }
+
+    public function countPubliclyAvailableDossiers(Inquiry $inquiry): int
+    {
+        return intval($this->createQueryBuilder('inq')
+            ->select('count(dos)')
+            ->join('inq.dossiers', 'dos')
+            ->where('inq.id = :inquiryId')
+            ->andWhere('dos.status IN (:statuses)')
+            ->setParameter('inquiryId', $inquiry->getId())
+            ->setParameter('statuses', [
+                DossierStatus::PREVIEW,
+                DossierStatus::PUBLISHED,
+            ])
+            ->getQuery()
+            ->getSingleScalarResult());
+    }
+
+    public function getDossiersForInquiryQueryBuilder(Inquiry $inquiry): QueryBuilder
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('dos')
+            ->addSelect('COUNT(doc) as docCount')
+            ->from(WooDecision::class, 'dos')
+            ->join('dos.inquiries', 'inq', Join::WITH, 'inq = :inquiry')
+            ->leftJoin('dos.documents', 'doc', Join::WITH, 'inq MEMBER OF doc.inquiries')
+            ->where('dos.status IN (:statuses)')
+            ->setParameter('inquiry', $inquiry)
+            ->setParameter('statuses', [
+                DossierStatus::PREVIEW,
+                DossierStatus::PUBLISHED,
+            ])
+            ->groupBy('dos.id');
     }
 }

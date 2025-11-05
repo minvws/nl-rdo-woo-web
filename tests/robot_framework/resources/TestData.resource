@@ -26,12 +26,12 @@ ${PDF_TEMPLATE}                 ${TEST_DATA_ROOT}/template.html
 *** Keywords ***
 Generate Test Data Set
   [Documentation]  Generates test data and stores their location in environment variables with test scope.
-  [Arguments]  ${type}  ${has_attachment}=${FALSE}
+  [Arguments]  ${type}  ${has_attachment}=${FALSE}  ${case_id}=${EMPTY}
   IF  '${type}' == 'woo-decision'
     VAR  ${nr_of_documents} =  5
     ${location} =  Generate Test Documents  ${nr_of_documents}  ${has_attachment}
-    ${production_report_location} =  Create Test Production Report  ${location}
     Create Zip From Files In Directory  ${location}  filename=${location}/Archive.zip
+    ${production_report_location} =  Create Test Production Report  ${location}  ${case_id}
     VAR  ${PRODUCTION_REPORT} =  ${production_report_location}  scope=test
     VAR  ${DOCUMENTS} =  ${location}/Archive.zip  scope=test
     VAR  ${NUMBER_OF_DOCUMENTS} =  ${nr_of_documents}  scope=test
@@ -71,21 +71,21 @@ Generate Test Documents
 
 Create Test Production Report
   [Documentation]  Creates a production report Excel file for the PDFs found in the given test data location.
-  [Arguments]  ${test_data_location}
-  @{rows} =  Parse TXT Files Into Excel Rows  ${test_data_location}
+  [Arguments]  ${test_data_location}  ${case_id}=${EMPTY}
+  @{rows} =  Parse TXT Files Into Excel Rows  ${test_data_location}  ${case_id}
   VAR  ${excel_file} =  ${test_data_location}/production_report.xlsx
   Copy File  ${PRODUCTION_REPORT_TEMPLATE}  ${excel_file}
   Write Rows To Excel File  ${excel_file}  @{rows}
   RETURN  ${excel_file}
 
 Parse TXT Files Into Excel Rows
-  [Documentation]  All PDF files excluding any starting with VWS_, since those are used as attachments.
-  [Arguments]  ${test_data_location}
+  [Documentation]  All TXT files excluding any starting with VWS_, since those are used as attachments.
+  [Arguments]  ${test_data_location}  ${case_id}
   ${files} =  List Files In Directory  ${test_data_location}  pattern=[!V][!W][!S]*.txt
   VAR  @{rows} =
   FOR  ${file}  IN  @{files}
     ${filename}  ${_} =  Split String  ${file}  .
-    @{row_data} =  Create New Row Data  ${filename}
+    @{row_data} =  Create New Row Data  ${filename}  ${case_id}
     Append To List  ${rows}  ${row_data}
   END
   RETURN  @{rows}
@@ -107,7 +107,7 @@ Generate Dummy Production Report
   RETURN  ${excel_file}
 
 Create New Row Data
-  [Arguments]  ${document_id}
+  [Arguments]  ${document_id}  ${case_id}=${EMPTY}
   # Define each column
   VAR  ${matter} =  WOO
   VAR  ${family} =  1
@@ -123,7 +123,7 @@ Create New Row Data
   VAR  ${toelichting} =  ${EMPTY}
   VAR  ${publieke_link} =  ${EMPTY}
   VAR  ${gerelateerd_id} =  ${EMPTY}
-  VAR  ${zaaknummer} =  ${EMPTY}
+  VAR  ${zaaknummer} =  ${case_id}
   # Create array of fields
   VAR  @{row_data} =
   ...  ${document_id}

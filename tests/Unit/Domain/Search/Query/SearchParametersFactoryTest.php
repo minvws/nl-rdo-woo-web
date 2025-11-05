@@ -19,7 +19,7 @@ class SearchParametersFactoryTest extends MockeryTestCase
     private FacetInputFactory&MockInterface $facetInputFactory;
     private SearchParametersFactory $factory;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->facetInputFactory = \Mockery::mock(FacetInputFactory::class);
 

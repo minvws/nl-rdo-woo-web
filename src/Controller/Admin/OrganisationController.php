@@ -153,17 +153,22 @@ class OrganisationController extends AbstractController
     private function getPrefixValues(FormInterface $form): array
     {
         $prefixes = $form->get('documentPrefixes')->getData();
+
         if (! $prefixes instanceof Collection) {
             return [];
         }
 
-        return $prefixes->map(
-            static function ($prefix): string {
-                Assert::isInstanceOf($prefix, DocumentPrefix::class);
+        return $prefixes
+            ->filter(static function ($documentPrefix): bool {
+                Assert::isInstanceOf($documentPrefix, DocumentPrefix::class);
 
-                return $prefix->getPrefix();
-            },
-        )->toArray();
+                return $documentPrefix->issetPrefix();
+            })
+            ->map(static function ($documentPrefix): string {
+                Assert::isInstanceOf($documentPrefix, DocumentPrefix::class);
+
+                return $documentPrefix->getPrefix();
+            })->toArray();
     }
 
     /**

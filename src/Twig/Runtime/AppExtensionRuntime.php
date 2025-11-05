@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Twig\Runtime;
 
+use App\Service\EnvironmentService;
 use App\Service\Utils\Utils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -11,8 +12,11 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class AppExtensionRuntime implements RuntimeExtensionInterface
 {
-    public function __construct(protected string $projectPath, protected RequestStack $requestStack)
-    {
+    public function __construct(
+        private readonly string $projectPath,
+        private readonly RequestStack $requestStack,
+        private readonly EnvironmentService $environmentService,
+    ) {
     }
 
     public function size(string|int $value): string
@@ -41,5 +45,10 @@ class AppExtensionRuntime implements RuntimeExtensionInterface
         $request = $this->requestStack->getCurrentRequest() ?? new Request();
 
         return str_starts_with($request->getPathInfo(), '/balie');
+    }
+
+    public function isDev(): bool
+    {
+        return $this->environmentService->isDev();
     }
 }

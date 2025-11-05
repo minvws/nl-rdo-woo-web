@@ -1,13 +1,13 @@
 {% import 'public/macros/document.html.twig' as macro %}
 
-<div class="bg-woo-anti-flash-white p-6">
+<div class="bg-woo-gray-100 p-6">
     <div class="woo-readable-width" data-e2e-name="inquiry-info">
-    {% if dossiers.count > 0 %}
+    {% if dossiers.totalItemCount > 0 %}
         <p class="woo-p font-bold break-all">
             {{
                 'public.inquiry.decisions_for_case' | trans({
-                    '{are_or_is}': 'public.global.are_or_is' | trans({ 'count': dossiers.count }),
-                    '{number_of_decisions}': 'public.inquiries.number_of_decisions' | trans({ 'count': dossiers.count }),
+                    '{are_or_is}': 'public.global.are_or_is' | trans({ 'count': dossiers.totalItemCount }),
+                    '{number_of_decisions}': 'public.inquiries.number_of_decisions' | trans({ 'count': dossiers.totalItemCount }),
                     '{case_number}': inquiry.casenr,
                 })
             }}:
@@ -18,7 +18,7 @@
         <ul class="woo-ul">
             {% if documentCount.public > 0 %}
                 <li class="woo-li">
-                    {{ "public.inquiries.documents_made_public" | trans({ 'count': documentCount.public }) }}
+                    <span>{{ "public.inquiries.documents_made_public" | trans({ 'count': documentCount.public }) }}</span>
                     {{ macro.withdrawn_and_suspended_count(documentCount.public_withdrawn, documentCount.public_suspended) }}
                 </li>
             {% endif %}
@@ -39,7 +39,7 @@
 
         <ul class="mt-4">
             <li>
-                <a class="woo-a" href="{{ searchAllUrl }}">{{ 'global.search_through_all' | trans }}</a>
+                <a class="woo-a" href="{{ searchUrl }}" data-e2e-name="search-through-documents">{{ 'global.search_through_all' | trans }}</a>
             </li>
             <li>
                 <a class="woo-a" href="{{ path('app_inquiry_inventory_download', {'token': inquiry.token}) }}" data-e2e-name="download-inventory">{{ 'public.inquiries.download_inventory' | trans({'{casenumber}': inquiry.casenr}) }}</a>

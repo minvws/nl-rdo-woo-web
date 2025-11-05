@@ -35,6 +35,13 @@ auth_matrix:
                 organisation_only: false,
             }
         },
+        {
+            prefix: "super_admin",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                update: true,
+            }
+        },
 
       # -- Department ----------------------------------------------------------------------------
         {

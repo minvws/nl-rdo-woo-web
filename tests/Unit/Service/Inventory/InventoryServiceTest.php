@@ -25,7 +25,7 @@ class InventoryServiceTest extends MockeryTestCase
     private InventoryService $inventoryService;
     private ProductionReportProcessRun&MockInterface $run;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
@@ -126,6 +126,7 @@ class InventoryServiceTest extends MockeryTestCase
 
         $this->entityManager->expects('remove')->with($inventory);
         $this->entityManager->expects('remove')->with($productionReport);
+        $this->entityManager->expects('flush');
         $this->entityManager->expects('persist')->with($dossier);
 
         self::assertTrue(

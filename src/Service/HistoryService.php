@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\History\History;
@@ -32,12 +31,12 @@ class HistoryService
      * @param mixed[] $context
      */
     public function addDossierEntry(
-        AbstractDossier $dossier,
+        Uuid $dossierId,
         string $key,
         array $context = [],
         string $mode = self::MODE_BOTH,
     ): void {
-        $this->addEntry(self::TYPE_DOSSIER, $dossier->getId(), $key, $context, $mode, flush: true);
+        $this->addEntry(self::TYPE_DOSSIER, $dossierId, $key, $context, $mode, flush: true);
     }
 
     /**

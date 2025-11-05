@@ -21,7 +21,7 @@ class InventoryDataProviderFactoryTest extends MockeryTestCase
     private Document&MockInterface $docB;
     private InventoryDataProviderFactory $factory;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->documentRepository = \Mockery::mock(DocumentRepository::class);
         $this->docA = \Mockery::mock(Document::class);

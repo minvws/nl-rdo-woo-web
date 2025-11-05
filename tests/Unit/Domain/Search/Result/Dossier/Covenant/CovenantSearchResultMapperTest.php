@@ -21,7 +21,7 @@ class CovenantSearchResultMapperTest extends MockeryTestCase
     private CovenantRepository&MockInterface $repository;
     private CovenantSearchResultMapper $mapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->baseMapper = \Mockery::mock(DossierSearchResultBaseMapper::class);
         $this->repository = \Mockery::mock(CovenantRepository::class);

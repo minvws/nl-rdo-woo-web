@@ -24,7 +24,7 @@ class WooDecisionMapperTest extends MockeryTestCase
     private WooDecisionMapper $mapper;
     private ElasticDossierMapperInterface&MockInterface $defaultMapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->defaultMapper = \Mockery::mock(DefaultDossierMapper::class);
 

@@ -22,6 +22,9 @@ trait HasAttachments
         return $this->attachments;
     }
 
+    /**
+     * @param TAttachment $attachment
+     */
     public function addAttachment(AbstractAttachment $attachment): self
     {
         if (! $this->attachments->contains($attachment)) {
@@ -31,6 +34,9 @@ trait HasAttachments
         return $this;
     }
 
+    /**
+     * @param TAttachment $attachment
+     */
     public function removeAttachment(AbstractAttachment $attachment): self
     {
         $this->attachments->removeElement($attachment);

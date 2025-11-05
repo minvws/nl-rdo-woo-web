@@ -24,7 +24,7 @@ class SitemapAttachmentSubscriberTest extends UnitTestCase
     private AttachmentRepository&MockInterface $attachmentRepository;
     private SitemapAttachmentSubscriber $subscriber;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);

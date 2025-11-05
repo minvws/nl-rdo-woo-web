@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration;
 
+use App\Domain\Organisation\Organisation;
+use App\Service\Security\OrganisationSwitcher;
 use App\Tests\CarbonHelpers;
 use App\Tests\Faker\FakerFactory;
 use Faker\Generator;
@@ -43,5 +45,14 @@ trait IntegrationTestTrait
         }
 
         return $this->faker;
+    }
+
+    public static function setActiveOrganisation(Organisation $organisation): void
+    {
+        $organisationSwitcher = \Mockery::mock(OrganisationSwitcher::class);
+        $organisationSwitcher->expects('getActiveOrganisation')
+            ->andReturn($organisation);
+
+        self::getContainer()->set(OrganisationSwitcher::class, $organisationSwitcher);
     }
 }

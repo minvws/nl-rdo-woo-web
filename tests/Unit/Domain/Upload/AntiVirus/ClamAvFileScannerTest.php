@@ -25,7 +25,7 @@ final class ClamAvFileScannerTest extends MockeryTestCase
     private ClamAvFileScanner $scanner;
     private ClamAvClientFactory&MockInterface $clientFactory;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->clamAvClient = \Mockery::mock(Client::class);
         $this->clientFactory = \Mockery::mock(ClamAvClientFactory::class);

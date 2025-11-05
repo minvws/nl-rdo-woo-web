@@ -84,7 +84,9 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $dossier = $this->createWooDecision(
             status: DossierStatus::PUBLISHED,
             departments: $departments,
-            needsInventoryAndDocuments: $expectedNeedsInventoryAndDocuments = true,
+            isInventoryRequired: $expectedisInventoryRequired = true,
+            isInventoryOptional: $expectedisInventoryOptional = false,
+            canProvideInventory: $expectedcanProvideInventory = true,
             decisionDate: $expectedDecisionDate = $this->getRandomDate(),
             decisionDocument: $mainDocument,
             dateFrom: null,
@@ -124,7 +126,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $result = $this->factory->make($dossier);
 
         $this->assertInstanceOf(DossierCounts::class, $result->counts);
-        $this->assertSame($expectedNeedsInventoryAndDocuments, $result->needsInventoryAndDocuments);
+        $this->assertSame($expectedisInventoryRequired, $result->isInventoryRequired);
         $this->assertSame(DecisionType::NOT_PUBLIC, $result->decision);
         $this->assertSame($expectedDecisionDate, $result->decisionDate);
         $this->assertSame($expectedMainDocumentView, $result->mainDocument);
@@ -190,7 +192,9 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $dossier = $this->createWooDecision(
             status: DossierStatus::PREVIEW,
             departments: $departments,
-            needsInventoryAndDocuments: $expectedNeedsInventoryAndDocuments = true,
+            isInventoryRequired: $expectedisInventoryRequired = true,
+            isInventoryOptional: $expectedisInventoryOptional = false,
+            canProvideInventory: $expectedcanProvideInventory = true,
             decisionDate: $expectedDecisionDate = $this->getRandomDate(),
             decisionDocument: $mainDocument,
             dateFrom: null,
@@ -210,7 +214,9 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $result = $this->factory->make($dossier);
 
         $this->assertInstanceOf(DossierCounts::class, $result->counts);
-        $this->assertSame($expectedNeedsInventoryAndDocuments, $result->needsInventoryAndDocuments);
+        $this->assertSame($expectedisInventoryRequired, $result->isInventoryRequired);
+        $this->assertSame($expectedisInventoryOptional, $result->isInventoryOptional);
+        $this->assertSame($expectedcanProvideInventory, $result->canProvideInventory);
         $this->assertSame(DecisionType::NOT_PUBLIC, $result->decision);
         $this->assertSame($expectedDecisionDate, $result->decisionDate);
         $this->assertSame($expectedMainDocumentView, $result->mainDocument);
@@ -239,7 +245,9 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
     private function createWooDecision(
         DossierStatus $status,
         ArrayCollection $departments,
-        bool $needsInventoryAndDocuments,
+        bool $isInventoryRequired,
+        bool $isInventoryOptional,
+        bool $canProvideInventory,
         \DateTimeImmutable $decisionDate,
         WooDecisionMainDocument $decisionDocument,
         ?\DateTimeImmutable $dateFrom,
@@ -260,7 +268,9 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $dossier->shouldReceive('getTitle')->andReturn('my title');
         $dossier->shouldReceive('getDepartments')->andReturn($departments);
         $dossier->shouldReceive('getSummary')->andReturn('my summary');
-        $dossier->shouldReceive('needsInventoryAndDocuments')->andReturn($needsInventoryAndDocuments);
+        $dossier->shouldReceive('isInventoryRequired')->andReturn($isInventoryRequired);
+        $dossier->shouldReceive('isInventoryOptional')->andReturn($isInventoryOptional);
+        $dossier->shouldReceive('canProvideInventory')->andReturn($canProvideInventory);
         $dossier->shouldReceive('getDecision')->andReturn(DecisionType::NOT_PUBLIC);
         $dossier->shouldReceive('getDecisionDate')->andReturn($decisionDate);
         $dossier->shouldReceive('getMainDocument')->andReturn($decisionDocument);

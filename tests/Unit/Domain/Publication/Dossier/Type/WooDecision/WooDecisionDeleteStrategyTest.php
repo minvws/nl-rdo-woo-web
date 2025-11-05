@@ -29,7 +29,7 @@ class WooDecisionDeleteStrategyTest extends MockeryTestCase
     private InquiryService&MockInterface $inquiryService;
     private WooDecisionDeleteStrategy $strategy;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->documentService = \Mockery::mock(DocumentService::class);
@@ -87,6 +87,20 @@ class WooDecisionDeleteStrategyTest extends MockeryTestCase
         $this->inquiryService->expects('removeDossierFromInquiries')->with($dossier);
 
         $this->strategy->delete($dossier);
+    }
+
+    public function testDeleteWithOverride(): void
+    {
+        /** @var WooDecisionDeleteStrategy&MockInterface $strategy */
+        $strategy = \Mockery::mock(WooDecisionDeleteStrategy::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $dossier = \Mockery::mock(WooDecision::class);
+
+        $strategy->expects('delete')->with($dossier);
+
+        $strategy->deleteWithOverride($dossier);
     }
 
     public function testDeleteWithoutInventoryAndProcessRun(): void

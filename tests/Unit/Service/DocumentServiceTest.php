@@ -24,7 +24,7 @@ class DocumentServiceTest extends MockeryTestCase
     private SubTypeIndexer&MockInterface $subTypeIndexer;
     private HistoryService&MockInterface $historyService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
@@ -51,7 +51,7 @@ class DocumentServiceTest extends MockeryTestCase
         $document = \Mockery::mock(Document::class);
 
         $document->shouldReceive('getDossiers->contains')->with($dossier)->andReturnFalse();
-        $document->shouldReceive('getDossiers->count')->andReturn(0);
+        $document->shouldReceive('getDossiers->isEmpty')->andReturnTrue();
 
         $this->entityManager->expects('remove')->with($document);
         $this->entityManager->expects('flush');
@@ -70,7 +70,7 @@ class DocumentServiceTest extends MockeryTestCase
         $document = \Mockery::mock(Document::class);
 
         $document->expects('getDossiers->contains')->with($dossier)->andReturnTrue();
-        $document->shouldReceive('getDossiers->count')->andReturn(5);
+        $document->shouldReceive('getDossiers->isEmpty')->andReturnFalse();
 
         $dossier->expects('removeDocument')->with($document);
 
@@ -90,7 +90,7 @@ class DocumentServiceTest extends MockeryTestCase
         $dossier->expects('removeDocument')->with($document);
 
         $document->shouldReceive('getDossiers->contains')->with($dossier)->andReturnTrue();
-        $document->shouldReceive('getDossiers->count')->andReturn(0);
+        $document->shouldReceive('getDossiers->isEmpty')->andReturnTrue();
 
         $this->entityManager->expects('remove')->with($document);
         $this->entityManager->expects('persist')->with($dossier);

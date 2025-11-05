@@ -80,6 +80,8 @@
 
                 {% block dossier_link %}{% endblock %}
 
+                {% block dossier_advisory_bodies %}{% endblock %}
+
                 <twig:Admin:Definition term="{{ documentLabel }}">
                     {% if mainDocument is defined and mainDocument is not null %}
                         <twig:Admin:DownloadFile

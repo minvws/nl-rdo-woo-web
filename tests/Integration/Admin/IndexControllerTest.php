@@ -9,6 +9,7 @@ use App\Tests\Factory\UserFactory;
 use App\Tests\Integration\IntegrationTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 final class IndexControllerTest extends WebTestCase
 {
@@ -70,5 +71,40 @@ final class IndexControllerTest extends WebTestCase
             Roles::ROLE_DOSSIER_ADMIN => ['role' => Roles::ROLE_DOSSIER_ADMIN, 'expectedResponseCode' => 403],
             Roles::ROLE_VIEW_ACCESS => ['role' => Roles::ROLE_VIEW_ACCESS, 'expectedResponseCode' => 403],
         ];
+    }
+
+    public function testIndexWhenUserNotEnabled(): void
+    {
+        $client = static::createClient();
+
+        $user = UserFactory::new()
+            ->create([
+                'enabled' => false,
+                'changepwd' => false,
+                'roles' => [Roles::ROLE_SUPER_ADMIN],
+            ]);
+
+        $client
+            ->loginUser($user->_real(), 'balie')
+            ->request('GET', '/balie/dossiers');
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testIndexRedirectWithInvalidHostHeader(): void
+    {
+        $client = static::createClient();
+
+        $user = UserFactory::new()
+            ->isEnabled()
+            ->create(['roles' => [Roles::ROLE_SUPER_ADMIN]]);
+
+        $client
+            ->loginUser($user->_real(), 'balie')
+            ->request('GET', '/balie', [], [], [
+                'HTTP_HOST' => 'example.com',
+            ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
     }
 }

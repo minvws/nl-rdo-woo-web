@@ -148,8 +148,10 @@ defineExpose({
     <fieldset class="flex flex-col gap-2">
       <legend class="bhr-label">
         {{ props.legend }}
-        <span class="font-normal" v-if="props.minLength === 0">
-          (optioneel)</span
+        <span class="bhr-optional" v-if="props.minLength === 0">
+          <span class="sr-only">(</span>optioneel<span class="sr-only"
+            >)</span
+          ></span
         >
       </legend>
 

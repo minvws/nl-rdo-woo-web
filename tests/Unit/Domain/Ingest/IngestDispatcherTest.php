@@ -28,7 +28,7 @@ class IngestDispatcherTest extends UnitTestCase
     private MessageBusInterface&MockInterface $messageBus;
     private IngestDispatcher $dispatcher;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierRepository = \Mockery::mock(DossierRepository::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);

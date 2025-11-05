@@ -36,7 +36,7 @@ class DossierWorkflowManagerTest extends MockeryTestCase
     private InquiryService&MockInterface $inquiryService;
     private BatchDownloadService&MockInterface $batchDownloadService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->logger = \Mockery::mock(LoggerInterface::class);
 
@@ -118,7 +118,7 @@ class DossierWorkflowManagerTest extends MockeryTestCase
         ));
 
         $this->historyService->expects('addDossierEntry')->with(
-            $this->dossier,
+            $this->dossier->getId(),
             'dossier_state_published',
             ['old' => '%concept%', 'new' => '%published%'],
         );

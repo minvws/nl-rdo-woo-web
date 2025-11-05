@@ -43,7 +43,7 @@ final readonly class MainDocumentHistoryHandler
         $dossier = $this->repository->findOneByDossierId($event->dossierId);
 
         $this->historyService->addDossierEntry(
-            dossier: $dossier,
+            dossierId: $dossier->getId(),
             key: sprintf('%s.%s', $dossier->getType()->value, $key),
             context: [
                 'filename' => $event->filename,

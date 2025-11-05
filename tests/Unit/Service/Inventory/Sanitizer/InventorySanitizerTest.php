@@ -26,7 +26,7 @@ class InventorySanitizerTest extends MockeryTestCase
     private InventorySanitizer $sanitizer;
     private InventoryDataProviderInterface&MockInterface $dataProvider;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);

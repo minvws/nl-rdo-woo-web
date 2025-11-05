@@ -8,6 +8,7 @@ use App\Domain\Upload\AntiVirus\ClamAvFileScanner;
 use App\Domain\Upload\Extractor\Extractor;
 use App\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface;
 use App\Domain\Upload\UploadedFile;
+use App\Service\Storage\LocalFilesystem;
 use Symfony\Component\Mime\MimeTypesInterface;
 
 readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInterface
@@ -26,6 +27,7 @@ readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInterface
         private Extractor $sevenZipExtractor,
         private MimeTypesInterface $mimeTypes,
         private ClamAvFileScanner $scanner,
+        private LocalFilesystem $localFilesystem,
     ) {
     }
 
@@ -35,6 +37,10 @@ readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInterface
     public function process(UploadedFile $file): \Generator
     {
         foreach ($this->sevenZipExtractor->getFiles($file) as $extractedFile) {
+            if ($this->localFilesystem->isSymlink($extractedFile->getPathname())) {
+                continue;
+            }
+
             if ($this->scanner->scan($extractedFile->getPathname())->isNotSafe()) {
                 continue;
             }

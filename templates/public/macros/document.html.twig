@@ -20,36 +20,53 @@
     titleTranslationKey: the translation key of the title
 #}
 {% macro history_section(history, titleTranslationKey) %}
-     {% if history | length > 0 %}
+    {% set entries = history | filter(entry => history_trans(entry, "public") is not empty) %}
+    {% set firstSetItemCount = 5 %}
+    {% set setOne = entries[:firstSetItemCount] %}
+    {% set setTwo = entries[firstSetItemCount:] %}
+    {% if setOne | length > 0 %}
         <div class="mt-16">
             <h2 class="woo-h2 woo-h2-spacing">{{ titleTranslationKey | trans }}</h2>
 
-            <div class="woo-responsive-table" data-e2e-name="document-history">
-                <table class="woo-table">
-                    <caption class="sr-only">{{ titleTranslationKey | trans }}</caption>
-                    <thead>
-                        <tr>
-                            <th class="w-64 min-w-64" scope="col">{{ 'global.date' | trans() }}</th>
-                            <th class="min-w-64" scope="col">{{ "global.action" | trans() }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for entry in history %}
-                        {% set tr = history_trans(entry, "public") %}
-                        {% if tr is not empty %}
-                            <tr>
-                                <td class="woo-table-cell-light">{{ entry.createdDt | format_datetime(pattern="d LLLL y H:mm") }}</td>
-                                <td>
-                                    {{ tr }}
-                                </td>
-                            </tr>
-                        {% endif %}
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {{ _self.history_table(setOne, titleTranslationKey, 1) }}
+
+            {% if setTwo | length > 0 %}
+                {% set id = 'history-table-' ~ random() %}
+                <div class="js:hidden" id="{{ id }}">
+                    {{ _self.history_table(setTwo, titleTranslationKey, firstSetItemCount + 1) }}
+                </div>
+
+                <button class="js-collapsible-toggle font-bold py-4 text-woo-dark-blue-600 w-full text-center no-js:hidden border-b border-woo-gray-300" aria-controls="{{ id }}" aria-expanded="false" data-e2e-name="show-full-history">
+                    <span class="js-is-expanded hidden">{{ 'public.global.show_less_history' | trans }} <twig:Public:Icon name="chevron-up" /></span>
+                    <span class="js-is-collapsed">{{ 'public.global.show_full_history' | trans }} <twig:Public:Icon name="chevron-down" /></span>
+                </button>
+            {% endif %}
         </div>
     {% endif %}
+{% endmacro %}
+
+{% macro history_table(entries, titleTranslationKey, rowStartNumber) %}
+    <div class="woo-responsive-table" data-e2e-name="{{ rowStartNumber is same as(1) ? 'document-history' : 'document-history-follow-up' }}">
+        <table class="woo-table">
+            <caption class="sr-only">{{ titleTranslationKey | trans }} ({{ 'global.row' | trans | lower }} {{ rowStartNumber }} - {{ rowStartNumber + (entries | length) - 1}})</caption>
+            <thead class="{{ rowStartNumber is same as(1) ? '' : 'sr-only' }}">
+                <tr>
+                    <th scope="col">{{ 'global.date' | trans() }}</th>
+                    <th class="text-right!" scope="col">{{ "global.action" | trans() }}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entry in entries %}
+                <tr>
+                    <td class="w-64 min-w-64 woo-table-cell-light" data-e2e-name="document-history-date">{{ entry.createdDt | format_datetime(pattern="d LLLL y H:mm") }}</td>
+                    <td class="min-w-64 text-right" data-e2e-name="document-history-action">
+                        {{ history_trans(entry, "public") }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endmacro %}
 
 {% macro document_refers_to(documents) %}

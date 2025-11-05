@@ -20,7 +20,7 @@ class DossierServiceTest extends MockeryTestCase
     private SearchDispatcher&MockInterface $searchDispatcher;
     private DossierService $dossierService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
         $this->statusFactory = \Mockery::mock(WizardStatusFactory::class);

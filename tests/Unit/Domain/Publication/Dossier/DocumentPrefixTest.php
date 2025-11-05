@@ -47,4 +47,15 @@ class DocumentPrefixTest extends MockeryTestCase
 
         $this->assertTrue($entity->isArchived());
     }
+
+    public function testIssetPrefix(): void
+    {
+        $documentPrefix = new DocumentPrefix();
+
+        self::assertFalse($documentPrefix->issetPrefix());
+
+        $documentPrefix->setPrefix('foo');
+
+        self::assertTrue($documentPrefix->issetPrefix());
+    }
 }

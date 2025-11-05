@@ -1,9 +1,9 @@
 <div class="flex {{ css | default }}" {% if id is defined %}id="{{ id }}"{% endif %}>
     <span class="mr-2">
-        <twig:Public:Icon color="fill-woo-maximum-red" name="exclamation-filled" />
+        <twig:Public:Icon color="fill-woo-red-700" name="exclamation-filled" />
     </span>
 
-    <div class="text-woo-maximum-red leading-tight pt-0.5">
+    <div class="text-woo-red-700 leading-tight pt-0.5">
         {% block content %}{% endblock %}
     </div>
 </div>

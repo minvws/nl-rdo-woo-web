@@ -32,10 +32,10 @@ class Document extends AbstractPublicationItem
     )]
     private Collection $dossiers;
 
-    #[ORM\Column(length: 255, nullable: false)]
+    #[ORM\Column(length: 255, nullable: false, index: true)]
     private string $documentNr;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, index: true)]
     private ?\DateTimeImmutable $documentDate = null;
 
     #[ORM\Column(nullable: true)]

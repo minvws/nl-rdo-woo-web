@@ -13,6 +13,7 @@ use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use App\Service\Security\Authorization\Entry;
 use App\Service\Security\Roles;
+use App\Service\Security\User;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -45,8 +46,12 @@ class AuthMatrixVoterTest extends MockeryTestCase
             $authorizationMatrix->expects('isAuthorized')->with($prefix, $permission)->andReturnFalse();
         }
 
+        $user = \Mockery::mock(User::class);
+        $user->shouldReceive('isEnabled')->andReturnTrue();
+
         $voter = new AuthMatrixVoter($authorizationMatrix, $entryStore);
         $token = \Mockery::mock(TokenInterface::class);
+        $token->shouldReceive('getUser')->andReturn($user);
 
         self::assertEquals($expectedResult, $voter->vote($token, null, [$input]));
     }
@@ -88,8 +93,12 @@ class AuthMatrixVoterTest extends MockeryTestCase
         $authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
         $entryStore = \Mockery::mock(AuthorizationEntryRequestStore::class);
 
+        $user = \Mockery::mock(User::class);
+        $user->shouldReceive('isEnabled')->andReturnTrue();
+
         $voter = new AuthMatrixVoter($authorizationMatrix, $entryStore);
         $token = \Mockery::mock(TokenInterface::class);
+        $token->shouldReceive('getUser')->andReturn($user);
 
         self::assertEquals(VoterInterface::ACCESS_ABSTAIN, $voter->vote($token, new \stdClass(), ['AuthMatrix.dossier.read']));
     }
@@ -99,8 +108,12 @@ class AuthMatrixVoterTest extends MockeryTestCase
         $authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
         $entryStore = \Mockery::mock(AuthorizationEntryRequestStore::class);
 
+        $user = \Mockery::mock(User::class);
+        $user->shouldReceive('isEnabled')->andReturnTrue();
+
         $voter = new AuthMatrixVoter($authorizationMatrix, $entryStore);
         $token = \Mockery::mock(TokenInterface::class);
+        $token->shouldReceive('getUser')->andReturn($user);
 
         $entry = \Mockery::mock(Entry::class);
         $authorizationMatrix->shouldReceive('isAuthorized')->with('dossier', 'read')->andReturnTrue();
@@ -123,8 +136,12 @@ class AuthMatrixVoterTest extends MockeryTestCase
         $authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
         $entryStore = \Mockery::mock(AuthorizationEntryRequestStore::class);
 
+        $user = \Mockery::mock(User::class);
+        $user->shouldReceive('isEnabled')->andReturnTrue();
+
         $voter = new AuthMatrixVoter($authorizationMatrix, $entryStore);
         $token = \Mockery::mock(TokenInterface::class);
+        $token->shouldReceive('getUser')->andReturn($user);
 
         $entry = \Mockery::mock(Entry::class);
         $authorizationMatrix->shouldReceive('isAuthorized')->with('dossier', 'read')->andReturnTrue();
@@ -147,8 +164,12 @@ class AuthMatrixVoterTest extends MockeryTestCase
         $authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
         $entryStore = \Mockery::mock(AuthorizationEntryRequestStore::class);
 
+        $user = \Mockery::mock(User::class);
+        $user->shouldReceive('isEnabled')->andReturnTrue();
+
         $voter = new AuthMatrixVoter($authorizationMatrix, $entryStore);
         $token = \Mockery::mock(TokenInterface::class);
+        $token->shouldReceive('getUser')->andReturn($user);
 
         $entry = \Mockery::mock(Entry::class);
         $authorizationMatrix->shouldReceive('isAuthorized')->with('dossier', 'read')->andReturnTrue();
@@ -171,14 +192,40 @@ class AuthMatrixVoterTest extends MockeryTestCase
         $authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
         $entryStore = \Mockery::mock(AuthorizationEntryRequestStore::class);
 
+        $user = \Mockery::mock(User::class);
+        $user->shouldReceive('isEnabled')->andReturnTrue();
+
         $voter = new AuthMatrixVoter($authorizationMatrix, $entryStore);
         $token = \Mockery::mock(TokenInterface::class);
+        $token->shouldReceive('getUser')->andReturn($user);
 
         $entry = \Mockery::mock(Entry::class);
         $authorizationMatrix->shouldReceive('isAuthorized')->with('dossier', 'read')->andReturnTrue();
         $authorizationMatrix->shouldReceive('getAuthorizedMatches')->with('dossier', 'read')->andReturn([$entry]);
         $authorizationMatrix->shouldReceive('hasFilter')->with(AuthorizationMatrixFilter::UNPUBLISHED_DOSSIERS)->andReturnFalse();
         $entryStore->expects('storeEntries')->with($entry);
+
+        $subject = \Mockery::mock(AbstractDossier::class);
+        $subject->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
+
+        $organisation = \Mockery::mock(Organisation::class);
+        $subject->shouldReceive('getOrganisation')->andReturn($organisation);
+        $authorizationMatrix->shouldReceive('getActiveOrganisation')->andReturn($organisation);
+
+        self::assertEquals(VoterInterface::ACCESS_DENIED, $voter->vote($token, $subject, ['AuthMatrix.dossier.read']));
+    }
+
+    public function testAccessDeniedOnSubjectIfUserIsDisabled(): void
+    {
+        $authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
+        $entryStore = \Mockery::mock(AuthorizationEntryRequestStore::class);
+
+        $user = \Mockery::mock(User::class);
+        $user->shouldReceive('isEnabled')->andReturnFalse();
+
+        $voter = new AuthMatrixVoter($authorizationMatrix, $entryStore);
+        $token = \Mockery::mock(TokenInterface::class);
+        $token->shouldReceive('getUser')->andReturn($user);
 
         $subject = \Mockery::mock(AbstractDossier::class);
         $subject->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);

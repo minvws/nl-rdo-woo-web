@@ -23,7 +23,7 @@ class SitemapMainDocumentSubscriberTest extends UnitTestCase
     private MainDocumentRepository&MockInterface $mainDocumentRepository;
     private SitemapMainDocumentSubscriber $subscriber;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->mainDocumentRepository = \Mockery::mock(MainDocumentRepository::class);

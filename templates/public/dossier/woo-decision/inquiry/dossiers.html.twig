@@ -1,0 +1,14 @@
+{% extends 'public/base.html.twig' %}
+{% import "public/macros/document.html.twig" as macro %}
+
+{% set page_title = 'public.inquiry.dossiers_title' | trans({'{case_number}': inquiry.casenr}) %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-h1">{{ page_title }}</h1>
+
+    <div class="mt-12">
+        {% include "public/dossier/woo-decision/inquiry/snippets/dossiers.html.twig" with {pagination: true, sortable: true} %}
+    </div>
+</div>
+{% endblock %}

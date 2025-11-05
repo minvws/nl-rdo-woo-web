@@ -19,4 +19,9 @@ readonly class ElasticDossierDeleteStrategy implements DossierDeleteStrategyInte
     {
         $this->elasticService->removeDossier($dossier);
     }
+
+    public function deleteWithOverride(AbstractDossier $dossier): void
+    {
+        $this->delete($dossier);
+    }
 }

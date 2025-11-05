@@ -144,6 +144,19 @@ describe('The "<UploadDocuments />" component', () => {
           ],
           missingDocuments: ['3.pdf'],
         }),
+      )
+      .mockImplementationOnce(() =>
+        createStatusResponse({
+          canProcess: false,
+          currentDocumentsCount: 3,
+          uploadedFiles: [
+            { id: '1', name: '1.pdf', mimeType: 'application/pdf' },
+            { id: '2', name: '2.pdf', mimeType: 'application/pdf' },
+            { id: '3', name: '3.pdf', mimeType: 'application/pdf' },
+          ],
+          missingDocuments: [],
+          status: UploadStatus.Completed,
+        }),
       );
   });
 
@@ -264,6 +277,10 @@ describe('The "<UploadDocuments />" component', () => {
     await waitForNumberOfStatusResponses(4);
 
     expect(getIsProcessingComponent(component).exists()).toBe(true);
+
+    await waitForNumberOfStatusResponses(1);
+
+    expect(getIsProcessingComponent(component).exists()).toBe(false);
   });
 
   describe('the max combined size exceeded component', () => {

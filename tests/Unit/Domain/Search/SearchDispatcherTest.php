@@ -20,7 +20,7 @@ class SearchDispatcherTest extends UnitTestCase
     private MessageBusInterface&MockInterface $messageBus;
     private SearchDispatcher $dispatcher;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
 

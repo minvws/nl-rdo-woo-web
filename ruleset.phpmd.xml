@@ -41,11 +41,6 @@
             <property name="exceptions" description="Comma-separated list of exceptions" value="f,q,dt,qb,e,em,id,io,to,it,i,a,b,fn,fp"/>
         </properties>
     </rule>
-    <rule ref="rulesets/naming.xml/LongVariable">
-        <properties>
-            <property name="maximum" value="30"/>
-        </properties>
-    </rule>
     <rule ref="rulesets/naming.xml/LongClassName">
         <properties>
             <property name="maximum" value="50"/>

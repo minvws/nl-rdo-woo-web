@@ -1,0 +1,55 @@
+# https;?/taskfile.dev
+version: "3"
+
+vars:
+  CERTS_IMAGE_NAME: ghcr.io/minvws/nl-rdo-woo-web-private/certs
+  CERTS_IMAGE_VERSION: local
+  G4_TRIAL_VERSION: master
+
+tasks:
+
+  build:
+    desc: Build the certs container
+    cmds:
+      - echo "G4_TRIAL_VERSION={{.G4_TRIAL_VERSION}}"
+      - docker build
+        --tag {{.CERTS_IMAGE_NAME}}:{{.CERTS_IMAGE_VERSION}}
+        -f docker/certs/Dockerfile
+        --build-arg G4_TRIAL_VERSION={{.G4_TRIAL_VERSION}}
+        .
+
+  shell:
+    desc: Open a shell within the certs container
+    cmds:
+      - task: build
+      - docker run
+        --rm
+        --interactive
+        --tty
+        --volume {{.BASE_PATH}}/docker/certs/config.yaml:/usr/src/g4-trial/config.yaml
+        --volume {{.BASE_PATH}}/docker/certs/enrollments:/usr/src/enrollments
+        --volume {{.BASE_PATH}}/docker/certs/scripts:/usr/src/scripts
+        {{.CERTS_IMAGE_NAME}}:{{.CERTS_IMAGE_VERSION}}
+        /bin/bash
+
+  gen:
+    desc: Generate the mTLS PKI (local) certificates
+    summary: |
+      Generate the mTLS PKI (local) certificates.
+
+      The files can be found at `docker/certs/generated`.
+    set: [e]
+    cmds:
+      - task: build
+      - rm -rf {{.BASE_PATH}}/docker/certs/generated
+      - mkdir -p {{.BASE_PATH}}/docker/certs/generated
+      - |
+        CONTAINER_ID=$(docker run \
+          --rm \
+          --detach \
+          --volume {{.BASE_PATH}}/docker/certs/config.yaml:/usr/src/g4-trial/config.yaml \
+          --volume {{.BASE_PATH}}/docker/certs/enrollments:/usr/src/enrollments \
+          --volume {{.BASE_PATH}}/docker/certs/scripts:/usr/src/scripts \
+          {{.CERTS_IMAGE_NAME}}:{{.CERTS_IMAGE_VERSION}})
+        trap "docker stop $CONTAINER_ID || true" EXIT
+        docker cp $CONTAINER_ID:/usr/src/result/. {{.BASE_PATH}}/docker/certs/generated

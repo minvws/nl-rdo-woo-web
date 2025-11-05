@@ -2,12 +2,12 @@
 
 {% block body %}
     <div class="bhr-container bhr-container--sm">
-        {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
+        {% include 'admin/shared/page-title.html.twig' %}
 
         <div class="bhr-card">
             {% if workflow.canWithdraw %}
                 <div class="bhr-form-row text-bhr-gray-700">
-                    <p>Is het document opnieuw beoordeeld en zijn er andere lakkingen toegepast? Vervang dan het gelakte document. Let op: als andere uitzonderingsgronden zijn toegepast, vervang dan ook het productierapport bij dit besluit.</p>
+                    <p>Is het document opnieuw beoordeeld en zijn er andere lakkingen toegepast? Vervang dan het gelakte document. Let op: als andere beoordelingsgronden zijn toegepast, vervang dan ook het productierapport bij dit besluit.</p>
                 </div>
                 {{ form(form) }}
             {% elseif document.withDrawn %}

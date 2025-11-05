@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Api\Admin;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Api\Admin\ComplaintJudgementMainDocument\ComplaintJudgementMainDocumentDto;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -27,7 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints\Choice;
 
-final class ComplaintJudgementMainDocumentTest extends ApiTestCase
+final class ComplaintJudgementMainDocumentTest extends AdminApiTestCase
 {
     use IntegrationTestTrait;
 
@@ -47,20 +46,14 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
 
     public function testGetComplaintJudgementDocumentReturnsEmptySetUntilCreated(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $dossier = ComplaintJudgementFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        $response = static::createClient()
-            ->loginUser($user, 'balie')
+        $response = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/complaint-judgement-document', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
         $this->assertCount(0, $response->toArray(), 'Expected no main documents yet');
 
@@ -99,32 +92,19 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $upload->getUploadId(),
         ];
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_POST,
                 sprintf('/balie/api/dossiers/%s/complaint-judgement-document', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json' => $data,
-                ],
+                ['json' => $data],
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
-        $response = static::createClient()
-            ->loginUser($user, 'balie')
+        $response = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/complaint-judgement-document', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
         self::assertResponseIsSuccessful();
         $this->assertCount(1, $response->toArray(), 'Expected one main document');
@@ -135,7 +115,7 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
 
     public function testUpdateComplaintJudgementDocument(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $document = ComplaintJudgementMainDocumentFactory::createOne([
             'fileInfo' => FileInfoFactory::createOne([
@@ -146,8 +126,7 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        $updateResponse = static::createClient()
-            ->loginUser($user, 'balie')
+        $updateResponse = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_PUT,
                 sprintf(
@@ -156,10 +135,6 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
                     $document->getId(),
                 ),
                 [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
                     'json' => [
                         'name' => 'foobar.pdf',
                     ],
@@ -169,8 +144,7 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         self::assertMatchesResourceItemJsonSchema(ComplaintJudgementMainDocumentDto::class);
 
-        $getResponse = static::createClient()
-            ->loginUser($user, 'balie')
+        $getResponse = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf(
@@ -178,11 +152,6 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
                     $document->getDossier()->getId(),
                     $document->getId(),
                 ),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         self::assertResponseIsSuccessful();
@@ -193,7 +162,7 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
 
     public function testComplaintJudgementDocumentCanBeDeletedAfterCreation(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $dossier = ComplaintJudgementFactory::createOne([
             'organisation' => $user->getOrganisation(),
@@ -202,8 +171,7 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
 
         $complaintJudgementMainDocument = ComplaintJudgementMainDocumentFactory::createOne(['dossier' => $dossier]);
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_DELETE,
                 sprintf(
@@ -211,18 +179,13 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
                     $dossier->getId(),
                     $complaintJudgementMainDocument->getId(),
                 ),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }
 
     public function testComplaintJudgementDocumentCannotBeDeletedForAPublishedDossier(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $dossier = ComplaintJudgementFactory::createOne([
             'organisation' => $user->getOrganisation(),
@@ -233,23 +196,17 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
             'dossier' => $dossier,
         ]);
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/complaint-judgement-document', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
         self::assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
     }
 
     public function testCreateComplaintJudgementDocumentOnlyAcceptsValidTypeValues(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $dossier = ComplaintJudgementFactory::createOne([
             'organisation' => $user->getOrganisation(),
@@ -264,18 +221,12 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
             'uploadUuid' => Uuid::v6(),
         ];
 
-        static::createClient()
+        self::createAdminApiClient($user)
             ->loginUser($user, 'balie')
             ->request(
                 Request::METHOD_POST,
                 sprintf('/balie/api/dossiers/%s/complaint-judgement-document', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json' => $data,
-                ],
+                ['json' => $data],
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -287,7 +238,7 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
 
     public function testUpdateComplaintJudgementDocumentOnlyAcceptsValidTypeValues(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $document = ComplaintJudgementMainDocumentFactory::createOne([
             'fileInfo' => FileInfoFactory::createOne([
@@ -298,8 +249,7 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_PUT,
                 sprintf(
@@ -308,10 +258,6 @@ final class ComplaintJudgementMainDocumentTest extends ApiTestCase
                     $document->getId(),
                 ),
                 [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
                     'json' => [
                         'name' => 'foobar.pdf',
                         'type' => AttachmentType::PROGRESS_REPORT->value,

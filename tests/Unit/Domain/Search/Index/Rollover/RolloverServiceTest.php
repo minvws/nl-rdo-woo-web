@@ -26,7 +26,7 @@ class RolloverServiceTest extends UnitTestCase
     private RolloverCounter&MockInterface $counter;
     private MappingService&MockInterface $mappingService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
         $this->mappingService = \Mockery::mock(MappingService::class);

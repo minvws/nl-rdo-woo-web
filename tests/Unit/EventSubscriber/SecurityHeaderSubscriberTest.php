@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Unit\EventSubscriber;
 
 use App\EventSubscriber\SecurityHeaderSubscriber;
+use App\Service\EnvironmentService;
 use App\Service\Security\ApplicationMode\ApplicationMode;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,9 +21,17 @@ class SecurityHeaderSubscriberTest extends MockeryTestCase
 {
     use MatchesSnapshots;
 
+    private EnvironmentService&MockInterface $environmentService;
+
+    protected function setUp(): void
+    {
+        $this->environmentService = \Mockery::mock(EnvironmentService::class);
+        $this->environmentService->shouldReceive('isDev')->andReturn(false);
+    }
+
     public function testOnKernelRequestSetsNonce(): void
     {
-        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::PUBLIC);
+        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::PUBLIC, $this->environmentService);
 
         $request = new Request();
 
@@ -36,7 +46,7 @@ class SecurityHeaderSubscriberTest extends MockeryTestCase
     #[DataProvider('cspHeadersData')]
     public function testOnKernelResponseSetsCspHeadersForFrontend(ApplicationMode $mode): void
     {
-        $subscriber = new SecurityHeaderSubscriber($mode);
+        $subscriber = new SecurityHeaderSubscriber($mode, $this->environmentService);
 
         $request = new Request(attributes: ['csp_nonce' => 'foo']);
         $response = new Response();
@@ -80,7 +90,7 @@ class SecurityHeaderSubscriberTest extends MockeryTestCase
     public function testOnKernelRequestNonceIsNotSetForStyleForApiDocEndpoint(): void
     {
         $uri = '/balie/api/docs/foobar';
-        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::API);
+        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::API, $this->environmentService);
 
         $request = Request::create($uri);
         $request->attributes->set('csp_nonce', $nonce = 'foo');
@@ -107,13 +117,14 @@ class SecurityHeaderSubscriberTest extends MockeryTestCase
         }
 
         $this->assertStringNotContainsString($nonce, $styleSrc);
+        $this->assertStringNotContainsString('http://localhost:8001', $styleSrc);
         $this->assertStringContainsString('unsafe-inline', $styleSrc);
     }
 
     public function testOnKernelRequestNonceIsNotSetForStyleForApiDocEndpointUsingRoute(): void
     {
         $routeName = 'api_doc';
-        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::API);
+        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::API, $this->environmentService);
 
         $request = Request::create('my_endpoint');
         $request->attributes->set('csp_nonce', $nonce = 'foo');
@@ -141,12 +152,13 @@ class SecurityHeaderSubscriberTest extends MockeryTestCase
         }
 
         $this->assertStringNotContainsString($nonce, $styleSrc);
+        $this->assertStringNotContainsString('http://localhost:8001', $styleSrc);
         $this->assertStringContainsString('unsafe-inline', $styleSrc);
     }
 
     public function testOnKernelRequestNonceIsSetForStyleForNonApiDocEndpoint(): void
     {
-        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::API);
+        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::API, $this->environmentService);
 
         $request = Request::create('foobar');
         $request->attributes->set('csp_nonce', $nonce = 'foo');
@@ -173,12 +185,37 @@ class SecurityHeaderSubscriberTest extends MockeryTestCase
         }
 
         $this->assertStringContainsString($nonce, $styleSrc);
+        $this->assertStringNotContainsString('http://localhost:8001', $styleSrc);
         $this->assertStringNotContainsString('unsafe-inline', $styleSrc);
+    }
+
+    public function testOnKernelRequestContainsDevCsp(): void
+    {
+        $environmentService = \Mockery::mock(EnvironmentService::class);
+        $environmentService->shouldReceive('isDev')->andReturn(true);
+        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::ALL, $environmentService);
+
+        $request = Request::create('foobar');
+        $request->attributes->set('csp_nonce', $nonce = 'foo');
+        $response = new Response();
+
+        $responseEvent = new ResponseEvent(
+            kernel: \Mockery::mock(HttpKernelInterface::class),
+            request: $request,
+            requestType: 1,
+            response: $response,
+        );
+
+        $subscriber->onKernelResponse($responseEvent);
+
+        $cspHeaders = (string) $response->headers->get('Content-Security-Policy');
+
+        $this->assertStringContainsString('http://localhost:8001', $cspHeaders);
     }
 
     public function testOnKernelRequestAllowFontsFromScalarForScalarDocsEndpoints(): void
     {
-        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::API);
+        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::API, $this->environmentService);
 
         $request = Request::create('/api/docs');
         $response = new Response();
@@ -209,7 +246,7 @@ class SecurityHeaderSubscriberTest extends MockeryTestCase
     public function testOnKernelRequestAllowFontsFromScalarForScalarDocsUsingRoute(): void
     {
         $routeName = 'app_api_docs';
-        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::API);
+        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::API, $this->environmentService);
 
         $request = Request::create('my_endpoint');
         $request->attributes->set('_route', $routeName);
@@ -240,7 +277,7 @@ class SecurityHeaderSubscriberTest extends MockeryTestCase
 
     public function testOnKernelRequestDoesNotAllowFontsFromScalarForNonApiOrAllApplicationMode(): void
     {
-        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::ADMIN);
+        $subscriber = new SecurityHeaderSubscriber(ApplicationMode::ADMIN, $this->environmentService);
 
         $request = Request::create('/api/docs');
         $response = new Response();

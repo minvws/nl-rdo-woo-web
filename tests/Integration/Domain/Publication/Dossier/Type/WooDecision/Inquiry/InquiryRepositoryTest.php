@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision\Inqu
 
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use App\Tests\Factory\DocumentFactory;
@@ -14,7 +15,6 @@ use App\Tests\Factory\InquiryFactory;
 use App\Tests\Factory\OrganisationFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use App\Tests\Integration\IntegrationTestTrait;
-use Carbon\CarbonImmutable;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webmozart\Assert\Assert;
 
@@ -34,42 +34,6 @@ final class InquiryRepositoryTest extends KernelTestCase
         Assert::isInstanceOf($repository, InquiryRepository::class);
 
         $this->repository = $repository;
-    }
-
-    public function testGetDocCountsByDossier(): void
-    {
-        $organisation = OrganisationFactory::new()->create();
-        $wooDecisions = WooDecisionFactory::new()
-            ->sequence([
-                ['decisionDate' => CarbonImmutable::createFromMutable($this->getFaker()->dateTimeBetween('-2 years', '-1 years'))],
-                ['decisionDate' => CarbonImmutable::createFromMutable($this->getFaker()->dateTimeBetween('-6 months', '-3 months'))],
-                ['decisionDate' => CarbonImmutable::createFromMutable($this->getFaker()->dateTimeBetween('-2 months', 'now'))],
-            ])
-            ->create([
-                'organisation' => $organisation,
-                'status' => $this->getFaker()->randomElement([DossierStatus::PREVIEW, DossierStatus::PUBLISHED]),
-            ]);
-
-        $documentsForWooDecisionOne = DocumentFactory::createMany(2, ['dossiers' => [$wooDecisions[0]]]);
-        $documentsForWooDecisionTwo = DocumentFactory::createMany(2, ['dossiers' => [$wooDecisions[1]]]);
-        $documentsForWooDecisionThree = DocumentFactory::createMany(2, ['dossiers' => [$wooDecisions[2]]]);
-
-        $inquiry = InquiryFactory::createOne([
-            'organisation' => $organisation,
-            'dossiers' => $wooDecisions,
-            'documents' => [
-                ...$documentsForWooDecisionOne,
-                ...$documentsForWooDecisionTwo,
-                ...$documentsForWooDecisionThree,
-            ],
-        ])->_real();
-
-        $result = $this->repository->getDocCountsByDossier($inquiry);
-
-        self::assertCount(3, $result);
-        self::assertSame($result[0]['dossierNr'], $wooDecisions[2]->_real()->getDossierNr());
-        self::assertSame($result[1]['dossierNr'], $wooDecisions[1]->_real()->getDossierNr());
-        self::assertSame($result[2]['dossierNr'], $wooDecisions[0]->_real()->getDossierNr());
     }
 
     public function testGetDocumentsForBatchDownload(): void
@@ -177,5 +141,89 @@ final class InquiryRepositoryTest extends KernelTestCase
         self::assertEquals(0, $result['partial_public_suspended']);
         self::assertEquals(0, $result['already_public']);
         self::assertEquals(2, $result['not_public']);
+    }
+
+    public function testCountPubliclyAvailableDossiers(): void
+    {
+        $conceptWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::CONCEPT]);
+        $previewWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PREVIEW]);
+        $publishedWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED]);
+        $otherWooDecision = WooDecisionFactory::createOne();
+
+        $inquiry = InquiryFactory::createOne([
+            'dossiers' => [$conceptWooDecision, $publishedWooDecision, $previewWooDecision],
+        ]);
+
+        // Only $previewWooDecision and $publishedWooDecision should be counted
+        $this->assertEquals(2, $this->repository->countPubliclyAvailableDossiers($inquiry));
+    }
+
+    public function testGetDossiersForInquiryQueryBuilder(): void
+    {
+        $conceptWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::CONCEPT])->_real();
+        $previewWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PREVIEW])->_real();
+        $publishedWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED])->_real();
+        $otherWooDecision = WooDecisionFactory::createOne()->_real();
+
+        $docInConcept = DocumentFactory::createone(['dossiers' => [$conceptWooDecision]])->_real();
+        $docInPreviewAndInquiryA = DocumentFactory::createone(['dossiers' => [$previewWooDecision]])->_real();
+        $docInPreviewAndInquiryB = DocumentFactory::createone(['dossiers' => [$previewWooDecision]])->_real();
+        $docInPreviewWithoutInquiry = DocumentFactory::createone(['dossiers' => [$previewWooDecision]])->_real();
+        $docInPublishedAndInquiry = DocumentFactory::createone(['dossiers' => [$publishedWooDecision]])->_real();
+        $docInOther = DocumentFactory::createone(['dossiers' => [$otherWooDecision]])->_real();
+
+        $inquiry = InquiryFactory::createOne([
+            'dossiers' => [$conceptWooDecision, $publishedWooDecision, $previewWooDecision],
+            'documents' => [$docInPreviewAndInquiryA, $docInPreviewAndInquiryB, $docInPublishedAndInquiry],
+        ]);
+
+        $result = $this->repository->getDossiersForInquiryQueryBuilder($inquiry->_real())
+            ->getQuery()
+            ->getResult();
+
+        $this->assertCount(2, $result);
+        $this->assertContainsEquals(
+            [
+                0 => $publishedWooDecision,
+                'docCount' => 1,
+            ],
+            $result
+        );
+        $this->assertContainsEquals(
+            [
+                0 => $previewWooDecision,
+                'docCount' => 2,
+            ],
+            $result
+        );
+    }
+
+    public function testGetQueryWithDocCountAndDossierCount(): void
+    {
+        $conceptWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::CONCEPT])->_real();
+        $previewWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PREVIEW])->_real();
+        $publishedWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED])->_real();
+        $otherWooDecision = WooDecisionFactory::createOne()->_real();
+
+        DocumentFactory::createone(['dossiers' => [$conceptWooDecision]])->_real();
+        $docInPreviewAndInquiryA = DocumentFactory::createone(['dossiers' => [$previewWooDecision]])->_real();
+        $docInPreviewAndInquiryB = DocumentFactory::createone(['dossiers' => [$previewWooDecision]])->_real();
+        DocumentFactory::createone(['dossiers' => [$previewWooDecision]])->_real();
+        $docInPublishedAndInquiry = DocumentFactory::createone(['dossiers' => [$publishedWooDecision]])->_real();
+        DocumentFactory::createone(['dossiers' => [$otherWooDecision]])->_real();
+
+        $inquiry = InquiryFactory::createOne([
+            'dossiers' => [$conceptWooDecision, $publishedWooDecision, $previewWooDecision],
+            'documents' => [$docInPreviewAndInquiryA, $docInPreviewAndInquiryB, $docInPublishedAndInquiry],
+        ])->_real();
+
+        /** @var array<array{inquiry: Inquiry, documentCount: int, dossierCount: int}> $result */
+        $result = $this->repository->getQueryWithDocCountAndDossierCount($inquiry->getOrganisation())
+            ->getResult();
+
+        $this->assertCount(1, $result);
+        $this->assertEquals($result[0]['inquiry'], $inquiry);
+        $this->assertEquals($result[0]['documentCount'], 3);
+        $this->assertEquals($result[0]['dossierCount'], 3);
     }
 }

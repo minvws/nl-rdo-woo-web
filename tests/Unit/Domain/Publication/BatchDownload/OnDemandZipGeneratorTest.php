@@ -31,7 +31,7 @@ class OnDemandZipGeneratorTest extends MockeryTestCase
     private string $bucket = 'test-bucket';
     private OnDemandZipGenerator $zipGenerator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
         $this->streamFactory = \Mockery::mock(StreamFactory::class);

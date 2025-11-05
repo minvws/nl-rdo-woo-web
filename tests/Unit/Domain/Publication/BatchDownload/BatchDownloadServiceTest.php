@@ -27,7 +27,7 @@ class BatchDownloadServiceTest extends MockeryTestCase
     private BatchDownloadTypeInterface&MockInterface $typeB;
     private BatchDownloadService $service;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->batchRepository = \Mockery::mock(BatchDownloadRepository::class);
         $this->dispatcher = \Mockery::mock(BatchDownloadDispatcher::class);

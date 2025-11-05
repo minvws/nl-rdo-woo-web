@@ -31,30 +31,30 @@ final class DepartmentRepositoryTest extends KernelTestCase
 
     public function testFindPublicDepartmentBySlug(): void
     {
+        $slug = $this->getFaker()->unique()->slug();
+
         $department = DepartmentFactory::createOne([
-            'name' => 'Foo',
-            'slug' => 'foo',
+            'slug' => $slug,
         ]);
 
         self::assertEquals(
             $department->getId(),
-            $this->repository->findPublicDepartmentBySlug('foo')->getId(),
+            $this->repository->findPublicDepartmentBySlug($slug)->getId(),
         );
 
         $this->expectException(NoResultException::class);
-        $this->repository->findPublicDepartmentBySlug('bar');
+        $this->repository->findPublicDepartmentBySlug($this->faker->unique()->slug());
     }
 
     public function testGetAllPublicDepartments(): void
     {
-        $this->deleteAllDepartments();
         $this->createDepartments();
 
         $departments = $this->repository->getAllPublicDepartments();
 
         self::assertCount(3, $departments);
 
-        $departments = array_map(fn (Department $department): array => [
+        $departments = \array_map(fn (Department $department): array => [
             'name' => $department->getName(),
             'shortTag' => $department->getShortTag(),
             'slug' => $department->getSlug(),
@@ -66,15 +66,24 @@ final class DepartmentRepositoryTest extends KernelTestCase
 
     public function testCountPublicDepartments(): void
     {
-        $this->deleteAllDepartments();
         $this->createDepartments();
 
         self::assertSame(3, $this->repository->countPublicDepartments());
     }
 
+    public function testGetPaginatedWithCreatingExtra(): void
+    {
+        $departmentCount = $this->getFaker()->numberBetween(0, 5);
+        DepartmentFactory::createMany($departmentCount);
+
+        $result = $this->repository->getPaginated(100, null);
+
+        self::assertCount($departmentCount, $result);
+        self::assertContainsOnlyInstancesOf(Department::class, $result);
+    }
+
     public function testGetOrganisationDepartmentsSortedByName(): void
     {
-        $this->deleteAllDepartments();
         $departments = $this->createDepartments();
         $organisation = OrganisationFactory::createOne([
             'departments' => $departments,
@@ -84,7 +93,7 @@ final class DepartmentRepositoryTest extends KernelTestCase
 
         self::assertCount(4, $departments);
 
-        $departments = array_map(fn (Department $department): array => [
+        $departments = \array_map(fn (Department $department): array => [
             'name' => $department->getName(),
             'shortTag' => $department->getShortTag(),
             'slug' => $department->getSlug(),
@@ -96,7 +105,6 @@ final class DepartmentRepositoryTest extends KernelTestCase
 
     public function testFindOne(): void
     {
-        $this->deleteAllDepartments();
         $this->createDepartments();
 
         $firstDepartment = $this->repository->getAllPublicDepartments()[0] ?? null;
@@ -111,29 +119,20 @@ final class DepartmentRepositoryTest extends KernelTestCase
 
     public function testGetDepartmentsQueryFilteredByOrganisation(): void
     {
-        $organisationA = OrganisationFactory::createOne([]);
-        $organisationB = OrganisationFactory::createOne([]);
+        $organisationA = OrganisationFactory::createOne();
+        $organisationB = OrganisationFactory::createOne();
 
         $departmentA = DepartmentFactory::createOne([
-            'name' => 'department  A',
-            'shortTag' => 'A',
-            'slug' => 'a',
             'public' => true,
             'organisations' => [$organisationA],
         ]);
 
         $departmentB = DepartmentFactory::createOne([
-            'name' => 'department  B',
-            'shortTag' => 'B',
-            'slug' => 'b',
             'public' => true,
             'organisations' => [$organisationB],
         ]);
 
         $departmentC = DepartmentFactory::createOne([
-            'name' => 'department  C',
-            'shortTag' => 'C',
-            'slug' => 'c',
             'public' => true,
             'organisations' => [$organisationA],
         ]);
@@ -148,8 +147,6 @@ final class DepartmentRepositoryTest extends KernelTestCase
 
     public function testFindAllSortedByName(): void
     {
-        $this->deleteAllDepartments();
-
         DepartmentFactory::createSequence([
             ['name' => 'c'],
             ['name' => 'a'],
@@ -162,15 +159,6 @@ final class DepartmentRepositoryTest extends KernelTestCase
         self::assertSame('a', $departments[0]->getName());
         self::assertSame('b', $departments[1]->getName());
         self::assertSame('c', $departments[2]->getName());
-    }
-
-    private function deleteAllDepartments(): void
-    {
-        $this->repository
-            ->createQueryBuilder('d')
-            ->delete()
-            ->getQuery()
-            ->execute();
     }
 
     /**

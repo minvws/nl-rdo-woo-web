@@ -205,37 +205,7 @@ parameters:
 			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
 
 		-
-			message: '#^Cannot access offset ''docs\.count'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
-
-		-
-			message: '#^Cannot access offset ''health'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
-
-		-
-			message: '#^Cannot access offset ''index'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
-
-		-
 			message: '#^Cannot access offset ''mappings'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
-
-		-
-			message: '#^Cannot access offset ''status'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
-
-		-
-			message: '#^Cannot access offset ''store\.size'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
@@ -254,36 +224,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
-
-		-
-			message: '#^Parameter \$docsCount of class App\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexDetails constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
-
-		-
-			message: '#^Parameter \$health of class App\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexDetails constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
-
-		-
-			message: '#^Parameter \$name of class App\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexDetails constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
-
-		-
-			message: '#^Parameter \$status of class App\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexDetails constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
-
-		-
-			message: '#^Parameter \$storeSize of class App\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexDetails constructor expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
@@ -841,12 +781,6 @@ parameters:
 			path: tests/Unit/Domain/Search/Index/Updater/SubjectIndexUpdaterTest.php
 
 		-
-			message: '#^Method App\\Tests\\Unit\\Service\\DateRangeConverterTest\:\:dateRangeProvider\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Service/DateRangeConverterTest.php
-
-		-
 			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getDateTime\(\) expects int, int\|string\|null given\.$#'
 			identifier: argument.type
 			count: 2
@@ -889,66 +823,6 @@ parameters:
 			path: tests/Unit/Service/FileReader/ExcelReaderTest.php
 
 		-
-			message: '#^Method App\\Tests\\Unit\\Service\\Inventory\\InventoryDataHelperTest\:\:separateValuesProvider\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Service/Inventory/InventoryDataHelperTest.php
-
-		-
-			message: '#^Method App\\Tests\\Unit\\Service\\Inventory\\InventoryDataHelperTest\:\:toDateTimeImmutableProvider\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Service/Inventory/InventoryDataHelperTest.php
-
-		-
-			message: '#^PHPDoc tag @return has invalid value \(array\<string, array\{input\:string, expectedResult\:\\DateTimeImmutable\[\]\}\)\: Unexpected token "\*/", expected ''\>'' at offset 95 on line 3$#'
-			identifier: phpDoc.parseError
-			count: 1
-			path: tests/Unit/Service/Inventory/InventoryDataHelperTest.php
-
-		-
-			message: '#^PHPDoc tag @return has invalid value \(array\<string, array\{input\:string, separator\:string, expectedResult\:string\[\]\}\)\: Unexpected token "\*/", expected ''\>'' at offset 101 on line 3$#'
-			identifier: phpDoc.parseError
-			count: 1
-			path: tests/Unit/Service/Inventory/InventoryDataHelperTest.php
-
-		-
-			message: '#^Cannot call method getDate\(\) on App\\Service\\Inventory\\DocumentMetadata\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: tests/Unit/Service/Inventory/InventoryReaderTest.php
-
-		-
-			message: '#^Cannot call method getLinks\(\) on App\\Service\\Inventory\\DocumentMetadata\|null\.$#'
-			identifier: method.nonObject
-			count: 7
-			path: tests/Unit/Service/Inventory/InventoryReaderTest.php
-
-		-
-			message: '#^Cannot call method getRemark\(\) on App\\Service\\Inventory\\DocumentMetadata\|null\.$#'
-			identifier: method.nonObject
-			count: 7
-			path: tests/Unit/Service/Inventory/InventoryReaderTest.php
-
-		-
-			message: '#^Cannot call method getSourceType\(\) on App\\Service\\Inventory\\DocumentMetadata\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Unit/Service/Inventory/InventoryReaderTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\Inventory\\InventoryService\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Service/Inventory/InventoryRunProcessorTest.php
-
-		-
-			message: '#^Cannot call method with\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Unit/Service/Inventory/InventoryRunProcessorTest.php
-
-		-
 			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -959,27 +833,3 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: tests/Unit/Service/PaginatorFactoryTest.php
-
-		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Unit/Service/Search/Model/AggregationBucketEntryTest.php
-
-		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 14
-			path: tests/Unit/Service/Search/Result/AggregationMapperTest.php
-
-		-
-			message: '#^Cannot call method with\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 14
-			path: tests/Unit/Service/Search/Result/AggregationMapperTest.php
-
-		-
-			message: '#^Parameter \#1 \$config of class App\\Service\\Security\\Authorization\\ConfigFactory constructor expects array\{entries\: array\<mixed\>\}, array\{\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Unit/Service/Security/Authorization/ConfigFactoryTest.php

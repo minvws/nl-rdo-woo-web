@@ -40,7 +40,7 @@ defineExpose({
   </div>
 
   <button
-    class="bhr-btn-filled-primary"
+    class="bhr-btn-bordered-primary"
     type="button"
     ref="buttonElement"
     @click="reject"

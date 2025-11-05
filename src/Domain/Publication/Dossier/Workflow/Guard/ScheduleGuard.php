@@ -6,11 +6,12 @@ namespace App\Domain\Publication\Dossier\Workflow\Guard;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Workflow\Event\GuardEvent;
 
-final class ScheduleGuard implements EventSubscriberInterface
+final class ScheduleGuard
 {
+    #[AsEventListener(event: 'workflow.guard')]
     public function guardSchedule(GuardEvent $event): void
     {
         if ($event->getTransition()->getName() !== DossierStatusTransition::SCHEDULE_PUBLISH->value) {
@@ -23,15 +24,5 @@ final class ScheduleGuard implements EventSubscriberInterface
         if (! $dossier->isCompleted()) {
             $event->setBlocked(true, 'Dossier publication cannot be scheduled for an incomplete dossier');
         }
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            'workflow.guard' => ['guardSchedule'],
-        ];
     }
 }

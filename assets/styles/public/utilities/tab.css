@@ -1,17 +1,26 @@
 @utility woo-tab-list {
-  @apply flex flex-nowrap w-full overflow-x-auto mb-2 relative;
-
-  &::before {
-    @apply content-[''] absolute h-px bottom-0 inset-x-0 bg-woo-spanish-gray;
-  }
+  @apply flex flex-nowrap w-full overflow-x-auto mb-2;
 }
 
 @utility woo-tab-list__item {
-  @apply flex-none;
+  @apply flex-none ml-4 first:ml-0;
 }
 
 @utility woo-tab-button {
-  @apply text-woo-dim-gray font-bold leading-tight p-2 border-b-2 border-transparent transition-colors hover-focus:text-woo-ateneo-blue hover-focus:border-woo-ateneo-blue relative z-1;
-  @apply aria-selected:text-woo-ateneo-blue aria-selected:border-woo-ateneo-blue;
+  @apply text-woo-gray-600 font-bold py-2 relative;
+  @apply hover-focus:text-woo-dark-blue-600 aria-selected:text-woo-dark-blue-600;
   @apply focus:-outline-offset-2;
+
+  &::before {
+    @apply content-[''] absolute bottom-0 inset-x-0 bg-woo-dark-blue-600;
+  }
+
+  &:hover::before,
+  &:focus::before {
+    @apply h-px;
+  }
+
+  &[aria-selected="true"]::before {
+    @apply h-0.5;
+  }
 }

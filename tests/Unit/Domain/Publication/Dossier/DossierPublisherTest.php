@@ -22,7 +22,7 @@ class DossierPublisherTest extends MockeryTestCase
     private MessageBusInterface&MockInterface $messageBus;
     private DossierPublisher $publisher;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossier = \Mockery::mock(WooDecision::class);
         $this->dossier->shouldReceive('getId')->andReturn(Uuid::v6());

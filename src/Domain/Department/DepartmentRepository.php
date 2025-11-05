@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Department;
 
 use App\Domain\Organisation\Organisation;
+use App\Repository\PaginationQueryBuilder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
@@ -15,8 +16,10 @@ use Symfony\Component\Uid\Uuid;
  */
 class DepartmentRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly PaginationQueryBuilder $paginationQueryBuilder,
+    ) {
         parent::__construct($registry, Department::class);
     }
 
@@ -45,6 +48,18 @@ class DepartmentRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('d')
             ->orderBy('d.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<Department>
+     */
+    public function getPaginated(int $itemsPerPage, ?string $cursor): array
+    {
+        /** @var list<Department> */
+        return $this->paginationQueryBuilder
+            ->getPaginated(Department::class, $itemsPerPage, $cursor)
             ->getQuery()
             ->getResult();
     }

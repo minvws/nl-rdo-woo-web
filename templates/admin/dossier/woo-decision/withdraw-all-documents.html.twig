@@ -2,7 +2,7 @@
 
 {% block body %}
     <div class="bhr-container bhr-container--sm">
-        {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
+        {% include 'admin/shared/page-title.html.twig' %}
 
         <div class="bhr-card">
             {{ form(form) }}

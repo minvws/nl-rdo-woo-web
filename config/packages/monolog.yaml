@@ -54,7 +54,7 @@ when@prod:
                 type: syslog
                 ident: woopie
                 formatter: monolog.formatter.json
-                level: info
+                level: notice
                 channels: ["!doctrine", "!event", "!deprecation"]
             console:
                 type: console

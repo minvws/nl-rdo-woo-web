@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Ingest\Content\Extractor\Tika;
 
+use App\Domain\Ingest\Content\ContentExtractLogContext;
 use App\Domain\Ingest\Content\Extractor\Tika\TikaService;
 use App\Tests\Unit\UnitTestCase;
 use GuzzleHttp\Client as GuzzleClient;
@@ -64,6 +65,7 @@ final class TikaServiceTest extends UnitTestCase
                     'headers' => [
                         'Accept' => 'application/json',
                         'Content-Type' => 'application/pdf',
+                        'X-Tika-OCRmaxFileSizeToOcr' => 0,
                     ],
                     'body' => $body,
                 ]
@@ -99,11 +101,14 @@ final class TikaServiceTest extends UnitTestCase
                     'headers' => [
                         'Accept' => 'application/json',
                         'Content-Type' => 'application/pdf',
+                        'X-Tika-OCRmaxFileSizeToOcr' => 0,
                     ],
                     'body' => $body,
-                ]
+                ],
             )
             ->andThrows($exception = new ConnectException('My exception message', $request));
+
+        $logContext = \Mockery::mock(ContentExtractLogContext::class);
 
         $this->logger
             ->shouldReceive('error')
@@ -111,9 +116,13 @@ final class TikaServiceTest extends UnitTestCase
             ->with('Tika failed', [
                 'sourcePath' => $sourcePath,
                 'exception' => $exception->getMessage(),
+                'context' => $logContext,
             ]);
 
-        $result = $this->getInstance()->extract($sourcePath);
+        $result = $this->getInstance()->extract(
+            sourcePath: $sourcePath,
+            logContext: $logContext,
+        );
 
         $this->assertSame([], $result);
     }

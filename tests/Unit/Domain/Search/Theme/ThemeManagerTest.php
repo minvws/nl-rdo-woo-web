@@ -18,7 +18,7 @@ class ThemeManagerTest extends UnitTestCase
     private ThemeInterface&MockInterface $themeB;
     private ThemeManager $themeManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->themeViewFactory = \Mockery::mock(ThemeViewFactory::class);
 

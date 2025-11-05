@@ -19,7 +19,7 @@ class UploadEntityTest extends MockeryTestCase
     private User&MockInterface $user;
     private InputBag $context;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->user = \Mockery::mock(User::class);
         $this->context = new InputBag(['foo' => 'bar']);

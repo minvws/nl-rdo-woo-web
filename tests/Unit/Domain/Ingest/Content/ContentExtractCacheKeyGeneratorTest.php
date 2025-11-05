@@ -15,7 +15,7 @@ class ContentExtractCacheKeyGeneratorTest extends MockeryTestCase
 {
     private ContentExtractCacheKeyGenerator $keyGenerator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->keyGenerator = new ContentExtractCacheKeyGenerator();
     }

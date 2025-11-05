@@ -55,6 +55,11 @@ class PdfPageProcessingContext
         return $this->localPageDocument;
     }
 
+    public function getOptionalLocalPageDocument(): ?string
+    {
+        return $this->localPageDocument;
+    }
+
     public function setLocalPageDocument(string $localPageDocument): self
     {
         $this->localPageDocument = $localPageDocument;

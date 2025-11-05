@@ -19,7 +19,7 @@ class DossierUploadStatusTest extends UnitTestCase
     private Document&MockInterface $unwantedUpload;
     private WooDecision&MockInterface $dossier;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->missingUpload = \Mockery::mock(Document::class);
         $this->missingUpload->shouldReceive('shouldBeUploaded')->andReturnTrue();

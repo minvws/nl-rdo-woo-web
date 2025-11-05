@@ -21,7 +21,7 @@ class GenerateBatchDownloadHandlerTest extends MockeryTestCase
     private LoggerInterface&MockInterface $logger;
     private GenerateBatchDownloadHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(BatchDownloadRepository::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);

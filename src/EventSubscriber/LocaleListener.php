@@ -4,31 +4,25 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * This listener will set the locale based on the session or the _locale query parameter.
  */
-class LocaleListener implements EventSubscriberInterface
+class LocaleListener
 {
     protected const LOCALE_KEY = '_locale';
 
     /**
-     * @param string[] $allowedLocales
+     * @param list<string> $allowedLocales
      */
     public function __construct(protected array $allowedLocales, protected string $defaultLocale)
     {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::REQUEST => ['onKernelRequest', 20],
-        ];
-    }
-
+    #[AsEventListener(event: KernelEvents::REQUEST, priority: 20)]
     public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();

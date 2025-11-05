@@ -36,7 +36,7 @@ class Citation
         '5.2' => 'Persoonlijke beleidsopvattingen',
         '5.4' => 'Informatie die berust bij de formateur',
 
-        self::DUBBEL => 'Dubbel: inhoud is in een ander document al beoordeeld',
+        self::DUBBEL => ': inhoud is in een ander document al beoordeeld',
     ];
 
     /** @var array<string,string> */
@@ -52,7 +52,7 @@ class Citation
         '10.2e' => 'Eerbiediging van de persoonlijke levenssfeer',
         '10.2g' => 'Het voorkomen van onevenredige bevoordeling of benadeling',
         '11.1' => 'Persoonlijke beleidsopvattingen',
-        self::DUBBEL => 'Dubbel: inhoud is in een ander document al beoordeeld',
+        self::DUBBEL => ': inhoud is in een ander document al beoordeeld',
     ];
 
     /**

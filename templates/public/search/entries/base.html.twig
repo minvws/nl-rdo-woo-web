@@ -16,7 +16,7 @@
             {% block resultType %}<span class="font-bold text-gray-700">{{ resultType | trans }}</span>{% endblock %}
         </li>
         {% block resultTypeSpecs %}
-            <li class="woo-search-result__spec">{{ 'global.number_of_documents' | trans({ 'count': entry.dossier.totalDocumentCount })}}</li>
+            <li class="woo-search-result__spec">{{ 'global.number_of_documents' | trans({ 'count': entry.dossier.documentCount })}}</li>
         {% endblock %}
     </ul>
 </header>

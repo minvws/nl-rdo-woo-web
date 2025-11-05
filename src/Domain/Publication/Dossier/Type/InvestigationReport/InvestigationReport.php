@@ -30,7 +30,7 @@ class InvestigationReport extends AbstractDossier implements EntityWithAttachmen
     /** @use HasMainDocument<InvestigationReportMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: InvestigationReportMainDocument::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: InvestigationReportMainDocument::class, cascade: ['remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?InvestigationReportMainDocument $document;

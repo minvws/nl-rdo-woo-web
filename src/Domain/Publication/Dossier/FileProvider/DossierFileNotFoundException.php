@@ -12,6 +12,7 @@ class DossierFileNotFoundException extends \RuntimeException
         DossierFileType $type,
         AbstractDossier $dossier,
         string $id,
+        ?\Throwable $previous = null,
     ): self {
         return new self(
             sprintf(
@@ -20,6 +21,7 @@ class DossierFileNotFoundException extends \RuntimeException
                 $dossier->getId()->toRfc4122(),
                 $type->value,
             ),
+            previous: $previous,
         );
     }
 

@@ -19,7 +19,7 @@ class DossierAdminActionServiceTest extends MockeryTestCase
     private DossierAdminActionInterface&MockInterface $actionB;
     private DossierAdminActionService $actionService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->actionA = \Mockery::mock(DossierAdminActionInterface::class);
         $this->actionB = \Mockery::mock(DossierAdminActionInterface::class);
@@ -71,5 +71,22 @@ class DossierAdminActionServiceTest extends MockeryTestCase
         $this->expectException(DossierAdminActionException::class);
 
         $this->actionService->execute($dossier, DossierAdminAction::INGEST);
+    }
+
+    public function testNeedsConfirmation(): void
+    {
+        $this->actionA->shouldReceive('getAdminAction')->andReturn(DossierAdminAction::GENERATE_ARCHIVES);
+        $this->actionA->expects('needsConfirmation')->andReturnTrue();
+
+        $this->actionB->shouldReceive('getAdminAction')->andReturn(DossierAdminAction::INGEST);
+        $this->actionB->expects('needsConfirmation')->andReturnFalse();
+
+        self::assertTrue(
+            $this->actionService->needsConfirmation(DossierAdminAction::GENERATE_ARCHIVES)
+        );
+
+        self::assertFalse(
+            $this->actionService->needsConfirmation(DossierAdminAction::INGEST)
+        );
     }
 }

@@ -21,7 +21,7 @@ class InvestigationReportSearchResultMapperTest extends MockeryTestCase
     private InvestigationReportRepository&MockInterface $repository;
     private InvestigationReportSearchResultMapper $mapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->baseMapper = \Mockery::mock(DossierSearchResultBaseMapper::class);
         $this->repository = \Mockery::mock(InvestigationReportRepository::class);

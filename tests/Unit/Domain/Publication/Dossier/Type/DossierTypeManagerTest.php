@@ -20,7 +20,7 @@ class DossierTypeManagerTest extends MockeryTestCase
     private DossierTypeConfigInterface&MockInterface $configCovenant;
     private AuthorizationCheckerInterface&MockInterface $authChecker;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->configWoo = \Mockery::mock(DossierTypeConfigInterface::class);
         $this->configWoo->shouldReceive('getDossierType')->andReturn(DossierType::WOO_DECISION);

@@ -31,7 +31,7 @@ class EntityStorageServiceTest extends UnitTestCase
     private MessageBusInterface&MockInterface $messageBus;
     private EntityManagerInterface&MockInterface $doctrine;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

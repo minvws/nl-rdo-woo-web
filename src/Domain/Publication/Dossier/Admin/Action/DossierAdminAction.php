@@ -14,6 +14,7 @@ enum DossierAdminAction: string implements TranslatableInterface
     case VALIDATE_COMPLETION = 'validate_completion';
     case GENERATE_INVENTORY = 'generate_inventory';
     case GENERATE_ARCHIVES = 'generate_archives';
+    case DELETE = 'delete';
 
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {

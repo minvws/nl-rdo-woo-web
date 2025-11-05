@@ -1,6 +1,6 @@
 FROM minio/mc:RELEASE.2025-02-15T10-36-16Z AS mc
 
-FROM php:8.3.25-apache-bookworm
+FROM php:8.3.27-apache-bookworm
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -116,11 +116,13 @@ RUN groupadd --gid "$USER_GID" "$USER" \
 COPY docker/app/woopie.conf /etc/apache2/sites-available/woopie.conf
 COPY docker/app/open-woopie.conf /etc/apache2/sites-available/open-woopie.conf
 COPY docker/app/balie-woopie.conf /etc/apache2/sites-available/balie-woopie.conf
+COPY docker/app/api-woopie.conf /etc/apache2/sites-available/api-woopie.conf
 
 RUN a2dissite 000-default \
     && a2ensite woopie \
     && a2ensite balie-woopie \
-    && a2ensite open-woopie
+    && a2ensite open-woopie \
+    && a2ensite api-woopie
 
 RUN curl -fsSL https://get.symfony.com/cli/installer | bash -s -- --install-dir=/usr/local/bin \
     && rm -rf /tmp/LICENSE /tmp/README.md

@@ -1,0 +1,31 @@
+parameters:
+    env(HAS_FEATURE_PUBLICATION_V1_API): false
+    has_feature_publication_v1_api: '%env(bool:HAS_FEATURE_PUBLICATION_V1_API)%'
+
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    App\Api\Publication\V1\RequestLogProcessor:
+        tags: [ monolog.processor ]
+
+    App\Api\Publication\V1\Department\DepartmentProvider:
+        arguments:
+            $itemsPerPage: 100
+
+    App\Api\Publication\V1\Organisation\OrganisationProvider:
+        arguments:
+            $itemsPerPage: 100
+
+    App\Api\Publication\V1\Prefix\PrefixProvider:
+        arguments:
+            $itemsPerPage: 100
+
+    App\Api\Publication\V1\Subject\SubjectProvider:
+        arguments:
+            $itemsPerPage: 100
+
+    App\Service\Security\Api\PublicationApiAuthenticator:
+        arguments:
+            $sslUserNameWhitelist: '%env(PUBLICATION_API_SSL_USERNAME_WHITELIST)%'

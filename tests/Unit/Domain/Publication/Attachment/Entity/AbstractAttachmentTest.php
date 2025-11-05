@@ -19,7 +19,7 @@ class AbstractAttachmentTest extends MockeryTestCase
 {
     private Covenant&MockInterface $dossier;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossier = \Mockery::mock(Covenant::class);
     }

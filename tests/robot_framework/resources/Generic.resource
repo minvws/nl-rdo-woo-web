@@ -67,12 +67,6 @@ Verify Page Error
     Fatal Error  Not supported yet
   END
 
-Abbreviate To First Letters
-  [Documentation]  Example: an input of 'E2E Test Organisation' would result in 'PO'
-  [Arguments]  ${string}
-  ${abbreviated} =  Evaluate  ' '.join([word[0] for word in '${string}'.split()]).replace(" ", "")
-  RETURN  ${abbreviated}
-
 Convert Dutch To English Date
   [Documentation]  Converts a date string like '1 oktober 2024' to '1-10-2024'
   [Arguments]  ${dutch_timestamp}
@@ -103,6 +97,16 @@ Click With Reload Retry
   END
   Click  ${selector}
 
+Click With CSRF Retry
+  [Arguments]  ${selector}
+  Click  ${selector}
+  ${csfr_error_visible} =  Get Element Count  //*[contains(.,'CSRF')]
+  IF  ${csfr_error_visible} > 0
+    # Retry on CSRF error, another instance of https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
+    Log  message=CSRF error found, retrying the click.  level=WARN
+    Click  ${selector}
+  END
+
 Go To With Response
   [Arguments]  ${url}
   Go To  ${url}
@@ -113,8 +117,8 @@ Go To With Response
 Success Alert Is Visible
   [Arguments]
   ...  ${contains_message}=${EMPTY}
-  ...  ${selector}=//*[@data-e2e-name="alerts"]/div[contains(@class, 'bhr-alert--success')]
-  Wait For Elements State  ${selector}  attached  timeout=5s
+  ...  ${selector}=//*[@data-e2e-name="alert"][contains(@class, 'bhr-alert--success')]
+  Wait For Elements State  ${selector}  attached
   IF  "${contains_message}" != '${EMPTY}'
     Get Text  ${selector}  contains  ${contains_message}
   END

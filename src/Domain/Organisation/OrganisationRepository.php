@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Organisation;
 
+use App\Repository\PaginationQueryBuilder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -12,9 +13,23 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class OrganisationRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly PaginationQueryBuilder $paginationQueryBuilder,
+    ) {
         parent::__construct($registry, Organisation::class);
+    }
+
+    /**
+     * @return list<Organisation>
+     */
+    public function getPaginated(int $itemsPerPage, ?string $cursor): array
+    {
+        /** @var list<Organisation> */
+        return $this->paginationQueryBuilder
+            ->getPaginated(Organisation::class, $itemsPerPage, $cursor)
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -22,9 +37,9 @@ class OrganisationRepository extends ServiceEntityRepository
      */
     public function getAllSortedByName(): array
     {
-        $qb = $this->createQueryBuilder('o')
-            ->orderBy('o.name', 'asc');
-
-        return $qb->getQuery()->getResult();
+        return $this->createQueryBuilder('o')
+            ->orderBy('o.name', 'asc')
+            ->getQuery()
+            ->getResult();
     }
 }

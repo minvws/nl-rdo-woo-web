@@ -13,7 +13,7 @@ final class PdftoppmServiceTest extends UnitTestCase
 {
     protected Process&MockInterface $process;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

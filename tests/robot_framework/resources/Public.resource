@@ -9,6 +9,7 @@ Library             String
 Library             Browser
 Library             DateTimeTZ
 Library             DebugLibrary
+Library             DependencyLibrary
 Resource            Generic.resource
 
 
@@ -216,11 +217,21 @@ Navigate To Covid19 Theme Page
 
 Verify Document Preview Thumbnails
   [Documentation]  Should contain three items and the alt text of the images should say Pagina #
-  Get Element Count  //ol[@data-e2e-name="preview-list"]/li  assertion_operator=>=  assertion_expected=1
+  [Arguments]  ${pages_expected}
+  Get Element Count
+  ...  //ol[@data-e2e-name="preview-list"]/li
+  ...  assertion_operator=>=
+  ...  assertion_expected=${pages_expected}
   Get Attribute  (//ol[@data-e2e-name="preview-list"]/li)[1]//img  alt  contains  Pagina 1
+  ${url} =  Get Attribute  (//ol[@data-e2e-name="preview-list"]/li)[1]//a  href
+  Generic Download URL  ${url}
 
 Click Clear All Filters
   Click  //*[@data-e2e-name="clear-all-filters"]
 
 Click Start A New Search
   Click  //*[@data-e2e-name="start-new-search"]
+
+Click Public Breadcrumb Element
+  [Arguments]  ${element_nr}
+  Click  //div[@class="woo-container"]/nav/ol/li[${element_nr}]

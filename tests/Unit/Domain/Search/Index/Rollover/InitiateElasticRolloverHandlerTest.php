@@ -20,7 +20,7 @@ class InitiateElasticRolloverHandlerTest extends UnitTestCase
     private ingestDispatcher&MockInterface $ingestDispatcher;
     private InitiateElasticRolloverHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->elasticIndexManager = \Mockery::mock(ElasticIndexManager::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);

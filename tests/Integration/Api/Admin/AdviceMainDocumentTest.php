@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Api\Admin;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Api\Admin\AdviceMainDocument\AdviceMainDocumentDto;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -25,7 +24,7 @@ use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class AdviceMainDocumentTest extends ApiTestCase
+final class AdviceMainDocumentTest extends AdminApiTestCase
 {
     use IntegrationTestTrait;
 
@@ -45,20 +44,14 @@ final class AdviceMainDocumentTest extends ApiTestCase
 
     public function testGetAdviceDocumentReturnsEmptySetUntilCreated(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $dossier = AdviceFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        $response = static::createClient()
-            ->loginUser($user, 'balie')
+        $response = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/advice-document', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
         $this->assertCount(0, $response->toArray(), 'Expected no main documents yet');
 
@@ -97,32 +90,19 @@ final class AdviceMainDocumentTest extends ApiTestCase
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $upload->getUploadId(),
         ];
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_POST,
                 sprintf('/balie/api/dossiers/%s/advice-document', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json' => $data,
-                ],
+                ['json' => $data],
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
-        $response = static::createClient()
-            ->loginUser($user, 'balie')
+        $response = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/advice-document', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
         self::assertResponseIsSuccessful();
         $this->assertCount(1, $response->toArray(), 'Expected one main document');
@@ -133,7 +113,7 @@ final class AdviceMainDocumentTest extends ApiTestCase
 
     public function testUpdateAdviceDocument(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $document = AdviceMainDocumentFactory::createOne([
             'fileInfo' => FileInfoFactory::createOne([
@@ -144,8 +124,7 @@ final class AdviceMainDocumentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        $updateResponse = static::createClient()
-            ->loginUser($user, 'balie')
+        $updateResponse = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_PUT,
                 sprintf(
@@ -154,10 +133,6 @@ final class AdviceMainDocumentTest extends ApiTestCase
                     $document->getId(),
                 ),
                 [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
                     'json' => [
                         'name' => 'foobar.pdf',
                     ],
@@ -167,8 +142,7 @@ final class AdviceMainDocumentTest extends ApiTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         self::assertMatchesResourceItemJsonSchema(AdviceMainDocumentDto::class);
 
-        $getResponse = static::createClient()
-            ->loginUser($user, 'balie')
+        $getResponse = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf(
@@ -176,11 +150,6 @@ final class AdviceMainDocumentTest extends ApiTestCase
                     $document->getDossier()->getId(),
                     $document->getId(),
                 ),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         self::assertResponseIsSuccessful();
@@ -191,7 +160,7 @@ final class AdviceMainDocumentTest extends ApiTestCase
 
     public function testAdviceDocumentCanBeDeletedAfterCreation(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $dossier = AdviceFactory::createOne([
             'organisation' => $user->getOrganisation(),
@@ -202,8 +171,7 @@ final class AdviceMainDocumentTest extends ApiTestCase
             'dossier' => $dossier,
         ])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_DELETE,
                 sprintf(
@@ -211,18 +179,13 @@ final class AdviceMainDocumentTest extends ApiTestCase
                     $dossier->getId(),
                     $adviceMainDocument->getId(),
                 ),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }
 
     public function testAdviceDocumentCannotBeDeletedForAPublishedDossier(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $dossier = AdviceFactory::createOne([
             'organisation' => $user->getOrganisation(),
@@ -231,16 +194,10 @@ final class AdviceMainDocumentTest extends ApiTestCase
 
         AdviceMainDocumentFactory::createOne(['dossier' => $dossier]);
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/advice-document', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
         self::assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
     }

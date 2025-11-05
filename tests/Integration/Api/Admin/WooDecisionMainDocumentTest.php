@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Api\Admin;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Api\Admin\WooDecisionMainDocument\WooDecisionMainDocumentDto;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -13,6 +12,7 @@ use App\Domain\Upload\Handler\UploadHandlerInterface;
 use App\Domain\Upload\UploadEntity;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Factory\FileInfoFactory;
+use App\Tests\Factory\OrganisationFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
 use App\Tests\Factory\UploadEntityFactory;
@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class WooDecisionMainDocumentTest extends ApiTestCase
+final class WooDecisionMainDocumentTest extends AdminApiTestCase
 {
     use IntegrationTestTrait;
 
@@ -45,20 +45,17 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
 
     public function testGetWooDecisionMainDocumentReturnsEmptySetUntilCreated(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
-        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
+        $dossier = WooDecisionFactory::createOne([
+            'organisation' => $user->getOrganisation(),
+            'status' => DossierStatus::CONCEPT,
+        ])->_real();
 
-        $response = static::createClient()
-            ->loginUser($user, 'balie')
+        $response = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/woo-decision-main-document', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
         $this->assertCount(0, $response->toArray(), 'Expected no main documents yet');
 
@@ -97,32 +94,19 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $upload->getUploadId(),
         ];
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_POST,
                 sprintf('/balie/api/dossiers/%s/woo-decision-main-document', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json' => $data,
-                ],
+                ['json' => $data],
             );
 
         self::assertResponseStatusCodeSame(201);
 
-        $response = static::createClient()
-            ->loginUser($user, 'balie')
+        $response = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/woo-decision-main-document', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
         self::assertResponseIsSuccessful();
         $this->assertCount(1, $response->toArray(), 'Expected one main document');
@@ -133,7 +117,7 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
 
     public function testUpdateWooDecisionDocument(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $document = WooDecisionMainDocumentFactory::createOne([
             'fileInfo' => FileInfoFactory::createOne([
@@ -144,8 +128,7 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        $updateResponse = static::createClient()
-            ->loginUser($user, 'balie')
+        $updateResponse = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_PUT,
                 sprintf(
@@ -154,10 +137,6 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
                     $document->getId(),
                 ),
                 [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
                     'json' => [
                         'name' => 'foobar.pdf',
                     ],
@@ -167,8 +146,7 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         self::assertMatchesResourceItemJsonSchema(WooDecisionMainDocumentDto::class);
 
-        $getResponse = static::createClient()
-            ->loginUser($user, 'balie')
+        $getResponse = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf(
@@ -176,11 +154,6 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
                     $document->getDossier()->getId(),
                     $document->getId(),
                 ),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         self::assertResponseIsSuccessful();
@@ -191,7 +164,7 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
 
     public function testWooDecisionMainDocumentCanBeDeletedAfterCreation(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $dossier = WooDecisionFactory::createOne([
             'organisation' => $user->getOrganisation(),
@@ -200,8 +173,7 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
 
         $wooDecisionMainDocument = WooDecisionMainDocumentFactory::createOne(['dossier' => $dossier]);
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_DELETE,
                 sprintf(
@@ -209,18 +181,13 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
                     $dossier->getId(),
                     $wooDecisionMainDocument->getId(),
                 ),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
         self::assertResponseStatusCodeSame(204);
     }
 
     public function testWooDecisionMainDocumentCannotBeDeletedForAPublishedDossier(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $dossier = WooDecisionFactory::createOne([
             'organisation' => $user->getOrganisation(),
@@ -229,20 +196,89 @@ final class WooDecisionMainDocumentTest extends ApiTestCase
 
         WooDecisionMainDocumentFactory::createOne(['dossier' => $dossier]);
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_DELETE,
                 sprintf(
                     '/balie/api/dossiers/%s/woo-decision-main-document',
                     $dossier->getId(),
                 ),
+            );
+        self::assertResponseStatusCodeSame(405);
+    }
+
+    public function testWooDecisionMainDocumentCannotBeDeletedForADossierFromAnotherOrganisation(): void
+    {
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
+
+        $anotherOrganisation = OrganisationFactory::createOne()->_real();
+
+        $dossier = WooDecisionFactory::createOne([
+            'organisation' => $anotherOrganisation,
+            'status' => DossierStatus::CONCEPT,
+        ])->_real();
+
+        $wooDecisionMainDocument = WooDecisionMainDocumentFactory::createOne(['dossier' => $dossier]);
+
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_DELETE,
+                sprintf(
+                    '/balie/api/dossiers/%s/woo-decision-main-document/%s',
+                    $dossier->getId(),
+                    $wooDecisionMainDocument->getId(),
+                ),
+            );
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testUpdateWooDecisionDocumentNotPossibleForADossierFromAnotherOrganisation(): void
+    {
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
+
+        $anotherOrganisation = OrganisationFactory::createOne()->_real();
+
+        $document = WooDecisionMainDocumentFactory::createOne([
+            'fileInfo' => FileInfoFactory::createOne([
+                'name' => 'test_file.pdf',
+            ]),
+            'dossier' => WooDecisionFactory::createOne([
+                'organisation' => $anotherOrganisation,
+            ]),
+        ])->_real();
+
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_PUT,
+                sprintf(
+                    '/balie/api/dossiers/%s/woo-decision-main-document/%s',
+                    $document->getDossier()->getId(),
+                    $document->getId(),
+                ),
                 [
-                    'headers' => [
-                        'Accept' => 'application/json',
+                    'json' => [
+                        'name' => 'foobar.pdf',
                     ],
                 ],
             );
-        self::assertResponseStatusCodeSame(405);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testGetWooDecisionMainDocumentNotPossibleForADossierFromAnotherOrganisation(): void
+    {
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
+
+        $anotherOrganisation = OrganisationFactory::createOne()->_real();
+
+        $dossier = WooDecisionFactory::createOne(['organisation' => $anotherOrganisation])->_real();
+
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_GET,
+                sprintf('/balie/api/dossiers/%s/woo-decision-main-document', $dossier->getId()),
+            );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 }

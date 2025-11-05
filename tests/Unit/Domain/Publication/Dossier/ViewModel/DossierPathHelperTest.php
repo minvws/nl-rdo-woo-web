@@ -21,7 +21,7 @@ final class DossierPathHelperTest extends MockeryTestCase
     private string $baseUrl = 'https://foo.bar';
     private DossierPathHelper $pathHelper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->router = \Mockery::mock(RouterInterface::class);
 

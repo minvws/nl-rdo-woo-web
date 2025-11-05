@@ -2,6 +2,63 @@
 
 # Release notes
 
+## v2.0.0
+
+*23 oktober 2025*
+
+### Publicatie API v1
+
+De Publicatie API v1 is een API waar andere systemen mee kunnen connecten om zo volledig automatisch het publicatieproces te doorlopen.
+Dit betekent dat gebruikers vanuit een systeem zoals Zylab de publicatie kunnen initiëren en de systemen onderling de volledige en juiste afhandeling doorlopen. Zo hoeft er niet meer ingelogd te worden in de balie om de publicatie handmatig uit te voeren.
+Dit levert tijdswinst op en de kans op fouten wordt zo ook minder.
+
+#### Publicatie API v1 Skeleton
+
+Voor de eerste release hebben we een zogenaamde "Publicatie API skeleton" ontwikkeld.
+Dit is een functionele Publicatie API met minimale features.
+De beweegredenen om een skeleton te ontwikkelen is dat we zo met onze eerste stap de API op alle lagen van het systeem introduceren.
+Dit maakt het mogelijk om de kaders waarbinnen wij op moeten leveren in kaart te brengen en alle non-functionele eisen (e.g. security) te waarborgen in een zo vroeg mogelijk stadium.
+
+#### API authenticatie en authorizatie
+
+CLients van de Publicatie API identificeren zullen zich middels [PKI Overheid certificaten](https://www.pkioverheid.nl/) moeten authenticeren.
+Authorizatie zal daarna ook plaats vinden gegeven de certificaat eigenschappen.
+Deze versie van de applicatie maakt beide mogelijk op alle omgevingen.
+
+#### Publicatie API v1 Livegang
+
+De Publicatie API v1 zal nog niet meteen na release geactiveerd en openbaar gemaakt worden op de productie-omgeving.
+Deze versie zal in de komende periode zwaar getoetst worden door onze security afdeling. Eventuele zwakheden zullen worden opgelost in de volgende release.
+
+### Release ES Rollover
+
+#### ES rollover performance issues geadresseerd
+
+Bij iedere release waar aanpassingen zijn gedaan in het zoeken en vinden op de publieke website is een, zoals dat heet, rollover nodig, i.e.:
+het compleet herindexeren van alle vindbare items voor het applicatie-onderdeel dat verantwoordelijk is voor zoekresultaten tonen op basis van een zoekterm.
+Deze versie bevat meerdere verbeteringen op het gebied van performance en robuustheid.
+We blijven hier verbeteringen op doorvoeren, maar we verwachten bij deze release al resultaten te zien.
+
+### Frontend Design Systeem
+
+#### Design Systeem Geïntroduceerd
+
+Op meerdere plekken op zowel de publieke website als in de balie zullen kleine verbeteringen te vinden zijn op het gebied van leesbaarheid, duidelijkheid en consistentie.
+Dit is het resultaat van het introduceren van een design systeem: een collaboratie tussen design en frontend development, waarbij alles is opgebouwd uit herbruikbare componenten die op meerdere plekken te gebruiken zijn.
+In de toekomst verwachten we daardoor nu ook een acceleratie bij het ontwikkelen van nieuwe features voor bezoekers en gebruikers.
+
+#### Toegankelijkheid
+
+Er zijn ook verbeteringen doorgevoerd betreffende de toegankelijkheid van het systeem.
+Omdat de verbeteringen ook in de componenten van het Design Systeem zijn geïntroduceerd zijn de resultaten op meerdere plekken terug te vinden en is toegankelijkheid ook in de toekomst beter geborgd.
+
+### Security
+
+#### Pentest bevindingen verwerkt
+
+Wij werken met zware beveiligingseisen en het systeem wordt periodiek getoetst op alle security aspecten.
+Deze release bevat meerdere aanpassingen die opzettelijke aanvallen en misbruik onmogelijk maken.
+
 ## v1.17.0
 
 *18 september 2025*

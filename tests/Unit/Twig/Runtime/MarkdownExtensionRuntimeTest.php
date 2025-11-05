@@ -15,7 +15,7 @@ class MarkdownExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCa
     private MarkdownConverter&MockInterface $converter;
     private MarkdownExtensionRuntime $runtime;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->converter = \Mockery::mock(MarkdownConverter::class);
 

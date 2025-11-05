@@ -21,7 +21,7 @@ class MainDocumentUploadVoterTest extends MockeryTestCase
     private AttachmentUploadVoter $voter;
     private DossierUploadRequestValidator&MockInterface $validator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validator = \Mockery::mock(DossierUploadRequestValidator::class);
 

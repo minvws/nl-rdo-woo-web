@@ -22,7 +22,7 @@ class OrphanedFileMoverTest extends UnitTestCase
     private S3Client&MockInterface $s3client;
     private vfsStreamDirectory $root;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->root = vfsStream::setup();
 

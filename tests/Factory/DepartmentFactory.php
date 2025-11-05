@@ -25,7 +25,7 @@ final class DepartmentFactory extends PersistentProxyObjectFactory
         return [
             'name' => sprintf('%s %s', $name, 'Department'),
             'shortTag' => self::faker()->unique()->word(),
-            'slug' => self::faker()->unique()->word(),
+            'slug' => self::faker()->unique()->slug(3),
             'public' => true,
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),

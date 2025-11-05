@@ -15,7 +15,7 @@ class IngestAllDossiersHandlerTest extends UnitTestCase
     private IngestDispatcher&MockInterface $ingestDispatcher;
     private IngestAllDossiersHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
 

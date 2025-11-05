@@ -20,7 +20,7 @@ class ExportRevokedUrlsTest extends MockeryTestCase
     private Command $command;
     private RevokedUrlService&MockInterface $revokedUrlService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->revokedUrlService = \Mockery::mock(RevokedUrlService::class);
 

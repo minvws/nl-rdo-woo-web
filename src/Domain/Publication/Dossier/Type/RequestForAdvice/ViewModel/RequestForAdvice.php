@@ -11,10 +11,14 @@ final readonly class RequestForAdvice
 {
     use CommonDossierPropertiesAccessors;
 
+    /**
+     * @param list<string> $advisoryBodies
+     */
     public function __construct(
         private CommonDossierProperties $commonDossier,
         public \DateTimeImmutable $date,
         public string $link,
+        public array $advisoryBodies,
     ) {
     }
 }

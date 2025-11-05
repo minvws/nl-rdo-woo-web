@@ -23,7 +23,7 @@ class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
     private WooExtensionRuntime $runtime;
     private DossierNotificationsFactory&MockInterface $dossierNotificationsFactory;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->requestStack = \Mockery::mock(RequestStack::class);
         $this->dossierNotificationsFactory = \Mockery::mock(DossierNotificationsFactory::class);

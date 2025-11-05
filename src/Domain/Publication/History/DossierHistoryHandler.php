@@ -20,10 +20,10 @@ final readonly class DossierHistoryHandler
     #[AsMessageHandler()]
     public function handleCreated(DossierCreatedEvent $event): void
     {
-        $dossier = $this->repository->findOneByDossierId($event->id);
+        $this->repository->findOneByDossierId($event->dossierId);
 
         $this->historyService->addDossierEntry(
-            dossier: $dossier,
+            dossierId: $event->dossierId,
             key: 'dossier_created',
         );
     }

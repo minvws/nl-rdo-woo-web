@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Ingest\Process\TikaOnly;
 
-use App\Domain\Ingest\Content\ContentExtractCollection;
+use App\Domain\Ingest\Content\ContentExtractCache;
 use App\Domain\Ingest\Content\ContentExtractOptions;
-use App\Domain\Ingest\Content\ContentExtractService;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand;
 use App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyHandler;
@@ -22,7 +21,7 @@ use Symfony\Component\Uid\Uuid;
 final class IngestTikaOnlyHandlerTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $doctrine;
-    private ContentExtractService&MockInterface $contentExtractService;
+    private ContentExtractCache&MockInterface $contentExtractCache;
     private SubTypeIndexer&MockInterface $subTypeIndexer;
     private LoggerInterface&MockInterface $logger;
     private EntityRepository&MockInterface $repository;
@@ -33,7 +32,7 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
         parent::setUp();
 
         $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
-        $this->contentExtractService = \Mockery::mock(ContentExtractService::class);
+        $this->contentExtractCache = \Mockery::mock(ContentExtractCache::class);
         $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->repository = \Mockery::mock(EntityRepository::class);
@@ -41,7 +40,7 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
         $this->handler = new IngestTikaOnlyHandler(
             $this->doctrine,
             $this->logger,
-            $this->contentExtractService,
+            $this->contentExtractCache,
             $this->subTypeIndexer,
         );
     }
@@ -79,11 +78,9 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
 
         $text = "lorem ipsum tika\nlorem ipsum tesseract";
-        $collection = \Mockery::mock(ContentExtractCollection::class);
-        $collection->shouldReceive('getCombinedContent')->andReturn($text);
 
-        $this->contentExtractService
-            ->expects('getExtracts')
+        $this->contentExtractCache
+            ->expects('getCombinedExtracts')
             ->with($entity, \Mockery::on(
                 static function (ContentExtractOptions $options): bool {
                     self::assertEquals([ContentExtractorKey::TIKA], array_values($options->getEnabledExtractors()));
@@ -91,7 +88,7 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
                     return true;
                 }
             ))
-            ->andReturn($collection);
+            ->andReturn($text);
 
         $this->subTypeIndexer
             ->expects('index')
@@ -127,11 +124,9 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
 
         $text = "lorem ipsum tika\nlorem ipsum tesseract";
-        $collection = \Mockery::mock(ContentExtractCollection::class);
-        $collection->shouldReceive('getCombinedContent')->andReturn($text);
 
-        $this->contentExtractService
-            ->expects('getExtracts')
+        $this->contentExtractCache
+            ->expects('getCombinedExtracts')
             ->with($entity, \Mockery::on(
                 static function (ContentExtractOptions $options): bool {
                     self::assertEquals([ContentExtractorKey::TIKA], array_values($options->getEnabledExtractors()));
@@ -139,7 +134,7 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
                     return true;
                 }
             ))
-            ->andReturn($collection);
+            ->andReturn($text);
 
         $this->subTypeIndexer
             ->expects('index')

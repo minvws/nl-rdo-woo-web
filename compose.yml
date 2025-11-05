@@ -16,7 +16,7 @@ networks:
 
 services:
   app:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.6.1
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.6.3
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -31,6 +31,7 @@ services:
       - woo_npm:/home/woopie/.npm
       - ./docker/app/balie-woopie.conf:/etc/apache2/sites-available/balie-woopie.conf
       - ./docker/app/open-woopie.conf:/etc/apache2/sites-available/open-woopie.conf
+      - ./docker/app/api-woopie.conf:/etc/apache2/sites-available/api-woopie.conf
       - ./docker/app/woopie.conf:/etc/apache2/sites-available/woopie.conf
     networks:
       woopie:
@@ -38,6 +39,7 @@ services:
           - app.local
           - open.local
           - balie.local
+          - api.local
     environment:
       PHP_INI_SCAN_DIR: "/usr/local/etc/php/custom.d:/usr/local/etc/php/conf.d"
       MC_CONFIG_DIR: /tmp/mc
@@ -46,7 +48,7 @@ services:
   worker:
     depends_on:
       - rabbitmq
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.6.1
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:0.6.3
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -67,7 +69,7 @@ services:
       ]
 
   tika:
-    image: apache/tika:latest
+    image: apache/tika:2.9.2.1
     platform: linux/amd64
     labels:
       com.symfony.server.service-ignore: true
@@ -173,3 +175,13 @@ services:
       com.symfony.server.service-ignore: true
     volumes:
       - ./docs:/docs
+
+  spectral:
+    profiles: [api-linting]
+    image: stoplight/spectral:6.15.0
+    labels:
+      com.symfony.server.service-ignore: true
+    networks:
+      - woopie
+    volumes:
+      - ./API-Design-Rules.spectral.yml:/usr/src/spectral/.spectral.yml

@@ -23,7 +23,7 @@
                 <p class="bhr-label">{{ 'admin.account.instructions' | trans }}</p>
 
                 <div class="pt-2">
-                    <a class="bhr-btn-filled-primary" href="{{ path('app_admin_user_pdf') }}">
+                    <a class="bhr-btn-filled-primary" href="{{ path('app_admin_user_pdf') }}" data-e2e-name="download-instructions">
                         {{ 'admin.account.instructions_download' | trans }}
                     </a>
                 </div>
@@ -31,7 +31,7 @@
 
             <div class="pt-8">
                 <p class="bhr-label">{{ 'admin.account.instructions.shared' | trans }}</p>
-                <p class="bhr-form-help text-lg pb-2 block">{{ 'admin.account.instructions.caution' | trans }}</p>
+                <p class="bhr-form-help block">{{ 'admin.account.instructions.caution' | trans }}</p>
 
                 <div class="pt-2">
                     <a class="bhr-btn-bordered-primary" href="{{ path('app_admin_users') }}">{{ 'admin.account.instructions.confirmation' | trans }}</a>

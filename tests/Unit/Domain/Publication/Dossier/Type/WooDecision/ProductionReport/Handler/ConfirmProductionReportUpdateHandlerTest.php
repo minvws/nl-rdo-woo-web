@@ -28,7 +28,7 @@ class ConfirmProductionReportUpdateHandlerTest extends UnitTestCase
     private ProductionReportDispatcher&MockInterface $dispatcher;
     private ConfirmProductionReportUpdateHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
         $this->processRunRepository = \Mockery::mock(ProductionReportProcessRunRepository::class);
@@ -52,6 +52,7 @@ class ConfirmProductionReportUpdateHandlerTest extends UnitTestCase
         $run->shouldReceive('getFileInfo')->andReturn(new FileInfo());
 
         $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision->shouldReceive('getId')->andReturn(Uuid::v6());
         $wooDecision->shouldReceive('getProcessRun')->andReturn($run);
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($wooDecision, DossierStatusTransition::UPDATE_PRODUCTION_REPORT);

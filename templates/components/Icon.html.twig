@@ -1,3 +1,3 @@
 <svg aria-hidden="true" class="{{ color }} {{ class }}" height="{{ height }}" width="{{ width }}">
-	<use xlink:href="{{ asset(path, 'vite') }}#{{ name }}" />
+	<use xlink:href="{{ path }}?{{ is_dev() ? random(500) : app_version().git_ref }}#{{ name }}" />
 </svg>

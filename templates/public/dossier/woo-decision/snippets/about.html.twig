@@ -41,7 +41,7 @@
                             <div class="grow mr-4">
                                 {% if dossier.counts.hasDocuments %}
                                     <div data-e2e-name="dossier-document-count">{{ 'global.number_of_documents' | trans({'count': dossier.counts.totalDocumentCount})}}</div>
-                                    <div class="text-woo-gray-700 pt-1">
+                                    <div class="text-woo-gray-700 pt-1" data-e2e-name="suspended-withdrawn">
                                         {{ 'public.dossiers.of_which_made_public' | trans({ count: dossier.counts.publicDocumentCount | format_number(locale=('lang' | trans)) }) }}
                                     </div>
                                 {% else %}

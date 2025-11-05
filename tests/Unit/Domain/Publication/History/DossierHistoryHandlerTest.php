@@ -19,7 +19,7 @@ final class DossierHistoryHandlerTest extends UnitTestCase
     private DossierRepository&MockInterface $repository;
     private DossierHistoryHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->historyService = \Mockery::mock(HistoryService::class);
         $this->repository = \Mockery::mock(DossierRepository::class);
@@ -44,7 +44,7 @@ final class DossierHistoryHandlerTest extends UnitTestCase
         $this->historyService
             ->expects('addDossierEntry')
             ->with(
-                $dossier,
+                $dossier->getId(),
                 'dossier_created',
             )
             ->once();

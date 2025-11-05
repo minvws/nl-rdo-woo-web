@@ -11,7 +11,7 @@ final class AlertTest extends MockeryTestCase
 {
     private Alert $alert;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->alert = new Alert();
 

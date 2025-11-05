@@ -6,6 +6,7 @@ namespace App\Domain\Publication\Attachment\Handler;
 
 use App\Domain\Publication\Attachment\AttachmentDeleter;
 use App\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
+use App\Domain\Publication\Attachment\Command\DeleteAttachmentWithOverrideCommand;
 use App\Domain\Publication\Attachment\Event\AttachmentDeletedEvent;
 use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
@@ -23,13 +24,15 @@ readonly class DeleteAttachmentHandler
     ) {
     }
 
-    public function __invoke(DeleteAttachmentCommand $command): void
+    public function __invoke(DeleteAttachmentCommand|DeleteAttachmentWithOverrideCommand $command): void
     {
-        $entity = $this->entityLoader->loadAndValidateAttachment(
-            $command->dossierId,
-            $command->attachmentId,
-            DossierStatusTransition::DELETE_ATTACHMENT,
-        );
+        $entity = $command instanceof DeleteAttachmentWithOverrideCommand
+            ? $this->entityLoader->loadAttachment($command->dossierId, $command->attachmentId)
+            : $this->entityLoader->loadAndValidateAttachment(
+                $command->dossierId,
+                $command->attachmentId,
+                DossierStatusTransition::DELETE_ATTACHMENT,
+            );
 
         $this->deleter->delete($entity);
 

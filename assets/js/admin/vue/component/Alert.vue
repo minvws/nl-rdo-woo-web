@@ -57,7 +57,11 @@ const iconName = getIconName();
 </script>
 
 <template>
-  <div class="bhr-alert" :class="{ [alertTypeClass]: true }">
+  <div
+    class="bhr-alert"
+    :class="{ [alertTypeClass]: true }"
+    data-e2e-name="alert"
+  >
     <template v-if="slots.top">
       <slot name="top"></slot>
     </template>

@@ -1,0 +1,10 @@
+<form action="{{ url }}" class="mb-4" method="post" role="search">
+    <label class="sr-only" for="search-in-decisions-and-documents">{{ 'public.publications.search.label' | trans }}</label>
+    <div class="xs:flex gap-x-4">
+        <input class="woo-input-text" type="text" name="q" id="search-in-decisions-and-documents" placeholder="{{ 'public.publications.search.label' | trans }}" />
+        <button type="submit" class="woo-btn-filled-primary xs:h-auto mt-2 xs:mt-0">
+            {{ 'public.search.label' | trans }}
+            <twig:Public:Icon name="magnifier" class="woo-btn__icon-right" size="20" />
+        </button>
+    </div>
+</form>

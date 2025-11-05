@@ -154,8 +154,13 @@ readonly class ElasticIndexManager
         $mappingResponse = $this->elastic->indices()->getMapping();
         $mappingData = $mappingResponse->asArray();
 
+        /**
+         * @var array<array-key,array{index:string,health:string,status:string,'docs.count':?string,'store.size':?string}> $asArray
+         */
+        $asArray = $indicesResponse->asArray();
+
         $indices = [];
-        foreach ($indicesResponse->asArray() as $index) {
+        foreach ($asArray as $index) {
             $indexAliases = array_keys($aliases[$index['index']]['aliases'] ?? []);
 
             $indices[] = new ElasticIndexDetails(

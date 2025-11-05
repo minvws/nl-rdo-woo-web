@@ -23,7 +23,7 @@ class UploadCleanerTest extends MockeryTestCase
     private UploadService&MockInterface $uploadService;
     private UploadCleaner $uploadCleaner;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->uploadEntityRepository = \Mockery::mock(UploadEntityRepository::class);
         $this->uploadService = \Mockery::mock(UploadService::class);

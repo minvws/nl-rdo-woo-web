@@ -19,6 +19,7 @@ use App\Service\Inventory\MetadataField;
 use App\Service\Inventory\PropertyChangeset;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Symfony\Component\Uid\Uuid;
 
 class DocumentHistoryHandlerTest extends UnitTestCase
 {
@@ -26,7 +27,7 @@ class DocumentHistoryHandlerTest extends UnitTestCase
     private DocumentHistoryHandler $handler;
     private DocumentComparator&MockInterface $documentComparator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->historyService = \Mockery::mock(HistoryService::class);
         $this->documentComparator = \Mockery::mock(DocumentComparator::class);
@@ -42,13 +43,14 @@ class DocumentHistoryHandlerTest extends UnitTestCase
     public function testHandleAllDocumentsWithdrawn(): void
     {
         $dossier = \Mockery::mock(WooDecision::class);
+        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
         $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'foo bar';
 
         $event = new AllDocumentsWithDrawnEvent($dossier, $reason, $explanation);
 
         $this->historyService->expects('addDossierEntry')->with(
-            $dossier,
+            $dossier->getId(),
             'dossier_withdraw_all',
             [
                 'explanation' => '%global.document.withdraw.reason.data_in_document%',

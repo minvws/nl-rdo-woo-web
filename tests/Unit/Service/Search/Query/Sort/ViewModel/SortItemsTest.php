@@ -16,7 +16,7 @@ class SortItemsTest extends TestCase
     private SortItem&MockInterface $sortItemB;
     private SortItems $sortItems;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sortItemA = \Mockery::mock(SortItem::class);
         $this->sortItemB = \Mockery::mock(SortItem::class);

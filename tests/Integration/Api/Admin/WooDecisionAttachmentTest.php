@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Api\Admin;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Api\Admin\WooDecisionAttachment\WooDecisionAttachmentDto;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -31,7 +30,7 @@ use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;
 
-final class WooDecisionAttachmentTest extends ApiTestCase
+final class WooDecisionAttachmentTest extends AdminApiTestCase
 {
     use IntegrationTestTrait;
 
@@ -57,16 +56,10 @@ final class WooDecisionAttachmentTest extends ApiTestCase
 
         WooDecisionAttachmentFactory::createMany(5, ['dossier' => $dossier]);
 
-        $response = static::createClient()
-            ->loginUser($user, 'balie')
+        $response = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         $this->assertResponseIsSuccessful();
@@ -84,16 +77,10 @@ final class WooDecisionAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         $this->assertResponseIsSuccessful();
@@ -106,16 +93,10 @@ final class WooDecisionAttachmentTest extends ApiTestCase
 
         $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -124,8 +105,8 @@ final class WooDecisionAttachmentTest extends ApiTestCase
     public function testCreateDecisionAttachment(): void
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
-
-        $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
+        $organisation = $user->getOrganisation();
+        $dossier = WooDecisionFactory::createOne(['organisation' => $organisation])->_real();
 
         $upload = UploadEntityFactory::createOne([
             'uploadGroupId' => UploadGroupId::ATTACHMENTS,
@@ -153,16 +134,13 @@ final class WooDecisionAttachmentTest extends ApiTestCase
                 \Mockery::type('string'),
             );
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::setActiveOrganisation($organisation);
+
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_POST,
                 sprintf('/balie/api/dossiers/%s/decision-attachments', $dossier->getId()),
                 [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
                     'json' => [
                         'uploadUuid' => $upload->getUploadId(),
                         'type' => AttachmentType::ACTIONS->value,
@@ -174,16 +152,10 @@ final class WooDecisionAttachmentTest extends ApiTestCase
 
         $this->assertResponseIsSuccessful();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         $this->assertResponseIsSuccessful();
@@ -200,16 +172,11 @@ final class WooDecisionAttachmentTest extends ApiTestCase
 
         $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_POST,
                 sprintf('/balie/api/dossiers/%s/decision-attachments', $dossier->getId()),
                 [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
                     'json' => $input,
                 ],
             );
@@ -351,16 +318,10 @@ final class WooDecisionAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         $this->assertResponseIsSuccessful();
@@ -372,16 +333,10 @@ final class WooDecisionAttachmentTest extends ApiTestCase
 
         $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_DELETE,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -400,16 +355,11 @@ final class WooDecisionAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        $updateResponse = static::createClient()
-            ->loginUser($user, 'balie')
+        $updateResponse = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_PUT,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
                 [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
                     'json' => [
                         'formalDate' => $decision->getFormalDate()->format('Y-m-d'),
                         'type' => $decision->getType()->value,
@@ -423,16 +373,10 @@ final class WooDecisionAttachmentTest extends ApiTestCase
         $this->assertResponseIsSuccessful();
         $this->assertMatchesResourceItemJsonSchema(WooDecisionAttachmentDto::class);
 
-        $getResponse = static::createClient()
-            ->loginUser($user, 'balie')
+        $getResponse = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         $this->assertResponseIsSuccessful();
@@ -447,16 +391,10 @@ final class WooDecisionAttachmentTest extends ApiTestCase
 
         $dossier = WooDecisionFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
             );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -480,18 +418,11 @@ final class WooDecisionAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_PUT,
                 sprintf('/balie/api/dossiers/%s/decision-attachments/%s', $decision->getDossier()->getId(), $decision->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json' => $input,
-                ],
+                ['json' => $input],
             );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);

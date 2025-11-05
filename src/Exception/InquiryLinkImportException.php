@@ -24,4 +24,18 @@ class InquiryLinkImportException extends TranslatableException
             'publication.dossier.error.opening_inventory_file',
         );
     }
+
+    /**
+     * @param string[] $caseNumberValues
+     */
+    public static function forInvalidCaseNumber(int $rowNumber, array $caseNumberValues): self
+    {
+        return new self(
+            'Invalid casenumbers value(s): ' . implode(', ', $caseNumberValues),
+            'publication.inquiry.error.casenumbers_invalid',
+            [
+                '{rownumber}' => (string) $rowNumber,
+            ],
+        );
+    }
 }

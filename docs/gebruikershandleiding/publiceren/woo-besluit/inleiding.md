@@ -44,13 +44,13 @@ De basisgegevens (metadata) van de publicatie vul je in stap 1 van de uploadstra
 Gegevens over het Woo-besluit
 De gegevens over het Woo-besluit (metadata) vul je in stap 2 van de uploadstraat in.
 
-| Naam                                | Vereist | Toelichting                                                                                                                                                                                                       |
-| ----------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Woo-besluit                         | Ja      | Hoe tegemoet is gekomen aan het Woo-verzoek. Heeft betrekking op het gehele verzoek. Keuze uit de opties: Reeds openbaar, Openbaarmaking, Gedeeltelijke openbaarmaking, Geen openbaarmaking en Niets aangetroffen |
-| Samenvatting van het besluit        | Ja      | Vrij invulveld, minimaal 1 karakter. Een korte samenvatting van de inhoud van het Woo-besluit. Wordt getoond onder de titel op de website.                                                                        |
-| Officiële besluitbrief              | Ja      | Brief aan de verzoeker waarin wordt beschreven of en op welke manier aan zijn verzoek wordt voldaan. Het te uploaden bestand is van type `.pdf`.                                                                  |
-| Datum waarop het besluit is genomen | Ja      | -                                                                                                                                                                                                                 |
-| Andere officiële bijlagen           | Nee     | Mogelijkheid om een of meerdere bijlagen te uploaden die te maken hebben met de totstandkoming van het genomen besluit. De documenten die met dit besluit openbaar worden gemaakt upload je in de volgende stap.  |
+| Naam                                | Vereist | Toelichting                                                                                                                                                                                                                 |
+| ----------------------------------- | ------- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Woo-besluit                         | Ja      | Hoe tegemoet is gekomen aan het Woo-verzoek. Heeft betrekking op het gehele verzoek. Keuze uit de opties: Reeds openbaar, Openbaarmaking, Gedeeltelijke openbaarmaking, Geen openbaarmaking en Geen documenten aangetroffen |
+| Samenvatting van het besluit        | Ja      | Vrij invulveld, minimaal 1 karakter. Een korte samenvatting van de inhoud van het Woo-besluit. Wordt getoond onder de titel op de website.                                                                                  |
+| Officiële besluitbrief              | Ja      | Brief aan de verzoeker waarin wordt beschreven of en op welke manier aan zijn verzoek wordt voldaan. Het te uploaden bestand is van type `.pdf`.                                                                            |
+| Datum waarop het besluit is genomen | Ja      | -                                                                                                                                                                                                                           |
+| Andere officiële bijlagen           | Nee     | Mogelijkheid om een of meerdere bijlagen te uploaden die te maken hebben met de totstandkoming van het genomen besluit. De documenten die met dit besluit openbaar worden gemaakt upload je in de volgende stap.            |
 
 ### Openbaar te maken documenten
 

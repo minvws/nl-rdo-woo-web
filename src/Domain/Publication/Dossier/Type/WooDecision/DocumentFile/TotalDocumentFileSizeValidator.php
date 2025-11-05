@@ -8,7 +8,7 @@ use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\Document
 
 readonly class TotalDocumentFileSizeValidator
 {
-    public const int MAX_SIZE = 1024 * 1024 * 1024 * 8;
+    public const int MAX_SIZE = 1024 * 1024 * 1024 * 10;
 
     public function exceedsMaxSizeWithUpdatesApplied(DocumentFileSet $documentFileSet): bool
     {

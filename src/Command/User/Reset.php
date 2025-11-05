@@ -30,9 +30,6 @@ class Reset extends Command
             ]);
     }
 
-    /**
-     * @throws \JsonException
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $email = strval($input->getArgument('email'));
@@ -43,7 +40,8 @@ class Reset extends Command
             return 1;
         }
 
-        $plainPassword = $this->userService->resetCredentials($user, true, true);
+        $plainPassword = $this->userService->resetPassword($user);
+        $this->userService->resetTwoFactorAuth($user);
 
         $output->writeln("User <info>{$user->getEmail()}</info> created.");
         $output->writeln("Password   : <info>{$plainPassword}</info>");

@@ -24,7 +24,7 @@ class IndexMainDocumentHandlerTest extends MockeryTestCase
     private SubTypeIngester&MockInterface $subTypeIngester;
     private IndexMainDocumentHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(MainDocumentRepository::class);
         $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);

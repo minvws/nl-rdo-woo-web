@@ -17,7 +17,7 @@ class PublishGuardTest extends MockeryTestCase
 {
     private PublishGuard $guard;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->guard = new PublishGuard();
     }

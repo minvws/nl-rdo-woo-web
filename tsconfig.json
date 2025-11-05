@@ -40,7 +40,7 @@
                 "assets/fonts/*"
             ],
             "@img/*": [
-                "assets/img/*"
+                "/img/*"
             ],
             "@styles/*": [
                 "assets/styles/*"

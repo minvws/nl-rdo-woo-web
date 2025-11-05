@@ -14,7 +14,7 @@ const id = getHelpId(props.inputId);
 </script>
 
 <template>
-  <div class="bhr-form-help text-lg pb-2" :id="id">
+  <div class="bhr-form-help" :id="id">
     <slot />
   </div>
 </template>

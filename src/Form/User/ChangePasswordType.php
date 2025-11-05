@@ -69,6 +69,9 @@ class ChangePasswordType extends AbstractType
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'admin.user.password.edit_confirm',
+                'attr' => [
+                    'data-e2e-name' => 'confirm-password-change',
+                ],
             ])
         ;
     }

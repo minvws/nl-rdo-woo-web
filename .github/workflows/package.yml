@@ -8,7 +8,7 @@ on:
         required: true
 
 env:
-  GH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }}
+  GITHUBH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }}
 
 jobs:
   build:
@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
       - name: Install Task
-        uses: arduino/setup-task@v2
+        uses: go-task/setup-task@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup PHP
@@ -43,9 +43,9 @@ jobs:
         run: |
           echo "{ \"version\": \"${{ env.RELEASE_VERSION }}\", \"git_ref\": \"$GITHUB_SHA\"}" > public/version.json
       - name: Create tar
-        run: tar -czf woo-web_${{ env.RELEASE_VERSION }}.tar.gz ./config ./public/ ./src/ ./templates ./translations ./vendor/ ./var/cache ./var/log ./worker-*.conf ./bin/console
+        run: tar -czf woo-web_${{ env.RELEASE_VERSION }}.tar.gz ./config ./public/ ./src/ ./templates ./translations ./vendor/ ./.db_requirements ./var/cache ./var/log ./worker-*.conf ./bin/console
       - name: Upload release tar
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: woo-web_${{ env.RELEASE_VERSION }}
           path: woo-web_${{ env.RELEASE_VERSION }}.tar.gz

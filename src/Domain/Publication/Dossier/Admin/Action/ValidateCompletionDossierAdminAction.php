@@ -28,4 +28,9 @@ readonly class ValidateCompletionDossierAdminAction implements DossierAdminActio
     {
         $this->dossierService->validateCompletion($dossier);
     }
+
+    public function needsConfirmation(): bool
+    {
+        return false;
+    }
 }

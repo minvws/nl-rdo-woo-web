@@ -1,5 +1,6 @@
 import { detailsComponents, tabs } from '@js/shared';
 import { jsEnabled, onDomReady } from '@utils';
+import { confirmAction } from './admin/confirm-action';
 import { clickableRows } from './clickable-row';
 import { clickOnSelector } from './click-on-selector';
 import { copyToClipboard } from './copy-to-clipboard';
@@ -16,6 +17,7 @@ export const init = () => {
     [
       clickableRows(),
       clickOnSelector(),
+      confirmAction(),
       copyToClipboard(),
       detailsComponents(),
       dossierInventoryStatus(),

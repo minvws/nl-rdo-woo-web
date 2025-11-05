@@ -19,7 +19,7 @@ class SitemapDepartmentSubscriberTest extends UnitTestCase
     private DepartmentRepository&MockInterface $departmentRepository;
     private SitemapDepartmentSubscriber $subscriber;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->departmentRepository = \Mockery::mock(DepartmentRepository::class);
 

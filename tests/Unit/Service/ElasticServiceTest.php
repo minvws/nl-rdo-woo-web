@@ -22,7 +22,7 @@ class ElasticServiceTest extends MockeryTestCase
     private LoggerInterface&MockInterface $logger;
     private ElasticService $elasticService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);

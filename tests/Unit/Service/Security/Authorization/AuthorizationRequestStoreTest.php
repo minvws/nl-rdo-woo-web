@@ -18,7 +18,7 @@ class AuthorizationRequestStoreTest extends MockeryTestCase
     private Request&Mockery\MockInterface $request;
     private AuthorizationEntryRequestStore $store;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->request = \Mockery::mock(Request::class);
         $this->request->attributes = new ParameterBag();

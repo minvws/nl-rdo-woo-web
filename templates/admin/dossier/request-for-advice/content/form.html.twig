@@ -2,6 +2,26 @@
     {{ form_row(form.summary) }}
     {{ form_row(form.link) }}
 
+    <div {{ vue_component('GenericController', {
+        componentName: 'MultiCombobox',
+        buttonText: 'admin.dossiers.request_for_advice.advisory_bodies.add' | trans,
+        buttonTextMultiple: '',
+        helpText: 'admin.dossiers.request_for_advice.advisory_bodies.help' | trans,
+        label: 'admin.dossiers.request_for_advice.advisory_bodies' | trans,
+        legend: 'admin.dossiers.request_for_advice.advisory_bodies' | trans,
+        minLength: 0,
+        minValueLength: 2,
+        maxLength: 1,
+        maxValueLength: 10,
+        name: 'content_form[advisoryBodies]',
+        options: departments,
+        submitErrors: advisoryBodiesErrors,
+        values: dossier.advisoryBodies,
+    }) }}>
+        <div class="min-h-14"></div>
+    </div>
+    {% do form.advisoryBodies.setRendered %}
+
     <twig:Admin:Publication:ManageDocument
         canDelete="{{ canDeleteDocument }}"
         documentType="{{ 'admin.dossiers.request-for-advice.document' | trans }}"

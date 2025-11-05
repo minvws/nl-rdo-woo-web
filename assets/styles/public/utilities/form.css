@@ -1,24 +1,24 @@
 @utility woo-input-text {
   @apply border
-            border-woo-dim-gray
+            border-woo-gray-600
             leading-none
             p-3
             text-lg
             w-full
 
-            placeholder:text-woo-dim-gray;
+            placeholder:text-woo-gray-600;
 }
 
 @utility woo-input-text--invalid {
-  @apply border-2 border-woo-maximum-red;
+  @apply border-2 border-woo-red-700;
 }
 
+@utility woo-label {
+    @apply block font-bold leading-tight mb-2;
+  }
+
 @utility woo-legend {
-  @apply block
-            font-bold
-            leading-tight
-            mt-0
-            mb-2;
+  @apply block font-bold leading-tight mt-0 mb-1;
 }
 
 @utility woo-choice-row {
@@ -32,5 +32,16 @@
 
 @utility woo-choice-input {
   /* radio or checkbox input */
-  @apply border border-woo-dim-gray block cursor-pointer h-4 w-4 mr-2 mt-0.5 rounded-sm;
+  @apply border border-woo-gray-600 block cursor-pointer h-4 w-4 mr-2 mt-0.5 rounded-sm;
+}
+
+@utility woo-select {
+    &::after {
+        @apply bg-woo-gray-700 content-[''] pointer-events-none absolute -ml-8 mt-3 w-6 h-6;
+        mask-image: url(@img/chevron-down.svg);
+    }
+}
+
+@utility woo-select__select {
+@apply appearance-none woo-input-text w-auto pr-8 placeholder:text-woo-gray-700 bg-white;
 }

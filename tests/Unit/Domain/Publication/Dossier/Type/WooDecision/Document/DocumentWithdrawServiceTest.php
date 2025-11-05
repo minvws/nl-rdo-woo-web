@@ -28,7 +28,7 @@ class DocumentWithdrawServiceTest extends MockeryTestCase
     private DocumentDispatcher&MockInterface $documentDispatcher;
     private DocumentWithdrawService $service;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->documentRepository = \Mockery::mock(DocumentRepository::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);

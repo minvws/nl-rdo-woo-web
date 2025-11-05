@@ -7,6 +7,8 @@ namespace App\Api\Admin\Uploader\WooDecision\Status;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\OpenApi\Factory\OpenApiFactory;
+use ApiPlatform\OpenApi\Model\Operation;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateType;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -15,13 +17,21 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Uid\Uuid;
 
-#[ApiResource()]
-#[Get(
-    name: 'api_uploader_woo_decision_status',
-    uriTemplate: '/uploader/woo-decision/{dossierId}/status',
-    security: "is_granted('AuthMatrix.dossier.update', object.wooDecision)",
-    stateless: false,
-    provider: UploadStatusProvider::class,
+#[ApiResource(
+    operations: [
+        new Get(
+            name: 'api_uploader_woo_decision_status',
+            uriTemplate: '/balie/api/uploader/woo-decision/{dossierId}/status',
+            security: "is_granted('AuthMatrix.dossier.update', object.wooDecision)",
+            stateless: false,
+            provider: UploadStatusProvider::class,
+            openapi: new Operation(
+                extensionProperties: [
+                    OpenApiFactory::API_PLATFORM_TAG => ['admin'],
+                ],
+            ),
+        ),
+    ],
 )]
 final readonly class UploadStatusDto
 {

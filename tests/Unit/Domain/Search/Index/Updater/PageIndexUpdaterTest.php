@@ -16,7 +16,7 @@ class PageIndexUpdaterTest extends MockeryTestCase
     private LoggerInterface&MockInterface $logger;
     private PageIndexUpdater $indexUpdater;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);

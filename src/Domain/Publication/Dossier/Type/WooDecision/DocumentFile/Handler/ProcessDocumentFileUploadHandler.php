@@ -91,8 +91,10 @@ readonly class ProcessDocumentFileUploadHandler
         $dossier = $documentFileSet->getDossier();
         foreach ($fileIterator as $file) {
             /** @var UploadedFile $file */
+            $originalFileExtension = $file->getOriginalFileExtension();
             $mimeType = $this->mimeTypeHelper->detectMimeTypeFromPath($file);
-            if (! $this->mimeTypeHelper->isValidForUploadGroup($mimeType, UploadGroupId::WOO_DECISION_DOCUMENTS)) {
+
+            if (! $this->mimeTypeHelper->isValidForUploadGroup($originalFileExtension, $mimeType, UploadGroupId::WOO_DECISION_DOCUMENTS)) {
                 $this->logger->info('Unsupported mimetype, skipping file', [
                     'filename' => $file->getOriginalFilename(),
                     'dossierId' => $dossier->getId(),
@@ -128,7 +130,7 @@ readonly class ProcessDocumentFileUploadHandler
             $this->entityStorageService->storeEntity($file, $documentFileUpdate, false);
 
             $documentFileUpdate->getFileInfo()->setName($file->getOriginalFilename());
-            $documentFileUpdate->getFileInfo()->setType($file->getOriginalFileExtension());
+            $documentFileUpdate->getFileInfo()->setType($originalFileExtension);
             $this->documentFileUpdateRepository->save($documentFileUpdate, true);
         }
     }

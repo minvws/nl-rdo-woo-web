@@ -21,7 +21,7 @@ class Covid19QueryConditionsTest extends UnitTestCase
     private OrganisationRepository&MockInterface $organisationRepository;
     private Covid19QueryConditionBuilder $conditions;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->organisationRepository = \Mockery::mock(OrganisationRepository::class);
 

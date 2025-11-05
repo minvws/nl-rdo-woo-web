@@ -1,0 +1,36 @@
+parameters:
+    env(PUBLICATION_V1_REQUEST_VALIDATION): true
+    publication_v1_request_validation: '%env(bool:PUBLICATION_V1_REQUEST_VALIDATION)%'
+
+    env(PUBLICATION_V1_RESPONSE_VALIDATION): true
+    publication_v1_response_validation: '%env(bool:PUBLICATION_V1_RESPONSE_VALIDATION)%'
+
+    env(PUBLICATION_V1_VALIDATE_RESPONSE_ON_TERMINATE): true
+    publication_v1_validate_response_on_terminate: '%env(bool:PUBLICATION_V1_VALIDATE_RESPONSE_ON_TERMINATE)%'
+
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    League\OpenAPIValidation\PSR7\ValidatorBuilder: ~
+
+    Psr\Http\Message\ServerRequestFactoryInterface:
+        class: 'Nyholm\Psr7\Factory\Psr17Factory'
+
+    Psr\Http\Message\StreamFactoryInterface:
+        class: 'Nyholm\Psr7\Factory\Psr17Factory'
+
+    Psr\Http\Message\UploadedFileFactoryInterface:
+        class: 'Nyholm\Psr7\Factory\Psr17Factory'
+
+    Psr\Http\Message\ResponseFactoryInterface:
+        class: 'Nyholm\Psr7\Factory\Psr17Factory'
+
+    Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory: ~
+
+    App\EventSubscriber\PublicationV1ApiRequestResponseValidatorSubscriber:
+        bind:
+            bool $enableRequestValidation: '%publication_v1_request_validation%'
+            bool $enableResponseValidation: '%publication_v1_response_validation%'
+            bool $validateResponseOnTerminate: '%publication_v1_validate_response_on_terminate%'

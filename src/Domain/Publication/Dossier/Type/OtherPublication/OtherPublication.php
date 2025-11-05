@@ -30,7 +30,7 @@ class OtherPublication extends AbstractDossier implements EntityWithAttachments,
     /** @use HasMainDocument<OtherPublicationMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: OtherPublicationMainDocument::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: OtherPublicationMainDocument::class, cascade: ['remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?OtherPublicationMainDocument $document;

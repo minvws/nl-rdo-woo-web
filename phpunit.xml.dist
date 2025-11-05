@@ -38,6 +38,7 @@
         <exclude>
             <directory>src/Controller</directory>
             <directory>src/Form</directory>
+            <directory suffix="Dto.php">src/Api</directory>
         </exclude>
     </source>
 

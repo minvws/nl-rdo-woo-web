@@ -3,8 +3,7 @@
 
 {% block body %}
     <div class="bhr-container bhr-container--sm">
-
-        {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
+        {% include 'admin/shared/page-title.html.twig' %}
 
         <div class="bhr-card">
             {% include 'admin/shared/flash-messages.html.twig' %}
@@ -22,7 +21,7 @@
             <table class="bhr-table">
                 <tbody>
                     <tr>
-                        <th class="bhr-row-head" scope="row">Publicatiestatus</th>
+                        <th scope="row">Publicatiestatus</th>
                         <td data-e2e-name="publication-status">
                             {% if document.suspended %}
                                 <span class="bhr-badge bhr-badge--red">{{ 'admin.publications.status.suspended' | trans }}</span>
@@ -34,11 +33,11 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="bhr-row-head" scope="row">Documentnaam</th>
+                        <th scope="row">Documentnaam</th>
                         <td class="font-bold">{{ document.fileInfo.name }}</td>
                     </tr>
                     <tr>
-                        <th class="bhr-row-head" scope="row">Publieke url</th>
+                        <th scope="row">Publieke url</th>
                         <td>
                             {% if dossier.status.isPublished %}
                                 {% set url = PUBLIC_BASE_URL ~ path('app_document_detail', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) %}
@@ -49,11 +48,11 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="bhr-row-head" scope="row">Status</th>
+                        <th scope="row">Status</th>
                         <td>{{ document.judgement | trans }}</td>
                     </tr>
                     <tr>
-                        <th class="bhr-row-head" scope="row">Gelakte gegevens</th>
+                        <th scope="row">Gelakte gegevens</th>
                         <td>
                             {% if document.grounds | length > 0 %}
                                 <ul>
@@ -67,7 +66,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="bhr-row-head" scope="row">Zaaknummers</th>
+                        <th scope="row">Zaaknummers</th>
                         <td data-e2e-name="inquiries">
                             {% for inquiry in document.inquiries %}
                                 <span class="break-all">{{ inquiry.caseNr }}</span>{% if not loop.last %}, {% endif %}
@@ -75,15 +74,15 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="bhr-row-head" scope="row">ThreadID</th>
+                        <th scope="row">ThreadID</th>
                         <td>{{ document.threadId }}</td>
                     </tr>
                     <tr>
-                        <th class="bhr-row-head" scope="row">Family</th>
+                        <th scope="row">Family</th>
                         <td>{{ document.familyId }}</td>
                     </tr>
                     <tr>
-                        <th class="bhr-row-head" scope="row">Datum document</th>
+                        <th scope="row">Datum document</th>
                         <td>
                             {% if document.documentDate is not null %}
                                 {{ document.documentDate | format_date('long') }} {{ document.documentDate | format_time('short') }}
@@ -93,7 +92,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="bhr-row-head" scope="row">Type download</th>
+                        <th scope="row">Type download</th>
                         <td data-e2e-name="download-type">
                             {% if document.isUploaded %}
                                 {{ document.fileInfo.type | upper }}, {{ document.fileinfo.size | size }}
@@ -103,7 +102,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="bhr-row-head" scope="row">Aantal pagina's</th>
+                        <th scope="row">Aantal pagina's</th>
                         <td>{{ document.fileInfo.pageCount }}</td>
                     </tr>
                 </tbody>

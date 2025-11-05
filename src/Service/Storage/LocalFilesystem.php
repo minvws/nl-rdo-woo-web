@@ -163,6 +163,11 @@ readonly class LocalFilesystem
         return $filesize;
     }
 
+    public function isSymlink(string $path): bool
+    {
+        return \is_link($path);
+    }
+
     /**
      * Glob that is safe with streams (vfs for example).
      *
@@ -206,7 +211,7 @@ readonly class LocalFilesystem
 
     protected function filesize(string $filename): int|false
     {
-        return filesize($filename);
+        return \filesize($filename);
     }
     // @codeCoverageIgnoreEnd
 }

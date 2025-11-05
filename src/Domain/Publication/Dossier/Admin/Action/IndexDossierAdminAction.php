@@ -28,4 +28,9 @@ readonly class IndexDossierAdminAction implements DossierAdminActionInterface
     {
         $this->searchDispatcher->dispatchIndexDossierCommand($dossier->getId());
     }
+
+    public function needsConfirmation(): bool
+    {
+        return false;
+    }
 }

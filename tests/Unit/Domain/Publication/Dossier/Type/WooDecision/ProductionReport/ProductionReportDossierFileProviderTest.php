@@ -16,7 +16,7 @@ final class ProductionReportDossierFileProviderTest extends UnitTestCase
 {
     private ProductionReportDossierFileProvider $provider;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->provider = new ProductionReportDossierFileProvider();
 

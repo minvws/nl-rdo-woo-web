@@ -14,6 +14,7 @@ use App\Domain\Publication\MainDocument\EntityWithMainDocument;
 use App\Domain\Publication\MainDocument\HasMainDocument;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,7 +31,7 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
     /** @use HasMainDocument<RequestForAdviceMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(targetEntity: RequestForAdviceMainDocument::class, mappedBy: 'dossier')]
+    #[ORM\OneToOne(targetEntity: RequestForAdviceMainDocument::class, mappedBy: 'dossier', cascade: ['remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?RequestForAdviceMainDocument $document;
@@ -43,6 +44,22 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
     #[ORM\Column(length: 255)]
     #[Assert\Url(groups: [DossierValidationGroup::CONTENT->value])]
     private string $link = '';
+
+    /** @var list<string> */
+    #[ORM\Column(type: Types::JSON, nullable: false)]
+    #[Assert\Count(
+        min: 0,
+        max: 1,
+        groups: [DossierValidationGroup::CONTENT->value],
+    )]
+    #[Assert\All(
+        constraints: [
+            new Assert\NotBlank(),
+            new Assert\Length(min: 2, max: 100),
+        ],
+        groups: [DossierValidationGroup::CONTENT->value],
+    )]
+    private array $advisoryBodies = [];
 
     public function __construct()
     {
@@ -84,5 +101,21 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
     public function getMainDocumentEntityClass(): string
     {
         return RequestForAdviceMainDocument::class;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getAdvisoryBodies(): array
+    {
+        return $this->advisoryBodies;
+    }
+
+    /**
+     * @param array<array-key,string> $values
+     */
+    public function setAdvisoryBodies(array $values): void
+    {
+        $this->advisoryBodies = array_values($values);
     }
 }

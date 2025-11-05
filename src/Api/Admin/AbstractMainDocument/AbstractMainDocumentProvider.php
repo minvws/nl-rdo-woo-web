@@ -7,15 +7,27 @@ namespace App\Api\Admin\AbstractMainDocument;
 use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use App\Api\Admin\ApiDossierAccessChecker;
 use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Uid\Uuid;
 
 abstract readonly class AbstractMainDocumentProvider implements ProviderInterface
 {
+    public function __construct(
+        private ApiDossierAccessChecker $dossierAccessChecker,
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
+
     abstract protected function fromEntityToDto(AbstractMainDocument $entity): AbstractMainDocumentDto;
 
-    abstract protected function getAttachmentRepository(): MainDocumentRepositoryInterface;
+    /**
+     * @return class-string<AbstractMainDocument>
+     */
+    abstract protected function getEntityClass(): string;
 
     /**
      * @param array<array-key, string> $uriVariables
@@ -27,12 +39,24 @@ abstract readonly class AbstractMainDocumentProvider implements ProviderInterfac
     {
         unset($context);
 
-        $document = $this->getAttachmentRepository()->findOneByDossierId(Uuid::fromString($uriVariables['dossierId']));
+        $dossierId = Uuid::fromString($uriVariables['dossierId']);
+
+        $this->dossierAccessChecker->ensureUserIsAllowedToUpdateDossier($dossierId);
+
+        $document = $this->getRepository()->findOneByDossierId($dossierId);
 
         if ($operation instanceof CollectionOperationInterface) {
             return $document ? [$this->fromEntityToDto($document)] : [];
         }
 
         return $document ? $this->fromEntityToDto($document) : null;
+    }
+
+    private function getRepository(): MainDocumentRepositoryInterface
+    {
+        /** @var EntityRepository&MainDocumentRepositoryInterface */
+        return $this->entityManager->getRepository(
+            $this->getEntityClass(),
+        );
     }
 }

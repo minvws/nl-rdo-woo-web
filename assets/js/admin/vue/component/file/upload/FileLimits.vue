@@ -21,9 +21,13 @@ const formatAllowedFileLabels = () => {
   }
 
   const labelsAndMaxFileSizes = maxFileSizes.map((maxFileSize) => {
-    const labels = props.limits
-      .filter((limit) => limit.size === maxFileSize)
-      .map((limit) => limit.label);
+    const labels = [
+      ...new Set(
+        props.limits
+          .filter((limit) => limit.size === maxFileSize)
+          .map((limit) => limit.label),
+      ),
+    ].sort();
 
     return `${labels.join(', ')} (max ${formatFileSize(maxFileSize)})`;
   });

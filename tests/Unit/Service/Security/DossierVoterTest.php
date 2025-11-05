@@ -16,7 +16,7 @@ class DossierVoterTest extends MockeryTestCase
 {
     private DossierVoter $voter;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->voter = new DossierVoter();
 

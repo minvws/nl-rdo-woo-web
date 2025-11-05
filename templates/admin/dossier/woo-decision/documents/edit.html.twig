@@ -2,44 +2,42 @@
 
 {% block body %}
     {% set hasDocuments = pagination | length > 0 %}
-    <div class="bhr-container bhr-container--sm">
-        {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
-    </div>
-
     <div class="bhr-container">
+        {% include 'admin/shared/page-title.html.twig' %}
+
         <div class="bhr-card">
             {% include 'admin/shared/flash-messages.html.twig' %}
 
-            <twig:Admin:LeftAndRight class="pt-1">
-                {% if dossier.productionReport is not null  %}
-                <a
-                    class="bhr-btn-filled-primary mr-2"
-                    href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
-                >
-                    {{ 'admin.dossiers.download_report' | trans }}
+            {% if dossier.hasProductionReport  %}
+                <twig:Admin:LeftAndRight class="pt-1">
+                    <a
+                        class="bhr-btn-filled-primary mr-2"
+                        href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
+                    >
+                        {{ 'admin.dossiers.download_report' | trans }}
 
-                    <twig:Admin:Button:Icon isRight="{{ true }}" name="download" />
-                </a>
-                {% endif %}
+                        <twig:Admin:Button:Icon isRight="{{ true }}" name="download" />
+                    </a>
 
-                <a class="bhr-btn-bordered-primary mr-2" href="{{ path('app_admin_dossier_woodecision_documents_edit_replace_inventory', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, replace: 1 }) }}" data-e2e-name="replace-report">
-                    {{ 'admin.dossiers.replace_report' | trans }}
-                </a>
+                    <a class="bhr-btn-bordered-primary mr-2" href="{{ path('app_admin_dossier_woodecision_documents_edit_replace_inventory', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, replace: 1 }) }}" data-e2e-name="replace-report">
+                        {{ 'admin.dossiers.replace_report' | trans }}
+                    </a>
 
-                <twig:block name="right">
-                    <div {{ vue_component('GenericController', {
-                        componentName: 'PublicationSearchAndGo',
+                    <twig:block name="right">
+                        <div {{ vue_component('GenericController', {
+                            componentName: 'PublicationSearchAndGo',
 
-                        dossierId: dossier.id,
-                        label: 'Zoek op documentnummer of -naam',
-                        resultType: 'document',
-                    }) }}>
-                        <div class="h-[50px]"></div>
-                    </div>
-                </twig:block>
-            </twig:Admin:LeftAndRight>
+                            dossierId: dossier.id,
+                            label: 'Zoek op documentnummer of -naam',
+                            resultType: 'document',
+                        }) }}>
+                            <div class="h-[50px]"></div>
+                        </div>
+                    </twig:block>
+                </twig:Admin:LeftAndRight>
+            {% endif %}
 
-            {% if dossier.needsInventoryAndDocuments %}
+            {% if dossier.canProvideInventory and dossier.hasProductionReport %}
                 <div class="mb-6">
                     <twig:Admin:Publication:WooDecision:ReplaceDocuments
                         dossier="{{ dossier }}"
@@ -62,7 +60,7 @@
                             {% for document in pagination %}
                                 <tr>
                                     <td>
-                                        <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_woodecision_document', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}">
+                                        <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_woodecision_document', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}" data-e2e-name="doc-link">
                                             {{ document.documentId }}
                                         </a>
                                     </td>
@@ -88,8 +86,14 @@
                 {% else %}
                     <p class="text-center">Er zijn nog geen documenten aan dit besluit gekoppeld.</p>
                 {% endif %}
+            {% elseif dossier.canProvideInventory and not dossier.hasProductionReport %}
+                <twig:Admin:Alert type="info">
+                    {{ 'admin.dossiers.woo-decision.has_no_publication_report' | trans }}
+                </twig:Admin:Alert>
             {% else %}
-                Op basis van het besluit '{{ dossier.decision | trans }}' heeft dit dossier geen inventarislijst en/of documenten.
+                <twig:Admin:Alert type="info">
+                    Op basis van het besluit '{{ dossier.decision | trans }}' heeft dit dossier geen inventarislijst en/of documenten.
+                </twig:Admin:Alert>
             {% endif %}
         </div>
     </div>

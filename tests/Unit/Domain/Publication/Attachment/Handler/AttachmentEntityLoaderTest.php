@@ -25,7 +25,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     private DossierRepository&MockInterface $dossierRepository;
     private AttachmentEntityLoader $loader;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->workflowManager = \Mockery::mock(DossierWorkflowManager::class);
         $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);
@@ -93,6 +93,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = \Mockery::mock(Covenant::class);
+        $dossier->shouldReceive('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();
         $attachment = \Mockery::mock(CovenantAttachment::class);
@@ -109,7 +110,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
             ->with($dossier, $transition);
 
         $this->attachmentRepository
-            ->expects('findOneOrNullForDossier')
+            ->expects('findOneForDossier')
             ->with($dossierId, $attachmentId)
             ->andReturn($attachment);
 
@@ -122,6 +123,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = \Mockery::mock(Covenant::class);
+        $dossier->shouldReceive('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();
 
@@ -133,9 +135,9 @@ class AttachmentEntityLoaderTest extends UnitTestCase
             ->andReturn($dossier);
 
         $this->attachmentRepository
-            ->expects('findOneOrNullForDossier')
+            ->expects('findOneForDossier')
             ->with($dossierId, $attachmentId)
-            ->andReturnNull();
+            ->andThrow(NoResultException::class);
 
         $this->expectException(AttachmentNotFoundException::class);
         $this->loader->loadAndValidateAttachment($dossierId, $attachmentId, $transition);
@@ -145,6 +147,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = \Mockery::mock(Covenant::class);
+        $dossier->shouldReceive('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();
         $attachment = \Mockery::mock(CovenantAttachment::class);
@@ -157,7 +160,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
             ->andReturn($dossier);
 
         $this->attachmentRepository
-            ->expects('findOneOrNullForDossier')
+            ->expects('findOneForDossier')
             ->with($dossierId, $attachmentId)
             ->andReturn($attachment);
 
@@ -168,5 +171,51 @@ class AttachmentEntityLoaderTest extends UnitTestCase
 
         $this->expectException(DossierWorkflowException::class);
         $this->loader->loadAndValidateAttachment($dossierId, $attachmentId, $transition);
+    }
+
+    public function testLoadAttachmentSuccessful(): void
+    {
+        $dossierId = Uuid::v6();
+        $dossier = \Mockery::mock(Covenant::class);
+        $dossier->shouldReceive('getId')->andReturn($dossierId);
+
+        $attachmentId = Uuid::v6();
+        $attachment = \Mockery::mock(CovenantAttachment::class);
+
+        $this->dossierRepository
+            ->expects('findOneByDossierId')
+            ->with($dossierId)
+            ->andReturn($dossier);
+
+        $this->attachmentRepository
+            ->expects('findOneForDossier')
+            ->with($dossierId, $attachmentId)
+            ->andReturn($attachment);
+
+        $result = $this->loader->loadAttachment($dossierId, $attachmentId);
+
+        self::assertSame($attachment, $result);
+    }
+
+    public function testLoadAttachmentThrowsExceptionWhenAttachmentIsNotFound(): void
+    {
+        $dossierId = Uuid::v6();
+        $dossier = \Mockery::mock(Covenant::class);
+        $dossier->shouldReceive('getId')->andReturn($dossierId);
+
+        $attachmentId = Uuid::v6();
+
+        $this->dossierRepository
+            ->expects('findOneByDossierId')
+            ->with($dossierId)
+            ->andReturn($dossier);
+
+        $this->attachmentRepository
+            ->expects('findOneForDossier')
+            ->with($dossierId, $attachmentId)
+            ->andThrow(NoResultException::class);
+
+        $this->expectException(AttachmentNotFoundException::class);
+        $this->loader->loadAttachment($dossierId, $attachmentId);
     }
 }

@@ -15,7 +15,7 @@ class EncryptionServiceTest extends MockeryTestCase
     private string $encryptionKey;
     private LoggerInterface&MockInterface $logger;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $encKey = KeyFactory::generateEncryptionKey();
         $this->encryptionKey = KeyFactory::export($encKey)->getString();

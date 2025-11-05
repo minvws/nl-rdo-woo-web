@@ -10,6 +10,7 @@ use App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface;
 use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use App\Domain\Publication\EntityWithFileInfo;
+use Doctrine\ORM\NoResultException;
 use Symfony\Component\Uid\Uuid;
 
 readonly class AttachmentDossierFileProvider implements DossierFileProviderInterface
@@ -29,9 +30,10 @@ readonly class AttachmentDossierFileProvider implements DossierFileProviderInter
 
     public function getEntityForPublicUse(AbstractDossier $dossier, string $id): EntityWithFileInfo
     {
-        $attachment = $this->attachmentRepository->findOneOrNullForDossier($dossier->getId(), Uuid::fromString($id));
-        if ($attachment === null) {
-            throw DossierFileNotFoundException::forEntity($this->getType(), $dossier, $id);
+        try {
+            $attachment = $this->attachmentRepository->findOneForDossier($dossier->getId(), Uuid::fromString($id));
+        } catch (NoResultException $e) {
+            throw DossierFileNotFoundException::forEntity($this->getType(), $dossier, $id, previous: $e);
         }
 
         return $attachment;

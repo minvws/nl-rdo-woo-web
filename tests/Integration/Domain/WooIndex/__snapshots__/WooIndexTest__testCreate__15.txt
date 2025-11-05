@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:diwoo="https://standaarden.overheid.nl/diwoo/metadata/" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd https://standaarden.overheid.nl/diwoo/metadata/ https://standaarden.overheid.nl/diwoo/metadata/0.9.4/xsd/diwoo-metadata.xsd">
  <url>
-  <loc>http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/attachment/1eef99b0-093d-6700-b0e0-315d29be4a5c</loc>
+  <loc>http://open.local/dossier/PREF/my-woo-decision-1/file/download/attachment/1eef99b0-093d-6700-b0e0-315d29be4a5c</loc>
   <lastmod>2024-04-13</lastmod>
   <diwoo:Document>
    <diwoo:DiWoo>
@@ -21,12 +21,12 @@
       <diwoo:atTime>2024-04-03T00:00:00+00:00</diwoo:atTime>
      </diwoo:documenthandeling>
     </diwoo:documenthandelingen>
-    <diwoo:isPartOf resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/main_document/1eefbf67-fd11-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:isPartOf>
+    <diwoo:isPartOf resource="http://open.local/dossier/PREF/my-woo-decision-1/file/download/main_document/1eefbf67-fd11-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:isPartOf>
    </diwoo:DiWoo>
   </diwoo:Document>
  </url>
  <url>
-  <loc>http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/attachment/1eefa642-afd9-6700-b0e0-315d29be4a5c</loc>
+  <loc>http://open.local/dossier/PREF/my-woo-decision-1/file/download/attachment/1eefa642-afd9-6700-b0e0-315d29be4a5c</loc>
   <lastmod>2024-04-14</lastmod>
   <diwoo:Document>
    <diwoo:DiWoo>
@@ -46,7 +46,7 @@
       <diwoo:atTime>2024-04-04T00:00:00+00:00</diwoo:atTime>
      </diwoo:documenthandeling>
     </diwoo:documenthandelingen>
-    <diwoo:isPartOf resource="http://localhost:8000/dossier/PREF/my-woo-decision-1/file/download/main_document/1eefbf67-fd11-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:isPartOf>
+    <diwoo:isPartOf resource="http://open.local/dossier/PREF/my-woo-decision-1/file/download/main_document/1eefbf67-fd11-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:isPartOf>
    </diwoo:DiWoo>
   </diwoo:Document>
  </url>

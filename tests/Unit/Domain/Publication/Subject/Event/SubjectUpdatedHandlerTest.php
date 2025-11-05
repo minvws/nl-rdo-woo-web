@@ -20,7 +20,7 @@ class SubjectUpdatedHandlerTest extends MockeryTestCase
     private SubjectIndexUpdater&MockInterface $indexUpdater;
     private SubjectUpdatedHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(SubjectRepository::class);
         $this->indexUpdater = \Mockery::mock(SubjectIndexUpdater::class);

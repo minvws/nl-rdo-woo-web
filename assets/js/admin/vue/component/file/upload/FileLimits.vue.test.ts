@@ -46,7 +46,7 @@ describe('The "FileLimits" component', () => {
     test('should display a list of allowed file types with their max size', () => {
       const component = createComponent();
       expect(component.text()).toContain(
-        'Bestand van het type PDF (max 1 MB), Spreadsheet (max 2 MB) of PNG, JPG (max 3 MB)',
+        'Bestand van het type PDF (max 1 MB), Spreadsheet (max 2 MB) of JPG, PNG (max 3 MB)',
       );
     });
 

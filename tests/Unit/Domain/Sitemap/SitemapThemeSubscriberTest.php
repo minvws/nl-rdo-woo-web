@@ -22,7 +22,7 @@ class SitemapThemeSubscriberTest extends UnitTestCase
     private ThemeManager&MockInterface $themeManager;
     private SitemapThemeSubscriber $subscriber;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->themeManager = \Mockery::mock(ThemeManager::class);
 

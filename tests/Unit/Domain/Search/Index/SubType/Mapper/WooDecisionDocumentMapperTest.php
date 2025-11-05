@@ -27,7 +27,7 @@ class WooDecisionDocumentMapperTest extends MockeryTestCase
     private WooDecisionDocumentMapper $mapper;
     private WooDecisionMapper&MockInterface $wooDecisionMapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->wooDecisionMapper = \Mockery::mock(WooDecisionMapper::class);
 

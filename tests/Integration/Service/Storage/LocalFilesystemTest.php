@@ -39,10 +39,10 @@ final class LocalFilesystemTest extends KernelTestCase
 
         vfsStream::create(['input.txt' => $contents], $this->root);
 
-        $source = fopen('vfs://root/input.txt', 'r');
+        $source = \fopen('vfs://root/input.txt', 'r');
         Assert::resource($source, 'stream', 'The source should be a stream');
 
-        $target = fopen('vfs://root/hello.txt', 'w');
+        $target = \fopen('vfs://root/hello.txt', 'w');
         Assert::resource($target, 'stream', 'The target should be a stream');
 
         $fs = new LocalFilesystem($this->logger);
@@ -61,10 +61,10 @@ final class LocalFilesystemTest extends KernelTestCase
     {
         FailingReadStreamWrapper::register();
 
-        $source = fopen(FailingReadStreamWrapper::getPath('input.txt'), 'r');
+        $source = \fopen(FailingReadStreamWrapper::getPath('input.txt'), 'r');
         Assert::resource($source, 'stream', 'The source should be a stream');
 
-        $target = fopen('vfs://root/hello.txt', 'w');
+        $target = \fopen('vfs://root/hello.txt', 'w');
         Assert::resource($target, 'stream', 'The target should be a stream');
 
         $fs = new LocalFilesystem($this->logger);
@@ -84,11 +84,11 @@ final class LocalFilesystemTest extends KernelTestCase
 
         vfsStream::create(['input.txt' => $contents], $this->root);
 
-        $source = fopen('vfs://root/input.txt', 'r');
+        $source = \fopen('vfs://root/input.txt', 'r');
         Assert::resource($source, 'stream', 'The source should be a stream');
 
         FailingWriteStreamWrapper::register();
-        $target = fopen(FailingWriteStreamWrapper::getPath('hello.txt'), 'w');
+        $target = \fopen(FailingWriteStreamWrapper::getPath('hello.txt'), 'w');
         Assert::resource($target, 'stream', 'The target should be a stream');
 
         $fs = new LocalFilesystem($this->logger);
@@ -135,7 +135,7 @@ final class LocalFilesystemTest extends KernelTestCase
     {
         $tmpDir = vfsStream::newDirectory('tmp')->at($this->root);
         $uniqueId = 'woopie_random';
-        $expectedPath = sprintf('%s/%s', $tmpDir->url(), $uniqueId);
+        $expectedPath = \sprintf('%s/%s', $tmpDir->url(), $uniqueId);
 
         $fs = $this->getPartialLocalFilesystem();
         $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
@@ -151,7 +151,7 @@ final class LocalFilesystemTest extends KernelTestCase
         $tmpDir = vfsStream::newDirectory('tmp')->at($this->root);
         $mySubdir = '/my-subdir/another-one/';
         $uniqueId = 'woopie_random';
-        $expectedPath = sprintf('%s/%s/my-subdir/another-one', $tmpDir->url(), $uniqueId);
+        $expectedPath = \sprintf('%s/%s/my-subdir/another-one', $tmpDir->url(), $uniqueId);
 
         $fs = $this->getPartialLocalFilesystem();
         $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
@@ -168,7 +168,7 @@ final class LocalFilesystemTest extends KernelTestCase
         $tmpDir = vfsStream::newDirectory('foobar')->chmod(0000)->at($this->root);
 
         $uniqueId = 'woopie_random';
-        $expectedPath = sprintf('%s/%s', $tmpDir->url(), $uniqueId);
+        $expectedPath = \sprintf('%s/%s', $tmpDir->url(), $uniqueId);
 
         $this->logger
             ->shouldReceive('error')
@@ -338,6 +338,30 @@ final class LocalFilesystemTest extends KernelTestCase
         $result = $fs->getFileSize($nonExistingFile);
 
         $this->assertFalse($result);
+    }
+
+    public function testGetIsSymlinkWhenNotSymlink(): void
+    {
+        $filename = 'file.txt';
+        vfsStream::create([$filename => $this->getFaker()->sentence()], $this->root);
+
+        $localFilesystem = new LocalFilesystem($this->logger);
+        $this->assertFalse($localFilesystem->isSymlink(\sprintf('vfs://root/%s', $filename)));
+    }
+
+    public function testGetIsSymlinkWhenSymlink(): void
+    {
+        $filename = 'file.txt';
+        vfsStream::create([$filename => $this->getFaker()->sentence()], $this->root);
+        $path = \sprintf('vfs://root/%s', $filename);
+
+        $linkname = $this->getFaker()->slug(1);
+        \symlink($path, $linkname);
+
+        $localFilesystem = new LocalFilesystem($this->logger);
+        $this->assertTrue($localFilesystem->isSymlink($linkname));
+
+        \unlink($linkname);
     }
 
     private function getPartialLocalFilesystem(): LocalFilesystem&MockInterface

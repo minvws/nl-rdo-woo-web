@@ -17,7 +17,7 @@ class ContentPageServiceTest extends UnitTestCase
     private ContentPageService $service;
     private ContentPageRepository&MockInterface $contentPageRepository;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->contentPageRepository = \Mockery::mock(ContentPageRepository::class);
         $this->service = new ContentPageService($this->contentPageRepository);

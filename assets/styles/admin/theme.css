@@ -1,4 +1,5 @@
 @theme {
+    --color-bhr-blue-0: #e7f5ff;
     --color-bhr-blue-50: #e7f5ff;
     --color-bhr-blue-100: #d0ebff;
     --color-bhr-blue-700: #1c7ed6;
@@ -6,8 +7,9 @@
     --color-bhr-blue-900: #1864ab;
     --color-bhr-grape-50: #f8f0fc;
     --color-bhr-grape-900: #862e9c;
+    --color-bhr-gray-0: #f8f9fa;
     --color-bhr-gray-100: #f1f3f5;
-    --color-bhr-gray-200: #ced4da;
+    --color-bhr-gray-200: #e9ecef;
     --color-bhr-gray-300: #dee2e6;
     --color-bhr-gray-400: #ced4da;
     --color-bhr-gray-500: #adb5bd;

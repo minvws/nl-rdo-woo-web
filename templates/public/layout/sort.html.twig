@@ -7,13 +7,13 @@
 
 {% set ariaSortValue = currentDirection == 'none' ? 'none' : (currentDirection == 'asc' ? 'ascending' : 'descending' ) %}
 {% set translatedNextDirection = nextDirection == 'asc' ? 'global.sort.direction.sort_asc' | trans : 'global.sort.direction.sort_desc' | trans %}
-{% set iconName = currentDirection == 'none' ? 'sort-alt' : (currentDirection == 'asc' ? 'sort-up' : 'sort-down') %}
+{% set iconName = currentDirection == 'none' ? 'sort' : (currentDirection == 'asc' ? 'sort-up' : 'sort-down') %}
 
 <th aria-sort="{{ ariaSortValue }}" class="{{ options.thClassName|default('') }}" scope="col">
-    <a class="block whitespace-nowrap" href="{{ options.href }}{{ options.fragment|default('') }}">
+    <a class="woo-fill-cell whitespace-nowrap hover-focus:bg-woo-dark-blue-600 hover-focus:text-white group" href="{{ options.href }}{{ options.fragment|default('') }}">
         <span class="sr-only">{{ translatedNextDirection }}:</span> {{ title }}
         {% if iconName %}
-            <twig:Public:Icon name="{{ iconName }}" />
+            <twig:Public:Icon color="fill-black group-hover-focus:fill-white" name="{{ iconName }}" />
         {% endif %}
     </a>
 </th>

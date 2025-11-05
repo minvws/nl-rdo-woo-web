@@ -14,7 +14,7 @@ class SortItemViewFactoryTest extends UnitTestCase
 {
     private SortItemViewFactory $sortItems;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sortItems = new SortItemViewFactory();
 

@@ -57,7 +57,7 @@
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
                 <div>
-                    <button class="bhr-btn-filled-primary" type="submit">{{ 'global.login' | trans() }}</button>
+                    <button class="bhr-btn-filled-primary" type="submit" data-e2e-name="login">{{ 'global.login' | trans() }}</button>
                 </div>
 
                 <p class="mt-6 bhr-text-muted">{{ 'admin.account.login_help.forgot_password_instructions' | trans() }}</p>

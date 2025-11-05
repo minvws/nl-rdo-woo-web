@@ -12,6 +12,7 @@ import { init } from './init';
 
 let clickableRowInitializeSpy: MockInstance;
 let clickOnSelectorInitializeSpy: MockInstance;
+let confirmActionInitializeSpy: MockInstance;
 let copyToClipboardInitializeSpy: MockInstance;
 let detailsComponentsInitializeSpy: MockInstance;
 let printPageInitializeSpy: MockInstance;
@@ -35,6 +36,12 @@ describe('the main "init" function for the admin', () => {
     }),
     tabs: () => ({
       initialize: tabsInitializeSpy,
+    }),
+  }));
+
+  vi.mock('./admin/confirm-action', () => ({
+    confirmAction: () => ({
+      initialize: confirmActionInitializeSpy,
     }),
   }));
 
@@ -83,6 +90,7 @@ describe('the main "init" function for the admin', () => {
   beforeEach(() => {
     clickableRowInitializeSpy = vi.fn();
     clickOnSelectorInitializeSpy = vi.fn();
+    confirmActionInitializeSpy = vi.fn();
     copyToClipboardInitializeSpy = vi.fn();
     detailsComponentsInitializeSpy = vi.fn();
     printPageInitializeSpy = vi.fn();
@@ -106,6 +114,7 @@ describe('the main "init" function for the admin', () => {
   test('should initialize the functionalities used in the admin', () => {
     expect(clickableRowInitializeSpy).not.toHaveBeenCalled();
     expect(clickOnSelectorInitializeSpy).not.toHaveBeenCalled();
+    expect(confirmActionInitializeSpy).not.toHaveBeenCalled();
     expect(copyToClipboardInitializeSpy).not.toHaveBeenCalled();
     expect(detailsComponentsInitializeSpy).not.toHaveBeenCalled();
     expect(printPageInitializeSpy).not.toHaveBeenCalled();
@@ -117,6 +126,7 @@ describe('the main "init" function for the admin', () => {
     init();
     expect(clickableRowInitializeSpy).toHaveBeenCalled();
     expect(clickOnSelectorInitializeSpy).toHaveBeenCalled();
+    expect(confirmActionInitializeSpy).toHaveBeenCalled();
     expect(copyToClipboardInitializeSpy).toHaveBeenCalled();
     expect(detailsComponentsInitializeSpy).toHaveBeenCalled();
     expect(printPageInitializeSpy).toHaveBeenCalled();

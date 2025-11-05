@@ -24,7 +24,7 @@ class UpdateDossierPublicationHandlerTest extends MockeryTestCase
     private UpdateDossierPublicationHandler $handler;
     private MockInterface&DossierService $dossierService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierService = \Mockery::mock(DossierService::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
@@ -56,7 +56,7 @@ class UpdateDossierPublicationHandlerTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             static function (DossierUpdatedEvent $message) use ($dossierId) {
-                self::assertEquals($dossierId, $message->id);
+                self::assertEquals($dossierId, $message->dossierId);
 
                 return true;
             }
@@ -85,7 +85,7 @@ class UpdateDossierPublicationHandlerTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             static function (DossierUpdatedEvent $message) use ($dossierId) {
-                self::assertEquals($dossierId, $message->id);
+                self::assertEquals($dossierId, $message->dossierId);
 
                 return true;
             }
@@ -115,7 +115,7 @@ class UpdateDossierPublicationHandlerTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             static function (DossierUpdatedEvent $message) use ($dossierId) {
-                self::assertEquals($dossierId, $message->id);
+                self::assertEquals($dossierId, $message->dossierId);
 
                 return true;
             }

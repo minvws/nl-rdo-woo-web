@@ -12,7 +12,7 @@ class ElasticDataCollectorTest extends UnitTestCase
 {
     private ElasticCollector $collector;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->collector = new ElasticCollector();
     }

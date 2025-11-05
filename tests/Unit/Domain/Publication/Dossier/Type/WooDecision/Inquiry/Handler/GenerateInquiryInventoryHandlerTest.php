@@ -24,7 +24,7 @@ class GenerateInquiryInventoryHandlerTest extends UnitTestCase
     private InventorySanitizer&MockInterface $inventorySanitizer;
     private GenerateInquiryInventoryHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->inquiryRepository = \Mockery::mock(InquiryRepository::class);
         $this->inventoryDataProviderFactory = \Mockery::mock(InventoryDataProviderFactory::class);

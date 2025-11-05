@@ -8,8 +8,8 @@
 {% set ariaSortValue = currentDirection == 'none' ? 'none' : (currentDirection == 'asc' ? 'ascending' : 'descending' ) %}
 {% set translatedNextDirection = nextDirection == 'asc' ? 'global.sort.direction.sort_asc' | trans : 'global.sort.direction.sort_desc' | trans %}
 
-<th aria-sort="{{ ariaSortValue }}" class="bhr-column-head bhr-column-head--gray {{ options.thClassName|default('') }}" scope="col">
-    <a class="{{ (('block whitespace-nowrap' ~ sorted ? ' font-bold' : '') ~ ' ' ~ sortClassName|default(''))|trim }}" href="{{ options.href }}{{ options.fragment|default('') }}">
+<th aria-sort="{{ ariaSortValue }}" class="{{ options.thClassName|default('') }}" scope="col">
+    <a class="bhr-fill-cell whitespace-nowrap hover-focus:bg-white {{ sortClassName|default('')|trim }}" href="{{ options.href }}{{ options.fragment|default('') }}">
         <span
             class="sr-only js-sort-next-direction"
             data-text-asc="{{ 'global.sort.direction.sort_asc' | trans }}"

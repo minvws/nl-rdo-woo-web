@@ -22,7 +22,7 @@ class FileStorageCheckerTest extends UnitTestCase
     private PathSetsFactoryInterface&MockInterface $pathSetFactoryA;
     private PathSetsFactoryInterface&MockInterface $pathSetFactoryB;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->fileStorageChecker = new FileStorageChecker(
             $this->fileStorageLister = \Mockery::mock(FileStorageLister::class),

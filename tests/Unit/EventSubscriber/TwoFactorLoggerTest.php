@@ -20,7 +20,7 @@ class TwoFactorLoggerTest extends MockeryTestCase
     private TwoFactorLogger $subscriber;
     private EntityManagerInterface&MockInterface $entityManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);

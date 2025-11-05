@@ -16,7 +16,7 @@ class CsvReaderTest extends MockeryTestCase
     private CsvReader $csvReader;
     private HeaderMap&MockInterface $headerMap;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->headerMap = \Mockery::mock(HeaderMap::class);
 

@@ -21,7 +21,7 @@ class AuthMatrixEnsureSubscriberTest extends MockeryTestCase
     private AuthMatrixEnsureSubscriber $subscriber;
     private Request&MockInterface $request;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->store = \Mockery::mock(AuthorizationEntryRequestStore::class);
         $this->request = \Mockery::mock(Request::class);

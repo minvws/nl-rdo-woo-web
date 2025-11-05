@@ -23,7 +23,7 @@ class LoginAuditLoggerTest extends MockeryTestCase
     private LoginAuditLogger $loginAuditLogger;
     private AuditLogger $auditLogger;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->internalAuditLogger = \Mockery::mock(AuditLoggerInterface::class);
         $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();

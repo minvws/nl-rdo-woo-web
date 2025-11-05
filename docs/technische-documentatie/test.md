@@ -56,21 +56,14 @@ task rf:venv
 ## Step 3: Initialize the application
 
 To run CI tests locally you need to create a user with 'super admin'-rights, username `email@example.org` and password `IkLoopNooitVastVandaag`.
-To prepare for this, you should create an environment variable named `SECRET_WOO_LOCAL` in your  `~/.zshrc` file, for which the value will be automatically replaced later on:
 
-```shell
-export SECRET_WOO_LOCAL=REPLACEABLE
-```
-
-Then create the aforementioned admin user by either follow the instructions in [development_install](development_install.md) or running the following testcase:
+Then create the aforementioned admin user by either following the instructions in [development_install](development_install.md) or running the following command:
 
 ```shell
 task rf:init
 ```
 
-Note that you have to restart your shell for any following `task rf:test` calls, otherwise it won't know the new secret.
-
-If you ever need an OTP code to login manually, use the following testcase:
+If you ever need an OTP code to login manually, use the following command:
 
 ```shell
 task rf:otp

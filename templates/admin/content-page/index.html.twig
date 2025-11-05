@@ -1,8 +1,5 @@
 {% extends 'admin/base.html.twig' %}
 
-
-
-
 {% block body %}
 <div class="bhr-container">
     <h1 class="bhr-title mb-6">{{ 'admin.content_pages.manage' | trans() }}</h1>
@@ -12,9 +9,9 @@
         <table class="bhr-table table-fixed">
             <thead>
                 <tr>
-                    <th class="text-left" scope="col">{{ 'admin.content-page.slug' | trans }}</th>
-                    <th class="text-left" scope="col">{{ 'admin.content-page.title' | trans }}</th>
-                    <th class="text-left" scope="col"></th>
+                    <th scope="col">{{ 'admin.content-page.slug' | trans }}</th>
+                    <th scope="col">{{ 'admin.content-page.title' | trans }}</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>

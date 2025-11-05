@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
 
+use App\Domain\Publication\Dossier\AbstractDossier;
+use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Step\StepException;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -11,70 +13,88 @@ use App\Domain\Publication\Dossier\Type\DossierType;
 use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentsStepDefinition;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DocumentsStepDefinitionTest extends MockeryTestCase
 {
-    public function testIsCompletedReturnsTrueWhenNoInventoryAndDocumentsAreNeeded(): void
+    private AbstractDossier&MockInterface $dossier;
+    private ValidatorInterface&MockInterface $validator;
+    private DocumentsStepDefinition $step;
+
+    protected function setUp(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('needsInventoryAndDocuments')->andReturnFalse();
+        $this->dossier = \Mockery::mock(WooDecision::class);
+        $this->validator = \Mockery::mock(ValidatorInterface::class);
 
-        $validator = \Mockery::mock(ValidatorInterface::class);
-
-        $step = new DocumentsStepDefinition(
+        $this->step = new DocumentsStepDefinition(
             StepName::DOCUMENTS,
             DossierType::WOO_DECISION,
         );
 
-        self::assertTrue($step->isCompleted($dossier, $validator));
+        parent::setUp();
     }
 
-    public function testIsCompletedReturnsTrueWhenUploadsAreComplete(): void
+    private function isStepCompleted(?AbstractDossier $dossier = null): bool
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('needsInventoryAndDocuments')->andReturnTrue();
-        $dossier->shouldReceive('getProductionReport->getFileInfo->isUploaded')->andReturnTrue();
-        $dossier->shouldReceive('getUploadStatus->isComplete')->andReturnTrue();
-
-        $validator = \Mockery::mock(ValidatorInterface::class);
-
-        $step = new DocumentsStepDefinition(
-            StepName::DOCUMENTS,
-            DossierType::WOO_DECISION,
-        );
-
-        self::assertTrue($step->isCompleted($dossier, $validator));
+        return $this->step->isCompleted($dossier ?? $this->dossier, $this->validator);
     }
 
     public function testIsCompletedThrowsExceptionForUnsupportedDossierType(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
-        $validator = \Mockery::mock(ValidatorInterface::class);
-
-        $step = new DocumentsStepDefinition(
-            StepName::DOCUMENTS,
-            DossierType::WOO_DECISION,
-        );
-
         $this->expectException(StepException::class);
-        $step->isCompleted($dossier, $validator);
+        $this->isStepCompleted(\Mockery::mock(Covenant::class));
     }
 
-    public function testIsCompletedReturnsFalseWhenRequiredUploadsAreIncomplete(): void
+    public function testIsCompletedReturnsTrueWhenNoInventoryAndDocumentsCanBeProvided(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('needsInventoryAndDocuments')->andReturnTrue();
-        $dossier->shouldReceive('getProductionReport->getFileInfo->isUploaded')->andReturnTrue();
-        $dossier->shouldReceive('getUploadStatus->isComplete')->andReturnFalse();
+        $this->dossier->shouldReceive('canProvideInventory')->andReturnFalse();
 
-        $validator = \Mockery::mock(ValidatorInterface::class);
+        self::assertTrue($this->isStepCompleted());
+    }
 
-        $step = new DocumentsStepDefinition(
-            StepName::DOCUMENTS,
-            DossierType::WOO_DECISION,
-        );
+    public function testIsCompletedReturnsTrueWhenUploadsAreComplete(): void
+    {
+        $this->dossier->shouldReceive('canProvideInventory')->andReturnTrue();
+        $this->dossier->shouldReceive('hasAllExpectedUploads')->andReturnTrue();
 
-        self::assertFalse($step->isCompleted($dossier, $validator));
+        self::assertTrue($this->isStepCompleted());
+    }
+
+    public function testIsCompletedReturnsFalseWhenUploadsAreIncomplete(): void
+    {
+        $this->dossier->shouldReceive('canProvideInventory')->andReturnTrue();
+        $this->dossier->shouldReceive('hasAllExpectedUploads')->andReturnFalse();
+        $this->dossier->shouldReceive('hasProductionReport')->andReturnTrue();
+
+        self::assertFalse($this->isStepCompleted());
+    }
+
+    #[DataProvider('dossierStatusData')]
+    public function testIsCompletedForOptionalInventoryAndDossierStatus(DossierStatus $status, bool $expectedIsCompleted): void
+    {
+        $this->dossier->shouldReceive('canProvideInventory')->andReturnTrue();
+        $this->dossier->shouldReceive('hasAllExpectedUploads')->andReturnFalse();
+        $this->dossier->shouldReceive('hasProductionReport')->andReturnFalse();
+        $this->dossier->shouldReceive('isInventoryOptional')->andReturnTrue();
+        $this->dossier->shouldReceive('getStatus')->andReturn($status);
+
+        self::assertEquals($expectedIsCompleted, $this->isStepCompleted());
+    }
+
+    /**
+     * @return array<array{DossierStatus,bool}>
+     */
+    public static function dossierStatusData(): array
+    {
+        return [
+            [DossierStatus::PUBLISHED, true],
+            [DossierStatus::PREVIEW, true],
+            [DossierStatus::SCHEDULED, true],
+
+            [DossierStatus::CONCEPT, false],
+            [DossierStatus::NEW, false],
+        ];
     }
 }

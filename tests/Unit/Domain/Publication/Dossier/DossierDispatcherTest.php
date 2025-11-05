@@ -11,8 +11,10 @@ use App\Domain\Publication\Dossier\Command\UpdateDossierContentCommand;
 use App\Domain\Publication\Dossier\Command\UpdateDossierDetailsCommand;
 use App\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
 use App\Domain\Publication\Dossier\DossierDispatcher;
+use App\Service\Security\User;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
@@ -20,14 +22,17 @@ use Symfony\Component\Uid\Uuid;
 class DossierDispatcherTest extends UnitTestCase
 {
     private MessageBusInterface&MockInterface $messageBus;
+    private Security&MockInterface $security;
     private DossierDispatcher $dispatcher;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
+        $this->security = \Mockery::mock(Security::class);
 
         $this->dispatcher = new DossierDispatcher(
             $this->messageBus,
+            $this->security,
         );
     }
 
@@ -95,9 +100,21 @@ class DossierDispatcherTest extends UnitTestCase
     {
         $id = Uuid::v6();
 
+        $user = \Mockery::mock(User::class);
+        $user->shouldReceive('getUserIdentifier')->andReturn($userId = 'foo-bar');
+        $user->shouldReceive('getEmail')->andReturn($email = 'foo@bar.baz');
+        $user->shouldReceive('getName')->andReturn($name = 'Foo Bar');
+        $user->shouldReceive('getRoles')->andReturn($roles = ['foo']);
+
+        $this->security->expects('getUser')->andReturns($user);
+
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
-            static function (DeleteDossierCommand $command) use ($id) {
-                self::assertEquals($id, $command->getUuid());
+            static function (DeleteDossierCommand $command) use ($id, $userId, $email, $name, $roles) {
+                self::assertEquals($id, $command->dossierId);
+                self::assertEquals($userId, $command->auditUserDetails->getAuditId());
+                self::assertEquals($name, $command->auditUserDetails->getName());
+                self::assertEquals($email, $command->auditUserDetails->getEmail());
+                self::assertEquals($roles, $command->auditUserDetails->getRoles());
 
                 return true;
             }

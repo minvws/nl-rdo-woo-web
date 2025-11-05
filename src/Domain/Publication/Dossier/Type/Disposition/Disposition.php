@@ -30,7 +30,7 @@ class Disposition extends AbstractDossier implements EntityWithAttachments, Enti
     /** @use HasMainDocument<DispositionMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: DispositionMainDocument::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: DispositionMainDocument::class, cascade: ['remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?DispositionMainDocument $document;

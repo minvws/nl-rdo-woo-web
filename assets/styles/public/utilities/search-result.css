@@ -11,8 +11,7 @@
 }
 
 @utility woo-search-result__main-link {
-  @apply block text-woo-sea-blue hover-focus:underline hover-focus:text-woo-ateneo-blue;
-  @apply visited:text-woo-plum visited:hover-focus:no-underline;
+  @apply block woo-a woo-a--reverse-underline;
   overflow-wrap: anywhere;
 }
 

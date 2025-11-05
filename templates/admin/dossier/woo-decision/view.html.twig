@@ -131,11 +131,12 @@
     </section>
 
     <section id="documents" class="bhr-card mt-10" data-e2e-name="documents-section">
+        {% set canEditDocuments = matrix_has_permission('dossier.update') and dossier.canProvideInventory and workflowStatus.isReadyForDocuments and (dossier.hasProductionReport or not dossier.status.isPubliclyAvailableOrScheduled) %}
         <twig:Admin:LeftAndRight>
-            <h2 class="bhr-title">{{ 'global.documents' | trans }}{% if dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments and dossier.inventory is not null %} ({{ uploadStatus.actualUploadCount }}/{{ uploadStatus.expectedUploadCount }}){%endif %}</h2>
+            <h2 class="bhr-title">{{ 'global.documents' | trans }}{% if dossier.canProvideInventory and workflowStatus.isReadyForDocuments and dossier.inventory is not null %} ({{ uploadStatus.actualUploadCount }}/{{ uploadStatus.expectedUploadCount }}){%endif %}</h2>
 
                 <twig:block name="right">
-                    {% if matrix_has_permission('dossier.update') and dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments %}
+                    {% if canEditDocuments %}
                         <a
                             class="bhr-btn-bordered-primary"
                             data-e2e-name="edit-link"
@@ -145,13 +146,13 @@
                 </twig:block>
         </twig:Admin:LeftAndRight>
 
-        {% if not dossier.needsInventoryAndDocuments %}
+        {% if not dossier.canProvideInventory %}
             <p class="font-bold text-lg text-center py-6">{{ 'public.dossiers.not_applicable' | trans({'decision': dossier.decision | trans}) }}</p>
         {% elseif dossier.status.isPubliclyAvailableOrScheduled or workflowStatus.isReadyForDocuments %}
             <dl class="text-lg">
                 <twig:Admin:Definition term="{{ 'public.dossiers.production_report' | trans() }}">
                     <span data-e2e-name="dossier-inventoryFile">
-                    {% if dossier.productionReport is not null  %}
+                    {% if dossier.hasProductionReport  %}
                         <twig:Admin:IconLink
                             href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
                             icon="file-csv"
@@ -166,7 +167,7 @@
                 <twig:Admin:Definition term="{{ 'global.documents' | trans() }}">
                     <p data-e2e-name="dossier-uploadCount">{{ uploadStatus.actualUploadCount }}{% if dossier.inventory is not null  %} van {{ uploadStatus.expectedUploadCount }}{% endif %} bestanden geüpload</p>
 
-                    {% if matrix_has_permission('dossier.update') and dossier.needsInventoryAndDocuments and workflowStatus.isReadyForDocuments %}
+                    {% if canEditDocuments %}
                     <p class="mt-3">
                         <twig:Admin:IconLink
                             href="{{ path(workflowStatus.documentsPath, {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}"
@@ -214,7 +215,7 @@
             </twig:block>
         </twig:Admin:LeftAndRight>
 
-        {% if dossier.status.isPubliclyAvailableOrScheduled or workflowStatus.publicationStep.isCompleted %}
+        {% if dossier.status.isPubliclyAvailableOrScheduled or workflowStatus.publicationStep.isAccessible %}
             <dl class="text-lg">
                 {% if dossier.previewDate is defined %}
                 <twig:Admin:Definition term="{{ dossier.hasFuturePreviewDate ? 'global.publication.preview_planned' | trans : 'global.publication.preview_on' | trans() }}">
@@ -250,7 +251,7 @@
                             <table class="bhr-table table-fixed">
                                 <thead>
                                     {% include 'admin/layout/sort.html.twig' with {'title': 'Zaaknummer', 'sorted': true, direction: 'desc', 'options': case_options, 'sortClassName': 'js-sort-table-toggler'} %}
-                                    <th class="bhr-column-head" scope="col">Link voor verzoeker</th>
+                                    <th scope="col">Link voor verzoeker</th>
                                 </thead>
                                 <tbody data-e2e-name="linked-inquiries">
                                     {% for inquiry in dossier.inquiries|sort((a, b) => a.casenr <=> b.casenr) %}
@@ -283,7 +284,7 @@
     {% set canWithdrawDocuments = not workflowStatus.isConcept %}
     {% set canDeleteDossier = matrix_has_permission('dossier.delete') %}
 
-    {% if not dossier.needsInventoryAndDocuments %}
+    {% if not dossier.canProvideInventory %}
         <section class="bhr-card mt-10" data-e2e-name="danger-zone">
             <h2 class="bhr-title mb-6">{{ 'admin.global.danger_zone' | trans }}</h2>
             <p>{{ 'admin.dossiers.woo-decision.no_docs' | trans }}</p>
@@ -298,7 +299,7 @@
         </section>
     {% endif %}
 
-    {% if dossier.needsInventoryAndDocuments and (canWithdrawDocuments or canDeleteDossier) %}
+    {% if dossier.canProvideInventory and (canWithdrawDocuments or canDeleteDossier) %}
         <section class="bhr-card mt-10" data-e2e-name="danger-zone">
             <h2 class="bhr-title mb-6">{{ 'admin.global.danger_zone' | trans }}</h2>
 

@@ -25,3 +25,17 @@
         </twig:Admin:Definition>
     {% endif %}
 {% endblock %}
+
+{% block dossier_advisory_bodies %}
+    <twig:Admin:Definition term="{{ 'admin.dossiers.request_for_advice.advisory_bodies' | trans }}">
+        {% if dossier.advisoryBodies | length > 0 %}
+            <ul>
+                {% for party in dossier.advisoryBodies %}
+                    <li>{{ party }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>{{ 'admin.global.no_record' | trans }}</p>
+        {% endif %}
+    </twig:Admin:Definition>
+{% endblock %}

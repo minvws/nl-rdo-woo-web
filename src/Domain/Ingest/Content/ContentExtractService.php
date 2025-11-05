@@ -30,8 +30,7 @@ readonly class ContentExtractService
     ): ContentExtractCollection {
         $extracts = new ContentExtractCollection();
 
-        $fileInfo = $entity->getFileInfo();
-        if (! $fileInfo->isUploaded()) {
+        if (! $entity->getFileInfo()->isUploaded()) {
             $this->logWithContext('ContentExtract skipped because file was not uploaded', $entity, LogLevel::WARNING);
 
             return $extracts->markAsFailure();
@@ -47,7 +46,7 @@ readonly class ContentExtractService
                     continue;
                 }
 
-                if (! $extractor->supports($fileInfo)) {
+                if (! $extractor->supports($entity)) {
                     continue;
                 }
 
@@ -55,7 +54,7 @@ readonly class ContentExtractService
                     new ContentExtract(
                         $extractor->getKey(),
                         $extractor->getContent(
-                            $entity->getFileInfo(),
+                            $entity,
                             $fileReference,
                         )
                     ),

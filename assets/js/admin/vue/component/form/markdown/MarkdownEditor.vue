@@ -484,8 +484,8 @@ const onBulletList = () => {
     <table class="bhr-table my-6">
       <thead>
         <tr>
-          <th class="bhr-column-head bhr-column-head--gray">Tekst</th>
-          <th class="bhr-column-head bhr-column-head--gray">Resultaat</th>
+          <th scope="col">Tekst</th>
+          <th scope="col">Resultaat</th>
         </tr>
       </thead>
       <tbody>

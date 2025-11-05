@@ -6,13 +6,49 @@ namespace App\Tests\Unit\Service;
 
 use App\Domain\Publication\History\History;
 use App\Service\HistoryService;
+use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\MockInterface;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Translator;
+use Symfony\Component\Uid\Uuid;
 
-class HistoryServiceTest extends MockeryTestCase
+class HistoryServiceTest extends UnitTestCase
 {
+    private EntityManagerInterface&MockInterface $entityManager;
+    private Translator&MockInterface $translator;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
+        $this->translator = \Mockery::mock(Translator::class);
+    }
+
+    public function testAddDossierEntry(): void
+    {
+        /** @var HistoryService&MockInterface $service */
+        $service = \Mockery::mock(HistoryService::class, [
+            $this->entityManager,
+            $this->translator,
+        ])
+        ->shouldAllowMockingProtectedMethods()
+        ->makePartial();
+
+        $uuid = Uuid::v6();
+        $key = 'my-key';
+        $context = ['a' => 'b'];
+        $mode = HistoryService::MODE_PUBLIC;
+
+        $service
+            ->shouldReceive('addEntry')
+            ->with(HistoryService::TYPE_DOSSIER, $uuid, $key, $context, $mode, true)
+            ->once();
+
+        $service->addDossierEntry($uuid, $key, $context, $mode);
+    }
+
     public function testHistoryTranslation(): void
     {
         $arrayLoader = new ArrayLoader();

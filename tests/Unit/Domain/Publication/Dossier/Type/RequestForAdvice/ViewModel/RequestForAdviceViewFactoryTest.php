@@ -50,6 +50,7 @@ final class RequestForAdviceViewFactoryTest extends UnitTestCase
         $dossier = \Mockery::mock(RequestForAdvice::class);
         $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new \DateTimeImmutable());
         $dossier->shouldReceive('getLink')->andReturn($expectedLink = 'http://foo.bar');
+        $dossier->shouldReceive('getAdvisoryBodies')->andReturn($expectedAdvisoryBodies = ['FooBar']);
 
         $result = (new RequestForAdviceViewFactory($this->commonDossierViewFactory))->make($dossier);
 
@@ -67,5 +68,6 @@ final class RequestForAdviceViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedType, $result->getType());
         $this->assertSame($expectedDate, $result->date);
         $this->assertSame($expectedLink, $result->link);
+        $this->assertSame($expectedAdvisoryBodies, $result->advisoryBodies);
     }
 }

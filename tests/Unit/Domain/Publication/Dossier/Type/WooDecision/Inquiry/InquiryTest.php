@@ -29,24 +29,6 @@ final class InquiryTest extends TestCase
         self::assertTrue($inquiry->getDossiers()->isEmpty());
     }
 
-    public function testGetPubliclyAvailableDossiers(): void
-    {
-        $wooDecisionPublished = \Mockery::mock(WooDecision::class);
-        $wooDecisionPublished->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
-
-        $wooDecisionConcept = \Mockery::mock(WooDecision::class);
-        $wooDecisionConcept->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
-
-        $inquiry = new Inquiry();
-        $inquiry->addDossier($wooDecisionConcept);
-        $inquiry->addDossier($wooDecisionPublished);
-
-        self::assertEqualsCanonicalizing(
-            [$wooDecisionPublished],
-            $inquiry->getPubliclyAvailableDossiers()->toArray(),
-        );
-    }
-
     public function testGetScheduledDossiers(): void
     {
         $wooDecisionScheduled = \Mockery::mock(WooDecision::class);

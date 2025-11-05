@@ -18,7 +18,7 @@ class WooDecisionBatchDownloadTest extends MockeryTestCase
     private WooDecisionRepository&MockInterface $repository;
     private WooDecisionBatchDownload $type;
 
-    public function setup(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(WooDecisionRepository::class);
 

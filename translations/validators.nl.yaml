@@ -157,6 +157,7 @@ admin.user.password.validation.minimal_chars: 'Je wachtwoord moet tenminste {{ l
 admin.user.password.validation.digits_only: 'Je wachtwoord mag niet alleen uit cijfers bestaan.'
 admin.user.password.validation.same_current: 'Je nieuwe wachtwoord mag niet hetzelfde zijn als je huidige wachtwoord'
 admin.user.password.validation.common: 'Het gekozen wachtwoord is niet veilig'
+admin.user.reset.at_lease_one_of: 'Vul tenminste 1 waarde in'
 subject_already_exists: 'Dit onderwerp bestaat al'
 alpha_numeric_dash_only: 'Prefix mag alleen bestaan uit letters, cijfers en streepjes'
 casenumbers_invalid: "Zaaknummers mogen alleen letters, cijfers en verbindingstekens bevatten. Maximale lengte is 255 tekens."

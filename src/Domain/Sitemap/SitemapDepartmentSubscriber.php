@@ -7,26 +7,17 @@ namespace App\Domain\Sitemap;
 use App\Domain\Department\DepartmentRepository;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-readonly class SitemapDepartmentSubscriber implements EventSubscriberInterface
+readonly class SitemapDepartmentSubscriber
 {
     public function __construct(
         private DepartmentRepository $departmentRepository,
     ) {
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            SitemapPopulateEvent::class => ['populate', 0],
-        ];
-    }
-
+    #[AsEventListener(event: SitemapPopulateEvent::class)]
     public function populate(SitemapPopulateEvent $event): void
     {
         $event->getUrlContainer()->addUrl(

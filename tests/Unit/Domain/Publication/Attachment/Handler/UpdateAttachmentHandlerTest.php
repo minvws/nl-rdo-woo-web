@@ -32,7 +32,7 @@ class UpdateAttachmentHandlerTest extends MockeryTestCase
     private ValidatorInterface&MockInterface $validator;
     private EntityUploadStorer&MockInterface $uploadStorer;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);
         $this->entityLoader = \Mockery::mock(AttachmentEntityLoader::class);

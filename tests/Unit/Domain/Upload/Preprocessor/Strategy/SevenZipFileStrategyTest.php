@@ -9,6 +9,7 @@ use App\Domain\Upload\AntiVirus\FileScanResult;
 use App\Domain\Upload\Extractor\Extractor;
 use App\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
 use App\Domain\Upload\UploadedFile;
+use App\Service\Storage\LocalFilesystem;
 use App\Tests\Unit\Domain\Upload\IterableToGenerator;
 use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
@@ -21,6 +22,7 @@ final class SevenZipFileStrategyTest extends UnitTestCase
     private Extractor&MockInterface $extractor;
     private MimeTypesInterface&MockInterface $mimeTypes;
     private ClamAvFileScanner&MockInterface $scanner;
+    private LocalFilesystem&MockInterface $localFilesystem;
     private SevenZipFileStrategy $strategy;
 
     protected function setUp(): void
@@ -30,11 +32,13 @@ final class SevenZipFileStrategyTest extends UnitTestCase
         $this->extractor = \Mockery::mock(Extractor::class);
         $this->mimeTypes = \Mockery::mock(MimeTypesInterface::class);
         $this->scanner = \Mockery::mock(ClamAvFileScanner::class);
+        $this->localFilesystem = \Mockery::mock(LocalFilesystem::class);
 
         $this->strategy = new SevenZipFileStrategy(
             $this->extractor,
             $this->mimeTypes,
             $this->scanner,
+            $this->localFilesystem,
         );
     }
 
@@ -57,6 +61,10 @@ final class SevenZipFileStrategyTest extends UnitTestCase
             ->with($file)
             ->andReturn($this->iterableToGenerator([$extractedFileOne, $extractedFileTwo]));
 
+        $this->localFilesystem->expects('isSymlink')
+            ->times(2)
+            ->andReturnFalse();
+
         $this->scanner->shouldReceive('scan')->with($pathOne)->andReturn(FileScanResult::SAFE);
         $this->scanner->shouldReceive('scan')->with($pathTwo)->andReturn(FileScanResult::SAFE);
 
@@ -69,6 +77,29 @@ final class SevenZipFileStrategyTest extends UnitTestCase
 
         $this->assertEquals($pathOne, $result[0]->getPathname());
         $this->assertEquals($pathTwo, $result[1]->getPathname());
+    }
+
+    public function testProcessDoesNotYieldIfSymlink(): void
+    {
+        /** @var UploadedFile&MockInterface $file */
+        $file = \Mockery::mock(UploadedFile::class);
+
+        $extractedFile = \Mockery::mock(\SplFileInfo::class);
+        $extractedFile->shouldReceive('getPathname')->andReturn('my/path/file_one.pdf');
+
+        $this->extractor
+            ->shouldReceive('getFiles')
+            ->once()
+            ->with($file)
+            ->andReturn($this->iterableToGenerator([$extractedFile]));
+
+        $this->localFilesystem->expects('isSymlink')
+            ->once()
+            ->andReturnTrue();
+
+        $result = iterator_to_array($this->strategy->process($file), false);
+
+        $this->assertCount(0, $result);
     }
 
     public function testProcessYieldsOnlySafeFiles(): void
@@ -88,15 +119,24 @@ final class SevenZipFileStrategyTest extends UnitTestCase
         $extractedFileThree->shouldReceive('getPathname')->andReturn($pathThree = 'my/path/file_three.doc');
         $extractedFileThree->shouldReceive('getBasename')->andReturn('file_three.doc');
 
+        $extractedFileFour = \Mockery::mock(\SplFileInfo::class);
+        $extractedFileFour->shouldReceive('getPathname')->andReturn($pathFour = 'my/path/file_four.doc');
+        $extractedFileFour->shouldReceive('getBasename')->andReturn('file_four.doc');
+
         $this->extractor
             ->shouldReceive('getFiles')
             ->once()
             ->with($file)
-            ->andReturn($this->iterableToGenerator([$extractedFileOne, $extractedFileTwo]));
+            ->andReturn($this->iterableToGenerator([$extractedFileOne, $extractedFileTwo, $extractedFileFour]));
 
-        $this->scanner->shouldReceive('scan')->with($pathOne)->andReturn(FileScanResult::UNSAFE);
-        $this->scanner->shouldReceive('scan')->with($pathTwo)->andReturn(FileScanResult::SAFE);
-        $this->scanner->shouldReceive('scan')->with($pathThree)->andReturn(FileScanResult::TECHNICAL_ERROR);
+        $this->localFilesystem->expects('isSymlink')
+            ->times(3)
+            ->andReturn(false, false, true);
+
+        $this->scanner->expects('scan')->with($pathOne)->andReturn(FileScanResult::UNSAFE);
+        $this->scanner->expects('scan')->with($pathTwo)->andReturn(FileScanResult::SAFE);
+        $this->scanner->expects('scan')->never()->with($pathThree);
+        $this->scanner->expects('scan')->never()->with($pathFour);
 
         $result = iterator_to_array($this->strategy->process($file), false);
 

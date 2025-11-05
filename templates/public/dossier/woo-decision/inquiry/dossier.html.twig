@@ -1,0 +1,25 @@
+{% extends 'public/base.html.twig' %}
+{% import "public/macros/document.html.twig" as macro %}
+
+{% set page_title = 'public.inquiry.dossier_detail_title' | trans({'{case_number}': inquiry.casenr, '{title}': dossier.title}) %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-h1">{{ page_title }}</h1>
+
+    <div class="mt-12" data-e2e-name="inquiry-documents">
+        <twig:Public:DownloadFilesForm
+            action="{{ downloadUrl }}"
+            canDownload="1"
+            searchUrl="{{ searchUrl }}"
+        />
+
+        <twig:Public:Publication:WooDecision:DocumentTabs
+            alreadyPublicDocuments="{{ already_public_docs }}"
+            publicDocuments="{{ public_docs }}"
+            notOnlineDocuments="{{ not_online_docs }}"
+            notPublicDocuments="{{ not_public_docs }}"
+        />
+    </div>
+</div>
+{% endblock %}

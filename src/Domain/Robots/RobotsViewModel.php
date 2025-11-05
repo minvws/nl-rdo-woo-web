@@ -8,6 +8,7 @@ final readonly class RobotsViewModel
 {
     public function __construct(
         public ?string $wooIndexSitemap,
+        public string $publicBaseUrl,
     ) {
     }
 

@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\OpenApi\Factory\OpenApiFactory;
 use ApiPlatform\OpenApi\Model\Operation;
 use App\Api\Admin\Attachment\AbstractAttachmentDto;
 use App\Api\Admin\Attachment\AttachmentCreateDto;
@@ -55,10 +56,13 @@ use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
         'dossierId' => new Link(toProperty: 'dossier', fromClass: DossierReferenceDto::class),
         'attachmentId' => new Link(fromClass: self::class),
     ],
-    routePrefix: '/dossiers/{dossierId}',
+    routePrefix: '/balie/api/dossiers/{dossierId}',
     stateless: false,
     openapi: new Operation(
         tags: ['DecisionAttachment'],
+        extensionProperties: [
+            OpenApiFactory::API_PLATFORM_TAG => ['admin'],
+        ],
     ),
     paginationEnabled: false,
     exceptionToStatus: [

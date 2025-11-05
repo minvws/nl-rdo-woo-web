@@ -1,0 +1,46 @@
+name: Setup Robot Framework test stack
+
+inputs:
+  github-token:
+    description: Add a Github Token
+
+runs:
+  using: composite
+  steps:
+    - name: Install Task
+      uses: go-task/setup-task@v1
+      with:
+        repo-token: ${{ inputs.github-token }}
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ inputs.github-token }}
+    - name: Run task setup
+      shell: bash
+      run: task setup
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        enable-cache: true
+        cache-dependency-glob: tests/robot_framework/uv.lock
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version-file: tests/robot_framework/pyproject.toml
+    - name: Prepare OS for tests
+      shell: bash
+      run: |
+        # https://github.com/actions/runner-images/issues/10977
+        echo "set man-db/auto-update false" | sudo debconf-communicate
+        sudo dpkg-reconfigure man-db
+        # /
+        sudo apt-get install --reinstall libpq-dev
+        sudo npx playwright install-deps
+    - name: Create virtual environment
+      shell: bash
+      run: |
+        task rf:venv
+        task rf:fixtures:load:e2e
+

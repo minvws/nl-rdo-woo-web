@@ -87,7 +87,10 @@ readonly class ValidateUploadCommandHandler
             throw UploadValidationException::forCannotDetectMimetype($uploadEntity);
         }
 
-        if (! $this->mimeTypeHelper->isValidForUploadGroup($mimeType, $uploadEntity->getUploadGroupId())) {
+        Assert::string($uploadEntity->getFilename());
+        $fileExtension = pathinfo($uploadEntity->getFilename(), PATHINFO_EXTENSION);
+
+        if (! $this->mimeTypeHelper->isValidForUploadGroup($fileExtension, $mimeType, $uploadEntity->getUploadGroupId())) {
             throw UploadValidationException::forInvalidMimetype($uploadEntity, $mimeType);
         }
 

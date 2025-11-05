@@ -20,7 +20,7 @@ class ResultFactoryTest extends MockeryTestCase
     private SearchResultMapperInterface&MockInterface $secondMapper;
     private ResultFactory $factory;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->firstMapper = \Mockery::mock(SearchResultMapperInterface::class);
         $this->secondMapper = \Mockery::mock(SearchResultMapperInterface::class);

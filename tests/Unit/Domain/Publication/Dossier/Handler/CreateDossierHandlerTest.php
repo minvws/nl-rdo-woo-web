@@ -25,7 +25,7 @@ class CreateDossierHandlerTest extends MockeryTestCase
     private CreateDossierHandler $handler;
     private MockInterface&DossierService $dossierService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierService = \Mockery::mock(DossierService::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
@@ -52,7 +52,7 @@ class CreateDossierHandlerTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             static function (DossierCreatedEvent $message) use ($annualReportUuid) {
-                self::assertEquals($annualReportUuid, $message->id);
+                self::assertEquals($annualReportUuid, $message->dossierId);
 
                 return true;
             }

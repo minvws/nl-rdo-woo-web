@@ -28,7 +28,7 @@ class AggregationMapperTest extends MockeryTestCase
     private FacetInputFactory&MockInterface $facetInputFactory;
     private AggregationMapper $mapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->facetDefinitions = \Mockery::mock(FacetDefinitions::class);
         $this->facetInputFactory = \Mockery::mock(FacetInputFactory::class);

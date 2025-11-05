@@ -3,8 +3,8 @@ name: CI
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
-    tags: [ v* ]
+    branches: [main]
+    tags: [v*]
   pull_request:
 
 concurrency:
@@ -84,7 +84,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Linting REUSE
-        uses: fsfe/reuse-action@v5
+        uses: fsfe/reuse-action@v6
 
   fe-linting:
     name: Check front-end linting
@@ -100,7 +100,7 @@ jobs:
       - name: Linting JavaScript-files
         run: npm run eslint:json
       - name: Upload ESLint report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: eslint-report
           path: reports/eslint
@@ -119,7 +119,7 @@ jobs:
       - name: Front-end Unit tests using Vitest
         run: npm run test
       - name: Upload Vitest coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: vitest-report
           path: reports/vitest
@@ -239,7 +239,7 @@ jobs:
           vendor/bin/phpstan analyse --memory-limit=-1 --error-format=json > reports/phpstan/phpstan.json
       - name: Upload PHPStan analysis report
         if: steps.phpstan-report.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: phpstan-report
           path: reports/phpstan
@@ -265,6 +265,8 @@ jobs:
         uses: ./.github/actions/setup-php
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Copy .env.ci to .env.local
+        run: cp .env.ci .env.test.local
       - name: Migrate Test DB
         run: bin/console doctrine:schema:create --no-interaction --env=test
 
@@ -272,34 +274,28 @@ jobs:
     name: Check back-end Unit tests
     runs-on: ubuntu-24.04
     needs: [setup-npm-cache, setup-composer-cache, audit-npm, audit-composer]
-    services:
-      postgres:
-        image: postgres:14.10-bookworm
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres_test
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      CR_PAT: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }} # For gh cli tool
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Setup Node
-        uses: ./.github/actions/setup-node
+      - name: Install Task
+        uses: go-task/setup-task@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-npm-build: true
-      - name: Setup PHP
-        uses: ./.github/actions/setup-php
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
         with:
-          coverage: pcov
-          extensions: zip, pgsql
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Back-end Unit tests using PHPUnit
-        run: php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit -d --without-creating-snapshots --log-junit=reports/phpunit/report-phpunit.xml --coverage-clover=reports/phpunit/coverage-phpunit.xml
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Start Docker compose services
+        run: task up
+      - name: Run tests
+        run: task app:test:ci
       - name: Upload PHPUnit coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: phpunit-report
           path: reports/phpunit
@@ -307,6 +303,7 @@ jobs:
   sonarcloud:
     name: Run SonarQube scanner
     runs-on: ubuntu-24.04
+    if: ${{ github.actor != 'dependabot[bot]' }}
     needs:
       - fe-unit-tests
       - fe-linting
@@ -323,22 +320,22 @@ jobs:
           mkdir -p reports/phpunit
           mkdir -p reports/phpstan
       - name: Download Vitest coverage report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: vitest-report
           path: reports/vitest
       - name: Download ESLint report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: eslint-report
           path: reports/eslint
       - name: Download PHPUnit coverage report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: phpunit-report
           path: reports/phpunit
       - name: Download PHPStan analysis report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: phpstan-report
           path: reports/phpstan
@@ -354,6 +351,7 @@ jobs:
     secrets: inherit
     with:
       test_tag: ci
+      runner: ubuntu-latest-m
 
   package:
     name: Package

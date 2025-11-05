@@ -43,7 +43,7 @@ jobs:
             echo "missing_migrations=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Find Comment
-        uses: peter-evans/find-comment@v3
+        uses: peter-evans/find-comment@v4
         id: find_comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -51,7 +51,7 @@ jobs:
           body-includes: Missing Database Migrations
       - name: Create comment
         if: ${{ contains(steps.migration_check.outputs.missing_migrations, 'true') }}
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
@@ -66,7 +66,7 @@ jobs:
 
       - name: Remove comment if no missing migrations
         if: ${{ contains(steps.migration_check.outputs.missing_migrations, 'false') && steps.find_comment.outputs.comment-id != '' }}
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             github.rest.issues.deleteComment({
@@ -98,7 +98,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install libecpg-dev postgresql-client
       - name: Set up Python 3.8
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: 3.8
       - name: Install dependencies

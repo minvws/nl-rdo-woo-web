@@ -1,0 +1,32 @@
+# https://taskfile.dev
+version: "3"
+
+vars:
+  SPECTRAL_RULE_FILE: API-Design-Rules.spectral.yml
+
+tasks:
+  lint:download-ruleset:
+    desc: Download the Spectral lint ruleset
+    status:
+      - test -f {{.SPECTRAL_RULE_FILE}}
+    cmds:
+      - curl -fL
+        https://raw.githubusercontent.com/Logius-standaarden/API-Design-Rules/develop/linter/spectral.yml
+        -o {{.SPECTRAL_RULE_FILE}}
+
+  lint:
+    desc: Lint the Publication OpenAPI specification using Spectral
+    cmds:
+      - docker compose run --rm
+        spectral
+        lint
+        http://open.local/documentatie/api/publication/v1/openapi.json
+        {{.CLI_ARGS}}
+
+  lint:shell:
+    desc: Open a shell within the Spectral container
+    cmds:
+      - docker compose run --rm
+        --entrypoint=''
+        spectral
+        /bin/sh

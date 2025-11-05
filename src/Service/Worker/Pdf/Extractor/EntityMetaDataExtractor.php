@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Worker\Pdf\Extractor;
 
+use App\Domain\Ingest\Content\ContentExtractLogContext;
 use App\Domain\Ingest\Content\Extractor\Tika\TikaService;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Search\Index\SubType\SubTypeIndexer;
@@ -63,7 +64,10 @@ readonly class EntityMetaDataExtractor implements EntityExtractorInterface
         /** @var array<array-key,string> $tikaData */
         $tikaData = $this->statsService->measure(
             'tika',
-            fn (): array => $this->tika->extract($localPdfPath),
+            fn (): array => $this->tika->extract(
+                sourcePath: $localPdfPath,
+                logContext: ContentExtractLogContext::forEntity($entity),
+            ),
         );
 
         unset($tikaData['X-TIKA:content']);

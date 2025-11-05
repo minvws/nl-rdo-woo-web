@@ -33,7 +33,7 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
     private DocumentFileProcessor&MockInterface $fileProcessor;
     private ProcessDocumentFileUpdateHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->documentFileUpdateRepository = \Mockery::mock(DocumentFileUpdateRepository::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);

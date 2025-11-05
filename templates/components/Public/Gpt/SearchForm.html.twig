@@ -1,0 +1,55 @@
+<form class="bg-woo-gray-100 p-6" method="get">
+    <label class="sr-only" for="gpt-search-field">Zoeken</label>
+    <div class="xs:flex gap-x-2 mb-2">
+        <input class="woo-input-text mb-2 xs:mb-0" type="text" name="q" id="gpt-search-field" placeholder="{{ ((anotherQuery ?? false) ? 'public.gpt.search.another_query.placeholder' : 'public.gpt.search.query.placeholder') | trans }}" />
+
+        <button class="woo-btn-filled-primary xs:p-0 xs:h-auto flex-none xs:w-[47px] aspect-square xs:aspect-auto" type="submit">
+            <span class="sr-only">{{ 'public.search.label' | trans }}</span>
+            <twig:Public:Icon name="send" color="fill-white" size="20" />
+        </button>
+    </div>
+
+    <p class="leading-tight text-sm">{{ 'public.gpt.search.help.text1' | trans }} <a class="woo-a" href="{{ path('app_gpt_about') }}#over-gegenereerde-antwoorden">{{ 'public.gpt.search.help.text2' | trans }}</a></p>
+
+    {% set advancedSearchOptionsId = 'gpt-advanced-search-options' %}
+    <button class="font-bold text-woo-dark-blue-600 mt-6 no-js:hidden js-collapsible-toggle" type="button" aria-controls="{{ advancedSearchOptionsId }}" aria-expanded="false">
+        {{ 'public.gpt.search.advanced.title' | trans }}
+        <twig:Public:Icon name="settings" class="relative -top-px ml-1" size="20" />
+    </button>
+
+    <div class="js:hidden" id="{{ advancedSearchOptionsId }}">
+        <div class="pt-4">
+            <fieldset>
+                <legend class="woo-legend">{{ 'public.gpt.search.advanced.date.title' | trans }}</legend>
+
+                <div class="flex gap-x-4">
+                    <div>
+                        <label class="block text-base mb-0.5" for="date-from">{{ 'public.gpt.search.advanced.date.from' | trans }} ({{ 'public.search.date_format' | trans }})</label>
+                        <input class="woo-input-text" id="date-from" name="date-from" type="date" value="">
+                    </div>
+
+                    <div>
+                        <label class="block text-base mb-0.5" for="date-to">{{ 'public.gpt.search.advanced.date.to' | trans }} ({{ 'public.search.date_format' | trans }})</label>
+                        <input class="woo-input-text" id="date-to" name="date-to" type="date" value="">
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="pt-4">
+                <label class="woo-label" for="publication-type">{{ 'public.gpt.search.advanced.publication_type.title' | trans }}</label>
+                <div class="woo-select">
+                    <select class="woo-select__select" id="publication-type" name="publication-type">
+                        <option value="">Advies</option>
+                        <option value="">Adviesaanvraag</option>
+                        <option value="">Besluit</option>
+                        <option value="">Convenant</option>
+                        <option value="">Jaarplan of jaarverslag</option>
+                        <option value="">Klachtenoordeel</option>
+                        <option value="">Onderzoeksrapport</option>
+                        <option value="">Overig informatiestuk</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

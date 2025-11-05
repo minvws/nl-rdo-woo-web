@@ -53,7 +53,7 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
     )]
     private array $parties = [];
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: CovenantMainDocument::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: CovenantMainDocument::class, cascade: ['remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?CovenantMainDocument $document;

@@ -23,7 +23,7 @@ class ProductionReportDispatcherTest extends UnitTestCase
     private MessageBusInterface&MockInterface $messageBus;
     private ProductionReportDispatcher $dispatcher;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
 

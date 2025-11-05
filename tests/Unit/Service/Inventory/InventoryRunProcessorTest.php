@@ -23,10 +23,9 @@ use Mockery\MockInterface;
 class InventoryRunProcessorTest extends MockeryTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
-    private LoggingHelper&MockInterface $loggingHelper;
     private InventoryComparator&MockInterface $inventoryComparator;
     private InventoryUpdater&MockInterface $inventoryUpdater;
-    private InventoryService $inventoryService;
+    private InventoryService&MockInterface $inventoryService;
     private DossierService&MockInterface $dossierService;
     private InventoryRunProcessor $runProcessor;
     private ProductionReportProcessRun&MockInterface $run;
@@ -34,10 +33,10 @@ class InventoryRunProcessorTest extends MockeryTestCase
     private WooDecision&MockInterface $dossier;
     private ProgressUpdater&MockInterface $progressUpdater;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->loggingHelper = \Mockery::mock(LoggingHelper::class);
+        $loggingHelper = \Mockery::mock(LoggingHelper::class);
         $this->inventoryComparator = \Mockery::mock(InventoryComparator::class);
         $this->inventoryUpdater = \Mockery::mock(InventoryUpdater::class);
         $this->inventoryService = \Mockery::mock(InventoryService::class);
@@ -46,7 +45,7 @@ class InventoryRunProcessorTest extends MockeryTestCase
 
         $this->runProcessor = new InventoryRunProcessor(
             $this->entityManager,
-            $this->loggingHelper,
+            $loggingHelper,
             $this->inventoryComparator,
             $this->inventoryUpdater,
             $this->inventoryService,
@@ -60,7 +59,7 @@ class InventoryRunProcessorTest extends MockeryTestCase
         $this->run->expects('startComparing');
         $this->run->shouldReceive('getDossier')->andReturn($this->dossier);
 
-        $this->loggingHelper->expects('disableAll');
+        $loggingHelper->expects('disableAll');
 
         $this->reader = \Mockery::mock(InventoryReaderInterface::class);
 

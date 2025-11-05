@@ -18,7 +18,7 @@ final class DossierFormParamBuilderTest extends UnitTestCase
 {
     private DossierFormParamBuilder $builder;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->builder = new DossierFormParamBuilder();
 

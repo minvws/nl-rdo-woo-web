@@ -29,8 +29,7 @@ readonly class UpdateDecisionHandler
 
         $this->dossierService->validateCompletion($command->dossier);
 
-        // If the dossier no longer needs inventory and documents: remove them
-        if (! $command->dossier->needsInventoryAndDocuments()) {
+        if (! $command->dossier->canProvideInventory()) {
             $this->wooDecisionDispatcher->dispatchRemoveInventoryAndDocumentsCommand($command->dossier->getId());
         }
 

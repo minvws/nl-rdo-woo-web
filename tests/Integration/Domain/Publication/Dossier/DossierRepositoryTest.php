@@ -99,7 +99,7 @@ final class DossierRepositoryTest extends KernelTestCase
 
     public function testGetRecentDossiersWithDepartmentFilter(): void
     {
-        $department = DepartmentFactory::random();
+        $department = DepartmentFactory::createOne();
 
         AnnualReportFactory::createOne(['status' => DossierStatus::CONCEPT, 'departments' => [$department]]);
         $publishedForDepartment = CovenantFactory::createOne(['status' => DossierStatus::PUBLISHED, 'departments' => [$department]]);

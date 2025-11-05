@@ -18,7 +18,7 @@ class FileStorageListerTest extends UnitTestCase
     private FilesystemOperator&MockInterface $documentStorage;
     private FilesystemOperator&MockInterface $batchStorage;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->fileStorageLister = new FileStorageLister(
             $this->documentStorage = \Mockery::mock(FilesystemOperator::class),

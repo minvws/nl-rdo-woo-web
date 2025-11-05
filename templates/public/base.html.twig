@@ -14,9 +14,13 @@
         <meta name="description" content="{{ 'global.meta_description' | trans() }}">
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
+        {% if is_dev() %}
+            <meta property="csp-nonce" nonce="{{ csp_nonce() }}" />
+        {% endif %}
+
         {{ vite_entry_link_tags('public') }}
 
-        {{ vite_entry_script_tags('public') }}
+        {{ vite_entry_script_tags('public', { attr: { defer: false } }) }}
 
         {% include "shared/piwik-script.html.twig" %}
     </head>
@@ -34,7 +38,7 @@
                     <twig:Icon
                         class="woo-icon woo-logo__img"
                         name="ro-logo"
-                        path="assets/img/public/non-free/icons.svg"
+                        path="/img/public/non-free/icons.svg"
                         height="100"
                         width="50"
                     />
@@ -42,56 +46,59 @@
                 </a>
             </p>
 
+            {% set currentRoute = app.request.get('_route') %}
             <div class="woo-main-header__nav-search">
                 <div class="woo-main-header__nav-search-container">
                     <div class="woo-main-header__nav-search-wrapper">
                         <nav class="woo-main-nav" aria-label="{{ 'public.global.navigation.accessible.label' | trans }}"  data-e2e-name="main-nav">
                             <div class="-mx-4 relative z-10">
                                 <div class="woo-main-nav__anchors">
-                                    {{ macro.main_nav_anchor(
-                                            path('app_home'),
-                                            app.request.get('_route') == 'app_home',
-                                            'public.global.label.home' | trans,
-                                            "house"
-                                        )
-                                    }}
-
-                                    <div class="absolute right-0 top-0 md:hidden no-js:hidden" data-e2e-name="hamburger">
-                                        <button class="focus:outline-white focus:-outline-offset-2 aspect-square w-15" id="js-main-nav-toggle" aria-controls="main-nav-list" aria-expanded="false">
-                                            <twig:Public:Icon class="js-icon-collapsed" color="fill-white" name="hamburger" />
-                                            <twig:Public:Icon class="hidden js-icon-expanded" color="fill-white" name="cross" />
-                                            <span class="js-text sr-only">
-                                                {{ 'global.menu_toggle.label' | trans }}
-                                            </span>
-                                        </button>
-                                    </div>
-
-                                    <ul class="woo-main-nav__list" id="main-nav-list" data-e2e-name="main-nav">
-                                        {{ macro.main_nav_item(
-                                                path('app_browse'),
-                                                app.request.get('_route') == 'app_browse' or (app.request.get('_route') == 'app_search' and app.request.get('type') != 'dossier'),
-                                                'public.global.label.search_publications' | trans
+                                    {% block mainNav %}
+                                        {{ macro.main_nav_anchor(
+                                                path('app_home'),
+                                                currentRoute == 'app_home',
+                                                'public.global.label.home' | trans,
+                                                "house"
                                             )
                                         }}
 
-                                        {% for theme in all_themes() %}
-                                            {{ macro.main_nav_item(
-                                                path('app_theme', {'name': theme.urlName}),
-                                                app.request.get('_route') == 'app_theme' and app.request.get('name') == theme.urlName,
-                                                theme.menuName | trans
-                                            )
-                                            }}
-                                        {% endfor %}
+                                        <div class="absolute right-0 top-0 md:hidden no-js:hidden" data-e2e-name="hamburger">
+                                            <button class="focus:outline-white focus:-outline-offset-2 aspect-square w-15" id="js-main-nav-toggle" aria-controls="main-nav-list" aria-expanded="false">
+                                                <twig:Public:Icon class="js-icon-collapsed" color="fill-white" name="hamburger" />
+                                                <twig:Public:Icon class="hidden js-icon-expanded" color="fill-white" name="cross" />
+                                                <span class="js-text sr-only">
+                                                    {{ 'global.menu_toggle.label' | trans }}
+                                                </span>
+                                            </button>
+                                        </div>
 
-                                        {% if DEPARTMENTS.hasAny %}
+                                        <ul class="woo-main-nav__list" id="main-nav-list" data-e2e-name="main-nav">
                                             {{ macro.main_nav_item(
-                                                    path('app_departments_index'),
-                                                    app.request.get('_route') == 'app_departments_index',
-                                                    'public.global.label.departments' | trans
+                                                    path('app_browse'),
+                                                    currentRoute == 'app_browse' or (currentRoute == 'app_search' and app.request.get('type') != 'dossier'),
+                                                    'public.global.label.search_publications' | trans
                                                 )
                                             }}
-                                        {% endif %}
-                                    </ul>
+
+                                            {% for theme in all_themes() %}
+                                                {{ macro.main_nav_item(
+                                                    path('app_theme', {'name': theme.urlName}),
+                                                    currentRoute == 'app_theme' and app.request.get('name') == theme.urlName,
+                                                    theme.menuName | trans
+                                                )
+                                                }}
+                                            {% endfor %}
+
+                                            {% if DEPARTMENTS.hasAny %}
+                                                {{ macro.main_nav_item(
+                                                        path('app_departments_index'),
+                                                        currentRoute == 'app_departments_index',
+                                                        'public.global.label.departments' | trans
+                                                    )
+                                                }}
+                                            {% endif %}
+                                        </ul>
+                                    {% endblock %}
                                 </div>
                             </div>
                         </nav>
@@ -108,49 +115,31 @@
                 </div>
             </div>
 
-            {% set isHomePage = app.request.get('_route') is same as('app_home') %}
+            {% set isPublicHomePage = currentRoute is same as('app_home') %}
 
-            {% if wo_breadcrumbs_exists() and not isHomePage %}
+            {% if wo_breadcrumbs_exists() and not isPublicHomePage %}
                 <div class="woo-container">
                     {{ wo_render_breadcrumbs() }}
                 </div>
             {% endif %}
 
-            {% if isHomePage %}
+            {% if isPublicHomePage %}
                 {% include 'public/home/snippets/search-form.html.twig' %}
             {% endif %}
-
-            {# {% elseif wo_breadcrumbs_exists() %}
-                <div class="bg-woo-anti-flash-white">
-                    <div class="woo-container">
-                        {% set hasSearchForm = block('search_form_top') is not empty %}
-                        <div class="lg:grid grid-cols-9 gap-x-8">
-                            <div class="py-1 sm:py-0 {{ hasSearchForm ? 'col-span-5' : 'col-span-9' }}">{{ wo_render_breadcrumbs() }}</div>
-                            {% if hasSearchForm %}
-                                <div class="col-span-4">
-                                    <div class="pb-4 lg:pb-0 pt-3 sm:pt-0 lg:pt-3">
-                                        {% block search_form_top %}{% endblock %}
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            {% endif %} #}
         </header>
 
         <main class="grow py-8 lg:pt-16 lg:pb-24" id="main-content" data-e2e-name="main-content">
             {% block body %}{% endblock %}
         </main>
 
-        <footer class="bg-woo-sea-blue py-8 lg:py-16 text-white">
+        <footer class="bg-woo-dark-blue-600 py-8 lg:py-16 text-white">
             <h2 class="sr-only">Footer</h2>
             <div class="woo-container">
                 <div class="md:flex justify-end">
                     {% macro footer_nav_item(route, title) %}
                         <li>
                             <a class="woo-footer-nav__a group" href="{{ route }}">
-                                <twig:Public:Icon name="chevron-right" color="fill-white" size="12" class="mr-1 align-baseline" />
+                                <twig:Public:Icon name="chevron-right" size="20" color="fill-white" class="relative -top-px -ml-1" />
                                 <span class="group-hover:underline group-focus:underline">{{ title }}</span>
                             </a>
                         </li>
@@ -176,6 +165,7 @@
                             {{ _self.footer_nav_item(path('app_cookies'), 'public.footer.label.cookies' | trans) }}
                             {{ _self.footer_nav_item(path('app_accessibility'), 'global.footer.label.accessibility' | trans) }}
                             {{ _self.footer_nav_item(path('app_report_vulnerability'), 'global.footer.label.report_vulnerability' | trans) }}
+                            {{ _self.footer_nav_item(path('app_sitemap'), 'public.footer.label.sitemap' | trans) }}
                         </ul>
                     </nav>
                 </div>

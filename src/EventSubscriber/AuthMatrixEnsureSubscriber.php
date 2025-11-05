@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use App\Service\Security\Authorization\AuthorizationEntryRequestStore;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -13,20 +13,14 @@ use Symfony\Component\HttpKernel\KernelEvents;
 /**
  * This listener ensures all admin endpoints check an AuthMatrix permission, except whitelisted urls.
  */
-readonly class AuthMatrixEnsureSubscriber implements EventSubscriberInterface
+readonly class AuthMatrixEnsureSubscriber
 {
     public function __construct(
         private AuthorizationEntryRequestStore $entryStore,
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::CONTROLLER_ARGUMENTS => ['onKernelControllerArguments', -10],
-        ];
-    }
-
+    #[AsEventListener(event: KernelEvents::CONTROLLER_ARGUMENTS, priority: -10)]
     public function onKernelControllerArguments(ControllerArgumentsEvent $event): void
     {
         if (! $event->isMainRequest()) {

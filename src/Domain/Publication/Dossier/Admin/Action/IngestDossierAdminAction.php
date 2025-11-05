@@ -28,4 +28,9 @@ readonly class IngestDossierAdminAction implements DossierAdminActionInterface
     {
         $this->ingestDispatcher->dispatchIngestDossierCommand($dossier);
     }
+
+    public function needsConfirmation(): bool
+    {
+        return false;
+    }
 }

@@ -11,6 +11,10 @@ includes:
   minio:
     taskfile: taskfiles/Taskfile.minio.yml
     flatten: true
+  api:
+    taskfile: taskfiles/Taskfile.api.yml
+  certs:
+    taskfile: taskfiles/Taskfile.certs.yml
 
 vars:
   BASE_PATH:
@@ -31,55 +35,57 @@ tasks:
       FIXGID:
         sh: echo ${FIXGID:-$(id -g)}
     cmds:
-      - 'FIXUID={{.FIXUID}} FIXGID={{.FIXGID}} docker compose {{.DOCKER_COMPOSE_ARGS}} {{.CLI_ARGS}}'
+      - 'FIXUID={{.FIXUID}} FIXGID={{.FIXGID}} docker compose {{.SUB_CMD}}'
 
   dc:run:
     interactive: true
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "run --rm --user $(id -u):$(id -g)", CLI_ARGS: "{{.CLI_ARGS}}" }
+        vars:
+          SUB_CMD: "run --rm --user $(id -u):$(id -g) {{.SUB_CMD}}"
 
   dc:shell:
     interactive: true
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "exec --user $(id -u):$(id -g)", CLI_ARGS: "{{.CLI_ARGS}}" }
+        vars:
+          SUB_CMD: "exec --user $(id -u):$(id -g) {{.SUB_CMD}}"
 
   dc:pull:
     desc: Pull all docker images
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "pull --include-deps --policy missing" }
+        vars: { SUB_CMD: "pull --include-deps --policy missing" }
 
   dc:build:
     desc: Build all docker images
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "--profile '*' build --build-arg USER_UID=$(id -u)" }
+        vars: { SUB_CMD: "--profile '*' build --build-arg USER_UID=$(id -u)" }
 
   dc:rebuild:
     desc: Rebuild all docker images
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "build --build-arg USER_UID=$(id -u) --no-cache" }
+        vars: { SUB_CMD: "build --build-arg USER_UID=$(id -u) --no-cache" }
 
   composer:install:
     desc: Install composer dependencies
     cmds:
       - task: dc:run
-        vars: { CLI_ARGS: "app composer install" }
+        vars: { SUB_CMD: "app composer install" }
 
   npm:install:
     desc: Install node dependencies
     cmds:
       - task: dc:run
-        vars: { CLI_ARGS: "app npm ci --no-fund" }
+        vars: { SUB_CMD: "app npm ci --no-fund" }
 
   npm:build:
     desc: Build assets
     cmds:
       - task: dc:run
-        vars: { CLI_ARGS: "app npm run build" }
+        vars: { SUB_CMD: "app npm run build" }
 
   setup:
     desc: Setup development environment
@@ -92,16 +98,16 @@ tasks:
       - task: dc:build
       - task: composer:install
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "up -d", CLI_ARGS: "" }
+        vars: { SUB_CMD: "up -d" }
       - task: dc:shell
-        vars: { CLI_ARGS: "app bash -c 'wait-for-it postgres:5432 --timeout=0 --strict -- wait-for-it rabbitmq:5672 --timeout=0 --strict -- wait-for-it elasticsearch:9200 --timeout=0 --strict -- echo \"Done waiting\"'" }
+        vars: { SUB_CMD: "app bash -c 'wait-for-it postgres:5432 --timeout=0 --strict -- wait-for-it rabbitmq:5672 --timeout=0 --strict -- wait-for-it elasticsearch:9200 --timeout=0 --strict -- echo \"Done waiting\"'" }
       - task: minio:create-buckets
       - task: app:migrate
       - task: app:loadfixtures
       - task: dc:run
-        vars: { CLI_ARGS: "app bash -c 'curl -X GET \"elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=30s\"'" }
+        vars: { SUB_CMD: "app bash -c 'curl -X GET \"elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=30s\"'" }
       - task: dc:run
-        vars: { CLI_ARGS: "app bin/console woopie:index:create woopie latest --read --write" }
+        vars: { SUB_CMD: "app bin/console woopie:index:create woopie latest --read --write" }
       - task: npm:install
       - task: npm:build
       - task: docs:build:ci
@@ -120,32 +126,33 @@ tasks:
     desc: Open shell in app container
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "exec app bash" }
+        vars: { SUB_CMD: "exec app bash" }
 
   up:
     desc: Start development environment
     cmds:
       - task: setup:if-not-exist
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "up -d" }
+        vars: { SUB_CMD: "up -d" }
 
   stop:
     desc: Stop development environment
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "stop" }
+        vars: { SUB_CMD: "stop" }
 
   down:
     desc: Down the development environment
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "down --volumes --remove-orphans" }
+        vars: { SUB_CMD: "down --volumes --remove-orphans" }
 
   reset:
     desc: Reset the development environment
     cmds:
       - task: down
       - task: down
+      - rm -rf var
       - task: dc:pull
       - task: dc:rebuild
       - task: up
@@ -154,7 +161,7 @@ tasks:
     desc: Show all project containers
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "ps -a" }
+        vars: { SUB_CMD: "ps -a" }
 
   env:
     desc: Template .env
@@ -189,50 +196,49 @@ tasks:
     cmds:
       - task: dc:shell
         vars:
-          CLI_ARGS: |
-            app bin/console woopie:user:create {{.CLI_ARGS | default "'email@example.org' 'full name' --super-admin"}}
+          SUB_CMD: 'app bin/console woopie:user:create {{.CLI_ARGS | default "\"email@example.org\" \"full name\" --super-admin"}}'
 
   app:migrate:
     desc: Run (doctrine) database migrations
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app bin/console doctrine:migrations:migrate --no-interaction" }
+        vars: { SUB_CMD: "app bin/console doctrine:migrations:migrate --no-interaction" }
 
   app:loadfixtures:
     desc: Load doctrine example fixtures
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --group=example --append" }
+        vars: { SUB_CMD: "app bin/console doctrine:fixtures:load --no-interaction --group=example --append" }
       - task: dc:shell
-        vars: { CLI_ARGS: "app bin/console doctrine:fixtures:load --no-interaction --group=vws --append" }
+        vars: { SUB_CMD: "app bin/console doctrine:fixtures:load --no-interaction --group=vws --append" }
 
   app:migrate:diff:
     desc: Run (doctrine) database migrations diff
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app bin/console doctrine:migrations:diff --no-interaction" }
+        vars: { SUB_CMD: "app bin/console doctrine:migrations:diff --no-interaction" }
 
   app:migrate:dump:
     desc: Dump doctrine migrations to plain SQL files
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app bin/console woopie:sql:dump" }
+        vars: { SUB_CMD: "app bin/console woopie:sql:dump" }
 
   app:migrate:test:
     desc: Run (doctrine) database migrations in test environment
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app bin/console doctrine:database:create --if-not-exists --no-interaction --env=test" }
+        vars: { SUB_CMD: "app bin/console doctrine:database:create --if-not-exists --no-interaction --env=test" }
       - task: dc:shell
-        vars: { CLI_ARGS: "app bin/console doctrine:schema:drop --full-database --force --no-interaction --env=test" }
+        vars: { SUB_CMD: "app bin/console doctrine:schema:drop --full-database --force --no-interaction --env=test" }
       - task: dc:shell
-        vars: { CLI_ARGS: "app bin/console doctrine:schema:create --no-interaction --env=test" }
+        vars: { SUB_CMD: "app bin/console doctrine:schema:create --no-interaction --env=test" }
 
   app:cleansheet:
     desc: Clears dossiers and inquiries (with related data) from the database. Also clears ES index and RabbitMq message queues.
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app bin/console woopie:dev:clean-sheet --force --keep-prefixes {{.CLI_ARGS}}" }
+        vars: { SUB_CMD: "app bin/console woopie:dev:clean-sheet --force --keep-prefixes {{.CLI_ARGS}}" }
       - task: minio:clear-buckets
 
   app:db:reset:
@@ -241,7 +247,7 @@ tasks:
     cmds:
       - task: app:cleansheet
       - task: dc:shell
-        vars: { CLI_ARGS: app bin/console doctrine:schema:drop --full-database --force }
+        vars: { SUB_CMD: app bin/console doctrine:schema:drop --full-database --force }
       - task: app:migrate
       - task: app:loadfixtures
 
@@ -249,103 +255,118 @@ tasks:
     desc: Display last 30 lines of db query logs and follow the rest
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "logs postgres --tail 30 --follow" }
+        vars: { SUB_CMD: "logs postgres --tail 30 --follow" }
 
   app:checkall:
     desc: Run all checks
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer checkall" }
+        vars: { SUB_CMD: "app composer checkall" }
       - task: docs:lint
 
   app:checkstyle:
     desc: Check code style using php_codesniffer and php-cs-fixer
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer checkstyle" }
+        vars: { SUB_CMD: "app composer checkstyle" }
 
   app:fixstyle:
     desc: Fix code style using php_codesniffer and php-cs-fixer
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer fixstyle" }
+        vars: { SUB_CMD: "app composer fixstyle" }
 
   app:checktype:
     desc: Check code type using PHPStan
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer checktype" }
+        vars: { SUB_CMD: "app composer checktype" }
 
   app:update-type-baseline:
     desc: Update PHPStan baseline
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer update-type-baseline" }
+        vars: { SUB_CMD: "app composer update-type-baseline" }
 
   app:md:
     desc: Run PHPMD
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer md" }
+        vars: { SUB_CMD: "app composer md" }
 
   app:test:
     desc: Run PHPUnit
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer test" }
+        vars:
+          SUB_CMD: "app composer test -- {{.CLI_ARGS}}"
+
+  app:test:ci:
+    desc: Run PHPUnit for CI
+    cmds:
+      - task: dc:shell
+        vars:
+          SUB_CMD: >
+            app php -dpcov.enabled=1
+            -dpcov.directory=. vendor/bin/phpunit
+            -d --without-creating-snapshots
+            --log-junit=reports/phpunit/report-phpunit.xml
+            --coverage-clover=reports/phpunit/coverage-phpunit.xml
+            -- {{.CLI_ARGS}}
 
   app:test-report:
     desc: Run PHPUnit tests with coverage test-report
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer test-report" }
+        vars: { SUB_CMD: "app composer test-report" }
 
   app:update-test-snapshots:
     desc: Update PHPUnit snapshots
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer update-test-snapshots" }
+        vars: { SUB_CMD: "app composer update-test-snapshots" }
 
   app:rector:
     desc: Run Rector on the code base
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer rector" }
+        vars: { SUB_CMD: "app composer rector" }
 
   app:rector:preview:
     desc: Preview Rector changes on the code base
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer rector-preview" }
+        vars: { SUB_CMD: "app composer rector-preview" }
 
   app:checktranslations:
     desc: Run YAML linting on translation files
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer checktranslations" }
+        vars: { SUB_CMD: "app composer checktranslations" }
 
   app:checktemplates:
     desc: Run Twig linting on templates
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer checktemplates" }
+        vars: { SUB_CMD: "app composer checktemplates" }
 
   app:syncdotenv:
     desc: Synchronize .env.development with .env.local
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app composer syncdotenv" }
+        vars: { SUB_CMD: "app composer syncdotenv" }
 
   app:postdeploy:
     desc: Run postdeploy script
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app bin/console woopie:post-deploy" }
+        vars: { SUB_CMD: "app bin/console woopie:post-deploy" }
 
   app:update:
     desc: (re) Pull dependencies, run migrations, build front-end and sync .env
     aliases: [app:refresh]
     cmds:
+      - rm -rf var
       - task: d:create-cache-volumes
       - task: composer:install
       - task: app:migrate
@@ -366,7 +387,7 @@ tasks:
     desc: Start the worker
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "up -d worker" }
+        vars: { SUB_CMD: "up -d worker" }
 
   worker:restart:
     desc: Restart the worker
@@ -378,25 +399,24 @@ tasks:
     desc: Stop the worker
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "stop worker" }
+        vars: { SUB_CMD: "stop worker" }
 
   worker:logs:
     desc: Display last 30 lines of worker logs and follow the rest
     cmds:
       - task: dc
-        vars: { DOCKER_COMPOSE_ARGS: "logs worker --tail 30 --follow" }
+        vars: { SUB_CMD: "logs worker --tail 30 --follow" }
 
   app:generate-sitemap:
     desc: Generate the sitemap in one command
     cmds:
       - task: dc:shell
-        vars: { CLI_ARGS: "app bin/console Woo-index:generate {{.CLI_ARGS}}" }
+        vars: { SUB_CMD: "app bin/console Woo-index:generate {{.CLI_ARGS}}" }
 
   gh:check-token:
     desc: Check your $CR_PAT environment variable for valid GitHub token
     cmds:
       - docker run -it --rm
-        --volume "{{.BASE_PATH}}/docs":/gh
         --env GITHUB_TOKEN="$CR_PAT"
         maniator/gh:{{.GH_VERSION}}
         auth status {{.CLI_ARGS}}

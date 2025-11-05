@@ -19,7 +19,7 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
     private EntityManagerInterface&MockInterface $entityManager;
     private DossierEntityUpdateListener $listener;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
 

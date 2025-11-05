@@ -22,12 +22,25 @@ readonly class DocumentsStepDefinition extends StepDefinition
             throw StepException::forIncompatibleDossierInstance($this, $dossier);
         }
 
-        return ! $dossier->needsInventoryAndDocuments() || $this->dossierHasAllExpectedUploads($dossier);
-    }
+        if (! $dossier->canProvideInventory()) {
+            return true;
+        }
 
-    private function dossierHasAllExpectedUploads(WooDecision $dossier): bool
-    {
-        return $dossier->getProductionReport()?->getFileInfo()->isUploaded()
-            && $dossier->getUploadStatus()->isComplete();
+        if ($dossier->hasAllExpectedUploads()) {
+            return true;
+        }
+
+        if ($dossier->hasProductionReport()) {
+            // Not all documents are uploaded yet
+            return false;
+        }
+
+        if ($dossier->isInventoryOptional()) {
+            $status = $dossier->getStatus();
+
+            return $status->isPublished() || $status->isPreview() || $status->isScheduled();
+        }
+
+        return false;
     }
 }

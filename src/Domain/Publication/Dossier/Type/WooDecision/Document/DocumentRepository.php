@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication\Dossier\Type\WooDecision\Document;
 
+use App\Doctrine\SortNullsLastWalker;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
@@ -13,6 +14,7 @@ use App\Service\Inquiry\DocumentCaseNumbers;
 use App\Service\Inventory\DocumentNumber;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -194,17 +196,20 @@ class DocumentRepository extends ServiceEntityRepository
         ;
     }
 
-    public function getDossierDocumentsForPaginationQueryBuilder(WooDecision $dossier): QueryBuilder
+    public function getDossierDocumentsForPaginationQuery(WooDecision $dossier): Query
     {
         return $this->getDossierDocumentsQueryBuilder($dossier)
             ->addSelect('
                 (CASE
                     WHEN doc.withdrawn=true THEN 1
-                    WHEN doc.suspended=true THEN 2
-                    WHEN doc.judgement IN (:publicJudgements) AND doc.fileInfo.uploaded=false THEN 3
-                    ELSE 0
+                    WHEN doc.suspended=true THEN 3
+                    WHEN doc.judgement IN (:publicJudgements) AND doc.fileInfo.uploaded=false THEN 2
+                    ELSE NULLIF(1,1)
                 END) AS HIDDEN hasNotice')
-            ->setParameter('publicJudgements', Judgement::atLeastPartialPublicValues());
+            ->setParameter('publicJudgements', Judgement::atLeastPartialPublicValues())
+            ->orderBy('doc.documentDate', 'ASC')
+            ->getQuery()
+            ->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, SortNullsLastWalker::class);
     }
 
     /**

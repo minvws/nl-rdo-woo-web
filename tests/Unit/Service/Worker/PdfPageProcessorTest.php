@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Worker;
 
+use App\Domain\Ingest\Content\ContentExtractCache;
 use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
 use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContextFactory;
 use App\Domain\Ingest\Process\PdfPage\PdfPageProcessor;
@@ -21,6 +22,7 @@ class PdfPageProcessorTest extends UnitTestCase
     private PageExtractor&MockInterface $pageExtractor;
     private PageContentExtractor&MockInterface $pageContentExtractor;
     private PdfPageProcessingContextFactory&MockInterface $contextFactory;
+    private ContentExtractCache&MockInterface $contentExtractCache;
     private PdfPageProcessor $processor;
 
     protected function setUp(): void
@@ -31,10 +33,12 @@ class PdfPageProcessorTest extends UnitTestCase
         $this->pageContentExtractor = \Mockery::mock(PageContentExtractor::class);
         $this->pageExtractor = \Mockery::mock(PageExtractor::class);
         $this->contextFactory = \Mockery::mock(PdfPageProcessingContextFactory::class);
+        $this->contentExtractCache = \Mockery::mock(ContentExtractCache::class);
         $this->processor = new PdfPageProcessor(
             $this->contextFactory,
             $this->thumbnailExtractor,
             $this->pageContentExtractor,
+            $this->contentExtractCache,
             $this->pageExtractor,
         );
     }
@@ -68,7 +72,7 @@ class PdfPageProcessorTest extends UnitTestCase
         $context = \Mockery::mock(PdfPageProcessingContext::class);
         $this->contextFactory->expects('createContext')->with($entity, $pageNr)->andReturn($context);
 
-        $this->pageContentExtractor->expects('hasCache')->with($entity, $pageNr)->andReturnFalse();
+        $this->contentExtractCache->expects('hasCache')->with($entity, $pageNr)->andReturnFalse();
         $this->pageContentExtractor->expects('extract')->with($context);
         $this->pageExtractor->expects('extractSinglePagePdf')->with($context);
 
@@ -92,7 +96,7 @@ class PdfPageProcessorTest extends UnitTestCase
 
         $this->thumbnailExtractor->expects('needsThumbGeneration')->with($context)->andReturnFalse();
 
-        $this->pageContentExtractor->expects('hasCache')->with($entity, $pageNr)->andReturnTrue();
+        $this->contentExtractCache->expects('hasCache')->with($entity, $pageNr)->andReturnTrue();
         $this->pageContentExtractor->expects('extract')->with($context);
 
         $this->contextFactory->expects('teardown')->with($context);
@@ -116,7 +120,7 @@ class PdfPageProcessorTest extends UnitTestCase
         $this->thumbnailExtractor->expects('extractSinglePagePdfThumbnail')->andThrows($exception);
         $this->thumbnailExtractor->expects('needsThumbGeneration')->with($context)->andReturnTrue();
 
-        $this->pageContentExtractor->expects('hasCache')->with($entity, $pageNr);
+        $this->contentExtractCache->expects('hasCache')->with($entity, $pageNr);
 
         $this->contextFactory->expects('teardown')->with($context);
 

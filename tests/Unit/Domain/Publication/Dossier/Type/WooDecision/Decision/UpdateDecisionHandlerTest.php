@@ -27,7 +27,7 @@ class UpdateDecisionHandlerTest extends UnitTestCase
     private MockInterface&DossierService $dossierService;
     private MockInterface&WooDecisionDispatcher $wooDecisionDispatcher;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierService = \Mockery::mock(DossierService::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
@@ -49,7 +49,7 @@ class UpdateDecisionHandlerTest extends UnitTestCase
         $wooDecisionUuid = Uuid::v6();
         $wooDecision = \Mockery::mock(WooDecision::class);
         $wooDecision->shouldReceive('getId')->andReturn($wooDecisionUuid);
-        $wooDecision->shouldReceive('needsInventoryAndDocuments')->andReturnFalse();
+        $wooDecision->shouldReceive('canProvideInventory')->andReturnFalse();
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($wooDecision, DossierStatusTransition::UPDATE_DECISION);
 
@@ -59,7 +59,7 @@ class UpdateDecisionHandlerTest extends UnitTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             static function (DossierUpdatedEvent $message) use ($wooDecisionUuid) {
-                self::assertEquals($wooDecisionUuid, $message->id);
+                self::assertEquals($wooDecisionUuid, $message->dossierId);
 
                 return true;
             }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use Scheb\TwoFactorBundle\Security\Authentication\Token\TwoFactorToken;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -23,19 +23,15 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  * has a twofactortoken. If so, we redirect to the 2fa login page. This will always force us to the 2fa page
  * when we are in the middle of authentication.
  */
-class TwofaRedirectSubscriber implements EventSubscriberInterface
+class TwofaRedirectSubscriber
 {
-    public function __construct(protected TokenStorageInterface $tokenStorage, protected UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        protected TokenStorageInterface $tokenStorage,
+        protected UrlGeneratorInterface $urlGenerator,
+    ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::REQUEST => 'onKernelRequest',
-        ];
-    }
-
+    #[AsEventListener(event: KernelEvents::REQUEST)]
     public function onKernelRequest(RequestEvent $event): void
     {
         // Don't redirect when we are already on the 2fa pages

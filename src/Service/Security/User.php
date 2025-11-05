@@ -225,6 +225,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $this->mfaRecovery = array_filter($this->mfaRecovery ?? [], fn ($target) => $target !== $code);
     }
 
+    public function isDisabled(): bool
+    {
+        return ! $this->enabled;
+    }
+
     public function isEnabled(): bool
     {
         return $this->enabled;

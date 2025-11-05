@@ -25,7 +25,7 @@ class SitemapDossierSubscriberTest extends MockeryTestCase
     private DossierPathHelper&MockInterface $dossierPathHelper;
     private SitemapDossierSubscriber $subscriber;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->dossierRepository = \Mockery::mock(DossierRepository::class);

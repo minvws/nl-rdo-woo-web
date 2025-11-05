@@ -14,8 +14,8 @@
     {% else %}
         <div class="bhr-form-row">
             <h2 class="bhr-label">{{ 'publication.dossier.documents_prefix' | trans }}</h2>
-            <p>{{ 'publication.dossier.can_not_edit_after_creation' | trans | raw }}</p>
-            <p class="mt-2"><strong>{{ dossier.documentPrefix }}-</strong></p>
+            <p class="bhr-form-help">{{ 'publication.dossier.can_not_edit_after_creation' | trans | raw }}</p>
+            <p class="bhr-readonly-text">{{ dossier.documentPrefix }}-</p>
         </div>
     {% endif %}
 {{ form_end(form) }}

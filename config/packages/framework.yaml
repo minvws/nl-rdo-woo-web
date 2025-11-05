@@ -4,6 +4,7 @@ framework:
     annotations: false
     http_method_override: false
     handle_all_throwables: true
+    trusted_hosts: '%env(TRUSTED_HOSTS)%'
 
     # Enables session support. Note that the session will ONLY be started if you read or write from it.
     # Remove or comment this section to explicitly disable session support.
@@ -48,3 +49,9 @@ when@dev:
     framework:
         session:
             cookie_secure: auto
+        trusted_hosts:
+            - '%env(TRUSTED_HOSTS)%'
+            - app.local
+            - open.local
+            - balie.local
+            - api.local

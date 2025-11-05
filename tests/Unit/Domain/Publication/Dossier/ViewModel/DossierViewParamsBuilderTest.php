@@ -30,7 +30,7 @@ final class DossierViewParamsBuilderTest extends MockeryTestCase
     private GroundViewFactory&MockInterface $groundViewFactory;
     private DepartmentRepository&MockInterface $departmentRepository;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossier = \Mockery::mock(Covenant::class);
         $this->workflowManager = \Mockery::mock(DossierWorkflowManager::class);

@@ -2,13 +2,13 @@
 
 {% macro previous_or_next(direction, pageNumber, query, pageParameterName, targetAnchor) %}
     {% set isPrevious = direction == 'prev' %}
-    {% set iconName = isPrevious ? 'chevron-left-thin' : 'chevron-right-thin' %}
-    {% set iconClass = isPrevious ? 'mr-2 -ml-1' : 'ml-2 -mr-1' %}
+    {% set iconName = isPrevious ? 'chevron-left' : 'chevron-right' %}
+    {% set iconClass = isPrevious ? 'mr-1 -ml-1' : 'ml-1 -mr-1' %}
     {% set hasPageNumber = pageNumber is not null %}
     <li class="absolute {{ isPrevious ? 'left-0' : 'right-0' }} top-0" {% if not hasPageNumber %}aria-hidden="true"{% endif %}>
         {% if hasPageNumber %}
             <a
-                class="flex items-center text-woo-sea-blue py-2 group"
+                class="flex items-center text-woo-dark-blue-600 py-2 group"
                 href="?{{ query|merge({(pageParameterName): pageNumber}) | url_encode }}{{ targetAnchor }}"
                 rel="{{ direction }}"
             >
@@ -28,7 +28,7 @@
     {% set isActive = pageNumber == currentPageNumber %}
     <a
         {% if isActive %}aria-current="page"{% endif %}
-        class="inline-block text-sm xs:text-base px-2 xs:px-1 py-3 xs:min-w-11 text-center leading-none transition-colors hover-focus:bg-woo-sea-blue hover-focus:text-white {{ isActive ? 'bg-woo-sea-blue text-white cursor-default' : 'text-woo-sea-blue' }}"
+        class="inline-block text-sm xs:text-base px-2 xs:px-1 py-3 xs:min-w-11 text-center leading-none transition-colors hover-focus:bg-woo-dark-blue-600 hover-focus:text-white {{ isActive ? 'bg-woo-dark-blue-600 text-white cursor-default' : 'text-woo-dark-blue-600' }}"
         data-e2e-name="page-number-{{ pageNumber }}"
         href="?{{ query|merge({(pageParameterName): pageNumber}) | url_encode }}{{ targetAnchor }}"
     >
@@ -39,7 +39,7 @@
 {% macro empty_list_item() %}<li class="hidden xs:block md:hidden lg:block xs:min-w-11 text-center">&hellip;</li>{% endmacro %}
 
 {% if pageCount > 1 %}
-<nav aria-label="{{ 'global.pagination' | trans }}" class="border-t-2 border-woo-sea-blue text-base" data-e2e-name="pagination">
+<nav aria-label="{{ 'global.pagination' | trans }}" class="border-t-2 border-woo-dark-blue-600 text-base" data-e2e-name="pagination">
     <ul class="flex flex-wrap relative items-center pt-11 sm:pt-0 justify-center">
         {{ _self.previous_or_next('prev', previous|default(null), query, pageParameterName, targetAnchor) }}
 

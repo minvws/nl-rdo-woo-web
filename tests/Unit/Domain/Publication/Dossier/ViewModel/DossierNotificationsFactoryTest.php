@@ -19,7 +19,7 @@ class DossierNotificationsFactoryTest extends UnitTestCase
     private WooDecisionRepository&MockInterface $wooDecisionRepository;
     private DossierNotificationsFactory $factory;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->wooDecisionRepository = \Mockery::mock(WooDecisionRepository::class);
         $this->factory = new DossierNotificationsFactory(

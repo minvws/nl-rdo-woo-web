@@ -10,9 +10,11 @@ use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionR
 use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\ProductionReportStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Form\Dossier\WooDecision\InventoryType;
+use App\Service\DossierWizard\DossierWizardStatus;
 use App\Service\Uploader\UploadGroupId;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -51,33 +53,19 @@ class DocumentsConceptStepController extends AbstractController
         }
 
         if ($request->query->has('reject')) {
-            $this->dispatcher->dispatchRejectProductionReportUpdateCommand($dossier);
-
-            return $this->redirectToRoute(
-                'app_admin_dossier_woodecision_documents_concept',
-                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
-            );
+            return $this->rejectProductionReport($dossier);
         }
 
         $inventoryForm = $this->createForm(InventoryType::class, $dossier);
         $inventoryForm->handleRequest($request);
 
         if ($this->stepHelper->isFormCancelled($inventoryForm)) {
-            $this->dispatcher->dispatchRejectProductionReportUpdateCommand($dossier);
-
-            return $this->redirectToRoute(
-                'app_admin_dossier_woodecision_documents_concept',
-                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
-            );
+            return $this->rejectProductionReport($dossier);
         }
 
-        if ($inventoryForm->isSubmitted() && $inventoryForm->isValid()) {
-            $uploadedFile = $inventoryForm->get('inventory')->getData();
-            if (! $uploadedFile instanceof UploadedFile) {
-                throw new \RuntimeException('Missing inventory uploadfile');
-            }
-
-            $this->dispatcher->dispatchInitiateProductionReportUpdateCommand($dossier, $uploadedFile);
+        $formSubmitResponse = $this->processFormSubmit($dossier, $inventoryForm, $wizardStatus);
+        if ($formSubmitResponse !== null) {
+            return $formSubmitResponse;
         }
 
         $processRun = $this->documentsHelper->mapProcessRunToForm($dossier, $inventoryForm);
@@ -96,6 +84,35 @@ class DocumentsConceptStepController extends AbstractController
             'inventoryStatus' => new ProductionReportStatus($dossier),
             'uploadGroupId' => UploadGroupId::WOO_DECISION_DOCUMENTS,
         ]);
+    }
+
+    private function processFormSubmit(WooDecision $dossier, FormInterface $inventoryForm, DossierWizardStatus $wizardStatus): ?Response
+    {
+        if (! ($inventoryForm->isSubmitted() && $inventoryForm->isValid())) {
+            return null;
+        }
+
+        $uploadedFile = $inventoryForm->get('inventory')->getData();
+
+        if ($uploadedFile instanceof UploadedFile) {
+            $this->dispatcher->dispatchInitiateProductionReportUpdateCommand($dossier, $uploadedFile);
+
+            return null;
+        } elseif ($dossier->isInventoryRequired()) {
+            throw new \RuntimeException('Missing inventory uploadfile');
+        } else {
+            return $this->stepHelper->redirectToNextStep($wizardStatus);
+        }
+    }
+
+    private function rejectProductionReport(WooDecision $dossier): Response
+    {
+        $this->dispatcher->dispatchRejectProductionReportUpdateCommand($dossier);
+
+        return $this->redirectToRoute(
+            'app_admin_dossier_woodecision_documents_concept',
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+        );
     }
 
     #[Route(

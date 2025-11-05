@@ -34,4 +34,9 @@ readonly class GenerateInventoryDossierAdminAction implements DossierAdminAction
 
         $this->dispatcher->dispatchGenerateInventoryCommand($dossier->getId());
     }
+
+    public function needsConfirmation(): bool
+    {
+        return false;
+    }
 }

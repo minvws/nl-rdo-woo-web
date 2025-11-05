@@ -50,7 +50,7 @@ class DocumentsEditStepController extends AbstractController
             return $this->stepHelper->redirectToDossier($dossier);
         }
 
-        $query = $this->documentRepository->getDossierDocumentsForPaginationQueryBuilder($dossier);
+        $query = $this->documentRepository->getDossierDocumentsForPaginationQuery($dossier);
 
         $pagination = $this->stepHelper->getPaginator(
             $query,

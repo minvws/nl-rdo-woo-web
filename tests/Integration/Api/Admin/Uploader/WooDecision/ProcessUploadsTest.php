@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Api\Admin\Uploader\WooDecision;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Domain\Publication\Dossier\DossierStatus;
 use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
@@ -13,13 +12,14 @@ use App\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileSetFactor
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileUploadFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use App\Tests\Factory\UserFactory;
+use App\Tests\Integration\Api\Admin\AdminApiTestCase;
 use App\Tests\Integration\IntegrationTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 
-final class ProcessUploadsTest extends ApiTestCase
+final class ProcessUploadsTest extends AdminApiTestCase
 {
     use IntegrationTestTrait;
 
@@ -52,15 +52,11 @@ final class ProcessUploadsTest extends ApiTestCase
 
         DocumentFileUploadFactory::createOne(['documentFileSet' => $documentFileSet]);
 
-        $client = static::createClient()->loginUser($user, 'balie');
-
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/uploader/woo-decision/%s/process', $wooDecision->getId()),
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ]
-        );
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/balie/api/uploader/woo-decision/%s/process', $wooDecision->getId()),
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
 
@@ -78,15 +74,11 @@ final class ProcessUploadsTest extends ApiTestCase
             ->create()
             ->_real();
 
-        $client = static::createClient()->loginUser($user, 'balie');
-
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/uploader/woo-decision/%s/process', Uuid::v6()),
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ]
-        );
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/balie/api/uploader/woo-decision/%s/process', Uuid::v6()),
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
@@ -100,15 +92,11 @@ final class ProcessUploadsTest extends ApiTestCase
             ->create()
             ->_real();
 
-        $client = static::createClient()->loginUser($user, 'balie');
-
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/uploader/woo-decision/%s/process', $invalidUuid),
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ],
-        );
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/balie/api/uploader/woo-decision/%s/process', $invalidUuid),
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
@@ -142,15 +130,11 @@ final class ProcessUploadsTest extends ApiTestCase
             'organisation' => $user->getOrganisation(),
         ])->_real();
 
-        $client = static::createClient()->loginUser($user, 'balie');
-
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/uploader/woo-decision/%s/process', $wooDecision->getId()),
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ]
-        );
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/balie/api/uploader/woo-decision/%s/process', $wooDecision->getId()),
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
@@ -175,15 +159,11 @@ final class ProcessUploadsTest extends ApiTestCase
             'organisation' => $owner->getOrganisation(),
         ])->_real();
 
-        $client = static::createClient()->loginUser($user, 'balie');
-
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/uploader/woo-decision/%s/process', $wooDecision->getId()),
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ]
-        );
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/balie/api/uploader/woo-decision/%s/process', $wooDecision->getId()),
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -209,15 +189,11 @@ final class ProcessUploadsTest extends ApiTestCase
             ]),
         ]);
 
-        $client = static::createClient()->loginUser($user, 'balie');
-
-        $client->request(
-            Request::METHOD_POST,
-            sprintf('/balie/api/uploader/woo-decision/%s/process', $wooDecision->getId()),
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ]
-        );
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/balie/api/uploader/woo-decision/%s/process', $wooDecision->getId()),
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }

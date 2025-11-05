@@ -23,7 +23,7 @@ class DossierIndexerTest extends MockeryTestCase
     private NestedDossierIndexUpdater&MockInterface $nestedDossierUpdater;
     private DossierIndexer $indexer;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->firstMapper = \Mockery::mock(ElasticDossierMapperInterface::class);
         $this->secondMapper = \Mockery::mock(ElasticDossierMapperInterface::class);

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Service\Security\Authorization;
 
-class ConfigFactory
+readonly class ConfigFactory
 {
     /**
-     * @param array{entries: mixed[]} $config
+     * @param array{entries?: mixed[]} $config
      */
     public function __construct(
-        private readonly array $config,
+        private array $config,
     ) {
     }
 

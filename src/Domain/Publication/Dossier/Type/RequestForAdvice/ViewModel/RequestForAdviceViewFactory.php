@@ -24,6 +24,7 @@ final readonly class RequestForAdviceViewFactory
             commonDossier: $this->commonDossierViewFactory->make($dossier),
             date: $dateFrom,
             link: $dossier->getLink(),
+            advisoryBodies: $dossier->getAdvisoryBodies(),
         );
     }
 }

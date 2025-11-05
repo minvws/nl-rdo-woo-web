@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Api\Admin\Department;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Domain\Department\DepartmentRepository;
 use App\Domain\Publication\FileInfo;
 use App\Domain\Publication\SourceType;
 use App\Tests\Factory\DepartmentFactory;
 use App\Tests\Factory\FileInfoFactory;
 use App\Tests\Factory\UserFactory;
+use App\Tests\Integration\Api\Admin\AdminApiTestCase;
 use App\Tests\Integration\IntegrationTestTrait;
 use App\Tests\Integration\VfsStreamHelpers;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 
-final class RemoveLogoTest extends ApiTestCase
+final class RemoveLogoTest extends AdminApiTestCase
 {
     use IntegrationTestTrait;
     use VfsStreamHelpers;
@@ -73,14 +73,11 @@ final class RemoveLogoTest extends ApiTestCase
 
         $this->createFileForEntityOnVfs($department, $this->assetsPath);
 
-        $client = static::createClient()->loginUser($user, 'balie');
-        $client->request(
-            Request::METHOD_DELETE,
-            sprintf('/balie/api/department/%s/logo', $department->getId()),
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ],
-        );
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_DELETE,
+                sprintf('/balie/api/department/%s/logo', $department->getId()),
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
 
@@ -105,15 +102,11 @@ final class RemoveLogoTest extends ApiTestCase
 
         self::assertFalse($department->getFileInfo()->isUploaded());
 
-        $client = static::createClient()->loginUser($user, 'balie');
-
-        $client->request(
-            Request::METHOD_DELETE,
-            sprintf('/balie/api/department/%s/logo', $department->getId()),
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ],
-        );
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_DELETE,
+                sprintf('/balie/api/department/%s/logo', $department->getId()),
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
 
@@ -132,15 +125,11 @@ final class RemoveLogoTest extends ApiTestCase
 
         $nonExistingDepartmentId = Uuid::v6();
 
-        $client = static::createClient()->loginUser($user, 'balie');
-
-        $client->request(
-            Request::METHOD_DELETE,
-            sprintf('/balie/api/department/%s/logo', $nonExistingDepartmentId),
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ],
-        );
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_DELETE,
+                sprintf('/balie/api/department/%s/logo', $nonExistingDepartmentId),
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
@@ -157,15 +146,11 @@ final class RemoveLogoTest extends ApiTestCase
             'name' => 'Department of Magic',
         ])->_real();
 
-        $client = static::createClient()->loginUser($user, 'balie');
-
-        $client->request(
-            Request::METHOD_DELETE,
-            sprintf('/balie/api/department/%s/logo', $department->getId()),
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ],
-        );
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_DELETE,
+                sprintf('/balie/api/department/%s/logo', $department->getId()),
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }

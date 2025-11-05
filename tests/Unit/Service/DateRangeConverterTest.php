@@ -10,6 +10,9 @@ use PHPUnit\Framework\TestCase;
 
 class DateRangeConverterTest extends TestCase
 {
+    /**
+     * @return array<string, array{from: \DateTimeImmutable|null, to: \DateTimeImmutable|null, expectedResult: string}>
+     */
     public static function dateRangeProvider(): array
     {
         return [

@@ -40,7 +40,7 @@ class CreateMainDocumentHandlerTest extends MockeryTestCase
     private ValidatorInterface&MockInterface $validator;
     private EntityUploadStorer&MockInterface $uploadStorer;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->annualReportDocumentRepository = \Mockery::mock(AnnualReportMainDocumentRepository::class);

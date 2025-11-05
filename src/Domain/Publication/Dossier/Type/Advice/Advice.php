@@ -30,7 +30,7 @@ class Advice extends AbstractDossier implements EntityWithAttachments, EntityWit
     /** @use HasMainDocument<AdviceMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AdviceMainDocument::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AdviceMainDocument::class, cascade: ['remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?AdviceMainDocument $document;

@@ -23,7 +23,7 @@ class SubTypeIndexerTest extends MockeryTestCase
     private PageIndexUpdater&MockInterface $pageIndexUpdater;
     private SubTypeIndexer $indexer;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->firstMapper = \Mockery::mock(ElasticSubTypeMapperInterface::class);
         $this->secondMapper = \Mockery::mock(ElasticSubTypeMapperInterface::class);

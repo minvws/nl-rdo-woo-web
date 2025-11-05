@@ -28,13 +28,6 @@ phpstan.neon
 /.phpunit.cache/
 ###< phpunit/phpunit ###
 
-### Robot Framework ###
-/tests/robot_framework/results
-/tests/robot_framework/libraries/__pycache__
-/tests/robot_framework/files/generated
-.venv
-.pabotsuitenames
-
 /env
 /*.hidden
 
@@ -54,3 +47,4 @@ auth.json
 hashes.json
 lib/
 reports
+compose.override.yml

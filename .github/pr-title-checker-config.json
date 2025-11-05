@@ -1,9 +1,0 @@
-{
-    "CHECKS": {
-        "regexp": "^WOO-\\d{0,6}:[ \t]+[^\\s]{1}.*$"
-    },
-    "MESSAGES": {
-        "success": "All OK",
-        "failure": "Please add WOO-XXXX to your PR title where XXXX is the issue number in GitHub"
-    }
-}

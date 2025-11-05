@@ -10,10 +10,10 @@
 
         {% include 'admin/dossier/workflow.html.twig' %}
 
-        {% if dossier.needsInventoryAndDocuments %}
+        {% if dossier.canProvideInventory %}
             {% include 'admin/dossier/woo-decision/documents/form.html.twig' %}
         {% else %}
-            Op basis van het besluit '{{ dossier.decision | trans }}' heeft dit dossier geen productierapport en/of documenten.
+            <twig:Admin:Alert type="info">Op basis van het besluit '{{ dossier.decision | trans }}' heeft dit dossier geen productierapport en/of documenten.</twig:Admin:Alert>
         {% endif %}
     </div>
 {% endblock %}

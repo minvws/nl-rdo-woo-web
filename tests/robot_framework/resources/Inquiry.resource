@@ -3,7 +3,7 @@ Documentation       Resource file containing custom keywords for inquiries in th
 Library             String
 Library             Browser
 Library             DebugLibrary
-Resource            Generic.resource
+Resource            Dossier.resource
 
 
 *** Keywords ***
@@ -21,46 +21,33 @@ Verify Inquiry Dossiers
     Get Text  //*[@data-e2e-name="inquiry-dossiers"]  contains  ${dossier_id}
   END
 
-Verify Inquiry Info
-  [Arguments]  ${nr_of_published_docs}=0  ${nr_of_partially_published_docs}=0  ${nr_of_unpublished_docs}=0
-  IF  ${nr_of_published_docs} == 1
-    Get Text
-    ...  //*[@data-e2e-name="inquiry-info"]
-    ...  contains
-    ...  ${nr_of_published_docs} document is hierna openbaar gemaakt
-  ELSE IF  ${nr_of_published_docs} > 1
-    Get Text
-    ...  //*[@data-e2e-name="inquiry-info"]
-    ...  contains
-    ...  ${nr_of_published_docs} documenten zijn hierna openbaar gemaakt
-  END
-  IF  ${nr_of_partially_published_docs} == 1
-    Get Text
-    ...  //*[@data-e2e-name="inquiry-info"]
-    ...  contains
-    ...  ${nr_of_partially_published_docs} document is hierna gedeeltelijk openbaar gemaakt.
-  ELSE IF  ${nr_of_partially_published_docs} > 1
-    Get Text
-    ...  //*[@data-e2e-name="inquiry-info"]
-    ...  contains
-    ...  ${nr_of_partially_published_docs} documenten zijn hierna gedeeltelijk openbaar gemaakt.
-  END
-  IF  ${nr_of_unpublished_docs} == 1
-    Get Text
-    ...  //*[@data-e2e-name="inquiry-info"]
-    ...  contains
-    ...  ${nr_of_unpublished_docs} document wordt niet openbaar gemaakt.
-  ELSE IF  ${nr_of_unpublished_docs} > 1
-    Get Text
-    ...  //*[@data-e2e-name="inquiry-info"]
-    ...  contains
-    ...  ${nr_of_unpublished_docs} documenten wordt niet openbaar gemaakt.
-  END
+Verify Inquiry Dossier
+  [Arguments]  ${dossier_id}  ${docs}
+  Click  //*[@data-e2e-name="inquiry-dossiers"]//tbody//a[contains(.,'${dossier_id}')]
+  VAR  ${published_docs} =  ${docs}[0]
+  VAR  ${partially_published_docs} =  ${docs}[1]
+  VAR  ${unpublished_docs} =  ${docs}[2]
+  VAR  ${not_yet_online_docs} =  ${docs}[3]
+  ${nr_of_published_docs} =  Get Length  ${published_docs}
+  ${nr_of_partially_published_docs} =  Get Length  ${partially_published_docs}
+  ${nr_of_unpublished_docs} =  Get Length  ${unpublished_docs}
+  ${nr_of_not_yet_online_docs} =  Get Length  ${not_yet_online_docs}
+  Verify Dossier Document Count
+  ...  ${nr_of_published_docs}
+  ...  ${nr_of_partially_published_docs}
+  ...  ${nr_of_unpublished_docs}
+  ...  ${nr_of_not_yet_online_docs}
+  Verify Inquiry Documents Per Tab  tabs-documenten-content-1  ${published_docs}
+  Verify Inquiry Documents Per Tab  tabs-documenten-content-2  ${partially_published_docs}
+  Verify Inquiry Documents Per Tab  tabs-documenten-content-3  ${unpublished_docs}
+  Verify Inquiry Documents Per Tab  tabs-documenten-content-4  ${not_yet_online_docs}
+  Click Public Breadcrumb Element  2
 
-Verify Inquiry Documents
-  [Arguments]  ${document_ids}
+Verify Inquiry Documents Per Tab
+  [Arguments]  ${tab_id}  ${document_ids}
   FOR  ${document_id}  IN  @{document_ids}
-    Get Text  //*[@data-e2e-name="inquiry-documents"]  contains  ${document_id}
+    ${doc_id_str} =  Convert To String  ${document_id}
+    Get Text  //*[@data-e2e-name="${tab_id}"]//tbody  contains  ${doc_id_str}
   END
 
 Click Manual Inquiry Linking
@@ -82,11 +69,11 @@ Link Inquiry To Decision
   Click  //button[@id="inquiry_link_dossier_form_link"]
 
 Link Inquiry To Documents
-  [Arguments]  ${linking_excel}
+  [Arguments]  ${linking_excel}  ${prefix}=E2E-A
   Upload File By Selector  id=inquiry_link_documents_form_upload  ${linking_excel}
   ${filename} =  Fetch From Right  ${linking_excel}  /
   Wait For Condition  Text  //div[@class="bhr-upload-area__files-area"]  contains  ${filename}
-  Select Prefix When Linking Inquiries  E2E-A
+  Select Prefix When Linking Inquiries  ${prefix}
   Click  id=inquiry_link_documents_form_link
   Success Alert Is Visible  zaaknummers gekoppeld
   Click  id=inquiry_link_documents_form_cancel
@@ -106,6 +93,9 @@ Select Prefix When Linking Inquiries
 
 Download Inquiry Archive
   Generic Download Click  //*[@data-e2e-name="download-documents-button"]  expected_extension=zip
+
+Click First Dossier In Inquiry
+  Click  (//div[@data-e2e-name="inquiry-dossiers"]//tbody//a)[1]
 
 Click First Document In Inquiry
   Click  (//div[@data-e2e-name="inquiry-documents"]//tbody//a)[1]

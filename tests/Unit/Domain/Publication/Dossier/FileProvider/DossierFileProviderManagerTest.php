@@ -19,7 +19,7 @@ class DossierFileProviderManagerTest extends MockeryTestCase
     private DossierFileProviderInterface&MockInterface $providerB;
     private DossierFileProviderManager $manager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->providerA = \Mockery::mock(DossierFileProviderInterface::class);
         $this->providerB = \Mockery::mock(DossierFileProviderInterface::class);

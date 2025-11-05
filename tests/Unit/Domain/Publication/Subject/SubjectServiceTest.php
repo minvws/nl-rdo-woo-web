@@ -24,7 +24,7 @@ class SubjectServiceTest extends MockeryTestCase
     private MessageBusInterface&MockInterface $messageBus;
     private SubjectService $subjectService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(SubjectRepository::class);
         $this->authMatrix = \Mockery::mock(AuthorizationMatrix::class);

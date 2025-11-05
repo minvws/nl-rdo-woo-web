@@ -21,7 +21,7 @@ class DocumentEventHandlerTest extends MockeryTestCase
     private BatchDownloadService&MockInterface $batchDownloadService;
     private DocumentEventHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
 

@@ -16,7 +16,7 @@ class DepartmentIndexUpdaterTest extends MockeryTestCase
     private DepartmentIndexUpdater $indexUpdater;
     private ElasticClientInterface&MockInterface $elasticClient;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
 

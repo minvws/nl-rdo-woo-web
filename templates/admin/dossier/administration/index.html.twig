@@ -6,9 +6,7 @@
 
 {% block body %}
 <div class="bhr-container">
-    {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
-
-    <h1 class="bhr-title pb-6">{{ page_title }}</h1>
+    <twig:Admin:PageTitle title="{{ page_title }}" />
 
     <div class="bhr-card">
         {% include 'admin/shared/flash-messages.html.twig' %}
@@ -17,11 +15,11 @@
             <table class="bhr-table">
                 <thead>
                     <tr>
-                        <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.dossiers.action.column.dossier_nr' | trans }}</th>
-                        <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.dossiers.action.column.type' | trans }}</th>
-                        <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.dossiers.action.column.status' | trans }}</th>
-                        <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.dossiers.action.column.id' | trans }}</th>
-                        <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.dossiers.action.column.title' | trans }}</th>
+                        <th scope="col">{{ 'admin.dossiers.action.column.dossier_nr' | trans }}</th>
+                        <th scope="col">{{ 'admin.dossiers.action.column.type' | trans }}</th>
+                        <th scope="col">{{ 'admin.dossiers.action.column.status' | trans }}</th>
+                        <th scope="col">{{ 'admin.dossiers.action.column.id' | trans }}</th>
+                        <th scope="col">{{ 'admin.dossiers.action.column.title' | trans }}</th>
                     </tr>
                 </thead>
                 <tbody>

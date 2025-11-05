@@ -1,0 +1,57 @@
+{% extends 'public/base.html.twig' %}
+
+{% set page_title = 'public.footer.label.sitemap' | trans %}
+
+{% import "public/macros/facet.html.twig" as macro %}
+
+{% block body %}
+    <div class="woo-container woo-container--sm">
+        <h1 class="woo-h1 woo-h1-spacing">{{ 'public.footer.label.sitemap' | trans }}</h1>
+
+        <div class="woo-rich-text woo-readable-width">
+            <ul>
+                <li>
+                    <a href="{{ path('app_home') }}">{{ 'public.global.label.home' | trans }}</a>
+                </li>
+
+                <li>
+                    <a href="{{ path('app_search') }}">{{ 'public.search.label' | trans }}</a>
+                </li>
+
+                <li>
+                    <a href="{{ path('app_browse') }}">{{ 'public.global.label.all_categories' | trans }}</a>
+                </li>
+
+                {{ macro.facets_sitemap(result) }}
+
+                {% if departments | length > 0 %}
+                    <li>
+                        <a href="{{ path('app_departments_index') }}">{{ 'global.all_departments' | trans }}</a>
+
+                        <ul>
+                            {% for department in departments %}
+                                <li>
+                                    <a href="{{ department.url }}">{{ department.name }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {% for theme in all_themes() %}
+                <li>
+                    <a href="{{ path('app_theme', {'name': theme.urlName}) }}">{{ theme.menuName | trans }}</a>
+                </li>
+                {% endfor %}
+
+                <li><a href="{{ path('app_contact') }}">{{ 'global.footer.label.contact' | trans }}</a></li>
+                <li><a href="{{ path('app_about') }}">{{ 'public.footer.label.about_platform' | trans }}</a></li>
+                <li><a href="{{ path('app_copyright') }}">{{ 'public.footer.label.copyright' | trans }}</a></li>
+                <li><a href="{{ path('app_privacy') }}">{{ 'global.footer.label.privacy' | trans }}</a></li>
+                <li><a href="{{ path('app_cookies') }}">{{ 'public.footer.label.cookies' | trans }}</a></li>
+                <li><a href="{{ path('app_accessibility') }}">{{ 'global.footer.label.accessibility' | trans }}</a></li>
+                <li><a href="{{ path('app_report_vulnerability') }}">{{ 'global.footer.label.report_vulnerability' | trans }}</a></li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

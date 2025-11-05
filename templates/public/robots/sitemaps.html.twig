@@ -1,0 +1,4 @@
+Sitemap: {{ robots.publicBaseUrl }}/sitemap.xml
+{% if robots.hasWooIndexSitemap %}
+    Sitemap: {{ robots.wooIndexSitemap }}
+{% endif %}

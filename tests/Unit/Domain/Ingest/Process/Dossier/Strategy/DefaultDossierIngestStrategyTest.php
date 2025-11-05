@@ -19,7 +19,7 @@ class DefaultDossierIngestStrategyTest extends MockeryTestCase
     private SearchDispatcher&MockInterface $searchDispatcher;
     private DefaultDossierIngestStrategy $ingester;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->searchDispatcher = \Mockery::mock(SearchDispatcher::class);
 

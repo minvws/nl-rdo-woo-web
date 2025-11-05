@@ -42,7 +42,7 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
     private MimeTypeHelper&MockInterface $mimeTypeHelper;
     private ProcessDocumentFileUploadHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->documentFileUploadRepository = \Mockery::mock(DocumentFileUploadRepository::class);
         $this->documentFileUpdateRepository = \Mockery::mock(DocumentFileUpdateRepository::class);
@@ -112,12 +112,12 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->with('pdf', 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
             ->andReturnTrue();
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->with('pdf', 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
             ->andReturnTrue();
 
         $this->documentNumberExtractor->expects('matchDocumentForFile')->with($fileA, $wooDecision)->andReturnNull();
@@ -192,12 +192,12 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->with('pdf', 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
             ->andReturnTrue();
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->with('pdf', 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
             ->andReturnTrue();
 
         $this->documentNumberExtractor->expects('matchDocumentForFile')->with($fileA, $wooDecision)->andReturnNull();
@@ -268,12 +268,12 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->with('pdf', 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
             ->andReturnTrue();
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->with('pdf', 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
             ->andReturnTrue();
 
         $this->documentNumberExtractor->expects('matchDocumentForFile')->with($fileA, $wooDecision)->andReturnNull();
@@ -388,12 +388,12 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->with('pdf', 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
             ->andReturnTrue();
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
+            ->with('pdf', 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS)
             ->andReturnFalse();
 
         $this->documentNumberExtractor->expects('matchDocumentForFile')->with($fileA, $wooDecision)->andReturnNull();

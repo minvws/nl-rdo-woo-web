@@ -35,6 +35,11 @@ class DocumentPrefix
         return $this->id;
     }
 
+    public function issetPrefix(): bool
+    {
+        return isset($this->prefix);
+    }
+
     public function getPrefix(): string
     {
         return strtoupper($this->prefix);

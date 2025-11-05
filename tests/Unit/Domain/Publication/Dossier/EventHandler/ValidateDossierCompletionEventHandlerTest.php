@@ -19,7 +19,7 @@ class ValidateDossierCompletionEventHandlerTest extends MockeryTestCase
     private DossierService&MockInterface $dossierService;
     private ValidateDossierCompletionEventHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(DossierRepository::class);
         $this->dossierService = \Mockery::mock(DossierService::class);

@@ -24,7 +24,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
     private DossierRepository&MockInterface $repository;
     private MainDocumentHistoryHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->historyService = \Mockery::mock(HistoryService::class);
         $this->repository = \Mockery::mock(DossierRepository::class);
@@ -52,7 +52,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
         $this->historyService
             ->expects('addDossierEntry')
             ->with(
-                $dossier,
+                $dossier->getId(),
                 'covenant.main_document_added',
                 [
                     'filename' => $expectedName,
@@ -79,7 +79,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
         $this->historyService
             ->expects('addDossierEntry')
             ->with(
-                $dossier,
+                $dossier->getId(),
                 'covenant.main_document_updated',
                 [
                     'filename' => $expectedName,
@@ -106,7 +106,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
         $this->historyService
             ->expects('addDossierEntry')
             ->with(
-                $dossier,
+                $dossier->getId(),
                 'covenant.main_document_deleted',
                 [
                     'filename' => $expectedName,

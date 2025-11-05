@@ -23,7 +23,7 @@ class SubTypeIngesterTest extends MockeryTestCase
 
     private SubTypeIngester $ingester;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->strategyA = \Mockery::mock(SubTypeIngestStrategyInterface::class);
         $this->strategyB = \Mockery::mock(SubTypeIngestStrategyInterface::class);

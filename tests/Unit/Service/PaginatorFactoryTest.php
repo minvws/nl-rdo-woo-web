@@ -20,7 +20,7 @@ class PaginatorFactoryTest extends MockeryTestCase
     private RequestStack&MockInterface $requestStack;
     private PaginatorFactory $factory;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->paginator = \Mockery::mock(PaginatorInterface::class);
         $this->requestStack = \Mockery::mock(RequestStack::class);

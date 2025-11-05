@@ -21,7 +21,7 @@ class InventoryDataHelperTest extends TestCase
     }
 
     /**
-     * @return array<string, array{input:string, separator:string, expectedResult:string[]}
+     * @return array<string, array{input:string|null, separators:non-empty-string|non-empty-string[], expectedResult:string[]}>
      */
     public static function separateValuesProvider(): array
     {
@@ -80,11 +80,15 @@ class InventoryDataHelperTest extends TestCase
     }
 
     /**
-     * @return array<string, array{input:string, expectedResult:\DateTimeImmutable[]}
+     * @return array<string, array{input:string, expectedResult:\DateTimeImmutable|null}>
      */
     public static function toDateTimeImmutableProvider(): array
     {
         $sixthOfMay2021 = \DateTimeImmutable::createFromFormat('!Y-m-d', '2021-05-06');
+        self::assertInstanceOf(\DateTimeImmutable::class, $sixthOfMay2021);
+
+        $sixthOfMay2021ElevenPastEight = \DateTimeImmutable::createFromFormat('Y-m-d H:i', '2021-05-06 08:11');
+        self::assertInstanceOf(\DateTimeImmutable::class, $sixthOfMay2021ElevenPastEight);
 
         return [
             'empty-input-throws-exception' => [
@@ -113,7 +117,7 @@ class InventoryDataHelperTest extends TestCase
             ],
             'DD/MM/YYYY h:m' => [
                 'input' => '06/05/2021 08:11',
-                'expectedResult' => \DateTimeImmutable::createFromFormat('Y-m-d H:i', '2021-05-06 08:11'),
+                'expectedResult' => $sixthOfMay2021ElevenPastEight,
             ],
             'invalid-input-throws-exception' => [
                 'input' => 'test-1231 foo bar',

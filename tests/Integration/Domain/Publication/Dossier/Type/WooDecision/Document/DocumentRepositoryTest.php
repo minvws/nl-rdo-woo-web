@@ -15,6 +15,7 @@ use App\Tests\Factory\OrganisationFactory;
 use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use App\Tests\Integration\IntegrationTestTrait;
 use App\Tests\Story\WooIndexWooDecisionStory;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Uid\Uuid;
@@ -435,19 +436,25 @@ final class DocumentRepositoryTest extends KernelTestCase
 
         $dossier = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
 
+        $documentNrA = 'FOO-123';
+        $documentNrB = 'FOO-456';
+
         DocumentFactory::createOne([
-            'documentNr' => $documentNrA = 'FOO-123',
+            'documentNr' => $documentNrA,
             'dossiers' => [$dossier],
+            'documentDate' => CarbonImmutable::now(),
         ]);
 
         DocumentFactory::createOne([
-            'documentNr' => $documentNrB = 'FOO-456',
+            'documentNr' => $documentNrB,
             'dossiers' => [$dossier],
+            'documentDate' => CarbonImmutable::now()->addDay(),
         ]);
 
-        $queryBuilder = $this->repository->getDossierDocumentsForPaginationQueryBuilder($dossier);
-        $queryBuilder->addOrderBy('doc.documentNr', 'ASC');
-        $result = $queryBuilder->getQuery()->getResult();
+        /**
+         * @var list<Document> $result
+         */
+        $result = $this->repository->getDossierDocumentsForPaginationQuery($dossier)->getResult();
 
         self::assertCount(2, $result);
         self::assertEquals($documentNrA, $result[0]->getDocumentNr());

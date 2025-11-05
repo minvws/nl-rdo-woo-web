@@ -1,57 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00001.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00001.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00002.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00002.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00003.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00003.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00004.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00004.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00005.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00005.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00006.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00006.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00007.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00007.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00008.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00008.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00009.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00009.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00010.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00010.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00011.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00011.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00012.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00012.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00013.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00013.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00014.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00014.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00015.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00015.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00016.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00016.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00017.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00017.xml</loc>
  </sitemap>
  <sitemap>
-  <loc>http://localhost:8000/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00018.xml</loc>
+  <loc>http://open.local/sitemap/woo-index/1efe8c60-9d44-6c08-8984-db09e5d32982/sitemap-00018.xml</loc>
  </sitemap>
 </sitemapindex>

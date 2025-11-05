@@ -18,7 +18,7 @@ final class GenerateInventoryDossierAdminActionTest extends MockeryTestCase
     private ProductionReportDispatcher&MockInterface $dispatcher;
     private GenerateInventoryDossierAdminAction $action;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dispatcher = \Mockery::mock(ProductionReportDispatcher::class);
 
@@ -41,6 +41,11 @@ final class GenerateInventoryDossierAdminActionTest extends MockeryTestCase
     {
         self::assertTrue($this->action->supports(\Mockery::mock(WooDecision::class)));
         self::assertFalse($this->action->supports(\Mockery::mock(Covenant::class)));
+    }
+
+    public function testNeedsConfirmation(): void
+    {
+        self::assertFalse($this->action->needsConfirmation());
     }
 
     public function testExecute(): void

@@ -1,5 +1,6 @@
 api_platform:
-    title: Woo balie API
+    title: OpenVWS Publication API
+    description: API for managing publications in the OpenVWS system.
     version: 0.1.0
     show_webby: false
     formats:
@@ -17,8 +18,6 @@ api_platform:
             vary: ['Content-Type', 'Authorization', 'Origin']
     exception_to_status:
         Doctrine\ORM\NoResultException: 404
-    resource_class_directories:
-      - '%kernel.project_dir%/src/Api'
     enable_docs: true
     enable_entrypoint: false
     enable_swagger: true
@@ -27,8 +26,8 @@ api_platform:
     asset_package: api_platform
     use_symfony_listeners: true
 
-when@dev:
-    api_platform:
-        enable_swagger: true
-        enable_swagger_ui: true
-        enable_docs: true
+    openapi:
+        contact:
+            name: iRealisatie
+            url: https://open.minvws.nl/contact
+            email: woo-platform@irealisatie.nl

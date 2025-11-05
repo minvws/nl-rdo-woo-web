@@ -39,7 +39,7 @@ class AttachmentRepository extends ServiceEntityRepository
         }
     }
 
-    public function findOneOrNullForDossier(Uuid $dossierId, Uuid $id): ?AbstractAttachment
+    public function findOneForDossier(Uuid $dossierId, Uuid $id): AbstractAttachment
     {
         $qb = $this->createQueryBuilder('a')
             ->where('a.id = :id')
@@ -49,8 +49,8 @@ class AttachmentRepository extends ServiceEntityRepository
             ->setParameter('dossierId', $dossierId)
         ;
 
-        /** @var ?AbstractAttachment */
-        return $qb->getQuery()->getOneOrNullResult();
+        /** @var AbstractAttachment */
+        return $qb->getQuery()->getSingleResult();
     }
 
     public function getAllPublishedQuery(): Query

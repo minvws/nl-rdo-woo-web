@@ -10,10 +10,10 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 class Icon
 {
     public string $class = '';
-    public string $color = 'fill-woo-dim-gray';
+    public string $color = 'fill-woo-gray-600';
     public ?int $height = 0;
     public string $name = '';
-    public string $path = 'assets/img/public/icons.svg';
+    public string $path = '/img/public/icons.svg';
     public ?int $size = 24;
     public ?int $width = 0;
 

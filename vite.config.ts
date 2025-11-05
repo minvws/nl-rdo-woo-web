@@ -2,6 +2,7 @@ import vuePlugin from '@vitejs/plugin-vue';
 import path from 'path';
 import { defineConfig } from 'vite';
 import symfonyPlugin from 'vite-plugin-symfony';
+import { execSync } from 'child_process';
 
 export default defineConfig({
   plugins: [
@@ -10,6 +11,12 @@ export default defineConfig({
       stimulus: './assets/js/shared/vue-controllers.json',
     }),
   ],
+
+  define: {
+    __GIT_HASH__: JSON.stringify(
+      execSync('git rev-parse HEAD').toString().trim(),
+    ),
+  },
 
   build: {
     manifest: true,
@@ -24,6 +31,15 @@ export default defineConfig({
     assetsInlineLimit: 0,
   },
 
+  html: {
+    cspNonce: 'vite-nonce',
+  },
+
+  server: {
+    host: 'localhost',
+    port: 8001,
+  },
+
   resolve: {
     alias: {
       /**
@@ -35,7 +51,7 @@ export default defineConfig({
 
       '@js': path.resolve(__dirname, 'assets/js/'),
       '@fonts': path.resolve(__dirname, 'assets/fonts/'),
-      '@img': path.resolve(__dirname, 'assets/img/'),
+      '@img': path.resolve(__dirname, 'public/img/'),
       '@styles': path.resolve(__dirname, 'assets/styles/'),
       '@test': path.resolve(__dirname, 'assets/js/test/'),
       '@utils': path.resolve(__dirname, 'assets/js/utils/'),

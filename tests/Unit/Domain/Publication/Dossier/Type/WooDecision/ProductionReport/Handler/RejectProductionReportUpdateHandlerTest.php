@@ -25,7 +25,7 @@ class RejectProductionReportUpdateHandlerTest extends UnitTestCase
     private LoggerInterface&MockInterface $logger;
     private RejectProductionReportUpdateHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
         $this->processRunRepository = \Mockery::mock(ProductionReportProcessRunRepository::class);

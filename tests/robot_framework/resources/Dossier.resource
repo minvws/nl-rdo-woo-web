@@ -36,13 +36,11 @@ Fill Out Basic Details
     Select Options By  id=details_date_from  value  ${date_from}
     Select Options By  id=details_date_to  value  ${date_to}
   END
-  Select Options By  //select[@name="details[departments][0]"]  text  E2E Test Department 1
+  Select Options By  //select[@name="details[departments][0]"]  index  1
   IF  '${type}' == 'woo-decision'
     Check Checkbox  id=details_publication_reason_1
-    Select Options By  id=details_subject  label  E2E Test Subject
-  ELSE
-    Select Random Subject
   END
+  Select Random Subject
   Select Options By  id=details_documentPrefix_documentPrefix  text  ${prefix}
   Fill Text  id=details_dossierNr  ${DOSSIER_REFERENCE}
   Click  "Opslaan en verder"
@@ -103,7 +101,7 @@ Publish Dossier And Return To Admin Home
   END
 
 Click Publications
-  Click  "Publicaties"
+  Click  //*[@data-e2e-name="nav-publications"]
 
 Click Publication By Value
   [Arguments]  ${value}
@@ -136,7 +134,8 @@ Click Continue To Publish
   Click  //*[@data-e2e-name="to-next-step-link"]
 
 Click Save And Prepare
-  Click  //*[@id="publish_submit"]
+  Click With CSRF Retry  //*[@id="publish_submit"]
+  Success Alert Is Visible  klaarzetten gelukt: De publicatie wordt voorbereid
 
 Click Edit Details
   Click  //a[@data-e2e-name="edit-details"]
@@ -158,3 +157,14 @@ Verify Publication Action Status
     ...  equals
     ...  ${EMPTY}
   END
+
+Verify Dossier Document Count
+  [Arguments]
+  ...  ${nr_of_published_docs}=0
+  ...  ${nr_of_partially_published_docs}=0
+  ...  ${nr_of_unpublished_docs}=0
+  ...  ${nr_of_not_yet_online_docs}=0
+  Get Text  //*[@data-e2e-name="tabs-documenten-button-1"]  contains  (${nr_of_published_docs})
+  Get Text  //*[@data-e2e-name="tabs-documenten-button-2"]  contains  (${nr_of_partially_published_docs})
+  Get Text  //*[@data-e2e-name="tabs-documenten-button-3"]  contains  (${nr_of_unpublished_docs})
+  Get Text  //*[@data-e2e-name="tabs-documenten-button-4"]  contains  (${nr_of_not_yet_online_docs})

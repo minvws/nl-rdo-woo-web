@@ -16,7 +16,7 @@ class AttachmentDeleterTest extends MockeryTestCase
     private AttachmentDeleteStrategyInterface&MockInterface $deleteStrategyA;
     private AttachmentDeleteStrategyInterface&MockInterface $deleteStrategyB;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->deleteStrategyA = \Mockery::mock(AttachmentDeleteStrategyInterface::class);
         $this->deleteStrategyB = \Mockery::mock(AttachmentDeleteStrategyInterface::class);

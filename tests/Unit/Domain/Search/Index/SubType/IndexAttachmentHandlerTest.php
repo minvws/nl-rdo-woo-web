@@ -24,7 +24,7 @@ class IndexAttachmentHandlerTest extends MockeryTestCase
     private SubTypeIngester&MockInterface $subTypeIngester;
     private IndexAttachmentHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(AttachmentRepository::class);
         $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);

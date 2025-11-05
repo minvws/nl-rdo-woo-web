@@ -21,7 +21,7 @@ class RequestForAdviceSearchResultMapperTest extends MockeryTestCase
     private RequestForAdviceRepository&MockInterface $repository;
     private RequestForAdviceSearchResultMapper $mapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->baseMapper = \Mockery::mock(DossierSearchResultBaseMapper::class);
         $this->repository = \Mockery::mock(RequestForAdviceRepository::class);

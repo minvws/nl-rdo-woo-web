@@ -1,21 +1,17 @@
 name: Setup PHP
+description: Compose action that sets up PHP and Composer
 
 inputs:
-# Note: All inputs are cast to string. Even default values of type bool or int etc.
   php-version:
     description: The PHP version
-    type:  string
     default: "8.3"
   coverage:
     description: Set PHP coverage driver
-    type: string
     default: none
   extensions:
     description: Set PHP extensions
-    type: string
   github-token:
     description: Add a Github Token which will be used for Composer auth
-    type: string
 
 runs:
   using: composite
@@ -44,10 +40,6 @@ runs:
     - name: Install dependencies
       shell: bash
       run: composer install --no-interaction --no-progress --prefer-dist --ignore-platform-reqs
-
-    - name: Copy .env.ci to .env.local
-      shell: bash
-      run: cp .env.ci .env.test.local
 
     - name: Save Composer cache
       if: ${{ always() && steps.composer-cache.outputs.cache-hit != 'true' }}

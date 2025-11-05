@@ -9,9 +9,9 @@ use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-readonly class SitemapDossierSubscriber implements EventSubscriberInterface
+readonly class SitemapDossierSubscriber
 {
     public function __construct(
         private EntityManagerInterface $doctrine,
@@ -20,16 +20,7 @@ readonly class SitemapDossierSubscriber implements EventSubscriberInterface
     ) {
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            SitemapPopulateEvent::class => ['populate', 0],
-        ];
-    }
-
+    #[AsEventListener(event: SitemapPopulateEvent::class)]
     public function populate(SitemapPopulateEvent $event): void
     {
         $dossierQuery = $this->dossierRepository->createQueryBuilder('d')

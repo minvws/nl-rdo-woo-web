@@ -29,7 +29,7 @@ Upload Advice
   Wait Until Keyword Succeeds  3x  5s  Upload And Submit  ${file_name}  ${advice_location}
   Success Alert Is Visible
   ...  contains_message=Advies '${file_name}' is toegevoegd.
-  ...  selector=//*[@data-e2e-name="main-document"][1]//*[@data-e2e-name="alerts"]/div[contains(@class, 'bhr-alert--success')]
+  ...  selector=//*[@data-e2e-name="main-document"][1]//*[@data-e2e-name="alert"][contains(@class, 'bhr-alert--success')]
 
 Upload Advice Request
   [Arguments]  ${advice_request_location}
@@ -38,7 +38,7 @@ Upload Advice Request
   Wait Until Keyword Succeeds  3x  5s  Upload And Submit  ${file_name}  ${advice_request_location}
   Success Alert Is Visible
   ...  contains_message=Adviesaanvraag '${file_name}' is toegevoegd.
-  ...  selector=//*[@data-e2e-name="attachments"][1]//*[@data-e2e-name="alerts"]/div[contains(@class, 'bhr-alert--success')]
+  ...  selector=//*[@data-e2e-name="attachments"][1]//*[@data-e2e-name="alert"][contains(@class, 'bhr-alert--success')]
 
 Upload And Submit
   [Arguments]  ${file_name}  ${advice_location}

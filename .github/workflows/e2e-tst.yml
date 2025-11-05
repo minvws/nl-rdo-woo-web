@@ -12,7 +12,7 @@ on:
 env:
   CR_PAT: ${{ secrets.GITHUB_TOKEN }}
   TEST_TAG: ${{ inputs.test_tag || 'testdossiers' }}
-  GH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }} # For gh cli tool
+  GITHUB_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }} # For gh cli tool
 
 jobs:
   e2e-tests:
@@ -21,11 +21,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Install Task
-        uses: arduino/setup-task@v2
+        uses: go-task/setup-task@v1
         with:
-          repo-token: ${{ env.GH_TOKEN }}
+          repo-token: ${{ env.GITHUB_TOKEN }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
           cache-dependency-glob: tests/robot_framework/uv.lock
@@ -54,7 +54,7 @@ jobs:
         run: |
           uv run robot --outputdir results --xunit outputxunit.xml --include ${{ env.TEST_TAG }} --variable ENVIRONMENT:test .
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: ${{ always() }}
         with:
           name: reports

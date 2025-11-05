@@ -35,7 +35,7 @@ class DocumentUpdaterTest extends MockeryTestCase
     private WooDecision&MockInterface $dossier;
     private DocumentRepository&MockInterface $repository;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(DocumentRepository::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);

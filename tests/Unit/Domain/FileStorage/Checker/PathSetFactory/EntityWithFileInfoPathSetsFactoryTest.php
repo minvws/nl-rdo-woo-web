@@ -32,7 +32,7 @@ class EntityWithFileInfoPathSetsFactoryTest extends UnitTestCase
     private ThumbnailStorageService&MockInterface $thumbnailStorageService;
     private int $thumbnailLimit = 2;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->factory = new EntityWithFileInfoPathSetsFactory(
             $this->entityManager = \Mockery::mock(EntityManagerInterface::class),

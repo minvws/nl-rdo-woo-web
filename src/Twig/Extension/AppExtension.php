@@ -32,6 +32,7 @@ class AppExtension extends AbstractExtension
         return [
             new TwigFunction('app_version', $this->runtime->appVersion(...)),
             new TwigFunction('is_backend', $this->runtime->isBackend(...)),
+            new TwigFunction('is_dev', $this->runtime->isDev(...)),
         ];
     }
 }

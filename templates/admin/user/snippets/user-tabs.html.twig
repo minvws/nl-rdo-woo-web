@@ -4,8 +4,11 @@
 {% set tabPaginators = tabPaginators | merge(deactivatedAdmins is not null ? [deactivatedAdmins] : []) %}
 
 {% set tabButtonTitles = ['admin.user.active_users' | trans, 'admin.user.deactivated_users' | trans] %}
-{% set tabButtonTitles = tabButtonTitles | merge(activeAdmins is not null ? ['admin.user.active_admins' | trans] : []) %}
-{% set tabButtonTitles = tabButtonTitles | merge(deactivatedAdmins is not null ? ['admin.user.deactivated_admins' | trans] : []) %}
+
+{% if is_granted('AuthMatrix.super_admin.update') %}
+    {% set tabButtonTitles = tabButtonTitles | merge(activeAdmins is not null ? ['admin.user.active_admins' | trans] : []) %}
+    {% set tabButtonTitles = tabButtonTitles | merge(deactivatedAdmins is not null ? ['admin.user.deactivated_admins' | trans] : []) %}
+{% endif %}
 
 {% set tabsName = 'gebruikers' %}
 <twig:Admin:Tabs

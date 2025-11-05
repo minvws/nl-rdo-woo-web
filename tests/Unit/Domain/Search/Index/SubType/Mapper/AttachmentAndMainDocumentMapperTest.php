@@ -22,7 +22,7 @@ class AttachmentAndMainDocumentMapperTest extends UnitTestCase
     private AttachmentAndMainDocumentMapper $mapper;
     private DossierIndexer&MockInterface $dossierIndexer;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierIndexer = \Mockery::mock(DossierIndexer::class);
         $this->mapper = new AttachmentAndMainDocumentMapper($this->dossierIndexer);

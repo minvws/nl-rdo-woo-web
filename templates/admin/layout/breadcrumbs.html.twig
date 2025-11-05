@@ -1,25 +1,29 @@
-{% if wo_breadcrumbs()|length %}
-    <nav class="-mt-2 mb-8" aria-label="{{ 'admin.global.current_location' | trans() }}">
+{% if wo_breadcrumbs() | length %}
+<div class="bhr-container">
+    <nav class="py-1.5" aria-label="{{ 'admin.global.current_location' | trans() }}">
         <ol>
+            <li class="inline-flex">
+                <a class="underline inline-block hover-focus:no-underline relative p-3 mr-3" data-e2e-name="breadcrumb" href="{{ path('app_admin_index') }}">
+                    <twig:Admin:Icon name="house" class="-mt-0.5" />
+                    <span class="sr-only">Home</span>
+                    <twig:Admin:Icon name="chevron-right" class="absolute -right-5 top-3 mt-px" />
+                </a>
+            </li>
             {% for breadcrumb in breadcrumbs %}
                 {% if loop.last %}
-                <li class="pt-2">
-                    <h1 class="bhr-title-lg">
-                        {{ breadcrumb.text | trans() }}
-                    </h1>
+                <li class="inline-flex p-3">
+                    {{ breadcrumb.text | trans() }}
                 </li>
                 {% else %}
                 <li class="inline-flex">
-                    <a class="underline text-lg inline-block hover:no-underline relative pr-10 py-2{% if not loop.first %} pl-4{% endif %}" href="{{ breadcrumb.url }}">
-                        <span class="block truncate max-w-[186px]">{{ breadcrumb.text | trans() }}</span>
-
-                        <twig:Admin:Icon name="chevron-right" class="absolute right-0 top-2.5" />
+                    <a class="underline inline-block hover-focus:no-underline relative p-3 mr-3" data-e2e-name="breadcrumb" href="{{ breadcrumb.url }}">
+                        <span class="block">{{ breadcrumb.text | trans() }}</span>
+                        <twig:Admin:Icon name="chevron-right" class="absolute -right-5 top-3 mt-px" />
                     </a>
                 </li>
                 {% endif %}
             {% endfor %}
         </ol>
     </nav>
+</div>
 {% endif %}
-
-

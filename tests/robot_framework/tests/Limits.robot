@@ -50,15 +50,15 @@ Publish A WooDecision With Max Individual Archive Size Of 5GB
   ...  contains
   ...  Het bestand "archive.zip" werd genegeerd omdat het te groot is
 
-Publish A Woodecision With Max Total Size Of 8GB
+Publish A Woodecision With Max Total Size Of 10GB
   [Documentation]  Should not be run on TEST and ACC, as it polutes the envs.
   ${new_prefix} =  Add A Random Organisation Prefix
   ${test_data_location1} =  Create Unique TestData Location
   ${test_data_location2} =  Create Unique TestData Location
   ${test_data_location3} =  Create Unique TestData Location
   ${archive1} =  Generate A WooDecision Archive Based On Size  3000  ${test_data_location1}  archive1.zip
-  ${archive2} =  Generate A WooDecision Archive Based On Size  3000  ${test_data_location2}  archive2.zip
-  ${archive3} =  Generate A WooDecision Archive Based On Size  3000  ${test_data_location3}  archive3.zip
+  ${archive2} =  Generate A WooDecision Archive Based On Size  4000  ${test_data_location2}  archive2.zip
+  ${archive3} =  Generate A WooDecision Archive Based On Size  4000  ${test_data_location3}  archive3.zip
   ${test_data_location} =  Create Unique TestData Location
   Move Files  ${test_data_location1}/*.txt  ${test_data_location}
   Move Files  ${test_data_location2}/*.txt  ${test_data_location}
@@ -91,13 +91,12 @@ Publish A Covenant With More Than Max Nr Of Attachments
 
 Individual Files Of Max 1GB
   [Documentation]  Not allowed because of ClamAV limit of 1GB. Upload a zip with both a <1GB file and >1GB file, where only the smaller should be processed.
-  [Tags]  deze
   ${new_prefix} =  Add A Random Organisation Prefix
   ${test_data_location} =  Create Unique TestData Location
   Generate File By Size  900  ${test_data_location}/900.txt
   Generate File By Size  1100  ${test_data_location}/1100.txt
-  ${production_report} =  Create Test Production Report  ${test_data_location}
   Create Zip From Files In Directory  ${test_data_location}  ${test_data_location}/archive.zip
+  ${production_report} =  Create Test Production Report  ${test_data_location}
   Click Publications
   Create New Dossier  woo-decision
   Fill Out Basic Details  prefix=${new_prefix}  type=woo-decision

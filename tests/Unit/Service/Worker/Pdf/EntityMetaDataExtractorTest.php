@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Worker\Pdf;
 
+use App\Domain\Ingest\Content\ContentExtractLogContext;
 use App\Domain\Ingest\Content\Extractor\Tika\TikaService;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Domain\Publication\FileInfo;
@@ -72,10 +73,22 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             }))
             ->andReturn($localPdfPath);
 
+        $this->entity->shouldReceive('getId')->andReturn($id = Uuid::v6());
+
         $this->tika
             ->shouldReceive('extract')
             ->once()
-            ->with($localPdfPath)
+            ->with(
+                $localPdfPath,
+                'application/pdf',
+                \Mockery::on(
+                    static function (ContentExtractLogContext $context) use ($id): bool {
+                        self::assertEquals($id->toRfc4122(), $context->id);
+
+                        return true;
+                    }
+                ),
+            )
             ->andReturn($tikaData = ['X-TIKA:content' => 'lorem ipsum', 'key' => 'value']);
 
         $this->statsService
@@ -228,10 +241,22 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             }))
             ->andReturn($localPdfPath);
 
+        $this->entity->shouldReceive('getId')->andReturn($entityUuid = Uuid::v6());
+
         $this->tika
             ->shouldReceive('extract')
             ->once()
-            ->with($localPdfPath)
+            ->with(
+                $localPdfPath,
+                'application/pdf',
+                \Mockery::on(
+                    static function (ContentExtractLogContext $context) use ($entityUuid): bool {
+                        self::assertEquals($entityUuid->toRfc4122(), $context->id);
+
+                        return true;
+                    }
+                ),
+            )
             ->andReturn($tikaData = ['X-TIKA:content' => 'lorem ipsum', 'key' => 'value']);
 
         $this->statsService
@@ -250,11 +275,6 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             ->shouldReceive('removeDownload')
             ->once()
             ->with($localPdfPath);
-
-        $this->entity
-            ->shouldReceive('getId')
-            ->once()
-            ->andReturn($entityUuid = Uuid::v6());
 
         $this->subTypeIndexer
             ->shouldReceive('index')

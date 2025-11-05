@@ -27,7 +27,7 @@ class FileInfo
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $type = null;
 
-    #[ORM\Column(length: 1024, nullable: true)]
+    #[ORM\Column(length: 1024, nullable: true, index: true)]
     #[Assert\Length(min: 1, max: 255, normalizer: 'trim')]
     private ?string $name = null;
 

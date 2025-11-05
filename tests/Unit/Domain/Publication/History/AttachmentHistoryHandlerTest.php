@@ -28,7 +28,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
     private DossierRepository&MockInterface $repository;
     private AttachmentHistoryHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->historyService = \Mockery::mock(HistoryService::class);
         $this->translator = \Mockery::mock(TranslatorInterface::class);
@@ -60,7 +60,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
         $this->historyService
             ->expects('addDossierEntry')
             ->with(
-                $dossier,
+                $dossier->getId(),
                 'attachment_created',
                 [
                     'filename' => $expectedName,
@@ -91,7 +91,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
         $this->historyService
             ->expects('addDossierEntry')
             ->with(
-                $dossier,
+                $dossier->getId(),
                 'attachment_created',
                 [
                     'filename' => $expectedName,
@@ -122,7 +122,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
         $this->historyService
             ->expects('addDossierEntry')
             ->with(
-                $dossier,
+                $dossier->getId(),
                 'attachment_updated',
                 [
                     'filename' => $expectedName,
@@ -153,7 +153,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
         $this->historyService
             ->expects('addDossierEntry')
             ->with(
-                $dossier,
+                $dossier->getId(),
                 'attachment_updated',
                 [
                     'filename' => $expectedName,
@@ -184,7 +184,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
         $this->historyService
             ->shouldReceive('addDossierEntry')
             ->with(
-                $dossier,
+                $dossier->getId(),
                 'attachment_deleted',
                 [
                     'filename' => $expectedName,
@@ -219,7 +219,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
         $this->historyService
             ->expects('addDossierEntry')
             ->with(
-                $dossier,
+                $dossier->getId(),
                 'attachment_withdrawn',
                 [
                     'reason' => $translatedReason,
@@ -231,7 +231,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
         $this->historyService
             ->expects('addDossierEntry')
             ->with(
-                $dossier,
+                $dossier->getId(),
                 'attachment_withdrawn',
                 [
                     'reason' => $translatedReason,

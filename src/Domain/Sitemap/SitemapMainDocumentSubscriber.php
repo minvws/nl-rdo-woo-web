@@ -9,10 +9,10 @@ use App\Domain\Publication\MainDocument\MainDocumentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-readonly class SitemapMainDocumentSubscriber implements EventSubscriberInterface
+readonly class SitemapMainDocumentSubscriber
 {
     public function __construct(
         private EntityManagerInterface $doctrine,
@@ -20,16 +20,7 @@ readonly class SitemapMainDocumentSubscriber implements EventSubscriberInterface
     ) {
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            SitemapPopulateEvent::class => ['populate', 0],
-        ];
-    }
-
+    #[AsEventListener(event: SitemapPopulateEvent::class)]
     public function populate(SitemapPopulateEvent $event): void
     {
         $mainDocumentQuery = $this->mainDocumentRepository->getAllPublishedQuery();

@@ -25,7 +25,7 @@ class DocumentsStepHelperTest extends UnitTestCase
     private FormFactoryInterface&MockInterface $formFactory;
     private DocumentsStepHelper $helper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

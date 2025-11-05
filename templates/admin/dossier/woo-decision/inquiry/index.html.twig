@@ -21,9 +21,9 @@
             <thead>
                 <tr>
                     {{ knp_pagination_sortable(pagination, 'admin.inquiries.case_number' | trans, 'inq.casenr', {}, {}, 'admin/layout/sort.html.twig') }}
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'public.global.decisions' | trans }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.documents' | trans }}</th>
-                    <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.last_update' | trans }}</th>
+                    <th scope="col">{{ 'public.global.decisions' | trans }}</th>
+                    <th scope="col">{{ 'global.documents' | trans }}</th>
+                    <th scope="col">{{ 'global.last_update' | trans }}</th>
                 </tr>
             </thead>
             <tbody data-e2e-name="inquiry-list">

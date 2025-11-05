@@ -58,7 +58,7 @@
                     <tr>
                         {{ knp_pagination_sortable(pagination, 'admin.publications.organisation_and_reference' | trans, ['dos.documentPrefix','dos.dossierNr'], {}, {}, 'admin/layout/sort.html.twig') }}
                         {{ knp_pagination_sortable(pagination, 'admin.publications.status' | trans, 'dos.status', {}, {}, 'admin/layout/sort.html.twig') }}
-                        <th class="bhr-column-head bhr-column-head--gray border-r-1 font-bold" scope="col">{{ "admin.dossiers.category" | trans() }}</th>
+                        <th scope="col">{{ "admin.dossiers.category" | trans() }}</th>
                         {{ knp_pagination_sortable(pagination, 'global.created_at' | trans, 'dos.createdAt', {}, {}, 'admin/layout/sort.html.twig') }}
                         {{ knp_pagination_sortable(pagination, 'global.publication_date' | trans, 'dos.publicationDate', {}, {}, 'admin/layout/sort.html.twig') }}
                         {{ knp_pagination_sortable(pagination, 'global.description' | trans, 'dos.summary', {}, {}, 'admin/layout/sort.html.twig') }}

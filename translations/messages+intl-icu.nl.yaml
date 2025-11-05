@@ -5,12 +5,14 @@ global.access_denied: "Toegang geweigerd"
 global.acronym: "Afkorting"
 global.admin: "Beheer"
 global.added: "toegevoegd"
+global.all_departments: "Alle bestuursorganen"
 global.and: "en"
 global.and_on: "en op"
 global.annual_report: "Jaarplan of jaarverslag"
 global.action: "Actie"
 global.attachment_of: "Bijlage van"
 global.attach: "Koppelen"
+global.attention: "Let op"
 global.back_to_home: "Ga terug naar de homepage"
 global.cancel: "Annuleren"
 global.covenant: "Convenant"
@@ -54,7 +56,7 @@ global.error_occured: "Er is een fout opgetreden"
 global.error_message: "Er is een technische fout opgetreden in uw zoekopdracht. Wis uw zoekopdracht en probeer het opnieuw."
 global.error_label: "Foutmelding"
 global.file: "Bestand"
-global.grounds: "Uitzonderingsgrond(en)"
+global.grounds: "Beoordelingsgrond(en)"
 global.history: "Geschiedenis"
 global.home: "Home"
 global.inquiry: "Zaak"
@@ -111,6 +113,7 @@ global.published_on: "Gepubliceerd op"
 global.publication_planned: "Publicatie gepland op"
 global.publication.preview_on: "Feitelijke verstrekking op"
 global.publication.preview_planned: "Feitelijke verstrekking gepland op"
+global.row: "Rij"
 global.sign_in: "Log in alstublieft"
 global.sign_in.page: "Loginpagina"
 global.sign_in.invalid: "Ongeldige inloggegevens"
@@ -185,8 +188,8 @@ categories.category.source_file: "Type bronbestand"
 categories.category.source_file.go_to_plural: "types bronbestanden"
 categories.category.judgement: "Soort besluit"
 categories.category.judgement.go_to_plural: "soorten besluiten"
-categories.category.grounds: "Uitzonderingsgronden"
-categories.category.grounds.go_to_plural: "uitzonderingsgronden"
+categories.category.grounds: "Beoordelingsgronden"
+categories.category.grounds.go_to_plural: "beoordelingsgronden"
 categories.label.all-categories: "Naar alle categorieën"
 categories.label.go_to_all_of_type: "Naar alle {count} {type}"
 categories.category.date.from: "Datum vanaf"
@@ -282,6 +285,8 @@ admin.inventory.confirm_replacement: "Ok, vervang productierapport"
 admin.inventory.checked: "Productierapport geüpload en gecontroleerd"
 admin.inventory.warning: "Als je verdergaat, wordt het oude productierapport in dit besluit vervangen."
 admin.inventory.explanation: "Dit heeft de volgende gevolgen"
+admin.inventory.optional_explanation.1: 'Indien er geen sprake is van een productierapport, druk dan op "{button_name}".'
+admin.inventory.optional_explanation.2: 'Het productierapport kan dan, na publicatie, niet meer alsnog worden toegevoegd.'
 admin.inventory.submit_label: "Upload productierapport"
 
 admin.organisations.manage: "Organisaties beheren"
@@ -360,6 +365,7 @@ admin.account.user.is_deactivated: "Deze gebruiker is momenteel gedeactiveerd."
 admin.account.user.roles: "Toegangsrollen"
 admin.user.error.edit_own_account_not_allowed: "Het is niet mogelijk je eigen account aan te passen."
 admin.user.error.edit_other_organisation_account_not_allowed: "Je hebt niet de rechten om deze gebruiker aan te passen."
+admin.user.error.edit_super_admin_not_allowed: "Je hebt niet de rechten om deze gebruiker aan te passen."
 admin.user.user_activated: "Account van {name} is geactiveerd."
 admin.user.user_deactivated: "Account van {name} is gedeactiveerd."
 admin.user.user_modified: "De gebruiker is gewijzigd."
@@ -402,7 +408,6 @@ admin.user.role.decision_admin: "Publicatie-beheer"
 admin.user.role.decision_admin.desc: "Beheren van publicaties."
 admin.user.role.read_only: "Alleen lezen"
 admin.user.role.read_only.desc: "Bekijken van (concept) besluiten en documenten."
-admin.department.all_departments: "Alle bestuursorganen"
 admin.department.created: "Het bestuursorgaan is aangemaakt"
 admin.department.edit: "Bestuursorgaan wijzigen"
 admin.department.modified: "Het bestuursorgaan is aangepast"
@@ -618,6 +623,7 @@ admin.dossiers.woo-decision.withdraw_decision: "Besluit verwijderen"
 admin.dossiers.woo-decision.document: "Besluitbrief"
 admin.dossiers.woo-decision.form.content.document_help: 'Upload minimaal de besluitbrief.'
 admin.dossiers.woo-decision.form.content.document_label: 'Besluitbrief'
+admin.dossiers.woo-decision.has_no_publication_report: 'Dit dossier heeft geen productierapport. Het kan daarom niet worden vervangen of toegevoegd.'
 admin.dossiers.decision.number: "Besluit"
 admin.dossiers.decision.inquiry_number: "Besluiten voor zaaknummer"
 admin.dossiers.documents.inquiry_number: "Documenten met zaaknummer"
@@ -656,6 +662,8 @@ public.global.sort.sorted_by: "Gesorteerd op"
 public.global.sort.sort_by: "Sorteren op"
 public.global.show_less: "Toon minder"
 public.global.show_more: "Toon meer"
+public.global.show_less_history: "Toon minder geschiedenis"
+public.global.show_full_history: "Toon volledige geschiedenis"
 public.global.warning: "Waarschuwing"
 public.global.download: "Download"
 public.global.download_verb: "Downloaden"
@@ -746,6 +754,8 @@ public.publication.no_documents_within_publication: 'Er zijn geen documenten met
 public.publication.woo_request_explanation: "Een Woo-verzoek is een verzoek om toegang tot overheidsinformatie in Nederland volgens de Wet open overheid. Een Wob-verzoek is een officieel verzoek aan een overheidsinstantie om specifieke informatie of documenten openbaar te maken volgens de Wet openbaarheid van bestuur."
 public.publication.woo_request_more: "Meer weten over Woo/Wob-verzoeken"
 
+public.publications.search.label: "Zoek in besluiten en documenten"
+
 public.footer.title.service: "Service"
 public.footer.title.about: "Over deze site"
 public.footer.label.about_platform: "Over dit platform"
@@ -753,6 +763,7 @@ public.footer.label.copyright: "Copyright"
 public.footer.label.cookies: "Cookies"
 public.footer.label.counter: "Counter"
 public.footer.label.logout: "Uitloggen"
+public.footer.label.sitemap: "Sitemap"
 
 public.search.hint: "Typ een zoekterm in"
 public.search.label: "Zoeken"
@@ -761,6 +772,7 @@ public.search.filter_results: "Filter resultaten"
 public.search.filter_remove: "Filter verwijderen"
 public.search.clear_all_filters: "Alle filters verwijderen"
 public.search.invalid_date_period: "Kies een periode waarbij de einddatum na de startdatum ligt."
+public.search.date_format: "dd/mm/jjjj"
 
 public.search.no_search_results.title: "Geen zoekresultaten"
 public.search.no_search_results.description: 'We konden geen documenten vinden die passen bij uw zoekopdracht "{query}"'
@@ -804,21 +816,6 @@ public.inquiries.number_of_decisions: >-
     =1{# (deel)besluit}
     other{# (deel)besluiten}
   }
-public.inquiries.dossiers_these: >-
-  { count, plural,
-    =1{dit besluit}
-    other{deze # besluiten}
-  }
-public.inquiries.documents_with_case_number_in_dossiers: >-
-  { count, plural,
-    =1{# document met zaaknummer {casenumber} in {dossiers}}
-    other{# documenten met zaaknummer {casenumber} in {dossiers}}
-  }
-public.inquiries.documents_with_case_number_in_dossier: >-
-  { count, plural,
-    =1{# document met zaaknummer {casenumber} in <em>{dossierTitle}</em>}
-    other{# documenten met zaaknummer {casenumber} in <em>{dossierTitle}</em>}
-  }
 public.inquiries.documents_made_public: >-
   { count, plural,
     =1{# document is hierna openbaar gemaakt.}
@@ -843,8 +840,14 @@ public.inquiries.documents_wont_be_published: >-
 public.inquiry.documents.of_which_withdrawn: "waarvan {count} ingetrokken"
 public.inquiry.documents.of_which_suspended: "waarvan {count} opgeschort"
 public.inquiry.page_title: "Besluiten en documenten voor zaaknummer {case_number}"
+public.inquiry.dossiers_and_documents: "Besluiten en documenten"
+public.inquiry.dossier_detail_breadcrumb: "Documenten voor {title}"
+public.inquiry.dossier_detail_title: "Documenten voor {title} voor zaaknummer {case_number}"
 public.inquiry.decisions_for_case: "Er {are_or_is} {number_of_decisions} genomen voor het verzoek om informatie te openbaren met zaaknummer {case_number}"
-
+public.inquiry.dossiers_breadcrumb: "Alle besluiten en documenten"
+public.inquiry.dossiers_title: "Alle besluiten en documenten voor zaaknummer {case_number}"
+public.inquiry.view_all_dossiers: "Alle besluiten bekijken ({count})"
+public.inquiry.documents_in_dossier: "{count} documenten in dit besluit"
 public.documents.viewer.click_on_page: "Klik op een pagina om de {fileInfo} ({fileSize} - {pages}) te openen in uw browser"
 public.documents.viewer.more_than_50: "Pagina 1 - {page_limit} van {total_pages}."
 public.documents.viewer.document_preview: "Pagina-voorvertoning"
@@ -1001,7 +1004,7 @@ dossier.type.woo-decision.decision-type.public: 'Openbaarmaking'
 dossier.type.woo-decision.decision-type.already_public: 'Reeds openbaar'
 dossier.type.woo-decision.decision-type.partial_public: 'Gedeeltelijke openbaarmaking'
 dossier.type.woo-decision.decision-type.not_public: 'Geen openbaarmaking'
-dossier.type.woo-decision.decision-type.nothing_found: 'Niets aangetroffen'
+dossier.type.woo-decision.decision-type.nothing_found: 'Geen documenten aangetroffen'
 dossier.type.woo-decision.judgement.public: 'Openbaarmaking'
 dossier.type.woo-decision.judgement.already_public: 'Reeds openbaar'
 dossier.type.woo-decision.judgement.partial_public: 'Gedeeltelijke openbaarmaking'
@@ -1014,7 +1017,7 @@ publication.dossier.new_basic_data: "Nieuw besluitdossier - basisgegevens"
 publication.dossier.description.category.title: "Kies het type besluit"
 publication.dossier.to_publication: "Verder naar publiceren"
 publication.dossier.documents_prefix: "Prefix for documenten"
-publication.dossier.can_not_edit_after_creation: "Dit kan je na het aanmaken van het besluitdossier niet meer bewerken."
+publication.dossier.can_not_edit_after_creation: "Deze waarde kun je na het aanmaken van het besluitdossier niet meer bewerken."
 publication.dossier.error.line_number: "Regel {line_number}: {error}"
 publication.dossier.error.document_already_exists: "documentnummer {document_id} bestaat al in een ander dossier"
 publication.dossier.error.can_not_store_inventory_file: "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
@@ -1035,6 +1038,7 @@ publication.dossier.error.remark_too_long: "Rij {rownumber} heeft een te lange t
 publication.dossier.error.link_too_long: "Rij {rownumber} heeft een te lange link (max 2048 tekens)"
 publication.dossier.error.file_name_too_long: "Rij {rownumber} heeft een te lange bestandsnaam (max 1024 tekens)"
 publication.dossier.error.casenumbers_invalid: "Rij {rownumber} bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
+publication.inquiry.error.casenumbers_invalid: "Bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
 publication.dossier.error.generic_document_row_exception: "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
 publication.dossier.error.processing_inventory: "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
 publication.dossier.error.no_inventory_changes: "Het nieuwe productierapport is gelijk aan het huidige rapport"
@@ -1319,6 +1323,7 @@ public.documents.type.request_for_advice_main_document: "Adviesaanvraag"
 public.dossiers.request-for-advice.about: "Over deze adviesaanvraag"
 public.dossiers.request-for-advice.attachments_for: "Bijlagen bij deze adviesaanvraag"
 public.dossiers.request-for-advice.date: "Datum:"
+public.dossiers.request-for-advice.advisory-bodies: "Adviserend orgaan:"
 dossier.type.request-for-advice: "Adviesaanvraag"
 dossier.type.request-for-advice.description: "Adviesaanvraag over ontwerpen van wet- en regelgeving en andere onderwerpen"
 admin.dossiers.request-for-advice.step.details: 'Basisgegevens'
@@ -1339,6 +1344,9 @@ admin.dossiers.request-for-advice.form.content.request_for_advice_label: 'Advies
 admin.dossiers.request-for-advice.form.content.attachments_help: ''
 admin.dossiers.request-for-advice.link: 'Link naar advies'
 admin.dossiers.request-for-advice.form.content.link_label: 'Link naar advies'
+admin.dossiers.request_for_advice.advisory_bodies: "Adviserend orgaan"
+admin.dossiers.request_for_advice.advisory_bodies.add: "Voeg toe"
+admin.dossiers.request_for_advice.advisory_bodies.help: "Geef de naam van de juridische entiteit op. Voer geen namen van personen in."
 admin.dossiers.request-for-advice.form.content.link_description: 'Voeg de volledige URL toe van de publicatie waar deze adviesaanvraag een relatie mee heeft.'
 admin.dossiers.request-for-advice.form.publication.publication_date_label: 'Datum openbare publicatie'
 admin.dossiers.request-for-advice.form.publication.publication_date_help: 'Kies de datum waarop de adviesaanvraag voor iedereen publiek toegankelijk wordt.'
@@ -1367,6 +1375,8 @@ admin.dossiers.action.label.index: 'Metadata opnieuw indexeren (exclusief docume
 admin.dossiers.action.label.validate_completion: 'Compleet status opnieuw bepalen'
 admin.dossiers.action.label.generate_inventory: 'Inventarislijst opnieuw genereren'
 admin.dossiers.action.label.generate_archives: 'Downloads opnieuw genereren'
+admin.dossiers.action.label.delete: 'Publicatie verwijderen'
+admin.dossiers.action.confirmation.delete: 'De publicatie zal compleet verwijderd worden van zowel de balie als de publieke website, deze actie kan niet ongedaan gemaakt worden.'
 
 admin.dossiers.action.action_is_executed: 'De actie wordt nu op de achtergrond uitgevoerd'
 admin.dossiers.action.withdraw_all_executing: 'Alle (deels) openbare documenten worden nu ingetrokken. Het kan even duren voor dit verwerkt is.'
@@ -1423,3 +1433,27 @@ admin.content-page.title_help: "Deze wordt gebruikt als HTML titel"
 admin.content-page.content: "Inhoud"
 admin.content-page.modified: "De content is aangepast"
 admin.content-page.edit_title: "Wijzig {slug}"
+
+public.gpt.browser_title: "Woo-GPT (beta)"
+
+public.gpt.main_nav.home: "Woo-GPT"
+public.gpt.main_nav.about: "Over dit project"
+
+public.gpt.home.title: "Welkom bij Woo-GPT"
+
+public.gpt.answer.title: "Jouw vraag"
+
+public.gpt.search.query.placeholder: "Stel een vraag"
+public.gpt.search.another_query.placeholder: "Stel nog een vraag"
+public.gpt.search.help.text1: "Antwoorden worden gegenereerd op basis van Woo-documenten."
+public.gpt.search.help.text2: "Wat betekent dit?"
+public.gpt.search.advanced.title: "Geavanceerde zoekopties"
+public.gpt.search.advanced.date.title: "Zoeken in een range"
+public.gpt.search.advanced.date.from: "Van"
+public.gpt.search.advanced.date.to: "Tot en met"
+public.gpt.search.advanced.publication_type.title: "Publicatietype"
+
+public.gpt.example_questions.title: "Je kunt ook kiezen uit een van de voorbeeldvragen"
+public.gpt.example_questions.q1: "Welke maatregelen werden genomen tijdens de coronacrisis?"
+public.gpt.example_questions.q2: "Welke partijen waren betrokken bij de inkoop van beschermingsmiddelen?"
+public.gpt.example_questions.q3: "Hoe werd er gecommuniceerd met het publiek tijdens de crisis?"

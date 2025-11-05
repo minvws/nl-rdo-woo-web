@@ -63,6 +63,7 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
         $queryString = strval($request->getQueryString());
         parse_str($queryString, $currentParams);
         parse_str($queryParam, $paramToRemove);
+        /** @var array-key $paramKeyToRemove */
         $paramKeyToRemove = key($paramToRemove);
 
         $currentParamValue = $currentParams[$paramKeyToRemove] ?? null;
@@ -79,7 +80,7 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
                     }
                 }
             } else {
-                /** @var array<string, array<string, string>> $paramToRemove */
+                /** @var array<string,array<string,string>> $paramToRemove */
                 $paramSubKey = key($paramToRemove[$paramKeyToRemove]);
                 unset($currentParams[$paramKeyToRemove][$paramSubKey]);
             }

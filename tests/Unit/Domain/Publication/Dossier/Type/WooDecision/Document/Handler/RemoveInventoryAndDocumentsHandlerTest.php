@@ -30,7 +30,7 @@ class RemoveInventoryAndDocumentsHandlerTest extends UnitTestCase
     private DossierService&MockInterface $dossierService;
     private RemoveInventoryAndDocumentsHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->wooDecisionRepository = \Mockery::mock(WooDecisionRepository::class);
         $this->inventoryService = \Mockery::mock(InventoryService::class);

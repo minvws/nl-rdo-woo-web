@@ -1,17 +1,14 @@
 name: Setup node
+description: Compose action that sets up node
 
 inputs:
-  # Note: All inputs are cast to string. Even default values of type bool or int etc.
   node-version:
     description: The node version
-    type: string
     default: "20"
   github-token:
     description: Add a Github Token which will be used for fetching node and npm packages
-    type: string
   run-npm-build:
     description: Run npm build script
-    type: bool
     default: "false"
 
 runs:

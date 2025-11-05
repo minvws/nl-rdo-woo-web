@@ -7,6 +7,7 @@ namespace App\Service\DossierWizard;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Step\StepName;
 use App\Domain\Publication\Dossier\Type\DossierTypeManager;
+use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 readonly class WizardStatusFactory
@@ -63,7 +64,9 @@ readonly class WizardStatusFactory
 
             $stepStatuses[$step->getName()->value] = $status;
 
-            if (! $status->isCompleted()) {
+            if ($dossier instanceof WooDecision) {
+                $nextStepAccessible = $this->isNextStepAccessibleForWooDecision($step->getName(), $dossier);
+            } elseif (! $status->isCompleted()) {
                 $nextStepAccessible = false;
             }
         }
@@ -78,5 +81,26 @@ readonly class WizardStatusFactory
             $typeConfig->getAttachmentStepName(),
             $stepStatuses,
         );
+    }
+
+    private function isNextStepAccessibleForWooDecision(StepName $stepName, WooDecision $dossier): bool
+    {
+        if ($stepName !== StepName::DOCUMENTS) {
+            return true;
+        }
+
+        if (! $dossier->canProvideInventory()) {
+            return true;
+        }
+
+        if ($dossier->hasAllExpectedUploads()) {
+            return true;
+        }
+
+        if ($dossier->hasProductionReport()) {
+            return false;
+        }
+
+        return true;
     }
 }

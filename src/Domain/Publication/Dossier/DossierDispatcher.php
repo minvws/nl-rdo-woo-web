@@ -9,13 +9,18 @@ use App\Domain\Publication\Dossier\Command\DeleteDossierCommand;
 use App\Domain\Publication\Dossier\Command\UpdateDossierContentCommand;
 use App\Domain\Publication\Dossier\Command\UpdateDossierDetailsCommand;
 use App\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
+use App\Service\Security\AuditUserDetails;
+use App\Service\Security\User;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 readonly class DossierDispatcher
 {
     public function __construct(
         private MessageBusInterface $messageBus,
+        private Security $security,
     ) {
     }
 
@@ -47,10 +52,23 @@ readonly class DossierDispatcher
         );
     }
 
-    public function dispatchDeleteDossierCommand(Uuid $id): void
+    public function dispatchDeleteDossierCommand(Uuid $dossierId, bool $overrideWorkflow = false): void
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        Assert::isInstanceOf($user, User::class);
+
         $this->messageBus->dispatch(
-            new DeleteDossierCommand($id),
+            new DeleteDossierCommand(
+                $dossierId,
+                new AuditUserDetails(
+                    $user->getUserIdentifier(),
+                    $user->getName(),
+                    $user->getRoles(),
+                    $user->getEmail(),
+                ),
+                $overrideWorkflow,
+            ),
         );
     }
 }

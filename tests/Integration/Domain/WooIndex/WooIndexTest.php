@@ -13,6 +13,7 @@ use App\Domain\WooIndex\WooIndexNamer;
 use App\Domain\WooIndex\WooIndexRunOptions;
 use App\Domain\WooIndex\WooIndexSitemap;
 use App\Tests\Integration\IntegrationTestTrait;
+use App\Tests\Story\DepartmentStory;
 use App\Tests\Story\WooIndexAnnualReportStory;
 use App\Tests\Story\WooIndexCovenantStory;
 use App\Tests\Story\WooIndexWooDecisionStory;
@@ -27,11 +28,8 @@ final class WooIndexTest extends KernelTestCase
     use IntegrationTestTrait;
 
     private StreamHelper&MockInterface $streamHelper;
-
     private FilesystemOperator $wooIndexStorage;
-
     private WooIndexNamer $wooIndexNamer;
-
     private WooIndex $wooIndex;
 
     protected function setUp(): void
@@ -62,6 +60,7 @@ final class WooIndexTest extends KernelTestCase
         $this->wooIndex = self::getContainer()->get(WooIndex::class);
     }
 
+    #[WithStory(DepartmentStory::class)]
     #[WithStory(WooIndexWooDecisionStory::class)]
     #[WithStory(WooIndexAnnualReportStory::class)]
     #[WithStory(WooIndexCovenantStory::class)]

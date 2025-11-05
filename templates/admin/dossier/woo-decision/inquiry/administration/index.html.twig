@@ -4,9 +4,7 @@
 
 {% block body %}
 <div class="bhr-container">
-    {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
-
-    <h1 class="bhr-title pb-6">{{ page_title }}</h1>
+    <twig:Admin:PageTitle title="{{ page_title }}" />
 
     <div class="bhr-card">
         {% include 'admin/shared/flash-messages.html.twig' %}
@@ -15,8 +13,8 @@
             <table class="bhr-table">
                 <thead>
                     <tr>
-                        <th class="bhr-column-head bhr-column-head--gray" scope="col">Case nr</th>
-                        <th class="bhr-column-head bhr-column-head--gray" scope="col">Database ID</th>
+                        <th scope="col">Case nr</th>
+                        <th scope="col">Database ID</th>
                     </tr>
                 </thead>
                 <tbody>

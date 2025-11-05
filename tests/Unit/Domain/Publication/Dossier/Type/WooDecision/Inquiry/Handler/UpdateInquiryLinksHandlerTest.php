@@ -21,7 +21,7 @@ class UpdateInquiryLinksHandlerTest extends UnitTestCase
     private InquiryService&MockInterface $inquiryService;
     private UpdateInquiryLinksHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->organisationRepository = \Mockery::mock(OrganisationRepository::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);

@@ -17,7 +17,7 @@ class DocumentSearchResultMapperTest extends MockeryTestCase
     private WooDecisionRepository&MockInterface $dossierRepository;
     private DocumentSearchResultMapper $mapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierRepository = \Mockery::mock(WooDecisionRepository::class);
         $this->documentRepository = \Mockery::mock(DocumentRepository::class);

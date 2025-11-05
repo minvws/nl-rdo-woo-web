@@ -25,7 +25,7 @@ class SitemapDocumentSubscriberTest extends MockeryTestCase
     private DossierRepository&MockInterface $dossierRepository;
     private SitemapDocumentSubscriber $subscriber;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->dossierRepository = \Mockery::mock(DossierRepository::class);

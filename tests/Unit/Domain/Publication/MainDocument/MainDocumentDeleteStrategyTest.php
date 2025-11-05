@@ -21,7 +21,7 @@ final class MainDocumentDeleteStrategyTest extends MockeryTestCase
     private SearchDispatcher&MockInterface $searchDispatcher;
     private MainDocumentDeleteStrategy $strategy;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->searchDispatcher = \Mockery::mock(SearchDispatcher::class);
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
@@ -57,5 +57,19 @@ final class MainDocumentDeleteStrategyTest extends MockeryTestCase
         $this->searchDispatcher->expects('dispatchDeleteElasticDocumentCommand')->with($documentId);
 
         $this->strategy->delete($dossier);
+    }
+
+    public function testDeleteWithOverride(): void
+    {
+        /** @var MainDocumentDeleteStrategy&MockInterface $strategy */
+        $strategy = \Mockery::mock(MainDocumentDeleteStrategy::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $dossier = \Mockery::mock(Covenant::class);
+
+        $strategy->expects('delete')->with($dossier);
+
+        $strategy->deleteWithOverride($dossier);
     }
 }

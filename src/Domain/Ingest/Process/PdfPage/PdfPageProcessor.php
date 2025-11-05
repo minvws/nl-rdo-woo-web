@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Ingest\Process\PdfPage;
 
+use App\Domain\Ingest\Content\ContentExtractCache;
 use App\Domain\Publication\EntityWithFileInfo;
 use App\Service\Worker\Pdf\Extractor\PageContentExtractor;
 use App\Service\Worker\Pdf\Extractor\PageExtractor;
@@ -16,6 +17,7 @@ readonly class PdfPageProcessor
         private PdfPageProcessingContextFactory $contextFactory,
         private ThumbnailExtractor $thumbnailExtractor,
         private PageContentExtractor $pageContentExtractor,
+        private ContentExtractCache $contentExtractCache,
         private PageExtractor $pageExtractor,
     ) {
     }
@@ -31,7 +33,7 @@ readonly class PdfPageProcessor
 
         try {
             $needsThumbGeneration = $this->thumbnailExtractor->needsThumbGeneration($processingContext);
-            $contentCacheMissing = ! $this->pageContentExtractor->hasCache($entity, $pageNr);
+            $contentCacheMissing = ! $this->contentExtractCache->hasCache($entity, $pageNr);
             if ($needsThumbGeneration || $contentCacheMissing) {
                 // Only download the file when actual processing is needed
                 $this->pageExtractor->extractSinglePagePdf($processingContext);

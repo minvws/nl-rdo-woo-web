@@ -81,7 +81,7 @@ readonly class DossierWorkflowManager
             return;
         }
 
-        $this->historyService->addDossierEntry($dossier, 'dossier_state_' . $newState->value, [
+        $this->historyService->addDossierEntry($dossier->getId(), 'dossier_state_' . $newState->value, [
             'old' => '%' . $oldState->value . '%',
             'new' => '%' . $newState->value . '%',
         ]);

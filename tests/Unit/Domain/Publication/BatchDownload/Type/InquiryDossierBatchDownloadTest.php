@@ -21,7 +21,7 @@ class InquiryDossierBatchDownloadTest extends MockeryTestCase
     private InquiryRepository&MockInterface $repository;
     private InquiryDossierBatchDownload $type;
 
-    public function setup(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(InquiryRepository::class);
 

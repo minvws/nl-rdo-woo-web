@@ -7,9 +7,9 @@ Bij stap 2 worden de gegevens van het Woo-besluit ingevuld en wordt de besluitbr
 ## Besluit Oordeel
 
 Hoe tegemoet is gekomen aan het Woo-verzoek. Deze status heeft betrekking op het gehele verzoek. Dit veld is verplicht om in te vullen. Keuze uit de opties:
-Reeds openbaar, Openbaarmaking, Gedeeltelijke openbaarmaking, Geen openbaarmaking en Niets aangetroffen.
+Reeds openbaar, Openbaarmaking, Gedeeltelijke openbaarmaking, Geen openbaarmaking en Geen documenten aangetroffen.
 
-In de gevallen van geen openbaarmaking of niets aangetroffen zal stap 3 van de uploadstraat worden overgeslagen.
+In de gevallen van geen openbaarmaking of geen documenten aangetroffen zal stap 3 van de uploadstraat worden overgeslagen.
 
 ## Samenvatting van het besluit
 

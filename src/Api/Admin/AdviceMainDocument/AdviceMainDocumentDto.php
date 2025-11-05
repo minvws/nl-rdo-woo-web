@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\OpenApi\Factory\OpenApiFactory;
 use ApiPlatform\OpenApi\Model\Operation;
 use App\Api\Admin\AbstractMainDocument\AbstractMainDocumentDto;
 use App\Api\Admin\Attachment\AttachmentCreateDto;
@@ -21,21 +22,21 @@ use App\Domain\Publication\MainDocument\MainDocumentAlreadyExistsException;
 use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 
 #[ApiResource(
-    uriTemplate: '/dossiers/{dossierId}/advice-document/{mainDocumentId}',
+    uriTemplate: '/advice-document/{mainDocumentId}',
     operations: [
         new Get(
             security: "is_granted('AuthMatrix.dossier.read')",
         ),
         new GetCollection(
-            uriTemplate: '/dossiers/{dossierId}/advice-document',
+            uriTemplate: '/advice-document',
             uriVariables: [
                 'dossierId' => new Link(toProperty: 'dossier', fromClass: DossierReferenceDto::class),
             ],
             security: "is_granted('AuthMatrix.dossier.read')",
-            itemUriTemplate: '/dossiers/{dossierId}/advice-document/{mainDocumentId}',
+            itemUriTemplate: '/advice-document/{mainDocumentId}',
         ),
         new Post(
-            uriTemplate: '/dossiers/{dossierId}/advice-document',
+            uriTemplate: '/advice-document',
             uriVariables: [
                 'dossierId' => new Link(toProperty: 'dossier', fromClass: DossierReferenceDto::class),
             ],
@@ -54,9 +55,13 @@ use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
         'dossierId' => new Link(toProperty: 'dossier', fromClass: DossierReferenceDto::class),
         'mainDocumentId' => new Link(fromClass: self::class),
     ],
+    routePrefix: '/balie/api/dossiers/{dossierId}',
     stateless: false,
     openapi: new Operation(
         tags: ['AdviceDocument'],
+        extensionProperties: [
+            OpenApiFactory::API_PLATFORM_TAG => ['admin'],
+        ],
     ),
     exceptionToStatus: [
         MainDocumentAlreadyExistsException::class => 409,

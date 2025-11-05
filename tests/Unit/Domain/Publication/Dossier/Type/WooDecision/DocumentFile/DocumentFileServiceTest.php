@@ -33,7 +33,7 @@ class DocumentFileServiceTest extends UnitTestCase
     private TotalDocumentFileSizeValidator&MockInterface $totalDocumentFileSizeValidator;
     private DocumentFileService $service;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->wooDecision = \Mockery::mock(WooDecision::class);
         $this->dispatcher = \Mockery::mock(DocumentFileDispatcher::class);

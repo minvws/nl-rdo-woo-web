@@ -7,7 +7,7 @@ namespace App\Domain\Ingest\Content\Extractor\Tesseract;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
 use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use App\Domain\Ingest\Content\FileReferenceInterface;
-use App\Domain\Publication\FileInfo;
+use App\Domain\Publication\EntityWithFileInfo;
 
 readonly class TesseractExtractor implements ContentExtractorInterface
 {
@@ -20,7 +20,7 @@ readonly class TesseractExtractor implements ContentExtractorInterface
      * Important: tesseract will only extract content for the first page of the file!
      * Multipage files must be split up into single page files first, executing this extractor on each individual page.
      */
-    public function getContent(FileInfo $fileInfo, FileReferenceInterface $fileReference): string
+    public function getContent(EntityWithFileInfo $entity, FileReferenceInterface $fileReference): string
     {
         $content = $this->tesseractService->extract(
             $fileReference->getPath(),
@@ -29,9 +29,9 @@ readonly class TesseractExtractor implements ContentExtractorInterface
         return trim($content);
     }
 
-    public function supports(FileInfo $fileInfo): bool
+    public function supports(EntityWithFileInfo $entity): bool
     {
-        return $fileInfo->getNormalizedMimeType() === 'application/pdf';
+        return $entity->getFileInfo()->getNormalizedMimeType() === 'application/pdf';
     }
 
     public function getKey(): ContentExtractorKey

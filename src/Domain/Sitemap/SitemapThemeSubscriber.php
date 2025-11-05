@@ -7,26 +7,16 @@ namespace App\Domain\Sitemap;
 use App\Domain\Search\Theme\ThemeManager;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-readonly class SitemapThemeSubscriber implements EventSubscriberInterface
+readonly class SitemapThemeSubscriber
 {
-    public function __construct(
-        private ThemeManager $themeManager,
-    ) {
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function getSubscribedEvents(): array
+    public function __construct(private ThemeManager $themeManager)
     {
-        return [
-            SitemapPopulateEvent::class => ['populate', 0],
-        ];
     }
 
+    #[AsEventListener(event: SitemapPopulateEvent::class)]
     public function populate(SitemapPopulateEvent $event): void
     {
         foreach ($this->themeManager->getViewsForAllThemes() as $themeView) {

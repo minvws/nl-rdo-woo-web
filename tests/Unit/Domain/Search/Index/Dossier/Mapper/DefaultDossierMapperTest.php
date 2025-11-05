@@ -22,7 +22,7 @@ class DefaultDossierMapperTest extends UnitTestCase
 {
     private DefaultDossierMapper $mapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->mapper = new DefaultDossierMapper();
 

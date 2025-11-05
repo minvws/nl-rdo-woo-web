@@ -13,36 +13,60 @@ class ApplicationModeTest extends MockeryTestCase
 {
     use MatchesSnapshots;
 
-    public function testIsAdmin(): void
-    {
-        self::assertTrue(ApplicationMode::ADMIN->isAdmin());
-        self::assertFalse(ApplicationMode::ALL->isAdmin());
-        self::assertFalse(ApplicationMode::API->isAdmin());
-        self::assertFalse(ApplicationMode::PUBLIC->isAdmin());
-    }
-
-    public function testIsPublic(): void
-    {
-        self::assertTrue(ApplicationMode::PUBLIC->isPublic());
-        self::assertFalse(ApplicationMode::ALL->isPublic());
-        self::assertFalse(ApplicationMode::API->isPublic());
-        self::assertFalse(ApplicationMode::ADMIN->isPublic());
-    }
-
-    public function testIsApi(): void
-    {
-        self::assertTrue(ApplicationMode::API->isApi());
-        self::assertFalse(ApplicationMode::ALL->isApi());
-        self::assertFalse(ApplicationMode::ADMIN->isApi());
-        self::assertFalse(ApplicationMode::PUBLIC->isApi());
-    }
-
     public function testIsAll(): void
     {
         self::assertTrue(ApplicationMode::ALL->isAll());
         self::assertFalse(ApplicationMode::ADMIN->isAll());
         self::assertFalse(ApplicationMode::API->isAll());
         self::assertFalse(ApplicationMode::PUBLIC->isAll());
+    }
+
+    public function testIsAdmin(): void
+    {
+        self::assertTrue(ApplicationMode::ADMIN->isAdmin());
+        self::assertFalse(ApplicationMode::API->isAdmin());
+        self::assertFalse(ApplicationMode::PUBLIC->isAdmin());
+        self::assertFalse(ApplicationMode::ALL->isAdmin());
+    }
+
+    public function testIsAdminOrAll(): void
+    {
+        self::assertTrue(ApplicationMode::ADMIN->isAdminOrAll());
+        self::assertFalse(ApplicationMode::API->isAdminOrAll());
+        self::assertFalse(ApplicationMode::PUBLIC->isAdminOrAll());
+        self::assertTrue(ApplicationMode::ALL->isAdminOrAll());
+    }
+
+    public function testIsPublic(): void
+    {
+        self::assertFalse(ApplicationMode::ADMIN->isPublic());
+        self::assertFalse(ApplicationMode::API->isPublic());
+        self::assertTrue(ApplicationMode::PUBLIC->isPublic());
+        self::assertFalse(ApplicationMode::ALL->isPublic());
+    }
+
+    public function testIsPublicOrAll(): void
+    {
+        self::assertFalse(ApplicationMode::ADMIN->isPublicOrAll());
+        self::assertFalse(ApplicationMode::API->isPublicOrAll());
+        self::assertTrue(ApplicationMode::PUBLIC->isPublicOrAll());
+        self::assertTrue(ApplicationMode::ALL->isPublicOrAll());
+    }
+
+    public function testIsApi(): void
+    {
+        self::assertFalse(ApplicationMode::ADMIN->isApi());
+        self::assertTrue(ApplicationMode::API->isApi());
+        self::assertFalse(ApplicationMode::PUBLIC->isApi());
+        self::assertFalse(ApplicationMode::ALL->isApi());
+    }
+
+    public function testIsApiOrAll(): void
+    {
+        self::assertFalse(ApplicationMode::ADMIN->isApiOrAll());
+        self::assertTrue(ApplicationMode::API->isApiOrAll());
+        self::assertFalse(ApplicationMode::PUBLIC->isApiOrAll());
+        self::assertTrue(ApplicationMode::ALL->isApiOrAll());
     }
 
     public function testGetAccessibleDossierStatusesForPublic(): void

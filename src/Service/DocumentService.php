@@ -34,7 +34,7 @@ readonly class DocumentService
         }
 
         // In any case: clean up orphaned documents completely, otherwise update ES
-        if ($document->getDossiers()->count() === 0) {
+        if ($document->getDossiers()->isEmpty()) {
             // Remove whole document including all files, as there are no links left.
             $this->entityStorageService->deleteAllFilesForEntity($document);
             $this->thumbStorage->deleteAllThumbsForEntity($document);

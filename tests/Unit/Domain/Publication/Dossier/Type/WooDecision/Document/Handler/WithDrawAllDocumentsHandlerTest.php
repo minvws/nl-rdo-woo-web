@@ -26,7 +26,7 @@ class WithDrawAllDocumentsHandlerTest extends MockeryTestCase
     private WithDrawAllDocumentsHandler $handler;
     private WooDecision&MockInterface $dossier;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossier = \Mockery::mock(WooDecision::class);
         $this->repository = \Mockery::mock(WooDecisionRepository::class);

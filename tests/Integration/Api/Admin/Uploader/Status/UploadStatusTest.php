@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Api\Admin\Uploader\Status;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Domain\Upload\UploadStatus;
 use App\Tests\Factory\UploadEntityFactory;
 use App\Tests\Factory\UserFactory;
+use App\Tests\Integration\Api\Admin\AdminApiTestCase;
 use App\Tests\Integration\IntegrationTestTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class UploadStatusTest extends ApiTestCase
+final class UploadStatusTest extends AdminApiTestCase
 {
     use IntegrationTestTrait;
 
@@ -38,15 +38,11 @@ final class UploadStatusTest extends ApiTestCase
             'user' => $user,
         ]);
 
-        $client = static::createClient()->loginUser($user, 'balie');
-
-        $client->request(
-            Request::METHOD_GET,
-            sprintf('/balie/api/uploader/upload/%s/status', $uploadId),
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ]
-        );
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_GET,
+                sprintf('/balie/api/uploader/upload/%s/status', $uploadId),
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         self::assertJsonContains([
@@ -76,15 +72,11 @@ final class UploadStatusTest extends ApiTestCase
             'user' => $userA,
         ]);
 
-        $client = static::createClient()->loginUser($userB, 'balie');
-
-        $client->request(
-            Request::METHOD_GET,
-            sprintf('/balie/api/uploader/upload/%s/status', $uploadId),
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ]
-        );
+        self::createAdminApiClient($userB)
+            ->request(
+                Request::METHOD_GET,
+                sprintf('/balie/api/uploader/upload/%s/status', $uploadId),
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -97,15 +89,11 @@ final class UploadStatusTest extends ApiTestCase
             ->create()
             ->_real();
 
-        $client = static::createClient()->loginUser($user, 'balie');
-
-        $client->request(
-            Request::METHOD_GET,
-            '/balie/api/uploader/upload/non-existent-upload-id/status',
-            [
-                'headers' => ['Accept' => 'application/json'],
-            ]
-        );
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_GET,
+                '/balie/api/uploader/upload/non-existent-upload-id/status',
+            );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }

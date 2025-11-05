@@ -9,31 +9,31 @@
             <caption class="sr-only">{{ 'elastic.rollover' | trans() }} {{ details.index.name }}</caption>
             <tbody>
                 <tr>
-                    <th class="bhr-row-head" scope="row">{{ 'global.name' | trans() }}</th>
+                    <th scope="row">{{ 'global.name' | trans() }}</th>
                     <td>{{ index.name }}</td>
                 </tr>
                 <tr>
-                    <th class="bhr-row-head" scope="row">{{ 'elastic.health' | trans() }}</th>
+                    <th scope="row">{{ 'elastic.health' | trans() }}</th>
                     <td>{{ index.health }}</td>
                 </tr>
                 <tr>
-                    <th class="bhr-row-head" scope="row">{{ 'elastic.status' | trans() }}</th>
+                    <th scope="row">{{ 'elastic.status' | trans() }}</th>
                     <td>{{ index.status }}</td>
                 </tr>
                 <tr>
-                    <th class="bhr-row-head" scope="row">{{ 'elastic.object_count' | trans() }}</th>
+                    <th scope="row">{{ 'elastic.object_count' | trans() }}</th>
                     <td>{{ index.docsCount }}</td>
                 </tr>
                 <tr>
-                    <th class="bhr-row-head" scope="row">{{ 'public.global.size' | trans() }}</th>
+                    <th scope="row">{{ 'public.global.size' | trans() }}</th>
                     <td>{{ index.storeSize }}</td>
                 </tr>
                 <tr>
-                    <th class="bhr-row-head" scope="row">{{ 'admin.elastic.mapping_version' | trans() }}</th>
+                    <th scope="row">{{ 'admin.elastic.mapping_version' | trans() }}</th>
                     <td>{{ index.mappingVersion }}</td>
                 </tr>
                 <tr>
-                    <th class="bhr-row-head" scope="row">{{ 'elastic.aliases' | trans() }}</th>
+                    <th scope="row">{{ 'elastic.aliases' | trans() }}</th>
                     <td>
                         {% for alias in index.aliases %}
                             <span>{{ alias }}</span>{% if not loop.last %},{% endif %}
@@ -44,7 +44,9 @@
             </tbody>
         </table>
 
-        {% include 'admin/elastic/counts.html.twig' %}
+        <div class="pt-8">
+            {% include 'admin/elastic/counts.html.twig' %}
+        </div>
 
         {% if index.aliases | length == 0 %}
             <p class="mt-6">

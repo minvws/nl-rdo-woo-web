@@ -23,7 +23,7 @@ class MainDocumentSearchResultMapperTest extends MockeryTestCase
     private MainDocumentViewFactory&MockInterface $mainDocumentViewFactory;
     private MainDocumentSearchResultMapper $mapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->mainDocumentRepository = \Mockery::mock(MainDocumentRepository::class);
         $this->mainDocumentViewFactory = \Mockery::mock(MainDocumentViewFactory::class);

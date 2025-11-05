@@ -26,7 +26,7 @@ class LoginLoggerTest extends MockeryTestCase
     private UserRouteHelper&MockInterface $userRouteHelper;
     private LoginLogger $subscriber;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->router = \Mockery::mock(RouterInterface::class);

@@ -16,7 +16,7 @@ final class InventoryDossierFileProviderTest extends UnitTestCase
 {
     private InventoryDossierFileProvider $provider;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->provider = new InventoryDossierFileProvider();
 

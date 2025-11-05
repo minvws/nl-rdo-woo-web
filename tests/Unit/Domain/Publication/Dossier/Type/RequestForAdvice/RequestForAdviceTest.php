@@ -31,4 +31,14 @@ class RequestForAdviceTest extends TestCase
         self::assertEquals($date, $dossier->getDateFrom());
         self::assertEquals($date, $dossier->getDateTo());
     }
+
+    public function testGetAndSetAdvisoryBodies(): void
+    {
+        $requestForAdvice = new RequestForAdvice();
+        self::assertEquals([], $requestForAdvice->getAdvisoryBodies());
+
+        $requestForAdvice->setAdvisoryBodies($advisoryBodies = ['foo']);
+
+        self::assertEquals($advisoryBodies, $requestForAdvice->getAdvisoryBodies());
+    }
 }

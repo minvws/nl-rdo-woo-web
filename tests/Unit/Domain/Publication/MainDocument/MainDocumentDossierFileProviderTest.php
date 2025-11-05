@@ -18,7 +18,7 @@ final class MainDocumentDossierFileProviderTest extends UnitTestCase
     private MainDocumentRepository&MockInterface $repository;
     private MainDocumentDossierFileProvider $provider;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(MainDocumentRepository::class);
 

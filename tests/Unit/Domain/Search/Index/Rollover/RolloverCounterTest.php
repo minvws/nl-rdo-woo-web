@@ -34,7 +34,7 @@ class RolloverCounterTest extends UnitTestCase
     private DossierTypeManager&MockInterface $dossierTypeManager;
     private ElasticClientInterface&MockInterface $elasticClient;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);

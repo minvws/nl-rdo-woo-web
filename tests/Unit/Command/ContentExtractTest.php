@@ -25,7 +25,7 @@ class ContentExtractTest extends MockeryTestCase
     private ContentExtractService&MockInterface $contentExtractService;
     private EntityManagerInterface&MockInterface $entityManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->contentExtractService = \Mockery::mock(ContentExtractService::class);
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);

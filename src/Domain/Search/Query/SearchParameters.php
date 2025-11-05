@@ -15,7 +15,7 @@ use App\Service\Search\Query\Sort\SortOrder;
 use App\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-final readonly class SearchParameters
+readonly class SearchParameters
 {
     /**
      * @SuppressWarnings("PHPMD.ExcessiveParameterList")

@@ -37,7 +37,7 @@ readonly class DocumentHistoryHandler
     public function handleAllDocumentsWithdrawn(AllDocumentsWithDrawnEvent $event): void
     {
         $this->historyService->addDossierEntry(
-            dossier: $event->dossier,
+            dossierId: $event->dossier->getId(),
             key: 'dossier_withdraw_all',
             context: [
                 'explanation' => '%' . $event->reason->getTranslationKey() . '%',

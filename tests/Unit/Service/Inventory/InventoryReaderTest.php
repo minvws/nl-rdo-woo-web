@@ -16,7 +16,7 @@ class InventoryReaderTest extends MockeryTestCase
 {
     private InventoryReaderInterface $reader;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $factory = new InventoryReaderFactory([
             new ExcelReaderFactory(),
@@ -33,26 +33,31 @@ class InventoryReaderTest extends MockeryTestCase
 
         $this->reader->open(__DIR__ . '/inventory-link-remark-1.xlsx');
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
+        self::assertNotNull($item->getDocumentMetaData());
         self::assertEquals(['https://www.example.org'], $item->getDocumentMetaData()->getLinks());
         self::assertNull($item->getDocumentMetaData()->getRemark());
 
         $this->reader->open(__DIR__ . '/inventory-link-remark-2.xlsx');
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
+        self::assertNotNull($item->getDocumentMetaData());
         self::assertEquals(['https://www.example.org'], $item->getDocumentMetaData()->getLinks());
         self::assertNull($item->getDocumentMetaData()->getRemark());
 
         $this->reader->open(__DIR__ . '/inventory-link-remark-3.xlsx');
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
+        self::assertNotNull($item->getDocumentMetaData());
         self::assertEquals([], $item->getDocumentMetaData()->getLinks());
         self::assertEquals('foo bar', $item->getDocumentMetaData()->getRemark());
 
         $this->reader->open(__DIR__ . '/inventory-link-remark-4.xlsx');
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
+        self::assertNotNull($item->getDocumentMetaData());
         self::assertEquals(['https://www.example.org'], $item->getDocumentMetaData()->getLinks());
         self::assertEquals('https://notok.example.org', $item->getDocumentMetaData()->getRemark());
 
         $this->reader->open(__DIR__ . '/inventory-link-remark-5.xlsx');
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
+        self::assertNotNull($item->getDocumentMetaData());
         self::assertEquals(['https://example.org'], $item->getDocumentMetaData()->getLinks());
         self::assertEquals('foo bar', $item->getDocumentMetaData()->getRemark());
     }
@@ -63,17 +68,22 @@ class InventoryReaderTest extends MockeryTestCase
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
-        self::assertEquals(new \DateTimeImmutable('2023-11-04'), $result[0]->getDocumentMetadata()->getDate());
-        self::assertEquals(new \DateTimeImmutable('2023-05-06'), $result[1]->getDocumentMetadata()->getDate());
+        $documentMetadata1 = $result[0]->getDocumentMetadata();
+        $documentMetadata2 = $result[1]->getDocumentMetadata();
+        self::assertNotNull($documentMetadata1);
+        self::assertNotNull($documentMetadata2);
 
-        self::assertEquals(['http://foo.bar'], $result[0]->getDocumentMetaData()->getLinks());
-        self::assertEquals(['http://foo.bar/baz'], $result[1]->getDocumentMetaData()->getLinks());
+        self::assertEquals(new \DateTimeImmutable('2023-11-04'), $documentMetadata1->getDate());
+        self::assertEquals(new \DateTimeImmutable('2023-05-06'), $documentMetadata2->getDate());
 
-        self::assertEquals('test remark', $result[0]->getDocumentMetaData()->getRemark());
-        self::assertEquals(null, $result[1]->getDocumentMetaData()->getRemark());
+        self::assertEquals(['http://foo.bar'], $documentMetadata1->getLinks());
+        self::assertEquals(['http://foo.bar/baz'], $documentMetadata2->getLinks());
 
-        self::assertEquals(SourceType::UNKNOWN, $result[0]->getDocumentMetaData()->getSourceType());
-        self::assertEquals(SourceType::UNKNOWN, $result[1]->getDocumentMetaData()->getSourceType());
+        self::assertEquals('test remark', $documentMetadata1->getRemark());
+        self::assertEquals(null, $documentMetadata2->getRemark());
+
+        self::assertEquals(SourceType::UNKNOWN, $documentMetadata1->getSourceType());
+        self::assertEquals(SourceType::UNKNOWN, $documentMetadata2->getSourceType());
     }
 
     public function testInventoryReaderAddsExceptionsForEmptyMatterCells(): void
@@ -129,8 +139,13 @@ class InventoryReaderTest extends MockeryTestCase
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
-        self::assertEquals(new \DateTimeImmutable('2023-11-04'), $result[0]->getDocumentMetadata()->getDate());
-        self::assertEquals(null, $result[1]->getDocumentMetadata()->getDate());
+        $documentMetadata1 = $result[0]->getDocumentMetadata();
+        $documentMetadata2 = $result[1]->getDocumentMetadata();
+        self::assertNotNull($documentMetadata1);
+        self::assertNotNull($documentMetadata2);
+
+        self::assertEquals(new \DateTimeImmutable('2023-11-04'), $documentMetadata1->getDate());
+        self::assertEquals(null, $documentMetadata2->getDate());
     }
 
     public function testInventoryReaderAddsExceptionForInvalidDocumentId(): void

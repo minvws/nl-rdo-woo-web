@@ -32,7 +32,7 @@ class ResultTransformerTest extends MockeryTestCase
     private SortItemViewFactory&MockInterface $sortItemViewFactory;
     private ResultTransformer $transformer;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->logger = \Mockery::mock(LoggerInterface::class);
         $this->paginator = \Mockery::mock(PaginatorInterface::class);

@@ -21,7 +21,7 @@ class IndexDossierHandlerTest extends MockeryTestCase
     private LoggerInterface&MockInterface $logger;
     private IndexDossierHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierRepository = \Mockery::mock(DossierRepository::class);
         $this->dossierIndexer = \Mockery::mock(DossierIndexer::class);

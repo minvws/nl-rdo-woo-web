@@ -1,0 +1,4 @@
+{
+--suite Robot Framework.Tests.Sequential
+}
+#WAIT

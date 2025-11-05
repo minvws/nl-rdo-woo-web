@@ -12,7 +12,7 @@ final class MimeTypeIconTest extends MockeryTestCase
 {
     private MimeTypeIcon $mimeTypeIcon;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->mimeTypeIcon = new MimeTypeIcon();
 

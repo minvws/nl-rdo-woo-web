@@ -36,7 +36,7 @@ class UploadServiceTest extends MockeryTestCase
     private FilesystemOperator&MockInterface $workingCopyStorage;
     private UploadService $uploadService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->uploadHandler = \Mockery::mock(UploadHandlerInterface::class);
         $this->eventDispatcher = \Mockery::mock(EventDispatcherInterface::class);

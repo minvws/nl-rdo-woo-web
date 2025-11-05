@@ -16,7 +16,7 @@ class DossierQueryConditionsTest extends MockeryTestCase
 {
     private DossierQueryConditions $queryCondition;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->queryCondition = new DossierQueryConditions();
     }

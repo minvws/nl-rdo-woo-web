@@ -23,4 +23,6 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 interface DossierDeleteStrategyInterface
 {
     public function delete(AbstractDossier $dossier): void;
+
+    public function deleteWithOverride(AbstractDossier $dossier): void;
 }

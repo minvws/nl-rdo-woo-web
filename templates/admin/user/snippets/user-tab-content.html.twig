@@ -5,9 +5,9 @@
         <thead>
             <tr>
                 {{ knp_pagination_sortable(paginator, 'admin.global.user' | trans, 'u.name', { 'fragment': fragment }, {}, 'admin/layout/sort.html.twig') }}
-                <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'global.organisation' | trans }}</th>
-                <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.global.roles' | trans }}</th>
-                <th class="bhr-column-head bhr-column-head--gray" scope="col">{{ 'admin.global.last_login' | trans }}</th>
+                <th scope="col">{{ 'global.organisation' | trans }}</th>
+                <th scope="col">{{ 'admin.global.roles' | trans }}</th>
+                <th scope="col">{{ 'admin.global.last_login' | trans }}</th>
             </tr>
         </thead>
         <tbody>

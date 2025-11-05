@@ -12,9 +12,13 @@
 
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
+        {% if is_dev() %}
+            <meta property="csp-nonce" nonce="{{ csp_nonce() }}" />
+        {% endif %}
+
         {{ vite_entry_link_tags('admin') }}
 
-        {{ vite_entry_script_tags('admin') }}
+        {{ vite_entry_script_tags('admin', { attr: { defer: false } }) }}
 
         {% block extra_scripts %}{% endblock %}
 
@@ -41,93 +45,105 @@
             </li>
         {% endmacro %}
 
-        <header class="bg-bhr-gray-900 print:hidden">
-            <div class="bhr-container">
-                {% if isAuthenticated %}
-                <button class="p-4 lg:hidden js-visibility-toggler" aria-controls="main-nav" aria-expanded="false">
-                    <twig:Admin:Icon color="fill-white" name="hamburger" class="" />
-                    <span class="sr-only">{{ 'global.menu_toggle.label' | trans() }}</span>
-                </button>
+        <header class="print:hidden">
+            <div class="bg-bhr-gray-900">
+                <div class="bhr-container">
+                    {% if isAuthenticated %}
+                    <button class="p-4 lg:hidden js-visibility-toggler" aria-controls="main-nav" aria-expanded="false">
+                        <twig:Admin:Icon color="fill-white" name="hamburger" class="" />
+                        <span class="sr-only">{{ 'global.menu_toggle.label' | trans() }}</span>
+                    </button>
 
-                <nav class="text-white lg:flex hidden" id="main-nav">
-                    <ul class="grow lg:flex items-center">
-                        <li><a href="#inhoud" class="bhr-site-header-nav-item bhr-site-header-nav-item--anchor bhr-site-header-nav-item--skip-link">{{ 'global.skip_link' | trans() }}</a></li>
+                    <nav class="text-white lg:flex hidden" id="main-nav">
+                        <ul class="grow lg:flex items-center">
+                            <li><a href="#inhoud" class="bhr-site-header-nav-item bhr-site-header-nav-item--anchor bhr-site-header-nav-item--skip-link">{{ 'global.skip_link' | trans() }}</a></li>
 
-                        {% set organisationSwitcher = get_organisation_switcher() %}
-                        {% if organisationSwitcher.isSwitchAllowed(app.user) %}
-                            {% set activeOrganisation = organisationSwitcher.activeOrganisation(app.user) %}
-                            <li>
-                                <details class="js-details" data-e2e-name="organisation-switcher">
-                                    <summary
-                                        class="bhr-site-header-nav-item bhr-site-header-nav-item--divider max-h-20 flex items-center"
-                                    >
-                                        <span class="grow">
-                                            <span class="block text-sm font-normal">{{ 'global.organisation' | trans() }}</span>
-                                            <span class="block text-md truncate max-w-[165px]" data-e2e-name="active-organisation">
-                                                {{ activeOrganisation.name }}
-                                            </span>
-                                        </span>
-                                        <span>
-                                            <twig:Admin:Icon name="chevron-down" color="fill-white" class="ml-2" />
-                                        </span>
-                                    </summary>
-                                    <div class="bhr-overlay-card max-w-sm mt-2 text-black flex flex-col px-0 pt-0 pb-2">
-                                        <a
-                                            class="font-bold text-bhr-gray-700 text-right border-b border-bhr-gray-300 px-4 py-3"
-                                            href="{{ path('app_admin_user_organisation') }}"
-                                            data-e2e-name="manage-organisations"
+                            {% set organisationSwitcher = get_organisation_switcher() %}
+                            {% if organisationSwitcher.isSwitchAllowed(app.user) %}
+                                {% set activeOrganisation = organisationSwitcher.activeOrganisation(app.user) %}
+                                <li>
+                                    <details class="js-details" data-e2e-name="organisation-switcher">
+                                        <summary
+                                            class="bhr-site-header-nav-item bhr-site-header-nav-item--divider max-h-18 flex items-center"
                                         >
-                                            {{ 'admin.organisations.manage' | trans }}
-                                            <twig:Admin:Icon name="manage" class="ml-1" />
-                                        </a>
-                                        <ul>
-                                            {% for organisation in organisationSwitcher.organisations(app.user) %}
+                                            <span class="grow">
+                                                <span class="block text-sm font-normal">{{ 'global.organisation' | trans() }}</span>
+                                                <span class="block text-md truncate max-w-[165px]" data-e2e-name="active-organisation">
+                                                    {{ activeOrganisation.name }}
+                                                </span>
+                                            </span>
+                                            <span>
+                                                <twig:Admin:Icon name="chevron-down" color="fill-white" class="ml-2" />
+                                            </span>
+                                        </summary>
+                                        <div class="bhr-overlay-card max-w-sm mt-2 text-black flex flex-col sm:min-w-3xs">
+                                            <ul>
                                                 <li>
                                                     <a
-                                                        class="bhr-site-header-sub-nav-item{% if activeOrganisation == organisation %} bhr-site-header-sub-nav-item--active{% endif %}"
-                                                        href="{{ path('app_admin_switch_organisation', {'id': organisation.id.toRfc4122}) }}"
-                                                    >{{ organisation.name }}</a>
+                                                        class="bhr-site-header-sub-nav-item"
+                                                        data-e2e-name="manage-organisations"
+                                                        href="{{ path('app_admin_user_organisation') }}"
+                                                    >
+                                                        <twig:Admin:Icon name="manage" class="mr-1" />
+                                                        {{ 'admin.organisations.manage' | trans }}
+                                                    </a>
                                                 </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                </details>
-                            </li>
-                        {% endif %}
+                                                {% for organisation in organisationSwitcher.organisations(app.user) %}
+                                                    {% set isActiveOrganisation = activeOrganisation == organisation %}
+                                                    <li>
+                                                        <a
+                                                            class="bhr-site-header-sub-nav-item{% if isActiveOrganisation %} bhr-site-header-sub-nav-item--active{% endif %}"
+                                                            href="{{ path('app_admin_switch_organisation', {'id': organisation.id.toRfc4122}) }}"
+                                                        >
+                                                            {% if isActiveOrganisation %}<twig:Admin:Icon name="check" class="mr-1" />{% endif %}
+                                                            {{ organisation.name }}
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </details>
+                                </li>
+                            {% endif %}
 
-                        {% if matrix_has_permission('dossier.read') %}
-                            {{ _self.nav_item('app_admin_dossiers', 'admin.global.label.publications', '/^app_admin_dossier/') }}
-                        {% endif %}
+                            {% if matrix_has_permission('dossier.read') %}
+                                {{ _self.nav_item('app_admin_dossiers', 'admin.global.label.publications', '/^app_admin_dossier/', 'nav-publications') }}
+                            {% endif %}
 
-                        {% if matrix_has_permission('inquiry.read') %}
-                            {{ _self.nav_item('app_admin_inquiries', 'admin.global.label.inquiries', '/^app_admin_inquiries/') }}
-                        {% endif %}
+                            {% if matrix_has_permission('inquiry.read') %}
+                                {{ _self.nav_item('app_admin_inquiries', 'admin.global.label.inquiries', '/^app_admin_inquiries/', 'nav-inquiries') }}
+                            {% endif %}
 
-                        {% if matrix_has_permission('department.read') %}
-                            {{ _self.nav_item('app_admin_departments', 'admin.global.label.departments', '/^app_admin_department/') }}
-                        {% endif %}
+                            {% if matrix_has_permission('department.read') %}
+                                {{ _self.nav_item('app_admin_departments', 'admin.global.label.departments', '/^app_admin_department/', 'nav-departments') }}
+                            {% endif %}
 
-                        {% if matrix_has_permission('subject.read') %}
-                            {{ _self.nav_item('app_admin_subjects', 'admin.global.label.subjects', '/^app_admin_subject/') }}
-                        {% endif %}
+                            {% if matrix_has_permission('subject.read') %}
+                                {{ _self.nav_item('app_admin_subjects', 'admin.global.label.subjects', '/^app_admin_subject/', 'nav-subjects') }}
+                            {% endif %}
 
-                        {% if matrix_has_permission('user.read') %}
-                            {{ _self.nav_item('app_admin_users', 'admin.global.label.access_control', '/^app_admin_user/') }}
-                        {% endif %}
-                    </ul>
+                            {% if matrix_has_permission('user.read') %}
+                                {{ _self.nav_item('app_admin_users', 'admin.global.label.access_control', '/^app_admin_user/', 'nav-access-control') }}
+                            {% endif %}
+                        </ul>
 
-                    <ul class="lg:flex items-center">
-                        {{ _self.nav_item('app_admin_user_profile', app.user.name|default("unknown user")) }}
-                        {{ _self.nav_item('app_logout', 'global.logout', null, 'logout-link') }}
-                    </ul>
-                </nav>
-                {% else %}
-                <div class="text-center text-white py-3">
-                    <div><strong class="text-2xl">{{ SITE_NAME }}</strong></div>
-                    <em>Publicatie/document management</em>
+                        <ul class="lg:flex items-center">
+                            {{ _self.nav_item('app_admin_user_profile', app.user.name|default("unknown user")) }}
+                            {{ _self.nav_item('app_logout', 'global.logout', null, 'logout-link') }}
+                        </ul>
+                    </nav>
+                    {% else %}
+                    <div class="text-center text-white py-3">
+                        <div><strong class="text-2xl">{{ SITE_NAME }}</strong></div>
+                        <em>Publicatie/document management</em>
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
             </div>
+
+            {% if wo_breadcrumbs_exists() %}
+                {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
+            {% endif %}
         </header>
 
         <main class="grow pt-16 px-4 print:bhr-card" id="inhoud">

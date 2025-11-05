@@ -76,6 +76,7 @@ class DossierAdministrationController extends AbstractController
             'form' => $form,
             'breadcrumbs' => $breadcrumbs,
             'workflowStatus' => $this->wizardStatusFactory->getWizardStatus($dossier),
+            'confirmations' => $this->getConfirmations($dossier),
         ]);
     }
 
@@ -113,5 +114,25 @@ class DossierAdministrationController extends AbstractController
             'dossiers' => $list,
             'breadcrumbs' => $breadcrumbs,
         ]);
+    }
+
+    /**
+     * @return array<string, string|null>
+     */
+    private function getConfirmations(AbstractDossier $dossier): array
+    {
+        $confirmations = [];
+        foreach ($this->adminActionService->getAvailableAdminActions($dossier) as $action) {
+            $confirmation = null;
+            if ($this->adminActionService->needsConfirmation($action)) {
+                $confirmation = $this->translator->trans(
+                    sprintf('admin.dossiers.action.confirmation.%s', $action->value),
+                );
+            }
+
+            $confirmations[$action->value] = $confirmation;
+        }
+
+        return $confirmations;
     }
 }

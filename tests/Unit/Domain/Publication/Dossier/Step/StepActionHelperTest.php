@@ -31,7 +31,7 @@ class StepActionHelperTest extends MockeryTestCase
     private DossierViewParamsBuilder&MockInterface $paramsBuilder;
     private PaginatorInterface&MockInterface $paginator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

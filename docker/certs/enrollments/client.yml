@@ -1,0 +1,9 @@
+---
+profile: profiles/G4TRIALEEPrivGTLSSYS2025.yaml
+subject:
+  C: NL
+  O: TRIAL BZK
+  CN: TRIAL BZK
+  organizationIdentifier: NTRNL-99999992  # This is the KvK Registration number in an ETSI format
+subjectAltNames:
+  - bzk.nl

@@ -6,7 +6,14 @@ import tseslint from 'typescript-eslint';
 
 export default [
   { files: ['**/*.{js,mjs,cjs,ts}'] },
-  { languageOptions: { globals: globals.browser } },
+  {
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        __GIT_HASH__: 'readonly',
+      },
+    },
+  },
   {
     files: ['**/*.vue'],
     languageOptions: {

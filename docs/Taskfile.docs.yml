@@ -12,7 +12,7 @@ tasks:
       - docker run -it --rm
         --volume "{{.BASE_PATH}}":/workdir
         davidanson/markdownlint-cli2:{{.MARKDOWNLINT_VERSION}}
-        {{.CLI_ARGS}}
+        {{.SUB_CMD}} {{.CLI_ARGS}}
     requires:
       vars: [ BASE_PATH ]
 
@@ -20,13 +20,13 @@ tasks:
     desc: Auto fix lint errors in documentation
     cmds:
       - task: lint
-        vars: { CLI_ARGS: --fix }
+        vars: { SUB_CMD: --fix }
 
   sphinx:shell:
     desc: Start a shell in the sphinx container
     cmds:
       - task: :dc
-        vars: { CLI_ARGS: run --rm sphinx bash }
+        vars: { SUB_CMD: run --rm sphinx bash }
 
   build:
     aliases: [ sphinx:build ]
@@ -84,6 +84,5 @@ tasks:
     internal: true
     cmds:
       - docker compose run --rm
-        --volume "{{.BASE_PATH}}/docs":/docs
         sphinx
         sphinx-build -M html gebruikershandleiding _build

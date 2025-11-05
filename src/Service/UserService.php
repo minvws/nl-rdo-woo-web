@@ -17,7 +17,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
-use Minvws\HorseBattery\HorseBattery;
+use Minvws\HorseBattery\PasswordGenerator;
 use Psr\Log\LoggerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -29,8 +29,6 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 readonly class UserService
 {
-    protected HorseBattery $passwordGenerator;
-
     public function __construct(
         private UserRepository $userRepository,
         private UserPasswordHasherInterface $passwordHasher,
@@ -38,38 +36,21 @@ readonly class UserService
         private LoggerInterface $logger,
         private TokenStorageInterface $tokenStorage,
         private EventDispatcherInterface $eventDispatcher,
+        private PasswordGenerator $passwordGenerator,
     ) {
-        $this->passwordGenerator = new HorseBattery();
     }
 
-    public function resetCredentials(User $user, bool $resetPassword, bool $reset2fa): string
+    public function resetPassword(User $user): string
     {
-        $plainPassword = '';
-
-        if ($resetPassword) {
-            $plainPassword = $this->passwordGenerator->generate(4);
-            $hash = $this->passwordHasher->hashPassword($user, $plainPassword);
-            $user->setPassword($hash);
-            $user->setChangepwd(true);
-        }
-
-        if ($reset2fa) {
-            $secret = $this->totp->generateSecret();
-            $user->setMfaToken($secret);
-
-            $recoveryCodes = [];
-            for ($i = 0; $i !== 5; $i++) {
-                $recoveryCodes[] = $this->passwordGenerator->generate(4);
-            }
-            $user->setMfaRecovery($recoveryCodes);
-        }
+        $plainPassword = $this->passwordGenerator->generate(4);
+        $hash = $this->passwordHasher->hashPassword($user, $plainPassword);
+        $user->setPassword($hash);
+        $user->setChangepwd(true);
 
         $this->userRepository->save($user, true);
 
-        $this->logger->log('info', 'User credentials reset', [
+        $this->logger->info('User password reset', [
             'user' => $user->getId(),
-            'resetPassword' => $resetPassword,
-            'reset2fa' => $reset2fa,
         ]);
 
         /** @var ?User $actor */
@@ -79,12 +60,42 @@ readonly class UserService
             new UserResetEvent(
                 user: $user,
                 actor: $actor,
-                resetPassword: $resetPassword,
-                resetTwoFactorAuth: $reset2fa,
+                resetPassword: true,
+                resetTwoFactorAuth: false,
             ),
         );
 
         return $plainPassword;
+    }
+
+    public function resetTwoFactorAuth(User $user): void
+    {
+        $secret = $this->totp->generateSecret();
+        $user->setMfaToken($secret);
+
+        $recoveryCodes = [];
+        for ($i = 0; $i !== 5; $i++) {
+            $recoveryCodes[] = $this->passwordGenerator->generate(4);
+        }
+        $user->setMfaRecovery($recoveryCodes);
+
+        $this->userRepository->save($user, true);
+
+        $this->logger->info('User two factor auth reset', [
+            'user' => $user->getId(),
+        ]);
+
+        /** @var ?User $actor */
+        $actor = $this->tokenStorage->getToken()?->getUser();
+
+        $this->eventDispatcher->dispatch(
+            new UserResetEvent(
+                user: $user,
+                actor: $actor,
+                resetPassword: false,
+                resetTwoFactorAuth: true,
+            ),
+        );
     }
 
     /**

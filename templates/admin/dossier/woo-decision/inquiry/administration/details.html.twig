@@ -6,7 +6,7 @@
 
 {% block body %}
 <div class="bhr-container">
-    {{ wo_render_breadcrumbs({viewTemplate: 'admin/layout/breadcrumbs.html.twig' }) }}
+    {% include 'admin/shared/page-title.html.twig' %}
 
     <div class="bhr-card">
         {% include 'admin/shared/flash-messages.html.twig' %}

@@ -22,7 +22,7 @@ final class DocumentDossierFileProviderTest extends UnitTestCase
     private AuthorizationCheckerInterface&MockInterface $authorizationChecker;
     private DocumentDossierFileProvider $provider;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(DocumentRepository::class);
         $this->authorizationChecker = \Mockery::mock(AuthorizationCheckerInterface::class);

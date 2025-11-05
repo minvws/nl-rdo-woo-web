@@ -17,7 +17,7 @@ class PublishAsPreviewGuardTest extends MockeryTestCase
 {
     private PublishAsPreviewGuard $guard;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->guard = new PublishAsPreviewGuard();
     }

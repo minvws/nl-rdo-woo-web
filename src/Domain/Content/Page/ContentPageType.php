@@ -17,6 +17,8 @@ enum ContentPageType: string
     case HOMEPAGE_INTRO = 'homepage-intro';
     case HOMEPAGE_OTHER_PUBLICATIONS = 'homepage-andere-publicaties';
     case HOMEPAGE_WOO_REQUEST = 'homepage-woo-verzoek';
+    case WOO_GPT_ABOUT_GENERATED_ANSWERS = 'woo-gpt-over-gegenereerde-antwoorden';
+    case WOO_GPT_ABOUT_PLATFORM = 'woo-gpt-over-platform';
 
     public function getSlug(): string
     {
@@ -37,6 +39,8 @@ enum ContentPageType: string
             self::HOMEPAGE_INTRO => 'Openbaar gemaakte informatie',
             self::HOMEPAGE_OTHER_PUBLICATIONS => 'Andere publicaties',
             self::HOMEPAGE_WOO_REQUEST => 'Een Woo-verzoek indienen',
+            self::WOO_GPT_ABOUT_GENERATED_ANSWERS => 'Over gegenereerde antwoorden',
+            self::WOO_GPT_ABOUT_PLATFORM => 'Over Woo-GPT',
         };
     }
 }

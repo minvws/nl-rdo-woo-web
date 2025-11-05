@@ -18,7 +18,7 @@ class WooDecisionInventoryDataProviderTest extends MockeryTestCase
     private Document&MockInterface $docB;
     private WooDecisionInventoryDataProvider $dataProvider;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->wooDecision = \Mockery::mock(WooDecision::class);
         $this->docA = \Mockery::mock(Document::class);

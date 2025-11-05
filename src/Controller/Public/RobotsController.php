@@ -12,8 +12,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class RobotsController extends AbstractController
 {
-    public function __construct(private readonly RobotsViewFactory $robotsViewFactory)
-    {
+    public function __construct(
+        private readonly RobotsViewFactory $robotsViewFactory,
+    ) {
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
@@ -23,7 +24,7 @@ final class RobotsController extends AbstractController
         $robotsViewModel = $this->robotsViewFactory->make();
 
         $response = new Response(
-            $this->renderView('public/robots.txt.twig', ['robots' => $robotsViewModel]),
+            $this->renderView('public/robots/robots.txt.twig', ['robots' => $robotsViewModel]),
             200,
         );
         $response->headers->set('Content-Type', 'text/plain');

@@ -21,7 +21,7 @@ class AnnualReportSearchResultMapperTest extends MockeryTestCase
     private AnnualReportRepository&MockInterface $repository;
     private AnnualReportSearchResultMapper $mapper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->baseMapper = \Mockery::mock(DossierSearchResultBaseMapper::class);
         $this->repository = \Mockery::mock(AnnualReportRepository::class);

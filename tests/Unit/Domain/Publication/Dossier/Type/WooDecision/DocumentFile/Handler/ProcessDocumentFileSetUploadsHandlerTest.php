@@ -25,7 +25,7 @@ class ProcessDocumentFileSetUploadsHandlerTest extends UnitTestCase
     private LoggerInterface&MockInterface $logger;
     private ProcessDocumentFileSetUploadsHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dispatcher = \Mockery::mock(DocumentFileDispatcher::class);
         $this->repository = \Mockery::mock(DocumentFileSetRepository::class);

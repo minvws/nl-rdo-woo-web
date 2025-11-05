@@ -7,7 +7,7 @@
 
 {%- block choice_widget_expanded -%}
     <fieldset>
-        <legend class="bhr-legend">{{ form.vars.label | trans }}</legend>
+        <legend class="bhr-label">{{ form.vars.label | trans }}</legend>
         {{- form_help(form) -}}
         {{- form_errors(form) -}}
 
@@ -53,7 +53,7 @@
 {%- endblock form_errors -%}
 
 {%- block form_help -%}
-    {%- set help_attr = help_attr|merge({ class: help_attr.class|default(help_class|default('bhr-form-help text-lg pb-2')) }) -%}
+    {%- set help_attr = help_attr|merge({ class: help_attr.class|default(help_class|default('bhr-form-help')) }) -%}
     {{- parent() -}}
 {%- endblock form_help -%}
 
@@ -81,25 +81,25 @@
         {%- endif -%}
         {% set displayIsOptional = required is not same as (true) and (label_attr.displayIsOptional ?? true) is not same as (false) %}
         <label {% if label_attr %}{% with { attr: label_attr } %}{{ block('attributes') }}{% endwith %}{% endif %}>
-            {{ label | trans }}{% if displayIsOptional %} <span class="font-normal">({{'global.optional' | trans() }})</span>{% endif %}
+            {{ label | trans }}{% if displayIsOptional %} <span class="bhr-optional"><span class="sr-only">(</span>optioneel<span class="sr-only">)</span></span>{% endif %}
         </label>
     {%- endif -%}
 {%- endblock form_label -%}
 
 {%- block form_fieldset -%}
     <fieldset>
-        <legend class="bhr-legend">
+        <legend class="bhr-label">
             {{ row_attr | default([])['data-legend'] | default('') | trans() }}
             {% set isOptional = (row_attr|default([])['data-required'] ?? true) is same as (false) %}
             {% if isOptional %}
-                <span class="font-normal">({{'global.optional' | trans() }})</span>
+                <span class="bhr-optional"><span class="sr-only">(</span>optioneel<span class="sr-only">)</span></span>
             {% endif %}
         </legend>
 
         <div class="flex gap-4">
             {% for item in field_set_fields|split(' ') %}
             <div>
-                {{- form_label(form.parent.children[item], null, { label_attr: { displayIsOptional: false }, label_class: 'block text-bhr-gray-700 text-lg mb-1' }) -}}
+                {{- form_label(form.parent.children[item], null, { label_attr: { displayIsOptional: false }, label_class: 'bhr-label font-normal' }) -}}
                 {{- form_help(form.parent.children[item]) -}}
                 {{- form_errors(form.parent.children[item]) -}}
                 {{- form_widget(form.parent.children[item], widget_attr) -}}

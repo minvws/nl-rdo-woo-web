@@ -10,6 +10,7 @@ use App\Service\Security\Authorization\AuthorizationMatrix;
 use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class AuthMatrixVoter extends Voter
 {
@@ -35,6 +36,10 @@ class AuthMatrixVoter extends Voter
      */
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
+        if (! $this->isUserAllowed($token->getUser())) {
+            return false;
+        }
+
         $parts = explode('.', $attribute, 3);
         if (count($parts) !== 3) {
             return false;
@@ -81,5 +86,18 @@ class AuthMatrixVoter extends Voter
         }
 
         return true;
+    }
+
+    private function isUserAllowed(?UserInterface $user): bool
+    {
+        if ($user === null) {
+            return false;
+        }
+
+        if (! $user instanceof User) {
+            return false;
+        }
+
+        return $user->isEnabled();
     }
 }

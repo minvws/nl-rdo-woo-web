@@ -75,7 +75,7 @@ Upload Documents Step
 Upload Production Report
   [Arguments]  ${production_report_location}  ${expect_error}=${FALSE}
   Upload File By Selector  id=inventory_inventory  ${production_report_location}
-  Click  //*[@id="inventory_submit"]
+  Click Save And Continue Production Report
   Wait For Elements State
   ...  //*[@id="js-inventory-status"]//*[contains(.,"Bezig met het toepassen van het productierapport")]
   ...  detached
@@ -96,19 +96,18 @@ Verify Document Upload Remaining
 
 Upload And Process Documents
   [Arguments]  @{file_locations}
+  # This has been wrapped with a retry mechanism, since sometimes the Click Process Documents fails for unclear reasons
+  Wait Until Keyword Succeeds  3x  5s  Inner Keyword Upload And Process Documents  @{file_locations}
+
+Inner Keyword Upload And Process Documents
+  [Arguments]  @{file_locations}
   Sleep  30ms  # sometimes the upload doesn't seem to select anything, so let's try a tiny wait here before we click
   Scroll To Element  //button[@data-e2e-name="process-documents"]
   Upload File By Selector  id=upload-area-dossier-files  @{file_locations}
-  Wait For Condition
-  ...  Attribute
-  ...  //button[@data-e2e-name="process-documents"]
-  ...  data-e2e-is-uploading
-  ...  equals
-  ...  false
-  Wait For Elements State  //*[@data-e2e-name="uploaded-files"]  attached
+  Wait For Elements State  //*[@data-e2e-name="uploaded-files"]  visible
   Click Process Documents
   Wait For Elements State  //*[@data-e2e-name="checking"]  detached
-  Wait For Elements State  //div[@data-e2e-name="upload-busy"]  detached
+  Wait For Elements State  //*[@data-e2e-name="upload-busy"]  detached
 
 Verify Document Upload Completed
   Scroll To Element  //*[@id="inhoud"]/div/div[2]
@@ -128,7 +127,7 @@ Click Continue To Documents
   Click  //*[@data-e2e-name="continue-to-documents"]
 
 Click Process Documents
-  Wait For Load State  networkidle
+  Wait For Load State  load
   Click  //button[@data-e2e-name="process-documents"]
   Wait For Elements State
   ...  //button[@data-e2e-name="process-documents"]
@@ -138,7 +137,7 @@ Click Process Documents
 Open Document In Dossier
   [Arguments]  ${document_id}
   Scroll To Element  //table[@data-e2e-name="dossier-documents"]
-  Click  //table[@data-e2e-name="dossier-documents"]//a[contains(@href,'${document_id}')]
+  Click  //*[@data-e2e-name="doc-link"][contains(.,'${document_id}')]
   Wait For Condition  Text  //*[@data-e2e-name="document-nr"]  contains  ${document_id}
 
 Retract Document
@@ -150,7 +149,7 @@ Retract Document
 
 Click Breadcrumb Element
   [Arguments]  ${element_nr}
-  Click  //*[@id="inhoud"]/div/nav/ol/li[${element_nr}]
+  Click  (//*[@data-e2e-name="breadcrumb"])[${element_nr}]
 
 Click Public URL
   Click  //*[@data-e2e-name="public-url"]
@@ -184,3 +183,6 @@ Fill Publication Date
 
 Click Edit Decision
   Click  //a[@data-e2e-name="edit-decision"]
+
+Click Save And Continue Production Report
+  Click  //*[@id="inventory_submit"]

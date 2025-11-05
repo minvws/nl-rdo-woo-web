@@ -153,7 +153,7 @@ readonly class InquiryService
 
         $inquiry->addDossier($dossier);
 
-        $this->historyService->addDossierEntry($dossier, 'dossier_inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
+        $this->historyService->addDossierEntry($dossier->getId(), 'dossier_inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
 
         return $dossier->getStatus()->isPubliclyAvailable();
     }

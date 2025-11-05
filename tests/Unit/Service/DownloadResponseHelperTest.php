@@ -22,7 +22,7 @@ class DownloadResponseHelperTest extends UnitTestCase
     private DownloadFilenameGenerator&MockInterface $filenameGenerator;
     private EntityStorageService&MockInterface $entityStorageService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
         $this->batchDownloadStorage = \Mockery::mock(BatchDownloadStorage::class);

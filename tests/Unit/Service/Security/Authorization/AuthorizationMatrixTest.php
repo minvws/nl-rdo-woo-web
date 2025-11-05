@@ -35,7 +35,7 @@ class AuthorizationMatrixTest extends MockeryTestCase
     private AuthorizationMatrix $authorizationMatrix;
     private AuthorizationEntryRequestStore $entryStore;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->user = \Mockery::mock(User::class);
 

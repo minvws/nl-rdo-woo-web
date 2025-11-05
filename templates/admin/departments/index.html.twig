@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% set page_title = 'admin.department.all_departments' | trans %}
+{% set page_title = 'global.all_departments' | trans %}
 
 {% block body %}
 <div class="bhr-container">
@@ -23,7 +23,7 @@
                     {{ knp_pagination_sortable(pagination, 'admin.publications.department' | trans, 'd.name', {}, {}, 'admin/layout/sort.html.twig') }}
                     {{ knp_pagination_sortable(pagination, 'global.acronym' | trans, 'd.shortTag', { thClassName: 'border-r-0' }, {}, 'admin/layout/sort.html.twig') }}
                     {{ knp_pagination_sortable(pagination, 'admin.publications.has_landingpage' | trans, 'd.public', {}, {}, 'admin/layout/sort.html.twig') }}
-                    <th class="bhr-column-head bhr-column-head--gray border-r-1 font-bold" scope="col">{{ "admin.publications.landingpage_url" | trans() }}</th>
+                    <th scope="col">{{ "admin.publications.landingpage_url" | trans() }}</th>
                 </tr>
             </thead>
             <tbody>

@@ -4,72 +4,48 @@ on:
   workflow_dispatch:
     inputs:
       test_tag:
-        description: 'Robot Framework test tag'
+        description: "Robot Framework test tag"
         required: true
         type: string
-        default: 'ci'
+        default: "ci"
       runner:
-        description: 'Github Runner tag'
+        description: "Github Runner tag"
         type: choice
-        default: 'ubuntu-24.04'
+        default: "ubuntu-24.04"
         options:
           - ubuntu-24.04
           - ubuntu-latest-m
   workflow_call:
     inputs:
       test_tag:
-        description: 'Robot Framework test tag'
+        description: "Robot Framework test tag"
         required: true
         type: string
       runner:
-        description: 'Github Runner tag'
+        description: "Github Runner tag"
         type: string
 
   schedule:
-    - cron: '0 0 * * *' # Every day at midnight UTC
+    - cron: "0 0 * * *" # Every day at midnight UTC
 
 env:
   CR_PAT: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }} # For gh cli tool
   PYTHON_VERSION: 3.12
   TEST_TAG: ${{ inputs.test_tag || 'ci' }}
-  GH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }} # For gh cli tool
 
 jobs:
-  e2e-tests:
-    name: 'Run E2E tests on Docker'
-    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
-    timeout-minutes: 480
+  e2e-tests-app:
+    name: "Run E2E tests on app"
+    runs-on: ${{ inputs.runner || 'ubuntu-latest-m' }}
+    if: ${{ inputs.test_tag != 'api' }}
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
-      - name: Install Task
-        uses: arduino/setup-task@v2
+      - name: Setup Robot Framework test stack
+        uses: ./.github/actions/setup-rf
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run task setup
-        run: task setup
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
-        with:
-          enable-cache: true
-          cache-dependency-glob: tests/robot_framework/uv.lock
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: tests/robot_framework/pyproject.toml
-      - name: Prepare OS for tests
-        run: |
-          sudo apt-get install --reinstall libpq-dev
-          sudo npx playwright install-deps
-      - name: Create virtual environment
-        run: |
-          task rf:venv
-          task rf:fixtures:load:e2e
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Robot Framework tests
         working-directory: tests/robot_framework
         env:
@@ -77,20 +53,46 @@ jobs:
           URL_ADMIN: http://localhost:8000/balie
           HEADLESS: true
         run: |
-          ### Disabled for now, see https://github.com/minvws/nl-rdo-woo-web-private/issues/5143#issuecomment-3072864407
-          # if [ ${{ env.TEST_TAG }} == 'ci' ]; then
-          #   uv run robot --outputdir results --output results/output-robot.xml --log NONE --report NONE --name 'Sequential run' --include 'ci' --exclude 'parallel' --variable ENVIRONMENT:docker-ci .
-          #   uv run pabot --processes 8 --outputdir results --output output-pabot.xml --log NONE --report NONE  --include 'parallel' --variable ENVIRONMENT:docker-ci .
-          #   uv run rebot --output results/output-pabot.xml --log NONE --report NONE --name 'Parallel run' results/output-pabot.xml
-          #   uv run rebot --output results/output.xml --name 'Robot Framework' --log results/log.html --report results/report.html results/output-robot.xml results/output-pabot.xml
-          # else
-            uv run robot --outputdir results --xunit outputxunit.xml --include 'init' --include ${{ env.TEST_TAG }} --variable ENVIRONMENT:docker-ci .
-          # fi
+          if [ '${{ env.TEST_TAG }}' == 'ci' ]; then
+            uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include init --include ci --ordering order.txt --variable ENVIRONMENT:docker-ci .
+          else
+            uv run pabot --processes 1 --artifactsinsubfolders --outputdir results --include init --include ${{ env.TEST_TAG }} --ordering order.txt --variable ENVIRONMENT:docker-ci .
+          fi
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: ${{ always() }}
         with:
-          name: reports
+          name: robot-report-app
+          path: tests/robot_framework/results
+      - name: Publish test result summary to GitHub
+        uses: minvws/action-robotframework-summary@v1.0.0
+        if: ${{ always() }}
+        with:
+          output_file: tests/robot_framework/results/output.xml
+
+  e2e-tests-api:
+    name: "Run E2E tests on API"
+    runs-on: ubuntu-latest-m
+    if: ${{ inputs.test_tag == 'ci' || inputs.test_tag == 'api' }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup Robot Framework test stack
+        uses: ./.github/actions/setup-rf
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Robot Framework tests
+        working-directory: tests/robot_framework
+        env:
+          URL_PUBLIC: http://localhost:8000
+          URL_ADMIN: http://localhost:8000/balie
+          HEADLESS: true
+        run: uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api  --variable ENVIRONMENT:docker-ci .
+      - name: Upload test results
+        uses: actions/upload-artifact@v5
+        if: ${{ always() }}
+        with:
+          name: robot-report-api
           path: tests/robot_framework/results
       - name: Publish test result summary to GitHub
         uses: minvws/action-robotframework-summary@v1.0.0

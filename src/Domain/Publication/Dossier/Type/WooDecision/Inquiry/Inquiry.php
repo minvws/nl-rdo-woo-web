@@ -152,15 +152,6 @@ class Inquiry
     /**
      * @return Collection<array-key,WooDecision>
      */
-    public function getPubliclyAvailableDossiers(): Collection
-    {
-        return $this->dossiers
-            ->filter(static fn (WooDecision $dossier) => $dossier->getStatus()->isPubliclyAvailable());
-    }
-
-    /**
-     * @return Collection<array-key,WooDecision>
-     */
     public function getScheduledDossiers(): Collection
     {
         return $this->dossiers->filter(

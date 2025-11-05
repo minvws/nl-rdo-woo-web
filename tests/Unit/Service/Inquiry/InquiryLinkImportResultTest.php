@@ -15,7 +15,7 @@ class InquiryLinkImportResultTest extends MockeryTestCase
     private MockInterface&InquiryChangeset $changeset;
     private InquiryLinkImportResult $result;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->changeset = \Mockery::mock(InquiryChangeset::class);
         $this->result = new InquiryLinkImportResult($this->changeset);

@@ -1,0 +1,48 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Unit\EventSubscriber;
+
+use App\Api\Publication\V1\PublicationV1Api;
+use App\EventSubscriber\FeaturePublicationV1ApiSubscriber;
+use App\Tests\Unit\UnitTestCase;
+use Mockery\MockInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+final class FeaturePublicationV1ApiSubscriberTest extends UnitTestCase
+{
+    private Request&MockInterface $request;
+    private RequestEvent&MockInterface $event;
+
+    protected function setUp(): void
+    {
+        $this->request = \Mockery::mock(Request::class);
+        $this->event = \Mockery::mock(RequestEvent::class);
+        $this->event->shouldReceive('getRequest')->andReturn($this->request);
+    }
+
+    public function testWhenFeatureIsDisabledItThrowsNotFoundException(): void
+    {
+        $requestUri = sprintf('%s/some-endpoint', PublicationV1Api::API_PREFIX);
+
+        $this->request->shouldReceive('getPathInfo')->once()->andReturn($requestUri);
+
+        $subscriber = new FeaturePublicationV1ApiSubscriber(hasFeaturePublicationV1: false);
+
+        $this->expectException(NotFoundHttpException::class);
+
+        $subscriber->onRequest($this->event);
+    }
+
+    public function testWhenFeatureIsEnabledItsANoOp(): void
+    {
+        $this->event->shouldNotReceive('getRequest');
+
+        $subscriber = new FeaturePublicationV1ApiSubscriber(hasFeaturePublicationV1: true);
+
+        $subscriber->onRequest($this->event);
+    }
+}

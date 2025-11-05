@@ -1,13 +1,13 @@
 @utility bhr-site-header-nav-item {
-  @apply block font-bold leading-4 px-4 py-4 lg:py-8 text-lg;
+  @apply block font-bold leading-4 p-4 lg:py-7 text-lg;
 }
 
 @utility bhr-site-header-nav-item--anchor {
-  @apply hover-focus:bg-bhr-gray-700;
+  @apply hover-focus:bhr-site-header-nav-item--active;
 }
 
 @utility bhr-site-header-nav-item--active {
-  @apply bg-bhr-gray-700;
+  @apply bg-white text-bhr-gray-900;
 }
 
 @utility bhr-site-header-nav-item--divider {
@@ -19,9 +19,9 @@
 }
 
 @utility bhr-site-header-sub-nav-item {
-  @apply block text-black px-4 py-2 border-b border-bhr-gray-300 hover:bg-bhr-blue-100;
+  @apply block border-y border-white text-black px-4 py-3.5 hover:bg-bhr-blue-0;
 
   &.bhr-site-header-sub-nav-item--active {
-    @apply font-bold text-white bg-bhr-blue-800 pointer-events-none;
+    @apply font-bold pointer-events-none;
   }
 }

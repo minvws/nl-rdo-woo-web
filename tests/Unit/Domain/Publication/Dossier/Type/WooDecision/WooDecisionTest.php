@@ -14,138 +14,174 @@ use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use App\Tests\Unit\UnitTestCase;
 use Carbon\CarbonImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 final class WooDecisionTest extends UnitTestCase
 {
+    private WooDecision $wooDecision;
+
+    protected function setUp(): void
+    {
+        $this->wooDecision = new WooDecision();
+
+        parent::setUp();
+    }
+
     public function testGetGetUploadStatus(): void
     {
-        $dossier = new WooDecision();
-        $uploadStatus = $dossier->getUploadStatus();
+        $uploadStatus = $this->wooDecision->getUploadStatus();
 
-        self::assertSame($uploadStatus->getDossier(), $dossier);
+        self::assertSame($uploadStatus->getDossier(), $this->wooDecision);
     }
 
     public function testAddAndRemoveDocument(): void
     {
-        $dossier = new WooDecision();
         $document = \Mockery::mock(Document::class);
 
-        self::assertTrue($dossier->getDocuments()->isEmpty());
+        self::assertTrue($this->wooDecision->getDocuments()->isEmpty());
 
-        $document->expects('addDossier')->with($dossier);
-        $dossier->addDocument($document);
-        self::assertEquals([$document], $dossier->getDocuments()->toArray());
+        $document->expects('addDossier')->with($this->wooDecision);
+        $this->wooDecision->addDocument($document);
+        self::assertEquals([$document], $this->wooDecision->getDocuments()->toArray());
 
-        $document->expects('removeDossier')->with($dossier);
-        $dossier->removeDocument($document);
-        self::assertTrue($dossier->getDocuments()->isEmpty());
+        $document->expects('removeDossier')->with($this->wooDecision);
+        $this->wooDecision->removeDocument($document);
+        self::assertTrue($this->wooDecision->getDocuments()->isEmpty());
     }
 
     public function testAddAndRemoveInquiry(): void
     {
-        $dossier = new WooDecision();
         $inquiry = \Mockery::mock(Inquiry::class);
 
-        self::assertTrue($dossier->getDocuments()->isEmpty());
+        self::assertTrue($this->wooDecision->getDocuments()->isEmpty());
 
-        $inquiry->expects('addDossier')->with($dossier);
-        $dossier->addInquiry($inquiry);
-        self::assertEquals([$inquiry], $dossier->getInquiries()->toArray());
+        $inquiry->expects('addDossier')->with($this->wooDecision);
+        $this->wooDecision->addInquiry($inquiry);
+        self::assertEquals([$inquiry], $this->wooDecision->getInquiries()->toArray());
 
-        $inquiry->expects('removeDossier')->with($dossier);
-        $dossier->removeInquiry($inquiry);
-        self::assertTrue($dossier->getInquiries()->isEmpty());
+        $inquiry->expects('removeDossier')->with($this->wooDecision);
+        $this->wooDecision->removeInquiry($inquiry);
+        self::assertTrue($this->wooDecision->getInquiries()->isEmpty());
     }
 
     public function testSetProductionReport(): void
     {
-        $dossier = new WooDecision();
         $otherDossier = new WooDecision();
 
         $productionReport = \Mockery::mock(ProductionReport::class);
         $productionReport->expects('getDossier')->andReturn($otherDossier);
 
-        $productionReport->expects('setDossier')->with($dossier);
-        $dossier->setProductionReport($productionReport);
-        self::assertSame($productionReport, $dossier->getProductionReport());
+        $productionReport->expects('setDossier')->with($this->wooDecision);
+        $this->wooDecision->setProductionReport($productionReport);
+        self::assertSame($productionReport, $this->wooDecision->getProductionReport());
     }
 
     public function testSetAndGetInventory(): void
     {
-        $wooDecision = new WooDecision();
         $inventory = \Mockery::mock(Inventory::class);
 
-        $wooDecision->setInventory($inventory);
-        self::assertSame($inventory, $wooDecision->getInventory());
+        $this->wooDecision->setInventory($inventory);
+        self::assertSame($inventory, $this->wooDecision->getInventory());
     }
 
     public function testSetAndGetPublicationReason(): void
     {
-        $wooDecision = new WooDecision();
         $reason = PublicationReason::WOO_REQUEST;
 
-        $wooDecision->setPublicationReason($reason);
-        self::assertSame($reason, $wooDecision->getPublicationReason());
+        $this->wooDecision->setPublicationReason($reason);
+        self::assertSame($reason, $this->wooDecision->getPublicationReason());
     }
 
-    public function testNeedsInventoryAndDocumentsReturnsFalseWhenNothingFound(): void
+    #[DataProvider('decisionTypeDataForRequiredInventory')]
+    public function testIsInventoryRequiredForDecisionType(DecisionType $decisionType, bool $expectedIsInventoryRequired): void
     {
-        $wooDecision = new WooDecision();
-        $wooDecision->setDecision(DecisionType::NOTHING_FOUND);
+        $this->wooDecision->setDecision($decisionType);
 
-        self::assertFalse($wooDecision->needsInventoryAndDocuments());
+        self::assertEquals($expectedIsInventoryRequired, $this->wooDecision->isInventoryRequired());
     }
 
-    public function testNeedsInventoryAndDocumentsReturnsFalseWhenNotPublic(): void
+    /**
+     * @return array<array{DecisionType,bool}>
+     */
+    public static function decisionTypeDataForRequiredInventory(): array
     {
-        $wooDecision = new WooDecision();
-        $wooDecision->setDecision(DecisionType::NOT_PUBLIC);
-
-        self::assertFalse($wooDecision->needsInventoryAndDocuments());
+        return self::mapDecisionTypesToTrue([DecisionType::PUBLIC, DecisionType::PARTIAL_PUBLIC]);
     }
 
-    public function testNeedsInventoryAndDocumentsReturnsTrueWhenPublic(): void
+    #[DataProvider('decisionTypeDataForOptionalInventory')]
+    public function testIsInventoryOptionalForDecisionType(DecisionType $decisionType, bool $expectedIsInventoryOptional): void
     {
-        $wooDecision = new WooDecision();
-        $wooDecision->setDecision(DecisionType::PUBLIC);
+        $this->wooDecision->setDecision($decisionType);
 
-        self::assertTrue($wooDecision->needsInventoryAndDocuments());
+        self::assertEquals($expectedIsInventoryOptional, $this->wooDecision->isInventoryOptional());
+    }
+
+    /**
+     * @return array<array{DecisionType,bool}>
+     */
+    public static function decisionTypeDataForOptionalInventory(): array
+    {
+        return self::mapDecisionTypesToTrue([DecisionType::ALREADY_PUBLIC, DecisionType::NOT_PUBLIC]);
+    }
+
+    #[DataProvider('decisionTypeDataForCanProvideInventory')]
+    public function testCanProvideInventoryForDecisionType(DecisionType $decisionType, bool $expectedCanProvideInventory): void
+    {
+        $this->wooDecision->setDecision($decisionType);
+
+        self::assertEquals($expectedCanProvideInventory, $this->wooDecision->canProvideInventory());
+    }
+
+    /**
+     * @return array<array{DecisionType,bool}>
+     */
+    public static function decisionTypeDataForCanProvideInventory(): array
+    {
+        return self::mapDecisionTypesToTrue(
+            [DecisionType::PUBLIC, DecisionType::PARTIAL_PUBLIC, DecisionType::ALREADY_PUBLIC, DecisionType::NOT_PUBLIC],
+        );
+    }
+
+    /**
+     * @param DecisionType[] $decisionTypes
+     *
+     * @return array<array{DecisionType,bool}>
+     */
+    public static function mapDecisionTypesToTrue(array $decisionTypes): array
+    {
+        return array_map(fn (DecisionType $decisionType) => [$decisionType, in_array($decisionType, $decisionTypes, true)], DecisionType::cases());
     }
 
     public function testSetAndGetPreviewDate(): void
     {
-        $wooDecision = new WooDecision();
         $previewDate = new \DateTimeImmutable();
 
-        $wooDecision->setPreviewDate($previewDate);
-        self::assertEquals($previewDate, $wooDecision->getPreviewDate());
+        $this->wooDecision->setPreviewDate($previewDate);
+        self::assertEquals($previewDate, $this->wooDecision->getPreviewDate());
     }
 
     public function testHasFuturePreviewDateReturnsTrueForTomorrow(): void
     {
-        $wooDecision = new WooDecision();
         $previewDate = CarbonImmutable::tomorrow();
 
-        $wooDecision->setPreviewDate($previewDate);
-        self::assertTrue($wooDecision->hasFuturePreviewDate());
+        $this->wooDecision->setPreviewDate($previewDate);
+        self::assertTrue($this->wooDecision->hasFuturePreviewDate());
     }
 
     public function testHasFuturePreviewDateReturnsFalseForToday(): void
     {
-        $wooDecision = new WooDecision();
         $previewDate = CarbonImmutable::today();
 
-        $wooDecision->setPreviewDate($previewDate);
-        self::assertFalse($wooDecision->hasFuturePreviewDate());
+        $this->wooDecision->setPreviewDate($previewDate);
+        self::assertFalse($this->wooDecision->hasFuturePreviewDate());
     }
 
     public function testSetAndGetProcessRun(): void
     {
-        $wooDecision = new WooDecision();
         $processRun = \Mockery::mock(ProductionReportProcessRun::class);
 
-        $wooDecision->setProcessRun($processRun);
-        self::assertSame($processRun, $wooDecision->getProcessRun());
+        $this->wooDecision->setProcessRun($processRun);
+        self::assertSame($processRun, $this->wooDecision->getProcessRun());
     }
 
     public function testSetAndGetProcessRunOverwritesFinalRun(): void
@@ -153,13 +189,12 @@ final class WooDecisionTest extends UnitTestCase
         $finalProcessRun = \Mockery::mock(ProductionReportProcessRun::class);
         $finalProcessRun->expects('isNotFinal')->andReturnFalse();
 
-        $wooDecision = new WooDecision();
-        $wooDecision->setProcessRun($finalProcessRun);
+        $this->wooDecision->setProcessRun($finalProcessRun);
 
         $newProcessRun = \Mockery::mock(ProductionReportProcessRun::class);
-        $wooDecision->setProcessRun($newProcessRun);
+        $this->wooDecision->setProcessRun($newProcessRun);
 
-        self::assertSame($newProcessRun, $wooDecision->getProcessRun());
+        self::assertSame($newProcessRun, $this->wooDecision->getProcessRun());
     }
 
     public function testSetAndGetProcessRunThrowsExceptionWhenOverwritingANonFinalRun(): void
@@ -167,54 +202,49 @@ final class WooDecisionTest extends UnitTestCase
         $finalProcessRun = \Mockery::mock(ProductionReportProcessRun::class);
         $finalProcessRun->expects('isNotFinal')->andReturnTrue();
 
-        $wooDecision = new WooDecision();
-        $wooDecision->setProcessRun($finalProcessRun);
+        $this->wooDecision->setProcessRun($finalProcessRun);
 
         $newProcessRun = \Mockery::mock(ProductionReportProcessRun::class);
 
         $this->expectException(\RuntimeException::class);
 
-        $wooDecision->setProcessRun($newProcessRun);
+        $this->wooDecision->setProcessRun($newProcessRun);
     }
 
     public function testSetAndGetDecision(): void
     {
-        $wooDecision = new WooDecision();
         $decision = DecisionType::NOTHING_FOUND;
 
-        $wooDecision->setDecision($decision);
-        self::assertEquals($decision, $wooDecision->getDecision());
+        $this->wooDecision->setDecision($decision);
+        self::assertEquals($decision, $this->wooDecision->getDecision());
     }
 
     public function testSetAndGetDecisionDate(): void
     {
-        $wooDecision = new WooDecision();
         $decisionDate = new \DateTimeImmutable();
 
-        $wooDecision->setDecisionDate($decisionDate);
-        self::assertEquals($decisionDate, $wooDecision->getDecisionDate());
+        $this->wooDecision->setDecisionDate($decisionDate);
+        self::assertEquals($decisionDate, $this->wooDecision->getDecisionDate());
     }
 
     public function testHasWithdrawnOrSuspendedDocuments(): void
     {
-        $wooDecision = new WooDecision();
-
-        self::assertFalse($wooDecision->hasWithdrawnOrSuspendedDocuments());
+        self::assertFalse($this->wooDecision->hasWithdrawnOrSuspendedDocuments());
 
         $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('addDossier')->with($wooDecision);
+        $document->shouldReceive('addDossier')->with($this->wooDecision);
         $document->shouldReceive('isWithdrawn')->andReturnFalse();
         $document->shouldReceive('isSuspended')->andReturnFalse();
-        $wooDecision->addDocument($document);
+        $this->wooDecision->addDocument($document);
 
-        self::assertFalse($wooDecision->hasWithdrawnOrSuspendedDocuments());
+        self::assertFalse($this->wooDecision->hasWithdrawnOrSuspendedDocuments());
 
         $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('addDossier')->with($wooDecision);
+        $document->shouldReceive('addDossier')->with($this->wooDecision);
         $document->shouldReceive('isWithdrawn')->andReturnFalse();
         $document->shouldReceive('isSuspended')->andReturnTrue();
-        $wooDecision->addDocument($document);
+        $this->wooDecision->addDocument($document);
 
-        self::assertTrue($wooDecision->hasWithdrawnOrSuspendedDocuments());
+        self::assertTrue($this->wooDecision->hasWithdrawnOrSuspendedDocuments());
     }
 }

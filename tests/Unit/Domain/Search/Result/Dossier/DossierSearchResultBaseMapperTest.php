@@ -20,7 +20,7 @@ class DossierSearchResultBaseMapperTest extends MockeryTestCase
     private ProvidesDossierTypeSearchResultInterface&MockInterface $repository;
     private TypeArray&MockInterface $hit;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(ProvidesDossierTypeSearchResultInterface::class);
         $this->hit = \Mockery::mock(TypeArray::class);

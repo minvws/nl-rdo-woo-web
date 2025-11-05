@@ -1,0 +1,42 @@
+{% extends 'public/gpt/base.html.twig' %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-h1 mb-3 text-xl text-right">
+        {{ 'public.gpt.answer.title' | trans }}
+    </h1>
+
+    <div class="flex justify-end">
+        <div class="md:max-w-3/4">
+            <div class="bg-woo-gray-100 px-6 py-4">
+                {{ query }}
+            </div>
+        </div>
+    </div>
+
+    {# <output class="block pt-10 md:w-3/4" id="js-gpt-answer-status">
+        <h2 class="sr-only">De status van het antwoord op je vraag</h2>
+        <div class="block bg-woo-light-blue-50 px-6 py-4" id="js-gpt-answer-status-content">
+            Vraag verwerken...
+        </div>
+    </output> #}
+
+    <output class="block pt-12 md:w-3/4" id="js-gpt-answer">
+        <h2 class="woo-h2 mb-4 text-xl">
+            Antwoord op jouw vraag
+        </h2>
+
+        <div class="bg-woo-light-blue-50 px-6 py-4">
+            De mondkapjeswet werd ingevoerd vanwege de snelle verspreiding van het COVID-19 virus en de noodzaak om de volksgezondheid te beschermen        . Adviezen van het Nationaal Gezondheidsinstituut, maatschappelijke druk, en politieke roep om uniforme regels speelden daarbij een grote rol        . Lokale verschillen in maatregelen veroorzaakten verwarring, waardoor landelijke wetgeving nodig werd geacht om duidelijkheid en handhaafbaarheid te bieden.
+        </div>
+    </div>
+</div>
+
+<div class="pt-20">
+    <div class="woo-container woo-container--xs">
+        <div class="md:-mx-6">
+            <twig:Public:Gpt:SearchForm anotherQuery />
+        </div>
+    </div>
+</div>
+{% endblock %}

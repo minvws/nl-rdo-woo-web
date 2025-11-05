@@ -20,7 +20,7 @@ class DossierFactoryTest extends MockeryTestCase
     private DossierTypeManager&MockInterface $dossierTypeManager;
     private DossierFactory $factory;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierTypeManager = \Mockery::mock(DossierTypeManager::class);
         $this->authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);

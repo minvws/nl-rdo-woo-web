@@ -12,7 +12,7 @@ use App\Service\Inventory\InventoryDataHelper;
  */
 class CsvReader implements FileReaderInterface
 {
-    /** @var mixed[][] */
+    /** @var array<int,array<array-key,mixed>> */
     protected array $rows = [];
 
     public function __construct(protected readonly string $filepath, protected readonly HeaderMap $mapping)

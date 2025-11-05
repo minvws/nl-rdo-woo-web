@@ -30,7 +30,7 @@ class S3UploadHandlerTest extends MockeryTestCase
     private \App\Domain\Upload\Handler\S3\S3UploadHelper&MockInterface $s3uploadHelper;
     private vfsStreamDirectory $vfs;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->s3uploadHelper = \Mockery::mock(S3UploadHelper::class);
 

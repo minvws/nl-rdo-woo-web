@@ -14,7 +14,7 @@
     @apply
         border-1
         border-transparent
-        h-10
+        h-11
         px-4;
 }
 
@@ -27,52 +27,52 @@
 @utility woo-btn-filled-primary {
     @apply woo-btn-filled_;
     @apply
-        bg-woo-sea-blue
-        border-woo-sea-blue;
+        bg-woo-dark-blue-600
+        border-woo-dark-blue-600;
 
     &:active,
     &:focus,
     &:hover {
-        @apply bg-woo-ateneo-blue border-woo-ateneo-blue;
+        @apply bg-woo-dark-blue-700 border-woo-dark-blue-700;
     }
 }
 
 @utility woo-btn-filled-pink {
     @apply woo-btn-filled_;
     @apply
-        bg-woo-boston-university-red
-        border-woo-boston-university-red;
+        bg-woo-pink-800
+        border-woo-pink-800;
 
     &:active,
     &:focus,
     &:hover {
-        @apply bg-woo-dark-candy-apple-red border-woo-dark-candy-apple-red;
+        @apply bg-woo-red-800 border-woo-red-800;
     }
 }
 
 @utility woo-btn-bordered-blue {
     @apply woo-btn_filled_or_bordered_;
     @apply
-        border-woo-sea-blue
-        text-woo-sea-blue;
+        border-woo-dark-blue-600
+        text-woo-dark-blue-600;
 
     &:active,
     &:focus,
     &:hover {
-        @apply border-woo-ateneo-blue text-woo-ateneo-blue;
+        @apply border-woo-dark-blue-700 text-woo-dark-blue-700;
     }
 }
 
 @utility woo-btn-bordered-pink {
     @apply woo-btn_filled_or_bordered_;
     @apply
-        border-woo-boston-university-red
-        text-woo-boston-university-red;
+        border-woo-pink-800
+        text-woo-pink-800;
 
     &:active,
     &:focus,
     &:hover {
-        @apply border-woo-dark-candy-apple-red text-woo-dark-candy-apple-red;
+        @apply border-woo-red-800 text-woo-red-800;
     }
 }
 

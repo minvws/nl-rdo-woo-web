@@ -29,7 +29,7 @@ describe('The "Icon" component', () => {
     const svgElement = getSvg(createComponent());
     expect(svgElement.classes()).toContain('mocked-color');
     expect(svgElement.find('use').attributes('href')).toBe(
-      '/assets/img/admin/icons.svg#mocked-name',
+      `/img/admin/icons.svg?${__GIT_HASH__}#mocked-name`,
     );
   });
 

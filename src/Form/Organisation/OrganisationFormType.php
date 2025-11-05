@@ -107,13 +107,11 @@ class OrganisationFormType extends AbstractType
     {
         $prefixes = [];
         foreach ($documentPrefixes as $documentPrefix) {
-            try {
-                $prefix = $documentPrefix->getPrefix();
-            } catch (\Throwable) {
-                // If the field value is empty the 'getPrefix' call can trigger an uninitialized var error
+            if (! $documentPrefix->issetPrefix()) {
                 continue;
             }
 
+            $prefix = $documentPrefix->getPrefix();
             if (in_array($prefix, $prefixes, true)) {
                 $context
                     ->buildViolation('no_double_prefixes_allowed')

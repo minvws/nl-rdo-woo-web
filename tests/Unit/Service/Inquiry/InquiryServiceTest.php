@@ -45,7 +45,7 @@ class InquiryServiceTest extends MockeryTestCase
     private IngestDispatcher&MockInterface $ingestDispatcher;
     private UuidV6 $dossierId;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
@@ -112,8 +112,12 @@ class InquiryServiceTest extends MockeryTestCase
         $caseNr = 'case-123';
         $inquiryId = Uuid::v6();
 
-        $this->historyService->expects('addDossierEntry')->with($this->dossier, 'dossier_inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
-        $this->historyService->expects('addDossierEntry')->with($newDossier, 'dossier_inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
+        $this->historyService
+            ->expects('addDossierEntry')
+            ->with($this->dossier->getId(), 'dossier_inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
+        $this->historyService
+            ->expects('addDossierEntry')
+            ->with($newDossier->getId(), 'dossier_inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
         $this->inquiryRepo->expects('findOneBy')->with(['organisation' => $this->organisation, 'casenr' => $caseNr])->andReturnNull();
 
         $this->documentRepo->expects('find')->with($addDoc1Id)->andReturn($addDoc1);

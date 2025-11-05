@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Api\Admin;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Api\Admin\InvestigationReportAttachment\InvestigationReportAttachmentDto;
 use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use App\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -13,6 +12,7 @@ use App\Domain\Upload\Handler\UploadHandlerInterface;
 use App\Domain\Upload\UploadEntity;
 use App\Service\Uploader\UploadGroupId;
 use App\Tests\Factory\FileInfoFactory;
+use App\Tests\Factory\OrganisationFactory;
 use App\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachmentFactory;
 use App\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
 use App\Tests\Factory\UploadEntityFactory;
@@ -32,7 +32,7 @@ use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;
 
-final class InvestigationReportAttachmentTest extends ApiTestCase
+final class InvestigationReportAttachmentTest extends AdminApiTestCase
 {
     use IntegrationTestTrait;
 
@@ -58,16 +58,10 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
 
         InvestigationReportAttachmentFactory::createMany(5, ['dossier' => $dossier]);
 
-        $response = static::createClient()
-            ->loginUser($user, 'balie')
+        $response = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
-                sprintf('/balie/api/dossiers/%s/investigation-report-attachments', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments', $dossier->getId()),
             );
 
         self::assertResponseIsSuccessful();
@@ -85,16 +79,10 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
-                sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
             );
 
         self::assertResponseIsSuccessful();
@@ -107,24 +95,18 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
 
         $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
-                sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
-    public function testCreateInvestigationReportAttachment(): void
+    public function testCreateInvestigationReportAttachmentFoo(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create()->_real();
 
         $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
@@ -154,16 +136,11 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
                 \Mockery::type('string'),
             );
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_POST,
-                sprintf('/balie/api/dossiers/%s/investigation-report-attachments', $dossier->getId()),
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments', $dossier->getId()),
                 [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
                     'json' => [
                         'uploadUuid' => $upload->getUploadId(),
                         'type' => AttachmentType::COVENANT->value,
@@ -175,16 +152,10 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
 
         self::assertResponseIsSuccessful();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
-                sprintf('/balie/api/dossiers/%s/investigation-report-attachments', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments', $dossier->getId()),
             );
 
         self::assertResponseIsSuccessful();
@@ -201,18 +172,11 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
 
         $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_POST,
-                sprintf('/balie/api/dossiers/%s/investigation-report-attachments', $dossier->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json' => $input,
-                ],
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments', $dossier->getId()),
+                ['json' => $input],
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -366,16 +330,10 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_DELETE,
-                sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
             );
 
         self::assertResponseIsSuccessful();
@@ -387,16 +345,10 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
 
         $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_DELETE,
-                sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -415,16 +367,11 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        $response = static::createClient()
-            ->loginUser($user, 'balie')
+        $response = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_PUT,
-                sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
                 [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
                     'json' => [
                         'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
                         'type' => $attachment->getType()->value,
@@ -438,16 +385,10 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
         self::assertResponseIsSuccessful();
         self::assertMatchesResourceItemJsonSchema(InvestigationReportAttachmentDto::class);
 
-        $response2 = static::createClient()
-            ->loginUser($user, 'balie')
+        $response2 = self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
-                sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
             );
 
         self::assertResponseIsSuccessful();
@@ -462,16 +403,10 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
 
         $dossier = InvestigationReportFactory::createOne(['organisation' => $user->getOrganisation()])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_GET,
-                sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                    ],
-                ],
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $dossier->getId(), $this->getFaker()->uuid()),
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -495,18 +430,11 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
             ]),
         ])->_real();
 
-        static::createClient()
-            ->loginUser($user, 'balie')
+        self::createAdminApiClient($user)
             ->request(
                 Request::METHOD_PUT,
-                sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json' => $input,
-                ],
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
+                ['json' => $input],
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -613,5 +541,68 @@ final class InvestigationReportAttachmentTest extends ApiTestCase
                 ],
             ],
         ];
+    }
+
+    public function testUpdateInvestigationReportAttachmentAllowedWhenDossierFromOtherOrganisationWithPermission(): void
+    {
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $otherOrganisation = OrganisationFactory::new()->create()->_real();
+        $attachment = InvestigationReportAttachmentFactory::createOne([
+            'dossier' => InvestigationReportFactory::createOne([
+                'organisation' => $otherOrganisation,
+            ]),
+        ])->_real();
+
+        self::setActiveOrganisation($otherOrganisation);
+
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_PUT,
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
+                [
+                    'json' => [
+                        'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
+                        'type' => $attachment->getType()->value,
+                        'language' => $attachment->getLanguage()->value,
+                        'internalReference' => $attachment->getInternalReference(),
+                        'grounds' => $attachment->getGrounds(),
+                    ],
+                ],
+            );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
+
+    public function testUpdateInvestigationReportAttachmentNotAllowedWhenDossierFromOtherOrganisationWithoutPermission(): void
+    {
+        $user = UserFactory::new()->asOrganisationAdmin()->isEnabled()->create()->_real();
+        $otherOrganisation = OrganisationFactory::new()->create()->_real();
+
+        $attachment = InvestigationReportAttachmentFactory::createOne([
+            'fileInfo' => FileInfoFactory::createOne([
+                'name' => 'test_file.pdf',
+            ]),
+            'dossier' => InvestigationReportFactory::createOne([
+                'organisation' => $otherOrganisation,
+                'status' => DossierStatus::PUBLISHED,
+            ]),
+        ])->_real();
+
+        self::createAdminApiClient($user)
+            ->request(
+                Request::METHOD_PUT,
+                \sprintf('/balie/api/dossiers/%s/investigation-report-attachments/%s', $attachment->getDossier()->getId(), $attachment->getId()),
+                [
+                    'json' => [
+                        'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
+                        'type' => $attachment->getType()->value,
+                        'language' => $attachment->getLanguage()->value,
+                        'internalReference' => $attachment->getInternalReference(),
+                        'grounds' => $attachment->getGrounds(),
+                    ],
+                ],
+            );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 }

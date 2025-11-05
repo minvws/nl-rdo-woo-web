@@ -27,7 +27,7 @@ class S3UploadHelperTest extends MockeryTestCase
     private string $bucket = 'some-bucket';
     private vfsStreamDirectory $vfs;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->s3Client = \Mockery::mock(S3Client::class);
         $this->helper = new S3UploadHelper($this->s3Client, $this->bucket);

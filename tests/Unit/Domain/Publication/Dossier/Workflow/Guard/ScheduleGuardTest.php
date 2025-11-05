@@ -17,7 +17,7 @@ class ScheduleGuardTest extends MockeryTestCase
 {
     private ScheduleGuard $guard;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->guard = new ScheduleGuard();
     }

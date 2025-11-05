@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
+use App\Api\Admin\ApiDossierAccessChecker;
 use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
 use App\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
 use App\Domain\Publication\Attachment\Command\UpdateAttachmentCommand;
@@ -29,6 +30,7 @@ abstract class AbstractAttachmentProcessor implements ProcessorInterface
     use HandleTrait;
 
     public function __construct(
+        protected readonly ApiDossierAccessChecker $dossierAccessChecker,
         protected readonly AttachmentDtoFactory $dtoFactory,
         MessageBusInterface $messageBus,
     ) {
@@ -47,7 +49,10 @@ abstract class AbstractAttachmentProcessor implements ProcessorInterface
 
         Assert::object($data);
         Assert::allString($uriVariables);
+
         $dossierId = Uuid::fromString(strval($uriVariables['dossierId']));
+        $this->dossierAccessChecker->ensureUserIsAllowedToUpdateDossier($dossierId);
+
         $attachmentId = isset($uriVariables['attachmentId']) ? Uuid::fromString($uriVariables['attachmentId']) : null;
 
         try {

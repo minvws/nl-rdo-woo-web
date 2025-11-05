@@ -2,17 +2,14 @@
   @apply block
             font-bold
             leading-tight
-            mb-2
-            text-lg;
+            mb-2;
 }
 
 @utility bhr-legend {
   @apply block
-            font-bold
             leading-tight
             mt-0
-            mb-2
-            text-lg;
+            mb-2;
 }
 
 @utility bhr-input-text {
@@ -26,6 +23,11 @@
             w-full
 
             placeholder:text-bhr-gray-700;
+}
+
+@utility bhr-readonly-text {
+  @apply bhr-input-text;
+  @apply bg-bhr-gray-0 border-bhr-gray-400;
 }
 
 @utility bhr-input-text--disabled {
@@ -47,7 +49,7 @@
 @utility bhr-select {
   &::after {
     @apply bg-bhr-gray-700 content-[''] pointer-events-none absolute -ml-8 mt-3 w-6 h-6;
-    mask-image: url(@img/admin/chevron-down.svg);
+    mask-image: url(@img/chevron-down.svg);
   }
 }
 
@@ -93,6 +95,10 @@
   @apply bg-bhr-gray-100 inline-block min-w-[66%] py-4 px-6 print:py-2 print:px-3 print:bg-none print:border-2;
 }
 
+@utility bhr-optional {
+  @apply font-normal text-bhr-gray-700;
+}
+
 @utility bhr-form-row {
   @apply mb-8 relative;
 }
@@ -102,7 +108,7 @@
 }
 
 @utility bhr-form-help {
-  @apply text-bhr-gray-700;
+  @apply text-bhr-gray-700 pb-2;
 }
 
 @utility bhr-form-help__do {

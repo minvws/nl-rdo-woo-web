@@ -1,6 +1,6 @@
 <div class="bhr-form-row">
-    <h2 class="bhr-label">{{ title | default('Bijlagen') }} <span class="font-normal">(optioneel)</span></h2>
-    <p class="bhr-form-help text-lg pb-2">{{ helpText }}</p>
+    <h2 class="bhr-label">{{ title | default('Bijlagen') }} <span class="bhr-optional"><span class="sr-only">(</span>optioneel<span class="sr-only">)</span></span></h2>
+    <p class="bhr-form-help">{{ helpText }}</p>
 
     <div data-e2e-name="attachments" {{ vue_component('GenericController', {
         componentName: 'PublicationFiles',

@@ -19,7 +19,7 @@ class DossierWizardStatusTest extends MockeryTestCase
     private StepStatus&MockInterface $contentStep;
     private StepStatus&MockInterface $publicationStep;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossier = \Mockery::mock(WooDecision::class);
         $this->detailsStep = \Mockery::mock(StepStatus::class);

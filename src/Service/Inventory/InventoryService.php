@@ -75,6 +75,7 @@ class InventoryService
             $dossier->setProductionReport(null);
         }
 
+        $this->doctrine->flush();
         $this->doctrine->persist($dossier);
 
         return true;

@@ -17,7 +17,7 @@ final class ValidateCompletionDossierAdminActionTest extends MockeryTestCase
     private DossierService&MockInterface $dossierService;
     private ValidateCompletionDossierAdminAction $action;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierService = \Mockery::mock(DossierService::class);
 
@@ -40,6 +40,11 @@ final class ValidateCompletionDossierAdminActionTest extends MockeryTestCase
     {
         self::assertTrue($this->action->supports(\Mockery::mock(WooDecision::class)));
         self::assertTrue($this->action->supports(\Mockery::mock(Covenant::class)));
+    }
+
+    public function testNeedsConfirmation(): void
+    {
+        self::assertFalse($this->action->needsConfirmation());
     }
 
     public function testExecute(): void

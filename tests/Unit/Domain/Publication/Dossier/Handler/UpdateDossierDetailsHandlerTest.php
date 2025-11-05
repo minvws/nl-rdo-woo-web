@@ -25,7 +25,7 @@ class UpdateDossierDetailsHandlerTest extends MockeryTestCase
     private UpdateDossierDetailsHandler $handler;
     private MockInterface&DossierService $dossierService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierService = \Mockery::mock(DossierService::class);
         $this->messageBus = \Mockery::mock(MessageBusInterface::class);
@@ -52,7 +52,7 @@ class UpdateDossierDetailsHandlerTest extends MockeryTestCase
 
         $this->messageBus->expects('dispatch')->with(\Mockery::on(
             static function (DossierUpdatedEvent $message) use ($covenantUuid) {
-                self::assertEquals($covenantUuid, $message->id);
+                self::assertEquals($covenantUuid, $message->dossierId);
 
                 return true;
             }

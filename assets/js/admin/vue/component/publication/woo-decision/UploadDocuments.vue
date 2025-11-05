@@ -91,6 +91,10 @@ const showIsProcessing = computed(() => {
     return false;
   }
 
+  if (isComplete.value) {
+    return false;
+  }
+
   return [UploadStatus.Confirmed, UploadStatus.ProcessingUpdates].includes(
     value.status,
   );

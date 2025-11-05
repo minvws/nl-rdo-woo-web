@@ -7,7 +7,8 @@ namespace App\Controller\Admin;
 use App\Domain\Organisation\Organisation;
 use App\Form\User\DisableUserFormType;
 use App\Form\User\EnableUserFormType;
-use App\Form\User\ResetCredentialsFormType;
+use App\Form\User\ResetPasswordFormType;
+use App\Form\User\ResetTwoFactorAuthFormType;
 use App\Form\User\UserCreateFormType;
 use App\Form\User\UserInfoFormType;
 use App\Service\PaginatorFactory;
@@ -18,6 +19,7 @@ use App\Service\Security\User;
 use App\Service\Security\UserRepository;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,6 +40,7 @@ class UserController extends AbstractController
         private readonly TranslatorInterface $translator,
         private readonly AuthorizationMatrix $authorizationMatrix,
         private readonly PaginatorFactory $paginatorFactory,
+        private readonly Security $security,
     ) {
     }
 
@@ -162,7 +165,6 @@ class UserController extends AbstractController
     #[IsGranted('AuthMatrix.user.update')]
     public function modify(Request $request, User $user): Response
     {
-        /** @var User $loggedInUser */
         $loggedInUser = $this->getUser();
 
         if ($user === $loggedInUser) {
@@ -180,14 +182,22 @@ class UserController extends AbstractController
             return $this->redirectToRoute('app_admin_users');
         }
 
+        if ($user->hasRole(Roles::ROLE_SUPER_ADMIN) && ! $this->security->isGranted('AuthMatrix.super_admin.update')) {
+            $this->addFlash('backend', ['danger' => $this->translator->trans('admin.user.error.edit_super_admin_not_allowed')]);
+
+            return $this->redirectToRoute('app_admin_users');
+        }
+
         $userInfoForm = $this->createForm(UserInfoFormType::class, $user);
-        $userResetForm = $this->createForm(ResetCredentialsFormType::class);
+        $userResetPasswordForm = $this->createForm(ResetPasswordFormType::class);
+        $userResetTwoFactorAuthForm = $this->createForm(ResetTwoFactorAuthFormType::class);
         $userDisableForm = $this->createForm(DisableUserFormType::class);
         $userEnableForm = $this->createForm(EnableUserFormType::class);
 
         // Handle all forms that may be submitted
         $response = $this->handleInfoForm($userInfoForm, $request, $user) ??
-            $this->handleResetForm($userResetForm, $request, $user) ??
+            $this->handleResetPasswordForm($userResetPasswordForm, $request, $user) ??
+            $this->handleResetTwoFactorAuthForm($userResetTwoFactorAuthForm, $request, $user) ??
             $this->handleDisableForm($userDisableForm, $request, $user) ??
             $this->handleEnableForm($userEnableForm, $request, $user)
         ;
@@ -198,8 +208,8 @@ class UserController extends AbstractController
         return $this->render('admin/user/edit.html.twig', [
             'user' => $user,
             'user_info' => $userInfoForm->createView(),
-            'user_reset_password' => $userResetForm->createView(),
-            'user_reset_2fa' => $userResetForm->createView(),
+            'user_reset_password' => $userResetPasswordForm->createView(),
+            'user_reset_two_factor_auth' => $userResetTwoFactorAuthForm->createView(),
             'user_disable' => $userDisableForm->createView(),
             'user_enable' => $userEnableForm->createView(),
         ]);
@@ -265,18 +275,14 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_admin_users');
     }
 
-    protected function handleResetForm(FormInterface $form, Request $request, User $user): ?Response
+    protected function handleResetPasswordForm(FormInterface $form, Request $request, User $user): ?Response
     {
         $form->handleRequest($request);
         if (! $form->isSubmitted() || ! $form->isValid()) {
             return null;
         }
 
-        $password = $this->userService->resetCredentials(
-            $user,
-            resetPassword: boolval($form->get('reset_pw')->getData()),
-            reset2fa: boolval($form->get('reset_2fa')->getData())
-        );
+        $password = $this->userService->resetPassword($user);
 
         // We need to save the user id and password in the session so we can show it on the next page.
         // This is not ideal, but the session is encrypted and the password needs to be changed on first
@@ -286,6 +292,32 @@ class UserController extends AbstractController
             [
                 'user_id' => $user->getId(),
                 'plainTextPassword' => $password,
+            ]
+        );
+
+        return $this->render('admin/user/created.html.twig', [
+            'mode' => 'modified',
+            'user' => $user,
+        ]);
+    }
+
+    protected function handleResetTwoFactorAuthForm(FormInterface $form, Request $request, User $user): ?Response
+    {
+        $form->handleRequest($request);
+        if (! $form->isSubmitted() || ! $form->isValid()) {
+            return null;
+        }
+
+        $this->userService->resetTwoFactorAuth($user);
+
+        // We need to save the user id and password in the session so we can show it on the next page.
+        // This is not ideal, but the session is encrypted and the password needs to be changed on first
+        // time use.
+        $request->getSession()->set(
+            self::RESET_USER_KEY,
+            [
+                'user_id' => $user->getId(),
+                'plainTextPassword' => '',
             ]
         );
 

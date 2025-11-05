@@ -22,7 +22,7 @@ class DossierWithAccessCheckValueResolverTest extends MockeryTestCase
     private AuthorizationCheckerInterface&MockInterface $authorizationChecker;
     private DossierWithAccessCheckValueResolver $resolver;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
         $this->authorizationChecker = \Mockery::mock(AuthorizationCheckerInterface::class);

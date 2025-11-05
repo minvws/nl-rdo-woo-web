@@ -18,7 +18,7 @@ class InquiryInventoryDataProviderTest extends MockeryTestCase
     private Document&MockInterface $docB;
     private InquiryInventoryDataProvider $dataProvider;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->inquiry = \Mockery::mock(Inquiry::class);
         $this->docA = \Mockery::mock(Document::class);

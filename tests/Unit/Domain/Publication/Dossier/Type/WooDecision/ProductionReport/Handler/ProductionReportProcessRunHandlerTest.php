@@ -23,7 +23,7 @@ class ProductionReportProcessRunHandlerTest extends UnitTestCase
     private EntityManagerInterface&MockInterface $entityManager;
     private ProductionReportProcessRunHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->productionReportProcessRunRepository = \Mockery::mock(ProductionReportProcessRunRepository::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);

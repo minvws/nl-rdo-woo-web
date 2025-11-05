@@ -7,11 +7,12 @@ namespace App\Domain\Publication\Dossier\Workflow\Guard;
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Type\DossierTypeWithPreview;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Workflow\Event\GuardEvent;
 
-class PublishAsPreviewGuard implements EventSubscriberInterface
+class PublishAsPreviewGuard
 {
+    #[AsEventListener(event: 'workflow.guard')]
     public function guardPublicationAsPreview(GuardEvent $event): void
     {
         if ($event->getTransition()->getName() !== DossierStatusTransition::PUBLISH_AS_PREVIEW->value) {
@@ -29,15 +30,5 @@ class PublishAsPreviewGuard implements EventSubscriberInterface
         if ($dossier->getPreviewDate() === null || $dossier->getPreviewDate() > new \DateTimeImmutable('now midnight')) {
             $event->setBlocked(true, 'A dossier with an empty or future preview date cannot be published as preview');
         }
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            'workflow.guard' => ['guardPublicationAsPreview'],
-        ];
     }
 }

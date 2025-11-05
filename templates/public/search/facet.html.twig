@@ -9,12 +9,12 @@
 </a>
 {% endif %}
 
-<form class="form-filters" method="post" action="">
+<form class="form-filters" method="post">
     <fieldset>
         <legend class="woo-legend">{{ 'public.global.date' | trans }}</legend>
 
         {% macro date_input(fromOrTo, label) %}
-            <label class="block text-base mb-0.5" for="date-{{ fromOrTo }}">{{ label }}</label>
+            <label class="block text-base mb-0.5" for="date-{{ fromOrTo }}">{{ label }} ({{ 'public.search.date_format' | trans }})</label>
             <input class="woo-input-text" id="date-{{ fromOrTo }}" name="dt[{{ fromOrTo }}]" type="date" value="{{ app.request.get('dt')[fromOrTo] | default }}">
         {% endmacro %}
 
@@ -43,7 +43,7 @@
         <fieldset class="mt-4 js-filters-group" data-key="{{ facet.key.value }}">
             <legend class="w-full">
                 <button
-                    class="woo-legend w-full text-left relative border-b border-woo-chinese-silver py-2 leading-5 js-toggle-filters-group-button"
+                    class="woo-legend w-full text-left relative border-b border-woo-gray-400 py-2 leading-5 js-toggle-filters-group-button"
                     type="button"
                 >
                     <span class="absolute left-0 -mt-0.5">
@@ -60,7 +60,7 @@
                 {% for entry in entries %}
                     <div class="pb-2 js-search-filter-checkbox-group">
                         {{ macro.facet_entry(entry, facetInput) }}
-                        <div class="text-base text-woo-dim-gray leading-snug">
+                        <div class="text-base text-woo-gray-600 leading-snug">
                             {{ ('public.search.type_description.' ~ entry.key) | trans }}
                         </div>
 
@@ -106,7 +106,7 @@
     {{ macro.facet_select('categories.category.judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
     {{ macro.facet_select('categories.category.grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
 
-    <input type="hidden" name="q" value="{{ app.request.get('q') }}"/>
+    <input type="hidden" name="q" value="{{ app.request.get('q') }}">
 
     <div class="pt-8 js:hidden">
         <button class="woo-btn-filled-pink" type="submit">{{ 'public.search.filter_results' | trans() }}</button>

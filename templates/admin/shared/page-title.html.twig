@@ -1,0 +1,4 @@
+{% if wo_breadcrumbs() | default([]) | length %}
+    {% set currentPage = wo_breadcrumbs() | last %}
+    <twig:Admin:PageTitle title="{{ currentPage.text | trans() }}" />
+{% endif %}

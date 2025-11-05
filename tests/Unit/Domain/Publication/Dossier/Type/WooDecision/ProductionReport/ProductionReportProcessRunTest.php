@@ -18,7 +18,7 @@ final class ProductionReportProcessRunTest extends UnitTestCase
     private WooDecision&MockInterface $wooDecision;
     private ProductionReportProcessRun $productionReportProcessRun;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->wooDecision = \Mockery::mock(WooDecision::class);
         $this->wooDecision->expects('setProcessRun');

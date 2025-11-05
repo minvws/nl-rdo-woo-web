@@ -20,7 +20,7 @@ class IngestDossierHandlerTest extends MockeryTestCase
     private DossierIngester&MockInterface $ingester;
     private IngestDossierHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
         $this->ingester = \Mockery::mock(DossierIngester::class);

@@ -2,7 +2,15 @@
   @apply w-full;
 
   & th {
-    @apply whitespace-nowrap;
+    @apply font-normal text-left whitespace-nowrap;
+
+    &[scope="col"] {
+      @apply bg-bhr-gray-100 text-bhr-gray-900;
+    }
+
+    &[scope="row"] {
+      @apply text-bhr-gray-700;
+    }
   }
 
   & td,
@@ -11,21 +19,10 @@
   }
 
   & tr {
-    @apply border-b border-bhr-gray-300;
+    @apply border-b border-bhr-gray-100;
   }
 }
 
-@utility bhr-row-head {
-  @apply font-normal text-left text-bhr-gray-700;
-}
-
-@utility bhr-column-head {
-  @apply font-normal italic text-lg text-left;
-}
-
-@utility bhr-column-head--gray {
-  @apply bg-bhr-gray-100 border-r border-bhr-gray-300 text-bhr-gray-700 last:border-r-0;
-}
 
 @utility bhr-fill-cell {
   @apply block -my-2 -mx-4 py-2 px-4;

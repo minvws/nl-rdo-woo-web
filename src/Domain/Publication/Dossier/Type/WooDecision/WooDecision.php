@@ -55,16 +55,16 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     #[ORM\ManyToMany(targetEntity: Inquiry::class, mappedBy: 'dossiers')]
     protected Collection $inquiries;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: Inventory::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: Inventory::class, cascade: ['remove'])]
     private ?Inventory $inventory = null;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ProductionReport::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ProductionReport::class, cascade: ['remove'])]
     protected ?ProductionReport $productionReport = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $previewDate = null;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ProductionReportProcessRun::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ProductionReportProcessRun::class, cascade: ['remove'])]
     private ?ProductionReportProcessRun $processRun = null;
 
     #[ORM\Column(length: 255, nullable: true, enumType: DecisionType::class)]
@@ -76,7 +76,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     #[Assert\LessThanOrEqual(value: 'today', message: 'date_must_not_be_in_future', groups: [DossierValidationGroup::DECISION->value])]
     private ?\DateTimeImmutable $decisionDate = null;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: WooDecisionMainDocument::class)]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: WooDecisionMainDocument::class, cascade: ['remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::DECISION->value])]
     private ?WooDecisionMainDocument $document;
@@ -143,10 +143,37 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
         return $this->productionReport;
     }
 
-    public function needsInventoryAndDocuments(): bool
+    public function isInventoryRequired(): bool
     {
-        return $this->getDecision() !== DecisionType::NOTHING_FOUND
-            && $this->getDecision() !== DecisionType::NOT_PUBLIC;
+        return $this->isDecisionOneOfTypes([DecisionType::PUBLIC, DecisionType::PARTIAL_PUBLIC]);
+    }
+
+    public function isInventoryOptional(): bool
+    {
+        return $this->isDecisionOneOfTypes([DecisionType::ALREADY_PUBLIC, DecisionType::NOT_PUBLIC]);
+    }
+
+    /**
+     * @param DecisionType[] $decisionTypes
+     */
+    private function isDecisionOneOfTypes(array $decisionTypes): bool
+    {
+        return in_array($this->getDecision(), $decisionTypes, true);
+    }
+
+    public function canProvideInventory(): bool
+    {
+        return $this->isInventoryRequired() || $this->isInventoryOptional();
+    }
+
+    public function hasProductionReport(): bool
+    {
+        return $this->getProductionReport()?->getFileInfo()->isUploaded() ?? false;
+    }
+
+    public function hasAllExpectedUploads(): bool
+    {
+        return $this->hasProductionReport() && $this->getUploadStatus()->isComplete();
     }
 
     public function getPreviewDate(): ?\DateTimeImmutable

@@ -18,7 +18,7 @@
 }
 
 @utility woo-main-nav__list {
-  @apply bg-woo-sea-blue;
+  @apply bg-woo-dark-blue-600;
   @apply no-js:absolute no-js:left-0 no-js:right-0;
   @apply md:!static md:!flex md:!h-auto md:!overflow-visible;
 }
@@ -31,7 +31,8 @@
 @utility woo-main-nav__anchor {
   @apply block px-4 py-5 md:py-7 text-white;
   @apply focus:outline-white -outline-offset-2;
-  @apply aria-current-page:font-bold aria-current-page:cursor-default;
+  @apply aria-current-page:bg-woo-light-blue-100 aria-current-page:cursor-default aria-current-page:text-black;
+  @apply hover-focus:bg-woo-light-blue-100 hover-focus:text-black;
 }
 
 @utility woo-main-nav__anchor--home {
@@ -39,5 +40,5 @@
 }
 
 @utility woo-main-nav__icon {
-  @apply align-middle -ml-0.5 -mt-1 mr-1;
+  @apply align-middle -ml-0.5 -mt-1.5 mr-1 relative top-px;
 }

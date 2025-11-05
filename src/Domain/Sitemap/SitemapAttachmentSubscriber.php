@@ -9,10 +9,10 @@ use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-readonly class SitemapAttachmentSubscriber implements EventSubscriberInterface
+readonly class SitemapAttachmentSubscriber
 {
     public function __construct(
         private EntityManagerInterface $doctrine,
@@ -20,16 +20,7 @@ readonly class SitemapAttachmentSubscriber implements EventSubscriberInterface
     ) {
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            SitemapPopulateEvent::class => ['populate', 0],
-        ];
-    }
-
+    #[AsEventListener(event: SitemapPopulateEvent::class)]
     public function populate(SitemapPopulateEvent $event): void
     {
         $attachmentQuery = $this->attachmentRepository->getAllPublishedQuery();

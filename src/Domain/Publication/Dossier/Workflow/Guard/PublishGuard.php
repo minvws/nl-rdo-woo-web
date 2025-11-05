@@ -6,11 +6,12 @@ namespace App\Domain\Publication\Dossier\Workflow\Guard;
 
 use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Workflow\Event\GuardEvent;
 
-final class PublishGuard implements EventSubscriberInterface
+final class PublishGuard
 {
+    #[AsEventListener(event: 'workflow.guard')]
     public function guardPublication(GuardEvent $event): void
     {
         if ($event->getTransition()->getName() !== DossierStatusTransition::PUBLISH->value) {
@@ -22,15 +23,5 @@ final class PublishGuard implements EventSubscriberInterface
         if ($dossier->getPublicationDate() === null || $dossier->getPublicationDate() > new \DateTimeImmutable('now midnight')) {
             $event->setBlocked(true, 'A dossier with an empty or future publication date cannot be published');
         }
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            'workflow.guard' => ['guardPublication'],
-        ];
     }
 }

@@ -24,7 +24,7 @@ class GenerateInventoryHandlerTest extends UnitTestCase
     private InventorySanitizer&MockInterface $inventorySanitizer;
     private GenerateInventoryHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->wooDecisionRepository = \Mockery::mock(WooDecisionRepository::class);
         $this->inventoryDataProviderFactory = \Mockery::mock(InventoryDataProviderFactory::class);

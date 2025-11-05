@@ -24,7 +24,7 @@ class WooDecisionVoterTest extends MockeryTestCase
 
     private InquirySessionService&MockInterface $inquirySessionService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->inquirySessionService = \Mockery::mock(InquirySessionService::class);
 

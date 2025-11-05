@@ -30,7 +30,7 @@ final readonly class AttachmentHistoryHandler
         $dossier = $this->getDossier($event);
 
         $this->historyService->addDossierEntry(
-            dossier: $dossier,
+            dossierId: $dossier->getId(),
             key: 'attachment_created',
             context: $this->getContext($event),
             mode: $dossier->getStatus()->isPublished() ? HistoryService::MODE_BOTH : HistoryService::MODE_PRIVATE,
@@ -43,7 +43,7 @@ final readonly class AttachmentHistoryHandler
         $dossier = $this->getDossier($event);
 
         $this->historyService->addDossierEntry(
-            dossier: $dossier,
+            dossierId: $event->dossierId,
             key: 'attachment_updated',
             context: $this->getContext($event),
             mode: $dossier->getStatus()->isPublished() ? HistoryService::MODE_BOTH : HistoryService::MODE_PRIVATE,
@@ -53,10 +53,8 @@ final readonly class AttachmentHistoryHandler
     #[AsMessageHandler()]
     public function handleDelete(AttachmentDeletedEvent $event): void
     {
-        $dossier = $this->getDossier($event);
-
         $this->historyService->addDossierEntry(
-            dossier: $dossier,
+            dossierId: $event->dossierId,
             key: 'attachment_deleted',
             context: $this->getContext($event),
             mode: HistoryService::MODE_PRIVATE,
@@ -66,11 +64,10 @@ final readonly class AttachmentHistoryHandler
     #[AsMessageHandler()]
     public function handleWithdraw(AttachmentWithdrawnEvent $event): void
     {
-        $dossier = $this->getDossier($event);
         $translatedReason = $event->reason->trans($this->translator);
 
         $this->historyService->addDossierEntry(
-            dossier: $dossier,
+            dossierId: $event->dossierId,
             key: 'attachment_withdrawn',
             context: [
                 'reason' => $translatedReason,
@@ -79,7 +76,7 @@ final readonly class AttachmentHistoryHandler
         );
 
         $this->historyService->addDossierEntry(
-            dossier: $dossier,
+            dossierId: $event->dossierId,
             key: 'attachment_withdrawn',
             context: [
                 'reason' => $translatedReason,

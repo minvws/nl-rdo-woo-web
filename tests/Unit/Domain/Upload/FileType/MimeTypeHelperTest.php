@@ -10,32 +10,63 @@ use App\Service\Uploader\UploadGroupId;
 use League\MimeTypeDetection\FinfoMimeTypeDetector;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
+use Psr\Log\NullLogger;
 
 class MimeTypeHelperTest extends MockeryTestCase
 {
     private FinfoMimeTypeDetector&MockInterface $mimeTypeDetector;
     private MimeTypeHelper $helper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->mimeTypeDetector = \Mockery::mock(FinfoMimeTypeDetector::class);
-        $this->helper = new MimeTypeHelper($this->mimeTypeDetector);
+        $this->helper = new MimeTypeHelper($this->mimeTypeDetector, new NullLogger());
 
         parent::setUp();
+    }
+
+    public function testIsValidForUploadGroupReturnsFalseWhenMimeTypeDoesNotMatchFileExtension(): void
+    {
+        self::assertFalse(
+            $this->helper->isValidForUploadGroup('foo', 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS),
+        );
     }
 
     public function testIsValidForUploadGroupReturnsFalseWhenMimeTypeIsNotAllowedBasedOnFileContents(): void
     {
         self::assertFalse(
-            $this->helper->isValidForUploadGroup('foo/bar', UploadGroupId::WOO_DECISION_DOCUMENTS),
+            $this->helper->isValidForUploadGroup('foo', 'foo/bar', UploadGroupId::WOO_DECISION_DOCUMENTS),
         );
     }
 
-    public function testIsFileMimeTypeValidForUploadGroupReturnsTrueForValidMimeType(): void
+    public function testIsValidForUploadGroupReturnsFalseWhenMimeTypeDoesNotMatchExtension(): void
     {
-        self::assertTrue(
-            $this->helper->isValidForUploadGroup('application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS),
+        self::assertFalse(
+            $this->helper->isValidForUploadGroup('xls', 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS),
         );
+    }
+
+    #[DataProvider('validMimeTypeExtensionDataProvider')]
+    public function testIsFileMimeTypeValidForUploadGroupReturnsTrueForValidMimeType(
+        string $fileExtension,
+        string $mimeType,
+    ): void {
+        self::assertTrue(
+            $this->helper->isValidForUploadGroup($fileExtension, $mimeType, UploadGroupId::WOO_DECISION_DOCUMENTS),
+        );
+    }
+
+    /**
+     * @return array<array{fileExtension: string, mimeType: string}>
+     */
+    public static function validMimeTypeExtensionDataProvider(): array
+    {
+        return [
+            ['fileExtension' => 'pdf', 'mimeType' => 'application/pdf'],
+            ['fileExtension' => 'xls', 'mimeType' => 'application/msexcel'],
+            ['fileExtension' => 'xlsx', 'mimeType' => 'application/msexcel'],
+        ];
     }
 
     public function testDetectMimetypeFromPath(): void

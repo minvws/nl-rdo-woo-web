@@ -10,13 +10,13 @@
         {{ 'admin.publications.filters' | trans }}
     </summary>
 
-    <div class="bhr-overlay-card max-w-xs mt-4">
+    <div class="bhr-overlay-card max-w-xs mt-4 p-4">
         {{ form_start(form) }}
 
         {% if hasVisibleDepartmentFilters %}
         <div class="bhr-form-row">
             <fieldset>
-                <legend class="bhr-legend">{{ 'admin.publications.department' | trans() }}</legend>
+                <legend class="bhr-label">{{ 'admin.publications.department' | trans() }}</legend>
                 {{ form_widget(form.departments) }}
             </fieldset>
         </div>
@@ -27,7 +27,7 @@
             {% if hasVisibleTypeFilters %}
                 <div class="bhr-form-row">
                     <fieldset>
-                        <legend class="bhr-legend">{{ 'admin.publications.type' | trans() }}</legend>
+                        <legend class="bhr-label">{{ 'admin.publications.type' | trans() }}</legend>
                         {{ form_widget(form.types) }}
                     </fieldset>
                 </div>
@@ -38,7 +38,7 @@
         {% if hasVisibleStatusFilters %}
         <div class="bhr-form-row">
             <fieldset>
-                <legend class="bhr-legend">{{ 'admin.publications.status' | trans() }}</legend>
+                <legend class="bhr-label">{{ 'admin.publications.status' | trans() }}</legend>
                 {{ form_widget(form.statuses) }}
             </fieldset>
         </div>

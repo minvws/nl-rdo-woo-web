@@ -25,4 +25,9 @@ abstract readonly class AbstractEntityWithFileInfoDeleteStrategy implements Doss
     }
 
     abstract public function delete(AbstractDossier $dossier): void;
+
+    public function deleteWithOverride(AbstractDossier $dossier): void
+    {
+        $this->delete($dossier);
+    }
 }

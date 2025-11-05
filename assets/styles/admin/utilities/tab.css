@@ -1,17 +1,26 @@
 @utility bhr-tab-list {
-  @apply flex flex-nowrap w-full overflow-x-auto relative;
-
-  &::before {
-    @apply content-[''] absolute h-px bottom-0 inset-x-0 bg-bhr-gray-600;
-  }
+  @apply flex flex-nowrap w-full overflow-x-auto mb-2;
 }
 
 @utility bhr-tab-list__item {
-  @apply flex-none;
+  @apply flex-none ml-4 first:ml-0;
 }
 
 @utility bhr-tab-button {
-  @apply text-bhr-gray-700 font-bold leading-tight p-2 border-b-2 border-transparent transition-colors hover-focus:text-bhr-blue-800 hover-focus:border-bhr-blue-800 relative z-1;
-  @apply aria-selected:text-bhr-blue-800 aria-selected:border-bhr-blue-800;
+  @apply text-bhr-gray-700 font-bold py-2 relative;
+  @apply hover-focus:text-bhr-blue-800 aria-selected:text-bhr-blue-800;
   @apply focus:-outline-offset-2;
+
+  &::before {
+    @apply content-[''] absolute bottom-0 inset-x-0 bg-bhr-blue-800;
+  }
+
+  &:hover::before,
+  &:focus::before {
+    @apply h-px;
+  }
+
+  &[aria-selected="true"]::before {
+    @apply h-0.5;
+  }
 }

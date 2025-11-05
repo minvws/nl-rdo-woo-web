@@ -2,7 +2,7 @@
     <h2 class="bhr-label">{{ title }}</h2>
     {{ form_errors(formField) }}
     {% do formField.setRendered %}
-    <p class="bhr-form-help text-lg pb-2">{{ helpText }}</p>
+    <p class="bhr-form-help">{{ helpText }}</p>
 
     <div data-e2e-name="main-document" {{ vue_component('GenericController', {
         componentName: 'PublicationFiles',

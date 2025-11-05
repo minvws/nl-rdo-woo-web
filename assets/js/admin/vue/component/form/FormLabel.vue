@@ -12,6 +12,10 @@ const props = withDefaults(defineProps<Props>(), {
 <template>
   <label class="bhr-label" :for="props.for">
     <slot />
-    <span v-if="!props.required" class="font-normal"> (optioneel)</span>
+    <span v-if="!props.required" class="bhr-optional">
+      <span class="sr-only"> (</span>optioneel<span class="sr-only"
+        >)</span
+      ></span
+    >
   </label>
 </template>

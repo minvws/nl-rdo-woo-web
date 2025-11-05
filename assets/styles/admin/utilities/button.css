@@ -58,7 +58,7 @@
 @utility bhr-btn-bordered-primary {
     @apply bhr-btn-bordered_;
     @apply
-        border-bhr-gray-200
+        border-bhr-gray-400
         text-bhr-blue-800;
 
     &:active,

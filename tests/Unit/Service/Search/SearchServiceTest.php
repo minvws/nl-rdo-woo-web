@@ -32,7 +32,7 @@ class SearchServiceTest extends MockeryTestCase
     private SearchParametersFactory&MockInterface $searchParametersFactory;
     private SearchService $searchService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
         $this->logger = \Mockery::mock(LoggerInterface::class);

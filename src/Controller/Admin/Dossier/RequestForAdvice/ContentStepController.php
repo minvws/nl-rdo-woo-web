@@ -68,6 +68,7 @@ class ContentStepController extends AbstractController
                 ->withWizardStatus($wizardStatus)
                 ->withBreadCrumbs($breadcrumbs)
                 ->withDepartments()
+                ->with('advisoryBodiesErrors', $this->getAdvisoryBodiesErrors($form))
                 ->getParams()
         );
     }
@@ -112,6 +113,7 @@ class ContentStepController extends AbstractController
                 ->withWizardStatus($wizardStatus)
                 ->withBreadCrumbs($breadcrumbs)
                 ->withDepartments()
+                ->with('advisoryBodiesErrors', $this->getAdvisoryBodiesErrors($form))
                 ->getParams()
         );
     }
@@ -123,5 +125,18 @@ class ContentStepController extends AbstractController
             $dossier,
             ['validation_groups' => [self::STEP_NAME->value]]
         );
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getAdvisoryBodiesErrors(FormInterface $form): array
+    {
+        $errors = [];
+        foreach ($form->get('advisoryBodies')->getErrors(true) as $error) {
+            $errors[] = $error->getMessage();
+        }
+
+        return $errors;
     }
 }

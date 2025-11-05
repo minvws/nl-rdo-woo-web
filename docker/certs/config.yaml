@@ -1,0 +1,13 @@
+# See json schema at: https://github.com/pkioverheid/g4-trial/blob/c82445dc6dac038be53c59d9eff46097ede5a403/schema/config.json
+
+# Base URL for CA Issuers, e.g., where certificates are published:
+# Type: string, Format: uri, Required: true
+caIssuersBaseUrl: http://localhost:8080/certs
+
+# Base URL for CRL distribution points, e.g., where CRLs are available.
+# Type: string, Format: uri, Required: true
+cRLDistributionPointsBaseUrl: http://localhost:8080/crl
+
+# Number of hours the CRL should be valid for, i.e. the difference between thisUpdate and nextUpdate fields
+# Type: integer, Required: true
+crlRenewalHours: 48

@@ -21,7 +21,7 @@ class DocumentEventHandlerTest extends MockeryTestCase
     private DossierService&MockInterface $dossierService;
     private DocumentEventHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dossierService = \Mockery::mock(DossierService::class);
 

@@ -45,4 +45,15 @@ readonly class DossierAdminActionService
 
         throw DossierAdminActionException::forActionNotAvailable($dossier, $adminAction);
     }
+
+    public function needsConfirmation(DossierAdminAction $adminAction): bool
+    {
+        foreach ($this->actions as $action) {
+            if ($action->getAdminAction() === $adminAction) {
+                return $action->needsConfirmation();
+            }
+        }
+
+        return false;
+    }
 }

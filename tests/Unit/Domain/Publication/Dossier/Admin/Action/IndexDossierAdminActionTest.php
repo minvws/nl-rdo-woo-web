@@ -18,7 +18,7 @@ final class IndexDossierAdminActionTest extends MockeryTestCase
     private SearchDispatcher&MockInterface $searchDispatcher;
     private IndexDossierAdminAction $action;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->searchDispatcher = \Mockery::mock(SearchDispatcher::class);
 
@@ -41,6 +41,11 @@ final class IndexDossierAdminActionTest extends MockeryTestCase
     {
         self::assertTrue($this->action->supports(\Mockery::mock(WooDecision::class)));
         self::assertTrue($this->action->supports(\Mockery::mock(Covenant::class)));
+    }
+
+    public function testNeedsConfirmation(): void
+    {
+        self::assertFalse($this->action->needsConfirmation());
     }
 
     public function testExecute(): void

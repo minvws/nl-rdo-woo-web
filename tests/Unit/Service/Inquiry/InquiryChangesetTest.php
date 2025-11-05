@@ -17,7 +17,7 @@ class InquiryChangesetTest extends MockeryTestCase
 {
     private InquiryChangeset $changeset;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $organisationId = Uuid::v6();
 

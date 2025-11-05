@@ -1,5 +1,5 @@
 @utility woo-carousel {
-  @apply bg-woo-anti-flash-white;
+  @apply bg-woo-gray-100;
 }
 
 @utility woo-carousel__list {

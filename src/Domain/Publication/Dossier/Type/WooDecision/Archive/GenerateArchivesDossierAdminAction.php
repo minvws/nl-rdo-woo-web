@@ -37,4 +37,9 @@ readonly class GenerateArchivesDossierAdminAction implements DossierAdminActionI
             BatchDownloadScope::forWooDecision($dossier),
         );
     }
+
+    public function needsConfirmation(): bool
+    {
+        return false;
+    }
 }

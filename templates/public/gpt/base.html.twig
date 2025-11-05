@@ -1,0 +1,22 @@
+{% extends 'public/base.html.twig' %}
+
+{% set page_title = 'public.gpt.browser_title' | trans %}
+
+{% import "public/macros/main-nav.html.twig" as macro %}
+
+{% block mainNav %}
+    {% set currentRoute = app.request.get('_route') %}
+    {{ macro.main_nav_anchor(
+            path('app_gpt_home'),
+            currentRoute == 'app_gpt_home',
+            'public.gpt.main_nav.home' | trans,
+            "house"
+        )
+    }}
+    {{ macro.main_nav_anchor(
+            path('app_gpt_about'),
+            currentRoute == 'app_gpt_about',
+            'public.gpt.main_nav.about' | trans,
+        )
+    }}
+{% endblock %}

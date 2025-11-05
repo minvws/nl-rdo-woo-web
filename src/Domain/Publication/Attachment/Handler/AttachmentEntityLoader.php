@@ -12,6 +12,7 @@ use App\Domain\Publication\Dossier\AbstractDossier;
 use App\Domain\Publication\Dossier\DossierRepository;
 use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Doctrine\ORM\NoResultException;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
@@ -24,16 +25,22 @@ readonly class AttachmentEntityLoader
     ) {
     }
 
+    public function loadAttachment(
+        Uuid $dossierId,
+        Uuid $attachmentId,
+    ): AbstractAttachment {
+        $dossier = $this->loadDossier($dossierId);
+
+        return $this->doLoadAttachment($dossier, $attachmentId);
+    }
+
     public function loadAndValidateAttachment(
         Uuid $dossierId,
         Uuid $attachmentId,
         DossierStatusTransition $transition,
     ): AbstractAttachment {
         $dossier = $this->loadDossier($dossierId);
-        $attachment = $this->attachmentRepository->findOneOrNullForDossier($dossierId, $attachmentId);
-        if ($attachment === null) {
-            throw new AttachmentNotFoundException();
-        }
+        $attachment = $this->doLoadAttachment($dossier, $attachmentId);
 
         $this->dossierWorkflowManager->applyTransition($dossier, $transition);
 
@@ -58,5 +65,16 @@ readonly class AttachmentEntityLoader
         Assert::isInstanceOf($dossier, EntityWithAttachments::class);
 
         return $dossier;
+    }
+
+    private function doLoadAttachment(EntityWithAttachments&AbstractDossier $dossier, Uuid $attachmentId): AbstractAttachment
+    {
+        try {
+            $attachment = $this->attachmentRepository->findOneForDossier($dossier->getId(), $attachmentId);
+        } catch (NoResultException $e) {
+            throw new AttachmentNotFoundException($e);
+        }
+
+        return $attachment;
     }
 }

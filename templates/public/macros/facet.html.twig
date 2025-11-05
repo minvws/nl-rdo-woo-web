@@ -11,7 +11,7 @@ Display facet with hyperlinks
     {% set entries = result.aggregation(facet.key).entries|default([]) %}
 
     {% if entries | length > 0 %}
-    <div class="border-b last:border-b-0 border-woo-chinese-silver pb-8 mb-8" id="{{ facetKey.value }}">
+    <div class="border-b last:border-b-0 border-woo-gray-400 pb-8 mb-8" id="{{ facetKey.value }}">
         <h2 class="woo-h3 sm:font-normal mb-6">{{ title }}</h2>
 
         <ul class="sm:columns-2 lg:columns-3 sm:gap-x-12">
@@ -37,6 +37,32 @@ Display facet with hyperlinks
     {% endif %}
 {% endmacro %}
 
+{% macro facets_sitemap(result) %}
+    {{ _self.facet_sitemap('categories.category.type' | trans, constant('App\\Service\\Search\\Model\\FacetKey::TYPE'), result) }}
+    {{ _self.facet_sitemap('categories.category.department' | trans, constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), result) }}
+    {{ _self.facet_sitemap('categories.category.grounds' | trans, constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
+    {{ _self.facet_sitemap('categories.category.source_file' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SOURCE'), result) }}
+    {{ _self.facet_sitemap('categories.category.subject' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT'), result) }}
+    {{ _self.facet_sitemap('categories.category.judgement' | trans, constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
+{% endmacro %}
+
+{% macro facet_sitemap(title, facetKey, result) %}
+    {% set facet = result.searchParameters.facetInputs.getByFacetKey(facetKey).facet %}
+    {% set entries = result.aggregation(facet.key).entries|default([]) %}
+
+    {% if entries | length > 0 %}
+        <h2 class="mb-0! mt-1! text-lg!">{{ title }}</h2>
+
+        <ul>
+            {% for entryIndex, entry in entries %}
+            <li>
+                <a href="{{ path('app_search', entry.queryParams) }}">{{ entry.displayValue | trans }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endmacro %}
+
 {% macro facet_preview(title, facetKey, result, gotoPlural) %}
     {% set facet = result.searchParameters.facetInputs.getByFacetKey(facetKey).facet %}
     {% set allEntries = result.aggregation(facet.key).entries %}
@@ -46,11 +72,11 @@ Display facet with hyperlinks
     {% set visibleEntries = allEntries|default([])[:numberOfVisibleEntries] %}
     {% if visibleEntries | length > 0 %}
     <div class="pb-16" data-e2e-name="categories-{{ title }}">
-        <div class="flex border-b border-woo-chinese-silver mb-2 pb-2">
+        <div class="flex border-b border-woo-gray-400 mb-2 pb-2">
             <h3 class="woo-h3 sm:font-normal grow mr-2">{{ title }}</h3>
             {% if hasMoreEntries and gotoPlural is not null %}
                 <a class="woo-a no-underline" href="{{ path('app_browse') }}#{{ facetKey.value }}">
-                    <twig:Public:Icon class="mr-1 relative -top-px" name="chevron-right" size="12" />
+                    <twig:Public:Icon class="-mr-1 relative -top-px" size="20" name="chevron-right" />
                     {{ 'categories.label.go_to_all_of_type' | trans({'count': numberOfAllEntries, 'type': gotoPlural}) }}
                 </a>
             {% endif %}
@@ -133,7 +159,7 @@ Display facet with hyperlinks
             <button
                 aria-expanded="true"
                 aria-controls="filters-group-{{ facet.key.value }}"
-                class="woo-legend w-full text-left relative border-b border-woo-chinese-silver py-2 leading-5 js-toggle-filters-group-button"
+                class="woo-legend w-full text-left relative border-b border-woo-gray-400 py-2 leading-5 js-toggle-filters-group-button"
                 type="button"
             >
                 {{ title }}
@@ -156,7 +182,7 @@ Display facet with hyperlinks
                 <button
                     aria-expanded="true"
                     aria-controls="filter-items-{{ facet.key.value }}"
-                    class="text-woo-sea-blue text-sm w-full text-left py-2 js-toggle-filter-items-button no-js:hidden"
+                    class="text-woo-dark-blue-600 text-sm w-full text-left py-2 js-toggle-filter-items-button no-js:hidden"
                     data-text-collapsed="{{ 'public.global.show_more' | trans }}"
                     data-text-expanded="{{ 'public.global.show_less' | trans }}"
                     type="button"

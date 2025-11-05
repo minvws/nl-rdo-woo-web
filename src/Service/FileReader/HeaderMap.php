@@ -13,14 +13,14 @@ use App\Exception\FileReaderException;
 class HeaderMap
 {
     /**
-     * @param array<string, string> $mapping
+     * @param array<string,string|int> $mapping
      */
     public function __construct(
         private readonly array $mapping,
     ) {
     }
 
-    public function getCellCoordinate(string $headerName): mixed
+    public function getCellCoordinate(string $headerName): string|int
     {
         if (! $this->has($headerName)) {
             throw FileReaderException::forUnknownHeader($headerName);

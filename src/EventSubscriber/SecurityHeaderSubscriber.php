@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
+use App\Service\EnvironmentService;
 use App\Service\Security\ApplicationMode\ApplicationMode;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -16,11 +17,16 @@ use Webmozart\Assert\Assert;
 /**
  * This listener will add security headers to the response.
  */
-class SecurityHeaderSubscriber implements EventSubscriberInterface
+class SecurityHeaderSubscriber
 {
     private const string CSP_SELF = "'self'";
     private const string CSP_DATA = 'data:';
     private const string CSP_STATS = 'https://statistiek.rijksoverheid.nl';
+    private const string CSP_VITE = 'http://localhost:8001';
+    private const string CSP_VITE_WS = 'ws://localhost:8001';
+
+    /** @var list<string> */
+    private const array DEV_CSPS = [self::CSP_VITE];
 
     /** @var array|string[] */
     protected array $fields = [
@@ -41,9 +47,11 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
 
     public function __construct(
         private readonly ApplicationMode $applicationMode,
+        private readonly EnvironmentService $environmentService,
     ) {
     }
 
+    #[AsEventListener(event: KernelEvents::REQUEST)]
     public function onKernelRequest(RequestEvent $event): void
     {
         // Add random nonce that can be used in CSP for this request only
@@ -52,6 +60,7 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
         $event->getRequest()->attributes->set('csp_nonce', $nonce);
     }
 
+    #[AsEventListener(event: KernelEvents::RESPONSE)]
     public function onKernelResponse(ResponseEvent $event): void
     {
         $response = $event->getResponse();
@@ -78,22 +87,37 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
         Assert::nullOrString($nonce);
 
         $csp = [
-            'default-src' => [self::CSP_SELF],
+            'default-src' => $this->extendCspsForDevEnv([self::CSP_SELF]),
             'frame-ancestors' => [self::CSP_SELF],
             'form-action' => [self::CSP_SELF],
             'base-uri' => [self::CSP_SELF],
-            'connect-src' => [self::CSP_SELF, self::CSP_STATS],
-            'script-src' => [self::CSP_SELF, self::CSP_STATS, "'nonce-" . $nonce . "'"],
+            'connect-src' => $this->extendCspsForDevEnv([self::CSP_SELF, self::CSP_STATS], [self::CSP_VITE, self::CSP_VITE_WS]),
+            'script-src' => $this->extendCspsForDevEnv([self::CSP_SELF, self::CSP_STATS, "'nonce-" . $nonce . "'"]),
             'style-src' => $this->getStyleSrcDirective($request, $nonce),
-            'img-src' => [self::CSP_SELF, self::CSP_DATA],
+            'img-src' => $this->extendCspsForDevEnv([self::CSP_SELF, self::CSP_DATA]),
             'font-src' => $this->getFontSrcDirective($request),
         ];
 
         if (! $this->applicationMode->isAll()) {
-            $csp['img-src'] = [self::CSP_SELF, self::CSP_DATA, self::CSP_STATS];
+            $csp['img-src'] = $this->extendCspsForDevEnv([self::CSP_SELF, self::CSP_DATA, self::CSP_STATS]);
         }
 
         $response->headers->set('Content-Security-Policy', $this->buildCsp($csp));
+    }
+
+    /**
+     * @param list<string> $csps
+     * @param list<string> $developmentCsps
+     *
+     * @return list<string>
+     */
+    private function extendCspsForDevEnv(array $csps, array $developmentCsps = self::DEV_CSPS): array
+    {
+        if ($this->environmentService->isDev()) {
+            return array_values(array_merge($csps, $developmentCsps));
+        }
+
+        return $csps;
     }
 
     /**
@@ -105,7 +129,7 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
             return [self::CSP_SELF, "'unsafe-inline'"];
         }
 
-        return [self::CSP_SELF, "'nonce-" . $nonce . "'"];
+        return $this->extendCspsForDevEnv([self::CSP_SELF, "'nonce-" . $nonce . "'"]);
     }
 
     /**
@@ -117,7 +141,7 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
             return [self::CSP_SELF, 'https://fonts.scalar.com'];
         }
 
-        return [self::CSP_SELF];
+        return $this->extendCspsForDevEnv([self::CSP_SELF]);
     }
 
     private function isApiPlatformDocsRoute(Request $request): bool
@@ -134,20 +158,12 @@ class SecurityHeaderSubscriber implements EventSubscriberInterface
         $requestUri = $request->getRequestUri();
         $routeName = $request->attributes->get('_route');
 
-        if (! ($this->applicationMode->isAll() || $this->applicationMode->isApi())) {
+        if (! $this->applicationMode->isApiOrAll()) {
             return false;
         }
 
         return str_starts_with($requestUri, '/api/docs')
                || (is_string($routeName) && $routeName === 'app_api_docs');
-    }
-
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::REQUEST => 'onKernelRequest',
-            KernelEvents::RESPONSE => 'onKernelResponse',
-        ];
     }
 
     /**

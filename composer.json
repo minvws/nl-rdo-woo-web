@@ -15,7 +15,7 @@
         "api-platform/doctrine-orm": "^4.1",
         "api-platform/symfony": "^4.1",
         "aws/aws-sdk-php": "^3.279",
-        "doctrine/annotations": "^2.0",
+        "devizzent/cebe-php-openapi": "^1.1",
         "doctrine/doctrine-bundle": "^2.10",
         "doctrine/doctrine-fixtures-bundle": "^4.0",
         "doctrine/doctrine-migrations-bundle": "^3.2",
@@ -33,6 +33,7 @@
         "league/flysystem-aws-s3-v3": "^3.15",
         "league/flysystem-bundle": "^3.1",
         "league/mime-type-detection": "^1.16",
+        "league/openapi-psr7-validator": "^0.22.0",
         "maennchen/zipstream-php": "^3.1",
         "martin-georgiev/postgresql-for-doctrine": "^3.0",
         "mhujer/breadcrumbs-bundle": "^1.5",
@@ -42,6 +43,7 @@
         "minvws/icore-php-typearray": "^0.0.6",
         "nesbot/carbon": "^3.7",
         "nikic/php-parser": "^5.0",
+        "nyholm/psr7": "^1.8",
         "paragonie/halite": "^5.1",
         "pentatrion/vite-bundle": "^8.0",
         "php-amqplib/rabbitmq-bundle": "^2.11",
@@ -84,6 +86,7 @@
         "symfony/process": "6.4.*",
         "symfony/property-access": "6.4.*",
         "symfony/property-info": "6.4.*",
+        "symfony/psr-http-message-bridge": "7.3.*",
         "symfony/rate-limiter": "6.4.*",
         "symfony/routing": "6.4.*",
         "symfony/runtime": "6.4.*",
@@ -186,7 +189,7 @@
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=off phpunit -d --without-creating-snapshots"
+            "XDEBUG_MODE=off phpunit -d --without-creating-snapshots --display-phpunit-deprecations --display-deprecations"
         ],
         "test-report": [
             "Composer\\Config::disableProcessTimeout",
@@ -238,7 +241,7 @@
         "phpstan/phpstan-mockery": "^2.0",
         "phpstan/phpstan-symfony": "^2.0",
         "phpstan/phpstan-webmozart-assert": "^2.0",
-        "phpunit/phpunit": "^11.4",
+        "phpunit/phpunit": "^12.4",
         "rector/rector": "^2.0",
         "slevomat/coding-standard": "^8.11",
         "spatie/phpunit-snapshot-assertions": "^5.1",

@@ -24,7 +24,7 @@ class PageCheckTest extends MockeryTestCase
     private ElasticService&MockInterface $elasticService;
     private WooDecisionRepository&MockInterface $repository;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(WooDecisionRepository::class);
         $this->elasticService = \Mockery::mock(ElasticService::class);

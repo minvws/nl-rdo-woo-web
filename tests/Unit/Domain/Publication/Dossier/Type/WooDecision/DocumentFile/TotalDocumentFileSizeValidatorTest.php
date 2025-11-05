@@ -15,7 +15,7 @@ class TotalDocumentFileSizeValidatorTest extends UnitTestCase
 {
     private TotalDocumentFileSizeValidator $validator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validator = new TotalDocumentFileSizeValidator();
     }

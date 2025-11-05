@@ -21,7 +21,7 @@ class DocumentFileSetEventHandlerTest extends MockeryTestCase
     private BatchDownloadService&MockInterface $batchDownloadService;
     private DocumentFileSetEventHandler $handler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = \Mockery::mock(WooDecisionRepository::class);
         $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);

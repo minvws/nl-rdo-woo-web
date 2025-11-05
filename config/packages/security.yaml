@@ -9,11 +9,14 @@ security:
                 property: email
 
     firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
+        api:
+            pattern: ^/api
+            stateless: true
+            custom_authenticators:
+                - App\Service\Security\Api\PublicationApiAuthenticator
         balie:
             pattern: ^/balie
+            user_checker: App\Service\Security\UserChecker
             form_login:
                 provider: app_user_provider
                 login_path: app_login
@@ -40,6 +43,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - { path: ^/api, roles: ROLE_API_CLIENT }
         - { path: ^/balie/login, roles: PUBLIC_ACCESS }
         - { path: ^/balie/logout, roles: PUBLIC_ACCESS }
         - { path: ^/balie/2fa, role: IS_AUTHENTICATED_2FA_IN_PROGRESS }

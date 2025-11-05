@@ -12,7 +12,7 @@ final class YearMonthTypeTest extends TestCase
 {
     private YearMonthType $yearMonthType;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         Carbon::setTestNow('2024-04-30 09:42:11');
 
